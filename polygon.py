@@ -196,7 +196,7 @@ class PolygonCreator():
         from sage.modules.free_module import VectorSpace
         return VectorSpace(self._field, 2)
 
-    def addVertex(self, new_vertex):
+    def add_vertex(self, new_vertex):
         r"""
         Add a vertex to the polygon.
         Returns 1 if successful and 0 if not, in which case the resulting 
@@ -230,7 +230,7 @@ class PolygonCreator():
             self._v.append(newv)
             return 1
 
-    def getPolygon(self):
+    def get_polygon(self):
         r"""
         Return the polygon.
         Raises a ValueError if less than three vertices have been accepted.
