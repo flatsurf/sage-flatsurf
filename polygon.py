@@ -28,11 +28,14 @@ from sage.rings.real_mpfr import RR
 from sage.categories.action import Action
 import operator
 
+def wedge_product(v,w):
+    return v[0]*w[1]-v[1]*w[0]
+
 def check_convexity(edges, reliable_comparison=False):
     for i in xrange(len(edges)-1):
-        if edges[i].dot_product(edges[i+1]) < 0:
+        if wedge_product(edges[i],edges[i+1]) <= 0:
             raise ValueError("not convex!")
-    if edges[-1].dot_product(edges[0]) < 0:
+    if wedge_product(edges[-1],edges[0]) <= 0:
         raise ValueError("not convex!")
 
 class ActionOnPolygons(Action):
@@ -43,6 +46,7 @@ class ActionOnPolygons(Action):
 
     def _call_(self, g, x):
         if g.det() <= 0:
+            """Maybe we can allow an action, which also reverses the edge ordering? -Pat"""
             raise ValueError("can not act with matrix with negative determinant")
         return x.parent()([g*e for e in x.edges()])
 
@@ -175,4 +179,64 @@ def regular_octagon(field=None):
             (2,0), (sqrt2,sqrt2)]
 
     return Polygons(field)(edges)
+
+class PolygonCreator():
+    r"""
+    Class for iteratively constructing a polygon over the field.
+    """
+    def __init__(self, field = QQ): 
+        self._v=[]
+        self._w=[]
+        self._field=field
+
+    def vector_space(self):
+        r"""
+        Return the vector space in which self naturally embeds.
+        """
+        from sage.modules.free_module import VectorSpace
+        return VectorSpace(self._field, 2)
+
+    def addVertex(self, new_vertex):
+        r"""
+        Add a vertex to the polygon.
+        Returns 1 if successful and 0 if not, in which case the resulting 
+        polygon would not have been convex.
+        """
+        V=self.vector_space()
+        newv=V(new_vertex)
+        if (len(self._v)==0):
+            self._v.append(newv)
+            self._w.append(V.zero())
+            return 1
+        if (len(self._v)==1):
+            if (self._v[0]==newv):
+                return 0
+            else:
+                self._w[-1]=newv-self._v[-1]
+                self._w.append(self._v[0]-newv)
+                self._v.append(newv)
+                return 1
+        if (len(self._v)>=2):
+            neww1=newv-self._v[-1]
+            if wedge_product(self._w[-2],neww1) <= 0:
+                return 0
+            neww2=self._v[0]-newv
+            if wedge_product(neww1,neww2)<= 0:
+                return 0
+            if wedge_product(neww2,self._w[0])<= 0:
+                return 0
+            self._w[-1]=newv-self._v[-1]
+            self._w.append(self._v[0]-newv)
+            self._v.append(newv)
+            return 1
+
+    def getPolygon(self):
+        r"""
+        Return the polygon.
+        Raises a ValueError if less than three vertices have been accepted.
+        """
+        if len(self._v)<2:
+            raise ValueError("Not enough vertices!")
+        return Polygons(self._field)(self._w)
+
 
