@@ -14,6 +14,7 @@ Right now we can do from sage::
 from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ
 from sage.rings.real_mpfr import RR
+from sage.structure.sage_object import SageObject
 
 ZZ_1 = Integer(1)
 ZZ_2 = Integer(2)
@@ -32,6 +33,12 @@ class TranslationSurfaceDisplay:
         Think about a class for plotting saddle connections, cylinders, circles.
     """
 
+
+"""Comments: 
+1) I think this class should be renamed to AffineSurface. 
+2) I don't think this class should know about the labels or positions of polygons. This can be handled by a display class as above.
+-Pat
+"""
 class TranslationSurface(SageObject):
     r"""
     A surface with a flat metric and conical singularities (not necessarily
@@ -164,17 +171,19 @@ class TranslationSurface(SageObject):
             p = self._polygons[a]
             v = p.vertices(translation=self._pos[a])
             G += p.plot(translation=self._pos[a])
+            """
             for i in xrange(p.num_edges()):
                 G += text(str(self._edge_labels[a,i]),
                         (v[i]+v[(i+1)%p.num_edges()])/2,
                         color='black')
+            """
 
         # then we possibly plot the lable inside each polygon
         if len(self._index_set) != 1:
             for a in self._index_set:
                 p = self._polygons[a]
                 m = sum(p.vertices(translation=self._pos[a])) / p.num_edges()
-                G += text(str(a), m, color='black')
+                #G += text(str(a), m, color='black')
         return G
 
 class TranslationSurfaces:
