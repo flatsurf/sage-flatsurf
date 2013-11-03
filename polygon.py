@@ -23,6 +23,13 @@ from sage.categories.sets_cat import Sets
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
 from sage.rings.real_mpfr import RR
+from sage.rings.qqbar import AA
+
+from matrix_2x2 import (angle,
+                        is_similarity,
+                        homothety_rotation_decomposition,
+                        similarity_from_vectors,
+                        rotation_matrix_angle)
 
 # we implement action of GL(2,K) on polygons
 from sage.categories.action import Action
@@ -30,13 +37,6 @@ import operator
 
 def wedge_product(v,w):
     return v[0]*w[1]-v[1]*w[0]
-
-def check_convexity(edges, reliable_comparison=False):
-    for i in xrange(len(edges)-1):
-        if wedge_product(edges[i],edges[i+1]) <= 0:
-            raise ValueError("not convex!")
-    if wedge_product(edges[-1],edges[0]) <= 0:
-        raise ValueError("not convex!")
 
 class ActionOnPolygons(Action):
     def __init__(self, polygons):
@@ -54,6 +54,10 @@ from sage.structure.element import Element
 class Polygon(Element):
     r"""
     A polygon in RR^2 defined up to translation.
+
+    .. NOTE::
+
+    Should we precompute the angles ?
     """
     def __init__(self, parent, edges):
         r"""
@@ -73,7 +77,23 @@ class Polygon(Element):
         if sum(self._x) or sum(self._y):
             raise ValueError("the sum over the edges do not sum up to 0")
 
-        check_convexity(self.edges())
+        # the following is very long because of the angle buisness!!!
+        self._check()
+
+    def _check(self):
+        # check convexity
+        edges = self.edges()
+        for i in xrange(len(edges)-1):
+            if wedge_product(edges[i],edges[i+1]) <= 0:
+                raise ValueError("not convex!")
+        if wedge_product(edges[-1],edges[0]) <= 0:
+            raise ValueError("not convex!")
+
+        # check angles (long time)
+        sum(self.angle(i) for i in xrange(self.num_edges())) == self.num_edges() - 3
+
+    def base_ring(self):
+        return self.parent().field()
 
     def num_edges(self):
         return len(self._x)
@@ -117,6 +137,13 @@ class Polygon(Element):
         V = self.parent().vector_space()
         return map(V, zip(self._x,self._y))
 
+    def edge(self, i):
+        r"""
+        Return the ``i``-th edge of that polygon.
+        """
+        V = self.parent().vector_space()
+        return V((self._x[i], self._y[i]))
+
     def plot(self, translation=None):
         from sage.plot.point import point2d
         from sage.plot.line import line2d
@@ -126,11 +153,20 @@ class Polygon(Element):
         P = self.vertices(translation)
         return point2d(P, color='red') + line2d(P + [P[0]], color='orange') + polygon2d(P, alpha=0.3)
 
+    def angle(self, e):
+        r"""
+        Return the angle at the begining of the start point of the edge ``e``.
+        """
+        return angle(self.edge(e), -self.edge((e-1)%self.num_edges()))
+
 from sage.structure.parent import Parent
 class Polygons(Parent):
     Element = Polygon
     def __init__(self, field):
         Parent.__init__(self, category=Sets())
+
+        if not AA.has_coerce_map_from(field):
+            raise ValueError("the field must have a coercion to AA")
         self._field = field
 
         self.register_action(ActionOnPolygons(self))
@@ -141,18 +177,20 @@ class Polygons(Parent):
     def _an_element_(self):
         return self([(1,0),(0,1),(-1,0),(0,-1)])
 
-    def field(self):
+    def base_ring(self):
         return self._field
 
+    field = base_ring
+
     def _repr_(self):
-        return "polygons with coordinates in %s"%self.field()
+        return "polygons with coordinates in %s"%self.base_ring()
 
     def vector_space(self):
         r"""
         Return the vector space in which self naturally embeds.
         """
         from sage.modules.free_module import VectorSpace
-        return VectorSpace(self.field(), 2)
+        return VectorSpace(self.base_ring(), 2)
 
     def _element_constructor_(self, data):
         return self.element_class(self, data)
@@ -170,7 +208,7 @@ def regular_octagon(field=None):
 
         R = PolynomialRing(ZZ,'x')
         x = R.gen()
-        field = NumberField(x**2 - 2, 'sqrt2', embedding=RR(1.4142))
+        field = NumberField(x**2 - 2, 'sqrt2', embedding=AA(2).sqrt())
         sqrt2 = field.gen()
     else:
         sqrt = field.gen()
@@ -184,7 +222,7 @@ class PolygonCreator():
     r"""
     Class for iteratively constructing a polygon over the field.
     """
-    def __init__(self, field = QQ): 
+    def __init__(self, field = QQ):
         self._v=[]
         self._w=[]
         self._field=field
@@ -199,7 +237,7 @@ class PolygonCreator():
     def add_vertex(self, new_vertex):
         r"""
         Add a vertex to the polygon.
-        Returns 1 if successful and 0 if not, in which case the resulting 
+        Returns 1 if successful and 0 if not, in which case the resulting
         polygon would not have been convex.
         """
         V=self.vector_space()
