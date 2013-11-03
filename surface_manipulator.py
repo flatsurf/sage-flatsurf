@@ -57,10 +57,10 @@ class SurfaceManipulator(Frame):
         #file_menu.add_cascade(label="New", menu=new_menu)
         file_menu.add_command(label="New Similarity Surface", command=self.on_new_similarity_surface)
         file_menu.add_separator()
-        file_menu.add_command(label="About", command=self.on_about)    
-        file_menu.add_command(label="Export PostScript", command=self.on_export)    
-        file_menu.add_command(label="Exit", command=self.on_exit)
-        menubar.add_cascade(label="File", menu=file_menu)
+        file_menu.add_command(label="About", command=self.on_about)
+        file_menu.add_command(label="Export PostScript", command=self.on_export)
+        file_menu.add_command(label="Exit", command=self.on_exit,accelerator="Alt+F4")
+        menubar.add_cascade(label="File", underline=0, menu=file_menu)
 
         self._surface_menu = Menu(menubar, tearoff=0)
         self._selected_surface = IntVar()
@@ -68,14 +68,14 @@ class SurfaceManipulator(Frame):
         self._surface_menu.add_radiobutton(label="None", 
             command=self.menu_select_surface, variable=self._selected_surface, 
             value=-1)
-        menubar.add_cascade(label="Surface", menu=self._surface_menu)
+        menubar.add_cascade(label="Surface", underline=0, menu=self._surface_menu)
 
         self._create_menu = Menu(menubar, tearoff=0)
-        menubar.add_cascade(label="Create", menu=self._create_menu)
+        menubar.add_cascade(label="Create", underline=0, menu=self._create_menu)
 
         self._action_menu = Menu(menubar, tearoff=0)
         self._reset_action_menu()
-        menubar.add_cascade(label="Action", menu=self._action_menu)
+        menubar.add_cascade(label="Action", underline=0, menu=self._action_menu)
     
         help_menu = Menu(menubar, tearoff=0)
         menubar.add_cascade(label="Help", menu=help_menu)
@@ -186,8 +186,8 @@ class SurfaceManipulator(Frame):
     def _reset_action_menu(self):
         for i in range(100):
             self._action_menu.delete(0)
-        self._action_menu.add_command(label="Recenter", command=self._on_recenter)
-        self._action_menu.add_command(label="Zoom", command=self._on_zoom)
+        self._action_menu.add_command(label="Recenter", underline=2, command=self._on_recenter)
+        self._action_menu.add_command(label="Zoom", underline=0, command=self._on_zoom,accelerator="Alt+Z")
         self._action_menu.add_command(label="Delete Junk", command=self.on_delete_junk)
 
     def _reset_create_menu(self):
@@ -204,8 +204,9 @@ class SurfaceManipulator(Frame):
         Set the current mode of user interaction.
         """
         if (actor != self._currentActor):
+            if self._currentActor != None:
+                self._currentActor.on_deactivate()
             if (actor==None):
-                """Need to figure out how to remove bindings here!"""
                 self.set_text("Nothing going on.")
                 # Event bindings
                 self._canvas.unbind('<Button-1>')
@@ -221,9 +222,14 @@ class SurfaceManipulator(Frame):
             else:
                 # Event bindings
                 self._canvas.bind('<Button-1>', actor.single_left_click)
+                self._canvas.bind('<Double-Button-1>', actor.double_left_click)
+                self._canvas.bind('<Triple-Button-1>', actor.double_left_click)
                 self._canvas.bind('<Button-2>', actor.single_middle_click)
+                self._canvas.bind('<Double-Button-2>', actor.double_middle_click)
+                self._canvas.bind('<Triple-Button-2>', actor.double_middle_click)
                 self._canvas.bind('<Button-3>', actor.single_right_click)
-                self._canvas.bind('<Double-Button-1>', actor.double_click)
+                self._canvas.bind('<Double-Button-3>', actor.double_right_click)
+                self._canvas.bind('<Triple-Button-3>', actor.double_right_click)
                 self._canvas.bind('<Shift-Button-1>', actor.shift_click)
                 self._canvas.bind('<Motion>', actor.mouse_moved)
                 self.bind('<FocusIn>', actor.focus_in)

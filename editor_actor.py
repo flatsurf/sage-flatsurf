@@ -5,17 +5,33 @@ class EditorActor:
         self._editor = editor        
     def on_activate(self):
         pass
-
+    def on_deactivate(self):
+        pass
     def single_left_click(self, event):
+        pass
+
+    def double_left_click(self, event):
+        pass
+
+    def triple_left_click(self, event):
         pass
 
     def single_middle_click(self, event):
         pass    
 
+    def double_middle_click(self, event):
+        pass
+
+    def triple_middle_click(self, event):
+        pass
+
     def single_right_click(self, event):
         pass
 
-    def double_click(self, event):
+    def double_right_click(self, event):
+        pass
+
+    def triple_right_click(self, event):
         pass
 
     def shift_click(self, event):
@@ -58,9 +74,6 @@ class RecenterActor(EditorActor):
     def single_right_click(self, event):
         self.recenter(event)
 
-    def double_click(self, event):
-        self.recenter(event)
-
 class ZoomActor(EditorActor):
     def __init__(self, editor):
         EditorActor.__init__(self, editor)
@@ -87,6 +100,12 @@ class ZoomActor(EditorActor):
         else:
             bundle.zoom(QQ(8)/QQ(7),x,y)
 
+    def double_left_click(self, event):
+        self.single_left_click(event)
+
+    def triple_left_click(self, event):
+        self.single_left_click(event)
+
     def single_right_click(self, event):
         from sage.rings.rational_field import QQ
         x = self._editor.get_canvas().canvasx(event.x)
@@ -96,6 +115,12 @@ class ZoomActor(EditorActor):
             pass
         else:
             bundle.zoom(QQ(7)/QQ(8),x,y)
+
+    def double_right_click(self, event):
+        self.single_right_click(event)
+
+    def triple_right_click(self, event):
+        self.single_right_click(event)
 
 
 
@@ -111,6 +136,8 @@ class PolygonDrawer(EditorActor):
         self._bundle=bundle
     def on_activate(self):
         self._editor.set_text("Left click to start drawing a polygon.")
+    def on_deactivate(self):
+        self._editor.get_canvas().delete("PolygonDrawer")
 
     def single_left_click(self, event):
         x = self._editor.get_canvas().canvasx(event.x)
@@ -179,8 +206,8 @@ class DemoActor(EditorActor):
         self._editor.get_canvas().create_rectangle(x-5,y-5,x+5,y+5, 
             fill='#ff00ff', tags="junk")
 
-    def double_click(self, event):
-        print "double click"
+    def double_left_click(self, event):
+        print "double left click"
 
     def shift_click(self, event):
         print "shift click"
