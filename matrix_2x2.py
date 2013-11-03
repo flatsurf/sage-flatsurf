@@ -4,9 +4,13 @@ Some tools for 2x2 matrices.
 
 from sage.rings.qqbar import AA
 from sage.rings.rational import Rational
+from sage.rings.real_mpfr import RR
+
+from math import pi as pi_float
 
 from sage.symbolic.constants import pi
 from sage.matrix.constructor import matrix, identity_matrix
+
 
 def number_field_to_AA(a):
     r"""
@@ -182,19 +186,45 @@ def rotation_matrix_angle(r):
 def angle(u,v):
     r"""
     Return the angle between the vectors ``u`` and ``v``.
+
+    This will not work if the angle is too small!!
+
+    EXAMPLES:
+
+    As the implementation is dirty, we at least check that it works for all
+    denominator up to 100::
+
+        sage: u = vector((AA(1),AA(0)))
+        sage: for n in xsrange(1,100):
+        ....:     print n
+        ....:     for k in xsrange(1,n):
+        ....:         v = vector((AA(cos(2*k*pi/n)), AA(sin(2*k*pi/n))))
+        ....:         assert angle(u,v) == k/n, "failed for %d/%d get angle(u,v)=%d"%(k,n,angle(u,v))
     """
-    sqnorm_u = u[0]*u[0] + u[1]*u[1]
-    sqnorm_v = v[0]*v[0] + v[1]*v[1]
+    # fast and dirty way
+    from math import acos,asin,sqrt,pi
 
-    if sqnorm_u != sqnorm_v:
-        # we need to take a square root in order that u and v have the
-        # same norm
-        u = (1 / AA(sqnorm_u)).sqrt() * u.change_ring(AA)
-        v = (1 / AA(sqnorm_v)).sqrt() * v.change_ring(AA)
-        sqnorm_u = AA.one()
-        sqnorm_v = AA.one()
+    u0 = float(u[0]); u1 = float(u[1])
+    v0 = float(v[0]); v1 = float(v[1])
 
-    cos_uv = (u[0]*v[0] + u[1]*v[1]) / sqnorm_u
-    sin_uv = (u[0]*v[1] - u[1]*v[0]) / sqnorm_u
-    return rotation_matrix_angle(matrix([[cos_uv, -sin_uv],[sin_uv, cos_uv]]))
+    cos_uv = (u0*v0 + u1*v1) / sqrt((u0*u0 + u1*u1)*(v0*v0 + v1*v1))
+    angle = acos(float(cos_uv)) / (2*pi)   # rat number between 0 and 1/2
+    angle_rat = RR(angle).nearby_rational(0.000001)
+    if u0*v1 - u1*v0 < 0:
+        return 1 - angle_rat
+    return angle_rat
 
+    # a neater way is provided below by working only with number fields
+    #sqnorm_u = u[0]*u[0] + u[1]*u[1]
+    #sqnorm_v = v[0]*v[0] + v[1]*v[1]
+    #
+    #if sqnorm_u != sqnorm_v:
+    #    # we need to take a square root in order that u and v have the
+    #    # same norm
+    #    u = (1 / AA(sqnorm_u)).sqrt() * u.change_ring(AA)
+    #    v = (1 / AA(sqnorm_v)).sqrt() * v.change_ring(AA)
+    #    sqnorm_u = AA.one()
+    #    sqnorm_v = AA.one()
+    #
+    #cos_uv = (u[0]*v[0] + u[1]*v[1]) / sqnorm_u
+    #sin_uv = (u[0]*v[1] - u[1]*v[0]) / sqnorm_u

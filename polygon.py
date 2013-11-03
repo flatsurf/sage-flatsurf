@@ -61,13 +61,11 @@ class Polygon(Element):
     """
     def __init__(self, parent, edges):
         r"""
-        The first point in the list has a special role.
-
         INPUT:
 
         - ``parent`` -- a parent
 
-        - ``edges`` -- a list of elements whose sum is zero
+        - ``edges`` -- a list of vectors or couples whose sum is zero
         """
         Element.__init__(self, parent)
         field = parent.field()
@@ -89,11 +87,13 @@ class Polygon(Element):
         if wedge_product(edges[-1],edges[0]) <= 0:
             raise ValueError("not convex!")
 
-        # check angles (long time)
+        # check angles (relatively long time)
         sum(self.angle(i) for i in xrange(self.num_edges())) == self.num_edges() - 3
 
     def base_ring(self):
-        return self.parent().field()
+        return self.parent().base_ring()
+
+    field=base_ring
 
     def num_edges(self):
         return len(self._x)
@@ -156,8 +156,41 @@ class Polygon(Element):
     def angle(self, e):
         r"""
         Return the angle at the begining of the start point of the edge ``e``.
+
+        EXAMPLES::
+
+            sage: regular_octagon().angle(0)
+            3/8
         """
-        return angle(self.edge(e), -self.edge((e-1)%self.num_edges()))
+        return angle(self.edge(e), - self.edge((e-1)%self.num_edges()))
+
+    def area(self):
+        r"""
+        Return the area of self.
+
+        EXAMPLES::
+
+            sage: regular_octagon().area()
+            8*sqrt2 + 8
+            sage: square().area()
+            1
+            sage: (2*square()).area()
+            4
+        """
+        x = self._x
+        y = self._y
+        zero = self.field().zero()
+        x0 = self._x[0]
+        y0 = self._y[0]
+        x1 = x0 + self._x[1]
+        y1 = y0 + self._y[1]
+        a = 0
+        for i in xrange(2,len(self._x)):
+            a += (x0*y1 - x1*y0)/2
+            x0 = x1; y0 = y1
+            x1 += x[i]
+            y1 += y[i]
+        return a
 
 from sage.structure.parent import Parent
 class Polygons(Parent):
@@ -210,6 +243,10 @@ def regular_octagon(field=None):
         x = R.gen()
         field = NumberField(x**2 - 2, 'sqrt2', embedding=AA(2).sqrt())
         sqrt2 = field.gen()
+
+        # a faster way would be
+        # field, sqrt2, _ = AA(2).sqrt().as_number_field_element()
+        # but proceeding that way we get a field with no embedding in AA!!!!!
     else:
         sqrt = field.gen()
 
