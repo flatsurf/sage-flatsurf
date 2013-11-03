@@ -1,0 +1,38 @@
+In order to work with arbitrary number fields, the structure of the
+number fields has to be slightly modified.
+
+Interesting things:
+
+- sage.rings.real_mpfi: where the real interval field RIF is defined (an
+  element in that field is a pair of floating points).
+- sage.rings.qqbar: where the set of algebraic real (AA) is defined.
+- sage.rings.number_field.number_field: where number fields are defined.
+  Note that the class for elements of quadratic fields differ slightly
+  from the more general ones.
+- sage.rings.polynomial.real_roots: compute isolating intervals for
+  roots of a polynomial. The results might either be a pair of rationals
+  or an element of RIF
+
+Examples and problems
+
+    sage: R.<x> = PolynomialRing(QQ)
+    sage: K.<cbrt2> = NumberField(x^3-2, embedding=1.2599)
+
+Currently the following fails
+
+   sage: AA(cbrt2)
+   Traceback (most recent call last):
+   ...
+   TypeError: Illegal initializer for algebraic number
+
+For sure, defining embedding=1.2599 defines an embedding into RR which is
+the set of floating point numbers!! So each time we use a number field we
+must use
+
+    sage: R.<x> = PolynomialRing(QQ)
+    sage: P = x^3 - 2
+    sage: cbrt2_AA = AA.polynomial_root(P, RIF(1.259,1.26))
+    sage: K.<cbrt2> = NumberField(P, embedding=cbrt2_AA)
+
+The problem with the trick is that the number field is actually built twice...
+(once in the background of AA and once in the last command above).
