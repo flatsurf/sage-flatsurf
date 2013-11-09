@@ -25,7 +25,7 @@ class SurfaceManipulator(Frame):
         - ``parent`` -- parent Tk window
         """
         Frame.__init__(self, parent)   
-        self.parent = parent
+        self._parent = parent
         self.pack(fill="both", expand=1)
 
         r"""Surface currently being manipulated"""
@@ -47,8 +47,8 @@ class SurfaceManipulator(Frame):
 
     def _init_menu(self):
         
-        menubar = Menu(self.parent)
-        self.parent.config(menu=menubar)
+        menubar = Menu(self._parent)
+        self._parent.config(menu=menubar)
         
         #new_menu = Menu(menubar, tearoff=0)
         #new_menu.add_command(label="Billiard Table", command=self.on_new_similarity_surface)
@@ -81,9 +81,9 @@ class SurfaceManipulator(Frame):
         menubar.add_cascade(label="Help", menu=help_menu)
 
     def _init_gui(self):
-        self.parent.title("FlatSurf Editor")
+        self._parent.title("FlatSurf Editor")
 
-        self._canvas = Canvas(self, bg="white", width=300, height=200)
+        self._canvas = Canvas(self, bg="#444", width=300, height=200)
         self._canvas.pack(fill="both", expand=1)
         
         self.bottom_text = Label(self, text="Welcome to FlatSurf.",
@@ -100,14 +100,12 @@ class SurfaceManipulator(Frame):
         if (newsurface==None):
             return -1
         i=0
-        for s in self._surfaces:            
+        for s in self._surfaces:
             if (s==newsurface):
                 return i
             i=i+1
         self._surfaces.append(newsurface)
-        self._surface_menu.add_radiobutton(label=newsurface.name,
-            command=self.menu_select_surface, variable=self._selected_surface,
-            value=len(self._surfaces)-1)
+        self._reset_surface_menu()
         return len(self._surfaces)-1
 
     def get_canvas(self):
@@ -124,6 +122,9 @@ class SurfaceManipulator(Frame):
         Return the height of the canvas (an integer).
         """
         return self.get_canvas().winfo_height()
+
+    def get_parent(self):
+        return self._parent
 
     def get_surface_bundle(self):
         r"""
@@ -172,7 +173,7 @@ class SurfaceManipulator(Frame):
         s=CreateSimilaritySurfaceBundle(len(self._surfaces),self)
         if (s!=None):
             i=self.set_surface(s)
-            self.set_text("Created new surface `"+self._surfaces[i].name+"'.")
+            self.set_text("Created new surface `"+self._surfaces[i].get_name()+"'.")
 
     def _on_no_surface(self):
         self._canvas.delete("all")
@@ -183,18 +184,34 @@ class SurfaceManipulator(Frame):
     def _on_recenter(self):
         self.set_actor(RecenterActor(self))
 
+    def _reset_menus(self):
+        r"""Reset all changing menus except the surface menu"""
+        self._reset_action_menu()
+        self._reset_create_menu()
+
     def _reset_action_menu(self):
         for i in range(100):
             self._action_menu.delete(0)
         self._action_menu.add_command(label="Recenter", underline=2, command=self._on_recenter)
         self._action_menu.add_command(label="Zoom", underline=0, command=self._on_zoom,accelerator="Alt+Z")
-        self._action_menu.add_command(label="Delete Junk", command=self.on_delete_junk)
+        #self._action_menu.add_command(label="Delete Junk", command=self.on_delete_junk)
+        if self._surface!= None:
+            self._surface.make_action_menu(self._action_menu)
 
     def _reset_create_menu(self):
         for i in range(100):
             self._create_menu.delete(0)
         if self._surface!= None:
             self._surface.make_create_menu(self._create_menu)
+
+    def _reset_surface_menu(self):
+        for i in range(100):
+            self._surface_menu.delete(0)
+        for i in range( len(self._surfaces) ):
+            surface = self._surfaces[i]
+            self._surface_menu.add_radiobutton(label=surface.get_name(),
+                command=self.menu_select_surface, variable=self._selected_surface,
+                value=i)
 
     def set_text(self, text):
         self.bottom_text["text"]=text
@@ -217,8 +234,8 @@ class SurfaceManipulator(Frame):
                 self._canvas.unbind('<Motion>')
                 self.unbind('<FocusIn>')
                 self.unbind('<FocusOut>')
-                self.parent.unbind('<Key>')
-                self.parent.unbind('<KeyRelease>')
+                self._parent.unbind('<Key>')
+                self._parent.unbind('<KeyRelease>')
             else:
                 # Event bindings
                 self._canvas.bind('<Button-1>', actor.single_left_click)
@@ -234,8 +251,8 @@ class SurfaceManipulator(Frame):
                 self._canvas.bind('<Motion>', actor.mouse_moved)
                 self.bind('<FocusIn>', actor.focus_in)
                 self.bind('<FocusOut>', actor.focus_out)
-                self.parent.bind('<Key>', actor.key_press)
-                self.parent.bind('<KeyRelease>', actor.key_release)
+                self._parent.bind('<Key>', actor.key_press)
+                self._parent.bind('<KeyRelease>', actor.key_release)
                 self._currentActor=actor
                 self._currentActor.on_activate()
 
@@ -246,19 +263,25 @@ class SurfaceManipulator(Frame):
             self._surface=surface
             self._surface_menu.invoke(i+1)
             if (i>=0):
-                self.set_text("Switched to `"+self._surface.name+"'.")
-                self.parent.title(self._surface.name)
-                self._reset_create_menu()
+                self.set_text("Switched to `"+self._surface.get_name()+"'.")
+                self._parent.title(self._surface.get_name())
+                self._reset_menus()
                 if (isinstance(self._surface, EditorRenderer)):
                     self._surface.initial_render()
             else:
                 self.set_text("No surface selected.")
-                self.parent.title("FlatSurf Editor")
+                self._parent.title("FlatSurf Editor")
         return i
+
+    def surface_renamed(self):
+        if self._surface is not None:
+            self._parent.title(self._surface.get_name())
+            self._reset_surface_menu()
+
 
 def main():
     root = Tk()
-    root.geometry("400x300+300+300")
+    root.geometry("600x500+10+10")
     app = SurfaceManipulator(root)
     root.mainloop()  
 
