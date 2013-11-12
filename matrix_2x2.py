@@ -24,7 +24,7 @@ def imaginary_unit():
         1*I
     """
     from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
-    from sage.rings.all import CIF
+    from sage.rings.all import RIF,CIF
 
     R = PolynomialRing(QQ,'x')
     x = R.gen()

@@ -5,8 +5,8 @@ This file implements polygons with
 
 EXAMPLES::
 
-    sage: K.<sqrt2> = NumberField(x^2 - 2)
-    sage: p = Polygons(K)([(0,0),(1,0),(sqrt2,sqrt2)])
+    sage: K.<sqrt2> = NumberField(x^2 - 2, embedding=AA(2).sqrt())
+    sage: p = Polygons(K)([(1,0),(-sqrt2,1+sqrt2),(sqrt2-1,-1-sqrt2)])
     sage: p
     Polygon: (0, 0), (1, 0), (sqrt2, sqrt2)
 
@@ -145,6 +145,9 @@ class Polygon(Element):
         return V((self._x[i], self._y[i]))
 
     def plot(self, translation=None):
+        r"""
+        Plot the polygon with the origine at ``translation``.
+        """
         from sage.plot.point import point2d
         from sage.plot.line import line2d
         from sage.plot.polygon import polygon2d
@@ -159,6 +162,8 @@ class Polygon(Element):
 
         EXAMPLES::
 
+            sage: square().angle(0)
+            1/4
             sage: regular_octagon().angle(0)
             3/8
         """
@@ -235,6 +240,11 @@ def square(field=None):
     return Polygons(field)([(1,0),(0,1),(-1,0),(0,-1)])
 
 def regular_octagon(field=None):
+    r"""
+    Return a regular octagon with sides of length 2.
+
+    TODO: implement regular_ngons.
+    """
     if field is None:
         from sage.rings.number_field.number_field import NumberField
         from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
