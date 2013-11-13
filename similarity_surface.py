@@ -180,6 +180,8 @@ class SimilaritySurface(SageObject):
             sage: SimilaritySurface([square()]
         """
         if e is None:
+            # What does the following line do?
+            # -Pat
             p,e = p
         u = self.polygon(p).edge(e)
         pp,ee = self.opposite_edge(p,e)
@@ -187,6 +189,9 @@ class SimilaritySurface(SageObject):
 
         # be careful, because of the orientation, it is -v and not v
         return similarity_from_vectors(u,-v)
+
+    def minimal_translation_cover(self):
+        return MinimalTranslationCover(self)
 
 class ConicSurface(SimilaritySurface):
     r"""
@@ -281,6 +286,30 @@ class TranslationSurface(ConicSurface):
     def stratum(self):
         from sage.dynamics.flat_surfaces.all import AbelianStratum
         return AbelianStratum([a-1 for a in self.angles()])
+
+class MinimalTranslationCover(TranslationSurface):
+    def __init__(self, similarity_surface):
+        self._ss=similarity_surface
+        self._field=self._ss.base_ring()
+
+        from sage.matrix.matrix_space import MatrixSpace
+        from sage.categories.cartesian_product import cartesian_product
+        from sage.rings.semirings.non_negative_integer_semiring import NN
+
+        ms=MatrixSpace(self._field,2,2)
+        self._polygon_domain=cartesian_product([self._ss.polygons().keys(), ms])
+        self._polygon_family=Family(self._polygon_domain, lambda x: x[1](self.polygon(x[0])), lazy=True)
+
+    def polygons(self):
+        return self._polygon_family
+
+    def opposite_edge(self, p, e):
+        if p not in self._polygon_domain:
+            raise ValueError
+        pi1,pm = p
+        pi2,e2 = self._ss.opposite_edge(pi1,e)
+        me = self._ss.edge_matrix(pi1,e)
+        return ((pi2,pm*me),e2)
 
 class Origami(TranslationSurface):
     def __init__(self, r, u):

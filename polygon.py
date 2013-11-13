@@ -46,7 +46,7 @@ class ActionOnPolygons(Action):
 
     def _call_(self, g, x):
         if g.det() <= 0:
-            """Maybe we can allow an action, which also reverses the edge ordering? -Pat"""
+            # Maybe we can allow an action, which also reverses the edge ordering? -Pat
             raise ValueError("can not act with matrix with negative determinant")
         return x.parent()([g*e for e in x.edges()])
 
