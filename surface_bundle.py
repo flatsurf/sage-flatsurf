@@ -43,6 +43,12 @@ class SurfaceBundle:
         self._tx = self._field.zero()
         self._ty = self._field.zero()
 
+    def after_zoom_change(self):
+        pass
+
+    def before_zoom_change(self):
+        pass
+
     def field(self):
         return self._field
 
@@ -75,6 +81,7 @@ class SurfaceBundle:
     def math_to_screen_coordinates(self,v):
         return ( RDF(self._sx*v[0]+self._tx), RDF(self._sy*v[1]+self._ty) )
 
+
     def redraw_all(self):
         pass
 
@@ -92,6 +99,7 @@ class SurfaceBundle:
         self._editor.surface_renamed()
 
     def set_transform(self, sx, sy, tx, ty):
+        self.before_zoom_change()
         self._sx=sx
         self._sy=sy
         self._tx=tx
@@ -99,6 +107,7 @@ class SurfaceBundle:
         r"""
         Set the parts of the transformation which convert to screen coordinates.
         """
+        self.after_zoom_change()
 
     def vector_space(self):
         r"""
@@ -114,6 +123,7 @@ class SurfaceBundle:
         - ``xc`` -- rational or integer point in screen coordinates
         - ``yc`` -- rational or integer point in screen coordinates
         """
+        self.before_zoom_change()
         x0=xc-factor*xc
         y0=yc-factor*yc
         self._editor.get_canvas().scale(ALL,xc,yc,RDF(factor),RDF(factor))
@@ -121,4 +131,5 @@ class SurfaceBundle:
         self._sy = self._sy * factor
         self._tx = factor*self._tx + x0
         self._ty = factor*self._ty + y0
+        self.after_zoom_change()
 

@@ -123,8 +123,11 @@ class Polygon(Element):
                     raise ValueError("can not convert translation to a vector in R^2")
             zero = translation
         res = [zero]
-        for x,y in zip(self._x,self._y):
-            res.append(res[-1] + V((x,y)))
+        # This code returns a last vertex equal to the first vertex:
+        #for x,y in zip(self._x,self._y):
+        #    res.append(res[-1] + V((x,y)))
+        for i in range(self.num_edges()-1):
+            res.append(res[-1] + V((self._x[i],self._y[i])))
         return res
 
     def __iter__(self):

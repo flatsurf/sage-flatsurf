@@ -57,10 +57,10 @@ class CreateSimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
                     del self._handles_to_labels[label_handle]
                 label = self._glue.get_label(index,edge)
                 if label is not None:
-                    midx=(coords[2*edge]+coords[2*edge+2])/2
-                    dx=coords[2*edge+2]-coords[2*edge]
-                    midy=(coords[2*edge+1]+coords[2*edge+3])/2
-                    dy=coords[2*edge+3]-coords[2*edge+1]
+                    midx=(coords[2*edge]+coords[(2*edge+2)%(2*n)])/2
+                    dx=coords[(2*edge+2)%(2*n)]-coords[2*edge]
+                    midy=(coords[2*edge+1]+coords[(2*edge+3)%(2*n)])/2
+                    dy=coords[(2*edge+3)%(2*n)]-coords[2*edge+1]
                     if dx>0:
                         if dy>0:
                             anchor="ne"

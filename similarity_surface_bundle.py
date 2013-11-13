@@ -39,9 +39,17 @@ class SimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
         # cache for transformed vertices
         self._polygon_cache={}
         # handles for the polygons in the canvas
-        self._polygon_to_handles={}
+        self._polygon_to_handle={}
+        self._handle_to_polygon={}
         # stores labels:
         self._edge_labels=SurfaceLabels(self._ss)
+
+    def after_zoom_change(self):
+        self._render_all_edge_labels()
+
+    def before_zoom_change(self):
+        # remove all labels
+        self._editor.get_canvas().delete("label")
         
     def _default_gl(self):
         return identity_matrix( 2, self.field() )
@@ -62,7 +70,8 @@ class SimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
         self._editor.get_canvas().delete("all")
         self._visible=set()
         self._polygon_cache={}
-        self._polygon_to_handles={}
+        self._polygon_to_handle={}
+        self._handle_to_polygon={}
         self.initial_render()
 
     def initial_render(self):
@@ -89,6 +98,45 @@ class SimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
             return vs1[e1]==vs2[(e2+1)%len(vs2)] and vs1[(e1+1)%len(vs1)]==vs2[e2]
         return 0
 
+    def make_create_menu(self,menu):
+        #menu.add_command(label="Polygon", command=self._on_draw_polygon)
+        #menu.add_command(label="To Similarity Surface", command=self._on_to_similarity_surface)
+        #menu.add_command(label="Produce Similarity Surface", command=self._on_glue)
+        pass
+
+    def make_action_menu(self,menu):
+        menu.add_separator()
+        menu.add_command(label="Make adjacent", command=self._on_make_adjacent)
+
+    def make_visible(self, polygon_index):
+        if not self.is_visible(polygon_index):
+            self._visible.add(polygon_index)
+            self._render_polygon_fill(polygon_index)
+            self._render_polygon_outline(polygon_index)
+            self._render_polygon_edge_labels(polygon_index)
+
+    def _on_make_adjacent(self):
+        ps=EdgeSelector(self._editor,self._on_make_adjacent_callback)
+        self._editor.set_actor(ps)
+
+    def _on_make_adjacent_callback(self, polygon_handle, e1):
+        p1=self._handle_to_polygon[polygon_handle]
+        p2,e2 = self._ss.opposite_edge(p1,e1)
+        m1=self._gl[p1]
+        mc=self._ss.edge_matrix(p2,e2)
+        m2=m1*mc
+        vs=self.get_transformed_vertices(p1)
+        pt1=vs[e1]
+        vs=self._ss.polygon(p2).vertices()
+        pt2=m2*vs[(e2+1)%self._ss.polygon(p2).num_edges()]
+        t2=pt1-pt2
+        self.set_polygon_view(p2,m2,t2[0],t2[1])
+        self._visible.add(p2)
+        self.redraw_all()
+        # Do it again:
+        ps=EdgeSelector(self._editor,self._on_make_adjacent_callback)
+        self._editor.set_actor(ps)
+
     def reset_transformed_vertices(self, i):
         r"""
         Reset the cache storing the transformed vertices of polygon i.
@@ -112,7 +160,8 @@ class SimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
             imgs.append(img[1])
         handle=self._editor.get_canvas().create_polygon(imgs,
             outline="",fill="white",tags=("SimilaritySurfaceBundle","polygon"))
-        self._polygon_to_handles[i]=handle
+        self._polygon_to_handle[i]=handle
+        self._handle_to_polygon[handle]=i
 
     def _render_edge(self,p,e):
         vs=self.get_transformed_vertices(p)
@@ -128,14 +177,17 @@ class SimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
                 fill="#f00",tags=("SimilaritySurfaceBundle","edge"))
 
     def _render_all_edge_labels(self):
-        print "rendering all edge labels"
         for p in self._visible:
-            vs=self.get_transformed_vertices(p)
-            for e in range(len(vs)):
-                if not self.is_adjacent(p,e):
-                    p2,e2=self._ss.opposite_edge(p,e)
-                    if p2 in self._visible:
-                        self._render_edge_label(p,e)
+            self._render_polygon_edge_labels(p)
+
+    def _render_polygon_edge_labels(self, p):
+        vs=self.get_transformed_vertices(p)
+        for e in range(len(vs)):
+            if not self.is_adjacent(p,e):
+                p2,e2=self._ss.opposite_edge(p,e)
+                if p2 in self._visible:
+                    self._render_edge_label(p,e)
+
 
     def _render_all_polygons(self):
         for p in self._visible:
@@ -150,30 +202,39 @@ class SimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
         dx, dy = vs[(e+1)%len(vs)] - vs[e]
         dy = -dy
         label=self._edge_labels.get_label(p,e)
-        print "label="+str(label)
+        offset=(0,0)
         if dx>0:
             if dy>0:
                 anchor="ne"
+                offset=(1,-1)
             elif dy<0:
                 anchor="nw"
+                offset=(-1,-1)
             else:
                 anchor="n"
+                offset=(0,-2)
         elif dx<0:
             if dy>0:
                 anchor="se"
+                offset=(1,1)
             elif dy<0:
                 anchor="sw"
+                offset=(-1,1)
             else:
                 anchor="s"
+                offset=(0,2)
         else:
             if dy>0:
                 anchor="e"
+                offset=(2,0)
             elif dy<0:
                 anchor="w"
+                offset=(-2,0)
             else:
                 anchor="center"
-        print "mid="+str(mid)
-        label_handle=canvas.create_text(mid[0], mid[1], text=label, 
+                offset=(0,0)
+        label_handle=canvas.create_text(mid[0]-offset[0], mid[1]-offset[1],
+            text=label, 
             fill="#7efffc", font=("Helvetica","12"), anchor=anchor, 
             tags=("SimilaritySurfaceBundle","label") )
 
@@ -181,6 +242,12 @@ class SimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
         vs=self.get_transformed_vertices(p)
         for e in range(len(vs)):
             self._render_edge(p,e)
+
+    def set_polygon_view(self, polygon_index, m, tx, ty):
+        F=self.field()
+        self._gl[polygon_index]=m
+        self._t[polygon_index]=vector([F(tx),F(ty)])
+        self.reset_transformed_vertices(polygon_index)
 
     def set_polygon_translation(self, polygon_index, x, y):
         F=self.field()

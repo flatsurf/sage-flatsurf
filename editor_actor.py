@@ -359,9 +359,9 @@ class PolygonEdgeSelector(EditorActor):
         canvas.itemconfig(handle,fill="#ffaa66")
         coords=canvas.coords(handle)
         self._edge_handles=[]
-        n=len(coords)/2-1
+        n=len(coords)/2
         for i in range(n):
-            eh=canvas.create_line(coords[2*i], coords[2*i+1], coords[2*i+2], coords[2*i+3], 
+            eh=canvas.create_line(coords[2*i], coords[2*i+1], coords[(2*i+2)%(2*n)], coords[(2*i+3)%(2*n)], 
                 fill="#dd5500", width=5.0, tags="PolygonEdge")
             self._edge_handles.append(eh)
         self._editor.set_text(self._msg)
@@ -415,6 +415,15 @@ class EdgeSelector(EditorRedirectingActor):
     def __init__(self, editor, polygon_handle_and_edge_receiver, 
             polygon_msg="Select a polygon.", 
             edge_msg="Select an edge from the polygon."):
+        r"""
+        INPUT:
+
+        - ``editor`` -- a SurfaceManipulator
+
+        - ``polygon_handle_and_edge_receiver`` -- a function taking as input a pair 
+            (handle,edge), where handle is a handle of a canvas item with a polygon tag
+            and edge is a number between 0 and the number of edges.
+        """
         EditorRedirectingActor.__init__(self, editor)
         self.setActor(PolygonSelector(editor,self._receive_polygon_handle,msg=polygon_msg))
         self._emsg=edge_msg
