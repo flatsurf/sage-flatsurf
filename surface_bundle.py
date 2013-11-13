@@ -75,6 +75,8 @@ class SurfaceBundle:
     def math_to_screen_coordinates(self,v):
         return ( RDF(self._sx*v[0]+self._tx), RDF(self._sy*v[1]+self._ty) )
 
+    def redraw_all(self):
+        pass
 
     def recenter_screen(self,x0,y0):
         c=self._editor.get_center()
@@ -119,6 +121,4 @@ class SurfaceBundle:
         self._sy = self._sy * factor
         self._tx = factor*self._tx + x0
         self._ty = factor*self._ty + y0
-
-
 

@@ -41,8 +41,8 @@ class SimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
         # handles for the polygons in the canvas
         self._polygon_to_handles={}
         # stores labels:
-        self._glue=EditableEdgeGluing()
-
+        self._edge_labels=SurfaceLabels(self._ss)
+        
     def _default_gl(self):
         return identity_matrix( 2, self.field() )
 
@@ -58,14 +58,19 @@ class SimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
         except KeyError:
             return self.reset_transformed_vertices(i)
 
+    def redraw_all(self):
+        self._editor.get_canvas().delete("all")
+        self._visible=set()
+        self._polygon_cache={}
+        self._polygon_to_handles={}
+        self.initial_render()
+
     def initial_render(self):
         if self._ss.polygons().is_finite():
             for i in self._ss.polygons().keys():
                 self._visible.add(i)
-            for i in self._ss.polygons().keys():
-                self._render_polygon_fill(i)
-            for i in self._ss.polygons().keys():
-                self._render_polygon_outline(i)
+        self._render_all_polygons()
+        self._render_all_edge_labels()
 
     def is_visible(self,polygon_index):
         r"""
@@ -121,59 +126,56 @@ class SimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
             handle=self._editor.get_canvas().create_line(
                 img0[0], img0[1],img1[0],img1[1],
                 fill="#f00",tags=("SimilaritySurfaceBundle","edge"))
-    """
+
+    def _render_all_edge_labels(self):
+        print "rendering all edge labels"
+        for p in self._visible:
+            vs=self.get_transformed_vertices(p)
+            for e in range(len(vs)):
+                if not self.is_adjacent(p,e):
+                    p2,e2=self._ss.opposite_edge(p,e)
+                    if p2 in self._visible:
+                        self._render_edge_label(p,e)
+
+    def _render_all_polygons(self):
+        for p in self._visible:
+            self._render_polygon_fill(p)
+        for p in self._visible:
+            self._render_polygon_outline(p)
+
     def _render_edge_label(self, p, e):
         canvas = self._editor.get_canvas()
         vs=self.get_transformed_vertices(p)
         mid=self.math_to_screen_coordinates( (vs[e] + vs[(e+1)%len(vs)])/2 )
         dx, dy = vs[(e+1)%len(vs)] - vs[e]
         dy = -dy
-        
-        polygons = canvas.find_withtag("polygon")
-        for handle in polygons:
-            index=self._handles_to_polygon[handle]
-            polygon=self._polygons[index]
-            n=polygon.num_edges()
-            coords=canvas.coords(handle)
-            for edge in range(n):
-                if self._edge_to_label_handle.has_key((index,edge)):
-                    label_handle = self._edge_to_label_handle[(index,edge)]
-                    canvas.delete(label_handle)
-                    del self._edge_to_label_handle[(index,edge)]
-                    del self._handles_to_labels[label_handle]
-                label = self._glue.get_label(index,edge)
-                if label is not None:
-                    midx=(coords[2*edge]+coords[2*edge+2])/2
-                    dx=coords[2*edge+2]-coords[2*edge]
-                    midy=(coords[2*edge+1]+coords[2*edge+3])/2
-                    dy=coords[2*edge+3]-coords[2*edge+1]
-                    if dx>0:
-                        if dy>0:
-                            anchor="ne"
-                        elif dy<0:
-                            anchor="nw"
-                        else:
-                            anchor="n"
-                    elif dx<0:
-                        if dy>0:
-                            anchor="se"
-                        elif dy<0:
-                            anchor="sw"
-                        else:
-                            anchor="s"
-                    else:
-                        if dy>0:
-                            anchor="e"
-                        elif dy<0:
-                            anchor="w"
-                        else:
-                            anchor="center"
-                    label_handle=canvas.create_text(midx, midy, text=label, 
-                        fill="#7efffc", font=("Helvetica","12"), anchor=anchor, 
-                        tags="CreateSimilaritySurfaceBundle")
-                    self._edge_to_label_handle[(index,edge)]=label_handle
-                    self._handles_to_labels[label_handle]=(index,edge)
-    """
+        label=self._edge_labels.get_label(p,e)
+        print "label="+str(label)
+        if dx>0:
+            if dy>0:
+                anchor="ne"
+            elif dy<0:
+                anchor="nw"
+            else:
+                anchor="n"
+        elif dx<0:
+            if dy>0:
+                anchor="se"
+            elif dy<0:
+                anchor="sw"
+            else:
+                anchor="s"
+        else:
+            if dy>0:
+                anchor="e"
+            elif dy<0:
+                anchor="w"
+            else:
+                anchor="center"
+        print "mid="+str(mid)
+        label_handle=canvas.create_text(mid[0], mid[1], text=label, 
+            fill="#7efffc", font=("Helvetica","12"), anchor=anchor, 
+            tags=("SimilaritySurfaceBundle","label") )
 
     def _render_polygon_outline(self,p):
         vs=self.get_transformed_vertices(p)
@@ -183,8 +185,5 @@ class SimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
     def set_polygon_translation(self, polygon_index, x, y):
         F=self.field()
         self._t[polygon_index]=vector([F(x),F(y)])
-        try:
-            del self._polygon_cache[polygon_index]
-        except KeyError:
-            pass
+        self.reset_transformed_vertices(polygon_index)
 

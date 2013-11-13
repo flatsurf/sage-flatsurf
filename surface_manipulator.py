@@ -180,6 +180,10 @@ class SurfaceManipulator(Frame):
     def _on_zoom(self):
         self.set_actor(ZoomActor(self))
 
+    def _on_redraw_all(self):
+        if self._surface is not None:
+            self._surface.redraw_all()
+
     def _on_recenter(self):
         self.set_actor(RecenterActor(self))
 
@@ -193,6 +197,7 @@ class SurfaceManipulator(Frame):
             self._action_menu.delete(0)
         self._action_menu.add_command(label="Recenter", underline=2, command=self._on_recenter)
         self._action_menu.add_command(label="Zoom", underline=0, command=self._on_zoom,accelerator="Alt+Z")
+        self._action_menu.add_command(label="Redraw All", underline=0, command=self._on_redraw_all)
         #self._action_menu.add_command(label="Delete Junk", command=self.on_delete_junk)
         if self._surface!= None:
             self._surface.make_action_menu(self._action_menu)
