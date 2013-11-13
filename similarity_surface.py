@@ -163,7 +163,7 @@ class SimilaritySurface(SageObject):
         """
         return self._polygons[lab]
 
-    def edge_to_identified(self, p, e):
+    def opposite_edge(self, p, e):
         if (p,e) not in self._edge_identifications:
             raise ValueError("not a valid edge identifier")
         return self._edge_identifications[(p,e)]
@@ -182,7 +182,7 @@ class SimilaritySurface(SageObject):
         if e is None:
             p,e = p
         u = self.polygon(p).edge(e)
-        pp,ee = self.edge_to_identified(p,e)
+        pp,ee = self.opposite_edge(p,e)
         v = self.polygon(pp).edge(ee)
 
         # be careful, because of the orientation, it is -v and not v
@@ -210,11 +210,11 @@ class ConicSurface(SimilaritySurface):
         while edges:
             p,e = edges.pop()
             angle = self.polygon(p).angle(e)
-            pp,ee = self.edge_to_identified(p,(e-1)%self.polygon(p).num_edges())
+            pp,ee = self.opposite_edge(p,(e-1)%self.polygon(p).num_edges())
             while pp != p or ee != e:
                 edges.remove((pp,ee))
                 angle += self.polygon(pp).angle(ee)
-                pp,ee = self.edge_to_identified(pp,(ee-1)%self.polygon(pp).num_edges())
+                pp,ee = self.opposite_edge(pp,(ee-1)%self.polygon(pp).num_edges())
             angles.append(angle)
         return angles
 
@@ -305,7 +305,7 @@ class Origami(TranslationSurface):
     def edges(self):
         return [(p,j) for p in self._domain for j in xrange(4)]
 
-    def edge_to_identified(self, p, e):
+    def opposite_edge(self, p, e):
         if p not in self._domain:
             raise ValueError
         if e < 0 or e > 3:

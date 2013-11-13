@@ -11,6 +11,7 @@ import tkFileDialog
 from editor_actor import *
 from editor_renderer import *
 from surface_bundle import *
+from create_similarity_surface_bundle import *
 
 class SurfaceManipulator(Frame):
     r"""
@@ -65,10 +66,8 @@ class SurfaceManipulator(Frame):
         self._surface_menu = Menu(menubar, tearoff=0)
         self._selected_surface = IntVar()
         self._selected_surface.set(-1)
-        self._surface_menu.add_radiobutton(label="None", 
-            command=self.menu_select_surface, variable=self._selected_surface, 
-            value=-1)
         menubar.add_cascade(label="Surface", underline=0, menu=self._surface_menu)
+        self._reset_surface_menu()
 
         self._create_menu = Menu(menubar, tearoff=0)
         menubar.add_cascade(label="Create", underline=0, menu=self._create_menu)
@@ -207,6 +206,9 @@ class SurfaceManipulator(Frame):
     def _reset_surface_menu(self):
         for i in range(100):
             self._surface_menu.delete(0)
+        self._surface_menu.add_radiobutton(label="None", 
+            command=self.menu_select_surface, variable=self._selected_surface, 
+            value=-1)
         for i in range( len(self._surfaces) ):
             surface = self._surfaces[i]
             self._surface_menu.add_radiobutton(label=surface.get_name(),
@@ -256,11 +258,14 @@ class SurfaceManipulator(Frame):
                 self._currentActor=actor
                 self._currentActor.on_activate()
 
-    def set_surface(self,surface):
-        i=self.add_surface(surface)
-        if (surface != self._surface):
+    def set_surface(self,surface_bundle):
+        r"""
+        Set the current surface to the one given by surface_bundle
+        """
+        i=self.add_surface(surface_bundle)
+        if (surface_bundle != self._surface):
             self._canvas.delete("all")
-            self._surface=surface
+            self._surface=surface_bundle
             self._surface_menu.invoke(i+1)
             if (i>=0):
                 self.set_text("Switched to `"+self._surface.get_name()+"'.")
