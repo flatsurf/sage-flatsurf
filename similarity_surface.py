@@ -37,6 +37,8 @@ from sage.misc.cachefunc import cached_method
 
 from sage.structure.sage_object import SageObject
 
+from sage.sets.family import Family
+
 from sage.rings.integer import Integer
 from sage.rings.rational import Rational
 
@@ -88,7 +90,6 @@ class SimilaritySurface(SageObject):
 
             sage: from polygon import square
         """
-        from sage.sets.family import Family
         self._polygons = Family(polygons)
 
         if self._polygons.cardinality() == 0:
@@ -155,7 +156,7 @@ class SimilaritySurface(SageObject):
         r"""
         Return the set of labels used for the polygons.
         """
-        return self._polygons.keys()
+        return self.polygons().keys()
 
     def polygon(self, lab):
         r"""
@@ -198,8 +199,8 @@ class SimilaritySurface(SageObject):
         """
         from surface_manipulator import SurfaceManipulator
         sm = SurfaceManipulator.launch()
-        bundle = sm.find_bundle(self)
-        if bundle is None:
+        sb = sm.find_bundle(self)
+        if sb is None:
             from similarity_surface_bundle import SimilaritySurfaceBundle
             sb = SimilaritySurfaceBundle(self, editor=sm)
             sm.add_surface(sb)
@@ -359,6 +360,7 @@ class Origami(TranslationSurface):
         self._r = r
         self._u = u
         self._perms = [~u,r,u,~r] # down,right,up,left
+        self._field=QQ
 
     def _repr_(self):
         return "Origami defined by r=%s and u=%s"%(self._r,self._u)

@@ -15,6 +15,8 @@ import tkSimpleDialog
 import tkMessageBox
 
 from collections import defaultdict
+import threading
+import time
 
 class SimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
 
@@ -119,6 +121,19 @@ class SimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
             self._render_polygon_outline(polygon_index)
             self._render_polygon_edge_labels(polygon_index)
 
+    def on_pick_edge(self):
+        self.done_picking=IntVar()
+        self.done_picking.set(0)
+        ps=EdgeSelector(self._editor,self._on_pick_edge_callback)
+        self._editor.set_actor(ps)
+        self._editor.wait_variable(self.done_picking)
+        return self.picked_polygon_handle, self.picked_edge
+
+    def _on_pick_edge_callback(self,polygon_handle, e):
+        self.picked_polygon_handle=polygon_handle
+        self.picked_edge=e
+        self.done_picking.set(1)
+
     def _on_make_adjacent(self):
         ps=EdgeSelector(self._editor,self._on_make_adjacent_callback)
         self._editor.set_actor(ps)
@@ -138,8 +153,7 @@ class SimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
         self._visible.add(p2)
         self.redraw_all()
         # Do it again:
-        ps=EdgeSelector(self._editor,self._on_make_adjacent_callback)
-        self._editor.set_actor(ps)
+        self._on_make_adjacent()
 
     def redraw_all(self):
         r"""
@@ -156,12 +170,13 @@ class SimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
         r"""
         Reset the cache storing the transformed vertices of polygon i.
         """
+        #print "Updating i="+str(i)
         t=self._t[i]
         gl=self._gl[i]
         imgs=[]
         vs=self._ss.polygon(i).vertices()
-        for i in range(self._ss.polygon(i).num_edges()):
-            imgs.append(gl*vs[i]+t)
+        for j in range(self._ss.polygon(i).num_edges()):
+            imgs.append(gl*vs[j]+t)
         res=tuple(imgs)
         self._polygon_cache[i]=res
         return res
