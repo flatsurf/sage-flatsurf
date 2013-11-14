@@ -77,7 +77,7 @@ class TranslationSurfaceGenerators:
         return TranslationSurface_polygons_and_gluings(polygons=polygons, identifications=identifications)
 
     @staticmethod
-    def origami(r,u):
+    def origami(r,u,rr=None,uu=None,domain=None):
         r"""
         Return the origami defined by the permutations ``r`` and ``u``.
 
@@ -93,5 +93,15 @@ class TranslationSurfaceGenerators:
             H_2(2)
         """
         from similarity_surface import Origami
-        return Origami(r,u)
+        return Origami(r,u,rr,uu,domain)
 
+    @staticmethod
+    def infinite_cylinder():
+        from similarity_surface import Origami
+
+        return Origami(
+            lambda x: x+1,
+            lambda x: x+1,
+            lambda x: x-1,
+            lambda x: x-1,
+            ZZ)

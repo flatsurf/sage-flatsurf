@@ -450,11 +450,18 @@ class MinimalTranslationCover(TranslationSurface_generic):
         return ((pi2,pm*me),e2)
 
 class Origami(TranslationSurface_generic):
-    def __init__(self, r, u):
-        self._domain = r.parent().domain()
+    def __init__(self, r, u, rr=None, uu=None, domain=None):
+        if domain is None:
+            self._domain = r.parent().domain()
+        else:
+            self._domain = domain
         self._r = r
         self._u = u
-        self._perms = [~u,r,u,~r] # down,right,up,left
+        if rr is None:
+            rr = ~r
+        if uu is None:
+            uu = ~u
+        self._perms = [uu,r,u,rr] # down,right,up,left
 
     def base_ring(self):
         return QQ
@@ -481,5 +488,4 @@ class Origami(TranslationSurface_generic):
         if e < 0 or e > 3:
             raise ValueError
         return self._perms[e](p), (e+2)%4
-
 
