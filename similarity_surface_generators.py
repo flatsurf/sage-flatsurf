@@ -96,12 +96,12 @@ class TranslationSurfaceGenerators:
         return Origami(r,u,rr,uu,domain)
 
     @staticmethod
-    def infinite_cylinder():
+    def infinite_origami_example():
         from similarity_surface import Origami
 
         return Origami(
             lambda x: x+1,
+            lambda x: x-1,
+            lambda x: x-1,
             lambda x: x+1,
-            lambda x: x-1,
-            lambda x: x-1,
             ZZ)

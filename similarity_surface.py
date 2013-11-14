@@ -87,16 +87,27 @@ class SimilaritySurface_generic(SageObject):
           somewhat fixed polygon
         - opposite_edge(self, lab, edege): a couple (``other_lab``, ``other_edge``)
     """
-    #
-    # Methods that have to be implemented in derived classes
-    #
     def base_ring(self):
         r"""
         The field on which the coordinates of ``self`` live.
 
-        .. NOTE::
+        This method must be overriden in subclasses!
+        """
+        raise NotImplementedError
 
-            This method must be overriden in subclasses!
+    def polygon_labels(self):
+        r"""
+        The set of labels used by the polygons.
+
+        This method must be overriden in subclasses.
+        """
+        raise NotImplementedError
+
+    def polygon(self, lab):
+        r"""
+        Return the polygon with label ``lab``.
+
+        This method must be overriden in subclasses.
         """
         raise NotImplementedError
 
@@ -105,86 +116,41 @@ class SimilaritySurface_generic(SageObject):
         Given the label ``p`` of a polygon and an edge ``e`` in that polygon
         returns the pair (``pp``, ``ee``) to which this edge is glued.
 
-        .. NOTE::
-
-            This method must be overriden in subclasses.
+        This method must be overriden in subclasses.
         """
         raise NotImplementedError
 
-    def polygon_labels(self):
-        r"""
-        The set of labels used by the polygons.
 
-        .. NOTE::
-
-            Either :meth:`polygons` must be implemented or this method must be
-            overriden in subclasses.
-        """
-        from sage.combinat.words.alphabet import build_alphabet
-        return build_alphabet(self.polygons().keys())
-
-    def polygons(self):
-        r"""
-        Return the set of polygons that constitute the surface as a family
-        ``label`` -> ``polygon``.
-
-        .. NOTE::
-
-            This method is optional and by default raise a ``NotImplementedError``.
-        """
-        raise NotImplementedError
-
-    def polygon(self, lab):
-        r"""
-        Return the polygon with label ``lab``.
-
-        .. NOTE::
-
-            Either :meth:`polygons` must be implemented or this method must be
-            overriden in subclasses.
-        """
-        return self.polygons()[lab]
-
-    def edges(self):
-        r"""
-        Return the set of edges that constitute the surface as a family
-        ``(label,number)``.
-
-        .. NOTE::
-
-            This method is optional and by default raise a ``NotImplementedError``.
-        """
-        raise NotImplementedError
+    #
+    # generic methods
+    #
 
     def num_polygons(self):
         r"""
         Return the number of polygons.
         """
-        return self.polygons().cardinality()
+        return self.polygon_labels().cardinality()
+
+    def polygon_iterator(self):
+        r"""
+        Iterator over the polygons.
+        """
+        from itertools import imap
+        return imap(self.polygon, self.polygon_labels())
 
     def num_edges(self):
         r"""
         Return the number of edges.
         """
-        return self.edges().cardinality()
-
-    def polygon_labels(self):
-        r"""
-        Return the set of labels used for the polygons.
-        """
-        return self.polygons().keys()
+        if self.polygon_labels().is_finite():
+            return sum(p.num_edges() for p in self.polygon_iterator())
+        else:
+            from sage.rings.infinity import Infinity
+            return Infinity
 
     def base_polygon(self):
-        r"""
-        If ``polygons`` is implemented there is no need for this method.
-        """
-        P = self.polygons()
-        lab = iter(P.keys()).next()
-        return lab,P[lab]
-
-    #
-    # generic methods
-    #
+        lab = self.polygon_labels().an_element()
+        return lab,self.polygon(lab)
 
     def _repr_(self):
         if self.polygons().cardinality() == 1:
@@ -195,7 +161,7 @@ class SimilaritySurface_generic(SageObject):
 
     def area(self):
         if self.num_polygons.is_finite():
-            return sum(p.area() for p in self.polygons())
+            return sum(p.area() for p in self.polygon_iterator())
         raise NotImplementedError("area is not implemented for surfaces built from an infinite number of polygons")
 
     def edge_matrix(self, p, e=None):
@@ -313,17 +279,9 @@ class SimilaritySurface_polygons_and_gluings(SimilaritySurface_generic):
     def base_ring(self):
         return self._field
 
-    def polygons(self):
-        r"""
-        The family of polygons that constitute self.
-        """
-        return self._polygons
-
-    def edges(self):
-        r"""
-        Return the set of edges.
-        """
-        return self._edge_identifications.keys()
+    def polygon_labels(self):
+        from sage.combinat.words.alphabet import build_alphabet
+        return build_alphabet(self.polygons().keys())
 
     def polygon(self, lab):
         r"""
@@ -455,23 +413,36 @@ class Origami(TranslationSurface_generic):
             self._domain = r.parent().domain()
         else:
             self._domain = domain
+
         self._r = r
         self._u = u
         if rr is None:
             rr = ~r
+        else:
+            for a in self._domain.some_elements():
+                if r(rr(a)) != a:
+                    raise ValueError("r o rr is not identity on %s"%a)
+                if rr(r(a)) != a:
+                    raise ValueError("rr o r is not identity on %s"%a)
         if uu is None:
             uu = ~u
+        else:
+            for a in self._domain.some_elements():
+                if u(uu(a)) != a:
+                    raise ValueError("u o uu is not identity on %s"%a)
+                if uu(u(a)) != a:
+                    raise ValueError("uu o u is not identity on %s"%a)
+
         self._perms = [uu,r,u,rr] # down,right,up,left
 
-    def base_ring(self):
-        return QQ
+    def num_polygons(self):
+        r"""
+        Returns the number of polygons.
+        """
+        return self._domain.cardinality()
 
-    def _repr_(self):
-        return "Origami defined by r=%s and u=%s"%(self._r,self._u)
-
-    def polygons(self):
-        from polygon import square
-        return Family(self._domain, lambda x: square())
+    def polygon_labels(self):
+        return self._domain
 
     def polygon(self, lab):
         if lab not in self._domain:
@@ -479,8 +450,11 @@ class Origami(TranslationSurface_generic):
         from polygon import square
         return square()
 
-    def edges(self):
-        return [(p,j) for p in self._domain for j in xrange(4)]
+    def base_ring(self):
+        return QQ
+
+    def _repr_(self):
+        return "Origami defined by r=%s and u=%s"%(self._r,self._u)
 
     def opposite_edge(self, p, e):
         if p not in self._domain:
