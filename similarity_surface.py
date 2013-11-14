@@ -60,7 +60,7 @@ from matrix_2x2 import (is_similarity,
                     rotation_matrix_angle)
 
 
-class SimilaritySurface(SageObject):
+class SimilaritySurface_generic(SageObject):
     r"""
     An oriented surface built from a set of polygons and edges identified with
     similarities (i.e. composition of homothety, rotations and translations).
@@ -71,10 +71,187 @@ class SimilaritySurface(SageObject):
 
     The edge are identified by a couple (polygon label, edge number).
 
-    Remark:
+    .. NOTE::
 
-    If an edge is glued to itself we get a pole in the middle... it seems to be
-    not ennoying.
+        This class is abstract and should not be called directly. Instead you
+        can either use SimilaritySurface_from_polygons_and_identifications or
+        inherit from it and implement the methods:
+
+        - num_polygons(self): the number of polygons in that surface
+        - base_ring(self): the base ring in which coordinates lives
+        - polygon(self, lab): the polygon associated to the label ``lab``
+
+    It might also be good to implement
+
+        - base_polygon(self): a couple (``label``, ``polygon``) that is a
+          somewhat fixed polygon
+        - opposite_edge(self, lab, edege): a couple (``other_lab``, ``other_edge``)
+    """
+    #
+    # Methods that have to be implemented in derived classes
+    #
+    def base_ring(self):
+        r"""
+        The field on which the coordinates of ``self`` live.
+
+        .. NOTE::
+
+            This method must be overriden in subclasses!
+        """
+        raise NotImplementedError
+
+    def opposite_edge(self, p, e):
+        r"""
+        Given the label ``p`` of a polygon and an edge ``e`` in that polygon
+        returns the pair (``pp``, ``ee``) to which this edge is glued.
+
+        .. NOTE::
+
+            This method must be overriden in subclasses.
+        """
+        raise NotImplementedError
+
+    def polygon_labels(self):
+        r"""
+        The set of labels used by the polygons.
+
+        .. NOTE::
+
+            Either :meth:`polygons` must be implemented or this method must be
+            overriden in subclasses.
+        """
+        from sage.combinat.words.alphabet import build_alphabet
+        return build_alphabet(self.polygons().keys())
+
+    def polygons(self):
+        r"""
+        Return the set of polygons that constitute the surface as a family
+        ``label`` -> ``polygon``.
+
+        .. NOTE::
+
+            This method is optional and by default raise a ``NotImplementedError``.
+        """
+        raise NotImplementedError
+
+    def polygon(self, lab):
+        r"""
+        Return the polygon with label ``lab``.
+
+        .. NOTE::
+
+            Either :meth:`polygons` must be implemented or this method must be
+            overriden in subclasses.
+        """
+        return self.polygons()[lab]
+
+    def edges(self):
+        r"""
+        Return the set of edges that constitute the surface as a family
+        ``(label,number)``.
+
+        .. NOTE::
+
+            This method is optional and by default raise a ``NotImplementedError``.
+        """
+        raise NotImplementedError
+
+    def num_polygons(self):
+        r"""
+        Return the number of polygons.
+        """
+        return self.polygons().cardinality()
+
+    def num_edges(self):
+        r"""
+        Return the number of edges.
+        """
+        return self.edges().cardinality()
+
+    def polygon_labels(self):
+        r"""
+        Return the set of labels used for the polygons.
+        """
+        return self.polygons().keys()
+
+    def base_polygon(self):
+        r"""
+        If ``polygons`` is implemented there is no need for this method.
+        """
+        P = self.polygons()
+        lab = iter(P.keys()).next()
+        return lab,P[lab]
+
+    #
+    # generic methods
+    #
+
+    def _repr_(self):
+        if self.polygons().cardinality() == 1:
+            end = ""
+        else:
+            end = "s"
+        return "Similarity surface built from %s polygon"%self._polygons.cardinality() + end
+
+    def area(self):
+        if self.num_polygons.is_finite():
+            return sum(p.area() for p in self.polygons())
+        raise NotImplementedError("area is not implemented for surfaces built from an infinite number of polygons")
+
+    def edge_matrix(self, p, e=None):
+        r"""
+        Return the edge to which this edge is identified and the matrix to be
+        applied.
+
+        EXAMPLES::
+
+            sage: from
+            sage: SimilaritySurface([square()]
+        """
+        if e is None:
+            # What does the following line do?
+            # -Pat
+            p,e = p
+        u = self.polygon(p).edge(e)
+        pp,ee = self.opposite_edge(p,e)
+        v = self.polygon(pp).edge(ee)
+
+        # be careful, because of the orientation, it is -v and not v
+        res = similarity_from_vectors(u,-v)
+        return similarity_from_vectors(u,-v)
+
+    def minimal_translation_cover(self):
+        return MinimalTranslationCover(self)
+
+    def get_bundle(self):
+        r"""
+        Return a pair (sm,sb), where sm is the active SurfaceManipulator, and sb is the surface
+        bundle for this surface (which is added if neccessary to the SurfaceManipulator).
+        If necessary, we create one or both objects.
+        """
+        from surface_manipulator import SurfaceManipulator
+        sm = SurfaceManipulator.launch()
+        sb = sm.find_bundle(self)
+        if sb is None:
+            from similarity_surface_bundle import SimilaritySurfaceBundle
+            sb = SimilaritySurfaceBundle(self, editor=sm)
+            sm.add_surface(sb)
+        return sm, sb
+
+    def edit(self):
+        r"""
+        Launch the tk editor to interactively modify ``self``.
+        """
+        sm,sb = self.get_bundle()
+        sm.set_surface(sb)
+        #old version below
+        #from translation_surface_editor import TranslationSurfaceEditor
+        #fse = TranslationSurfaceEditor(self)
+        #fse.window.mainloop()
+
+class SimilaritySurface_polygons_and_gluings(SimilaritySurface_generic):
+    r"""
+    Similarity surface build from a list of polygons and gluings.
     """
     def __init__(self, polygons=None, identifications=None):
         r"""
@@ -123,22 +300,10 @@ class SimilaritySurface(SageObject):
         self._edge_identifications = edge_identifications
 
     def num_polygons(self):
-        return self._polygons.cardinality()
-
-    def _repr_(self):
-        if self.polygons().cardinality() == 1:
-            end = ""
-        else:
-            end = "s"
-        return "Similarity surface built from %s polygon"%self._polygons.cardinality() + end
+        return self.polygons().cardinality()
 
     def base_ring(self):
         return self._field
-
-    def area(self):
-        if self._polygons.is_finite():
-            return sum(p.area() for p in self._polygons)
-        raise NotImplementedError("area is not implemented for surfaces built from an infinite number of polygons")
 
     def polygons(self):
         r"""
@@ -152,12 +317,6 @@ class SimilaritySurface(SageObject):
         """
         return self._edge_identifications.keys()
 
-    def polygon_labels(self):
-        r"""
-        Return the set of labels used for the polygons.
-        """
-        return self.polygons().keys()
-
     def polygon(self, lab):
         r"""
         Return the polygon with label ``lab``.
@@ -169,84 +328,7 @@ class SimilaritySurface(SageObject):
             raise ValueError("not a valid edge identifier")
         return self._edge_identifications[(p,e)]
 
-    def edge_matrix(self, p, e=None):
-        r"""
-        Return the edge to which this edge is identified and the matrix to be
-        applied.
-
-        EXAMPLES::
-
-            sage: from
-            sage: SimilaritySurface([square()]
-        """
-        if e is None:
-            # What does the following line do?
-            # -Pat
-            p,e = p
-        u = self.polygon(p).edge(e)
-        pp,ee = self.opposite_edge(p,e)
-        v = self.polygon(pp).edge(ee)
-
-        # be careful, because of the orientation, it is -v and not v
-        res = similarity_from_vectors(u,-v)
-        return similarity_from_vectors(u,-v)
-
-    def get_bundle(self):
-        r"""
-        Return a pair (sm,sb), where sm is the active SurfaceManipulator, and sb is the surface
-        bundle for this surface (which is added if neccessary to the SurfaceManipulator).
-        If necessary, we create one or both objects.
-        """
-        from surface_manipulator import SurfaceManipulator
-        sm = SurfaceManipulator.launch()
-        sb = sm.find_bundle(self)
-        if sb is None:
-            from similarity_surface_bundle import SimilaritySurfaceBundle
-            sb = SimilaritySurfaceBundle(self, editor=sm)
-            sm.add_surface(sb)
-        return sm, sb
-
-    def edit(self):
-        r"""
-        Launch the tk editor to interactively modify ``self``.
-        """
-        sm,sb = self.get_bundle()
-        sm.set_surface(sb)
-        #old version below
-        #from translation_surface_editor import TranslationSurfaceEditor
-        #fse = TranslationSurfaceEditor(self)
-        #fse.window.mainloop()
-
-
-    def minimal_translation_cover(self):
-        return MinimalTranslationCover(self)
-
-class SimilaritySurfaceGenerators:
-    r"""
-    Examples of similarity surfaces.
-    """
-    @staticmethod
-    def example():
-        r"""
-        Construct a SimilaritySurface from a pair of triangles.
-        """
-        from polygon import PolygonCreator
-        pc=PolygonCreator()
-        pc.add_vertex((0,0))
-        pc.add_vertex((2,-2))
-        pc.add_vertex((2,0))
-        p0=pc.get_polygon()
-        pc=PolygonCreator()
-        pc.add_vertex((0,0))
-        pc.add_vertex((2,0))
-        pc.add_vertex((1,3))
-        p1=pc.get_polygon()
-        ps=(p0,p1)
-        glue={ (0,2):(1,0), (0,0):(1,1), (0,1):(1,2), (1,0):(0,2), (1,1):(0,0), (1,2):(0,1) }
-        return SimilaritySurface(ps,glue)
-
-
-class ConicSurface(SimilaritySurface):
+class ConicSurface(SimilaritySurface_generic):
     r"""
     A conic surface.
     """
@@ -276,7 +358,7 @@ class ConicSurface(SimilaritySurface):
             angles.append(angle)
         return angles
 
-class TranslationSurface(ConicSurface):
+class TranslationSurface_generic(ConicSurface):
     r"""
     A surface with a flat metric and conical singularities (not necessarily
     multiple angle of pi or 2pi).
@@ -330,7 +412,12 @@ class TranslationSurface(ConicSurface):
         from sage.dynamics.flat_surfaces.all import AbelianStratum
         return AbelianStratum([a-1 for a in self.angles()])
 
-class MinimalTranslationCover(TranslationSurface):
+class TranslationSurface_polygons_and_gluings(
+        TranslationSurface_generic,
+        SimilaritySurface_polygons_and_gluings):
+    pass
+
+class MinimalTranslationCover(TranslationSurface_generic):
     def __init__(self, similarity_surface):
         self._ss=similarity_surface
         self._field=self._ss.base_ring()
@@ -354,13 +441,15 @@ class MinimalTranslationCover(TranslationSurface):
         me = self._ss.edge_matrix(pi1,e)
         return ((pi2,pm*me),e2)
 
-class Origami(TranslationSurface):
+class Origami(TranslationSurface_generic):
     def __init__(self, r, u):
         self._domain = r.parent().domain()
         self._r = r
         self._u = u
         self._perms = [~u,r,u,~r] # down,right,up,left
-        self._field=QQ
+
+    def base_ring(self):
+        return QQ
 
     def _repr_(self):
         return "Origami defined by r=%s and u=%s"%(self._r,self._u)
@@ -385,6 +474,31 @@ class Origami(TranslationSurface):
             raise ValueError
         return self._perms[e](p), (e+2)%4
 
+class SimilaritySurfaceGenerators:
+    r"""
+    Examples of similarity surfaces.
+    """
+    @staticmethod
+    def example():
+        r"""
+        Construct a SimilaritySurface from a pair of triangles.
+        """
+        from polygon import PolygonCreator
+        pc=PolygonCreator()
+        pc.add_vertex((0,0))
+        pc.add_vertex((2,-2))
+        pc.add_vertex((2,0))
+        p0=pc.get_polygon()
+        pc=PolygonCreator()
+        pc.add_vertex((0,0))
+        pc.add_vertex((2,0))
+        pc.add_vertex((1,3))
+        p1=pc.get_polygon()
+        ps=(p0,p1)
+        glue={ (0,2):(1,0), (0,0):(1,1), (0,1):(1,2), (1,0):(0,2), (1,1):(0,0), (1,2):(0,1) }
+        return SimilaritySurface(ps,glue)
+
+
 class TranslationSurfaceGenerators:
     r"""
     Common and less common translation surfaces.
@@ -407,7 +521,7 @@ class TranslationSurfaceGenerators:
         polygons = [regular_octagon()]
         identifications = {}
         identifications.update(dict(((0,i),(0,i+4)) for i in xrange(4)))
-        return TranslationSurface(polygons=polygons, identifications=identifications)
+        return TranslationSurface_polygons_and_gluings(polygons=polygons, identifications=identifications)
 
     @staticmethod
     def octagon_and_squares():
@@ -429,7 +543,7 @@ class TranslationSurfaceGenerators:
             (0,6): (1,2),
             (0,7): (2,2),
             }
-        return TranslationSurface(polygons=polygons, identifications=identifications)
+        return TranslationSurface_polygons_and_gluings(polygons=polygons, identifications=identifications)
 
     @staticmethod
     def origami(r,u):
@@ -449,4 +563,3 @@ class TranslationSurfaceGenerators:
         """
         return Origami(r,u)
 
-translation_surfaces = TranslationSurfaceGenerators()
