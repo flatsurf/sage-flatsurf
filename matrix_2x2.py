@@ -146,7 +146,7 @@ def similarity_from_vectors(u,v):
     assert u.parent() is v.parent()
 
     if u == v:
-        return identity_matrix(2,u.base_ring())
+        return identity_matrix(u.base_ring(), n=2)
 
     sqnorm_u = u[0]*u[0] + u[1]*u[1]
     # Editted by Pat to remove worry about subfield...

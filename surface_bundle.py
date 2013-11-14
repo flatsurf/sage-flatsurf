@@ -60,6 +60,9 @@ class SurfaceBundle:
         r"""Return the editor manipulating this surface"""
         return self._editor
 
+    def get_surface(self):
+        return None
+
     def get_transform(self):
         r"""
         Get the parts of the transformation which convert to screen coordinates.

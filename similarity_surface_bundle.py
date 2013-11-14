@@ -18,7 +18,10 @@ from collections import defaultdict
 
 class SimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
 
-    def __init__(self, name, editor, similarity_surface):
+    # STATIC VARIABLES
+    count = 0
+
+    def __init__(self, similarity_surface, editor = None, name = None):
         r"""
         INPUT:
 
@@ -27,6 +30,12 @@ class SimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
         - ``editor`` - the identification of the edges. A list of pairs
           ((p0,e0),(p1,e1)) or
         """
+        if name is None:
+            SimilaritySurfaceBundle.count = SimilaritySurfaceBundle.count + 1
+            name = "Similarity Surface #"+ str(SimilaritySurfaceBundle.count)
+        if editor is None:
+            from surface_manipulator import SurfaceManipulator
+            editor = SurfaceManipulator.launch()
         SurfaceBundle.__init__(self,name, editor, field=similarity_surface.base_ring() )
         EditorRenderer.__init__(self,editor)
         self._ss=similarity_surface
@@ -52,10 +61,13 @@ class SimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
         self._editor.get_canvas().delete("label")
         
     def _default_gl(self):
-        return identity_matrix( 2, self.field() )
+        return identity_matrix( self.field(), n=2)
 
     def _default_t(self):
         return self.vector_space().zero()
+
+    def get_surface(self):
+        return self._ss
 
     def get_transformed_vertices(self, i):
         r"""
@@ -65,14 +77,6 @@ class SimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
             return self._polygon_cache[i]
         except KeyError:
             return self.reset_transformed_vertices(i)
-
-    def redraw_all(self):
-        self._editor.get_canvas().delete("all")
-        self._visible=set()
-        self._polygon_cache={}
-        self._polygon_to_handle={}
-        self._handle_to_polygon={}
-        self.initial_render()
 
     def initial_render(self):
         if self._ss.polygons().is_finite():
@@ -136,6 +140,17 @@ class SimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
         # Do it again:
         ps=EdgeSelector(self._editor,self._on_make_adjacent_callback)
         self._editor.set_actor(ps)
+
+    def redraw_all(self):
+        r"""
+        Remove and redraw everything on the canvas.
+        """
+        self._editor.get_canvas().delete("all")
+        self._visible=set()
+        self._polygon_cache={}
+        self._polygon_to_handle={}
+        self._handle_to_polygon={}
+        self.initial_render()
 
     def reset_transformed_vertices(self, i):
         r"""

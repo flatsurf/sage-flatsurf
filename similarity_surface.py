@@ -168,7 +168,6 @@ class SimilaritySurface(SageObject):
             raise ValueError("not a valid edge identifier")
         return self._edge_identifications[(p,e)]
 
-    @cached_method
     def edge_matrix(self, p, e=None):
         r"""
         Return the edge to which this edge is identified and the matrix to be
@@ -188,10 +187,63 @@ class SimilaritySurface(SageObject):
         v = self.polygon(pp).edge(ee)
 
         # be careful, because of the orientation, it is -v and not v
+        res = similarity_from_vectors(u,-v)
         return similarity_from_vectors(u,-v)
+
+    def get_bundle(self):
+        r"""
+        Return a pair (sm,sb), where sm is the active SurfaceManipulator, and sb is the surface
+        bundle for this surface (which is added if neccessary to the SurfaceManipulator).
+        If necessary, we create one or both objects.
+        """
+        from surface_manipulator import SurfaceManipulator
+        sm = SurfaceManipulator.launch()
+        bundle = sm.find_bundle(self)
+        if bundle is None:
+            from similarity_surface_bundle import SimilaritySurfaceBundle
+            sb = SimilaritySurfaceBundle(self, editor=sm)
+            sm.add_surface(sb)
+        return sm, sb
+
+    def edit(self):
+        r"""
+        Launch the tk editor to interactively modify ``self``.
+        """
+        sm,sb = self.get_bundle()
+        sm.set_surface(sb)
+        #old version below
+        #from translation_surface_editor import TranslationSurfaceEditor
+        #fse = TranslationSurfaceEditor(self)
+        #fse.window.mainloop()
+
 
     def minimal_translation_cover(self):
         return MinimalTranslationCover(self)
+
+class SimilaritySurfaceGenerators:
+    r"""
+    Examples of similarity surfaces.
+    """
+    @staticmethod
+    def example():
+        r"""
+        Construct a SimilaritySurface from a pair of triangles.
+        """
+        from polygon import PolygonCreator
+        pc=PolygonCreator()
+        pc.add_vertex((0,0))
+        pc.add_vertex((2,-2))
+        pc.add_vertex((2,0))
+        p0=pc.get_polygon()
+        pc=PolygonCreator()
+        pc.add_vertex((0,0))
+        pc.add_vertex((2,0))
+        pc.add_vertex((1,3))
+        p1=pc.get_polygon()
+        ps=(p0,p1)
+        glue={ (0,2):(1,0), (0,0):(1,1), (0,1):(1,2), (1,0):(0,2), (1,1):(0,0), (1,2):(0,1) }
+        return SimilaritySurface(ps,glue)
+
 
 class ConicSurface(SimilaritySurface):
     r"""
@@ -261,16 +313,6 @@ class TranslationSurface(ConicSurface):
         for i in self.polygons():
             "%s %s"
 
-    def edit(self):
-        r"""
-        Launch the tk editor to interactively modify ``self``.
-        """
-        raise NotImplementedError("Pat should be working on it")
-        #old version below
-        #from translation_surface_editor import TranslationSurfaceEditor
-        #fse = TranslationSurfaceEditor(self)
-        #fse.window.mainloop()
-
     def plot(self):
         return TranslationSurfacePlot(self).plot()
 
@@ -281,7 +323,7 @@ class TranslationSurface(ConicSurface):
             raise ValueError
         elif e < 0 or e >= self.polygons()[p].num_edges():
             raise ValueError
-        return identity_matrix(self.field())
+        return identity_matrix(self.base_ring(),2)
 
     def stratum(self):
         from sage.dynamics.flat_surfaces.all import AbelianStratum

@@ -18,6 +18,38 @@ class SurfaceManipulator(Frame):
     A translation surface editor in tk.
     """
   
+    # STATIC METHODS AND OBJECTS
+
+    current = None
+    # boolean variable to remember if the hook was run!
+    _clear_hook_was_run = 0
+
+    @staticmethod
+    def launch(geometry = "800x700+10+10"):
+        r"""Prefered way to gain access to a SurfaceManipulator window."""
+        if SurfaceManipulator.current is None:
+            SurfaceManipulator._clear_hook()
+            root = Tk()
+            root.geometry(geometry)
+            SurfaceManipulator.current=SurfaceManipulator(root)
+        return SurfaceManipulator.current
+    
+    @staticmethod
+    def _window_destroyed(surface_manipulator):
+        if SurfaceManipulator.current is surface_manipulator:
+            SurfaceManipulator.current = None
+
+    @staticmethod
+    def _clear_hook():
+        if not SurfaceManipulator._clear_hook_was_run:
+            # Hack due to Nathan Dunfield (http://trac.sagemath.org/ticket/15152)
+            import IPython.lib.inputhook as ih
+            ih.clear_inputhook()
+            SurfaceManipulator._clear_hook_was_run = 1
+
+    # NORMAL METHODS
+
+
     def __init__(self, parent, surface=None, surfaces=[]):
         r"""
         INPUT:
@@ -29,19 +61,22 @@ class SurfaceManipulator(Frame):
         self._parent = parent
         self.pack(fill="both", expand=1)
 
-        r"""Surface currently being manipulated"""
+        # Run something when closing
+        self._parent.wm_protocol ("WM_DELETE_WINDOW", self.exit)
+
+        # Surface currently being manipulated
         self._surface=None
-        r"""List of surfaces in editor"""
+        # List of surfaces in editor
         self._surfaces=[]
-        r"""More variables to initialize"""
+        # More variables to initialize
         self._currentActor=None
-        r"""Initialization of GUI"""
+        # Initialization of GUI
         self._init_menu()
         self._init_gui()
-        r"""Setup surface list"""
+        # Setup surface list
         for s in surfaces:
             self.add_surface(s)
-        r"""Setup initial surface"""
+        # Setup initial surface
         if (surface != None):
             self.add_surface(surface)
         self.set_surface(surface)
@@ -60,7 +95,7 @@ class SurfaceManipulator(Frame):
         file_menu.add_separator()
         file_menu.add_command(label="About", command=self.on_about)
         file_menu.add_command(label="Export PostScript", command=self.on_export)
-        file_menu.add_command(label="Exit", command=self.on_exit,accelerator="Alt+F4")
+        file_menu.add_command(label="Exit", command=self.exit,accelerator="Alt+F4")
         menubar.add_cascade(label="File", underline=0, menu=file_menu)
 
         self._surface_menu = Menu(menubar, tearoff=0)
@@ -107,6 +142,16 @@ class SurfaceManipulator(Frame):
         self._reset_surface_menu()
         return len(self._surfaces)-1
 
+    def exit(self):
+        SurfaceManipulator._window_destroyed(self)
+        self._parent.destroy()
+
+    def find_bundle(self, surface):
+        for surface_bundle in self._surfaces:
+            if surface is surface_bundle.get_surface():
+                return surface_bundle
+        return None
+
     def get_canvas(self):
         return self._canvas
 
@@ -152,9 +197,6 @@ class SurfaceManipulator(Frame):
 
     def on_delete_junk(self):
         self._canvas.delete("junk")
-
-    def on_exit(self):
-        self.quit()
 
     def on_export(self):
         r"""
@@ -287,13 +329,3 @@ class SurfaceManipulator(Frame):
         if self._surface is not None:
             self._parent.title(self._surface.get_name())
             self._reset_surface_menu()
-
-
-def main():
-    root = Tk()
-    root.geometry("600x500+10+10")
-    app = SurfaceManipulator(root)
-    root.mainloop()  
-
-if __name__ == '__main__':
-    main()  

@@ -109,7 +109,7 @@ class CreateSimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
 
     def _on_to_similarity_surface(self):
         s=SimilaritySurface(self._polygons,self._glue.get_edge_pair_list())
-        sb=SimilaritySurfaceBundle(self._name, self._editor,s)
+        sb=SimilaritySurfaceBundle(s, editor=self._editor, name=self._name+" [SS]")
         for i in range(len(self._translations)):
             v=self._translations[i]
             sb.set_polygon_translation(i,v[0],v[1])
