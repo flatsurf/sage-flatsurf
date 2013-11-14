@@ -340,6 +340,62 @@ class PolygonSelector(EditorActor):
         #        # Pass the polygon handle:
         #        self._handle_receiver(handle)
 
+class PointSelector(EditorActor):
+    r"""
+    A class for selecting a polygon. 
+    The polygons must be tagged with the tag "polygon". 
+    When a polygon is clicked the class calls handle_reciever with the handle of the poilygon clicked.
+    """
+    def __init__(self, editor, handle_receiver, msg="Select a point."):
+        EditorActor.__init__(self, editor)
+        self._over_handle=None
+        self._old_fill=None
+        self._handle_receiver=handle_receiver
+        self._msg=msg
+
+    def on_activate(self):
+        self._editor.set_text(self._msg)
+
+    def on_deactivate(self):
+        self._revert_higlight()
+
+    def _highlight(self,handle):
+        self._over_handle=handle
+        self._old_fill=self._editor.get_canvas().itemcget(handle,"fill")
+        self._editor.get_canvas().itemconfig(handle,fill="#ffaa66")
+
+    def _revert_higlight(self):
+        if self._over_handle is not None:
+            self._editor.get_canvas().itemconfig(self._over_handle,fill=self._old_fill)
+        self._over_handle=None
+        self._old_fill=None
+
+    def mouse_moved(self, event):
+        canvas=self._editor.get_canvas()
+        handles=canvas.find_withtag(CURRENT)
+        if (len(handles)>0):
+            handle=handles[0]
+        else :
+            handle=0
+        if self._over_handle is not None:
+            if self._over_handle != handle:
+                self._revert_higlight()
+            else: 
+                # still over same polygon
+                return
+        if handle:
+            tags=canvas.gettags(CURRENT)
+            if "polygon" in tags:
+                # Over polygon
+                self._highlight(handle)
+
+    def single_left_click(self, event):
+        x = self._editor.get_canvas().canvasx(event.x)
+        y = self._editor.get_canvas().canvasy(event.y)
+        if self._over_handle is not None:
+            # god knows why canvasx and canvasy would return floats!
+            self._handle_receiver(self._over_handle, int(x), int(x))
+
 class PolygonEdgeSelector(EditorActor):
     r"""
     A class for selecting an edge from a given polygon.

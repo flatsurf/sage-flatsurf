@@ -249,6 +249,14 @@ class SimilaritySurface_generic(SageObject):
         #fse = TranslationSurfaceEditor(self)
         #fse.window.mainloop()
 
+    def vector_space(self):
+        r"""
+        Return the vector space in which self naturally embeds.
+        """
+        from sage.modules.free_module import VectorSpace
+        return VectorSpace(self.base_ring(), 2)
+
+
 class SimilaritySurface_polygons_and_gluings(SimilaritySurface_generic):
     r"""
     Similarity surface build from a list of polygons and gluings.
@@ -496,7 +504,7 @@ class SimilaritySurfaceGenerators:
         p1=pc.get_polygon()
         ps=(p0,p1)
         glue={ (0,2):(1,0), (0,0):(1,1), (0,1):(1,2), (1,0):(0,2), (1,1):(0,0), (1,2):(0,1) }
-        return SimilaritySurface(ps,glue)
+        return SimilaritySurface_polygons_and_gluings(ps,glue)
 
 
 class TranslationSurfaceGenerators:

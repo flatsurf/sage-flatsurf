@@ -101,7 +101,7 @@ class PolygonPosition:
     def get_position_type(self):
         return self._position_type
 
-    def get_containing_edge(self):
+    def get_edge(self):
         return self._edge
     
     def get_vertex(self):
@@ -157,6 +157,9 @@ class Polygon(Element):
         """
         return "Polygon: " + ", ".join(map(str,self.vertices()))
 
+    def vector_space(self):
+        return self.parent().vector_space()
+
     def vertices(self, translation=None):
         r"""
         Return the set of vertices as vectors.
@@ -185,6 +188,12 @@ class Polygon(Element):
 
     def __iter__(self):
         return iter(self.vertices())
+
+    def contains_point(self,point,translation=None):
+        r"""
+        Return true if the point is within the polygon (after the polygon is possibly translated)
+        """
+        return self.get_point_position(point,translation=translation).is_inside()
 
     def get_point_position(self,point,translation=None):
         r"""

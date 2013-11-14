@@ -121,18 +121,6 @@ class SimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
             self._render_polygon_outline(polygon_index)
             self._render_polygon_edge_labels(polygon_index)
 
-    def on_pick_edge(self):
-        self.done_picking=IntVar()
-        self.done_picking.set(0)
-        ps=EdgeSelector(self._editor,self._on_pick_edge_callback)
-        self._editor.set_actor(ps)
-        self._editor.wait_variable(self.done_picking)
-        return self.picked_polygon_handle, self.picked_edge
-
-    def _on_pick_edge_callback(self,polygon_handle, e):
-        self.picked_polygon_handle=polygon_handle
-        self.picked_edge=e
-        self.done_picking.set(1)
 
     def _on_make_adjacent(self):
         ps=EdgeSelector(self._editor,self._on_make_adjacent_callback)
@@ -154,6 +142,42 @@ class SimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
         self.redraw_all()
         # Do it again:
         self._on_make_adjacent()
+
+    def pick_edge(self):
+        self.done_picking=IntVar()
+        self.done_picking.set(0)
+        ps=EdgeSelector(self._editor,self._pick_edge_callback)
+        self._editor.set_actor(ps)
+        self._editor.wait_variable(self.done_picking)
+        return self.picked_polygon_handle, self.picked_edge
+
+    def _pick_edge_callback(self,polygon_handle, e):
+        self.picked_polygon_handle=polygon_handle
+        self.picked_edge=e
+        self.done_picking.set(1)
+
+    def pick_point(self):
+        self.done_picking=IntVar()
+        self.done_picking.set(0)
+        ps=PointSelector(self._editor,self._pick_point_callback)
+        self._editor.set_actor(ps)
+        self._editor.wait_variable(self.done_picking)
+        return self._picked_point
+
+    def _pick_point_callback(self,polygon_handle, x,y):
+        from surface_point import SurfacePoint
+        print "x="+str(x)+" and y="+str(y)
+        v=self.screen_to_math_coordinates(x,y)
+        #print "v="+str(v)
+        i=self._handle_to_polygon[polygon_handle]
+        t=self._t[i]
+        gl=self._gl[i]
+        p=gl.inverse()*(v-t)
+        try:
+            self._picked_point=SurfacePoint(self._ss,i,p)
+        except ValueError:
+            self._picked_point=None
+        self.done_picking.set(1)
 
     def redraw_all(self):
         r"""
@@ -192,6 +216,19 @@ class SimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
             outline="",fill="white",tags=("SimilaritySurfaceBundle","polygon"))
         self._polygon_to_handle[i]=handle
         self._handle_to_polygon[handle]=i
+
+    def render_segments(self,pair_list):
+        for pair in pair_list:
+            a,b=pair
+            i=a.get_label()
+            t=self._t[i]
+            gl=self._gl[i]
+            img0=self.math_to_screen_coordinates( gl*a.get_point()+t )
+            img1=self.math_to_screen_coordinates( gl*b+t )
+            handle=self._editor.get_canvas().create_line(
+                img0[0], img0[1],img1[0],img1[1],
+                fill="#000",tags=("segment"))
+
 
     def _render_edge(self,p,e):
         vs=self.get_transformed_vertices(p)

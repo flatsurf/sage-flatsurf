@@ -103,10 +103,10 @@ class SurfaceBundle:
 
     def set_transform(self, sx, sy, tx, ty):
         self.before_zoom_change()
-        self._sx=sx
-        self._sy=sy
-        self._tx=tx
-        self._ty=ty
+        self._sx=self._field(sx)
+        self._sy=self._field(sy)
+        self._tx=self._field(tx)
+        self._ty=self._field(ty)
         r"""
         Set the parts of the transformation which convert to screen coordinates.
         """
