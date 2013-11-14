@@ -1,7 +1,9 @@
 from similarity_surface import *
-#ss=SimilaritySurfaceGenerators.example()
-#ss.edit()
-#sm,sb = ss.get_bundle()
+ss=SimilaritySurfaceGenerators.example()
+ss.edit()
+sm,sb = ss.get_bundle()
+sb.set_transform(100,-100,300,300)
+sb.redraw_all()
 
 from sage.groups.perm_gps.permgroup_named import SymmetricGroup
 S = SymmetricGroup(3)

@@ -50,6 +50,63 @@ class ActionOnPolygons(Action):
             raise ValueError("can not act with matrix with negative determinant")
         return x.parent()([g*e for e in x.edges()])
 
+class PolygonPosition:
+    r"""
+    Class for describing the position of a point within or outside of a polygon.
+    """
+    # Position Types:
+    OUTSIDE = 0
+    INTERIOR = 1
+    EDGE_INTERIOR = 2
+    VERTEX = 3
+
+    def __init__(self, position_type, edge = None, vertex = None):
+        self._position_type=position_type
+        if self.is_vertex():
+            if vertex is None:
+                raise ValueError("Constructed vertex position with no specified vertex.")
+            self._vertex=vertex
+        if self.is_in_edge_interior():
+            if edge is None:
+                raise ValueError("Constructed edge position with no specified edge.")
+            self._edge=edge
+    
+    def __repr__(self):
+        if self.is_outside():
+            return "point positioned outside polygon"
+        if self.is_in_interior():
+            return "point positioned in interior of polygon"
+        if self.is_in_edge_interior():
+            return "point positioned on interior of edge "+str(self._edge)+" of polygon"
+        return "point positioned on vertex "+str(self._vertex)+" of polygon"
+
+    def is_outside(self):
+        return self._position_type == PolygonPosition.OUTSIDE
+
+    def is_inside(self):
+        r""" 
+        Return true if the position is not outside the closure of the polygon
+        """
+        return bool(self._position_type)
+
+    def is_in_interior(self):
+        return self._position_type == PolygonPosition.INTERIOR
+
+    def is_in_edge_interior(self):
+        return self._position_type == PolygonPosition.EDGE_INTERIOR
+
+    def is_vertex(self):
+        return self._position_type == PolygonPosition.VERTEX
+
+    def get_position_type(self):
+        return self._position_type
+
+    def get_containing_edge(self):
+        return self._edge
+    
+    def get_vertex(self):
+        return self._vertex
+
 from sage.structure.element import Element
 class Polygon(Element):
     r"""
@@ -58,6 +115,7 @@ class Polygon(Element):
     .. NOTE::
 
     Should we precompute the angles ?
+    No, in my oppinion. -Pat
     """
     def __init__(self, parent, edges):
         r"""
@@ -72,23 +130,18 @@ class Polygon(Element):
         self._x = [field(e[0]) for e in edges]
         self._y = [field(e[1]) for e in edges]
 
+        # Linear Time Sanity Checks
         if sum(self._x) or sum(self._y):
             raise ValueError("the sum over the edges do not sum up to 0")
+        self._convexity_check()
 
-        # the following is very long because of the angle buisness!!!
-        self._check()
-
-    def _check(self):
-        # check convexity
+    def _convexity_check(self):
+        # Updated convexity check
         edges = self.edges()
-        for i in xrange(len(edges)-1):
-            if wedge_product(edges[i],edges[i+1]) <= 0:
+        pc=PolygonCreator(field=self.base_ring())
+        for v in self.vertices():
+            if not pc.add_vertex(v):
                 raise ValueError("not convex!")
-        if wedge_product(edges[-1],edges[0]) <= 0:
-            raise ValueError("not convex!")
-
-        # check angles (relatively long time)
-        sum(self.angle(i) for i in xrange(self.num_edges())) == self.num_edges() - 3
 
     def base_ring(self):
         return self.parent().base_ring()
@@ -133,6 +186,153 @@ class Polygon(Element):
     def __iter__(self):
         return iter(self.vertices())
 
+    def get_point_position(self,point,translation=None):
+        r"""
+        Get a combinatorial position of a points position compared to the polygon
+
+        INPUT:
+
+        - ``point`` -- a point in the plane (vector over the underlying base_ring())
+
+        - ``translation`` -- optional translation to applied to the polygon (vector over the underlying base_ring())
+
+        OUTPUT:
+
+        - a PolygonPosition object
+
+        EXAMPLES::
+
+            sage: s=square()
+            sage: V=s.parent().vector_space()
+            sage: s.get_point_position(V((1/2,1/2)))
+            point positioned in interior of polygon
+            sage: s.get_point_position(V((1,0)))
+            point positioned on vertex 1 of polygon
+            sage: s.get_point_position(V((1,1/2)))
+            point positioned on interior of edge 1 of polygon
+            sage: s.get_point_position(V((1,3/2)))
+            point positioned outside polygon
+        """
+        V = self.parent().vector_space()
+        if translation is None:
+            v1=V.zero()
+        else:
+            v1=translation
+        for i in range(self.num_edges()):
+            v0=v1
+            e=V((self._x[i],self._y[i]))
+            v1=v0+e
+            w=wedge_product(e,point-v0)
+            if w < 0:
+                return PolygonPosition(PolygonPosition.OUTSIDE)
+            if w == 0:
+                # Lies on the line through edge i!
+                n=self.num_edges()
+                # index and edge after v1 
+                ip1=(i+1)%n
+                e=V((self._x[ip1],self._y[ip1]))
+                w=wedge_product(e,point-v1)
+                if w<0:
+                    return PolygonPosition(PolygonPosition.OUTSIDE)
+                if w==0:
+                    # Found vertex ip1!
+                    return PolygonPosition(PolygonPosition.VERTEX, vertex=ip1)
+                # index, edge and vertex prior to v0
+                im1=(i+n-1)%n
+                e=V((self._x[im1],self._y[im1]))
+                vm1=v0-e
+                w=wedge_product(e,point-vm1)
+                if w<0:
+                    return PolygonPosition(PolygonPosition.OUTSIDE)
+                if w==0:
+                    # Found vertex i!
+                    return PolygonPosition(PolygonPosition.VERTEX, vertex=i)
+                # Otherwise we found the interior of edge i:
+                return PolygonPosition(PolygonPosition.EDGE_INTERIOR, edge=i)
+        # Loop terminated (on positive side of each edge)
+        return PolygonPosition(PolygonPosition.INTERIOR)
+
+    def flow(self,point,holonomy,translation=None):
+        r"""
+        Flow a point in the direction of holonomy for the length of the holonomy, or until the point leaves the polygon.
+        Note that ValueErrors may be thrown if the point is not in the polygon, or if it is on the boundary and the 
+        holonomy does not point into the polygon.
+
+        INPUT:
+
+        - ``point`` -- a point in the closure of the polygon (vector over the underlying base_ring())
+
+        - ``holonomy`` -- direction and magnitude of motion (vector over the underlying base_ring())
+
+        - ``translation`` -- optional translation to applied to the polygon (vector over the underlying base_ring())
+
+        OUTPUT:
+
+        - The point within the polygon where the motion stops (or leaves the polygon)
+
+        - The amount of holonomy left to flow
+
+        - a PolygonPosition object representing the combinatorial position of the stopping point
+
+        EXAMPLES::
+
+            sage: s=square()
+            sage: V=s.parent().vector_space()
+            sage: p=V((1/2,1/2))
+            sage: w=V((2,0))
+            sage: s.flow(p,w)
+            ((1, 1/2), (3/2, 0), point positioned on interior of edge 1 of polygon)
+        """
+        V = self.parent().vector_space()
+        if holonomy == V.zero():
+            # not flowing at all!
+            return point, V.zero(), self.get_point_position(point,translation=translation)
+        from sage.matrix.constructor import matrix
+        if translation is None:
+            v0=V.zero()
+        else:
+            v0=translation
+        w=holonomy
+        for i in range(self.num_edges()):
+            e=self.edge(i)
+            #print "i="+str(i)+" e="+str(e)
+            m=matrix([[e[0], -holonomy[0]],[e[1], -holonomy[1]]])
+            #print "m="+str(m)
+            #print "diff="+str(point-v0)
+            try:
+                ret=m.inverse()*(point-v0)
+                s=ret[0]
+                t=ret[1]
+                #print "s="+str(s)+" and t="+str(t)
+                # What if the matrix is non-invertible?
+
+                # s is location it intersects on edge, t is the portion of the holonomy to reach this intersection
+                if t>0 and 0<=s and s<=1:
+                    # The ray passes through edge i.
+                    if t>1:
+                        # the segment from point with the given holonomy stays within the polygon
+                        return point+holonomy, V.zero(), PolygonPosition(PolygonPosition.INTERIOR)
+                    if s==1:
+                        # exits through vertex i+1
+                        v0=v0+e
+                        return v0, point+holonomy-v0, PolygonPosition(PolygonPosition.VERTEX, vertex= (i+1)%self.num_edges())
+                    if s==0:
+                        # exits through vertex i
+                        return v0, point+holonomy-v0, PolygonPosition(PolygonPosition.VERTEX, vertex= i)
+                        # exits through vertex i
+                    # exits through interior of edge i
+                    prod=t*holonomy
+                    return point+prod, holonomy-prod, PolygonPosition(PolygonPosition.EDGE_INTERIOR, edge=i)
+            except ZeroDivisionError:
+                # can safely ignore this error. It means that the edge and the holonomy are parallel.
+                pass
+            v0=v0+e
+        # Our loop has terminated. This can mean one of several errors...
+        pos = self.get_point_position(point,translation=translation)
+        if pos.is_outside():
+            raise ValueError("Started with point outside polygon")
+        raise ValueError("Point on boundary of polygon and holonomy not pointed into the polygon.")
+
     def edges(self):
         r"""
         Return the set of edges as vectors.
@@ -149,7 +349,7 @@ class Polygon(Element):
 
     def plot(self, translation=None):
         r"""
-        Plot the polygon with the origine at ``translation``.
+        Plot the polygon with the origin at ``translation``.
         """
         from sage.plot.point import point2d
         from sage.plot.line import line2d
