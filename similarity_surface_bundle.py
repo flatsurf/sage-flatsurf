@@ -47,6 +47,7 @@ class SimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
         self._t=defaultdict(self._default_t)
         # List of visible polygons
         self._visible=set()
+        self._visible.add(self._ss.base_label())
         # cache for transformed vertices
         self._polygon_cache={}
         # handles for the polygons in the canvas
@@ -81,8 +82,8 @@ class SimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
             return self.reset_transformed_vertices(i)
 
     def initial_render(self):
-        if self._ss.polygons().is_finite():
-            for i in self._ss.polygons().keys():
+        if self._ss.is_finite():
+            for i in self._ss.polygon_labels():
                 self._visible.add(i)
         self._render_all_polygons()
         self._render_all_edge_labels()
@@ -166,7 +167,7 @@ class SimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
 
     def _pick_point_callback(self,polygon_handle, x,y):
         from surface_point import SurfacePoint
-        print "x="+str(x)+" and y="+str(y)
+        #print "x="+str(x)+" and y="+str(y)
         v=self.screen_to_math_coordinates(x,y)
         #print "v="+str(v)
         i=self._handle_to_polygon[polygon_handle]
@@ -178,6 +179,31 @@ class SimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
         except ValueError:
             self._picked_point=None
         self.done_picking.set(1)
+
+    def draw_flow(self, holonomy):
+        self._holonomy=self._ss.vector_space()((holonomy[0],holonomy[1]))
+        self.done_picking=IntVar()
+        self.done_picking.set(0)
+        ps=PointSelector(self._editor,self._draw_flow_callback)
+        self._editor.set_actor(ps)
+        
+
+    def _draw_flow_callback(self,polygon_handle, x,y):
+        from surface_point import SurfacePoint
+        #print "x="+str(x)+" and y="+str(y)
+        v=self.screen_to_math_coordinates(x,y)
+        #print "v="+str(v)
+        i=self._handle_to_polygon[polygon_handle]
+        t=self._t[i]
+        gl=self._gl[i]
+        p=gl.inverse()*(v-t)
+        #try:
+        pt=SurfacePoint(self._ss,i,p)
+        segments=pt.flow_segments(self._holonomy)
+        self.render_segments(segments)
+        #except ValueError:
+        #    print
+        #    pass
 
     def redraw_all(self):
         r"""

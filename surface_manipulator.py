@@ -152,6 +152,12 @@ class SurfaceManipulator(Frame):
                 return surface_bundle
         return None
 
+    def get_bundle(self):
+        return self._surface
+
+    def get_bundles(self):
+        return self._surfaces
+
     def get_canvas(self):
         return self._canvas
 

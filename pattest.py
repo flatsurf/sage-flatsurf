@@ -1,16 +1,12 @@
 def test1():
-    from similarity_surface import SimilaritySurfaceGenerators
+    from similarity_surface_generators import SimilaritySurfaceGenerators
     ss=SimilaritySurfaceGenerators.example()
     ss.edit()
     sm,sb = ss.get_bundle()
     sb.set_transform(100,-100,300,300)
     sb.redraw_all()
-    pt=sb.pick_point()
-    print str(pt)
-    V=ss.vector_space()
-    hol=V((100000,10000))
-    segments=pt.flow_segments(hol)
-    sb.render_segments(segments)
+    hol=(10000000,1000000)
+    sb.draw_flow(hol)
 
 
 def test2():
@@ -27,7 +23,7 @@ def test2():
 
 
 def test3():
-    from similarity_surface import TranslationSurfaceGenerators
+    from similarity_surface_generators import TranslationSurfaceGenerators
     ss=TranslationSurfaceGenerators.regular_octagon()
     ss.edit()
     sm,sb = ss.get_bundle()

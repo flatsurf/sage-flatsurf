@@ -394,7 +394,7 @@ class PointSelector(EditorActor):
         y = self._editor.get_canvas().canvasy(event.y)
         if self._over_handle is not None:
             # god knows why canvasx and canvasy would return floats!
-            self._handle_receiver(self._over_handle, int(x), int(x))
+            self._handle_receiver(self._over_handle, int(x), int(y))
 
 class PolygonEdgeSelector(EditorActor):
     r"""

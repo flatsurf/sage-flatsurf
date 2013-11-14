@@ -131,6 +131,10 @@ class SimilaritySurface_generic(SageObject):
         """
         return self.polygon_labels().cardinality()
 
+    def is_finite(self):
+        from sage.rings.infinity import Infinity
+        return self.num_polygons() != Infinity
+
     def polygon_iterator(self):
         r"""
         Iterator over the polygons.
@@ -148,12 +152,11 @@ class SimilaritySurface_generic(SageObject):
             from sage.rings.infinity import Infinity
             return Infinity
 
-    def base_polygon(self):
-        lab = self.polygon_labels().an_element()
-        return lab,self.polygon(lab)
+    def base_label(self):
+        return self.polygon_labels().an_element()
 
     def _repr_(self):
-        if self.polygons().cardinality() == 1:
+        if self.num_polygons() == 1:
             end = ""
         else:
             end = "s"
@@ -274,14 +277,14 @@ class SimilaritySurface_polygons_and_gluings(SimilaritySurface_generic):
         self._edge_identifications = edge_identifications
 
     def num_polygons(self):
-        return self.polygons().cardinality()
+        return self._polygons.cardinality()
 
     def base_ring(self):
         return self._field
 
     def polygon_labels(self):
         from sage.combinat.words.alphabet import build_alphabet
-        return build_alphabet(self.polygons().keys())
+        return build_alphabet(self._polygons.keys())
 
     def polygon(self, lab):
         r"""
@@ -307,7 +310,7 @@ class ConicSurface(SimilaritySurface_generic):
         r"""
         Return the set of angles around the vertices of the surface.
         """
-        if not self.polygons().is_finite():
+        if not self.is_finite():
             raise NotImplementedError("the set of edges is infinite!")
 
         edges = self.edges()
@@ -345,23 +348,6 @@ class TranslationSurface_generic(ConicSurface):
     def _repr_(self):
         return "Translation surface built from %d polygons"%self.num_polygons()
 
-    def to_str(self):
-        r"""
-        Return a string that can be used to reconstruct self.
-        """
-        K = self._field
-        P = K.defining_polynomial()
-        print "var:%s"%P.variable_name()
-        print "poly:%s"%P
-        print "embedding:%s"%K.gen_embedding()
-        print "reliable_comparison:%s"%self._reliable_comparison
-        # WHAT ABOUT THE index_set and edge_labels (should be a command)!!!
-        print "index_set:XXX"
-        print "edge_labels:XXX"
-        print "START polygon"
-        for i in self.polygons():
-            "%s %s"
-
     def plot(self):
         return TranslationSurfacePlot(self).plot()
 
@@ -370,7 +356,7 @@ class TranslationSurface_generic(ConicSurface):
             p,e = p
         if p not in self.polygon_labels():
             raise ValueError
-        elif e < 0 or e >= self.polygons()[p].num_edges():
+        elif e < 0 or e >= self.polygon(p).num_edges():
             raise ValueError
         return identity_matrix(self.base_ring(),2)
 

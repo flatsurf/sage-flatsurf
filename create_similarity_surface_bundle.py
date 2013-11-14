@@ -1,7 +1,6 @@
 from editor_actor import *
 from editor_renderer import *
 from edge_gluings import *
-from similarity_surface import *
 from similarity_surface_bundle import *
 
 from sage.matrix.matrix_space import MatrixSpace
@@ -108,7 +107,8 @@ class CreateSimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
         self._editor.set_actor(ps)
 
     def _on_to_similarity_surface(self):
-        s=SimilaritySurface(self._polygons,self._glue.get_edge_pair_list())
+        from similarity_surface import SimilaritySurface_polygons_and_gluings
+        s=SimilaritySurface_polygons_and_gluings(self._polygons,self._glue.get_edge_pair_list())
         sb=SimilaritySurfaceBundle(s, editor=self._editor, name=self._name+" [SS]")
         for i in range(len(self._translations)):
             v=self._translations[i]
