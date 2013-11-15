@@ -1,6 +1,5 @@
 r"""
 Translation surface in Sage.
-Stupid edit here from Pat.
 
 EXAMPLES:
 
@@ -59,7 +58,6 @@ from matrix_2x2 import (is_similarity,
                     similarity_from_vectors,
                     rotation_matrix_angle)
 
-
 class SimilaritySurface_generic(SageObject):
     r"""
     An oriented surface built from a set of polygons and edges identified with
@@ -87,6 +85,24 @@ class SimilaritySurface_generic(SageObject):
           somewhat fixed polygon
         - opposite_edge(self, lab, edege): a couple (``other_lab``, ``other_edge``)
     """
+    def _check(self):
+        r"""
+        Run all the methods that start with _check
+        """
+        for name in dir(self):
+            if name.startswith('_check') and name != '_check':
+                print name
+                getattr(self, name)()
+
+    def _check_gluings(self):
+        for lab in self.polygon_labels().some_elements():
+            p = self.polygon(lab)
+            for e in xrange(p.num_edges()):
+                llab,ee = self.opposite_edge(lab,e)
+                lllab,eee = self.opposite_edge(llab,ee)
+                if (lllab,eee) != (lab,e):
+                    raise ValueError("edges not glued correctly:\n(%s,%s) -> (%s,%s) -> (%s,%s)"%(lab,e,llab,ee,lllab,eee))
+
     def base_ring(self):
         r"""
         The field on which the coordinates of ``self`` live.
@@ -301,11 +317,6 @@ class ConicSurface(SimilaritySurface_generic):
     r"""
     A conic surface.
     """
-    def _check(self):
-        r"""
-        We check that the matrices are isometries.
-        """
-
     def angles(self):
         r"""
         Return the set of angles around the vertices of the surface.
@@ -345,8 +356,22 @@ class TranslationSurface_generic(ConicSurface):
     - canonical labelings of polygons
     - Delaunay triangulation
     """
+    def _check_edge_matrix(self):
+        r"""
+        Check the compatibility condition
+        """
+        for lab in self.polygon_labels().some_elements():
+            p = self.polygon(lab)
+            for e in xrange(p.num_edges()):
+                if not self.edge_matrix(lab,e).is_one():
+                    raise ValueError("gluings of (%s,%s) is not through translation"%(lab,e))
+
     def _repr_(self):
-        return "Translation surface built from %d polygons"%self.num_polygons()
+        if self.num_polygons() == 1:
+            end = ""
+        else:
+            end = "s"
+        return "Translation surface built from %s polygon"%(self.num_polygons()) + end
 
     def plot(self):
         return TranslationSurfacePlot(self).plot()
