@@ -3,10 +3,10 @@ def test1():
     ss=SimilaritySurfaceGenerators.example()
     ss.edit()
     sm,sb = ss.get_bundle()
-    sb.set_transform(100,-100,300,300)
-    sb.redraw_all()
-    hol=(10000000,1000000)
-    sb.draw_flow(hol)
+    #sb.set_transform(100,300,300)
+    #sb.redraw_all()
+    #hol=(10000000,1000000)
+    #sb.draw_flow(hol)
 
 
 def test2():
@@ -17,7 +17,7 @@ def test2():
     o = translation_surfaces.origami(r,u)
     o.edit()
     se,sb=o.get_bundle()
-    sb.set_transform(200,-200,300,300)
+    sb.set_transform(200,300,300)
     sb.redraw_all()
 
 
@@ -27,7 +27,7 @@ def test3():
     ss=TranslationSurfaceGenerators.regular_octagon()
     ss.edit()
     sm,sb = ss.get_bundle()
-    sb.set_transform(100,-100,500,400)
+    sb.set_transform(100,500,400)
     sb.redraw_all()
     pt=sb.pick_point()
     print str(pt)
@@ -41,6 +41,6 @@ def test4():
     ss=TranslationSurfaceGenerators.infinite_origami_example()
     ss.edit()
     se,sb=ss.get_bundle()
-    sb.set_transform(100,-100,300,300)
+    sb.set_transform(100,300,300)
     sb.redraw_all()
 

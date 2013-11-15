@@ -113,8 +113,8 @@ class CreateSimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
         for i in range(len(self._translations)):
             v=self._translations[i]
             sb.set_polygon_translation(i,v[0],v[1])
-        a1,a2,a3,a4 = self.get_transform()
-        sb.set_transform(a1,a2,a3,a4)
+        a1,a2,a3 = self.get_transform()
+        sb.set_transform(a1,a2,a3)
         self._editor.set_surface(sb)
 
     def polygon_to_screen_coordinates(self,polygon,translation=None):

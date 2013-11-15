@@ -9,11 +9,19 @@ class EditorActor:
         pass
     def single_left_click(self, event):
         pass
-
     def double_left_click(self, event):
         pass
 
     def triple_left_click(self, event):
+        pass
+
+    def left_mouse_pressed(self,event):
+        pass
+
+    def left_mouse_released(self,event):
+        pass
+
+    def left_dragged(self,event):
         pass
 
     def single_middle_click(self, event):
@@ -98,6 +106,18 @@ class EditorRedirectingActor(EditorActor):
         if self._subactor is not None: 
             self._subactor.triple_left_click(event)
 
+    def left_mouse_pressed(self,event):
+        if self._subactor is not None: 
+            self._subactor.left_mouse_pressed(event)
+
+    def left_mouse_released(self,event):
+        if self._subactor is not None: 
+            self._subactor.left_mouse_released(event)
+
+    def left_dragged(self,event):
+        if self._subactor is not None: 
+            self._subactor.left_dragged(event)
+
     def single_middle_click(self, event):
         if self._subactor is not None: 
             self._subactor.single_middle_click(event)
@@ -145,6 +165,72 @@ class EditorRedirectingActor(EditorActor):
     def key_release(self, event):
         if self._subactor is not None: 
             self._subactor.key_release(event)
+
+class RectangleDrawingActor(EditorActor):
+    r"""
+    A class for selecting a rectangle. The rectangle_receiver function must accept a four
+    integer points x1,y1,x2,y2 given as coordinates of corners of the rectangle in screen coordinates.
+    Note we return these numbers so that x1<x2 and y1<y2.
+    """
+    def __init__(self, editor, rectangle_receiver, msg="Draw a rectangle by dragging the mouse."):
+        EditorActor.__init__(self, editor)
+        self._receiver=rectangle_receiver
+        self._rectangle_handle=None
+        self._msg=msg
+        self._x1=None
+        self._y1=None
+
+    def on_activate(self):
+        self._editor.set_text(self._msg)
+
+    def on_deactivate(self):
+        self._revert_highlight()
+
+    def _revert_highlight(self):
+        if self._rectangle_handle is not None:
+            self._editor.get_canvas().delete(self._rectangle_handle)
+            self._rectangle_handle=None
+
+    def single_left_click(self, event):
+        self._x1 = int(self._editor.get_canvas().canvasx(event.x))
+        self._y1 = int(self._editor.get_canvas().canvasy(event.y))
+
+    def left_dragged(self, event):
+        if self._x1 is not None:
+            x2 = int(self._editor.get_canvas().canvasx(event.x))
+            y2 = int(self._editor.get_canvas().canvasy(event.y))
+            self._revert_highlight()
+            self._rectangle_handle= \
+                self._editor.get_canvas().create_rectangle( \
+                self._x1, self._y1, x2, y2, fill=None, outline="#f70")
+
+    def left_mouse_released(self, event):
+        x2 = int(self._editor.get_canvas().canvasx(event.x))
+        y2 = int(self._editor.get_canvas().canvasy(event.y))
+        x1=self._x1
+        y1=self._y1
+        self._x1=None
+        self._y1=None
+        self._revert_highlight()
+        if (x1==x2) or (y1==y2):
+            self._editor.set_text("You selected a degenerate rectangle. Try again.")
+            return
+        if x1>x2:
+            temp=x1
+            x1=x2
+            x2=temp
+        if y1>y2:
+            temp=y1
+            y1=y2
+            y2=temp
+        self._receiver(x1,y1,x2,y2)
+
+class ZoomBoxActor(RectangleDrawingActor):
+    def __init__(self, editor):
+        RectangleDrawingActor.__init__(self, editor, self._receive, msg="Draw a rectangle by dragging the mouse to zoom in.")
+
+    def _receive(self, x1, y1, x2, y2):
+        self._editor.get_bundle().zoom_screen_box(x1, y1, x2, y2)
 
 
 class RecenterActor(EditorActor):
@@ -462,6 +548,59 @@ class PolygonEdgeSelector(EditorActor):
                 if self._over_handle == self._edge_handles[i]:
                     self._edge_receiver(i)
                     return
+
+class PolygonEdgeDragger(EditorActor):
+    def __init__(self, editor, handle_receiver, msg="Select a polygon."):
+        EditorActor.__init__(self, editor)
+        self._over_handle=None
+        self._old_fill=None
+        self._handle_receiver=handle_receiver
+        self._msg=msg
+
+    def on_activate(self):
+        self._editor.set_text(self._msg)
+
+    def on_deactivate(self):
+        self._revert_higlight()
+
+    def _highlight(self,handle):
+        self._over_handle=handle
+        self._old_fill=self._editor.get_canvas().itemcget(handle,"fill")
+        self._editor.get_canvas().itemconfig(handle,fill="#ffaa66")
+        canvas=self._editor.get_canvas()
+        coords=canvas.coords(handle)
+        self._edge_handles=[]
+        n=len(coords)/2
+        for i in range(n):
+            eh=canvas.create_line(coords[2*i], coords[2*i+1], coords[(2*i+2)%(2*n)], coords[(2*i+3)%(2*n)], 
+                fill="#dd5500", width=5.0, tags="PolygonEdge")
+            self._edge_handles.append(eh)
+
+    def _revert_higlight(self):
+        self._editor.get_canvas().delete("PolygonEdge")
+        if self._over_handle is not None:
+            self._editor.get_canvas().itemconfig(self._over_handle,fill=self._old_fill)
+        self._over_handle=None
+        self._old_fill=None
+
+    def mouse_moved(self, event):
+        canvas=self._editor.get_canvas()
+        handles=canvas.find_withtag(CURRENT)
+        if (len(handles)>0):
+            handle=handles[0]
+        else :
+            handle=0
+        if self._over_handle is not None:
+            if self._over_handle != handle:
+                self._revert_higlight()
+            else: 
+                # still over same polygon
+                return
+        if handle:
+            tags=canvas.gettags(CURRENT)
+            if "polygon" in tags:
+                # Over polygon
+                self._highlight(handle)
 
 class EdgeSelector(EditorRedirectingActor):
     r"""

@@ -228,6 +228,9 @@ class SurfaceManipulator(Frame):
     def _on_zoom(self):
         self.set_actor(ZoomActor(self))
 
+    def _on_zoom_box(self):
+        self.set_actor(ZoomBoxActor(self))
+
     def _on_redraw_all(self):
         if self._surface is not None:
             self._surface.redraw_all()
@@ -245,6 +248,7 @@ class SurfaceManipulator(Frame):
             self._action_menu.delete(0)
         self._action_menu.add_command(label="Recenter", underline=2, command=self._on_recenter)
         self._action_menu.add_command(label="Zoom", underline=0, command=self._on_zoom,accelerator="Alt+Z")
+        self._action_menu.add_command(label="Zoom Box", command=self._on_zoom_box)
         self._action_menu.add_command(label="Redraw All", underline=0, command=self._on_redraw_all)
         #self._action_menu.add_command(label="Delete Junk", command=self.on_delete_junk)
         if self._surface!= None:
@@ -289,6 +293,9 @@ class SurfaceManipulator(Frame):
                 self._canvas.unbind('<Motion>')
                 self.unbind('<FocusIn>')
                 self.unbind('<FocusOut>')
+                #self._canvas.unbind('<ButtonPress-1>')
+                self._canvas.unbind('<ButtonRelease-1>')
+                self._canvas.unbind('<B1-Motion>')
                 self._parent.unbind('<Key>')
                 self._parent.unbind('<KeyRelease>')
             else:
@@ -304,6 +311,9 @@ class SurfaceManipulator(Frame):
                 self._canvas.bind('<Triple-Button-3>', actor.double_right_click)
                 self._canvas.bind('<Shift-Button-1>', actor.shift_click)
                 self._canvas.bind('<Motion>', actor.mouse_moved)
+                #self._canvas.bind('<ButtonPress-1>', actor.left_mouse_pressed)
+                self._canvas.bind('<ButtonRelease-1>', actor.left_mouse_released)
+                self._canvas.bind('<B1-Motion>',actor.left_dragged)
                 self.bind('<FocusIn>', actor.focus_in)
                 self.bind('<FocusOut>', actor.focus_out)
                 self._parent.bind('<Key>', actor.key_press)

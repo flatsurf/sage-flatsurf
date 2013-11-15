@@ -59,9 +59,10 @@ class SimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
     def after_zoom_change(self):
         self._render_all_edge_labels()
 
+
     def before_zoom_change(self):
         # remove all labels
-        self._editor.get_canvas().delete("label")
+        self.remove_all_labels()
         
     def _default_gl(self):
         return identity_matrix( self.field(), n=2)
@@ -85,8 +86,40 @@ class SimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
         if self._ss.is_finite():
             for i in self._ss.polygon_labels():
                 self._visible.add(i)
-        self._render_all_polygons()
+            self._render_all_polygons()
+            self.zoom_fit(boundary=QQ(1)/10)
+        else:
+            self._render_all_polygons()
+            self.zoom_fit(boundary=2)
         self._render_all_edge_labels()
+
+    def zoom_fit_nice_boundary(self):
+        self.zoom_fit(boundary=QQ(1)/20)
+
+    def zoom_fit(self,boundary=0):
+        x1,y1,x2,y2=self.get_math_bbox()
+        #print "fit math box="+str((x1,y1,x2,y2))
+        if (boundary!=0):
+            boundary=QQ(boundary)
+            xc=(x1+x2)/2
+            yc=(y1+y2)/2
+            width=x2-x1
+            height=y2-y1
+            x1=xc-(1+boundary)*width/2
+            x2=xc+(1+boundary)*width/2
+            y1=yc-(1+boundary)*height/2
+            y2=yc+(1+boundary)*height/2
+        self.zoom_math_box(x1,y1,x2,y2)
+        #self.remove_all_labels()
+        #bbox=self._editor.get_canvas().bbox(ALL)
+        #x1,y1,x2,y2=bbox
+        #print "bbox="+str(bbox)
+        #xc=(QQ(x1)+x2)/2
+        #yc=(QQ(y1)+y2)/2
+        #width=QQ(x2)-x1
+        #height=QQ(y2)-y1
+        #self.zoom_screen_box(xc-11*width/20,yc-11*height/20,xc+11*width/20,yc+11*height/20)
+
 
     def is_visible(self,polygon_index):
         r"""
@@ -112,8 +145,10 @@ class SimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
         pass
 
     def make_action_menu(self,menu):
+        menu.add_command(label="Zoom fit", command=self.zoom_fit_nice_boundary)
         menu.add_separator()
         menu.add_command(label="Make adjacent", command=self._on_make_adjacent)
+        menu.add_command(label="Drag show", command=self._on_drag_show)
 
     def make_visible(self, polygon_index):
         if not self.is_visible(polygon_index):
@@ -122,6 +157,12 @@ class SimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
             self._render_polygon_outline(polygon_index)
             self._render_polygon_edge_labels(polygon_index)
 
+    def _on_drag_show(self):
+        ps=PolygonEdgeDragger(self._editor,self._on_drag_show_callback)
+        self._editor.set_actor(ps)
+
+    def _on_drag_show_callback(self, polygon_handle, e1):
+        pass
 
     def _on_make_adjacent(self):
         ps=EdgeSelector(self._editor,self._on_make_adjacent_callback)
@@ -181,6 +222,9 @@ class SimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
             self._picked_point=None
         self.done_picking.set(1)
 
+    def remove_all_labels(self):
+        self._editor.get_canvas().delete("label")
+
     def draw_flow(self, holonomy):
         self._holonomy=self._ss.vector_space()((holonomy[0],holonomy[1]))
         self.done_picking=IntVar()
@@ -216,9 +260,9 @@ class SimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
 
     def _draw_flow_with_skip_callback(self,polygon_handle, x,y):
         from surface_point import SurfacePoint
-        print "x="+str(x)+" and y="+str(y)
+        #print "x="+str(x)+" and y="+str(y)
         v=self.screen_to_math_coordinates(x,y)
-        print "v="+str(v)
+        #print "v="+str(v)
         i=self._handle_to_polygon[polygon_handle]
         t=self._t[i]
         gl=self._gl[i]
@@ -241,7 +285,8 @@ class SimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
         self._polygon_cache={}
         self._polygon_to_handle={}
         self._handle_to_polygon={}
-        self.initial_render()
+        self._render_all_polygons()
+        self._render_all_edge_labels()
 
     def reset_transformed_vertices(self, i):
         r"""
@@ -257,6 +302,28 @@ class SimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
         res=tuple(imgs)
         self._polygon_cache[i]=res
         return res
+
+    def get_math_bbox(self):
+        first = True
+        for i in self._visible:
+            vs=self.get_transformed_vertices(i)
+            for v in vs:
+                if first:
+                    xmin=v[0]
+                    xmax=v[0]
+                    ymin=v[1]
+                    ymax=v[1]
+                    first=False
+                else:
+                    if v[0]<xmin:
+                        xmin=v[0]
+                    if v[0]>xmax:
+                        xmax=v[0]
+                    if v[1]<ymin:
+                        ymin=v[1]
+                    if v[1]>ymax:
+                        ymax=v[1]
+        return xmin,ymin,xmax,ymax
 
     def _render_polygon_fill(self,i):
         vs=self.get_transformed_vertices(i)
