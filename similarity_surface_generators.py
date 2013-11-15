@@ -4,9 +4,10 @@ ZZ_1 = ZZ(1)
 ZZ_2 = ZZ(2)
 ZZ_3 = ZZ(3)
 
-
 from similarity_surface import TranslationSurface_generic
 class InfiniteStaircase(TranslationSurface_generic):
+    def _repr_(self):
+        return "The infinite staircase"
     def base_ring(self):
         from sage.rings.rational_field import QQ
         return QQ
@@ -68,6 +69,10 @@ class TFractal(TranslationSurface_generic):
         self._h1 = self._field(h1)
         self._h2 = self._field(h2)
         self._words = Words('LR')
+
+    def _repr_(self):
+        return "The T-fractal surface with parameters w=%s, r=%s, h1=%s, h2=%s"%(
+                self._w, self._r, self._h1, self._h2)
 
     def base_ring(self):
         return self._field
@@ -255,5 +260,5 @@ class TranslationSurfaceGenerators:
         return InfiniteStaircase()
 
     @staticmethod
-    def t_fractal(w=1, r=3, h1=1, h2=1):
+    def t_fractal(w=ZZ_1, r=ZZ_3, h1=ZZ_1, h2=ZZ_1):
         return TFractal(w,r,h1,h2)
