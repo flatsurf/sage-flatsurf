@@ -206,6 +206,32 @@ class SimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
         #    print
         #    pass
 
+    def draw_flow_with_skip(self, holonomy):
+        self._holonomy=self._ss.vector_space()((holonomy[0],holonomy[1]))
+        self.done_picking=IntVar()
+        self.done_picking.set(0)
+        ps=PointSelector(self._editor,self._draw_flow_with_skip_callback)
+        self._editor.set_actor(ps)
+        
+
+    def _draw_flow_with_skip_callback(self,polygon_handle, x,y):
+        from surface_point import SurfacePoint
+        print "x="+str(x)+" and y="+str(y)
+        v=self.screen_to_math_coordinates(x,y)
+        print "v="+str(v)
+        i=self._handle_to_polygon[polygon_handle]
+        t=self._t[i]
+        gl=self._gl[i]
+        p=gl.inverse()*(v-t)
+        #try:
+        pt=SurfacePoint(self._ss,i,p)
+        segments=pt.flow_segments_wait(self._holonomy)
+        self.render_segments(segments)
+        #except ValueError:
+        #    print
+        #    pass
+
+
     def redraw_all(self):
         r"""
         Remove and redraw everything on the canvas.
