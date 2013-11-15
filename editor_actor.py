@@ -379,14 +379,14 @@ class PolygonSelector(EditorActor):
         self._editor.set_text(self._msg)
 
     def on_deactivate(self):
-        self._revert_higlight()
+        self._revert_highlight()
 
     def _highlight(self,handle):
         self._over_handle=handle
         self._old_fill=self._editor.get_canvas().itemcget(handle,"fill")
         self._editor.get_canvas().itemconfig(handle,fill="#ffaa66")
 
-    def _revert_higlight(self):
+    def _revert_highlight(self):
         if self._over_handle is not None:
             self._editor.get_canvas().itemconfig(self._over_handle,fill=self._old_fill)
         self._over_handle=None
@@ -401,7 +401,7 @@ class PolygonSelector(EditorActor):
             handle=0
         if self._over_handle is not None:
             if self._over_handle != handle:
-                self._revert_higlight()
+                self._revert_highlight()
             else: 
                 # still over same polygon
                 return
@@ -443,14 +443,14 @@ class PointSelector(EditorActor):
         self._editor.set_text(self._msg)
 
     def on_deactivate(self):
-        self._revert_higlight()
+        self._revert_highlight()
 
     def _highlight(self,handle):
         self._over_handle=handle
         self._old_fill=self._editor.get_canvas().itemcget(handle,"fill")
         self._editor.get_canvas().itemconfig(handle,fill="#ffaa66")
 
-    def _revert_higlight(self):
+    def _revert_highlight(self):
         if self._over_handle is not None:
             self._editor.get_canvas().itemconfig(self._over_handle,fill=self._old_fill)
         self._over_handle=None
@@ -465,7 +465,7 @@ class PointSelector(EditorActor):
             handle=0
         if self._over_handle is not None:
             if self._over_handle != handle:
-                self._revert_higlight()
+                self._revert_highlight()
             else: 
                 # still over same polygon
                 return
@@ -517,7 +517,7 @@ class PolygonEdgeSelector(EditorActor):
         self._old_fill=self._editor.get_canvas().itemcget(handle,"fill")
         self._editor.get_canvas().itemconfig(handle,fill="#ff7700")
 
-    def _revert_higlight(self):
+    def _revert_highlight(self):
         if self._over_handle is not None:
             self._editor.get_canvas().itemconfig(self._over_handle,fill=self._old_fill)
         self._over_handle=None
@@ -532,7 +532,7 @@ class PolygonEdgeSelector(EditorActor):
             handle=0
         if self._over_handle is not None:
             if self._over_handle != handle:
-                self._revert_higlight()
+                self._revert_highlight()
             else: 
                 # still over same polygon
                 return
@@ -561,7 +561,7 @@ class PolygonEdgeDragger(EditorActor):
         self._editor.set_text(self._msg)
 
     def on_deactivate(self):
-        self._revert_higlight()
+        self._revert_highlight()
 
     def _highlight(self,handle):
         self._over_handle=handle
@@ -576,7 +576,7 @@ class PolygonEdgeDragger(EditorActor):
                 fill="#dd5500", width=5.0, tags="PolygonEdge")
             self._edge_handles.append(eh)
 
-    def _revert_higlight(self):
+    def _revert_highlight(self):
         self._editor.get_canvas().delete("PolygonEdge")
         if self._over_handle is not None:
             self._editor.get_canvas().itemconfig(self._over_handle,fill=self._old_fill)
@@ -592,7 +592,10 @@ class PolygonEdgeDragger(EditorActor):
             handle=0
         if self._over_handle is not None:
             if self._over_handle != handle:
-                self._revert_higlight()
+                for i in range(len(self._edge_handles)):
+                    if (handle==self._edge_handles[i]):
+                        self._handle_receiver(self._over_handle,i)
+                self._revert_highlight()
             else: 
                 # still over same polygon
                 return

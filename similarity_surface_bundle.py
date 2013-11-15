@@ -148,7 +148,7 @@ class SimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
         menu.add_command(label="Zoom fit", command=self.zoom_fit_nice_boundary)
         menu.add_separator()
         menu.add_command(label="Make adjacent", command=self._on_make_adjacent)
-        menu.add_command(label="Drag show", command=self._on_drag_show)
+        menu.add_command(label="Move show", command=self._on_move_show)
 
     def make_visible(self, polygon_index):
         if not self.is_visible(polygon_index):
@@ -157,12 +157,26 @@ class SimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
             self._render_polygon_outline(polygon_index)
             self._render_polygon_edge_labels(polygon_index)
 
-    def _on_drag_show(self):
-        ps=PolygonEdgeDragger(self._editor,self._on_drag_show_callback)
+    def _on_move_show(self):
+        ps=PolygonEdgeDragger(self._editor,self._on_move_show_callback)
         self._editor.set_actor(ps)
 
-    def _on_drag_show_callback(self, polygon_handle, e1):
-        pass
+    def _on_move_show_callback(self, polygon_handle, e1):
+        p1=self._handle_to_polygon[polygon_handle]
+        p2,e2 = self._ss.opposite_edge(p1,e1)
+        #print "p1="+str(p1)+" e1="+str(e1)+" p2="+str(p2)+" e2="+str(e2)
+        if not (p2 in self._visible):
+            m1=self._gl[p1]
+            mc=self._ss.edge_matrix(p2,e2)
+            m2=m1*mc
+            vs=self.get_transformed_vertices(p1)
+            pt1=vs[e1]
+            vs=self._ss.polygon(p2).vertices()
+            pt2=m2*vs[(e2+1)%self._ss.polygon(p2).num_edges()]
+            t2=pt1-pt2
+            self.set_polygon_view(p2,m2,t2[0],t2[1])
+            self._visible.add(p2)
+            self.redraw_all()
 
     def _on_make_adjacent(self):
         ps=EdgeSelector(self._editor,self._on_make_adjacent_callback)
@@ -341,13 +355,14 @@ class SimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
         for pair in pair_list:
             a,b=pair
             i=a.get_label()
-            t=self._t[i]
-            gl=self._gl[i]
-            img0=self.math_to_screen_coordinates( gl*a.get_point()+t )
-            img1=self.math_to_screen_coordinates( gl*b+t )
-            handle=self._editor.get_canvas().create_line(
-                img0[0], img0[1],img1[0],img1[1],
-                fill="#000",tags=("segment"))
+            if i in self._visible:
+                t=self._t[i]
+                gl=self._gl[i]
+                img0=self.math_to_screen_coordinates( gl*a.get_point()+t )
+                img1=self.math_to_screen_coordinates( gl*b+t )
+                handle=self._editor.get_canvas().create_line(
+                    img0[0], img0[1],img1[0],img1[1],
+                    fill="#000",tags=("segment"))
 
 
     def _render_edge(self,p,e):
