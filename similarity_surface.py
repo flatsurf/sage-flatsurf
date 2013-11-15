@@ -1,35 +1,5 @@
 r"""
-Translation surface in Sage.
-
-EXAMPLES:
-
-Right now we can do from sage::
-
-    sage: import translation_surface
-    sage: t = TranslationSurface()
-    sage: t.edit()
-
-    sage: translation_surfaces.octagon()
-    Translation surface built from an octagon
-
-A flat torus::
-
-        sage: S = ConicSurface([square()], [((0,0),(0,2)), ((0,1),(0,3))])
-        sage: S
-        Similarity surface built from 1 polygon
-        sage: S.edge_matrix(0,0)
-        [1 0]
-        [0 1]
-        sage: S.angles()
-
-A surface with conical singularities::
-
-        sage: S = ConicSurface([square()], [((0,0),(0,1)),((0,2),(0,3))])
-        sage: S.edge_matrix(0,0)
-        [ 0  1]
-        [-1  0]
-        sage: S.angles()
-        [4]
+Translation surfaces.
 """
 
 from sage.misc.cachefunc import cached_method
@@ -91,8 +61,9 @@ class SimilaritySurface_generic(SageObject):
         """
         for name in dir(self):
             if name.startswith('_check') and name != '_check':
-                print name
+                print name, "...",
                 getattr(self, name)()
+                print "done"
 
     def _check_gluings(self):
         for lab in self.polygon_labels().some_elements():
@@ -205,6 +176,15 @@ class SimilaritySurface_generic(SageObject):
         res = similarity_from_vectors(u,-v)
         return similarity_from_vectors(u,-v)
 
+    def edge_dict(self):
+        if not self.is_finite():
+            raise ValueError("the surface must be finite")
+        edges = {}
+        for p in self.polygon_labels():
+            for e in xrange(self.polygon(p).num_edges()):
+                pp,ee = self.opposite_edge(p,e)
+                edges[(p,e)] = (pp,ee)
+
     def minimal_translation_cover(self):
         return MinimalTranslationCover(self)
 
@@ -240,6 +220,46 @@ class SimilaritySurface_generic(SageObject):
         """
         from sage.modules.free_module import VectorSpace
         return VectorSpace(self.base_ring(), 2)
+
+    def edge_iterator(self):
+        for p in self.polygon_labels():
+            for e in xrange(self.polygon(p).num_edges()):
+                yield p,e
+
+    def fundamental_group_basis(self):
+        r"""
+        Return a basis for the fundamental group as a sequence of paths:
+
+        [vertex0, edge0, vertex1, edge1, ...].
+        """
+        raise NotImplementedError
+        if not self.is_finite():
+            raise ValueError("the method would dramatically fails for infinite surfaces!!!")
+
+        tree = {}   # goes from leaves to root self.polygon_labels()
+        basis = []
+
+        p = self.base_label() # the root of the tree
+        tree[p] = (None,None)
+
+        wait = [] # list of triples p1 -- e --> p2
+        for e in xrange(self.polygon(p).num_edges()):
+            pp,ee = self.opposite_edge(p,e)
+            wait.append((pp,ee,p,e))
+        while wait:
+            p1,e1,p2,e2 = wait.pop()
+            if p1 in tree: # new cycle
+                if p1 < p2 or (p1 == p2 and e1 < e2):
+                    i = p1
+                    p1_to_root = [i]
+                    while i != None:
+                        i,e = tree[i]
+                        p1_to_root.append(e)
+                        p1_to_root.append(i)
+            else:
+                tree[p1] = (p2,e)
+
+        return tree,bridges
 
 
 class SimilaritySurface_polygons_and_gluings(SimilaritySurface_generic):
@@ -395,28 +415,51 @@ class TranslationSurface_polygons_and_gluings(
     pass
 
 class MinimalTranslationCover(TranslationSurface_generic):
+    r"""
+    We label copy by cartesian product (polygon from bot, matrix).
+    """
     def __init__(self, similarity_surface):
-        self._ss=similarity_surface
-        self._field=self._ss.base_ring()
+        self._ss = similarity_surface
 
         from sage.matrix.matrix_space import MatrixSpace
         from sage.categories.cartesian_product import cartesian_product
         from sage.rings.semirings.non_negative_integer_semiring import NN
 
-        ms=MatrixSpace(self._field,2,2)
-        self._polygon_domain=cartesian_product([self._ss.polygons().keys(), ms])
-        self._polygon_family=Family(self._polygon_domain, lambda x: x[1](self.polygon(x[0])), lazy=True)
+    def base_ring(self):
+        return self._ss.base_ring()
 
-    def polygons(self):
-        return self._polygon_family
+    def base_label(self):
+        from sage.matrix.constructor import identity_matrix
+        I = identity_matrix(self.base_ring(),2)
+        I.set_immutable()
+        return (self._ss.base_label(), I)
+
+    def polygon(self, lab):
+        return ~(lab[1]) * self._ss.polygon(lab[0])
+
+    def polygon_labels(self):
+        r"""
+        Return the set of polygons used for the labels.
+        """
+        from cartesian_product import CartesianProduct
+        from finitely_generated_matrix_group import FinitelyGeneratedMatrixSubgroup
+
+        ss = self._ss
+
+        M = [ss.edge_matrix(p,e) for p,e in ss.edge_iterator()]
+        for m in M: m.set_immutable()
+        M = sorted(set(M))
+        for m in M: m.set_immutable()
+        G = FinitelyGeneratedMatrixSubgroup(M)
+        return CartesianProduct([ss.polygon_labels(), G])
 
     def opposite_edge(self, p, e):
-        if p not in self._polygon_domain:
-            raise ValueError
-        pi1,pm = p
-        pi2,e2 = self._ss.opposite_edge(pi1,e)
-        me = self._ss.edge_matrix(pi1,e)
-        return ((pi2,pm*me),e2)
+        pp,m = p  # this is the polygon m * ss.polygon(p)
+        p2,e2 = self._ss.opposite_edge(pp,e)
+        me = self._ss.edge_matrix(pp,e)
+        mm = ~me * m
+        mm.set_immutable()
+        return ((p2,mm),e2)
 
 class Origami(TranslationSurface_generic):
     def __init__(self, r, u, rr=None, uu=None, domain=None):

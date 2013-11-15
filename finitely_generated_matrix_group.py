@@ -95,11 +95,10 @@ class FinitelyGeneratedMatrixSubgroup(Group):
         if any(m.det() != 1 for m in self._generators):
             return False
 
-        # now compute the orders
-
-
-
         raise NotImplementedError("the algorithm is not complete")
+
+    def cardinality(self):
+        return Infinity
 
     def __iter__(self):
         yield self.one()

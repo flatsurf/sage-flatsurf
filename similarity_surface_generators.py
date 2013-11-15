@@ -1,46 +1,88 @@
 from sage.rings.integer_ring import ZZ
+from sage.misc.cachefunc import cached_method
 
 ZZ_1 = ZZ(1)
 ZZ_2 = ZZ(2)
-ZZ_3 = ZZ(3)
 
 from similarity_surface import TranslationSurface_generic
 class InfiniteStaircase(TranslationSurface_generic):
+    r"""
+    The infinite staircase.
+
+     ...
+     +--+--+
+     |  |  |
+     +--+--+--+
+        |  |  |
+        +--+--+--+
+           |  |  |
+           +--+--+--+
+              |  |  |
+              +--+--+
+                  ...
+    """
     def _repr_(self):
+        r"""
+        String representation.
+        """
         return "The infinite staircase"
+
     def base_ring(self):
+        r"""
+        Return the rational field.
+        """
         from sage.rings.rational_field import QQ
         return QQ
 
     def polygon(self, lab):
+        r"""
+        Return the polygon labeled by ``lab``.
+        """
         if lab not in self.polygon_labels():
             raise ValueError("lab (=%s) not a valid label"%lab)
         from polygon import square
         return square()
 
     def polygon_labels(self):
+        r"""
+        The set of labels used for the polygons.
+        """
         return ZZ
 
     def opposite_edge(self, p, e):
-        if ((p%2) + (e%2)) % 2:
+        r"""
+        Return the pair ``(pp,ee)`` to which the edge ``(p,e)`` is glued to.
+        """
+        if (p+e) % 2:
             return p+1,(e+2)%4
         else:
             return p-1,(e+2)%4
 
 class TFractal(TranslationSurface_generic):
     r"""
-     w/r         w/r
+    The TFractal surface.
+
+    The TFractal surface is a translation surface of finite area built from
+    infinitely many polygons. The basic building block is the following polygon
+
+     w/r    w     w/r
     +---+------+---+
-    | 1 |  2   | 3 |
-    |   |      |   |  h2
+    | 1 |   2  | 3 | h2
     +---+------+---+
-        |  0   | h1
+        |   0  | h1
         +------+
             w
 
-    where r is some ratio
+    where ``w``, ``h1``, ``h2``, ``r`` are some positive numbers. Default values
+    are ``w=h1=h2=1`` and ``r=2``.
+
+    .. TODO::
+
+        In that surface, the linear flow can be computed more efficiently using
+        only one affine interval exchange transformation with 5 intervals. But
+        the underlying geometric construction is not a covering.
     """
-    def __init__(self, w=ZZ_1, r=ZZ_3, h1=ZZ_1, h2=ZZ_1):
+    def __init__(self, w=ZZ_1, r=ZZ_2, h1=ZZ_1, h2=ZZ_1):
         from sage.structure.sequence import Sequence
         from sage.combinat.words.words import Words
 
@@ -106,8 +148,10 @@ class TFractal(TranslationSurface_generic):
             if e == 2: return (w + self._words('R'), 0), 0
             if e == 3: return (w,2),1
 
+
     def polygon(self, lab):
         r"""
+        Return the polygon with label ``lab``.
          w/r         w/r
         +---+------+---+
         | 1 |  2   | 3 |
@@ -117,18 +161,20 @@ class TFractal(TranslationSurface_generic):
             +------+
             w
         """
+        return (1 / self._r ** w.length()) * self._base_polygon(lab[1])
+
+    @cached_method
+    def _base_polygon(self, i):
         from polygon import Polygons
-        w,i = lab
-        n = w.length()
         if i == 0:
-            w = self._w / self._r**n
-            h = self._h1 / self._r**n
+            w = self._w
+            h = self._h1
         if i == 1 or i == 3:
-            w = self._w / self._r**(n+1)
-            h = self._h2 / self._r**n
+            w = self._w / self._r
+            h = self._h2
         if i == 2:
-            w = self._w / self._r**n
-            h = self._h2 / self._r**n
+            w = self._w
+            h = self._h2
         return Polygons(self.base_ring())([(w,0),(0,h),(-w,0),(0,-h)])
 
     def base_label(self):
@@ -160,6 +206,23 @@ class SimilaritySurfaceGenerators:
         glue={ (0,2):(1,0), (0,0):(1,1), (0,1):(1,2), (1,0):(0,2), (1,1):(0,0), (1,2):(0,1) }
         return SimilaritySurface_polygons_and_gluings(ps,glue)
 
+
+    @staticmethod
+    def right_angle_triangle(w,h):
+        from sage.structure.sequence import Sequence
+        from polygon import Polygons
+        from sage.modules.free_module import VectorSpace
+        from similarity_surface import SimilaritySurface_polygons_and_gluings
+
+        F = Sequence([w,h]).universe()
+        if not F.is_field():
+            F = F.fraction_field()
+        V = VectorSpace(F,2)
+        P1 = Polygons(F)([V((w,0)),V((-w,h)),V((0,-h))])
+        P2 = Polygons(F)([V((0,h)),V((-w,-h)),V((w,0))])
+        ps = (P1,P2)
+        glue = {(0,0):(1,2),(0,1):(1,1),(0,2):(1,0)}
+        return SimilaritySurface_polygons_and_gluings(ps,glue)
 
 class TranslationSurfaceGenerators:
     r"""
@@ -228,20 +291,21 @@ class TranslationSurfaceGenerators:
         from similarity_surface import Origami
         return Origami(r,u,rr,uu,domain)
 
-    @staticmethod
-    def infinite_origami_example():
-        from similarity_surface import Origami
-        return Origami(
-            lambda x: x+1,
-            lambda x: x-1,
-            lambda x: x-1,
-            lambda x: x+1,
-            ZZ)
 
     @staticmethod
-    def infinite_staircase():
+    def infinite_staircase1():
         return InfiniteStaircase()
 
     @staticmethod
-    def t_fractal(w=ZZ_1, r=ZZ_3, h1=ZZ_1, h2=ZZ_1):
+    def infinite_staircase2():
+        from similarity_surface import Origami
+        return Origami(
+                lambda x: x+1 if x%2 else x-1,  # r  (edge 1)
+                lambda x: x-1 if x%2 else x+1,  # u  (edge 2)
+                lambda x: x+1 if x%2 else x-1,  # rr (edge 3)
+                lambda x: x-1 if x%2 else x+1,  # uu (edge 0)
+                domain = ZZ)
+
+    @staticmethod
+    def t_fractal(w=ZZ_1, r=ZZ_2, h1=ZZ_1, h2=ZZ_1):
         return TFractal(w,r,h1,h2)
