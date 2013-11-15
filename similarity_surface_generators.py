@@ -22,27 +22,10 @@ class InfiniteStaircase(TranslationSurface_generic):
         return ZZ
 
     def opposite_edge(self, p, e):
-        if p%2:
-            if e == 0: # down
-                return p-1,2
-            if e == 1: #right
-                return p+1,3
-            if e == 2: # up
-                return p-1,0
-            if e == 3: # left
-                return p+1,1
+        if ((p%2) + (e%2)) % 2:
+            return p+1,(e+2)%4
         else:
-            if e == 0: # down
-                return p+1,2
-            if e == 1: #right
-                return p-1,3
-            if e == 2: # up
-                return p+1,0
-            if e == 3: # left
-                return p-1,1
-
-        raise ValueError("not a valid edge identifier")
-
+            return p-1,(e+2)%4
 
 class TFractal(TranslationSurface_generic):
     r"""
