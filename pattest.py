@@ -36,3 +36,11 @@ def test3():
     segments=pt.flow_segments(hol)
     sb.render_segments(segments)
 
+def test4():
+    from similarity_surface_generators import TranslationSurfaceGenerators
+    ss=TranslationSurfaceGenerators.infinite_origami_example()
+    ss.edit()
+    se,sb=ss.get_bundle()
+    sb.set_transform(100,-100,300,300)
+    sb.redraw_all()
+

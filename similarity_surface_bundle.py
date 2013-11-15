@@ -130,6 +130,7 @@ class SimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
     def _on_make_adjacent_callback(self, polygon_handle, e1):
         p1=self._handle_to_polygon[polygon_handle]
         p2,e2 = self._ss.opposite_edge(p1,e1)
+        #print "p1="+str(p1)+" e1="+str(e1)+" p2="+str(p2)+" e2="+str(e2)
         m1=self._gl[p1]
         mc=self._ss.edge_matrix(p2,e2)
         m2=m1*mc
@@ -210,7 +211,7 @@ class SimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
         Remove and redraw everything on the canvas.
         """
         self._editor.get_canvas().delete("all")
-        self._visible=set()
+        #self._visible=set()
         self._polygon_cache={}
         self._polygon_to_handle={}
         self._handle_to_polygon={}
