@@ -435,7 +435,7 @@ class MinimalTranslationCover(TranslationSurface_generic):
         return (self._ss.base_label(), I)
 
     def polygon(self, lab):
-        return ~(lab[1]) * self._ss.polygon(lab[0])
+        return lab[1] * self._ss.polygon(lab[0])
 
     def polygon_labels(self):
         r"""
