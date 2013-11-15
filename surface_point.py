@@ -41,7 +41,15 @@ class SurfacePoint:
                 raise ValueError("Straight line flow hit a vertex")
             pair_list.append((pt0,q))
             pt0=pt1
+        print pt0
         return pair_list
+
+    def flow_segments_wait(self,holonomy):
+        pair_list=self.flow_segments(holonomy)
+        pair_list2=[]
+        for i in range(len(pair_list)/2,len(pair_list)):
+            pair_list2.append(pair_list[i])
+        return pair_list2
 
     def flow(self,holonomy):
         hol=holonomy
