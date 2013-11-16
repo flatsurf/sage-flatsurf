@@ -5,6 +5,7 @@ ZZ_1 = ZZ(1)
 ZZ_2 = ZZ(2)
 
 from similarity_surface import TranslationSurface_generic
+
 class InfiniteStaircase(TranslationSurface_generic):
     r"""
     The infinite staircase.
@@ -57,6 +58,148 @@ class InfiniteStaircase(TranslationSurface_generic):
             return p+1,(e+2)%4
         else:
             return p-1,(e+2)%4
+
+class EInfinity(TranslationSurface_generic):
+    r"""
+    The surface based on the $E_\infinity$ graph.
+
+     The biparite graph is shown below, with edges numbered:
+
+      0   1   2  -2   3  -3   4  -4 
+    *---o---*---o---*---o---*---o---*...
+            |
+            |-1
+            o
+
+    Here, black vertices are colored *, and white o. 
+    Black nodes represent vertical cylinders and white nodes
+    represent horizontal cylinders.
+    """
+    def __init__(self,lambda_squared=None, field=None):
+        TranslationSurface_generic.__init__(self)
+        if lambda_squared==None:
+            from sage.rings.number_field.number_field import NumberField
+            from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+            R=PolynomialRing(ZZ,'x')
+            x = R.gen()
+            from sage.rings.qqbar import AA
+            self._field=NumberField(x**3-ZZ(5)*x**2+ZZ(4)*x-ZZ(1), 'r', embedding=AA(ZZ(4)))
+            self._l=self._field.gen()
+        else:
+            if field is None:
+                self._l=lambda_squared
+                self._field=lambda_squared.parent()
+            else:
+                self._field=field
+                self._l=field(lambda_squared)
+
+    def _repr_(self):
+        r"""
+        String representation.
+        """
+        return "The E-infinity surface"
+
+    def base_ring(self):
+        r"""
+        Return the rational field.
+        """
+        return self._field
+
+    @cached_method
+    def get_white(self,n):
+        r"""Get the weight of the white endpoint of edge n."""
+        l=self._l
+        if n==0 or n==1:
+            return l
+        if n==-1:
+            return l-1
+        if n==2:
+            return 1-3*l+l**2
+        if n>2:
+            x=self.get_white(n-1)
+            y=self.get_black(n)
+            return l*y-x
+        return self.get_white(-n)
+
+    @cached_method
+    def get_black(self,n):
+        r"""Get the weight of the black endpoint of edge n."""
+        l=self._l
+        if n==0:
+            return self._field(1)
+        if n==1 or n==-1 or n==2:
+            return l-1
+        if n>2:
+            x=self.get_black(n-1)
+            y=self.get_white(n-1)
+            return y-x
+        return self.get_black(1-n)
+
+    def polygon(self, lab):
+        r"""
+        Return the polygon labeled by ``lab``.
+        """
+        if lab not in self.polygon_labels():
+            raise ValueError("lab (=%s) not a valid label"%lab)
+        from polygon import rectangle
+        return rectangle(2*self.get_black(lab),self.get_white(lab))
+
+    def polygon_labels(self):
+        r"""
+        The set of labels used for the polygons.
+        """
+        return ZZ
+
+    def opposite_edge(self, p, e):
+        r"""
+        Return the pair ``(pp,ee)`` to which the edge ``(p,e)`` is glued to.
+        """
+        if p==0:
+            if e==0:
+                return (0,2)
+            if e==1:
+                return (1,3)
+            if e==2:
+                return (0,0)
+            if e==3:
+                return (1,1)
+        if p==1:
+            if e==0:
+                return (-1,2)
+            if e==1:
+                return (0,3)
+            if e==2:
+                return (2,0)
+            if e==3:
+                return (0,1)
+        if p==-1:
+            if e==0:
+                return (2,2)
+            if e==1:
+                return (-1,3)
+            if e==2:
+                return (1,0)
+            if e==3:
+                return (-1,1)
+        if p==2:
+            if e==0:
+                return (1,2)
+            if e==1:
+                return (-2,3)
+            if e==2:
+                return (-1,0)
+            if e==3:
+                return (-2,1)
+        if p>2:
+            if e%2:
+                return -p,(e+2)%4
+            else:
+                return 1-p,(e+2)%4
+        else:
+            if e%2:
+                return -p,(e+2)%4
+            else:
+                return 1-p,(e+2)%4
 
 class TFractal(TranslationSurface_generic):
     r"""

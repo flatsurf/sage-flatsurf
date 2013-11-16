@@ -2,7 +2,7 @@ from surface_manipulator import *
 from similarity_surface_generators import *
 from sage.rings.rational_field import QQ
 
-sm=SurfaceManipulator.launch()
+#sm=SurfaceManipulator.launch()
 
 def demo1():
     s=TranslationSurfaceGenerators.octagon_and_squares()
@@ -29,3 +29,12 @@ def demo3():
     globals()['sb'] = sb
     globals()['sm'] = sm
 
+def demo4():
+    s=EInfinity()
+    sm,sb=s.get_bundle()
+    sm.set_surface(sb)
+    globals()['s'] = s
+    globals()['sb'] = sb
+    globals()['sm'] = sm
+
+demo4()

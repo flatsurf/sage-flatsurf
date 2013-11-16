@@ -319,10 +319,16 @@ class SimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
 
     def get_math_bbox(self):
         first = True
+        xmin=0
+        xmax=0
+        ymin=0
+        ymax=0
         for i in self._visible:
             vs=self.get_transformed_vertices(i)
             for v in vs:
+                #print "v="+str(v)
                 if first:
+                    #print "running first"
                     xmin=v[0]
                     xmax=v[0]
                     ymin=v[1]
@@ -331,12 +337,17 @@ class SimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
                 else:
                     if v[0]<xmin:
                         xmin=v[0]
+                    #print "comparing v0="+str(v[0])+" with xmax="+str(xmax)
                     if v[0]>xmax:
+                        #print "v0 is larger"
                         xmax=v[0]
+                    #else:
+                    #    print "v0 is smaller"
                     if v[1]<ymin:
                         ymin=v[1]
                     if v[1]>ymax:
                         ymax=v[1]
+        #print "bbox="+str((xmin,ymin,xmax,ymax))
         return xmin,ymin,xmax,ymax
 
     def _render_polygon_fill(self,i):
@@ -437,7 +448,8 @@ class SimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
                 offset=(0,0)
         label_handle=canvas.create_text(mid[0]-offset[0], mid[1]-offset[1],
             text=label, 
-            fill="#7efffc", font=("Helvetica","12"), anchor=anchor, 
+            fill="#7efffc", 
+            font=("Helvetica","12"), anchor=anchor, 
             tags=("SimilaritySurfaceBundle","label") )
 
     def _render_polygon_outline(self,p):

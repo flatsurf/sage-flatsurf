@@ -415,8 +415,8 @@ class Polygons(Parent):
     def __init__(self, field):
         Parent.__init__(self, category=Sets())
 
-        if not AA.has_coerce_map_from(field):
-            raise ValueError("the field must have a coercion to AA")
+        #if not AA.has_coerce_map_from(field):
+        #    raise ValueError("the field must have a coercion to AA")
         self._field = field
 
         self.register_action(ActionOnPolygons(self))
@@ -450,6 +450,10 @@ def square(field=None):
     if field is None:
         field = QQ
     return Polygons(field)([(1,0),(0,1),(-1,0),(0,-1)])
+
+def rectangle(width,height):
+    F=width.parent()
+    return Polygons(F)([(width,F(0)),(F(0),height),(-width,F(0)),(F(0),-height)])
 
 def regular_octagon(field=None):
     r"""
