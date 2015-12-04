@@ -77,9 +77,12 @@ class SurfaceManipulator(Frame):
         for s in surfaces:
             self.add_surface(s)
         # Setup initial surface
-        if (surface != None):
+        if surface is not None:
             self.add_surface(surface)
         self.set_surface(surface)
+
+    def __repr__(self):
+        return "Surface manipulator"
 
     def _init_menu(self):
         
@@ -192,8 +195,8 @@ class SurfaceManipulator(Frame):
         r"""
         Called when a surface is selected from a menu.
         """
-        i=self._selected_surface.get()
-        if (i==-1):
+        i = self._selected_surface.get()
+        if i == -1:
             self.set_surface(None)
         else:
             self.set_surface(self._surfaces[i])
@@ -217,9 +220,9 @@ class SurfaceManipulator(Frame):
             self.set_text("Wrote image to "+fileName)
 
     def on_new_similarity_surface(self):  
-        s=CreateSimilaritySurfaceBundle(len(self._surfaces),self)
-        if (s!=None):
-            i=self.set_surface(s)
+        s = CreateSimilaritySurfaceBundle(len(self._surfaces),self)
+        if s is not None:
+            i = self.set_surface(s)
             self.set_text("Created new surface `"+self._surfaces[i].get_name()+"'.")
 
     def _on_no_surface(self):
@@ -239,7 +242,9 @@ class SurfaceManipulator(Frame):
         self.set_actor(RecenterActor(self))
 
     def _reset_menus(self):
-        r"""Reset all changing menus except the surface menu"""
+        r"""
+        Reset all changing menus except the surface menu
+        """
         self._reset_action_menu()
         self._reset_create_menu()
 
@@ -325,16 +330,16 @@ class SurfaceManipulator(Frame):
         r"""
         Set the current surface to the one given by surface_bundle
         """
-        i=self.add_surface(surface_bundle)
-        if (surface_bundle != self._surface):
+        i = self.add_surface(surface_bundle)
+        if surface_bundle != self._surface:
             self._canvas.delete("all")
             self._surface=surface_bundle
             self._surface_menu.invoke(i+1)
-            if (i>=0):
+            if i >= 0:
                 self.set_text("Switched to `"+self._surface.get_name()+"'.")
                 self._parent.title(self._surface.get_name())
                 self._reset_menus()
-                if (isinstance(self._surface, EditorRenderer)):
+                if isinstance(self._surface, EditorRenderer):
                     self._surface.initial_render()
             else:
                 self.set_text("No surface selected.")

@@ -607,7 +607,7 @@ class PolygonEdgeDragger(EditorActor):
 
 class EdgeSelector(EditorRedirectingActor):
     r"""
-    A class for selecting an edge from a collection of polygons polygon. 
+    A class for selecting an edge from a collection of polygons.
     The polygons must be tagged with the tag "polygon". 
     """
     def __init__(self, editor, polygon_handle_and_edge_receiver, 
@@ -624,12 +624,12 @@ class EdgeSelector(EditorRedirectingActor):
         """
         EditorRedirectingActor.__init__(self, editor)
         self.setActor(PolygonSelector(editor,self._receive_polygon_handle,msg=polygon_msg))
-        self._emsg=edge_msg
-        self._polygon_handle=None
-        self._polygon_handle_and_edge_receiver=polygon_handle_and_edge_receiver
+        self._emsg = edge_msg
+        self._polygon_handle = None
+        self._polygon_handle_and_edge_receiver = polygon_handle_and_edge_receiver
 
     def _receive_polygon_handle(self,handle):
-        self._polygon_handle=handle
+        self._polygon_handle = handle
         self.setActor(PolygonEdgeSelector(self._editor,handle,self._receive_edge,msg=self._emsg))
 
     def _receive_edge(self,edge):

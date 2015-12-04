@@ -23,7 +23,7 @@ class SimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
     # STATIC VARIABLES
     count = 0
 
-    def __init__(self, similarity_surface, editor = None, name = None):
+    def __init__(self, similarity_surface, editor=None, name=None):
         r"""
         INPUT:
 
@@ -38,27 +38,33 @@ class SimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
         if editor is None:
             from surface_manipulator import SurfaceManipulator
             editor = SurfaceManipulator.launch()
-        SurfaceBundle.__init__(self,name, editor, field=similarity_surface.base_ring() )
-        EditorRenderer.__init__(self,editor)
-        self._ss=similarity_surface
+        SurfaceBundle.__init__(self, name, editor, field=similarity_surface.base_ring() )
+        EditorRenderer.__init__(self, editor)
+        self._ss = similarity_surface
         # matrices which act affinely on the polygons:
-        self._gl=defaultdict(self._default_gl)
+        self._gl = defaultdict(self._default_gl)
         # translation vectors for the polygons:
-        self._t=defaultdict(self._default_t)
+        self._t = defaultdict(self._default_t)
         # List of visible polygons
-        self._visible=set()
+        self._visible = set()
         self._visible.add(self._ss.base_label())
         # cache for transformed vertices
-        self._polygon_cache={}
+        self._polygon_cache = {}
         # handles for the polygons in the canvas
-        self._polygon_to_handle={}
-        self._handle_to_polygon={}
+        self._polygon_to_handle = {}
+        self._handle_to_polygon = {}
         # stores labels:
-        self._edge_labels=SurfaceLabels(self._ss)
+        self._edge_labels = SurfaceLabels(self._ss)
+
+    def __repr__(self):
+        s = "Similarity surface bundle"
+        s += "  _handle_to_polygon : {!r}\n".format(self._handle_to_polygon)
+        s += "  _polygon_to_handle : {!r}\n".format(self._polygon_to_handle)
+        s += "  _visible           : {!r}\n".format(self._visible)
+        return s
 
     def after_zoom_change(self):
         self._render_all_edge_labels()
-
 
     def before_zoom_change(self):
         # remove all labels
@@ -99,7 +105,7 @@ class SimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
     def zoom_fit(self,boundary=0):
         x1,y1,x2,y2=self.get_math_bbox()
         #print "fit math box="+str((x1,y1,x2,y2))
-        if (boundary!=0):
+        if boundary:
             boundary=QQ(boundary)
             xc=(x1+x2)/2
             yc=(y1+y2)/2
@@ -162,7 +168,7 @@ class SimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
         self._editor.set_actor(ps)
 
     def _on_move_show_callback(self, polygon_handle, e1):
-        p1=self._handle_to_polygon[polygon_handle]
+        p1 = self._handle_to_polygon[polygon_handle]
         p2,e2 = self._ss.opposite_edge(p1,e1)
         #print "p1="+str(p1)+" e1="+str(e1)+" p2="+str(p2)+" e2="+str(e2)
         if not (p2 in self._visible):
@@ -179,21 +185,21 @@ class SimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
             self.redraw_all()
 
     def _on_make_adjacent(self):
-        ps=EdgeSelector(self._editor,self._on_make_adjacent_callback)
+        ps = EdgeSelector(self._editor, self._on_make_adjacent_callback)
         self._editor.set_actor(ps)
 
     def _on_make_adjacent_callback(self, polygon_handle, e1):
-        p1=self._handle_to_polygon[polygon_handle]
+        p1 = self._handle_to_polygon[polygon_handle]
         p2,e2 = self._ss.opposite_edge(p1,e1)
         #print "p1="+str(p1)+" e1="+str(e1)+" p2="+str(p2)+" e2="+str(e2)
-        m1=self._gl[p1]
-        mc=self._ss.edge_matrix(p2,e2)
-        m2=m1*mc
-        vs=self.get_transformed_vertices(p1)
-        pt1=vs[e1]
-        vs=self._ss.polygon(p2).vertices()
-        pt2=m2*vs[(e2+1)%self._ss.polygon(p2).num_edges()]
-        t2=pt1-pt2
+        m1 = self._gl[p1]
+        mc = self._ss.edge_matrix(p2,e2)
+        m2 = m1*mc
+        vs = self.get_transformed_vertices(p1)
+        pt1 = vs[e1]
+        vs = self._ss.polygon(p2).vertices()
+        pt2 = m2*vs[(e2+1)%self._ss.polygon(p2).num_edges()]
+        t2 = pt1-pt2
         self.set_polygon_view(p2,m2,t2[0],t2[1])
         self._visible.add(p2)
         self.redraw_all()
