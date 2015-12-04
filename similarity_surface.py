@@ -400,7 +400,8 @@ class TranslationSurface_generic(ConicSurface):
         if e is None:
             p,e = p
         if p not in self.polygon_labels():
-            raise ValueError
+            from sage.structure.element import parent
+            raise ValueError("p (={!r}) with parent {!r} is not a valid label".format(p,parent(p)))
         elif e < 0 or e >= self.polygon(p).num_edges():
             raise ValueError
         return identity_matrix(self.base_ring(),2)
