@@ -145,17 +145,17 @@ class SurfaceLabels(EdgeLabels):
     Class for storing labels for edges in a similarity surface.
     """
     def __init__(self, similarity_surface):
-        AbstractLabels.__init__(self)
+        EdgeLabels.__init__(self)
         self._ss=similarity_surface
 
     def get_opposite(self, p1, e1):
         return self._ss.opposite_edge(p1,e1)
 
     def get_label(self,p1,e1):
-        res=AbstractLabels.get_label(self,p1,e1)
+        res = EdgeLabels.get_label(self,p1,e1)
         if res is None:
             self.add_label(p1,e1)
-            res=AbstractLabels.get_label(self,p1,e1)
+            res = EdgeLabels.get_label(self,p1,e1)
         return res
 
 class EditableEdgeGluing(EdgeLabels):
