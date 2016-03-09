@@ -86,7 +86,8 @@ class SurfaceManipulator(Frame):
 
     def _init_menu(self):
         
-        menubar = Menu(self._parent)
+        self._menubar = Menu(self._parent)
+        menubar=self._menubar
         self._parent.config(menu=menubar)
         
         #new_menu = Menu(menubar, tearoff=0)
@@ -94,8 +95,8 @@ class SurfaceManipulator(Frame):
         
         file_menu = Menu(menubar, tearoff=0)
         #file_menu.add_cascade(label="New", menu=new_menu)
-        file_menu.add_command(label="New Similarity Surface", command=self.on_new_similarity_surface)
-        file_menu.add_separator()
+        #file_menu.add_command(label="New Similarity Surface", command=self.on_new_similarity_surface)
+        #file_menu.add_separator()
         file_menu.add_command(label="About", command=self.on_about)
         file_menu.add_command(label="Export PostScript", command=self.on_export)
         file_menu.add_command(label="Exit", command=self.exit, accelerator="Alt+F4")
@@ -105,17 +106,9 @@ class SurfaceManipulator(Frame):
         self._selected_surface = IntVar()
         self._selected_surface.set(-1)
         menubar.add_cascade(label="Surface", underline=0, menu=self._surface_menu)
-        self._reset_surface_menu()
-
-        self._create_menu = Menu(menubar, tearoff=0)
-        menubar.add_cascade(label="Create", underline=0, menu=self._create_menu)
-
-        self._action_menu = Menu(menubar, tearoff=0)
-        self._reset_action_menu()
-        menubar.add_cascade(label="Action", underline=0, menu=self._action_menu)
-    
-        help_menu = Menu(menubar, tearoff=0)
-        menubar.add_cascade(label="Help", menu=help_menu)
+        self._surface_menu.add_radiobutton(label="None", 
+            command=self.menu_select_surface, variable=self._selected_surface, 
+            value=-1)
 
     def _init_gui(self):
         self._parent.title("FlatSurf Editor")
@@ -219,11 +212,11 @@ class SurfaceManipulator(Frame):
             self._canvas.postscript(file = fileName) 
             self.set_text("Wrote image to "+fileName)
 
-    def on_new_similarity_surface(self):  
-        s = CreateSimilaritySurfaceBundle(len(self._surfaces),self)
-        if s is not None:
-            i = self.set_surface(s)
-            self.set_text("Created new surface `"+self._surfaces[i].get_name()+"'.")
+#    def on_new_similarity_surface(self):  
+#        s = CreateSimilaritySurfaceBundle(len(self._surfaces),self)
+#        if s is not None:
+#            i = self.set_surface(s)
+#            self.set_text("Created new surface `"+self._surfaces[i].get_name()+"'.")
 
     def _on_no_surface(self):
         self._canvas.delete("all")
@@ -243,35 +236,26 @@ class SurfaceManipulator(Frame):
 
     def _reset_menus(self):
         r"""
-        Reset all changing menus except the surface menu
+        Reset all menus except the file and surface menu
         """
-        self._reset_action_menu()
-        self._reset_create_menu()
-
-    def _reset_action_menu(self):
-        for i in range(100):
-            self._action_menu.delete(0)
-        self._action_menu.add_command(label="Recenter", underline=2, command=self._on_recenter)
-        self._action_menu.add_command(label="Zoom", underline=0, command=self._on_zoom,accelerator="Ctrl+Z")
-	self.bind_all("<Control-z>", lambda event: self._on_zoom() )
-        self._action_menu.add_command(label="Zoom Box", command=self._on_zoom_box)
-        self._action_menu.add_command(label="Redraw All", underline=0, command=self._on_redraw_all)
-        #self._action_menu.add_command(label="Delete Junk", command=self.on_delete_junk)
+        # The following loop removes all but the first two menus (File and Surface).
+        num = len(self._menubar.children)
+        for i in range(num,2,-1):
+            self._menubar.delete(i)
         if self._surface!= None:
-            self._surface.make_action_menu(self._action_menu)
-
-    def _reset_create_menu(self):
-        for i in range(100):
-            self._create_menu.delete(0)
-        if self._surface!= None:
-            self._surface.make_create_menu(self._create_menu)
+            self._surface.make_menus(self._menubar)
 
     def _reset_surface_menu(self):
-        for i in range(100):
-            self._surface_menu.delete(0)
-        self._surface_menu.add_radiobutton(label="None", 
-            command=self.menu_select_surface, variable=self._selected_surface, 
-            value=-1)
+        r"""
+        Reset the surface menu.
+        """
+        ### This is a hack to get the number of items in the menu: 
+        num = self._surface_menu.index(100)+1
+        # First we remove everything but the first entry ("None")
+        for i in range(num-1,0,-1):
+            #print("removing a child2: "+str(i)+" of "+str(num))
+            self._surface_menu.delete(i)
+        # Add an entry for every surface in the list.
         for i in range( len(self._surfaces) ):
             surface = self._surfaces[i]
             self._surface_menu.add_radiobutton(label=surface.get_name(),
@@ -347,6 +331,8 @@ class SurfaceManipulator(Frame):
             else:
                 self.set_text("No surface selected.")
                 self._parent.title("FlatSurf Editor")
+                self._reset_menus()
+                self.set_actor(None)
         return i
 
     def surface_renamed(self):
