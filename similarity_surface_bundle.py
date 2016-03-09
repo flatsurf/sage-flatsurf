@@ -151,7 +151,8 @@ class SimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
         pass
 
     def make_action_menu(self,menu):
-        menu.add_command(label="Zoom fit", command=self.zoom_fit_nice_boundary)
+        menu.add_command(label="Zoom fit", command=self.zoom_fit_nice_boundary,accelerator="Ctrl+F")
+	self._editor.bind_all("<Control-f>", lambda event: self.zoom_fit_nice_boundary() )
         menu.add_separator()
         menu.add_command(label="Make adjacent", command=self._on_make_adjacent)
         menu.add_command(label="Move show", command=self._on_move_show)
