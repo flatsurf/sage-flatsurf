@@ -147,12 +147,14 @@ class SimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
         #menu.add_command(label="Produce Similarity Surface", command=self._on_glue)
         pass
 
-    def make_action_menu(self,menu):
-        menu.add_command(label="Zoom fit", command=self.zoom_fit_nice_boundary,accelerator="Ctrl+F")
-	self._editor.bind_all("<Control-f>", lambda event: self.zoom_fit_nice_boundary() )
-        menu.add_separator()
-        menu.add_command(label="Make adjacent", command=self._on_make_adjacent)
-        menu.add_command(label="Move show", command=self._on_move_show)
+    def make_menus(self,menubar):
+        # Setup Surface Bundle's Action Menu
+        SurfaceBundle.make_menus(self,menubar)
+        self._action_menu.add_command(label="Zoom fit", command=self.zoom_fit_nice_boundary,accelerator="Ctrl+F")
+        self._editor.bind_all("<Control-f>", lambda event: self.zoom_fit_nice_boundary() )
+        self._action_menu.add_separator()
+        self._action_menu.add_command(label="Make adjacent", command=self._on_make_adjacent)
+        self._action_menu.add_command(label="Move show", command=self._on_move_show)
 
     def make_visible(self, polygon_index):
         if not self.is_visible(polygon_index):
