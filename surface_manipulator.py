@@ -98,7 +98,7 @@ class SurfaceManipulator(Frame):
         file_menu.add_separator()
         file_menu.add_command(label="About", command=self.on_about)
         file_menu.add_command(label="Export PostScript", command=self.on_export)
-        file_menu.add_command(label="Exit", command=self.exit,accelerator="Alt+F4")
+        file_menu.add_command(label="Exit", command=self.exit, accelerator="Alt+F4")
         menubar.add_cascade(label="File", underline=0, menu=file_menu)
 
         self._surface_menu = Menu(menubar, tearoff=0)
@@ -252,7 +252,8 @@ class SurfaceManipulator(Frame):
         for i in range(100):
             self._action_menu.delete(0)
         self._action_menu.add_command(label="Recenter", underline=2, command=self._on_recenter)
-        self._action_menu.add_command(label="Zoom", underline=0, command=self._on_zoom,accelerator="Alt+Z")
+        self._action_menu.add_command(label="Zoom", underline=0, command=self._on_zoom,accelerator="Ctrl+Z")
+	self.bind_all("<Control-z>", lambda event: self._on_zoom() )
         self._action_menu.add_command(label="Zoom Box", command=self._on_zoom_box)
         self._action_menu.add_command(label="Redraw All", underline=0, command=self._on_redraw_all)
         #self._action_menu.add_command(label="Delete Junk", command=self.on_delete_junk)
