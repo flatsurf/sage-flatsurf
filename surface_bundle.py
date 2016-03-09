@@ -148,6 +148,9 @@ class SurfaceBundle:
         #print "screen box="+str((x1p,y1p,x2p,y2p))
         self.zoom_screen_box(x1p,y1p,x2p,y2p)
 
+    def editor_ready():
+        return self._editor.get_width()!=1
+
     def zoom_screen_box(self,x1,y1,x2,y2):
         r"""
         Scale picture by a factor fixing the point (xc,yc) in screen coordinates
@@ -162,8 +165,8 @@ class SurfaceBundle:
         screen_height=self._editor.get_height()
         width_change=QQ(screen_width)/width
         height_change=QQ(screen_height)/height
-	# Commenting this line out seems to have solved the label loss issue:
-	#self.before_zoom_change()
+        # Commenting this line out seems to have solved the label loss issue:
+        #self.before_zoom_change()
 
         # proposed scale change:
         scale_change=min(width_change,height_change)
