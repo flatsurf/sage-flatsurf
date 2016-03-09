@@ -340,8 +340,8 @@ class SurfaceManipulator(Frame):
                 self.set_text("Switched to `"+self._surface.get_name()+"'.")
                 self._parent.title(self._surface.get_name())
                 self._reset_menus()
-		# stop the actor (was a bug).
-		self.set_actor(None)
+                # stop the actor (was a bug).
+                self.set_actor(None)
                 if isinstance(self._surface, EditorRenderer):
                     self._surface.initial_render()
             else:
