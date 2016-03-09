@@ -162,8 +162,10 @@ class SurfaceBundle:
         screen_height=self._editor.get_height()
         width_change=QQ(screen_width)/width
         height_change=QQ(screen_height)/height
-        self.before_zoom_change()
-        #proposed scale change:
+	# Commenting this line out seems to have solved the label loss issue:
+	#self.before_zoom_change()
+
+        # proposed scale change:
         scale_change=min(width_change,height_change)
         new_scale=self._s*scale_change
 
