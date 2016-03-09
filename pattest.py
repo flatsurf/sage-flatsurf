@@ -28,13 +28,13 @@ def test3():
     ss.edit()
     sm,sb = ss.get_bundle()
     sb.set_transform(100,500,400)
-    sb.redraw_all()
-    pt=sb.pick_point()
-    print str(pt)
-    V=ss.vector_space()
-    hol=V((100,110))
-    segments=pt.flow_segments(hol)
-    sb.render_segments(segments)
+    #sb.redraw_all()
+    #pt=sb.pick_point()
+    #print str(pt)
+    #V=ss.vector_space()
+    #hol=V((100,110))
+    #segments=pt.flow_segments(hol)
+    #sb.render_segments(segments)
 
 def test4():
     from similarity_surface_generators import TranslationSurfaceGenerators
