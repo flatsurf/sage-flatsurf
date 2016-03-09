@@ -36,5 +36,3 @@ def demo4():
     globals()['s'] = s
     globals()['sb'] = sb
     globals()['sm'] = sm
-
-demo4()
