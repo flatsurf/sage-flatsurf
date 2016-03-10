@@ -426,6 +426,47 @@ class PolygonSelector(EditorActor):
         #        # Pass the polygon handle:
         #        self._handle_receiver(handle)
 
+class VectorSelector(EditorActor):
+    r"""
+    A class for selecting a polygon. 
+    The polygons must be tagged with the tag "polygon". 
+    When a polygon is clicked the class calls handle_reciever with the handle of the poilygon clicked.
+    """
+    def __init__(self, editor, start, end_receiver, msg="Select a vector."):
+        EditorActor.__init__(self, editor)
+        self._end_receiver=end_receiver
+        self._msg=msg
+        self._start=start
+        self._x=start[0]
+        self._y=start[1]
+
+
+    def on_activate(self):
+        self._editor.set_text(self._msg)
+        self._highlight()
+
+    def on_deactivate(self):
+        self._revert_highlight()
+
+    def _highlight(self):
+        self._editor.get_canvas().create_line(self._start[0],self._start[1],self._x,self._y,fill="#dd5500", width=5.0, tags="VectorSelector")
+
+    def _revert_highlight(self):
+        self._editor.get_canvas().delete("VectorSelector")
+
+    def mouse_moved(self, event):
+        self._x = self._editor.get_canvas().canvasx(event.x)
+        self._y = self._editor.get_canvas().canvasy(event.y)
+        self._revert_highlight()
+        self._highlight()
+
+    def single_left_click(self, event):
+        x = self._editor.get_canvas().canvasx(event.x)
+        y = self._editor.get_canvas().canvasy(event.y)
+        self._end_receiver(int(x), int(y))
+
+
+
 class PointSelector(EditorActor):
     r"""
     A class for selecting a polygon. 
