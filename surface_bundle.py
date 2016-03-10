@@ -68,6 +68,7 @@ class SurfaceBundle:
         """
         return (self._s, self._tx, self._ty)
 
+
     def make_menus(self,menubar):
         self._action_menu = Menu(menubar, tearoff=0)
         menubar.add_cascade(label="Action", underline=0, menu=self._action_menu)
@@ -76,6 +77,7 @@ class SurfaceBundle:
         self._editor.bind_all("<Control-z>", lambda event: self._editor._on_zoom() )
         self._action_menu.add_command(label="Zoom Box", command=self._editor._on_zoom_box)
         self._action_menu.add_command(label="Redraw All", underline=0, command=self._editor._on_redraw_all)
+        self._create_menu=Menu(menubar, tearoff=0)
 
     def get_name(self):
         return self._name
