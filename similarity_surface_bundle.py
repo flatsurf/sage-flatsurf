@@ -154,6 +154,9 @@ class SimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
         self._action_menu.add_separator()
         self._action_menu.add_command(label="Make adjacent", command=self._on_make_adjacent)
         self._action_menu.add_command(label="Move show", command=self._on_move_show)
+        menubar.add_cascade(label="Create", underline=0, menu=self._create_menu)
+        self._create_menu.add_command(label="Straight-line trajectory", command=self.construct_trajectory)
+
 
     def make_visible(self, polygon_index):
         if not self.is_visible(polygon_index):
@@ -218,28 +221,41 @@ class SimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
         self.picked_edge=e
         self.done_picking.set(1)
 
-    def pick_point(self):
-        self.done_picking=IntVar()
-        self.done_picking.set(0)
-        ps=PointSelector(self._editor,self._pick_point_callback)
-        self._editor.set_actor(ps)
-        self._editor.wait_variable(self.done_picking)
-        return self._picked_point
+    def to_math_coordinates(self, surface_point):
+        r"""Convert a surface point to the math version of screen coordinates."""
+        l=surface_point.get_label()
+        p=surface_point.get_point()
+        t=self._t[l]
+        gl=self._gl[l]
+        return gl*p+t
+            
+    def pick_point(self,callback):
+        r"""Has the user select a point. 
+        Returns the point as a SurfacePoint via callback."""
+        #self.done_picking=IntVar()
+        #self.done_picking.set(0)
 
-    def _pick_point_callback(self,polygon_handle, x,y):
-        from surface_point import SurfacePoint
-        #print "x="+str(x)+" and y="+str(y)
-        v=self.screen_to_math_coordinates(x,y)
-        #print "v="+str(v)
-        i=self._handle_to_polygon[polygon_handle]
-        t=self._t[i]
-        gl=self._gl[i]
-        p=gl.inverse()*(v-t)
-        try:
-            self._picked_point=SurfacePoint(self._ss,i,p)
-        except ValueError:
-            self._picked_point=None
-        self.done_picking.set(1)
+        def _pick_point_callback(polygon_handle, x,y):
+            from surface_point import SurfacePoint
+            #print "x="+str(x)+" and y="+str(y)
+            v=self.screen_to_math_coordinates(x,y)
+            #print "v="+str(v)
+            i=self._handle_to_polygon[polygon_handle]
+            t=self._t[i]
+            gl=self._gl[i]
+            p=gl.inverse()*(v-t)
+            try:
+                #self._picked_point=SurfacePoint(self._ss,i,p)
+                callback(SurfacePoint(self._ss,i,p))
+            except ValueError:
+                #self._picked_point=None
+                callback(None)
+            #self.done_picking.set(1)
+
+        ps=PointSelector(self._editor,_pick_point_callback)
+        self._editor.set_actor(ps)
+        #self._editor.wait_variable(self.done_picking)
+
 
     def remove_all_labels(self):
         self._editor.get_canvas().delete("label")
@@ -472,4 +488,28 @@ class SimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
         F=self.field()
         self._t[polygon_index]=vector([F(x),F(y)])
         self.reset_transformed_vertices(polygon_index)
+
+    def construct_trajectory(self):
+        self._ct_start=None
+        self._ct_start_screen=None
+        def _callback1(pt):
+            if pt is None:
+                print("Recieved no point. Aborting.")
+            print(pt)
+            self._ct_start=pt
+            self._ct_start_screen=self.to_math_coordinates(pt)
+            print("Converted: "+str(self.to_math_coordinates(pt)))
+            vs=VectorSelector(self._editor,self.math_to_screen_coordinates(self._ct_start_screen),_callback2)
+            self._editor.set_actor(vs)
+        def _callback2(x,y):
+            print("Received in callback 2: "+str(x)+", "+str(y))
+            end=self.screen_to_math_coordinates(x,y)
+            print(end)
+            hol=1000*(end-self._ct_start_screen)
+            segments=self._ct_start.flow_segments(hol)
+            self.render_segments(segments)
+            self._editor.set_actor(None)
+
+        pt=self.pick_point(_callback1)
+
 
