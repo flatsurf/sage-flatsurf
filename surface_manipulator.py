@@ -90,6 +90,11 @@ class SurfaceManipulator(Frame):
         sm,sb = s.get_bundle()
         self.set_surface(sb)
 
+    def add_octagon(self):
+        from similarity_surface_generators import TranslationSurfaceGenerators
+        ss=TranslationSurfaceGenerators.regular_octagon()
+        ss.edit()
+
     def _init_menu(self):
         
         self._menubar = Menu(self._parent)
@@ -101,6 +106,7 @@ class SurfaceManipulator(Frame):
         
         file_menu = Menu(menubar, tearoff=0)
         #file_menu.add_cascade(label="New", menu=new_menu)
+        file_menu.add_command(label="Octagon", command=self.add_octagon)
         file_menu.add_command(label="MegaWollmilchsau", command=self.add_mega_wollmilchsau)
         file_menu.add_separator()
         file_menu.add_command(label="About", command=self.on_about)
@@ -141,6 +147,7 @@ class SurfaceManipulator(Frame):
                 return i
             i=i+1
         self._surfaces.append(newsurface)
+        newsurface.zoom_fit_nice_boundary()
         self._reset_surface_menu()
         return len(self._surfaces)-1
 
