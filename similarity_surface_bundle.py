@@ -93,7 +93,6 @@ class SimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
             for i in self._ss.polygon_labels():
                 self._visible.add(i)
         self._render_all_polygons()
-        self.zoom_fit_nice_boundary()
         self._render_all_edge_labels()
 
     def zoom_fit_nice_boundary(self):
