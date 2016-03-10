@@ -83,20 +83,20 @@ class MegaWollmilchsauGroup(UniqueRepresentation, Group):
         x = args[0]
         return self.element_class(self, x, **kwds)
 
-    def __init__(self, category=None):
-        Group.__init__(self, category=category)
+    def __init__(self):
+        Group.__init__(self, category=Groups().Infinite())
 
     def _repr_(self):
         return "MegaWollmilchsauGroup"
 
     def a(self):
-        return MegaWollmilchsauGroupElement(self,0,1,_i)
+        return self.element_class(self,0,1,_i)
 
     def b(self):
-        return MegaWollmilchsauGroupElement(self,0,1,_j)
+        return self.element_class(self,0,1,_j)
 
     def one(self):
-        return MegaWollmilchsauGroupElement(self,0,0,1)
+        return self.element_class(self,0,0,1)
 
     def gens(self):
         return (self.a(), self.b())
@@ -104,8 +104,8 @@ class MegaWollmilchsauGroup(UniqueRepresentation, Group):
     def is_abelian(self):
         return False
 
-    def order(self):
-        return infinity
+    #def order(self):
+    #    return infinity
 
     def _an_element_(self):
         return self.a()
@@ -113,7 +113,7 @@ class MegaWollmilchsauGroup(UniqueRepresentation, Group):
     def some_elements(self):
         return [self.a(), self.b()]
 
-    def _test_relations(self):
+    def _test_relations(self,**options):
         a,b=self.gens()
         e=self.one()
         assert a**4==e
@@ -124,8 +124,8 @@ class MegaWollmilchsauGroup(UniqueRepresentation, Group):
         assert (a*a/b)**4==e
         assert (a*b/a/b)**2!=e
 
-    def cardinality(self):
-        return infinity
+    #def cardinality(self):
+    #    return infinity
 
 from similarity_surface import AbstractOrigami
 
