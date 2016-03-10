@@ -38,8 +38,8 @@ def demo4():
     globals()['sm'] = sm
 
 def demo5():
-    from mega_wollmilchsau import MegaWollMilchSau
-    s = MegaWollMilchSau()
+    from mega_wollmilchsau import MegaWollmilchsau
+    s = MegaWollmilchsau()
     sm,sb = s.get_bundle()
     sm.set_surface(sb)
     globals()['s'] = s
