@@ -462,7 +462,61 @@ class MinimalTranslationCover(TranslationSurface_generic):
         mm.set_immutable()
         return ((p2,mm),e2)
 
-class Origami(TranslationSurface_generic):
+class AbstractOrigami(TranslationSurface_generic):
+    r'''Abstract base class for origamis.
+    Realization needs just to define a _domain and four cardinal directions.
+    '''
+
+    def up(self, label):
+        raise NotImplementedError
+
+    def down(self, label):
+        raise NotImplementedError
+
+    def right(self, label):
+        raise NotImplementedError
+
+    def left(self, label):
+        raise NotImplementedError
+
+    def _repr_(self):
+        return "Some AbstractOrigami"
+
+    def num_polygons(self):
+        r"""
+        Returns the number of polygons.
+        """
+        return self._domain.cardinality()
+
+    def polygon_labels(self):
+        return self._domain
+
+    def polygon(self, lab):
+        if lab not in self._domain:
+            raise ValueError
+        from polygon import square
+        return square()
+
+    def base_ring(self):
+        return QQ
+
+    def opposite_edge(self, p, e):
+        if p not in self._domain:
+            raise ValueError
+        if e==0:
+            return self.down(p),2
+        if e==1:
+            return self.right(p),3
+        if e==2:
+            return self.up(p),0
+        if e==3:
+            return self.left(p),1
+        raise ValueError
+        
+        return self._perms[e](p), (e+2)%4
+
+
+class Origami(AbstractOrigami):
     def __init__(self, r, u, rr=None, uu=None, domain=None):
         if domain is None:
             self._domain = r.parent().domain()
@@ -490,31 +544,26 @@ class Origami(TranslationSurface_generic):
 
         self._perms = [uu,r,u,rr] # down,right,up,left
 
-    def num_polygons(self):
-        r"""
-        Returns the number of polygons.
-        """
-        return self._domain.cardinality()
-
-    def polygon_labels(self):
-        return self._domain
-
-    def polygon(self, lab):
-        if lab not in self._domain:
-            raise ValueError
-        from polygon import square
-        return square()
-
-    def base_ring(self):
-        return QQ
-
-    def _repr_(self):
-        return "Origami defined by r=%s and u=%s"%(self._r,self._u)
-
     def opposite_edge(self, p, e):
         if p not in self._domain:
             raise ValueError
         if e < 0 or e > 3:
             raise ValueError
         return self._perms[e](p), (e+2)%4
+
+    def up(self, label):
+        return self.opposite_edge(label,2)[0]
+
+    def down(self, label):
+        return self.opposite_edge(label,0)[0]
+
+    def right(self, label):
+        return self.opposite_edge(label,1)[0]
+
+    def left(self, label):
+        return self.opposite_edge(label,3)[0]
+
+    def _repr_(self):
+        return "Origami defined by r=%s and u=%s"%(self._r,self._u)
+
 
