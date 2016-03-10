@@ -84,6 +84,12 @@ class SurfaceManipulator(Frame):
     def __repr__(self):
         return "Surface manipulator"
 
+    def add_mega_wollmilchsau(self):
+        from mega_wollmilchsau import MegaWollmilchsau
+        s = MegaWollmilchsau()
+        sm,sb = s.get_bundle()
+        self.set_surface(sb)
+
     def _init_menu(self):
         
         self._menubar = Menu(self._parent)
@@ -95,8 +101,8 @@ class SurfaceManipulator(Frame):
         
         file_menu = Menu(menubar, tearoff=0)
         #file_menu.add_cascade(label="New", menu=new_menu)
-        #file_menu.add_command(label="New Similarity Surface", command=self.on_new_similarity_surface)
-        #file_menu.add_separator()
+        file_menu.add_command(label="MegaWollmilchsau", command=self.add_mega_wollmilchsau)
+        file_menu.add_separator()
         file_menu.add_command(label="About", command=self.on_about)
         file_menu.add_command(label="Export PostScript", command=self.on_export)
         file_menu.add_command(label="Exit", command=self.exit, accelerator="Alt+F4")
