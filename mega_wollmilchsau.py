@@ -11,7 +11,7 @@ _i,_j,_k=_Q.gens()
 
 
 
-class MegaWolmilchsauGroupElement(MultiplicativeGroupElement):
+class MegaWollmilchsauGroupElement(MultiplicativeGroupElement):
     
     @staticmethod
     def quat_to_tuple(r):
@@ -24,8 +24,8 @@ class MegaWolmilchsauGroupElement(MultiplicativeGroupElement):
     @staticmethod
     def wedge(r1,r2):
         r"""Wedge two quaterions. Returns an integer."""
-        x = MegaWolmilchsauGroupElement.quat_to_tuple(r1)
-        y = MegaWolmilchsauGroupElement.quat_to_tuple(r2)
+        x = MegaWollmilchsauGroupElement.quat_to_tuple(r1)
+        y = MegaWollmilchsauGroupElement.quat_to_tuple(r2)
         return -x[0]*y[3]+x[1]*y[2]-x[2]*y[1]+x[3]*y[0]
     
     def __init__(self, parent, i, r, q):
@@ -58,21 +58,24 @@ class MegaWolmilchsauGroupElement(MultiplicativeGroupElement):
     __cmp__=_cmp_
 
     def _mul_(self,m):
-        return MegaWolmilchsauGroupElement(self._parent,
-            self._i+m._i+MegaWolmilchsauGroupElement.wedge(self._r,self._q*m._r),
+        return MegaWollmilchsauGroupElement(self._parent,
+            self._i+m._i+MegaWollmilchsauGroupElement.wedge(self._r,self._q*m._r),
             self._r+self._q*m._r, self._q*m._q)
 
     def __invert__(self):
         q1=~self._q
         r1=-(q1 * self._r)
-        i1=-(self._i+MegaWolmilchsauGroupElement.wedge(r1,q1*self._r))
-        return MegaWolmilchsauGroupElement(self._parent,i1,r1,q1)
+        i1=-(self._i+MegaWollmilchsauGroupElement.wedge(r1,q1*self._r))
+        return MegaWollmilchsauGroupElement(self._parent,i1,r1,q1)
 
     def _div_(self,m):
         return self._mul_(m.__invert__())
 
-class MegaWolmilchsauGroup(UniqueRepresentation, Group):
-    Element = MegaWolmilchsauGroupElement
+    def __hash__(self):
+        return 67*hash(self._i)+23*hash(MegaWollmilchsauGroupElement.quat_to_tuple(self._r))-17*hash(MegaWollmilchsauGroupElement.quat_to_tuple(self._q))
+
+class MegaWollmilchsauGroup(UniqueRepresentation, Group):
+    Element = MegaWollmilchsauGroupElement
 
     def _element_constructor_(self, *args, **kwds):
         if len(args)!=1:
@@ -84,16 +87,16 @@ class MegaWolmilchsauGroup(UniqueRepresentation, Group):
         Group.__init__(self, category=category)
 
     def _repr_(self):
-        return "MegaWolmilchsauGroup"
+        return "MegaWollmilchsauGroup"
 
     def a(self):
-        return MegaWolmilchsauGroupElement(self,0,1,_i)
+        return MegaWollmilchsauGroupElement(self,0,1,_i)
 
     def b(self):
-        return MegaWolmilchsauGroupElement(self,0,1,_j)
+        return MegaWollmilchsauGroupElement(self,0,1,_j)
 
     def one(self):
-        return MegaWolmilchsauGroupElement(self,0,0,1)
+        return MegaWollmilchsauGroupElement(self,0,0,1)
 
     def gens(self):
         return (self.a(), self.b())
@@ -121,12 +124,31 @@ class MegaWolmilchsauGroup(UniqueRepresentation, Group):
         assert (a*a/b)**4==e
         assert (a*b/a/b)**2!=e
 
-    def __hash__(self):
-        return 67*hash(self._i)+23*hash(self._r)-17*hash(self._q)
+    def cardinality(self):
+        return infinity
 
-from similarity_surface_generators import TranslationSurfaceGenerators
-def MegaWollMilchSau():
-    G=MegaWolmilchsauGroup()
-    a,b=G.gens()
-    return TranslationSurfaceGenerators.origami(a,b,domain=G)
+from similarity_surface import AbstractOrigami
+
+class MegaWollmilchsau(AbstractOrigami):
+
+    def __init__(self):
+        self._G=self._domain=MegaWollmilchsauGroup()
+        self._a,self._b=self._G.gens()
+        self._ai=~self._a
+        self._bi=~self._b
+
+    def up(self, label):
+        return self._b*label
+
+    def down(self, label):
+        return self._bi*label
+
+    def right(self, label):
+        return self._a*label
+
+    def left(self, label):
+        return self._ai*label
+
+    def _repr_(self):
+        return "MegaWollmilchsau Origami"
 
