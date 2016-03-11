@@ -308,7 +308,7 @@ class ZoomActor(EditorActor):
 
 
 
-from polygon import PolygonCreator
+from geometry.polygon import PolygonCreator
 from sage.rings.rational_field import QQ
 
 class PolygonDrawer(EditorActor):
@@ -432,13 +432,14 @@ class VectorSelector(EditorActor):
     The polygons must be tagged with the tag "polygon". 
     When a polygon is clicked the class calls handle_reciever with the handle of the poilygon clicked.
     """
-    def __init__(self, editor, start, end_receiver, msg="Select a vector."):
+    def __init__(self, editor, start, end_receiver, msg="Select a vector.",dictionary={}):
         EditorActor.__init__(self, editor)
         self._end_receiver=end_receiver
         self._msg=msg
         self._start=start
         self._x=start[0]
         self._y=start[1]
+        self._d=dictionary
 
 
     def on_activate(self):
@@ -463,7 +464,7 @@ class VectorSelector(EditorActor):
     def single_left_click(self, event):
         x = self._editor.get_canvas().canvasx(event.x)
         y = self._editor.get_canvas().canvasy(event.y)
-        self._end_receiver(int(x), int(y))
+        self._end_receiver(int(x), int(y),dictionary=self._d)
 
 
 

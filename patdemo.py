@@ -1,5 +1,5 @@
 from surface_manipulator import *
-from similarity_surface_generators import *
+from geometry.similarity_surface_generators import *
 from sage.rings.rational_field import QQ
 
 #sm=SurfaceManipulator.launch()
@@ -38,7 +38,7 @@ def demo4():
     globals()['sm'] = sm
 
 def demo5():
-    from mega_wollmilchsau import MegaWollmilchsau
+    from geometry.mega_wollmilchsau import MegaWollmilchsau
     s = MegaWollmilchsau()
     sm,sb = s.get_bundle()
     sm.set_surface(sb)

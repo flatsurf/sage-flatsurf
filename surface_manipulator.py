@@ -85,13 +85,13 @@ class SurfaceManipulator(Frame):
         return "Surface manipulator"
 
     def add_mega_wollmilchsau(self):
-        from mega_wollmilchsau import MegaWollmilchsau
+        from geometry.mega_wollmilchsau import MegaWollmilchsau
         s = MegaWollmilchsau()
         sm,sb = s.get_bundle()
         self.set_surface(sb)
 
     def add_octagon(self):
-        from similarity_surface_generators import TranslationSurfaceGenerators
+        from geometry.similarity_surface_generators import TranslationSurfaceGenerators
         ss=TranslationSurfaceGenerators.regular_octagon()
         ss.edit()
 

@@ -1,5 +1,5 @@
 def test1():
-    from similarity_surface_generators import SimilaritySurfaceGenerators
+    from geometry.similarity_surface_generators import SimilaritySurfaceGenerators
     ss=SimilaritySurfaceGenerators.example()
     ss.edit()
     sm,sb = ss.get_bundle()
@@ -23,7 +23,7 @@ def test2():
 
 
 def test3():
-    from similarity_surface_generators import TranslationSurfaceGenerators
+    from geometry.similarity_surface_generators import TranslationSurfaceGenerators
     ss=TranslationSurfaceGenerators.regular_octagon()
     ss.edit()
     sm,sb = ss.get_bundle()
@@ -37,7 +37,7 @@ def test3():
     #sb.render_segments(segments)
 
 def test4():
-    from similarity_surface_generators import TranslationSurfaceGenerators
+    from geometry.similarity_surface_generators import TranslationSurfaceGenerators
     ss=TranslationSurfaceGenerators.infinite_origami_example()
     ss.edit()
     se,sb=ss.get_bundle()

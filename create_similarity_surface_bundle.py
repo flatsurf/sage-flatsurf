@@ -107,7 +107,7 @@ class CreateSimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
         self._editor.set_actor(ps)
 
     def _on_to_similarity_surface(self):
-        from similarity_surface import SimilaritySurface_polygons_and_gluings
+        from geometry.similarity_surface_generators import SimilaritySurface_polygons_and_gluings
         s=SimilaritySurface_polygons_and_gluings(self._polygons,self._glue.get_edge_pair_list())
         sb=SimilaritySurfaceBundle(s, editor=self._editor, name=self._name+" [SS]")
         for i in range(len(self._translations)):

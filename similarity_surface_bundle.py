@@ -1,7 +1,7 @@
 from editor_actor import *
 from editor_renderer import *
 from edge_gluings import *
-from similarity_surface import *
+from geometry.similarity_surface import *
 from surface_bundle import *
 
 from sage.matrix.matrix_space import MatrixSpace
@@ -18,6 +18,9 @@ from collections import defaultdict
 import threading
 import time
 
+
+
+
 class SimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
 
     # STATIC VARIABLES
@@ -33,8 +36,9 @@ class SimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
           ((p0,e0),(p1,e1)) or
         """
         if name is None:
-            SimilaritySurfaceBundle.count = SimilaritySurfaceBundle.count + 1
-            name = "Similarity Surface #"+ str(SimilaritySurfaceBundle.count)
+            #SimilaritySurfaceBundle.count = SimilaritySurfaceBundle.count + 1
+            #name = "Similarity Surface #"+ str(SimilaritySurfaceBundle.count)
+            name=repr(similarity_surface)
         if editor is None:
             from surface_manipulator import SurfaceManipulator
             editor = SurfaceManipulator.launch()
@@ -236,7 +240,7 @@ class SimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
         #self.done_picking.set(0)
 
         def _pick_point_callback(polygon_handle, x,y):
-            from surface_point import SurfacePoint
+            from geometry.surface_point import SurfacePoint
             #print "x="+str(x)+" and y="+str(y)
             v=self.screen_to_math_coordinates(x,y)
             #print "v="+str(v)
@@ -269,7 +273,7 @@ class SimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
         
 
     def _draw_flow_callback(self,polygon_handle, x,y):
-        from surface_point import SurfacePoint
+        from geometry.surface_point import SurfacePoint
         #print "x="+str(x)+" and y="+str(y)
         v=self.screen_to_math_coordinates(x,y)
         #print "v="+str(v)
@@ -294,7 +298,7 @@ class SimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
         
 
     def _draw_flow_with_skip_callback(self,polygon_handle, x,y):
-        from surface_point import SurfacePoint
+        from geometry.surface_point import SurfacePoint
         #print "x="+str(x)+" and y="+str(y)
         v=self.screen_to_math_coordinates(x,y)
         #print "v="+str(v)
@@ -490,23 +494,38 @@ class SimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
         self.reset_transformed_vertices(polygon_index)
 
     def construct_trajectory(self):
-        self._ct_start=None
-        self._ct_start_screen=None
-        def _callback1(pt):
+        #self._ct_start=None
+        #self._ct_start_screen=None
+        def _callback1(pt,dictionary={}):
             if pt is None:
-                print("Recieved no point. Aborting.")
-            print(pt)
-            self._ct_start=pt
-            self._ct_start_screen=self.to_math_coordinates(pt)
-            print("Converted: "+str(self.to_math_coordinates(pt)))
-            vs=VectorSelector(self._editor,self.math_to_screen_coordinates(self._ct_start_screen),_callback2)
+                return
+            dictionary["start"]=pt
+            dictionary["start_screen"]=self.to_math_coordinates(pt)
+            vs=VectorSelector(self._editor,self.math_to_screen_coordinates(dictionary["start_screen"]),_callback2,dictionary=dictionary)
             self._editor.set_actor(vs)
-        def _callback2(x,y):
-            print("Received in callback 2: "+str(x)+", "+str(y))
-            end=self.screen_to_math_coordinates(x,y)
-            print(end)
-            hol=1000*(end-self._ct_start_screen)
-            segments=self._ct_start.flow_segments(hol)
+        def _callback2(x,y,dictionary={}):
+            dictionary["end"]=self.screen_to_math_coordinates(x,y)
+            _LengthDialog(self,_callback3,dictionary=dictionary)
+            
+        class _LengthDialog(tkSimpleDialog.Dialog):
+            def __init__(self,bundle,callback3,dictionary={}):
+                self._callback3=callback3
+                self._dog=dictionary
+                tkSimpleDialog.Dialog.__init__(self,bundle.get_editor().get_parent(),title="Length of trajectory")
+
+            def body(self, master):
+                Label(master, text="Length multiplier:").grid(row=0)
+                self.entry = Entry(master)
+                self.entry.insert(0, "1000")
+                self.entry.grid(row=0, column=1)
+                return self.entry # initial focus
+
+            def apply(self):
+                self._callback3(self.entry.get(), dictionary=self._dog)
+
+        def _callback3(length,dictionary={}):
+            hol=10000*(dictionary["end"]-dictionary["start_screen"])
+            segments=dictionary["start"].flow_segments(hol)
             self.render_segments(segments)
             self._editor.set_actor(None)
 

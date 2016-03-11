@@ -10,7 +10,7 @@ TODO:
 - Sometimes we want labels to be fixed (for example on an origami where the
   squares are labeld 1,2,... it is convenient to use a1, b1, a2, b2,...).
 """
-from similarity_surface import *
+from geometry.similarity_surface_generators import *
 
 lower_and_upper_case = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
