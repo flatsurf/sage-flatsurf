@@ -1,9 +1,10 @@
-from sage.matrix.constructor import matrix, identity_matrix
+from sage.matrix.constructor import matrix
 from sage.matrix.matrix_space import MatrixSpace
 from sage.groups.group import Group
 from sage.categories.groups import Groups
 from sage.structure.element import MultiplicativeGroupElement
 from sage.modules.free_module import VectorSpace
+from sage.modules.free_module_element import vector
 
 from sage.rings.integer import Integer
 
@@ -15,51 +16,74 @@ ZZ_4 = Integer(4)
 
 
 class Similarity(MultiplicativeGroupElement):
+    r"""Class for a similarity of the plane."""
     
-    def __init__(self, parent, m, v):
-        r'''Construct the similarity w mapsto m*w+v from a 2x2 matrix and a vector.'''
+    def __init__(self, parent, a, b, s, t):
+        r'''Construct the similarity (x,y) mapsto (ax-by+s,bx+ay+t).'''
         if parent is None:
             raise ValueError("The parent must be provided")
-        self._m=m
-        self._v=v
+        self._a=a
+        self._b=b
+        self._s=s
+        self._t=t
         self._parent=parent
         MultiplicativeGroupElement.__init__(self,parent)
 
     def _mul_(self,s):
-        r'''Compose two similairities.'''
-        return Similarity(self._parent,self._m*s._m,self._m*s._v+self._v)
+        r'''Compose two similarities.'''
+        C = self.__class__
+        return C(self._parent,
+            self._a*s._a-self._b*s._b, 
+            self._b*s._a+self._a*s._b,
+            self._a*s._s-self._b*s._t+self._s,
+            self._b*s._s+self._a*s._t+self._t)
 
     def __invert__(self):
-        r'''Compose two similairities.'''
-        mi = ~self._m
-        return Similarity(self._parent,mi,-mi*self._v)
+        r'''Invert a similarity.'''
+        det=self._a*self._a+self._b*self._b
+        a=self._a/det
+        b=-self._b/det
+        C = self.__class__
+        return C(self._parent,
+            a,
+            b,
+            -a*self._s+b*self._t,
+            -b*self._s-a*self._t)
 
     def _div_(self,s):
         return self._mul_(s.__invert__())
 
     def __hash__(self):
-        return 73*hash(self._m)-19*hash(self._v)
+        return 73*hash(self._a)-19*hash(self._b)+13*hash(self._s)+53*hash(self._t)
 
-    def apply(self,w):
+    def __call__(self,w):
         r'''Return m*w+v.'''
-        return self._m*w+self._v
-
-    def apply_inverse(self, w):
-        r'''s.apply_inverse(w) is the same as (~s).apply(w).'''
-        mi = ~self._m
-        return mi*w-mi*self._v
+        return vector(self._parent._f,[self._a*w[0]-self._b*w[1]+self._s, self._b*w[0]+self._a*w[1]+self._t])
 
     def _repr_(self):
-        return "Similarity w mapsto\n"+repr(self._m)+"*w + "+repr(self._v)
+        return "Similarity (x,y) mapsto ("+str(self._a)+"*x-"+\
+            str(self._b)+"*y+"+str(self._s)+", "+\
+            str(self._b)+"*x+"+str(self._a)+"*y+"+str(self._t)+")"
 
     def _cmp_(self, other):
-        x=cmp(self._m,other._m)
+        x=cmp(self._a,other._a)
         if x!=0:
             return x
-        return cmp(self._v,other._v)
+        x=cmp(self._b,other._b)
+        if x!=0:
+            return x
+        x=cmp(self._s,other._s)
+        if x!=0:
+            return x
+        return cmp(self._t,other._t)
 
     __cmp__=_cmp_
 
+    def matrix(self):
+        return matrix(self._parent._f,[
+            [self._a, -self._b, self._s],
+            [self._b,  self._a, self._t],
+            [self._parent._f.zero(), self._parent._f.zero(), self._parent._f.one()]])
 
 class SimilarityGroup(Group):
     r'''Group representing all similarities in the plane.
@@ -72,12 +96,20 @@ class SimilarityGroup(Group):
         if len(args)!=1:
             return self.element_class(self, *args, **kwds)
         x = args[0]
+        
+        
+        return self.element_class(self, x, **kwds)
+
+        try:
+            P = x.parent()
+        except AttributeError:
+            return self.element_class(self, x, **kwds)
+        if P in QuotientFields() and P != self.base():
+            return self.element_class(self, x.numerator(), x.denominator(), **kwds)
         return self.element_class(self, x, **kwds)
 
     def __init__(self, base_field):
         self._f=base_field
-        # The matrix space of 2x2 matrices
-        self._ms = MatrixSpace(self._f,2,2)
         # The vector space of vectors 
         self._vs = VectorSpace(self._f,2)
         Group.__init__(self, category=Groups().Infinite())
@@ -86,24 +118,25 @@ class SimilarityGroup(Group):
         return "SimilarityGroup over field "+str(self._f)
 
     def one(self):
-        return self.element_class(self,self._ms.one(),self._vs.zero())
+        return self.element_class(self,self._f.one(),self._f.zero(),self._f.zero(),self._f.zero())
 
     def an_element(self):
-        return self.element_class(self,
-            self._ms([[ZZ_3,ZZ_4],[-ZZ_4,ZZ_3]]),
-            self._vs([ZZ_2,-ZZ_1]) )
+        return self.element_class(self,self._f(ZZ_3),self._f(ZZ_4),self._f(ZZ_2),self._f(-ZZ_1))
 
     def is_abelian(self):
         return False
 
     def gens(self):
-        matrices=[self._ms.one(),
-            self._ms([[ZZ_2,ZZ_0],[ZZ_0,ZZ_2]]),
-            self._ms([[ZZ_3,ZZ_4],[-ZZ_4,ZZ_3]]) ]
-        print(matrices)
+        pairs=[
+            (self._f.one(),self._f.zero()),
+            (self._f(ZZ_2),self._f.zero()),
+            (self._f.zero(),self._f(ZZ_2)),
+            (self._f(ZZ_3),self._f(ZZ_4))]
         l=[]
-        for m in matrices:
+        for p in pairs:
             for v in self._vs.gens():
-                print(m)
-                l.append(self.element_class(self,m,v))
+                l.append(self.element_class(self,p[0],p[1],v[0],v[1]))
         return l
+    
+
+
