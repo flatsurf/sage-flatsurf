@@ -1,6 +1,6 @@
 from editor_actor import *
 from editor_renderer import *
-from edge_gluings import *
+from graphical.edge_gluings import *
 from geometry.similarity_surface import *
 from surface_bundle import *
 
