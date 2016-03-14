@@ -1,6 +1,6 @@
 from editor_actor import *
 from editor_renderer import *
-from edge_gluings import *
+from graphical.edge_gluings import *
 
 from sage.matrix.matrix_space import MatrixSpace
 from sage.modules.free_module import VectorSpace
