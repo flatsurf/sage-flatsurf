@@ -1,6 +1,6 @@
 from editor_actor import *
 from editor_renderer import *
-from edge_gluings import *
+from graphical.edge_gluings import *
 from similarity_surface_bundle import *
 
 from sage.matrix.matrix_space import MatrixSpace
