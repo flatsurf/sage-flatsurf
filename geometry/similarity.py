@@ -131,7 +131,7 @@ class SimilarityGroup(UniqueRepresentation,Group):
         if self._f.has_coerce_map_from(S):
             return True
         if isinstance(S, SimilarityGroup):
-            return self._f.has_coerce_map_from(S)._f
+            return self._f.has_coerce_map_from(S._f)
         if isinstance(S, TranslationGroup):
             return self._f.has_coerce_map_from(S.base_field())
            
