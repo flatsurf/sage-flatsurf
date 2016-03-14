@@ -27,6 +27,7 @@ from geometry.matrix_2x2 import (is_similarity,
                     homothety_rotation_decomposition,
                     similarity_from_vectors,
                     rotation_matrix_angle)
+from geometry.similarity import SimilarityGroup
 
 class SimilaritySurface_generic(SageObject):
     r"""
@@ -176,6 +177,47 @@ class SimilaritySurface_generic(SageObject):
         res = similarity_from_vectors(u,-v)
         return similarity_from_vectors(u,-v)
 
+    def edge_transformation(self, p, e):
+        r"""
+        Return the edge to which this edge is identified and the matrix to be
+        applied.
+
+        EXAMPLES::
+        
+            sage: from geometry.similarity_surface_generators import SimilaritySurfaceGenerators
+            sage: s=SimilaritySurfaceGenerators.example()
+            sage: print(s.polygon(0))
+            Polygon: (0, 0), (2, -2), (2, 0)
+            sage: print(s.polygon(1))
+            Polygon: (0, 0), (2, 0), (1, 3)
+            sage: print(s.opposite_edge(0,0))
+            (1, 1)
+            sage: g=s.edge_transformation(0,0)
+            sage: g((0,0))
+            (1, 3)
+            sage: g((2,-2))
+            (2, 0)
+        """
+        q=self.polygon(p)
+        v=q.vertices()
+        G=SimilarityGroup(self.base_ring())
+        a=v[e]
+        b=v[(e+1)%q.num_edges()]
+        # This is the similarity carrying the origin to a and (1,0) to b:
+        g=G(b[0]-a[0],b[1]-a[1],a[0],a[1])
+
+        pp,ee = self.opposite_edge(p,e)
+        qq=self.polygon(pp)
+        vv=qq.vertices()
+        # Be careful here: opposite vertices are identified
+        aa=vv[(ee+1)%qq.num_edges()]
+        bb=vv[ee]
+        # This is the similarity carrying the origin to aa and (1,0) to bb:
+        gg=G(bb[0]-aa[0],bb[1]-aa[1],aa[0],aa[1])
+
+        # This is the similarity carrying (a,b) to (aa,bb):
+        return gg*(~g)
+
     def edge_dict(self):
         if not self.is_finite():
             raise ValueError("the surface must be finite")
@@ -189,6 +231,7 @@ class SimilaritySurface_generic(SageObject):
         return MinimalTranslationCover(self)
 
     def get_bundle(self):
+        # I plan to remove this
         r"""
         Return a pair (sm,sb), where sm is the active SurfaceManipulator, and sb is the surface
         bundle for this surface (which is added if neccessary to the SurfaceManipulator).
@@ -204,6 +247,7 @@ class SimilaritySurface_generic(SageObject):
         return sm, sb
 
     def edit(self):
+        # I plan to remove this.
         r"""
         Launch the tk editor to interactively modify ``self``.
         """
