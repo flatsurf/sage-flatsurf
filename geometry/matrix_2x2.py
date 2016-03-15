@@ -3,32 +3,15 @@ Some tools for 2x2 matrices and planar geometry.
 """
 from sage.misc.cachefunc import cached_function
 
-from sage.rings.rational_field import QQ
-from sage.rings.qqbar import QQbar,AA
+from sage.rings.all import ZZ, QQ, AA, QQbar, RR, CC, RDF, CDF, RIF, CIF
 from sage.rings.rational import Rational
-from sage.rings.real_mpfr import RR
+from sage.rings.complex_interval_field import ComplexIntervalField
+
 
 from math import pi as pi_float
 
 from sage.symbolic.constants import pi
 from sage.matrix.constructor import matrix, identity_matrix
-
-@cached_function
-def imaginary_unit():
-    r"""
-    Return the imaginary unit as an element of QQbar.
-
-    EXAMPLES::
-
-        sage: imaginary_unit()
-        1*I
-    """
-    from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
-    from sage.rings.all import RIF,CIF
-
-    R = PolynomialRing(QQ,'x')
-    x = R.gen()
-    return QQbar.polynomial_root(x**2 + 1, CIF(RIF(0,0), RIF(0.99,1.01)))
 
 def number_field_to_AA(a):
     r"""
@@ -54,7 +37,7 @@ def is_similarity(m):
         False
     """
     n = m * m.transpose()
-    return n[0,1] == 0 and n[1,0] == 0
+    return n[0,1].is_zero() and n[1,0].is_zero()
 
 def homothety_rotation_decomposition(m):
     r"""
@@ -171,49 +154,56 @@ def similarity_from_vectors(u,v):
     return matrix([[cos_uv, -sin_uv],[sin_uv, cos_uv]])
 
 
-def rotation_matrix_angle(r):
+def rotation_matrix_angle(r, check=False):
     r"""
     Return the angle of the rotation matrix ``r`` divided by ``2 pi`.
 
     EXAMPLES::
 
-        sage: rot_matrix = lambda a: matrix(AA, [[cos(a),-sin(a)],[sin(a),cos(a)]])
-        sage: rotation_matrix_angle(rot_matrix(pi/5))
-        1/10
-        sage: rotation_matrix_angle(rot_matrix(4*pi/7))
-        2/7
+        sage: def rot_matrix(p, q):
+        ....:     z = QQbar.zeta(q) ** p
+        ....:     c = z.real()
+        ....:     s = z.imag()
+        ....:     return matrix(AA, 2, [c,-s,s,c])
+        sage: [rotation_matrix_angle(rot_matrix(i, 5)) for i in range(1,5)]
+        [1/5, 2/5, 3/5, 4/5]
+        sage: [rotation_matrix_angle(rot_matrix(i,7)) for i in range(1,7)]
+        [1/7, 2/7, 3/7, 4/7, 5/7, 6/7]
 
-    .. NOTE:
+    Some random tests::
 
-    The algoritm used is very naive and very slow!
+        sage: for _ in range(100):
+        ....:     r = QQ.random_element(x=0,y=500)
+        ....:     r -= r.floor()
+        ....:     m = rot_matrix(r.numerator(), r.denominator())
+        ....:     assert rotation_matrix_angle(m) == r
+
+    .. NOTE::
+
+        This is using floating point arithmetic and might be wrong.
     """
-    assert (r * r.transpose()).is_one()
+    e0,e1 = r.change_ring(CDF).eigenvalues()
+    m0 = (e0.log() / 2 / CDF.pi()).imag()
+    m1 = (e1.log() / 2 / CDF.pi()).imag()
+    r0 = RR(m0).nearby_rational(max_denominator=10000)
+    r1 = RR(m1).nearby_rational(max_denominator=10000)
+    if r0 != -r1:
+        raise RuntimeError
+    r0 = r0.abs()
+    if r[0][1] > 0:
+        return QQ.one() - r0
+    else:
+        return r0
 
-    if not AA.has_coerce_map_from(r.base_ring()):
-        r = matrix(AA,2,map(number_field_to_AA,r.list()))
+    if check:
+        e = r.change_ring(AA).eigenvalues()[0]
+        if e.minpoly() != ZZ['x'].cyclotomic_polynomial()(r.denominator()):
+            raise RuntimeError
+        z = QQbar.zeta(r.denominator())
+        if z**r.numerator() != e:
+            raise RuntimeError
 
-    # first compute the order
-    n = 1
-    rr = r
-    while not rr.is_one():
-        rr *= r
-        n += 1
-
-    if n == 1:
-        return 1
-
-    # then compute which one
-    from sage.functions.trig import cos,sin
-    c1 = AA(cos(2*pi/n))
-    s1 = AA(sin(2*pi/n))
-    rr = matrix([[c1,-s1],[s1,c1]])
-    m = rr
-    for i in xrange(1,n):
-        if m == r:
-            return Rational((i,n))
-        m *= rr
-
-    raise ValueError("an unexpected error occurred!")
+    return r
 
 
 def is_cosine_sine_of_rational(c,s):
@@ -239,8 +229,7 @@ def is_cosine_sine_of_rational(c,s):
         sage: is_cosine_sine_of_rational(c,s)
         True
     """
-    zeta = QQbar(c) + imaginary_unit() * QQbar(s)
-    return zeta.minpoly().is_cyclotomic()
+    return (c + QQbar.gen() * s).minpoly().is_cyclotomic()
 
 def angle(u, v, assume_rational=False):
     r"""
