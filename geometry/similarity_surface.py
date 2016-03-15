@@ -198,19 +198,17 @@ class SimilaritySurface_generic(SageObject):
             (2, 0)
         """
         q=self.polygon(p)
-        v=q.vertices()
         G=SimilarityGroup(self.base_ring())
-        a=v[e]
-        b=v[(e+1)%q.num_edges()]
+        a=self.polygon(p).vertex(e)
+        b=self.polygon(p).vertex(e+1)
         # This is the similarity carrying the origin to a and (1,0) to b:
         g=G(b[0]-a[0],b[1]-a[1],a[0],a[1])
 
         pp,ee = self.opposite_edge(p,e)
         qq=self.polygon(pp)
-        vv=qq.vertices()
         # Be careful here: opposite vertices are identified
-        aa=vv[(ee+1)%qq.num_edges()]
-        bb=vv[ee]
+        aa=qq.vertex(ee+1)
+        bb=qq.vertex(ee)
         # This is the similarity carrying the origin to aa and (1,0) to bb:
         gg=G(bb[0]-aa[0],bb[1]-aa[1],aa[0],aa[1])
 
@@ -373,7 +371,9 @@ class SimilaritySurface_polygons_and_gluings(SimilaritySurface_generic):
 
     def opposite_edge(self, p, e):
         if (p,e) not in self._edge_identifications:
-            raise ValueError("not a valid edge identifier")
+            e = e % self._polygons[lab].num_edges()
+            if (p,e) not in self._edge_identifications:
+                raise ValueError("not a valid edge identifier")
         return self._edge_identifications[(p,e)]
 
 class ConicSurface(SimilaritySurface_generic):
