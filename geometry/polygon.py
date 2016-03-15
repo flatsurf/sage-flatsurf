@@ -374,19 +374,25 @@ class Polygon(Element):
 
             sage: square().angle(0)
             1/4
-            sage: regular_octagon().angle(0)
+            sage: regular_ngon(8).angle(0)
             3/8
         """
         return angle(self.edge(e), - self.edge((e-1)%self.num_edges()))
 
     def area(self):
         r"""
-        Return the area of self.
+        Return the area of this polygon.
 
         EXAMPLES::
 
-            sage: regular_octagon().area()
-            8*sqrt2 + 8
+            sage: regular_ngon(8).area()
+            2*a + 2
+            sage: _ == 2*AA(2).sqrt() + 2
+            True
+
+            sage: AA(regular_ngon(11).area())
+            9.36563990694544?
+
             sage: square().area()
             1
             sage: (2*square()).area()
@@ -394,8 +400,8 @@ class Polygon(Element):
         """
         # Will use an area formula obtainable from Green's theorem. See for instance:
         # http://math.blogoverflow.com/2014/06/04/greens-theorem-and-area-of-polygons/
-        total=self.field().zero()
-        for i in range(self._num_edges()):
+        total = self.field().zero()
+        for i in range(self.num_edges()):
             total += (self.vertex(i)[0]+self.vertex(i+1)[0])*self.edge(i)[1]
         return total/ZZ_2
 
