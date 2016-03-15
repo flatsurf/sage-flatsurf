@@ -26,11 +26,7 @@ from sage.rings.real_mpfr import RR
 from sage.rings.qqbar import AA
 from sage.modules.free_module import VectorSpace
 
-from geometry.matrix_2x2 import (angle,
-                        is_similarity,
-                        homothety_rotation_decomposition,
-                        similarity_from_vectors,
-                        rotation_matrix_angle)
+from geometry.matrix_2x2 import angle
 
 # we implement action of GL(2,K) on polygons
 from sage.categories.action import Action
@@ -131,7 +127,9 @@ class Polygon(Element):
             t=V.zero()
         else:
             t = V(translation)
-        if not edges is None:
+        if edges is not None:
+            if vertices is not None:
+                raise ValueError("both edges and vertices are defined which is not allowed")
             self._v = [V.zero()]
             total=t
             for i in range(len(edges)-1):
@@ -141,9 +139,7 @@ class Polygon(Element):
             total += V( edges[len(edges)-1] )
             if total != V.zero():
                 raise ValueError("the sum over the edges do not sum up to 0")
-            if not vertices is None:
-                raise ValueError("both edges and vertices are defined which is not allowed")
-        elif not vertices is None:
+        elif vertices is not None:
             self._v = [V(x)+t for x in vertices]
         else:
             raise ValueError("edges and vertices can't both be None")
@@ -368,7 +364,7 @@ class Polygon(Element):
         from sage.modules.free_module import VectorSpace
         V = VectorSpace(RR,2)
         P = self.vertices(translation)
-        return point2d(P, color='red') + line2d(P + [P[0]], color='orange') + polygon2d(P, alpha=0.3)
+        return point2d(P, color='red') + line2d(P + (P[0],), color='orange') + polygon2d(P, alpha=0.3)
 
     def angle(self, e):
         r"""
@@ -436,9 +432,8 @@ class Polygons(Parent):
         from sage.modules.free_module import VectorSpace
         return VectorSpace(self.base_ring(), 2)
 
-    def _element_constructor_(self, data):
-        return self.element_class(self, data)
-
+    def _element_constructor_(self, *args, **kwds):
+        return self.element_class(self, *args, **kwds)
 
 def square(field=None):
     if field is None:
@@ -449,31 +444,55 @@ def rectangle(width,height):
     F=width.parent()
     return Polygons(F)([(width,F(0)),(F(0),height),(-width,F(0)),(F(0),-height)])
 
-def regular_octagon(field=None):
+def number_field_elements_from_algebraics(elts, name='a'):
     r"""
-    Return a regular octagon with sides of length 2.
+    The native Sage function ``number_field_elements_from_algebraics`` currently
+    returns number field *without* embedding. This function return field with
+    embedding!
 
-    TODO: implement regular_ngons.
+    EXAMPLES::
+
+        sage: z = QQbar.zeta(5)
+        sage: c = z.real()
+        sage: s = z.imag()
+        sage: number_field_elements_from_algebraics((c,s))
+        (Number Field in a with defining polynomial y^4 - 5*y^2 + 5,
+         [1/2*a^2 - 3/2, 1/2*a])
     """
-    if field is None:
-        from sage.rings.number_field.number_field import NumberField
-        from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+    from sage.rings.qqbar import number_field_elements_from_algebraics
+    from sage.rings.number_field.number_field import NumberField
+    field,elts,phi = number_field_elements_from_algebraics(elts, minimal=True)
 
-        R = PolynomialRing(ZZ,'x')
-        x = R.gen()
-        field = NumberField(x**2 - 2, 'sqrt2', embedding=AA(2).sqrt())
-        sqrt2 = field.gen()
+    polys = [x.polynomial() for x in elts]
+    K = NumberField(field.polynomial(), name, embedding=AA(phi(field.gen())))
+    gen = K.gen()
 
-        # a faster way would be
-        # field, sqrt2, _ = AA(2).sqrt().as_number_field_element()
-        # but proceeding that way we get a field with no embedding in AA!!!!!
-    else:
-        sqrt = field.gen()
+    return K, [x.polynomial()(gen) for x in elts]
 
-    edges = [(0,2), (-sqrt2,sqrt2), (-2,0), (-sqrt2,-sqrt2), (0,-2), (sqrt2,-sqrt2),
-            (2,0), (sqrt2,sqrt2)]
+def regular_ngon(n):
+    r"""
+    Return a regular n-gon.
+    """
+    from sage.rings.qqbar import QQbar
+
+    c = QQbar.zeta(n).real()
+    s = QQbar.zeta(n).imag()
+
+    field, (c,s) = number_field_elements_from_algebraics((c,s))
+
+    cn = field.one()
+    sn = field.zero()
+    edges = [(cn,sn)]
+    for _ in range(n-1):
+        cn,sn = c*cn - s*sn, c*sn + s*cn
+        edges.append((cn,sn))
 
     return Polygons(field)(edges)
+
+def regular_octagon(field=None):
+    from sage.misc.superseded import deprecation
+    deprecation(33, "Do not use this function anymore but regular_ngon")
+    return regular_ngon(8)
 
 class PolygonCreator():
     r"""
