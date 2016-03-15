@@ -186,6 +186,9 @@ class Polygon(Element):
             res.append(res[-1] + V((self._x[i],self._y[i])))
         return res
 
+    def vertex(self,index):
+        return self.vertices()[index % self.num_edges()]
+
     def __iter__(self):
         return iter(self.vertices())
 
