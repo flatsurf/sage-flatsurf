@@ -24,6 +24,7 @@ from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
 from sage.rings.real_mpfr import RR
 from sage.rings.qqbar import AA
+from sage.modules.free_module import VectorSpace
 
 from geometry.matrix_2x2 import (angle,
                         is_similarity,
@@ -34,6 +35,8 @@ from geometry.matrix_2x2 import (angle,
 # we implement action of GL(2,K) on polygons
 from sage.categories.action import Action
 import operator
+
+ZZ_2=ZZ(2)
 
 def wedge_product(v,w):
     return v[0]*w[1]-v[1]*w[0]
@@ -109,30 +112,43 @@ class PolygonPosition:
 
 from sage.structure.element import Element
 class Polygon(Element):
-    r"""
-    A polygon in RR^2 defined up to translation.
-
-    .. NOTE::
-
-    Should we precompute the angles ?
-    No, in my oppinion. -Pat
-    """
-    def __init__(self, parent, edges):
+    r""" A polygon in RR^2 defined up to translation."""
+    def __init__(self, parent, edges=None, vertices=None, translation=None):
         r"""
+        To construct the polygon you should either use a list of edge vectors 
+        or a list of vertices. Using both will result in a ValueError. The polygon
+        needs to be convex with postively oriented boundary.
         INPUT:
 
         - ``parent`` -- a parent
-
         - ``edges`` -- a list of vectors or couples whose sum is zero
+        - ``vertices`` -- a list of vertices of the polygon
+        - ``translation`` -- a vector representing an addition translation to be applied to the resulting polygon
         """
         Element.__init__(self, parent)
-        field = parent.field()
-        self._x = [field(e[0]) for e in edges]
-        self._y = [field(e[1]) for e in edges]
-
-        # Linear Time Sanity Checks
-        if sum(self._x) or sum(self._y):
-            raise ValueError("the sum over the edges do not sum up to 0")
+        V=self.vector_space()
+        if translation is None:
+            t=V.zero()
+        else:
+            t = V(translation)
+        if not edges is None:
+            self._v = [V.zero()]
+            total=t
+            for i in range(len(edges)-1):
+                total += V(edges[i])
+                self._v.append(total)
+            # Linear Time Sanity Checks
+            total += V( edges[len(edges)-1] )
+            if total != V.zero():
+                raise ValueError("the sum over the edges do not sum up to 0")
+            if not vertices is None:
+                raise ValueError("both edges and vertices are defined which is not allowed")
+        elif not vertices is None:
+            self._v = [V(x)+t for x in vertices]
+        else:
+            raise ValueError("edges and vertices can't both be None")
+        # Make the polgon immutable:
+        self._v=tuple(self._v)
         self._convexity_check()
 
     def _convexity_check(self):
@@ -149,7 +165,7 @@ class Polygon(Element):
     field=base_ring
 
     def num_edges(self):
-        return len(self._x)
+        return len(self._v)
 
     def _repr_(self):
         r"""
@@ -158,36 +174,18 @@ class Polygon(Element):
         return "Polygon: " + ", ".join(map(str,self.vertices()))
 
     def vector_space(self):
+        r"""Return the vector space containing the vertices."""
         return self.parent().vector_space()
 
     def vertices(self, translation=None):
         r"""
         Return the set of vertices as vectors.
         """
-        V = self.parent().vector_space()
-        if translation is None:
-            zero = V.zero()
-        else:
-            try:
-                translation + V.zero()
-            except StandardError:
-                from sage.modules.free_module_element import vector
-                translation = vector(translation)
-                try:
-                    translation + V.zero()
-                except StandardError:
-                    raise ValueError("can not convert translation to a vector in R^2")
-            zero = translation
-        res = [zero]
-        # This code returns a last vertex equal to the first vertex:
-        #for x,y in zip(self._x,self._y):
-        #    res.append(res[-1] + V((x,y)))
-        for i in range(self.num_edges()-1):
-            res.append(res[-1] + V((self._x[i],self._y[i])))
-        return res
+        return self._v
 
     def vertex(self,index):
-        return self.vertices()[index % self.num_edges()]
+        return self._v[index % self.num_edges()]
+
 
     def __iter__(self):
         return iter(self.vertices())
@@ -225,14 +223,17 @@ class Polygon(Element):
             sage: s.get_point_position(V((1,3/2)))
             point positioned outside polygon
         """
-        V = self.parent().vector_space()
+        V = self.vector_space()
         if translation is None:
-            v1=V.zero()
+            # Since we allow the initial vertex to be non-zero, this changed:
+            v1=self.vertex(0)
         else:
-            v1=translation
+            # Since we allow the initial vertex to be non-zero, this changed:
+            v1=translation+self.vertex(0)
+        # Below, we only make use of edge vectors:
         for i in range(self.num_edges()):
             v0=v1
-            e=V((self._x[i],self._y[i]))
+            e=self.edge(i)
             v1=v0+e
             w=wedge_product(e,point-v0)
             if w < 0:
@@ -242,7 +243,7 @@ class Polygon(Element):
                 n=self.num_edges()
                 # index and edge after v1 
                 ip1=(i+1)%n
-                e=V((self._x[ip1],self._y[ip1]))
+                e=self.edge(ip1)
                 w=wedge_product(e,point-v1)
                 if w<0:
                     return PolygonPosition(PolygonPosition.OUTSIDE)
@@ -251,7 +252,7 @@ class Polygon(Element):
                     return PolygonPosition(PolygonPosition.VERTEX, vertex=ip1)
                 # index, edge and vertex prior to v0
                 im1=(i+n-1)%n
-                e=V((self._x[im1],self._y[im1]))
+                e=self.edge(im1)
                 vm1=v0-e
                 w=wedge_product(e,point-vm1)
                 if w<0:
@@ -347,17 +348,15 @@ class Polygon(Element):
 
     def edges(self):
         r"""
-        Return the set of edges as vectors.
+        Return the list of edges as vectors.
         """
-        V = self.parent().vector_space()
-        return map(V, zip(self._x,self._y))
+        return [self.edge(i) for i in range(self.num_edges())]
 
     def edge(self, i):
         r"""
-        Return the ``i``-th edge of that polygon.
+        Return a vector representing the ``i``-th edge of the polygon.
         """
-        V = self.parent().vector_space()
-        return V((self._x[i], self._y[i]))
+        return self.vertex(i+1)-self.vertex(i)
 
     def plot(self, translation=None):
         r"""
@@ -397,20 +396,12 @@ class Polygon(Element):
             sage: (2*square()).area()
             4
         """
-        x = self._x
-        y = self._y
-        zero = self.field().zero()
-        x0 = self._x[0]
-        y0 = self._y[0]
-        x1 = x0 + self._x[1]
-        y1 = y0 + self._y[1]
-        a = 0
-        for i in xrange(2,len(self._x)):
-            a += (x0*y1 - x1*y0)/2
-            x0 = x1; y0 = y1
-            x1 += x[i]
-            y1 += y[i]
-        return a
+        # Will use an area formula obtainable from Green's theorem. See for instance:
+        # http://math.blogoverflow.com/2014/06/04/greens-theorem-and-area-of-polygons/
+        total=self.field().zero()
+        for i in range(self._num_edges()):
+            total += (self.vertex(i)[0]+self.vertex(i+1)[0])*self.edge(i)[1]
+        return total/ZZ_2
 
 from sage.structure.parent import Parent
 class Polygons(Parent):
