@@ -106,6 +106,12 @@ class Similarity(MultiplicativeGroupElement):
     def t(self):
         return self._t
 
+    def derivative(self):
+        r"""Return the 2x2 matrix corresponding to the derivative of the similarity of the plane."""
+        return matrix(self._parent._f,[
+            [self._a, -self._b],
+            [self._b,  self._a]])
+
 
 class SimilarityGroup(UniqueRepresentation,Group):
     r'''Group representing all similarities in the plane.
