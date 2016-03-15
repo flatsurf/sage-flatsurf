@@ -36,10 +36,21 @@ from geometry.matrix_2x2 import (angle,
 from sage.categories.action import Action
 import operator
 
+ZZ_0=ZZ.zero()
 ZZ_2=ZZ(2)
 
 def wedge_product(v,w):
     return v[0]*w[1]-v[1]*w[0]
+
+def is_same_direction(v,w):
+    if wedge_product(v,w)!=ZZ_0:
+        return False
+    return v[0]*w[0]>0 or v[1]*w[1]>0
+
+def is_opposite_direction(v,w):
+    if wedge_product(v,w)!=ZZ_0:
+        return False
+    return v[0]*w[0]<0 or v[1]*w[1]<0
 
 class ActionOnPolygons(Action):
     def __init__(self, polygons):
