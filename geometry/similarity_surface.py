@@ -179,8 +179,7 @@ class SimilaritySurface_generic(SageObject):
 
     def edge_transformation(self, p, e):
         r"""
-        Return the edge to which this edge is identified and the matrix to be
-        applied.
+        Return the similarity bringing the opposite edge to the provided edge.
 
         EXAMPLES::
         
