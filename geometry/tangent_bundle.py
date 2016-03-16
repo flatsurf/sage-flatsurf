@@ -73,6 +73,14 @@ class SimilaritySurfaceTangentVector:
         """
         return self._position.is_vertex()
     
+    def is_in_boundary_of_polygon(self):
+        r"""
+        Return the truth value of the statement 
+        'the base point for this vector lies on the boundary of 
+        one of the polygons making up the surface.'
+        """
+        return self._position.is_in_boundary()
+    
     def bundle(self):
         r""" Return the tangent bundle containing this vector. """
         return self._bundle
@@ -90,6 +98,15 @@ class SimilaritySurfaceTangentVector:
     def vector(self):
         r""" Return the coordinates of this vector within the assigned polygon. """
         return self._vector
+        
+    def differs_by_scaling(self, another_tangent_vector):
+        r"""
+        Returns true if the other vector just differs by scaling. This means they should lie
+        in the same polygon, be based at the same point, and point in the same direction.
+        """
+        return self.polygon_label()==another_tangent_vector.polygon_label() and \
+            self.point()==another_tangent_vector.point() and \
+            is_same_direction(self.vector(),another_tangent_vector.vector())
         
     def invert(self):
         r"""
