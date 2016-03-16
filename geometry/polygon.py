@@ -102,6 +102,14 @@ class PolygonPosition:
     def is_in_interior(self):
         return self._position_type == PolygonPosition.INTERIOR
 
+    def is_in_boundary(self):
+        r"""
+        Return true if the position is in the boundary of the polygon
+        (either the interior of an edge or a vertex).
+        """
+        return self._position_type == PolygonPosition.EDGE_INTERIOR or \
+            self._position_type == PolygonPosition.VERTEX
+
     def is_in_edge_interior(self):
         return self._position_type == PolygonPosition.EDGE_INTERIOR
 
