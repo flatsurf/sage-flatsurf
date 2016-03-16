@@ -11,6 +11,7 @@ class SimilaritySurfaceTangentVector:
             self._polygon_label=polygon_label
             self._point=point
             self._vector=vector
+            self._position=pos
         elif pos.is_in_edge_interior():
             e=pos.get_edge()
             edge_v=p.edge(e)
@@ -23,10 +24,12 @@ class SimilaritySurfaceTangentVector:
                 self._polygon_label=label2
                 self._point=point2
                 self._vector=vector2
+                self._position=self.surface().polygon(label2).get_point_position(point2)
             else:
                 self._polygon_label=polygon_label
                 self._point=point
                 self._vector=vector
+                self._position=pos
         elif pos.is_vertex():
             v=pos.get_vertex()
             # subsequent edge:
@@ -46,11 +49,13 @@ class SimilaritySurfaceTangentVector:
                 self._polygon_label=label2
                 self._point=point2
                 self._vector=vector2
+                self._position=self.surface().polygon(label2).get_point_position(point2)
             else:
                 # vector points along edge1 in that directior or points into polygons interior
                 self._polygon_label=polygon_label
                 self._point=point
                 self._vector=vector
+                self._position=pos
         else:
             raise ValueError("Provided point lies outside the indexed polygon")
     
@@ -62,6 +67,84 @@ class SimilaritySurfaceTangentVector:
         r"""Return the underlying surface."""
         return self._bundle.surface()
 
+    def is_based_at_singularity(self):
+        r"""
+        Return the truth value of the statement 'the base point for this vector is a singularity.'
+        """
+        return self._position.is_vertex()
+    
+    def bundle(self):
+        r""" Return the tangent bundle containing this vector. """
+        return self._bundle
+    
+    def polygon_label(self):
+        return self._polygon_label
+
+    def polygon(self):
+        return self.surface().polygon(self.polygon_label())
+        
+    def point(self):
+        r""" Return the coordinates of the basepoint of the vector within the assigned polygon. """
+        return self._point
+    
+    def vector(self):
+        r""" Return the coordinates of this vector within the assigned polygon. """
+        return self._vector
+        
+    def invert(self):
+        r"""
+        Returns the negation of this tangent vector. 
+        Raises a ValueError if the vector is based at a singularity.'
+        """
+        if self.is_based_at_singularity():
+            raise ValueError("Can't invert tangent vector based at a singularity.")
+        return SimilaritySurfaceTangentVector(
+            self.bundle(), 
+            self.polygon_label(), 
+            self.point(),
+            -self.vector())
+
+    def forward_to_polygon_boundary(self):
+        r"""
+        Flows forward (in the direction of the tangent vector) until the end
+        of the polygon is reached.
+        Returns the tangent vector based at the endpoint which point backward along the trajectory.
+        
+        NOTES:: 
+        
+            We return the backward trajectory, because continuing forward does not make sense if a
+            singularity is reached. You can obtain the forward vector by subsequently applying invert().
+        
+        EXAMPLES::
+        
+            sage: from geometry.similarity_surface_generators import SimilaritySurfaceGenerators
+            sage: s=SimilaritySurfaceGenerators.example()
+            sage: from geometry.tangent_bundle import SimilaritySurfaceTangentBundle
+            sage: tb = SimilaritySurfaceTangentBundle(s)
+            sage: print("Polygon 0 is "+str(s.polygon(0)))
+            Polygon 0 is Polygon: (0, 0), (2, -2), (2, 0)
+            sage: print("Polygon 1 is "+str(s.polygon(1)))
+            Polygon 1 is Polygon: (0, 0), (2, 0), (1, 3)
+            sage: from geometry.tangent_bundle import SimilaritySurfaceTangentVector
+            sage: V=tb.surface().vector_space()
+            sage: v=SimilaritySurfaceTangentVector(tb, 0, V((0,0)), V((3,-1)))
+            sage: print(v)
+            SimilaritySurfaceTangentVector in polygon 0 based at (0, 0) with vector (3, -1)
+            sage: v2=v.forward_to_polygon_boundary()
+            sage: print(v2)
+            SimilaritySurfaceTangentVector in polygon 0 based at (2, -2/3) with vector (-3, 1)
+            sage: print(v2.invert())
+            SimilaritySurfaceTangentVector in polygon 1 based at (2/3, 2) with vector (4, -3)
+        """
+        p=self.polygon()
+        point2,pos2 = p.flow_to_exit(self.point(), self.vector())
+        #diff=point2-point
+        new_vector = SimilaritySurfaceTangentVector(
+            self.bundle(), 
+            self.polygon_label(), 
+            point2,
+            -self.vector())
+        return new_vector
     
 class SimilaritySurfaceTangentBundle:
     def __init__(self, similarity_surface):
