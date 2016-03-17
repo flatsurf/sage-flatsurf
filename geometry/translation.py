@@ -53,7 +53,7 @@ class Translation(MultiplicativeGroupElement):
 
     def __call__(self,w):
         r'''Return the image of a vector w under the translation.'''
-        return vector(self._parent._f, [ self._s+w[0], self._t+w[1] ])
+        return vector([ self._s+w[0], self._t+w[1] ])
 
     def _repr_(self):
         return "Translation by ("+str(self._s)+", "+str(self._t)+")"
