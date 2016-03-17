@@ -5,7 +5,7 @@ class SimilaritySurfaceTangentVector:
         self._bundle=tangent_bundle
         p=self.surface().polygon(polygon_label)
         pos=p.get_point_position(point)
-        if vector == self.surface().base_ring().zero():
+        if vector == self._bundle.vector_space().zero():
             raise ValueError("Provided vector is zero. (Temporarily not supported.)")
         if pos.is_in_interior():
             self._polygon_label=polygon_label
@@ -166,7 +166,18 @@ class SimilaritySurfaceTangentVector:
 class SimilaritySurfaceTangentBundle:
     def __init__(self, similarity_surface):
         self._s=similarity_surface
-        
+
+    def base_ring(self):
+        return self._s.base_ring()
+    
+    field=base_ring
+
+    def vector_space(self):
+        r"""
+        Return the vector space over the field of the bundle.
+        """
+        return self._s.vector_space()
+
     def surface(self):
         r"""Return the surface this bundle is over."""
         return self._s
