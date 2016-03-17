@@ -2,7 +2,6 @@ from sage.matrix.matrix_space import MatrixSpace
 from sage.modules.free_module import VectorSpace
 from sage.rings.real_double import RDF
 from sage.rings.rational_field import QQ
-from collections import defaultdict
 
 from geometry.similarity_surface import SimilaritySurface_generic
 
@@ -122,11 +121,11 @@ class GraphicalSurface:
         p=polygon.plot()
         for e in range(polygon.num_edges()):
             if not self.is_adjacent(label,e):
-                p += polygon.plot_edge(e,color="black")
+                p += polygon.plot_edge(e,color="blue")
             else:
                 pp,ee=self.opposite_edge(label,e)
                 if label>pp or (label==pp and e>ee):
-                    p += polygon.plot_edge(e,color="black",dotted=True)
+                    p += polygon.plot_edge(e,color="blue",dotted=True)
         while True:
             try:
                 label=i.next()
@@ -134,11 +133,11 @@ class GraphicalSurface:
                 p+=polygon.plot()
                 for e in range(polygon.num_edges()):
                     if not self.is_adjacent(label,e):
-                       p += polygon.plot_edge(e,color="black")
+                       p += polygon.plot_edge(e,color="blue")
                     else:
                         pp,ee=self.opposite_edge(label,e)
                         if label>pp or (label==pp and e>ee):
-                            p += polygon.plot_edge(e,color="black",dotted=True)
+                            p += polygon.plot_edge(e,color="blue",dotted=True)
             except StopIteration as e:
                 break
         return p
