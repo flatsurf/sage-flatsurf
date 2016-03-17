@@ -121,7 +121,7 @@ class StraightLineTrajectory:
         self._setup_backward()
 
     def segments(self):
-        return self._segments()
+        return self._segments
 
     def combinatorial_length(self):
         return len(self.segments())
