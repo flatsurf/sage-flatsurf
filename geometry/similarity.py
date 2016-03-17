@@ -63,7 +63,7 @@ class Similarity(MultiplicativeGroupElement):
 
     def __call__(self,w):
         r'''Return m*w+v.'''
-        return vector(self._parent._f,[self._a*w[0]-self._b*w[1]+self._s, self._b*w[0]+self._a*w[1]+self._t])
+        return vector([self._a*w[0]-self._b*w[1]+self._s, self._b*w[0]+self._a*w[1]+self._t])
 
     def _repr_(self):
         return "Similarity (x,y) mapsto ("+str(self._a)+"*x-"+\
