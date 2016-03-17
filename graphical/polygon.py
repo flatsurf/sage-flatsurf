@@ -35,6 +35,15 @@ class GraphicalPolygon:
     def transformed_vertex(self, e):
         return self._transformation(self._p.vertex(e))
 
+    def transform(self, point, field=None):
+        r"""
+        Return the transformation of point into graphical coordinates.
+        """
+        if self._transformation is None:
+            return V(point)
+        else:
+            return V(self._transformation(point))
+
     def set_transformation(self,transformation):
         r"""Set the transformation to be applied to the polygon."""
         if transformation is None:
