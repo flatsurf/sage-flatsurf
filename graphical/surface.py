@@ -53,6 +53,9 @@ class GraphicalSurface:
         return self._ss
         
     def graphical_polygon(self, label):
+        r"""
+        Return the graphical_polygon with the given label.
+        """
         if self._polygons.has_key(label):
             return self._polygons[label]
         else:
@@ -85,6 +88,12 @@ class GraphicalSurface:
         poly=self.graphical_polygon(pp)
         g=self._ss.edge_transformation(pp,ee)
         poly.set_transformation(g)
+
+    def make_adjacent_and_visible(self, p, e):
+        r"""Move the polygon across the prescribed edge so that is adjacent,
+        and make the moved polygon visible."""
+        self.make_adjacent(p, e)
+        self.make_visible(self._ss.opposite_edge(p,e)[0])
         
     def is_adjacent(self,p,e):
         r"""
