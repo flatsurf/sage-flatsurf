@@ -536,7 +536,8 @@ class AbstractOrigami(TranslationSurface_generic):
 
     def polygon(self, lab):
         if lab not in self._domain:
-            raise ValueError
+            #Updated to print a possibly useful error message
+            raise ValueError("Label "+str(lab)+" is not in the domain")
         from geometry.polygon import square
         return square()
 
