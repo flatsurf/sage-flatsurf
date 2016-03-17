@@ -3,15 +3,16 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to sage-flatsurf's documentation!
-=========================================
+Documentation for sage-flatsurf
+*******************************
 
 Contents:
 
 .. toctree::
    :maxdepth: 2
-.. automodule:: geometry.polygon
 
+   geometry
+   graphical
 
 
 
