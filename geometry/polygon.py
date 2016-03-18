@@ -597,6 +597,7 @@ class PolygonCreator():
     Class for iteratively constructing a polygon over the field.
     """
     def __init__(self, field = QQ):
+        r"""Create a polygon in the provided field."""
         self._v=[]
         self._w=[]
         self._field=field
