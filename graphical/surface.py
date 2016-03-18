@@ -87,7 +87,8 @@ class GraphicalSurface:
         pp,ee=self._ss.opposite_edge(p,e)
         poly=self.graphical_polygon(pp)
         g=self._ss.edge_transformation(pp,ee)
-        poly.set_transformation(g)
+        h=self.graphical_polygon(p).transformation()
+        poly.set_transformation(h*g)
 
     def make_adjacent_and_visible(self, p, e):
         r"""Move the polygon across the prescribed edge so that is adjacent,
