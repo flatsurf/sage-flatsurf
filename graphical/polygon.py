@@ -44,6 +44,13 @@ class GraphicalPolygon:
         else:
             return V(self._transformation(point))
 
+    def transformation(self):
+        r"""
+        Return the transformation (similarity) which converts from
+        mathematical to graphical coordinates.
+        """
+        return self._transformation
+
     def set_transformation(self,transformation):
         r"""Set the transformation to be applied to the polygon."""
         if transformation is None:
