@@ -148,7 +148,7 @@ class SimilaritySurface_generic(SageObject):
             end = ""
         else:
             end = "s"
-        return "Similarity surface built from %s polygon"%self._polygons.cardinality() + end
+        return "Similarity surface built from %s polygon"%self.polygon_labels().cardinality() + end
 
     def area(self):
         if self.num_polygons.is_finite():
