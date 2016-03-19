@@ -33,6 +33,10 @@ class GraphicalSurface:
     def __repr__(self):
         s = "Graphical version of Similarity Surface "+repr(self._ss)
         return s
+    
+    def visible(self):
+        r""" Return the set of visible labels. """
+        return self._visible
         
     def is_visible(self,label):
         r"""
@@ -51,7 +55,30 @@ class GraphicalSurface:
         Return the underlying similarity surface.
         """
         return self._ss
-        
+
+    def minx(self):
+        r""" Return the minimal x-coordinate of a vertex of a visible graphical polygon. """
+        return min([self.graphical_polygon(label).minx() for label in self.visible()])
+
+    def miny(self):
+        r""" Return the minimal y-coordinate of a vertex of a visible graphical polygon. """
+        return min([self.graphical_polygon(label).miny() for label in self.visible()])
+
+    def maxx(self):
+        r""" Return the maximal x-coordinate of a vertex of a visible graphical polygon. """
+        return max([self.graphical_polygon(label).maxx() for label in self.visible()])
+
+    def maxy(self):
+        r""" Return the minimal y-coordinate of a vertex of a visible graphical polygon. """
+        return max([self.graphical_polygon(label).maxy() for label in self.visible()])
+
+    def bounding_box(self):
+        r""" Return the quadruple (x1,y1,x2,y2) where x1 and y1 are the minimal
+        x- and y-coordinates of a visible graphical polygon and x2 and y2 are the 
+        maximal x-and y- cordinates  of a visible graphical polygon."""
+        return self.minx(), self.miny(), self.maxx(), self.maxy()
+
+
     def graphical_polygon(self, label):
         r"""
         Return the graphical_polygon with the given label.
