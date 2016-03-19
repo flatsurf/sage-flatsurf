@@ -32,6 +32,27 @@ class GraphicalPolygon:
     def base_polygon(self):
         return self._p
 
+    def minx(self):
+        r""" Return the minimal x-coordinate of a vertex. """
+        return min([v[0] for v in self.vertices()])
+
+    def miny(self):
+        r""" Return the minimal y-coordinate of a vertex. """
+        return min([v[1] for v in self.vertices()])
+
+    def maxx(self):
+        r""" Return the maximal x-coordinate of a vertex. """
+        return max([v[0] for v in self.vertices()])
+
+    def maxy(self):
+        r""" Return the minimal y-coordinate of a vertex. """
+        return max([v[1] for v in self.vertices()])
+
+    def bounding_box(self):
+        r""" Return the quadruple (x1,y1,x2,y2) where x1 and y1 are the minimal
+        x- and y-coordinates and x2 and y2 are the maximal x-and y- cordinates."""
+        return self.minx(), self.miny(), self.maxx(), self.maxy()
+
     def transformed_vertex(self, e):
         return self._transformation(self._p.vertex(e))
 
