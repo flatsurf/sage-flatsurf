@@ -14,13 +14,6 @@ Surfaces
    :members:
    :undoc-members:
 
-Pre-defined Surfaces
-====================
-
-.. automodule:: geometry.similarity_surface_generators
-   :members:
-   :undoc-members:
-
 Matrices (2x2)
 ==============
 .. automodule:: geometry.matrix_2x2
@@ -38,6 +31,12 @@ Similarities and Translations
 Tangent Bundle
 ==============
 .. automodule:: geometry.tangent_bundle
+   :members:
+   :undoc-members:
+
+Homology
+========
+.. automodule:: geometry.relative_homology
    :members:
    :undoc-members:
 
