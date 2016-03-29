@@ -156,7 +156,7 @@ def similarity_from_vectors(u,v):
 
 def rotation_matrix_angle(r, check=False):
     r"""
-    Return the angle of the rotation matrix ``r`` divided by ``2 pi`.
+    Return the angle of the rotation matrix ``r`` divided by ``2 pi``.
 
     EXAMPLES::
 
