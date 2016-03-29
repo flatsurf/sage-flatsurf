@@ -55,9 +55,9 @@ class RelativeHomologyClass(ModuleElement):
     def __cmp__(self, other):
         # Construct a set of keys
         s=set()
-        for k,v in self._d:
+        for k,v in self._d.iteritems():
             s.add(k)
-        for k,v in other._d:
+        for k,v in other._d.iteritems():
             s.add(k)
         zero = self.parent().base_ring().zero()
         for k in s:
