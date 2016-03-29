@@ -1,4 +1,4 @@
-def straight_line_plot(gs, v, directory="/tmp/", pause_time = 100, width_in_inches=10):
+def straight_line_plot(gs, v, directory="/tmp/", pause_time = 100, width_in_inches=10, file_offset=0):
     r"""
     Produces successively longer plots of a trajectory on the graphical surface gs which starts with the provided
     SimilaritySurfaceTangentVector, v. 
@@ -77,7 +77,8 @@ def straight_line_plot(gs, v, directory="/tmp/", pause_time = 100, width_in_inch
     # Every 100 times we do this, we move to a new file.
 
     while True:
-        f = open(path.join(directory, "orbit"+str(count/pause_time)+".txt"), 'w')
+        filename_f = "orbit"+str(count/pause_time+file_offset)+".txt"
+        f = open(path.join(directory, filename_f), 'w')
         count_start=count
         while (count==count_start) or (count % pause_time != 0):
             if gs.is_visible(seg.polygon_label()):
@@ -103,20 +104,22 @@ def straight_line_plot(gs, v, directory="/tmp/", pause_time = 100, width_in_inch
         plot.subplots_adjust(left=0,right=1,top=1,bottom=0)
         from matplotlib.backends.backend_agg import FigureCanvasAgg
         plot.set_canvas(FigureCanvasAgg(plot))
-        plot.savefig(path.join(directory,"orbit"+str(count/pause_time)+".svg"), transparent=True)
+        filename_p = "orbit"+str(count/pause_time+file_offset)+".svg"
+        plot.savefig(path.join(directory,"orbit"+str(count/pause_time+file_offset)+".svg"), transparent=True)
 
         # Write the pile file:
-        a = open(path.join(directory,"orbit_pile"+str(count/pause_time)+".svg"), 'w')
+        filename_a = "orbit_pile"+str(count/pause_time+file_offset)+".svg"
+        a = open(path.join(directory,filename_a), 'w')
         a.write('<?xml version="1.0" encoding="utf-8" standalone="no"?>\n');
         a.write('<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"\n  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">\n')
         a.write('<svg height="'+str(height_in_inches*72)+'pt" version="1.1" viewBox="0 0 '+ \
             str(width_in_inches*72)+' '+str(height_in_inches*72)+'" width="'+ \
             str(width_in_inches*72)+'pt" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">\n')
-        for i in range(count/pause_time+1):
+        for i in range(count/pause_time+1+file_offset):
             a.write('<image x="0" y="0" width="'+str(width_in_inches*72)+'" height="'+str(height_in_inches*72)+\
                 '" xlink:href="orbit'+str(i)+'.svg" />\n')
         a.write('</svg>')
         a.close()
         
         p=Graphics()
-        print("Wrote to files named 'orbit"+str(count/pause_time)+"' with extension .txt and .svg")
+        print("Wrote to files '"+filename_f+"', '"+filename_p+"' and '"+filename_a+"'.")
