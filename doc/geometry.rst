@@ -34,6 +34,12 @@ Tangent Bundle
    :members:
    :undoc-members:
 
+Straight-line Flow
+==================
+.. automodule:: geometry.straight_line_trajectory
+   :members:
+   :undoc-members:
+
 Homology
 ========
 .. automodule:: geometry.relative_homology
