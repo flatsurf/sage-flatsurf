@@ -45,10 +45,14 @@ class GraphicalSegmentInPolygon:
             gseg = GraphicalSegmentInPolygon(gs, seg)
             show(gs.plot()+gseg.plot())
         """
-        if color==None:
-            color="black"
-        from sage.plot.line import line2d
-        return line2d([self.start(), self.end()],color=color)
+        if self._gs.is_visible(self.polygon_label()):
+            if color==None:
+                color="black"
+            from sage.plot.line import line2d
+            return line2d([self.start(), self.end()],color=color)
+        else:
+            from sage.plot.graphics import Graphics
+            return Graphics()
 
 class GraphicalStraightLineTrajectory:
     def __init__(self, graphical_surface, trajectory):
