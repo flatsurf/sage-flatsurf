@@ -721,7 +721,7 @@ polygons = PolygonsConstructor()
 def regular_octagon(field=None):
     from sage.misc.superseded import deprecation
     deprecation(33, "Do not use this function anymore but regular_ngon")
-    return regular_ngon(8)
+    return polygons.regular_ngon(8)
 
 class PolygonCreator():
     r"""

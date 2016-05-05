@@ -42,6 +42,7 @@ class CartesianProduct(Parent):
             sage: len(CartesianProduct([A3,A2,A4]).list())
             24
             sage: len(CartesianProduct([A4,A2,A3]).list())
+            24
         """
         from itertools import product
         from sage.combinat.set_partition_ordered import OrderedSetPartitions

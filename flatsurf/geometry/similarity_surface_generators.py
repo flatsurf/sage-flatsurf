@@ -277,7 +277,8 @@ class TFractal(TranslationSurface_generic):
 
         EXAMPLES::
 
-            sage: T = TFractal()
+            sage: import flatsurf.geometry.similarity_surface_generators as sfg
+            sage: T = sfg.TFractal()
             sage: W = T._words
             sage: w = W('LLRLRL')
             sage: T.opposite_edge((w,0),0)
@@ -348,6 +349,8 @@ class TFractal(TranslationSurface_generic):
 
         EXAMPLES::
 
+            sage: import flatsurf.geometry.similarity_surface_generators as sfg
+            sage: T = sfg.TFractal()
             sage: T.polygon(('L',0))
             Polygon: (0, 0), (1/2, 0), (1/2, 1/2), (0, 1/2)
             sage: T.polygon(('LRL',0))
@@ -428,30 +431,42 @@ class TranslationSurfaceGenerators:
 
         EXAMPLES::
 
-            sage: T = translation_surfaces.regular_octagon()
+            sage: import flatsurf.geometry.similarity_surface_generators as sfg
+            sage: T = sfg.translation_surfaces.regular_octagon()
             sage: T
-            Translation surface built from the regular octagon
+            Translation surface built from 1 polygon
             sage: T.stratum()
-            H_2(2)
+            H(2)
         """
-        from flatsurf.geometry.polygon import regular_octagon
+        from flatsurf.geometry.polygon import polygons
         from flatsurf.geometry.similarity_surface import TranslationSurface_polygons_and_gluings
-        polygons = [regular_octagon()]
+        polygons = [polygons.regular_ngon(8)]
         identifications = {}
         identifications.update(dict(((0,i),(0,i+4)) for i in xrange(4)))
         return TranslationSurface_polygons_and_gluings(polygons=polygons, identifications=identifications)
 
     @staticmethod
     def octagon_and_squares():
-        from flatsurf.geometry.polygon import square, regular_octagon
+        r"""
+        EXAMPLES::
+
+            sage: import flatsurf.geometry.similarity_surface_generators as sfg
+            sage: sfg.translation_surfaces.octagon_and_squares()
+            Translation surface built from 3 polygons
+        """
+        from flatsurf.geometry.polygon import polygons
         from sage.matrix.matrix_space import MatrixSpace
         from flatsurf.geometry.similarity_surface import TranslationSurface_polygons_and_gluings
 
-        o = regular_octagon()
+        o = polygons.regular_ngon(8)
         K = o.parent().field()
         sqrt2 = K.gen()
+
         rot = MatrixSpace(K,2)([[sqrt2/ZZ_2,-sqrt2/ZZ_2],[sqrt2/ZZ_2,sqrt2/ZZ_2]])
-        polygons = [regular_octagon(), ZZ_2*square(K), ZZ_2*rot*square(K)]
+
+        s = ZZ_2 * polygons.square(field=K)
+
+        polygons = [o, s, rot * s]
         identifications = {
             (0,0): (1,3),
             (0,1): (2,3),
@@ -471,25 +486,47 @@ class TranslationSurfaceGenerators:
 
         EXAMPLES::
 
+            sage: import flatsurf.geometry.similarity_surface_generators as sfg
+
             sage: S = SymmetricGroup(3)
             sage: r = S('(1,2)')
             sage: u = S('(1,3)')
-            sage: o = translation_surfaces.origami(r,u)
+            sage: o = sfg.translation_surfaces.origami(r,u)
             sage: o
             Origami defined by r=(1,2) and u=(1,3)
             sage: o.stratum()
-            H_2(2)
+            H(2)
         """
         from flatsurf.geometry.similarity_surface import Origami
         return Origami(r,u,rr,uu,domain)
 
-
     @staticmethod
     def infinite_staircase1():
+        r"""
+        Return the infinite staircase
+
+        EXAMPLES::
+
+            sage: import flatsurf.geometry.similarity_surface_generators as sfg
+            sage: S = sfg.translation_surfaces.infinite_staircase1()
+            sage: S
+            The infinite staircase
+        """
         return InfiniteStaircase()
 
     @staticmethod
     def infinite_staircase2():
+        r"""
+        Return the infinite staircase built as an origami
+
+        EXAMPLES::
+
+            sage: import flatsurf.geometry.similarity_surface_generators as sfg
+            sage: S = sfg.translation_surfaces.infinite_staircase2()
+            sage: S
+            Origami defined by r=<function <lambda> at ...> and
+            u=<function <lambda> at ...>
+        """
         from flatsurf.geometry.similarity_surface import Origami
         return Origami(
                 lambda x: x+1 if x%2 else x-1,  # r  (edge 1)
@@ -500,4 +537,15 @@ class TranslationSurfaceGenerators:
 
     @staticmethod
     def t_fractal(w=ZZ_1, r=ZZ_2, h1=ZZ_1, h2=ZZ_1):
+        r"""
+        Return the T-fractal with parameters ``w``, ``r``, ``h1``, ``h2``.
+
+        EXAMPLES::
+
+            sage: import flatsurf.geometry.similarity_surface_generators as sfg
+            sage: sfg.translation_surfaces.t_fractal()
+            The T-fractal surface with parameters w=1, r=2, h1=1, h2=1
+        """
         return TFractal(w,r,h1,h2)
+
+translation_surfaces = TranslationSurfaceGenerators()
