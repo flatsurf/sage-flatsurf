@@ -47,14 +47,24 @@ def wedge_product(v,w):
     return v[0]*w[1]-v[1]*w[0]
 
 def is_same_direction(v,w):
-    return v and w and \
-           not wedge_product(v,w) and \
-           (v[0]*w[0] > 0 or v[1]*w[1] > 0)
+    if wedge_product(v,w)!=ZZ_0:
+        return False
+    return v[0]*w[0]>0 or v[1]*w[1]>0
 
 def is_opposite_direction(v,w):
-    return v and w and \
-           not wedge_product(v,w) and \
-           v[0]*w[0] < 0 or v[1]*w[1] < 0
+    if wedge_product(v,w)!=ZZ_0:
+        return False
+    return v[0]*w[0]<0 or v[1]*w[1]<0
+
+#def is_same_direction(v,w):
+#    return v and w and \
+#           not wedge_product(v,w) and \
+#           (v[0]*w[0] > 0 or v[1]*w[1] > 0)
+#
+#def is_opposite_direction(v,w):
+#    return v and w and \
+#           not wedge_product(v,w) and \
+#           v[0]*w[0] < 0 or v[1]*w[1] < 0
 
 class MatrixActionOnPolygons(Action):
     def __init__(self, polygons):
