@@ -12,3 +12,7 @@ contact the authors.
 There is also a related [flatsurf package](http://www.labri.fr/perso/vdelecro/programming.html).
 The code in this repository is currently independent of the package but
 the aim is to get them merged.
+
+To test:
+sage -t --force-lib ?
+where ? is a directory or file.
