@@ -387,6 +387,11 @@ class SimilaritySurface_generic(SageObject):
                 raise ValueError("not able to find a common ring for arguments")
 
         return self.tangent_bundle(R)(lab, p, v)
+        
+    def graphical_surface(self):
+        r"""Return a GraphicalSurface representing this surface."""
+        from graphical.surface import GraphicalSurface
+        return GraphicalSurface(self)
 
 
 class SimilaritySurface_polygons_and_gluings(SimilaritySurface_generic):
