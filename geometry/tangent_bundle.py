@@ -167,20 +167,25 @@ class SimilaritySurfaceTangentBundle:
     r""" 
     Construct the tangent bundle of a given similarity surface. 
     
-    Needs work: We should allow the vector field to lie in an extension field of the base field.
+    Needs work: We should check for coersion from the base_ring of the surface
     """
-    def __init__(self, similarity_surface):
+    def __init__(self, similarity_surface, base_ring=None):
         self._s=similarity_surface
+        if base_ring is None:
+            self._base_ring=self._s.base_ring()
+        else:
+            self._base_ring=base_ring
+        self._V = VectorSpace(self._base_ring, 2)
 
     def __call__(self, polygon_label, point, vector):
         r"""
         Construct a tangent vector from a polygon label, a point in the polygon and a vector. The point and the vector should have coordinates
         in the base field."""
         V = self.vector_space()
-        return SimilaritySurfaceTangentVector(self, polygon_label, V(point), V(vector))
+        return SimilaritySurfaceTangentVector(self, polygon_label, self._V(point), self._V(vector))
 
     def base_ring(self):
-        return self._s.base_ring()
+        return self._base_ring
     
     field=base_ring
 
@@ -188,7 +193,7 @@ class SimilaritySurfaceTangentBundle:
         r"""
         Return the vector space over the field of the bundle.
         """
-        return self._s.vector_space()
+        return self._V
 
     def surface(self):
         r"""Return the surface this bundle is over."""
