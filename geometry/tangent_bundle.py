@@ -177,18 +177,23 @@ class SimilaritySurfaceTangentVector:
             -self.vector())
         return new_vector
     
+    def straight_line_trajectory(self):
+        r""" Convert this tangent vector to a StraightLineTrajectory."""
+        from geometry.straight_line_trajectory import StraightLineTrajectory
+        return StraightLineTrajectory(self)
+    
 class SimilaritySurfaceTangentBundle:
     r""" 
     Construct the tangent bundle of a given similarity surface. 
     
     Needs work: We should check for coersion from the base_ring of the surface
     """
-    def __init__(self, similarity_surface, base_ring=None):
+    def __init__(self, similarity_surface, ring=None):
         self._s=similarity_surface
-        if base_ring is None:
+        if ring is None:
             self._base_ring=self._s.base_ring()
         else:
-            self._base_ring=base_ring
+            self._base_ring=ring
         self._V = VectorSpace(self._base_ring, 2)
 
     def __call__(self, polygon_label, point, vector):
