@@ -10,6 +10,7 @@ from sage.sets.family import Family
 
 from sage.rings.integer import Integer
 from sage.rings.rational import Rational
+from sage.rings.infinity import Infinity
 
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
@@ -144,11 +145,17 @@ class SimilaritySurface_generic(SageObject):
         return self.polygon_labels().an_element()
 
     def _repr_(self):
+        if self.num_polygons() == Infinity:
+            num = 'infinitely many'
+        else:
+            num = str(self.num_polygons())
+
         if self.num_polygons() == 1:
             end = ""
         else:
             end = "s"
-        return "Similarity surface built from %s polygon"%self.polygon_labels().cardinality() + end
+
+        return "Similarity surface built from {} polygon{}".format(num, end)
 
     def area(self):
         if self.num_polygons.is_finite():
