@@ -18,6 +18,8 @@ from sage.rings.qqbar import AA
 from sage.rings.real_mpfr import RR
 from sage.rings.real_mpfi import RIF
 
+from sage.modules.free_module_element import vector
+
 from sage.matrix.constructor import matrix, identity_matrix
 
 ZZ_1 = Integer(1)
@@ -308,6 +310,83 @@ class SimilaritySurface_generic(SageObject):
                 tree[p1] = (p2,e)
 
         return tree,bridges
+
+    def tangent_bundle(self, ring=None):
+        r"""
+        Return the tangent bundle
+
+        INPUT:
+
+        - ``ring`` -- an optional field (defaults to the coordinate field of the
+          surface)
+        """
+        if ring is None:
+            ring = self.base_ring()
+
+        try:
+            return self._tangent_bundle_cache[ring]
+        except AttributeError:
+            self._tangent_bundle_cache = {}
+        except KeyError:
+            pass
+
+        from tangent_bundle import SimilaritySurfaceTangentBundle
+        self._tangent_bundle_cache[ring] = SimilaritySurfaceTangentBundle(self, ring)
+        return self._tangent_bundle_cache[ring]
+
+    def tangent_vector(self, lab, p, v):
+        r"""
+        Return a tangent vector.
+
+        INPUT:
+
+        - ``lab`` -- label of a polygon
+
+        - ``p`` -- coordinates of a point in the polygon
+
+        - ``v`` -- coordinates of a vector in R^2
+
+        EXAMPLES::
+
+            sage: from geometry.chamanara import ChamanaraSurface
+            sage: S = ChamanaraSurface(1/2)
+            sage: S.tangent_vector(0, (1/2,1/2), (1,1))
+            SimilaritySurfaceTangentVector in polygon 1 based at (-1/2, 3/2) with vector
+            (-1, -1)
+            sage: K.<sqrt2> = QuadraticField(2)
+            sage: S.tangent_vector(0, (1/2,1/2), (1,sqrt2))
+            SimilaritySurfaceTangentVector in polygon 1 based at (-1/2, 3/2) with vector
+            (-1, -sqrt2)
+
+            sage: S = ChamanaraSurface(sqrt2/2)
+            sage: S.tangent_vector(1, (0,1), (1,1))
+            SimilaritySurfaceTangentVector in polygon 0 based at (-sqrt2, sqrt2
+            + 1) with vector (-1, -1)
+        """
+        p = vector(p)
+        v = vector(v)
+
+        if p.parent().dimension() != 2 or v.parent().dimension() != 2:
+            raise ValueError("p (={!r}) and v (={!v}) should have two coordinates")
+
+        R = p.base_ring()
+        if R != v.base_ring():
+            from sage.structure.element import get_coercion_model
+            cm = get_coercion_model()
+            R = cm.common_parent(R, v.base_ring())
+            p = p.change_ring(R)
+            v = v.change_ring(R)
+
+        R2 = self.base_ring()
+        if R != R2:
+            if R2.has_coerce_map_from(R):
+                p = p.change_ring(R2)
+                v = v.change_ring(R2)
+                R = R2
+            elif not R.has_coerce_map_from(R2):
+                raise ValueError("not able to find a common ring for arguments")
+
+        return self.tangent_bundle(R)(lab, p, v)
 
 
 class SimilaritySurface_polygons_and_gluings(SimilaritySurface_generic):
