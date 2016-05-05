@@ -8,17 +8,17 @@ This file implements convex polygons with
 
 EXAMPLES::
 
+    sage: from flatsurf.geometry.polygon import polygons
+
     sage: K.<sqrt2> = NumberField(x^2 - 2, embedding=AA(2).sqrt())
     sage: p = polygons((1,0), (-sqrt2,1+sqrt2), (sqrt2-1,-1-sqrt2))
     sage: p
-    Polygon: (0, 0), (1, 0), (sqrt2, sqrt2)
+    Polygon: (0, 0), (1, 0), (-sqrt2 + 1, sqrt2 + 1)
 
     sage: M = MatrixSpace(K,2)
     sage: m = M([[1,1+sqrt2],[0,1]])
     sage: m * p
-    Polygon: (0, 0), (1, 0), (2*sqrt2 + 2, sqrt2)
-
-    sage: s = polygons((0,0), (1,0), (2,2), (-2,3))
+    Polygon: (0, 0), (1, 0), (sqrt2 + 4, sqrt2 + 1)
 """
 
 
@@ -185,7 +185,7 @@ class ConvexPolygon(Element):
         r"""
         TESTS::
 
-            sage: from geometry.polygon import poylgons
+            sage: from flatsurf.geometry.polygon import polygons
             sage: p1 = polygons.square()
             sage: p2 = polygons((1,0),(0,1),(-1,0),(0,-1), ring=QQbar)
             sage: p1 == p2
@@ -203,7 +203,7 @@ class ConvexPolygon(Element):
         r"""
         TESTS::
 
-            sage: from geometry.polygon import poylgons
+            sage: from flatsurf.geometry.polygon import polygons
             sage: p1 = polygons.square()
             sage: p2 = polygons((1,0),(0,1),(-1,0),(0,-1), ring=QQbar)
             sage: p1 != p2
@@ -280,8 +280,9 @@ class ConvexPolygon(Element):
 
         EXAMPLES::
 
-            sage: s=square()
-            sage: V=s.parent().vector_space()
+            sage: from flatsurf.geometry.polygon import polygons
+            sage: s = polygons.square()
+            sage: V = s.parent().vector_space()
             sage: s.get_point_position(V((1/2,1/2)))
             point positioned in interior of polygon
             sage: s.get_point_position(V((1,0)))
@@ -432,7 +433,8 @@ class ConvexPolygon(Element):
 
         EXAMPLES::
 
-            sage: s=square()
+            sage: from flatsurf.geometry.polygon import polygons
+            sage: s = polygons.square()
             sage: V=s.parent().vector_space()
             sage: p=V((1/2,1/2))
             sage: w=V((2,0))
@@ -519,10 +521,10 @@ class ConvexPolygon(Element):
 
         EXAMPLES::
 
-            sage: from geometry.polygon import square
-            sage: square().angle(0)
+            sage: from flatsurf.geometry.polygon import polygons
+            sage: polygons.square().angle(0)
             1/4
-            sage: regular_ngon(8).angle(0)
+            sage: polygons.regular_ngon(8).angle(0)
             3/8
         """
         return angle(self.edge(e), - self.edge((e-1)%self.num_edges()))
@@ -533,18 +535,18 @@ class ConvexPolygon(Element):
 
         EXAMPLES::
 
-            sage: from geometry.polygon import regular_ngon
-            sage: regular_ngon(8).area()
+            sage: from flatsurf.geometry.polygon import polygons
+            sage: polygons.regular_ngon(8).area()
             2*a + 2
             sage: _ == 2*AA(2).sqrt() + 2
             True
 
-            sage: AA(regular_ngon(11).area())
+            sage: AA(polygons.regular_ngon(11).area())
             9.36563990694544?
 
-            sage: square().area()
+            sage: polygons.square().area()
             1
-            sage: (2*square()).area()
+            sage: (2*polygons.square()).area()
             4
         """
         # Will use an area formula obtainable from Green's theorem. See for instance:
@@ -597,6 +599,7 @@ def number_field_elements_from_algebraics(elts, name='a'):
 
     EXAMPLES::
 
+        sage: from flatsurf.geometry.polygon import number_field_elements_from_algebraics
         sage: z = QQbar.zeta(5)
         sage: c = z.real()
         sage: s = z.imag()
@@ -619,6 +622,8 @@ class PolygonsConstructor:
         r"""
         EXAMPLES::
 
+            sage: from flatsurf.geometry.polygon import polygons
+
             sage: polygons.square()
             Polygon: (0, 0), (1, 0), (1, 1), (0, 1)
             sage: polygons.square(field=QQbar).parent()
@@ -630,6 +635,8 @@ class PolygonsConstructor:
         r"""
         EXAMPLES::
 
+            sage: from flatsurf.geometry.polygon import polygons
+
             sage: polygons.rectangle(1,2)
             Polygon: (0, 0), (1, 0), (1, 2), (0, 2)
 
@@ -637,6 +644,8 @@ class PolygonsConstructor:
             sage: polygons.rectangle(1,sqrt2)
             Polygon: (0, 0), (1, 0), (1, sqrt2), (0, sqrt2)
             sage: _.parent()
+            polygons with coordinates in Number Field in sqrt2 with defining
+            polynomial x^2 - 2
         """
         return self((width,0),(0,height),(-width,0),(0,-height), **kwds)
 
@@ -646,6 +655,8 @@ class PolygonsConstructor:
         Return a regular n-gon.
 
         EXAMPLES::
+
+            sage: from flatsurf.geometry.polygon import polygons
 
             sage: p = polygons.regular_ngon(17)
             sage: p
@@ -670,6 +681,8 @@ class PolygonsConstructor:
     def __call__(self, *args, **kwds):
         r"""
         EXAMPLES::
+
+            sage: from flatsurf.geometry.polygon import polygons
 
             sage: polygons((1,0),(0,1),(-1,0),(0,-1))
             Polygon: (0, 0), (1, 0), (1, 1), (0, 1)

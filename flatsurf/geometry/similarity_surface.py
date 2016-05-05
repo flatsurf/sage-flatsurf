@@ -25,7 +25,6 @@ from sage.matrix.constructor import matrix, identity_matrix
 ZZ_1 = Integer(1)
 ZZ_2 = Integer(2)
 
-from flatsurf.geometry.polygon import Polygon,Polygons
 from flatsurf.geometry.matrix_2x2 import (is_similarity,
                     homothety_rotation_decomposition,
                     similarity_from_vectors,

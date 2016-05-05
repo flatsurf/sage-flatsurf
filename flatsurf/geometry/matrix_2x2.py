@@ -29,6 +29,8 @@ def is_similarity(m):
 
     EXAMPLES::
 
+        sage: from flatsurf.geometry.matrix_2x2 import is_similarity
+
         sage: is_similarity(matrix([[0,1],[1,0]]))
         True
         sage: is_similarity(matrix([[0,-2],[2,0]]))
@@ -47,6 +49,8 @@ def homothety_rotation_decomposition(m):
     ``m`` or in the algebraic field ``AA``.
 
     EXAMPLES::
+
+        sage: from flatsurf.geometry.matrix_2x2 import homothety_rotation_decomposition
 
         sage: R.<x> = PolynomialRing(QQ)
         sage: K.<sqrt2> = NumberField(x^2 - 2, embedding=1.4142)
@@ -80,6 +84,8 @@ def similarity_from_vectors(u,v):
     Return the unique similarity matrix that maps ``u`` to ``v``.
 
     EXAMPLES::
+
+        sage: from flatsurf.geometry.matrix_2x2 import similarity_from_vectors
 
         sage: V = VectorSpace(QQ,2)
         sage: u = V((1,0))
@@ -160,6 +166,8 @@ def rotation_matrix_angle(r, check=False):
 
     EXAMPLES::
 
+        sage: from flatsurf.geometry.matrix_2x2 import rotation_matrix_angle
+
         sage: def rot_matrix(p, q):
         ....:     z = QQbar.zeta(q) ** p
         ....:     c = z.real()
@@ -212,6 +220,8 @@ def is_cosine_sine_of_rational(c,s):
 
     EXAMPLES::
 
+        sage: from flatsurf.geometry.matrix_2x2 import is_cosine_sine_of_rational
+
         sage: c = s = AA(sqrt(2))/2
         sage: is_cosine_sine_of_rational(c,s)
         True
@@ -244,7 +254,9 @@ def angle(u, v, assume_rational=False):
       advance that the result is rational then setting it to ``True`` might be
       much faster.
 
-    EXAMPLES:
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.matrix_2x2 import angle
 
     As the implementation is dirty, we at least check that it works for all
     denominator up to 20::

@@ -3,12 +3,9 @@ from sage.modules.free_module import VectorSpace
 from sage.rings.real_double import RDF
 from sage.rings.rational_field import QQ
 
-from geometry.similarity_surface import SimilaritySurface_generic
-
-from graphical.polygon import *
-
-
-from graphical.edge_gluings import *
+from flatsurf.geometry.similarity_surface import SimilaritySurface_generic
+from flatsurf.graphical.polygon import *
+from flatsurf.graphical.edge_gluings import *
 
 
 class GraphicalSurface:

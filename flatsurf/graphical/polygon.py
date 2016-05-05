@@ -1,8 +1,8 @@
-from geometry.polygon import Polygon
-from geometry.similarity import SimilarityGroup
-from geometry.translation import TranslationGroup
 from sage.rings.real_double import RDF
 from sage.modules.free_module import VectorSpace
+
+from flatsurf.geometry.similarity import SimilarityGroup
+from flatsurf.geometry.translation import TranslationGroup
 
 V = VectorSpace(RDF, 2)
 

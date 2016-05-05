@@ -10,13 +10,15 @@ TODO:
 - Sometimes we want labels to be fixed (for example on an origami where the
   squares are labeld 1,2,... it is convenient to use a1, b1, a2, b2,...).
 """
-from geometry.similarity_surface_generators import *
 
 lower_and_upper_case = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
 from sage.rings.integer import Integer
 from sage.structure.unique_representation import UniqueRepresentation
 from sage.structure.parent import Parent
+
+from flatsurf.geometry.similarity_surface_generators import *
+
 class InfiniteAlphabet(Parent, UniqueRepresentation):
     r"""
     EXAMPLES::

@@ -17,26 +17,35 @@ from sage.rings.integer_ring import ZZ
 def ChamanaraPolygon(alpha):
     from sage.categories.fields import Fields
     field=alpha.parent()
-    if not field in Fields:
+    if not field in Fields():
         ValueError("The value of alpha must lie in a field.")
     if alpha<=0 or alpha>=1:
         ValueError("The value of alpha must be between zero and one.")
     # The value of x is $\sum_{n=0}^\infty \alpha^n$.
     x=1/(1-alpha)
-    from geometry.polygon import PolygonCreator
-    pc=PolygonCreator(field=field)
-    pc.add_vertex((0,0))
-    pc.add_vertex((1,0))
-    pc.add_vertex((1-x,x))
-    pc.add_vertex((1-x,x-1))
-    return pc.get_polygon()
+    from flatsurf.geometry.polygon import polygons
+    return polygons((1,0), (-x,x), (0,-1), (x-1,1-x))
+#    pc=PolygonCreator(field=field)
+#    pc.add_vertex((0,0))
+#    pc.add_vertex((1,0))
+#    pc.add_vertex((1-x,x))
+#    pc.add_vertex((1-x,x-1))
+#    return pc.get_polygon()
 
 class ChamanaraSurface(SimilaritySurface_generic):
-    r"""The ChamanaraSurface $X_{\alpha}$."""
+    r"""
+    The ChamanaraSurface $X_{\alpha}$.
     
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.chamanara import ChamanaraSurcec
+        sage: ChamanaraSurface(1/2)
+        Chamanara surface with parameter 1/2
+    """
     def __init__(self, alpha):
-        self._p=ChamanaraPolygon(alpha)
-        self._field=alpha.parent()
+        self._p = ChamanaraPolygon(alpha)
+        self._field = alpha.parent()
+        self.rename('Chamanara surface with parameter {}'.format(alpha))
     
     def base_ring(self):
         return self._field
@@ -73,7 +82,7 @@ def GraphicalChamanaraSurface(alpha,n):
     r"""Return a standard Graphical version of the ChamanaraSurface $X_{\alpha}$
     with $2n$ polygons shown."""
     s = ChamanaraSurface(alpha)
-    from graphical.surface import GraphicalSurface
+    from flatsurf.graphical.surface import GraphicalSurface
     gs = GraphicalSurface(s)
     # Make polygon 1 visible
     gs.make_adjacent_and_visible(0,1)
