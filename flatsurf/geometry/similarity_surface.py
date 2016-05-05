@@ -187,7 +187,7 @@ class SimilaritySurface_generic(SageObject):
 
     def edge_transformation(self, p, e):
         r"""
-        Return the similarity bringing the opposite edge to the provided edge.
+        Return the similarity bringing the provided edge to the opposite edge.
 
         EXAMPLES::
         
