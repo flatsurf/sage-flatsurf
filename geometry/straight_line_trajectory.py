@@ -210,4 +210,8 @@ class StraightLineTrajectory:
                 self._segments.appendleft(SegmentInPolygon(self._backward).invert())
                 self._setup_backward()
                 steps += 1
-
+    
+    def graphical_trajectory(self, graphical_surface):
+        r""" Returns a GraphicalStraightLineTrajectory corresponding to this trajectory in the provided GraphicalSurface. """
+        from graphical.straight_line_trajectory import GraphicalStraightLineTrajectory
+        return GraphicalStraightLineTrajectory(graphical_surface, self)
