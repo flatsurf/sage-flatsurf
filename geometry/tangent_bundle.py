@@ -63,6 +63,20 @@ class SimilaritySurfaceTangentVector:
         return "SimilaritySurfaceTangentVector in polygon "+repr(self._polygon_label)+\
             " based at "+repr(self._point)+" with vector "+repr(self._vector)
     
+    def __eq__(self, other):
+        if isinstance(other, self.__class__):
+            return self.surface()==other.surface() and \
+                self.polygon_label() == other.polygon_label() and \
+                self.point() == other.point() and \
+                self.vector() == other.vector()
+        return NotImplemented
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def __hash__(self):
+        return hash(tuple(sorted(self.__dict__.items())))
+
     def surface(self):
         r"""Return the underlying surface."""
         return self._bundle.surface()
