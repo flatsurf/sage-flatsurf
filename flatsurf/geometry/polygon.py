@@ -402,7 +402,7 @@ class ConvexPolygon(Element):
                 pass
             v0=v0+e
         # Our loop has terminated. This can mean one of several errors...
-        pos = self.get_point_position(point,translation=translation)
+        pos = self.get_point_position(point)
         if pos.is_outside():
             raise ValueError("Started with point outside polygon")
         raise ValueError("Point on boundary of polygon and direction not pointed into the polygon.")
