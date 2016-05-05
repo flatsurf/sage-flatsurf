@@ -334,7 +334,7 @@ class SimilaritySurface_generic(SageObject):
         self._tangent_bundle_cache[ring] = SimilaritySurfaceTangentBundle(self, ring)
         return self._tangent_bundle_cache[ring]
 
-    def tangent_vector(self, lab, p, v):
+    def tangent_vector(self, lab, p, v, ring=None):
         r"""
         Return a tangent vector.
 
@@ -369,24 +369,26 @@ class SimilaritySurface_generic(SageObject):
         if p.parent().dimension() != 2 or v.parent().dimension() != 2:
             raise ValueError("p (={!r}) and v (={!v}) should have two coordinates")
 
-        R = p.base_ring()
-        if R != v.base_ring():
-            from sage.structure.element import get_coercion_model
-            cm = get_coercion_model()
-            R = cm.common_parent(R, v.base_ring())
-            p = p.change_ring(R)
-            v = v.change_ring(R)
-
-        R2 = self.base_ring()
-        if R != R2:
-            if R2.has_coerce_map_from(R):
-                p = p.change_ring(R2)
-                v = v.change_ring(R2)
-                R = R2
-            elif not R.has_coerce_map_from(R2):
-                raise ValueError("not able to find a common ring for arguments")
-
-        return self.tangent_bundle(R)(lab, p, v)
+        if ring is None:
+            R = p.base_ring()
+            if R != v.base_ring():
+                from sage.structure.element import get_coercion_model
+                cm = get_coercion_model()
+                R = cm.common_parent(R, v.base_ring())
+                p = p.change_ring(R)
+                v = v.change_ring(R)
+    
+            R2 = self.base_ring()
+            if R != R2:
+                if R2.has_coerce_map_from(R):
+                    p = p.change_ring(R2)
+                    v = v.change_ring(R2)
+                    R = R2
+                elif not R.has_coerce_map_from(R2):
+                    raise ValueError("not able to find a common ring for arguments")
+            return self.tangent_bundle(R)(lab, p, v)
+        else:
+            return self.tangent_bundle(ring)(lab, p, v)
         
     def graphical_surface(self):
         r"""Return a GraphicalSurface representing this surface."""
