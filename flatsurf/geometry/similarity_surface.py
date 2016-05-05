@@ -391,7 +391,7 @@ class SimilaritySurface_generic(SageObject):
         
     def graphical_surface(self):
         r"""Return a GraphicalSurface representing this surface."""
-        from graphical.surface import GraphicalSurface
+        from flatsurf.graphical.surface import GraphicalSurface
         return GraphicalSurface(self)
 
 
