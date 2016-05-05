@@ -1,4 +1,6 @@
+build/
 *.pyc
 *~
 *.ps
 doc/_build/*
+*.swp
