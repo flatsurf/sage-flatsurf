@@ -55,6 +55,8 @@ class GraphicalSegmentInPolygon:
             return Graphics()
 
 class GraphicalStraightLineTrajectory:
+    r"""Allows for the rendering of a straight-line trajectory through a graphical surface."""
+    
     def __init__(self, graphical_surface, trajectory):
         self._gs = graphical_surface
         self._traj = trajectory
