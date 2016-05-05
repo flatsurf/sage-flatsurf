@@ -4,7 +4,7 @@ from sage.misc.cachefunc import cached_method
 ZZ_1 = ZZ(1)
 ZZ_2 = ZZ(2)
 
-from similarity_surface import TranslationSurface_generic
+from flatsurf.geometry.similarity_surface import TranslationSurface_generic
 
 class InfiniteStaircase(TranslationSurface_generic):
     r"""
@@ -41,7 +41,7 @@ class InfiniteStaircase(TranslationSurface_generic):
         """
         if lab not in self.polygon_labels():
             raise ValueError("lab (=%s) not a valid label"%lab)
-        from geometry.polygon import square
+        from flatsurf.geometry.polygon import square
         return square()
 
     def polygon_labels(self):
@@ -141,7 +141,7 @@ class EInfinity(TranslationSurface_generic):
         """
         if lab not in self.polygon_labels():
             raise ValueError("lab (=%s) not a valid label"%lab)
-        from geometry.polygon import rectangle
+        from flatsurf.geometry.polygon import rectangle
         return rectangle(2*self.get_black(lab),self.get_white(lab))
 
     def polygon_labels(self):
@@ -358,7 +358,7 @@ class TFractal(TranslationSurface_generic):
 
     @cached_method
     def _base_polygon(self, i):
-        from geometry.polygon import Polygons
+        from flatsurf.geometry.polygon import Polygons
         if i == 0:
             w = self._w
             h = self._h1
@@ -382,8 +382,8 @@ class SimilaritySurfaceGenerators:
         r"""
         Construct a SimilaritySurface from a pair of triangles.
         """
-        from geometry.similarity_surface import SimilaritySurface_polygons_and_gluings
-        from geometry.polygon import PolygonCreator
+        from flatsurf.geometry.similarity_surface import SimilaritySurface_polygons_and_gluings
+        from flatsurf.geometry.polygon import PolygonCreator
         pc=PolygonCreator()
         pc.add_vertex((0,0))
         pc.add_vertex((2,-2))
@@ -402,9 +402,9 @@ class SimilaritySurfaceGenerators:
     @staticmethod
     def right_angle_triangle(w,h):
         from sage.structure.sequence import Sequence
-        from geometry.polygon import Polygons
+        from flatsurf.geometry.polygon import Polygons
         from sage.modules.free_module import VectorSpace
-        from geometry.similarity_surface import SimilaritySurface_polygons_and_gluings
+        from flatsurf.geometry.similarity_surface import SimilaritySurface_polygons_and_gluings
 
         F = Sequence([w,h]).universe()
         if not F.is_field():
@@ -434,8 +434,8 @@ class TranslationSurfaceGenerators:
             sage: T.stratum()
             H_2(2)
         """
-        from geometry.polygon import regular_octagon
-        from geometry.similarity_surface import TranslationSurface_polygons_and_gluings
+        from flatsurf.geometry.polygon import regular_octagon
+        from flatsurf.geometry.similarity_surface import TranslationSurface_polygons_and_gluings
         polygons = [regular_octagon()]
         identifications = {}
         identifications.update(dict(((0,i),(0,i+4)) for i in xrange(4)))
@@ -443,9 +443,9 @@ class TranslationSurfaceGenerators:
 
     @staticmethod
     def octagon_and_squares():
-        from geometry.polygon import square, regular_octagon
+        from flatsurf.geometry.polygon import square, regular_octagon
         from sage.matrix.matrix_space import MatrixSpace
-        from geometry.similarity_surface import TranslationSurface_polygons_and_gluings
+        from flatsurf.geometry.similarity_surface import TranslationSurface_polygons_and_gluings
 
         o = regular_octagon()
         K = o.parent().field()
@@ -480,7 +480,7 @@ class TranslationSurfaceGenerators:
             sage: o.stratum()
             H_2(2)
         """
-        from geometry.similarity_surface import Origami
+        from flatsurf.geometry.similarity_surface import Origami
         return Origami(r,u,rr,uu,domain)
 
 
@@ -490,7 +490,7 @@ class TranslationSurfaceGenerators:
 
     @staticmethod
     def infinite_staircase2():
-        from geometry.similarity_surface import Origami
+        from flatsurf.geometry.similarity_surface import Origami
         return Origami(
                 lambda x: x+1 if x%2 else x-1,  # r  (edge 1)
                 lambda x: x-1 if x%2 else x+1,  # u  (edge 2)

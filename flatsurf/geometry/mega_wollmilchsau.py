@@ -6,6 +6,8 @@ from sage.algebras.quatalg.quaternion_algebra import QuaternionAlgebra
 from sage.rings.infinity import infinity
 from sage.rings.integer_ring import ZZ
 
+from flatsurf.geometry.similarity_surface import AbstractOrigami
+
 _Q=QuaternionAlgebra(-1, -1)
 _i,_j,_k=_Q.gens()
 
@@ -127,7 +129,6 @@ class MegaWollmilchsauGroup(UniqueRepresentation, Group):
     #def cardinality(self):
     #    return infinity
 
-from geometry.similarity_surface import AbstractOrigami
 
 class MegaWollmilchsau(AbstractOrigami):
 

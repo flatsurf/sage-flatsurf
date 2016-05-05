@@ -25,12 +25,12 @@ from sage.matrix.constructor import matrix, identity_matrix
 ZZ_1 = Integer(1)
 ZZ_2 = Integer(2)
 
-from geometry.polygon import Polygon,Polygons
-from geometry.matrix_2x2 import (is_similarity,
+from flatsurf.geometry.polygon import Polygon,Polygons
+from flatsurf.geometry.matrix_2x2 import (is_similarity,
                     homothety_rotation_decomposition,
                     similarity_from_vectors,
                     rotation_matrix_angle)
-from geometry.similarity import SimilarityGroup
+from flatsurf.geometry.similarity import SimilarityGroup
 
 class SimilaritySurface_generic(SageObject):
     r"""
@@ -578,8 +578,8 @@ class MinimalTranslationCover(TranslationSurface_generic):
         r"""
         Return the set of polygons used for the labels.
         """
-        from geometry.cartesian_product import CartesianProduct
-        from geometry.finitely_generated_matrix_group import FinitelyGeneratedMatrixSubgroup
+        from flatsurf.geometry.cartesian_product import CartesianProduct
+        from flatsurf.geometry.finitely_generated_matrix_group import FinitelyGeneratedMatrixSubgroup
 
         ss = self._ss
 
@@ -631,7 +631,7 @@ class AbstractOrigami(TranslationSurface_generic):
         if lab not in self._domain:
             #Updated to print a possibly useful error message
             raise ValueError("Label "+str(lab)+" is not in the domain")
-        from geometry.polygon import square
+        from flatsurf.geometry.polygon import square
         return square()
 
     def base_ring(self):

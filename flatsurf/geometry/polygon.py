@@ -21,22 +21,24 @@ EXAMPLES::
     sage: s = polygons((0,0), (1,0), (2,2), (-2,3))
 """
 
+
+import operator
+
+from sage.structure.element import Element
+from sage.structure.parent import Parent
 from sage.categories.sets_cat import Sets
 from sage.categories.fields import Fields
-
 from sage.misc.cachefunc import cached_method
-
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
 from sage.rings.real_mpfr import RR
 from sage.rings.qqbar import AA
 from sage.modules.free_module import VectorSpace
+from sage.categories.action import Action
 
-from geometry.matrix_2x2 import angle
+from flatsurf.geometry.matrix_2x2 import angle
 
 # we implement action of GL(2,K) on polygons
-from sage.categories.action import Action
-import operator
 
 ZZ_0=ZZ.zero()
 ZZ_2=ZZ(2)
@@ -132,7 +134,6 @@ class PolygonPosition:
     def get_vertex(self):
         return self._vertex
 
-from sage.structure.element import Element
 class ConvexPolygon(Element):
     r"""
     A convex polygon in the plane RR^2 defined up to translation.
@@ -553,7 +554,7 @@ class ConvexPolygon(Element):
             total += (self.vertex(i)[0]+self.vertex(i+1)[0])*self.edge(i)[1]
         return total/ZZ_2
 
-from sage.structure.parent import Parent
+
 class ConvexPolygons(Parent):
     Element = ConvexPolygon
     def __init__(self, field):

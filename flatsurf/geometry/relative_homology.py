@@ -11,6 +11,11 @@ modulo equivalences of two types:
 """
 
 from sage.structure.element import ModuleElement
+from sage.modules.module import Module
+from sage.rings.integer_ring import ZZ
+
+from flatsurf.geometry.similarity_surface import SimilaritySurface_generic as Surface
+
 
 class RelativeHomologyClass(ModuleElement):
 
@@ -85,10 +90,6 @@ class RelativeHomologyClass(ModuleElement):
         Returns a list of items of the form ((label,e),w) where (label,e) 
         represents and edge and w represents the non-zero weight assigned."""
         return self._d.items()
-
-from sage.modules.module import Module
-from sage.rings.integer_ring import ZZ
-from geometry.similarity_surface import SimilaritySurface_generic as Surface
 
 class RelativeHomology(Module):
     Element = RelativeHomologyClass

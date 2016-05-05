@@ -11,7 +11,7 @@ from sage.rings.integer import Integer
 from sage.categories.fields import Fields
 _Fields = Fields()
 
-from geometry.translation import TranslationGroup
+from flatsurf.geometry.translation import TranslationGroup
 
 ZZ_0 = Integer(0)
 ZZ_1 = Integer(1)

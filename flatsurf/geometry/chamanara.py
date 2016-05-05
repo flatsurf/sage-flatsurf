@@ -3,12 +3,16 @@ Construction of Chamanara's surfaces which depend on a parameter alpha less than
 See the paper "Affine automorphism groups of surfaces of infinite type" in which the surface 
 is called $X_\alpha$.
 
-EXAMPLE::
-    sage: from geometry.chamanara import GraphicalChamanaraSurface
-    sage: s=GraphicalChamanaraSurface(QQ(1)/2,8)
+EXAMPLES::
+
+    sage: from flatsurf.geometry.chamanara import GraphicalChamanaraSurface
+    sage: s = GraphicalChamanaraSurface(QQ(1)/2,8)
     sage: s.plot()
     Launched png viewer for Graphics object consisting of 65 graphics primitives
 """
+
+from flatsurf.geometry.similarity_surface import SimilaritySurface_generic
+from sage.rings.integer_ring import ZZ
 
 def ChamanaraPolygon(alpha):
     from sage.categories.fields import Fields
@@ -26,9 +30,6 @@ def ChamanaraPolygon(alpha):
     pc.add_vertex((1-x,x))
     pc.add_vertex((1-x,x-1))
     return pc.get_polygon()
-
-from geometry.similarity_surface import SimilaritySurface_generic
-from sage.rings.integer_ring import ZZ
 
 class ChamanaraSurface(SimilaritySurface_generic):
     r"""The ChamanaraSurface $X_{\alpha}$."""

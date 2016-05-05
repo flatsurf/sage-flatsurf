@@ -1,4 +1,4 @@
-from geometry.polygon import *
+from flatsurf.geometry.polygon import *
 
 class SimilaritySurfaceTangentVector:
     def __init__(self, tangent_bundle, polygon_label, point, vector):

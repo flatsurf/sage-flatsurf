@@ -1,7 +1,7 @@
 from collections import deque
 
-from geometry.tangent_bundle import *
-from geometry.polygon import is_same_direction
+from flatsurf.geometry.tangent_bundle import *
+from flatsurf.geometry.polygon import is_same_direction
 
 class SegmentInPolygon:
     r""" 
