@@ -198,6 +198,9 @@ class SimilaritySurfaceTangentBundle:
         V = self.vector_space()
         return SimilaritySurfaceTangentVector(self, polygon_label, self._V(point), self._V(vector))
 
+    def __repr__(self):
+        return "Tangent bundle of {!r}".format(self._s)
+
     def base_ring(self):
         return self._base_ring
     
