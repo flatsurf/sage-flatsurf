@@ -179,7 +179,7 @@ class SimilaritySurfaceTangentVector:
     
     def straight_line_trajectory(self):
         r""" Convert this tangent vector to a StraightLineTrajectory."""
-        from geometry.straight_line_trajectory import StraightLineTrajectory
+        from flatsurf.geometry.straight_line_trajectory import StraightLineTrajectory
         return StraightLineTrajectory(self)
     
 class SimilaritySurfaceTangentBundle:
