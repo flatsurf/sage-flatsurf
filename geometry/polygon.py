@@ -1,12 +1,15 @@
 r"""
-This file implements polygons with
+Convex polygons in the plane (R^2)
+
+This file implements convex polygons with
+
  - action of matrices in GL^+(2,R)
  - conversion between ground fields
 
 EXAMPLES::
 
     sage: K.<sqrt2> = NumberField(x^2 - 2, embedding=AA(2).sqrt())
-    sage: p = Polygons(K)([(1,0),(-sqrt2,1+sqrt2),(sqrt2-1,-1-sqrt2)])
+    sage: p = polygons((1,0), (-sqrt2,1+sqrt2), (sqrt2-1,-1-sqrt2))
     sage: p
     Polygon: (0, 0), (1, 0), (sqrt2, sqrt2)
 
@@ -15,10 +18,13 @@ EXAMPLES::
     sage: m * p
     Polygon: (0, 0), (1, 0), (2*sqrt2 + 2, sqrt2)
 
-    sage: s = Polygons(QQ)([(0,0),(1,0),(2,2),(-2,3)])
+    sage: s = polygons((0,0), (1,0), (2,2), (-2,3))
 """
 
 from sage.categories.sets_cat import Sets
+from sage.categories.fields import Fields
+
+from sage.misc.cachefunc import cached_method
 
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
@@ -39,16 +45,16 @@ def wedge_product(v,w):
     return v[0]*w[1]-v[1]*w[0]
 
 def is_same_direction(v,w):
-    if wedge_product(v,w)!=ZZ_0:
-        return False
-    return v[0]*w[0]>0 or v[1]*w[1]>0
+    return v and w and \
+           not wedge_product(v,w) and \
+           (v[0]*w[0] > 0 or v[1]*w[1] > 0)
 
 def is_opposite_direction(v,w):
-    if wedge_product(v,w)!=ZZ_0:
-        return False
-    return v[0]*w[0]<0 or v[1]*w[1]<0
+    return v and w and \
+           not wedge_product(v,w) and \
+           v[0]*w[0] < 0 or v[1]*w[1] < 0
 
-class ActionOnPolygons(Action):
+class MatrixActionOnPolygons(Action):
     def __init__(self, polygons):
         from sage.matrix.matrix_space import MatrixSpace
         K = polygons.field()
@@ -59,6 +65,7 @@ class ActionOnPolygons(Action):
             # Maybe we can allow an action, which also reverses the edge ordering? -Pat
             raise ValueError("can not act with matrix with negative determinant")
         return x.parent()([g*e for e in x.edges()])
+
 
 class PolygonPosition:
     r"""
@@ -126,8 +133,10 @@ class PolygonPosition:
         return self._vertex
 
 from sage.structure.element import Element
-class Polygon(Element):
-    r""" A polygon in RR^2 defined up to translation."""
+class ConvexPolygon(Element):
+    r"""
+    A convex polygon in the plane RR^2 defined up to translation.
+    """
     def __init__(self, parent, edges=None, vertices=None, translation=None):
         r"""
         To construct the polygon you should either use a list of edge vectors 
@@ -141,9 +150,9 @@ class Polygon(Element):
         - ``translation`` -- a vector representing an addition translation to be applied to the resulting polygon
         """
         Element.__init__(self, parent)
-        V=self.vector_space()
+        V = parent.vector_space()
         if translation is None:
-            t=V.zero()
+            t = V.zero()
         else:
             t = V(translation)
         if edges is not None:
@@ -163,8 +172,49 @@ class Polygon(Element):
         else:
             raise ValueError("edges and vertices can't both be None")
         # Make the polgon immutable:
-        self._v=tuple(self._v)
+        self._v = tuple(self._v)
         self._convexity_check()
+        for vv in self._v:
+            vv.set_immutable()
+
+    def __hash__(self):
+        return hash(self._v)
+
+    def __eq__(self, other):
+        r"""
+        TESTS::
+
+            sage: from geometry.polygon import poylgons
+            sage: p1 = polygons.square()
+            sage: p2 = polygons((1,0),(0,1),(-1,0),(0,-1), ring=QQbar)
+            sage: p1 == p2
+            True
+
+            sage: p3 = polygons((2,0),(-1,1),(-1,-1))
+            sage: p1 == p3
+            False
+        """
+        if not isinstance(other, ConvexPolygon):
+            raise TypeError
+        return self._v == other._v
+
+    def __ne__(self, other):
+        r"""
+        TESTS::
+
+            sage: from geometry.polygon import poylgons
+            sage: p1 = polygons.square()
+            sage: p2 = polygons((1,0),(0,1),(-1,0),(0,-1), ring=QQbar)
+            sage: p1 != p2
+            False
+
+            sage: p3 = polygons((2,0),(-1,1),(-1,-1))
+            sage: p1 != p3
+            True
+        """
+        if not isinstance(other, ConvexPolygon):
+            raise TypeError
+        return self._v != other._v
 
     def _convexity_check(self):
         # Updated convexity check
@@ -196,6 +246,8 @@ class Polygon(Element):
         r"""
         Return the set of vertices as vectors.
         """
+        if translation is not None:
+            raise RuntimeError("the 'translation' argument is ignored and should not be used")
         return self._v
 
     def vertex(self,index):
@@ -282,9 +334,10 @@ class Polygon(Element):
 
     def flow_to_exit(self,point,direction):
         r"""
-        Flow a point in the direction of holonomy until the point leaves the polygon.
-        Note that ValueErrors may be thrown if the point is not in the polygon, or if 
-        it is on the boundary and the holonomy does not point into the polygon.
+        Flow a point in the direction of holonomy until the point leaves the
+        polygon.  Note that ValueErrors may be thrown if the point is not in the
+        polygon, or if it is on the boundary and the holonomy does not point
+        into the polygon.
 
         INPUT:
 
@@ -355,9 +408,10 @@ class Polygon(Element):
 
     def flow(self,point,holonomy,translation=None):
         r"""
-        Flow a point in the direction of holonomy for the length of the holonomy, or until the point leaves the polygon.
-        Note that ValueErrors may be thrown if the point is not in the polygon, or if it is on the boundary and the 
-        holonomy does not point into the polygon.
+        Flow a point in the direction of holonomy for the length of the
+        holonomy, or until the point leaves the polygon.  Note that ValueErrors
+        may be thrown if the point is not in the polygon, or if it is on the
+        boundary and the holonomy does not point into the polygon.
 
         INPUT:
 
@@ -464,6 +518,7 @@ class Polygon(Element):
 
         EXAMPLES::
 
+            sage: from geometry.polygon import square
             sage: square().angle(0)
             1/4
             sage: regular_ngon(8).angle(0)
@@ -477,6 +532,7 @@ class Polygon(Element):
 
         EXAMPLES::
 
+            sage: from geometry.polygon import regular_ngon
             sage: regular_ngon(8).area()
             2*a + 2
             sage: _ == 2*AA(2).sqrt() + 2
@@ -498,16 +554,12 @@ class Polygon(Element):
         return total/ZZ_2
 
 from sage.structure.parent import Parent
-class Polygons(Parent):
-    Element = Polygon
+class ConvexPolygons(Parent):
+    Element = ConvexPolygon
     def __init__(self, field):
         Parent.__init__(self, category=Sets())
-
-        #if not AA.has_coerce_map_from(field):
-        #    raise ValueError("the field must have a coercion to AA")
         self._field = field
-
-        self.register_action(ActionOnPolygons(self))
+        self.register_action(MatrixActionOnPolygons(self))
 
     def has_coerce_map_from(self, other):
         return isinstance(other, Polygons) and self.field().has_coerce_map_from(other.field())
@@ -523,6 +575,7 @@ class Polygons(Parent):
     def _repr_(self):
         return "polygons with coordinates in %s"%self.base_ring()
 
+    @cached_method
     def vector_space(self):
         r"""
         Return the vector space in which self naturally embeds.
@@ -533,14 +586,7 @@ class Polygons(Parent):
     def _element_constructor_(self, *args, **kwds):
         return self.element_class(self, *args, **kwds)
 
-def square(field=None):
-    if field is None:
-        field = QQ
-    return Polygons(field)([(1,0),(0,1),(-1,0),(0,-1)])
-
-def rectangle(width,height):
-    F=width.parent()
-    return Polygons(F)([(width,F(0)),(F(0),height),(-width,F(0)),(F(0),-height)])
+Polygons = ConvexPolygons
 
 def number_field_elements_from_algebraics(elts, name='a'):
     r"""
@@ -567,25 +613,96 @@ def number_field_elements_from_algebraics(elts, name='a'):
 
     return K, [x.polynomial()(gen) for x in elts]
 
-def regular_ngon(n):
-    r"""
-    Return a regular n-gon.
-    """
-    from sage.rings.qqbar import QQbar
+class PolygonsConstructor:
+    def square(self, side=1, **kwds):
+        r"""
+        EXAMPLES::
 
-    c = QQbar.zeta(n).real()
-    s = QQbar.zeta(n).imag()
+            sage: polygons.square()
+            Polygon: (0, 0), (1, 0), (1, 1), (0, 1)
+            sage: polygons.square(field=QQbar).parent()
+            polygons with coordinates in Algebraic Field
+        """
+        return self.rectangle(side,side,**kwds)
 
-    field, (c,s) = number_field_elements_from_algebraics((c,s))
+    def rectangle(self, width, height, **kwds):
+        r"""
+        EXAMPLES::
 
-    cn = field.one()
-    sn = field.zero()
-    edges = [(cn,sn)]
-    for _ in range(n-1):
-        cn,sn = c*cn - s*sn, c*sn + s*cn
-        edges.append((cn,sn))
+            sage: polygons.rectangle(1,2)
+            Polygon: (0, 0), (1, 0), (1, 2), (0, 2)
 
-    return Polygons(field)(edges)
+            sage: K.<sqrt2> = QuadraticField(2)
+            sage: polygons.rectangle(1,sqrt2)
+            Polygon: (0, 0), (1, 0), (1, sqrt2), (0, sqrt2)
+            sage: _.parent()
+        """
+        return self((width,0),(0,height),(-width,0),(0,-height), **kwds)
+
+    @staticmethod
+    def regular_ngon(n):
+        r"""
+        Return a regular n-gon.
+
+        EXAMPLES::
+
+            sage: p = polygons.regular_ngon(17)
+            sage: p
+            Polygon: (0, 0), (1, 0), ..., (-1/2*a^14 + 15/2*a^12 - 45*a^10 + 275/2*a^8 - 225*a^6 + 189*a^4 - 70*a^2 + 15/2, 1/2*a)
+        """
+        from sage.rings.qqbar import QQbar
+
+        c = QQbar.zeta(n).real()
+        s = QQbar.zeta(n).imag()
+
+        field, (c,s) = number_field_elements_from_algebraics((c,s))
+
+        cn = field.one()
+        sn = field.zero()
+        edges = [(cn,sn)]
+        for _ in range(n-1):
+            cn,sn = c*cn - s*sn, c*sn + s*cn
+            edges.append((cn,sn))
+
+        return Polygons(field)(edges)
+
+    def __call__(self, *args, **kwds):
+        r"""
+        EXAMPLES::
+
+            sage: polygons((1,0),(0,1),(-1,0),(0,-1))
+            Polygon: (0, 0), (1, 0), (1, 1), (0, 1)
+            sage: polygons((1,0),(0,1),(-1,0),(0,-1), ring=QQbar)
+            Polygon: (0, 0), (1, 0), (1, 1), (0, 1)
+            sage: _.parent()
+            polygons with coordinates in Algebraic Field
+        """
+        base_ring = None
+        if 'ring' in kwds:
+            base_ring = kwds.pop('ring')
+        if 'base_ring' in kwds:
+            base_ring = kwds.pop('base_ring')
+        if 'field' in kwds:
+            base_ring = kwds.pop('field')
+
+        if base_ring is None:
+            from sage.structure.sequence import Sequence
+            from sage.modules.free_module_element import vector
+
+            s = Sequence(map(vector, args))
+            V = s.universe()
+            base_ring = V.base_ring()
+        else:
+            from sage.modules.free_module import VectorSpace
+            V = VectorSpace(base_ring,2)
+            s = map(V, args)
+
+        if base_ring not in Fields():
+            base_ring = base_ring.fraction_field()
+
+        return ConvexPolygons(base_ring)(s, **kwds)
+
+polygons = PolygonsConstructor()
 
 def regular_octagon(field=None):
     from sage.misc.superseded import deprecation
