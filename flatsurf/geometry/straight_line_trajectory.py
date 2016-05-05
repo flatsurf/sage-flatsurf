@@ -67,33 +67,33 @@ class SegmentInPolygon:
         
         EXAMPLES::
         
-            sage: from geometry.similarity_surface_generators import SimilaritySurfaceGenerators
-            sage: s=SimilaritySurfaceGenerators.example()
-            sage: from geometry.tangent_bundle import SimilaritySurfaceTangentBundle
+            sage: from flatsurf.geometry.similarity_surface_generators import SimilaritySurfaceGenerators
+            sage: s = SimilaritySurfaceGenerators.example()
+            sage: from flatsurf.geometry.tangent_bundle import SimilaritySurfaceTangentBundle
             sage: tb = SimilaritySurfaceTangentBundle(s)
             sage: print("Polygon 0 is "+str(s.polygon(0)))
             Polygon 0 is Polygon: (0, 0), (2, -2), (2, 0)
             sage: print("Polygon 1 is "+str(s.polygon(1)))
             Polygon 1 is Polygon: (0, 0), (2, 0), (1, 3)
-            sage: from geometry.tangent_bundle import SimilaritySurfaceTangentVector
-            sage: V=tb.surface().vector_space()
-            sage: v=SimilaritySurfaceTangentVector(tb, 0, V((0,0)), V((3,-1)))
-            sage: from geometry.straight_line_trajectory import *
+            sage: from flatsurf.geometry.tangent_bundle import SimilaritySurfaceTangentVector
+            sage: V = tb.surface().vector_space()
+            sage: v = SimilaritySurfaceTangentVector(tb, 0, V((0,0)), V((3,-1)))
+            sage: from flatsurf.geometry.straight_line_trajectory import *
             sage: seg = SegmentInPolygon(v)
             sage: print(seg)
             Segment in polygon 0 starting at (0, 0) and ending at (2, -2/3)
-            sage: from geometry.similarity_surface_generators import SimilaritySurfaceGenerators
-            sage: s=SimilaritySurfaceGenerators.example()
-            sage: from geometry.tangent_bundle import SimilaritySurfaceTangentBundle
+            sage: from flatsurf.geometry.similarity_surface_generators import SimilaritySurfaceGenerators
+            sage: s = SimilaritySurfaceGenerators.example()
+            sage: from flatsurf.geometry.tangent_bundle import SimilaritySurfaceTangentBundle
             sage: tb = SimilaritySurfaceTangentBundle(s)
             sage: print("Polygon 0 is "+str(s.polygon(0)))
             Polygon 0 is Polygon: (0, 0), (2, -2), (2, 0)
             sage: print("Polygon 1 is "+str(s.polygon(1)))
             Polygon 1 is Polygon: (0, 0), (2, 0), (1, 3)
-            sage: from geometry.tangent_bundle import SimilaritySurfaceTangentVector
-            sage: V=tb.surface().vector_space()
-            sage: v=SimilaritySurfaceTangentVector(tb, 0, V((0,0)), V((3,-1)))
-            sage: from geometry.straight_line_trajectory import *
+            sage: from flatsurf.geometry.tangent_bundle import SimilaritySurfaceTangentVector
+            sage: V = tb.surface().vector_space()
+            sage: v = SimilaritySurfaceTangentVector(tb, 0, V((0,0)), V((3,-1)))
+            sage: from flatsurf.geometry.straight_line_trajectory import *
             sage: seg = SegmentInPolygon(v)
             sage: print(seg)
             Segment in polygon 0 starting at (0, 0) and ending at (2, -2/3)
@@ -176,18 +176,19 @@ class StraightLineTrajectory:
         Will fail gracefully the trajectory hits a singularity or closes up.
 
         EXAMPLES::
-            sage: from geometry.similarity_surface_generators import SimilaritySurfaceGenerators
-            sage: s=SimilaritySurfaceGenerators.example()
-            sage: from geometry.tangent_bundle import SimilaritySurfaceTangentBundle
+
+            sage: from flatsurf.geometry.similarity_surface_generators import SimilaritySurfaceGenerators
+            sage: s = SimilaritySurfaceGenerators.example()
+            sage: from flatsurf.geometry.tangent_bundle import SimilaritySurfaceTangentBundle
             sage: tb = SimilaritySurfaceTangentBundle(s)
             sage: print("Polygon 0 is "+str(s.polygon(0)))
             Polygon 0 is Polygon: (0, 0), (2, -2), (2, 0)
             sage: print("Polygon 1 is "+str(s.polygon(1)))
             Polygon 1 is Polygon: (0, 0), (2, 0), (1, 3)
-            sage: from geometry.tangent_bundle import SimilaritySurfaceTangentVector
-            sage: V=tb.surface().vector_space()
-            sage: v=SimilaritySurfaceTangentVector(tb, 0, V((1,-0.5)), V((3,-1)))
-            sage: from geometry.straight_line_trajectory import *
+            sage: from flatsurf.geometry.tangent_bundle import SimilaritySurfaceTangentVector
+            sage: V = tb.surface().vector_space()
+            sage: v = SimilaritySurfaceTangentVector(tb, 0, V((1,-0.5)), V((3,-1)))
+            sage: from flatsurf.geometry.straight_line_trajectory import *
             sage: traj = StraightLineTrajectory(v)
             sage: print(traj)
             StraightLineTrajectorydeque([Segment in polygon 0 starting at (1/4, -1/4) and ending at (2, -5/6)])
