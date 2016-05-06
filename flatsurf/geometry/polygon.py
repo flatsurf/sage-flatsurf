@@ -46,25 +46,94 @@ ZZ_2=ZZ(2)
 def wedge_product(v,w):
     return v[0]*w[1]-v[1]*w[0]
 
-def is_same_direction(v,w):
-    if wedge_product(v,w)!=ZZ_0:
-        return False
-    return v[0]*w[0]>0 or v[1]*w[1]>0
+def is_same_direction(v,w,zero=None):
+    r"""
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.polygon import is_same_direction
+        sage: V = QQ**2
+
+        sage: is_same_direction(V((0,1)), V((0,2)))
+        True
+        sage: is_same_direction(V((1,-1)), V((2,-2)))
+        True
+        sage: is_same_direction(V((4,-2)), V((2,-1)))
+        True
+        sage: is_same_direction(V((1,2)), V((2,4)))
+        True
+        sage: is_same_direction(V((0,2)), V((0,1)))
+        True
+
+        sage: is_same_direction(V((1,1)), V((1,2)))
+        False
+        sage: is_same_direction(V((1,2)), V((2,1)))
+        False
+        sage: is_same_direction(V((1,2)), V((1,-2)))
+        False
+        sage: is_same_direction(V((1,2)), V((-1,-2)))
+        False
+        sage: is_same_direction(V((2,-1)), V((-2,1)))
+        False
+
+        sage: is_same_direction(V((1,0)), V.zero())
+        Traceback (most recent call last):
+        ...
+        TypeError: zero vector has no direction
+
+        sage: for _ in range(100):
+        ....:    v = V.random_element()
+        ....:    if not v: continue
+        ....:    assert is_same_direction(v, 2*v)
+        ....:    assert not is_same_direction(v, -v)
+    """
+    if not v or not w:
+        raise TypeError("zero vector has no direction")
+    return not wedge_product(v,w) and (v[0]*w[0] > 0 or v[1]*w[1] > 0)
 
 def is_opposite_direction(v,w):
-    if wedge_product(v,w)!=ZZ_0:
-        return False
-    return v[0]*w[0]<0 or v[1]*w[1]<0
+    r"""
+    EXAMPLES::
 
-#def is_same_direction(v,w):
-#    return v and w and \
-#           not wedge_product(v,w) and \
-#           (v[0]*w[0] > 0 or v[1]*w[1] > 0)
-#
-#def is_opposite_direction(v,w):
-#    return v and w and \
-#           not wedge_product(v,w) and \
-#           v[0]*w[0] < 0 or v[1]*w[1] < 0
+        sage: from flatsurf.geometry.polygon import is_opposite_direction
+        sage: V = QQ**2
+
+        sage: is_opposite_direction(V((0,1)), V((0,-2)))
+        True
+        sage: is_opposite_direction(V((1,-1)), V((-2,2)))
+        True
+        sage: is_opposite_direction(V((4,-2)), V((-2,1)))
+        True
+        sage: is_opposite_direction(V((-1,-2)), V((2,4)))
+        True
+
+        sage: is_opposite_direction(V((1,1)), V((1,2)))
+        False
+        sage: is_opposite_direction(V((1,2)), V((2,1)))
+        False
+        sage: is_opposite_direction(V((0,2)), V((0,1)))
+        False
+        sage: is_opposite_direction(V((1,2)), V((1,-2)))
+        False
+        sage: is_opposite_direction(V((1,2)), V((-1,2)))
+        False
+        sage: is_opposite_direction(V((2,-1)), V((-2,-1)))
+        False
+
+        sage: is_opposite_direction(V((1,0)), V.zero())
+        Traceback (most recent call last):
+        ...
+        TypeError: zero vector has no direction
+
+        sage: for _ in range(100):
+        ....:    v = V.random_element()
+        ....:    if not v: continue
+        ....:    assert not is_opposite_direction(v, v)
+        ....:    assert not is_opposite_direction(v,2*v)
+        ....:    assert is_opposite_direction(v, -v)
+    """
+    if not v or not w:
+        raise TypeError("zero vector has no direction")
+    return not wedge_product(v,w) and (v[0]*w[0] < 0 or v[1]*w[1] < 0)
 
 class MatrixActionOnPolygons(Action):
     def __init__(self, polygons):
