@@ -119,6 +119,12 @@ class SimilarityJoinPolygonsMapping(SimilaritySurfaceMapping):
         self._glued_edge=e1
         SimilaritySurfaceMapping.__init__(self, s, s2)
 
+    def glued_vertices(self):
+        r"""
+        Return the vertices of the newly glued polygon which bound the diagonal formed by the glue.
+        """
+        return (self._glued_edge,self._glued_edge+self._domain.polygon(self._removed_label).num_edges())
+
     def push_vector_forward(self,tangent_vector):
         r"""Applies the mapping to the provided vector."""
         ring = tangent_vector.bundle().base_ring()
@@ -402,4 +408,50 @@ def triangulation_mapping(s):
             m=SimilaritySurfaceMappingComposition(m,m2)
         except ValueError:
             return m
-
+            
+def edge_needs_flip(s,p1,e1):
+    r"""
+    Return if the provided edge which bounds two triangles should be flipped
+    to get closer to the Delaunay decomposition
+    """
+    p2,e2=s.opposite_edge(p1,e1)
+    poly1=s.polygon(p1)
+    poly2=s.polygon(p2)
+    assert poly1.num_edges()==3
+    assert poly2.num_edges()==3
+    from flatsurf.geometry.matrix_2x2 import similarity_from_vectors
+    sim1=similarity_from_vectors(poly1.edge(e1+2),-poly1.edge(e1+1))
+    sim2=similarity_from_vectors(poly2.edge(e1+2),-poly2.edge(e1+1))
+    sim=sim1*sim2
+    return sim[1][0] < 0
+    
+def flip_edge_mapping(s,p1,e1):
+    r"""
+    Return a mapping whose domain is s which flips the provided edge.
+    
+    EXAMPLES::
+        sage: sys.path.append('/home/pat/active/talks/2016/Oaxaca-SAGE_Days/sage-flatsurf-master')
+        sage: K.<sqrt2> = NumberField(x**2 - 2, embedding=1.414)
+        sage: from flatsurf.geometry.polygon import Polygons
+        sage: p = Polygons(K)([(1,0),(sqrt2/2, sqrt2/2),(0, 1),(-sqrt2/2, sqrt2/2),(-1,0),(-sqrt2/2, -sqrt2/2),(0, -1),(sqrt2/2, -sqrt2/2)])
+        sage: gluings=[((0,i),(0,i+4)) for i in range(4)]
+        sage: from flatsurf.geometry.similarity_surface import TranslationSurface_polygons_and_gluings
+        sage: s=TranslationSurface_polygons_and_gluings([p], gluings)
+        sage: from flatsurf.geometry.mappings import triangulation_mapping, flip_edge_mapping
+        sage: m=triangulation_mapping(s)
+        sage: s2=m.codomain()
+        sage: m2=flip_edge_mapping(s2,1,0)
+        sage: s3=m2.codomain()
+        sage: for label in s3.polygon_labels():
+        ...       print s3.polygon(label)
+        Polygon: (0, 0), (-1/2*sqrt2, 1/2*sqrt2 + 1), (-1/2*sqrt2, 1/2*sqrt2)
+        Polygon: (0, 0), (-1/2*sqrt2, -1/2*sqrt2 - 1), (0, -1)
+        Polygon: (0, 0), (-1, -sqrt2 - 1), (1/2*sqrt2, -1/2*sqrt2)
+        Polygon: (0, 0), (0, -sqrt2 - 1), (1, 0)
+        Polygon: (0, 0), (1/2*sqrt2, -1/2*sqrt2 - 1), (1/2*sqrt2, 1/2*sqrt2)
+        Polygon: (0, 0), (1/2*sqrt2, 1/2*sqrt2 + 1), (-1, 0)
+    """
+    m1=SimilarityJoinPolygonsMapping(s,p1,e1)
+    v1,v2=m1.glued_vertices()
+    m2=SimilaritySplitPolygonsMapping(m1.codomain(), p1, (v1+1)%4, (v1+3)%4)
+    return SimilaritySurfaceMappingComposition(m1,m2)
