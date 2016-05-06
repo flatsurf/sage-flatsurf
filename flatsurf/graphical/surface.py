@@ -47,6 +47,16 @@ class GraphicalSurface:
         """
         self._visible.add(label)
 
+    def make_all_visible(self):
+        r"""Attempt to show all invisible polygons by walking over the surface."""
+        assert self._ss.is_finite()
+        for l in self._ss.polygon_labels():
+            poly=self._ss.polygon(l)
+            for e in range(poly.num_edges()):
+                l2,e2=self._ss.opposite_edge(l,e)
+                if not self.is_visible(l2):
+                    self.make_adjacent_and_visible(l,e)
+
     def get_surface(self):
         r"""
         Return the underlying similarity surface.
