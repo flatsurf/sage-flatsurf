@@ -445,6 +445,11 @@ class SimilaritySurface_polygons_and_gluings(SimilaritySurface_generic):
                 it = iter(identifications)
             for e0,e1 in it:
                 edge_identifications[e0] = e1
+                # Check that e0 makes sense. 
+                assert e0[1]>=0 and e0[1]<self._polygons[e0[0]].num_edges()
+                # Check that e1 makes sense. 
+                assert e1[1]>=0 and e1[1]<self._polygons[e1[0]].num_edges()
+                
                 if e1 in edge_identifications:
                     assert edge_identifications[e1] == e0
                 else:
