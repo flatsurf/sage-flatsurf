@@ -110,13 +110,14 @@ def invariant_quadratic_forms(m):
         [1 0 0]
         [0 1 0]
 
-        sage: invariant_quadratic_form(-identity_matrix(2))
+        sage: invariant_quadratic_forms(-identity_matrix(2))
         Traceback (most recent call last):
         ...
-        ValueError: m must be non identity and non-singular
+        ValueError: m must be non scalar
 
         sage: for _ in range(100):
         ....:     r = random_matrix(ZZ, 2, algorithm='unimodular')
+        ....:     if r.is_scalar(): continue
         ....:     q = invariant_quadratic_forms(r)
         ....:     a,c,b = q.random_element()
         ....:     m = matrix(2, [a,b,b,c])
@@ -152,7 +153,6 @@ def contains_definite_form(V):
         sage: from flatsurf.geometry.finitely_generated_matrix_group import contains_definite_form
 
         sage: V = ZZ**3
-        sage: W = V.submodule([(1,1,0)])
         sage: contains_definite_form(V.submodule([(1,1,0)]))
         True
         sage: contains_definite_form(V.submodule([(2,1,1)]))
@@ -163,6 +163,8 @@ def contains_definite_form(V):
         True
         sage: contains_definite_form(V.submodule([(1,0,0),(0,0,1)]))
         False
+        sage: contains_definite_form(V.submodule([(-1,0,0),(0,1,3)]))
+        True
     """
     dim = V.dimension()
     if dim == 0:
@@ -175,7 +177,7 @@ def contains_definite_form(V):
         a2,c2,b2 = V.gen(1)
         if b1**2 < a1*c1 or b2**2 < a2*c2:
             return True
-        return (2*b1*b2 - a2*c1 - a2*c1)**2 - 4 * (b1**2 - a1*c1) * a2*c2 > 0
+        return (2*b1*b2 - a2*c1 - a1*c2)**2 - 4 * (b1**2 - a1*c1) * (b2**2 - a2*c2) > 0
     elif dim == 3:
         return True
     else:
