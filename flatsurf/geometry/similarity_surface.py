@@ -458,9 +458,9 @@ class SimilaritySurface_polygons_and_gluings(SimilaritySurface_generic):
 
     def opposite_edge(self, p, e):
         if (p,e) not in self._edge_identifications:
-            e = e % self._polygons[lab].num_edges()
+            e = e % self._polygons[p].num_edges()
             if (p,e) not in self._edge_identifications:
-                raise ValueError("not a valid edge identifier")
+                raise ValueError("The pair"+str((p,e))+" is not a valid edge identifier.")
         return self._edge_identifications[(p,e)]
 
 class ConicSurface(SimilaritySurface_generic):
