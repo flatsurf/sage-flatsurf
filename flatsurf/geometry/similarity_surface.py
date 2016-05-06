@@ -167,11 +167,6 @@ class SimilaritySurface_generic(SageObject):
         r"""
         Return the edge to which this edge is identified and the matrix to be
         applied.
-
-        EXAMPLES::
-
-            sage: from
-            sage: SimilaritySurface([square()]
         """
         if e is None:
             # What does the following line do?
@@ -191,15 +186,15 @@ class SimilaritySurface_generic(SageObject):
 
         EXAMPLES::
         
-            sage: from geometry.similarity_surface_generators import SimilaritySurfaceGenerators
-            sage: s=SimilaritySurfaceGenerators.example()
+            sage: from flatsurf.geometry.similarity_surface_generators import SimilaritySurfaceGenerators
+            sage: s = SimilaritySurfaceGenerators.example()
             sage: print(s.polygon(0))
             Polygon: (0, 0), (2, -2), (2, 0)
             sage: print(s.polygon(1))
             Polygon: (0, 0), (2, 0), (1, 3)
             sage: print(s.opposite_edge(0,0))
             (1, 1)
-            sage: g=s.edge_transformation(0,0)
+            sage: g = s.edge_transformation(0,0)
             sage: g((0,0))
             (1, 3)
             sage: g((2,-2))
@@ -347,7 +342,7 @@ class SimilaritySurface_generic(SageObject):
 
         EXAMPLES::
 
-            sage: from geometry.chamanara import ChamanaraSurface
+            sage: from flatsurf.geometry.chamanara import ChamanaraSurface
             sage: S = ChamanaraSurface(1/2)
             sage: S.tangent_vector(0, (1/2,1/2), (1,1))
             SimilaritySurfaceTangentVector in polygon 1 based at (-1/2, 3/2) with vector
@@ -411,7 +406,7 @@ class SimilaritySurface_polygons_and_gluings(SimilaritySurface_generic):
 
         EXAMPLES::
 
-            sage: from geometry.polygon import square
+            sage: from flatsurf.geometry.polygon import polygons
         """
         self._polygons = Family(polygons)
 
@@ -644,8 +639,8 @@ class AbstractOrigami(TranslationSurface_generic):
         if lab not in self._domain:
             #Updated to print a possibly useful error message
             raise ValueError("Label "+str(lab)+" is not in the domain")
-        from flatsurf.geometry.polygon import square
-        return square()
+        from flatsurf.geometry.polygon import polygons
+        return polygons.square()
 
     def base_ring(self):
         return QQ

@@ -106,13 +106,13 @@ class GraphicalPolygon:
         
         EXAMPLES::
         
-            sage: from geometry.similarity_surface_generators import SimilaritySurfaceGenerators
-            sage: s=SimilaritySurfaceGenerators.example()
-            sage: from graphical.surface import GraphicalSurface
-            sage: gs=GraphicalSurface(s)
+            sage: from flatsurf.geometry.similarity_surface_generators import SimilaritySurfaceGenerators
+            sage: s = SimilaritySurfaceGenerators.example()
+            sage: from flatsurf.graphical.surface import GraphicalSurface
+            sage: gs = GraphicalSurface(s)
             sage: gs.graphical_polygon(0).set_fill_color("red")
-            sage: show(gs.graphical_polygon(0).plot())
-            Launched png viewer for Graphics object consisting of 1 graphics primitive
+            sage: gs.graphical_polygon(0).plot()
+            Graphics object consisting of 1 graphics primitive
         """
         from sage.plot.point import point2d
         from sage.plot.polygon import polygon2d

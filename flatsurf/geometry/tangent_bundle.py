@@ -148,20 +148,20 @@ class SimilaritySurfaceTangentVector:
         
         EXAMPLES::
         
-            sage: from geometry.similarity_surface_generators import SimilaritySurfaceGenerators
-            sage: s=SimilaritySurfaceGenerators.example()
-            sage: from geometry.tangent_bundle import SimilaritySurfaceTangentBundle
+            sage: from flatsurf.geometry.similarity_surface_generators import SimilaritySurfaceGenerators
+            sage: s = SimilaritySurfaceGenerators.example()
+            sage: from flatsurf.geometry.tangent_bundle import SimilaritySurfaceTangentBundle
             sage: tb = SimilaritySurfaceTangentBundle(s)
             sage: print("Polygon 0 is "+str(s.polygon(0)))
             Polygon 0 is Polygon: (0, 0), (2, -2), (2, 0)
             sage: print("Polygon 1 is "+str(s.polygon(1)))
             Polygon 1 is Polygon: (0, 0), (2, 0), (1, 3)
-            sage: from geometry.tangent_bundle import SimilaritySurfaceTangentVector
-            sage: V=tb.surface().vector_space()
-            sage: v=SimilaritySurfaceTangentVector(tb, 0, V((0,0)), V((3,-1)))
+            sage: from flatsurf.geometry.tangent_bundle import SimilaritySurfaceTangentVector
+            sage: V = tb.surface().vector_space()
+            sage: v = SimilaritySurfaceTangentVector(tb, 0, V((0,0)), V((3,-1)))
             sage: print(v)
             SimilaritySurfaceTangentVector in polygon 0 based at (0, 0) with vector (3, -1)
-            sage: v2=v.forward_to_polygon_boundary()
+            sage: v2 = v.forward_to_polygon_boundary()
             sage: print(v2)
             SimilaritySurfaceTangentVector in polygon 0 based at (2, -2/3) with vector (-3, 1)
             sage: print(v2.invert())
@@ -228,9 +228,9 @@ class SimilaritySurfaceTangentBundle:
 
         EXAMPLES::
 
-            sage: from geometry.similarity_surface_generators import SimilaritySurfaceGenerators
-            sage: s=SimilaritySurfaceGenerators.example()
-            sage: from geometry.tangent_bundle import SimilaritySurfaceTangentBundle
+            sage: from flatsurf.geometry.similarity_surface_generators import SimilaritySurfaceGenerators
+            sage: s = SimilaritySurfaceGenerators.example()
+            sage: from flatsurf.geometry.tangent_bundle import SimilaritySurfaceTangentBundle
             sage: tb = SimilaritySurfaceTangentBundle(s)
             sage: print(s.polygon(0))
             Polygon: (0, 0), (2, -2), (2, 0)
@@ -250,9 +250,9 @@ class SimilaritySurfaceTangentBundle:
         
         EXAMPLES::
 
-            sage: from geometry.similarity_surface_generators import SimilaritySurfaceGenerators
-            sage: s=SimilaritySurfaceGenerators.example()
-            sage: from geometry.tangent_bundle import SimilaritySurfaceTangentBundle
+            sage: from flatsurf.geometry.similarity_surface_generators import SimilaritySurfaceGenerators
+            sage: s = SimilaritySurfaceGenerators.example()
+            sage: from flatsurf.geometry.tangent_bundle import SimilaritySurfaceTangentBundle
             sage: tb = SimilaritySurfaceTangentBundle(s)
             sage: print("Polygon 0 is "+str(s.polygon(0)))
             Polygon 0 is Polygon: (0, 0), (2, -2), (2, 0)

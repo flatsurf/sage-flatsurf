@@ -41,8 +41,8 @@ class InfiniteStaircase(TranslationSurface_generic):
         """
         if lab not in self.polygon_labels():
             raise ValueError("lab (=%s) not a valid label"%lab)
-        from flatsurf.geometry.polygon import square
-        return square()
+        from flatsurf.geometry.polygon import polygons
+        return polygons.square()
 
     def polygon_labels(self):
         r"""

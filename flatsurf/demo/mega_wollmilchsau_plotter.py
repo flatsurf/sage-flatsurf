@@ -13,17 +13,18 @@ def mega_plot(K, x, y, dx, dy, directory="/tmp/", pause_time = 100):
 
     EXAMPLE::
     
-        sage: from demo.mega_wollmilchsau_plotter import mega_plot
+        sage: import flatsurf
+        sage: import flatsurf.demo
+        sage: from flatsurf.demo.mega_wollmilchsau_plotter import mega_plot
         sage: from sage.calculus.predefined import x
         sage: from sage.rings.integer_ring import ZZ
         sage: from sage.rings.number_field.number_field import NumberField
-        sage: K=NumberField(x**2-2,'s',embedding=ZZ(1))
-        sage: sqrt2=K.gens()[0]
-        sage: x=K.zero()
-        sage: y=K.zero()
-        sage: dx=K.one()
-        sage: dy=sqrt2
-        sage: mega_plot(K,x,y,dx,dy, directory="/tmp/", pause_time = 10)
+        sage: K.<sqrt2> = NumberField(x**2-2, embedding=ZZ(1))
+        sage: x = K.zero()
+        sage: y = K.zero()
+        sage: dx = K.one()
+        sage: dy = sqrt2
+        sage: mega_plot(K,x,y,dx,dy, directory="/tmp/", pause_time = 10)  # not tested: BUG
         Segment #0 (plotted 0)
         Segment #1 (plotted 1)...
     """
@@ -33,7 +34,7 @@ def mega_plot(K, x, y, dx, dy, directory="/tmp/", pause_time = 100):
         ValueError("Provided directory must be a directory")
 
     # Construct the surface:
-    from geometry.mega_wollmilchsau import MegaWollmilchsau
+    from flatsurf.geometry.mega_wollmilchsau import MegaWollmilchsau
     s=MegaWollmilchsau()
 
     # Get the labels for 3 polygons.
@@ -43,27 +44,27 @@ def mega_plot(K, x, y, dx, dy, directory="/tmp/", pause_time = 100):
     labels=[l0,l1,l2]
 
     # Setup the portion of the surface we want to draw
-    from graphical.surface import GraphicalSurface
+    from flatsurf.graphical.surface import GraphicalSurface
     gs=GraphicalSurface(s)
     gs.make_adjacent_and_visible(l0,1)
     gs.make_adjacent_and_visible(l0,2)
 
     # Construct a tangent vector
-    from geometry.tangent_bundle import SimilaritySurfaceTangentBundle, SimilaritySurfaceTangentVector
+    from flatsurf.geometry.tangent_bundle import SimilaritySurfaceTangentBundle, SimilaritySurfaceTangentVector
     tb = SimilaritySurfaceTangentBundle(s)
     from sage.modules.free_module import VectorSpace
     V=VectorSpace(K,2)
     v=SimilaritySurfaceTangentVector(tb, l0, V((x,y)), V((dx,dy)))
 
     # Construct a segment using the tangent vector
-    from geometry.straight_line_trajectory import SegmentInPolygon
+    from flatsurf.geometry.straight_line_trajectory import SegmentInPolygon
     seg = SegmentInPolygon(v)
 
     # Plot the surface
     p = gs.plot()
 
     # Used for drawing segments:
-    from graphical.straight_line_trajectory import GraphicalSegmentInPolygon
+    from flatsurf.graphical.straight_line_trajectory import GraphicalSegmentInPolygon
 
     # Prepare to loop:
     all=0

@@ -23,6 +23,7 @@ class InfiniteAlphabet(Parent, UniqueRepresentation):
     r"""
     EXAMPLES::
 
+        sage: from flatsurf.graphical.edge_gluings import InfiniteAlphabet
         sage: I = InfiniteAlphabet(); I
         {a, b, c, ..., A, B, ..., aa, ab, ... }
         sage: it = iter(I)
@@ -32,7 +33,10 @@ class InfiniteAlphabet(Parent, UniqueRepresentation):
         'A B C D E F G H I J K L M N O P Q R S T U V W X Y Z'
         sage: ' '.join(it.next() for _ in xrange(26))
         'aa ab ac ad ae af ag ah ai aj ak al am an ao ap aq ar as at au av aw ax ay az'
-        sage: for _ in xrange(2**16): it.next();
+        sage: for _ in xrange(2**16): print it.next()
+        aA
+        aB
+        ...
         sage: it.next()
         'xmQ'
     """
@@ -57,6 +61,7 @@ class InfiniteAlphabet(Parent, UniqueRepresentation):
         r"""
         TESTS::
 
+            sage: from flatsurf.graphical.edge_gluings import InfiniteAlphabet
             sage: I = InfiniteAlphabet()
             sage: I._rank_one_letter('a')
             0

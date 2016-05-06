@@ -29,6 +29,7 @@ class CartesianProduct(Parent):
         r"""
         TESTS::
 
+            sage: from flatsurf.geometry.cartesian_product import CartesianProduct
             sage: A2 = IntegerRange(2)
             sage: A3 = FiniteEnumeratedSet('abc')
             sage: A4 = Alphabet([-1,-2,-3,-4])

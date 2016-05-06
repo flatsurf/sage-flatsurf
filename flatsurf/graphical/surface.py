@@ -92,10 +92,10 @@ class GraphicalSurface:
         
         EXAMPLES::
         
-            sage: from geometry.similarity_surface_generators import SimilaritySurfaceGenerators
-            sage: s=SimilaritySurfaceGenerators.example()
-            sage: from graphical.surface import GraphicalSurface
-            sage: gs=GraphicalSurface(s)
+            sage: from flatsurf.geometry.similarity_surface_generators import SimilaritySurfaceGenerators
+            sage: s = SimilaritySurfaceGenerators.example()
+            sage: from flatsurf.graphical.surface import GraphicalSurface
+            sage: gs = GraphicalSurface(s)
             sage: print("Polygon 0: "+str(gs.graphical_polygon(0).vertices()))
             Polygon 0: [(0.0, 0.0), (2.0, -2.0), (2.0, 0.0)]
             sage: print("Polygon 1: "+str(gs.graphical_polygon(1).vertices()))
@@ -141,13 +141,13 @@ class GraphicalSurface:
         
         EXAMPLES::
         
-            sage: from geometry.similarity_surface_generators import SimilaritySurfaceGenerators
-            sage: s=SimilaritySurfaceGenerators.example()
-            sage: from graphical.surface import GraphicalSurface
-            sage: gs=GraphicalSurface(s)
+            sage: from flatsurf.geometry.similarity_surface_generators import SimilaritySurfaceGenerators
+            sage: s = SimilaritySurfaceGenerators.example()
+            sage: from flatsurf.graphical.surface import GraphicalSurface
+            sage: gs = GraphicalSurface(s)
             sage: gs.make_visible(1)
-            sage: show(gs.plot())
-            Launched png viewer for Graphics object consisting of 7 graphics primitives
+            sage: gs.plot()
+            Graphics object consisting of 7 graphics primitives
         """
         i=iter(self._visible)
         label=i.next()
