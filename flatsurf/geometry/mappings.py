@@ -29,40 +29,33 @@ class SimilaritySurfaceMapping:
     def pull_vector_back(self,tangent_vector):
         r"""Applies the inverse of the mapping to the provided vector."""
         raise NotImplementedError
+        
+class SimilaritySurfaceMappingComposition(SimilaritySurfaceMapping):
+    r"""
+    Compose two mappings.
+    """
+    
+    def __init__(self, mapping1, mapping2):
+        r"""
+        Represent the mapping of mapping1 followed by mapping2.
+        """
+        if mapping1.codomain()!=mapping2.domain():
+            raise ValueError("Codomain of mapping1 must be equal to the domain of mapping2")
+        self._m1=mapping1
+        self._m2=mapping2
+        SimilaritySurfaceMapping.__init__(self, self._m1.domain(), self._m2.codomain())
+
+    def push_vector_forward(self,tangent_vector):
+        r"""Applies the mapping to the provided vector."""
+        return self._m2.push_vector_forward(self._m1.push_vector_forward(tangent_vector))
+
+    def pull_vector_back(self,tangent_vector):
+        r"""Applies the inverse of the mapping to the provided vector."""
+        return self._m1.pull_vector_back(self._m2.pull_vector_back(tangent_vector))
 
 class SimilarityJoinPolygonsMapping(SimilaritySurfaceMapping):
     r"""
     Return a SimilaritySurfaceMapping joining two polygons together along the edge provided to the constructor.
-
-    EXAMPLES::
-    sage: from flatsurf.geometry.polygon import Polygons
-    sage: p=Polygons(QQ)([(2,0),(-1,1),(-1,-1)])
-    sage: from flatsurf.geometry.similarity_surface import SimilaritySurface_polygons_and_gluings
-    sage: s=SimilaritySurface_polygons_and_gluings([p,p],[((0,0),(1,2)),((0,1),(1,0)),((0,2),(1,1))])
-    sage: gs=s.graphical_surface()
-    sage: gs.make_adjacent_and_visible(0,1)
-    sage: gs.plot()
-    sage: from flatsurf.geometry.mappings import SimilarityJoinPolygonsMapping
-    sage: m = SimilarityJoinPolygonsMapping(s,0,1)
-    [((0, 0), (0, 2)), ((0, 1), (0, 3)), ((0, 2), (0, 0)), ((0, 3), (0, 1))]
-    sage: s2=m.codomain()
-    sage: s2.graphical_surface().plot()
-    sage: v=s.tangent_vector(1,(1,1/2),(1,2))
-    sage: traj=v.straight_line_trajectory()
-    sage: gs.plot()+traj.graphical_trajectory(gs).plot()
-    sage: gs2=s2
-    sage: gs2=s2.graphical_surface()
-    sage: v2=m.push_vector_forward(v)
-    sage: traj2=v2.straight_line_trajectory()
-    sage: gs2.plot()+traj2.graphical_trajectory(gs2).plot()
-    sage: s2.polygon(0)
-    Polygon: (0, 0), (2, 0), (2, 1), (1, 1)
-    sage: w2=s2.tangent_vector(0,(3/2,2/3),(1,1))
-    sage: traj2=w2.straight_line_trajectory()
-    sage: gs2.plot()+traj2.graphical_trajectory(gs2).plot()
-    sage: w=m.pull_vector_back(w2)
-    sage: traj=w.straight_line_trajectory()
-    sage: gs.plot()+traj.graphical_trajectory(gs).plot()
     """
     def __init__(self, s, p1, e1):
         r"""
@@ -358,4 +351,55 @@ class SimilaritySplitPolygonsMapping(SimilaritySurfaceMapping):
                 tangent_vector.vector(), \
                 ring = ring)
 
+def _subdivide_a_polygon(s):
+    r"""
+    Return a SimilaritySurfaceMapping which cuts one polygon along a diagonal.
+    """
+    for l in s.polygon_labels():
+        poly=s.polygon(l)
+        if poly.num_edges()>3:
+            return SimilaritySplitPolygonsMapping(s,l,0,2)
+    raise ValueError("Surface is already triangulated")
+
+
+def triangulation_mapping(s):
+    r"""Return a  SimilaritySurfaceMapping triangulating the provided surface.
+    
+    EXAMPLES::
+    
+        sage: K.<sqrt2> = NumberField(x**2 - 2, embedding=1.414)
+        sage: from flatsurf.geometry.polygon import Polygons
+        sage: p = Polygons(K)([(1,0),
+        ....: (sqrt2/2, sqrt2/2),
+        ....: (0, 1),
+        ....: (-sqrt2/2, sqrt2/2),
+        ....: (-1,0),
+        ....: (-sqrt2/2, -sqrt2/2),
+        ....: (0, -1),
+        ....: (sqrt2/2, -sqrt2/2)
+        ....: ])
+        sage: gluings=[((0,i),(0,i+4)) for i in range(4)]
+        sage: from flatsurf.geometry.similarity_surface import TranslationSurface_polygons_and_gluings
+        sage: s=TranslationSurface_polygons_and_gluings([p], gluings)
+        sage: from flatsurf.geometry.mappings import triangulation_mapping
+        sage: m=triangulation_mapping(s)
+        sage: s2=m.codomain()
+        sage: for label in s2.polygon_labels():
+        ....:     print s2.polygon(label)
+        Polygon: (0, 0), (-1/2*sqrt2, 1/2*sqrt2 + 1), (-1/2*sqrt2, 1/2*sqrt2)
+        Polygon: (0, 0), (-1/2*sqrt2 - 1, -1/2*sqrt2), (-1/2*sqrt2, -1/2*sqrt2)
+        Polygon: (0, 0), (-1/2*sqrt2 - 1, -1/2*sqrt2 - 1), (0, -1)
+        Polygon: (0, 0), (-1, -sqrt2 - 1), (1/2*sqrt2, -1/2*sqrt2)
+        Polygon: (0, 0), (0, -sqrt2 - 1), (1, 0)
+        Polygon: (0, 0), (1/2*sqrt2, -1/2*sqrt2 - 1), (1/2*sqrt2, 1/2*sqrt2)
+    """
+    m=_subdivide_a_polygon(s)
+    s1=m.codomain()
+    while True:
+        try:
+            m2=_subdivide_a_polygon(s1)
+            s1=m2.codomain()
+            m=SimilaritySurfaceMappingComposition(m,m2)
+        except ValueError:
+            return m
 
