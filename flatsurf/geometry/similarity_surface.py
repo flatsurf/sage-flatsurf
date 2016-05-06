@@ -238,6 +238,7 @@ class SimilaritySurface_generic(SageObject):
             sage: from flatsurf import *
             sage: S = similarity_surfaces.example()
             sage: T = S.minimal_translation_cover()
+            sage: T
             Translation surface built from +Infinity polygons
             sage: T.polygon(T.polygon_labels().an_element())
             Polygon: (0, 0), (8/5, -4/5), (6/5, 2/5)
