@@ -208,9 +208,13 @@ class PolygonPosition:
         return self._position_type
 
     def get_edge(self):
+        if not self.is_in_edge_interior():
+            raise ValueError("Asked for edge when not in edge interior.")
         return self._edge
     
     def get_vertex(self):
+        if not self.is_vertex():
+            raise ValueError("Asked for vertex when not a vertex.")
         return self._vertex
 
 class ConvexPolygon(Element):
