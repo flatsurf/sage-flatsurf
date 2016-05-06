@@ -1,9 +1,14 @@
+from sage.categories.cartesian_product import cartesian_product
+CartesianProduct = cartesian_product
+
+# for now we keep the code below, but we should get rid of it!!
+
 from sage.rings.integer_ring import ZZ
 from sage.structure.parent import Parent
 
 ZZ_0 = ZZ(0)
 
-class CartesianProduct(Parent):
+class OLD_CartesianProduct(Parent):
     def __init__(self, sets, category=None):
         from sage.categories.finite_enumerated_sets import FiniteEnumeratedSets
         from sage.categories.enumerated_sets import EnumeratedSets
