@@ -13,6 +13,28 @@ There is also a related [flatsurf package](http://www.labri.fr/perso/vdelecro/pr
 The code in this repository is currently independent of the package but
 the aim is to get them merged.
 
-To test:
-sage -t --force-lib ?
-where ? is a directory or file.
+Installing the module
+---------------------
+
+Get the file in this git repository. Then run
+
+    $ sage -python setup.py install
+
+Then you should be able to use the following within sage
+
+    sage: import flatsurf.geometry.similarity_surface_generators as sfg
+    sage: T = sfg.translation_surfaces.regular_octagon()
+	sage: T
+	Translation surface built from 1 polygon
+	sage: T.stratum()
+	H(2)
+
+Run the tests
+-------------
+
+    $ sage -t --force-lib ARG
+
+where `ARG` is either a directory or file. In particular, to test all the
+files in the module just do
+
+    $ sage -t --force-lib flatsurf
