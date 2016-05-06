@@ -471,10 +471,9 @@ class ConvexPolygon(Element):
                 if wedge_product(e,point-v0)==0:
                     # In this case point lies on the edge. 
                     # We need to work out which direction to move in.
-                    if is_same_direction(e,point-v0):
+                    if (point-v0).is_zero() or is_same_direction(e,point-v0):
                         # exits through vertex i+1
-                        v0=v0+e
-                        return v0, PolygonPosition(PolygonPosition.VERTEX, vertex= (i+1)%self.num_edges())
+                        return self.vertex(i+1), PolygonPosition(PolygonPosition.VERTEX, vertex= (i+1)%self.num_edges())
                     else:
                         # exits through vertex i
                         return v0, PolygonPosition(PolygonPosition.VERTEX, vertex= i)
