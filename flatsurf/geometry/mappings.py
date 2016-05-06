@@ -1,6 +1,7 @@
 r"""Mappings between translation surfaces."""
 
 from flatsurf.geometry.polygon import Polygons, wedge_product
+from flatsurf.geometry.similarity_surface import SimilaritySurface_polygons_and_gluings
 
 
 class SimilaritySurfaceMapping:
@@ -52,6 +53,68 @@ class SimilaritySurfaceMappingComposition(SimilaritySurfaceMapping):
     def pull_vector_back(self,tangent_vector):
         r"""Applies the inverse of the mapping to the provided vector."""
         return self._m1.pull_vector_back(self._m2.pull_vector_back(tangent_vector))
+
+class SL2RMapping(SimilaritySurfaceMapping):
+    r""" 
+    This class pushes a surface forward under a matrix. 
+    
+    EXAMPLE::
+        sage: sys.path.append('/home/pat/active/talks/2016/Oaxaca-SAGE_Days/sage-flatsurf-master')
+        sage: K.<sqrt2> = NumberField(x**2 - 2, embedding=1.414)
+        sage: from flatsurf.geometry.polygon import Polygons
+        sage: p = Polygons(K)([(1,0),(sqrt2/2, sqrt2/2),(0, 1),(-sqrt2/2, sqrt2/2),(-1,0),(-sqrt2/2, -sqrt2/2),(0, -1),(sqrt2/2, -sqrt2/2)])
+        sage: gluings=[((0,i),(0,i+4)) for i in range(4)]
+        sage: from flatsurf.geometry.similarity_surface import TranslationSurface_polygons_and_gluings
+        sage: s=TranslationSurface_polygons_and_gluings([p], gluings)
+        sage: from flatsurf.geometry.mappings import SL2RMapping
+        sage: mat=Matrix([[2,1],[1,1]])
+        sage: m=SL2RMapping(s,mat)
+        sage: s2=m.codomain()
+        sage: print s2.polygon(0)
+        Polygon: (0, 0), (2, 1), (3/2*sqrt2 + 2, sqrt2 + 1), (3/2*sqrt2 + 3, sqrt2 + 2), (sqrt2 + 3, sqrt2 + 2), (sqrt2 + 1, sqrt2 + 1), (-1/2*sqrt2 + 1, 1), (-1/2*sqrt2, 0)
+        sage: print m.push_vector_forward(s.tangent_vector(0,(1,1),(2,3)))
+        SimilaritySurfaceTangentVector in polygon 0 based at (3, 2) with vector (7, 5)
+        sage: print m.pull_vector_back(s2.tangent_vector(0,(0,0),(1,1)))
+        SimilaritySurfaceTangentVector in polygon 0 based at (0, 0) with vector (0, 1)
+    """
+    def __init__(self, s, m, ring=None):
+        r"""
+        Hit the surface s with the 2x2 matrix m which should have positive determinant.
+        """
+        if not s.is_finite():
+            raise ValueError("Currently only works with finite surfaces.""")
+        if m.determinant()<=0:
+            raise ValueError("Currently only works with matrices of positive determinant.""")
+        if ring is None:
+            ring = s.base_ring()
+        polys={}
+        gluing=[]
+        P=Polygons(ring)
+        for l in s.polygon_labels():
+            poly=s.polygon(l)
+            vs=[m*e for e in poly.edges()]
+            polys[l]=P(vs)
+            for e in range(poly.num_edges()):
+                l2,e2=s.opposite_edge(l,e)
+                gluing.append( ((l,e),(l2,e2)) )
+        s2=SimilaritySurface_polygons_and_gluings(polys,gluing)
+        self._m=m
+        self._im=~m
+        SimilaritySurfaceMapping.__init__(self, s, s2)
+
+    def push_vector_forward(self,tangent_vector):
+        r"""Applies the mapping to the provided vector."""
+        return self.codomain().tangent_vector(
+                tangent_vector.polygon_label(), \
+                self._m*tangent_vector.point(), \
+                self._m*tangent_vector.vector())
+
+    def pull_vector_back(self,tangent_vector):
+        r"""Applies the inverse of the mapping to the provided vector."""
+        return self.domain().tangent_vector(
+                tangent_vector.polygon_label(), \
+                self._im*tangent_vector.point(), \
+                self._im*tangent_vector.vector())
 
 class SimilarityJoinPolygonsMapping(SimilaritySurfaceMapping):
     r"""
@@ -107,7 +170,6 @@ class SimilarityJoinPolygonsMapping(SimilaritySurfaceMapping):
                         gluings.append( ( (ll1,ee1), inv_edge_map[(ll3,ee3)] ) )
                     else:
                         gluings.append( ( (ll1,ee1), (ll3,ee3) ) )
-            from flatsurf.geometry.similarity_surface import SimilaritySurface_polygons_and_gluings
             s2=SimilaritySurface_polygons_and_gluings(polygons,gluings)
         else:
             # There is no reason this could not be implemented.
@@ -271,7 +333,7 @@ class SimilaritySplitPolygonsMapping(SimilaritySurfaceMapping):
                     l4=l3
                     e4=e3
                 gluings.append( ( (l1,e1), (l4,e4) ) )
-        from flatsurf.geometry.similarity_surface import SimilaritySurface_polygons_and_gluings
+
         s2=SimilaritySurface_polygons_and_gluings(polygon_map,gluings)
 
         self._p=p
@@ -357,15 +419,15 @@ class SimilaritySplitPolygonsMapping(SimilaritySurfaceMapping):
                 tangent_vector.vector(), \
                 ring = ring)
 
-def _subdivide_a_polygon(s):
+def subdivide_a_polygon(s):
     r"""
-    Return a SimilaritySurfaceMapping which cuts one polygon along a diagonal.
+    Return a SimilaritySurfaceMapping which cuts one polygon along a diagonal or None if the surface is triangulated.
     """
     for l in s.polygon_labels():
         poly=s.polygon(l)
         if poly.num_edges()>3:
             return SimilaritySplitPolygonsMapping(s,l,0,2)
-    raise ValueError("Surface is already triangulated")
+    return None
 
 
 def triangulation_mapping(s):
@@ -399,16 +461,15 @@ def triangulation_mapping(s):
         Polygon: (0, 0), (0, -sqrt2 - 1), (1, 0)
         Polygon: (0, 0), (1/2*sqrt2, -1/2*sqrt2 - 1), (1/2*sqrt2, 1/2*sqrt2)
     """
-    m=_subdivide_a_polygon(s)
+    m=subdivide_a_polygon(s)
     s1=m.codomain()
     while True:
-        try:
-            m2=_subdivide_a_polygon(s1)
-            s1=m2.codomain()
-            m=SimilaritySurfaceMappingComposition(m,m2)
-        except ValueError:
+        m2=subdivide_a_polygon(s1)
+        if m2 is None:
             return m
-            
+        s1=m2.codomain()
+        m=SimilaritySurfaceMappingComposition(m,m2)
+
 def edge_needs_flip(s,p1,e1):
     r"""
     Return if the provided edge which bounds two triangles should be flipped
@@ -455,3 +516,46 @@ def flip_edge_mapping(s,p1,e1):
     v1,v2=m1.glued_vertices()
     m2=SimilaritySplitPolygonsMapping(m1.codomain(), p1, (v1+1)%4, (v1+3)%4)
     return SimilaritySurfaceMappingComposition(m1,m2)
+    
+def one_delaunay_flip_mapping(s):
+    r"""
+    Returns one delaunay flip, or none if no flips are needed.
+    """
+    for p in s.polygon_labels():
+        poly=s.polygon(p)
+        for e in range(poly.num_edges()):
+            if edge_needs_flip(s,p,e):
+                return flip_edge_mapping(s,p,e)
+    return None
+
+def delaunay_mapping(s):
+    r"""
+    Returns a mapping to a Delaunay decomposition or None if the surface already is Delaunay.
+    """
+    m=one_delaunay_flip_mapping(s)
+    if m is None:
+        return None
+    s1=m.codomain()
+    while True:
+        m1=one_delaunay_flip_mapping(s1)
+        if m1 is None:
+            return m
+        s1=m1.codomain()
+        m=SimilaritySurfaceMappingComposition(m,m1)
+
+def edge_needs_identify(s,p1,e1):
+    r"""
+    Return if the provided edge which bounds two triangles should be flipped
+    to get closer to the Delaunay decomposition
+    """
+    p2,e2=s.opposite_edge(p1,e1)
+    poly1=s.polygon(p1)
+    poly2=s.polygon(p2)
+    assert poly1.num_edges()==3
+    assert poly2.num_edges()==3
+    from flatsurf.geometry.matrix_2x2 import similarity_from_vectors
+    sim1=similarity_from_vectors(poly1.edge(e1+2),-poly1.edge(e1+1))
+    sim2=similarity_from_vectors(poly2.edge(e1+2),-poly2.edge(e1+1))
+    sim=sim1*sim2
+    return sim[1][0] == 0
+
