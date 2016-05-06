@@ -384,40 +384,66 @@ class SimilaritySurfaceGenerators:
     def example():
         r"""
         Construct a SimilaritySurface from a pair of triangles.
+
+        TESTS::
+
+            sage: from flatsurf import *
+            sage: similarity_surfaces.example()
+            Similarity surface built from 2 polygons
         """
         from flatsurf.geometry.similarity_surface import SimilaritySurface_polygons_and_gluings
-        from flatsurf.geometry.polygon import PolygonCreator
-        pc=PolygonCreator()
-        pc.add_vertex((0,0))
-        pc.add_vertex((2,-2))
-        pc.add_vertex((2,0))
-        p0=pc.get_polygon()
-        pc=PolygonCreator()
-        pc.add_vertex((0,0))
-        pc.add_vertex((2,0))
-        pc.add_vertex((1,3))
-        p1=pc.get_polygon()
-        ps=(p0,p1)
+        from flatsurf.geometry.polygon import polygons
+        p0 = polygons(vertices=[(0,0), (2,-2), (2,0)])
+        p1 = polygons(vertices=[(0,0), (2,0), (1,3)])
+        ps = (p0,p1)
         glue={ (0,2):(1,0), (0,0):(1,1), (0,1):(1,2), (1,0):(0,2), (1,1):(0,0), (1,2):(0,1) }
         return SimilaritySurface_polygons_and_gluings(ps,glue)
 
 
     @staticmethod
+    def billard(P):
+        r"""
+        Return the billiard in the polygon ``P``.
+        """
+        from flatsurf.geometry.polygon import polygons
+        from flatsurf.geometry.similarity_surface import SimilaritySurface_polygons_and_gluings
+        from sage.matrix.constructor import matrix
+
+        n = P.num_edges()
+        r = matrix(2, [-1,0,0,1])
+        Q = polygons(*[r*v for v in reversed(P.edges())])
+
+        glue = {(0,i): (1,n-i-1) for i in range(n)}
+        glue.update({(1,i): (0,n-i-1) for i in range(P.num_edges())})
+        return SimilaritySurface_polygons_and_gluings((P,P), glue)
+
+    @staticmethod
     def right_angle_triangle(w,h):
+        r"""
+        TESTS::
+
+            sage: from flatsurf import *
+            sage: similarity_surfaces.right_angle_triangle(2, 3)
+            Similarity surface built from 2 polygons
+        """
         from sage.structure.sequence import Sequence
         from flatsurf.geometry.polygon import Polygons
         from sage.modules.free_module import VectorSpace
+        from sage.modules.free_module_element import vector
         from flatsurf.geometry.similarity_surface import SimilaritySurface_polygons_and_gluings
 
         F = Sequence([w,h]).universe()
         if not F.is_field():
             F = F.fraction_field()
         V = VectorSpace(F,2)
-        P1 = Polygons(F)([V((w,0)),V((-w,h)),V((0,-h))])
-        P2 = Polygons(F)([V((0,h)),V((-w,-h)),V((w,0))])
-        ps = (P1,P2)
+        P = Polygons(F)
+        p1 = P([V((w,0)),V((-w,h)),V((0,-h))])
+        p2 = P([V((0,h)),V((-w,-h)),V((w,0))])
+        ps = (p1,p2)
         glue = {(0,0):(1,2),(0,1):(1,1),(0,2):(1,0)}
         return SimilaritySurface_polygons_and_gluings(ps,glue)
+
+similarity_surfaces = SimilaritySurfaceGenerators()
 
 class TranslationSurfaceGenerators:
     r"""
@@ -431,8 +457,8 @@ class TranslationSurfaceGenerators:
 
         EXAMPLES::
 
-            sage: import flatsurf.geometry.similarity_surface_generators as sfg
-            sage: T = sfg.translation_surfaces.regular_octagon()
+            sage: from flatsurf import *
+            sage: T = translation_surfaces.regular_octagon()
             sage: T
             Translation surface built from 1 polygon
             sage: T.stratum()
@@ -450,8 +476,8 @@ class TranslationSurfaceGenerators:
         r"""
         EXAMPLES::
 
-            sage: import flatsurf.geometry.similarity_surface_generators as sfg
-            sage: sfg.translation_surfaces.octagon_and_squares()
+            sage: from flatsurf import translation_surfaces
+            sage: translation_surfaces.octagon_and_squares()
             Translation surface built from 3 polygons
         """
         from flatsurf.geometry.polygon import polygons
@@ -486,12 +512,12 @@ class TranslationSurfaceGenerators:
 
         EXAMPLES::
 
-            sage: import flatsurf.geometry.similarity_surface_generators as sfg
+            sage: from flatsurf import translation_surfaces
 
             sage: S = SymmetricGroup(3)
             sage: r = S('(1,2)')
             sage: u = S('(1,3)')
-            sage: o = sfg.translation_surfaces.origami(r,u)
+            sage: o = translation_surfaces.origami(r,u)
             sage: o
             Origami defined by r=(1,2) and u=(1,3)
             sage: o.stratum()
@@ -507,8 +533,8 @@ class TranslationSurfaceGenerators:
 
         EXAMPLES::
 
-            sage: import flatsurf.geometry.similarity_surface_generators as sfg
-            sage: S = sfg.translation_surfaces.infinite_staircase1()
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.infinite_staircase1()
             sage: S
             The infinite staircase
         """
@@ -521,8 +547,9 @@ class TranslationSurfaceGenerators:
 
         EXAMPLES::
 
-            sage: import flatsurf.geometry.similarity_surface_generators as sfg
-            sage: S = sfg.translation_surfaces.infinite_staircase2()
+            sage: from flatsurf import translation_surfaces
+
+            sage: S = translation_surfaces.infinite_staircase2()
             sage: S
             Origami defined by r=<function <lambda> at ...> and
             u=<function <lambda> at ...>
@@ -542,8 +569,8 @@ class TranslationSurfaceGenerators:
 
         EXAMPLES::
 
-            sage: import flatsurf.geometry.similarity_surface_generators as sfg
-            sage: sfg.translation_surfaces.t_fractal()
+            sage: from flatsurf import translation_surfaces
+            sage: translation_surfaces.t_fractal()
             The T-fractal surface with parameters w=1, r=2, h1=1, h2=1
         """
         return TFractal(w,r,h1,h2)

@@ -228,6 +228,20 @@ class SimilaritySurface_generic(SageObject):
                 edges[(p,e)] = (pp,ee)
 
     def minimal_translation_cover(self):
+        r"""
+        EXAMPLES::
+
+            sage: from flatsurf import *
+            sage: S = similarity_surfaces.example()
+            sage: T = S.minimal_translation_cover()
+            Translation surface built from +Infinity polygons
+            sage: T.polygon(T.polygon_labels().an_element())
+            Polygon: (0, 0), (8/5, -4/5), (6/5, 2/5)
+            
+        An example of a finite unfolding::
+
+            sage: 
+        """
         return MinimalTranslationCover(self)
 
     def get_bundle(self):
@@ -512,6 +526,9 @@ class TranslationSurface_generic(ConicSurface):
     - canonical labelings of polygons
     - Delaunay triangulation
     """
+    def minimal_translation_cover(self):
+        return self
+
     def _check_edge_matrix(self):
         r"""
         Check the compatibility condition
@@ -587,7 +604,7 @@ class MinimalTranslationCover(TranslationSurface_generic):
         Return the set of polygons used for the labels.
         """
         from flatsurf.geometry.cartesian_product import CartesianProduct
-        from flatsurf.geometry.finitely_generated_matrix_group import FinitelyGeneratedMatrixSubgroup
+        from flatsurf.geometry.finitely_generated_matrix_group import FinitelyGenerated2x2MatrixGroup
 
         ss = self._ss
 
@@ -595,7 +612,7 @@ class MinimalTranslationCover(TranslationSurface_generic):
         for m in M: m.set_immutable()
         M = sorted(set(M))
         for m in M: m.set_immutable()
-        G = FinitelyGeneratedMatrixSubgroup(M)
+        G = FinitelyGenerated2x2MatrixGroup(M)
         return CartesianProduct([ss.polygon_labels(), G])
 
     def opposite_edge(self, p, e):

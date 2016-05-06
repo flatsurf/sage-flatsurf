@@ -761,7 +761,7 @@ class PolygonsConstructor:
         r"""
         EXAMPLES::
 
-            sage: from flatsurf.geometry.polygon import polygons
+            sage: from flatsurf import *
 
             sage: polygons((1,0),(0,1),(-1,0),(0,-1))
             Polygon: (0, 0), (1, 0), (1, 1), (0, 1)
@@ -769,6 +769,9 @@ class PolygonsConstructor:
             Polygon: (0, 0), (1, 0), (1, 1), (0, 1)
             sage: _.parent()
             polygons with coordinates in Algebraic Field
+
+            sage: polygons(vertices=[(0,0), (1,0), (0,1)])
+            Polygon: (0, 0), (1, 0), (0, 1)
         """
         base_ring = None
         if 'ring' in kwds:
@@ -777,6 +780,14 @@ class PolygonsConstructor:
             base_ring = kwds.pop('base_ring')
         if 'field' in kwds:
             base_ring = kwds.pop('field')
+
+        if 'vertices' in kwds:
+            if args:
+                raise ValueError("if vertices is not None then the polygon should be given by edges")
+            from sage.modules.free_module_element import vector
+            verts = map(vector, kwds.pop('vertices'))
+            args = [verts[i+1] - verts[i] for i in range(len(verts)-1)]
+            args.append(verts[0] - verts[-1])
 
         if base_ring is None:
             from sage.structure.sequence import Sequence
