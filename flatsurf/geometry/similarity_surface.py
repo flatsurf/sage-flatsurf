@@ -475,12 +475,18 @@ class ConicSurface(SimilaritySurface_generic):
     def angles(self):
         r"""
         Return the set of angles around the vertices of the surface.
+
+        EXAMPLES::
+
+            sage: import flatsurf.geometry.similarity_surface_generators as sfg
+            sage: sfg.translation_surfaces.regular_octagon().angles()
+            [3]
         """
         if not self.is_finite():
             raise NotImplementedError("the set of edges is infinite!")
 
-        edges = self.edges()
-        edges = set(self.edges())
+        edges = [(p,e) for p in self.polygon_labels() for e in range(self.polygon(p).num_edges())]
+        edges = set(edges)
         angles = []
         while edges:
             p,e = edges.pop()
@@ -542,8 +548,16 @@ class TranslationSurface_generic(ConicSurface):
         return identity_matrix(self.base_ring(),2)
 
     def stratum(self):
+        r"""
+        EXAMPLES::
+
+            sage: import flatsurf.geometry.similarity_surface_generators as sfg
+            sage: sfg.translation_surfaces.octagon_and_squares().stratum()
+            H(4)
+        """
         from sage.dynamics.flat_surfaces.all import AbelianStratum
-        return AbelianStratum([a-1 for a in self.angles()])
+        from sage.rings.integer_ring import ZZ
+        return AbelianStratum([ZZ(a-1) for a in self.angles()])
 
 class TranslationSurface_polygons_and_gluings(
         TranslationSurface_generic,
