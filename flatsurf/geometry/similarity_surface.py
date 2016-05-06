@@ -177,7 +177,6 @@ class SimilaritySurface_generic(SageObject):
         v = self.polygon(pp).edge(ee)
 
         # be careful, because of the orientation, it is -v and not v
-        res = similarity_from_vectors(u,-v)
         return similarity_from_vectors(u,-v)
 
     def edge_transformation(self, p, e):
@@ -229,6 +228,11 @@ class SimilaritySurface_generic(SageObject):
 
     def minimal_translation_cover(self):
         r"""
+        Return the minimal translation cover.
+
+        Be careful that if the surface is not built from one polygon, this is
+        not the smallest translation cover of the surface.
+
         EXAMPLES::
 
             sage: from flatsurf import *
@@ -237,10 +241,6 @@ class SimilaritySurface_generic(SageObject):
             Translation surface built from +Infinity polygons
             sage: T.polygon(T.polygon_labels().an_element())
             Polygon: (0, 0), (8/5, -4/5), (6/5, 2/5)
-            
-        An example of a finite unfolding::
-
-            sage: 
         """
         return MinimalTranslationCover(self)
 

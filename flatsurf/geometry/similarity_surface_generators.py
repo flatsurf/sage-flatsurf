@@ -404,6 +404,16 @@ class SimilaritySurfaceGenerators:
     def billard(P):
         r"""
         Return the billiard in the polygon ``P``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import *
+            sage: P = polygons(vertices=[(0,0), (1,0), (0,1)])
+            sage: Q = similarity_surfaces.billard(P)
+            sage: Q
+            Similarity surface built from 2 polygons
+            sage: Q.minimal_translation_cover()
+            Translation surface built from 8 polygons
         """
         from flatsurf.geometry.polygon import polygons
         from flatsurf.geometry.similarity_surface import SimilaritySurface_polygons_and_gluings
@@ -442,6 +452,11 @@ class SimilaritySurfaceGenerators:
         ps = (p1,p2)
         glue = {(0,0):(1,2),(0,1):(1,1),(0,2):(1,0)}
         return SimilaritySurface_polygons_and_gluings(ps,glue)
+
+    def __call__(self, *args, **kwds):
+        from flatsurf.geometry.similarity_surface import SimilaritySurface_polygons_and_gluings
+        return SimilaritySurface_polygons_and_gluings(*args, **kwds)
+
 
 similarity_surfaces = SimilaritySurfaceGenerators()
 
