@@ -208,9 +208,13 @@ class PolygonPosition:
         return self._position_type
 
     def get_edge(self):
+        if not self.is_in_edge_interior():
+            raise ValueError("Asked for edge when not in edge interior.")
         return self._edge
     
     def get_vertex(self):
+        if not self.is_vertex():
+            raise ValueError("Asked for vertex when not a vertex.")
         return self._vertex
 
 class ConvexPolygon(Element):
@@ -471,10 +475,9 @@ class ConvexPolygon(Element):
                 if wedge_product(e,point-v0)==0:
                     # In this case point lies on the edge. 
                     # We need to work out which direction to move in.
-                    if is_same_direction(e,point-v0):
+                    if (point-v0).is_zero() or is_same_direction(e,point-v0):
                         # exits through vertex i+1
-                        v0=v0+e
-                        return v0, PolygonPosition(PolygonPosition.VERTEX, vertex= (i+1)%self.num_edges())
+                        return self.vertex(i+1), PolygonPosition(PolygonPosition.VERTEX, vertex= (i+1)%self.num_edges())
                     else:
                         # exits through vertex i
                         return v0, PolygonPosition(PolygonPosition.VERTEX, vertex= i)

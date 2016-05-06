@@ -22,12 +22,23 @@ class Translation(MultiplicativeGroupElement):
     This is an element of a group written multiplicatively (for composition, and
     compatibility with Similarity)."""
     
-    def __init__(self, parent, s, t):
-        r'''Construct the similarity (x,y) mapsto (ax-by+s,bx+ay+t).'''
+    def __init__(self, parent, *args):
+        r'''
+        Construct the translation (x,y) mapsto (x+s,y+t).
+        
+        Arguments: 
+        The first argument must be the parent. 
+        If there is one additional argument (call it a) then s=a[0] and t=a[1].
+        If there are two elements, these perscribe s and t.
+        '''
         if parent is None:
             raise ValueError("The parent must be provided")
-        self._s=s
-        self._t=t
+        if len(args)==1:
+            self._s=args[0][0]
+            self._t=args[0][1]
+        if len(args)==2:
+            self._s=args[0]
+            self._t=args[1]
         self._parent=parent
         MultiplicativeGroupElement.__init__(self,parent)
 

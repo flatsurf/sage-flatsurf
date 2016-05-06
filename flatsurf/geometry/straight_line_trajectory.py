@@ -23,7 +23,7 @@ class SegmentInPolygon:
 
     def __repr__(self):
         return "Segment in polygon "+repr(self.polygon_label())+" starting at "+\
-            repr(self.start_point())+" and ending at "+repr(self.end_point())
+            repr(self.start())+" and ending at "+repr(self.end())
 
     def start(self):
         r"""
@@ -54,6 +54,20 @@ class SegmentInPolygon:
 
     def end_is_singular(self):
         return self._end.is_based_at_singularity()
+
+    def is_edge(self):
+        if not self.start_is_singular() or not self.end_is_singular():
+            return False
+        vv=self.start().vector()
+        vertex=self.start().singularity()
+        ww=self.start().polygon().edge(vertex)
+        from flatsurf.geometry.polygon import is_same_direction
+        return is_same_direction(vv,ww)
+
+    def edge(self):
+        if not self.is_edge():
+            raise ValueError("Segment asked for edge when not an edge")
+        return self.start().singularity()
 
     def polygon_label(self):
         return self._start.polygon_label()

@@ -87,6 +87,10 @@ class SimilaritySurfaceTangentVector:
         """
         return self._position.is_vertex()
     
+    def singularity(self):
+        r"""Return the index of the vertex."""
+        return self._position.get_vertex()
+    
     def is_in_boundary_of_polygon(self):
         r"""
         Return the truth value of the statement 
@@ -94,7 +98,7 @@ class SimilaritySurfaceTangentVector:
         one of the polygons making up the surface.'
         """
         return self._position.is_in_boundary()
-    
+        
     def bundle(self):
         r""" Return the tangent bundle containing this vector. """
         return self._bundle
