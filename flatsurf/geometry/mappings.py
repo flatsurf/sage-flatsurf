@@ -462,6 +462,8 @@ def triangulation_mapping(s):
         Polygon: (0, 0), (1/2*sqrt2, -1/2*sqrt2 - 1), (1/2*sqrt2, 1/2*sqrt2)
     """
     m=subdivide_a_polygon(s)
+    if m is None:
+        return None
     s1=m.codomain()
     while True:
         m2=subdivide_a_polygon(s1)
@@ -482,7 +484,7 @@ def edge_needs_flip(s,p1,e1):
     assert poly2.num_edges()==3
     from flatsurf.geometry.matrix_2x2 import similarity_from_vectors
     sim1=similarity_from_vectors(poly1.edge(e1+2),-poly1.edge(e1+1))
-    sim2=similarity_from_vectors(poly2.edge(e1+2),-poly2.edge(e1+1))
+    sim2=similarity_from_vectors(poly2.edge(e2+2),-poly2.edge(e2+1))
     sim=sim1*sim2
     return sim[1][0] < 0
     
@@ -516,7 +518,7 @@ def flip_edge_mapping(s,p1,e1):
     v1,v2=m1.glued_vertices()
     m2=SimilaritySplitPolygonsMapping(m1.codomain(), p1, (v1+1)%4, (v1+3)%4)
     return SimilaritySurfaceMappingComposition(m1,m2)
-    
+
 def one_delaunay_flip_mapping(s):
     r"""
     Returns one delaunay flip, or none if no flips are needed.
@@ -528,22 +530,7 @@ def one_delaunay_flip_mapping(s):
                 return flip_edge_mapping(s,p,e)
     return None
 
-def delaunay_mapping(s):
-    r"""
-    Returns a mapping to a Delaunay decomposition or None if the surface already is Delaunay.
-    """
-    m=one_delaunay_flip_mapping(s)
-    if m is None:
-        return None
-    s1=m.codomain()
-    while True:
-        m1=one_delaunay_flip_mapping(s1)
-        if m1 is None:
-            return m
-        s1=m1.codomain()
-        m=SimilaritySurfaceMappingComposition(m,m1)
-
-def edge_needs_identify(s,p1,e1):
+def edge_needs_join(s,p1,e1):
     r"""
     Return if the provided edge which bounds two triangles should be flipped
     to get closer to the Delaunay decomposition
@@ -555,7 +542,64 @@ def edge_needs_identify(s,p1,e1):
     assert poly2.num_edges()==3
     from flatsurf.geometry.matrix_2x2 import similarity_from_vectors
     sim1=similarity_from_vectors(poly1.edge(e1+2),-poly1.edge(e1+1))
-    sim2=similarity_from_vectors(poly2.edge(e1+2),-poly2.edge(e1+1))
+    sim2=similarity_from_vectors(poly2.edge(e2+2),-poly2.edge(e2+1))
     sim=sim1*sim2
     return sim[1][0] == 0
 
+def delaunay_triangulation_mapping(s):
+    r"""
+    Returns a mapping to a Delaunay triangulation or None if the surface already is Delaunay triangulated.
+    """
+    m=triangulation_mapping(s)
+    if m is None:
+        s1=s
+    else: 
+        s1=m.codomain()
+    m1=one_delaunay_flip_mapping(s1)
+    if m1 is None:
+        return m
+    if m is None:
+        m=m1
+    else:
+        m=SimilaritySurfaceMappingComposition(m,m1)
+    s1=m1.codomain()
+    while True:
+        m1=one_delaunay_flip_mapping(s1)
+        if m1 is None:
+            return m
+        s1=m1.codomain()
+        m=SimilaritySurfaceMappingComposition(m,m1)
+
+def delaunay_decomposition_mapping(s):
+    r"""
+    Returns a mapping to a Delaunay decomposition or possibly None if the surface already is Delaunay.
+    """
+    m=delaunay_triangulation_mapping(s)
+    if m is None:
+        s1=s
+    else:
+        s1=m.codomain()
+    edge_vectors=[]
+    for p in s1.polygon_labels():
+        poly=s1.polygon(p)
+        for e in range(poly.num_edges()):
+            pp,ee=s1.opposite_edge(p,e)
+            if (p<pp or (p==pp and e<ee)) and edge_needs_join(s1,p,e):
+                edge_vectors.append( s1.tangent_vector(p,poly.vertex(e),poly.edge(e)) )
+    if len(edge_vectors)>0:
+        ev=edge_vectors.pop()
+        p,e=ev.edge_pointing_along()
+        m1=SimilarityJoinPolygonsMapping(s1,p,e)
+        s2=m1.codomain()
+        while len(edge_vectors)>0:
+            ev=edge_vectors.pop()
+            ev2=m1.push_vector_forward(ev)
+            p,e=ev2.edge_pointing_along()
+            mtemp=SimilarityJoinPolygonsMapping(s2,p,e)
+            m1=SimilaritySurfaceMappingComposition(m1,mtemp)
+            s2=m1.codomain()
+        if m is None:
+            return m1
+        else:
+            return SimilaritySurfaceMappingComposition(m,m1)
+    return m
