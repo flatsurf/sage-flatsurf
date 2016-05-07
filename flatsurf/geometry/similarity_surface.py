@@ -399,11 +399,15 @@ class SimilaritySurface_generic(SageObject):
         else:
             return self.tangent_bundle(ring)(lab, p, v)
         
-    def graphical_surface(self):
+    def graphical_surface(self, *args, **kwds):
         r"""Return a GraphicalSurface representing this surface."""
         from flatsurf.graphical.surface import GraphicalSurface
-        return GraphicalSurface(self)
+        return GraphicalSurface(self, *args, **kwds)
 
+    surface_plot = graphical_surface
+
+    def plot(self):
+        return self.surface_plot().plot()
 
 class SimilaritySurface_polygons_and_gluings(SimilaritySurface_generic):
     r"""

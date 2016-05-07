@@ -194,7 +194,9 @@ class SimilaritySurfaceTangentVector:
         return new_vector
     
     def straight_line_trajectory(self):
-        r""" Convert this tangent vector to a StraightLineTrajectory."""
+        r"""
+        Return the straight line trajectory associated to this vector.
+        """
         from flatsurf.geometry.straight_line_trajectory import StraightLineTrajectory
         return StraightLineTrajectory(self)
     
