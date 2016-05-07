@@ -590,4 +590,16 @@ class TranslationSurfaceGenerators:
         """
         return TFractal(w,r,h1,h2)
 
+    @staticmethod
+    def chamanara(alpha):
+        r"""
+        Return the Chamanara surface with parameter ``alpha``.
+
+        EXAMPLES::
+
+            sage:
+        """
+        from flatsurf.similarity_surface.chamanara import ChamanaraSurface
+        return ChamanaraSurface(alpha)
+
 translation_surfaces = TranslationSurfaceGenerators()

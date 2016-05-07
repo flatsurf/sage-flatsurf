@@ -30,41 +30,12 @@ EXAMPLES::
     sage: G = FinitelyGenerated2x2MatrixGroup([identity_matrix(2)])
 """
 
+from sage.rings.integer import Integer
 from sage.structure.parent import Parent
 from sage.groups.group import Group
 from sage.structure.sequence import Sequence
 from sage.rings.infinity import Infinity
 from sage.matrix.constructor import matrix
-
-def matrix_multiplicative_order(m):
-    r"""
-    Return the order of the 2x2 matrix ``m``.
-    """
-    if m.det() != 1 and m.det() != -1:
-        return Infinity
-
-    # now we compute the potentially preserved quadratic form
-    # i.e. looking for A such that m^t A m = A
-    m00 = m[0,0]
-    m01 = m[0,1]
-    m10 = m[1,0]
-    m11 = m[1,1]
-    M = matrix(m.base_ring(),
-        [[m00**2, m00*m10, m10**2],
-         [m00*m01, m00*m11, m10*m11],
-         [m01**2, m01*m11, m11**2]])
-
-    # might there be several solutions ? (other than scaling)... should not
-    try:
-        v = (M-identity_matrix(3)).solve_right()
-    except ValueError: # no solution
-        return False
-
-    raise NotImplementedError("your matrix is conjugate to an orthogonal matrix but the angle might not be rational.. to be terminated.")
-
-    # then we conjugate and check if the angles are rational
-    # we need to take a square root of a symmetric matrix... this is not implemented!
-    A = matrix(m.base_ring(), [[v[0],v[1]],[v[1],v[2]]])
 
 
 def invariant_quadratic_forms(m):
@@ -182,6 +153,39 @@ def contains_definite_form(V):
         return True
     else:
         raise RuntimeError
+
+def matrix_multiplicative_order(m):
+    r"""
+    Return the order of the 2x2 matrix ``m``.
+    """
+    if m.is_one():
+        return Integer(1)
+    elif m.det() != 1 and m.det() != -1:
+        return Infinity
+
+    # now we compute the potentially preserved quadratic form
+    # i.e. looking for A such that m^t A m = A
+    m00 = m[0,0]
+    m01 = m[0,1]
+    m10 = m[1,0]
+    m11 = m[1,1]
+    M = matrix(m.base_ring(),
+        [[m00**2, m00*m10, m10**2],
+         [m00*m01, m00*m11, m10*m11],
+         [m01**2, m01*m11, m11**2]])
+
+    # might there be several solutions ? (other than scaling)... should not
+    try:
+        v = (M-identity_matrix(3)).solve_right()
+    except ValueError: # no solution
+        return False
+
+    raise NotImplementedError("your matrix is conjugate to an orthogonal matrix but the angle might not be rational.. to be terminated.")
+
+    # then we conjugate and check if the angles are rational
+    # we need to take a square root of a symmetric matrix... this is not implemented!
+    A = matrix(m.base_ring(), [[v[0],v[1]],[v[1],v[2]]])
+
 
 
 class FinitelyGenerated2x2MatrixGroup(Group):

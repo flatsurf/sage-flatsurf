@@ -10,18 +10,14 @@ class GraphicalPolygon:
     r"""
     Stores data necessary to draw one of the polygons from a surface.
     """
-    
-    def __init__(self, polygon, transformation=None, outline_color=None, fill_color="#ccc"):
-        self._p=polygon
+
+    def __init__(self, polygon, transformation=None, outline_color=None, fill_color="#ccc", label=None):
+        self._p = polygon
         self.set_transformation(transformation)
         # Store colors
         self.set_outline_color(outline_color)
         self.set_fill_color(fill_color)
-        
-    def base_ring(self):
-        return self._p.base_ring()
-
-    field = base_ring
+        self.set_label(label)
 
     def _repr_(self):
         r"""
@@ -33,24 +29,50 @@ class GraphicalPolygon:
         return self._p
 
     def minx(self):
-        r""" Return the minimal x-coordinate of a vertex. """
+        r"""
+        Return the minimal x-coordinate of a vertex.
+
+        .. TODO::
+
+            to fit with Sage conventions this should be xmin
+        """
         return min([v[0] for v in self.vertices()])
 
     def miny(self):
-        r""" Return the minimal y-coordinate of a vertex. """
+        r"""
+        Return the minimal y-coordinate of a vertex.
+
+        .. TODO::
+
+            to fit with Sage conventions this should be ymin
+        """
         return min([v[1] for v in self.vertices()])
 
     def maxx(self):
-        r""" Return the maximal x-coordinate of a vertex. """
+        r"""
+        Return the maximal x-coordinate of a vertex.
+
+        .. TODO::
+
+            to fit with Sage conventions this should be xmax
+        """
         return max([v[0] for v in self.vertices()])
 
     def maxy(self):
-        r""" Return the minimal y-coordinate of a vertex. """
+        r"""
+        Return the minimal y-coordinate of a vertex
+
+        .. TODO::
+
+            To fit with Sage conventions this should be ymax
+        """
         return max([v[1] for v in self.vertices()])
 
     def bounding_box(self):
-        r""" Return the quadruple (x1,y1,x2,y2) where x1 and y1 are the minimal
-        x- and y-coordinates and x2 and y2 are the maximal x-and y- cordinates."""
+        r"""
+        Return the quadruple (x1,y1,x2,y2) where x1 and y1 are the minimal
+        x- and y-coordinates and x2 and y2 are the maximal x-and y- cordinates.
+        """
         return self.minx(), self.miny(), self.maxx(), self.maxy()
 
     def transformed_vertex(self, e):
@@ -81,67 +103,96 @@ class GraphicalPolygon:
         # Cache the location of vertices:
         self._v = [V(self._transformation(v)) for v in self._p.vertices()]
 
-    def set_fill_color(self,fill_color):
+    def set_fill_color(self, fill_color):
         r"""
         Set the fill color.
         """
         self._fill_color=fill_color
 
-    def set_outline_color(self,outline_color):
-        r""" 
+    def set_outline_color(self, outline_color):
+        r"""
         Set the outline color.
         """
         self._outline_color=outline_color
 
-    def num_edges(self):
-        return self._p.num_edges()
+    def set_label(self, label):
+        self._label = label
 
     def vertices(self):
-        r"""Return the vertices of the polygon as viewed through the transformation and converted to a
-        list of points in VectorSpace(RDF, 2)."""
+        r"""
+        Return the vertices of the polygon as a list of floating point vectors.
+        """
         return self._v
-        
+
+    def polygon_options(self):
+        d = {'axes': False}
+        if self._fill_color is not None:
+            d['color'] = self._fill_color
+            if self._outline_color is not None:
+                d['edgecolor'] = self._outline_color
+        elif self._outline_color is not None:
+            d['color'] = self._outline_color,
+            d['fill'] = False
+
+        return d
+
+    def polygon_label_options(self):
+        return {'color': 'black'}
+
     def plot(self):
         r"""Returns a plot of the GraphicalPolygon.
-        
+
         EXAMPLES::
-        
-            sage: from flatsurf.geometry.similarity_surface_generators import SimilaritySurfaceGenerators
-            sage: s = SimilaritySurfaceGenerators.example()
+
+            sage: from flatsurf import *
+            sage: s = similarity_surfaces.example()
             sage: from flatsurf.graphical.surface import GraphicalSurface
             sage: gs = GraphicalSurface(s)
             sage: gs.graphical_polygon(0).set_fill_color("red")
             sage: gs.graphical_polygon(0).plot()
-            Graphics object consisting of 1 graphics primitive
+            Graphics object consisting of 2 graphics primitives
         """
         from sage.plot.point import point2d
         from sage.plot.polygon import polygon2d
-        v = self.vertices()
         from sage.plot.graphics import Graphics
-        p = Graphics()
-        if not self._fill_color is None:
-            if self._outline_color is None:
-                p = polygon2d(self.vertices(), color=self._fill_color,axes=False)
-            else:
-                p = polygon2d(self.vertices(), 
-                    color=self._fill_color,edgecolor=self._outline_color,axes=False)
-        elif not self._outline_color is None:
-            p = polygon2d(self.vertices(), 
-                    color=self._outline_color,axes=False,fill=False)
+        from sage.plot.text import text
+
+        p = polygon2d(self._v, **self.polygon_options())
+
+        if self._label is not None:
+            p += text(str(self._label), sum(self._v) / len(self._v),
+                    **self.polygon_label_options())
         return p
 
     def plot_edge(self, e, color=None, dotted=False):
-        ne=self.num_edges()
-        if color==None:
-            color=self._outline_color
-        if color==None:
+        ne = self.base_polygon().num_edges()
+        if color is None:
+            color = self._outline_color
+        if color is None:
             from sage.plot.graphics import Graphics
             return Graphics()
+
         from sage.plot.line import line2d
-        v=self.vertices()[e]
-        w=self.vertices()[(e+1)%ne]
+        v = self._v[e]
+        w = self._v[(e+1)%ne]
         if dotted:
             return line2d([(v[0],v[1]), (w[0],w[1])],color=color,linestyle=":")
         else:
             return line2d([(v[0],v[1]), (w[0],w[1])],color=color)
+
+    # DEPRECATED METHODS THAT WILL BE REMOVED
+
+    def num_edges(self):
+        from sage.misc.superseded import deprecation
+        deprecation(1,"do not use num_edges but .base_polygon().num_edges()")
+        return self._p.num_edges()
+
+
+    def base_ring(self):
+        from sage.misc.superseded import deprecation
+        deprecation(1,"do not use .base_ring() but .base_polygon().base_ring()")
+        return self._p.base_ring()
+
+    field = base_ring
+
 
