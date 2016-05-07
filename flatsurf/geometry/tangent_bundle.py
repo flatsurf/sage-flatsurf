@@ -116,7 +116,19 @@ class SimilaritySurfaceTangentVector:
     def vector(self):
         r""" Return the coordinates of this vector within the assigned polygon. """
         return self._vector
-        
+    
+    def edge_pointing_along(self):
+        r"""
+        Returns the pair of (p,e) where p is the polygon label at the base point,
+        and e is the edge this vector points along or none if it does not point
+        along an edge. Here pointing along means that the vector is based at
+        a vertex and represents the vector joining this edge to the next vertex."""
+        if self.is_based_at_singularity():
+            e=self.singularity()
+            if self.vector()==self.polygon().edge(e):
+                return (self.polygon_label(),e)
+        return None
+    
     def differs_by_scaling(self, another_tangent_vector):
         r"""
         Returns true if the other vector just differs by scaling. This means they should lie
