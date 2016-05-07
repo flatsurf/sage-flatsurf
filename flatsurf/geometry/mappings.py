@@ -2,7 +2,7 @@ r"""Mappings between translation surfaces."""
 
 from flatsurf.geometry.polygon import Polygons, wedge_product
 from flatsurf.geometry.similarity_surface import SimilaritySurface_polygons_and_gluings
-
+from flatsurf.geometry.translation import TranslationGroup
 
 class SimilaritySurfaceMapping:
     r"""Abstract class for any mapping between similarity surfaces."""
@@ -31,6 +31,13 @@ class SimilaritySurfaceMapping:
         r"""Applies the inverse of the mapping to the provided vector."""
         raise NotImplementedError
         
+    def __mul__(self,other):
+        # Compose SimilaritySurfaceMappings
+        return SimilaritySurfaceMappingComposition(other,self)
+    
+    def __rmul__(self,other):
+        return SimilaritySurfaceMappingComposition(self,other)
+
 class SimilaritySurfaceMappingComposition(SimilaritySurfaceMapping):
     r"""
     Compose two mappings.
@@ -414,7 +421,7 @@ class SimilaritySplitPolygonsMapping(SimilaritySurfaceMapping):
         else:
             # Not in a polygon that was changed. Just copy the data.
             return self._domain.tangent_vector( \
-                self._p, \
+                tangent_vector.polygon_label(), \
                 tangent_vector.point(), \
                 tangent_vector.vector(), \
                 ring = ring)
@@ -603,3 +610,104 @@ def delaunay_decomposition_mapping(s):
         else:
             return SimilaritySurfaceMappingComposition(m,m1)
     return m
+    
+def canonical_first_vertex(polygon):
+    r"""
+    Return the index of the vertex with smallest y-coordinate.
+    If two vertices have the same y-coordinate, then the one with least x-coordinate is returned.
+    """
+    best=0
+    best_pt=polygon.vertex(best)
+    for v in range(1,polygon.num_edges()):
+        pt=polygon.vertex(v)
+        if pt[1]<best_pt[1]:
+            best=v
+            best_pt=pt
+    if best==0:
+        if pt[1]==best_pt[1]:
+            return v
+    return best
+   
+class CanonicalizePolygonsMapping(SimilaritySurfaceMapping):
+    r"""
+    This is a mapping to a surface with the polygon vertices canonically determined.
+    A canonical labeling is when the canonocal_first_vertex is the zero vertex.
+    
+    EXAMPLES::
+        sage: from flatsurf.geometry.polygon import Polygons
+        sage: K.<sqrt2> = NumberField(x**2 - 2, embedding=1.414)
+        sage: p = Polygons(K)([(1,0),(sqrt2/2, sqrt2/2),(0, 1),(-sqrt2/2, sqrt2/2),(-1,0),(-sqrt2/2, -sqrt2/2),(0, -1),(sqrt2/2, -sqrt2/2)])
+        sage: gluings=[((0,i),(0,i+4)) for i in range(4)]
+        sage: from flatsurf.geometry.similarity_surface import TranslationSurface_polygons_and_gluings
+        sage: s=TranslationSurface_polygons_and_gluings([p], gluings)
+        sage: from flatsurf.geometry.mappings import *
+        sage: mat=Matrix([[1,2+2*sqrt2],[0,1]])
+        sage: m1=SL2RMapping(s,mat)
+        sage: s2=m1.codomain()
+        sage: m2=delaunay_decomposition_mapping(s2)
+        sage: s3=m2.codomain()
+        sage: print s3.polygon(0)
+        Polygon: (0, 0), (1/2*sqrt2, -1/2*sqrt2), (1/2*sqrt2 + 1, -1/2*sqrt2), (sqrt2 + 1, 0), (sqrt2 + 1, 1), (1/2*sqrt2 + 1, 1/2*sqrt2 + 1), (1/2*sqrt2, 1/2*sqrt2 + 1), (0, 1)
+        sage: m3=CanonicalizePolygonsMapping(s3)
+        sage: s4=m3.codomain()
+        sage: s4.polygon(0)
+        Polygon: (0, 0), (1, 0), (1/2*sqrt2 + 1, 1/2*sqrt2), (1/2*sqrt2 + 1, 1/2*sqrt2 + 1), (1, sqrt2 + 1), (0, sqrt2 + 1), (-1/2*sqrt2, 1/2*sqrt2 + 1), (-1/2*sqrt2, 1/2*sqrt2)
+        sage: m=m3*m2*m1
+        sage: print m.push_vector_forward(s.tangent_vector(0,(0,0),(0,1)))
+        SimilaritySurfaceTangentVector in polygon 0 based at (0, 0) with vector (2*sqrt2 + 2, 1)
+        sage: print m.pull_vector_back(s4.tangent_vector(0,(0,0),(0,1)))
+        SimilaritySurfaceTangentVector in polygon 0 based at (1/2*sqrt2 + 1, 1/2*sqrt2 + 1) with vector (-2*sqrt2 - 2, 1)
+    """
+    def __init__(self, s):
+        r"""
+        Split the polygon with label p of surface s along the diagonal joining vertex v1 to vertex v2.
+        """
+        ring=s.base_ring()
+        T=TranslationGroup(ring)
+        P=Polygons(ring)
+        cv = {} # dictionary for canonical vertices
+        newpolys={} # Polygons for new surfaces
+        translations={} # translations bringing the canonical vertex to the origin.
+        for l in s.polygon_labels():
+            polygon=s.polygon(l)
+            cv[l]=canonical_first_vertex(polygon)
+            newedges=[]
+            for i in range(polygon.num_edges()):
+                newedges.append(polygon.edge( (i+cv[l]) % polygon.num_edges() ))
+            newpolys[l]=P(newedges)
+            translations[l]=T( -polygon.vertex(cv[l]) )
+        newgluing=[]
+        for l1 in s.polygon_labels():
+            polygon=s.polygon(l1)
+            for e1 in range(polygon.num_edges()):
+                l2,e2=s.opposite_edge(l1,e1)
+                ee1= (e1-cv[l1]+polygon.num_edges())%polygon.num_edges()
+                polygon2=s.polygon(l2)
+                ee2= (e2-cv[l2]+polygon2.num_edges())%polygon2.num_edges()
+                newgluing.append( ( (l1,ee1),(l1,ee2) ) )
+
+        s2=SimilaritySurface_polygons_and_gluings(newpolys,newgluing)
+        
+        self._cv=cv
+        self._translations=translations
+
+        SimilaritySurfaceMapping.__init__(self, s, s2)
+
+    def push_vector_forward(self,tangent_vector):
+        r"""Applies the mapping to the provided vector."""
+        ring = tangent_vector.bundle().base_ring()
+        l=tangent_vector.polygon_label()
+        return self.codomain().tangent_vector(l, \
+            self._translations[l](tangent_vector.point()), \
+            tangent_vector.vector(), \
+            ring = ring)
+
+    def pull_vector_back(self,tangent_vector):
+        r"""Applies the pullback mapping to the provided vector."""
+        ring = tangent_vector.bundle().base_ring()
+        l=tangent_vector.polygon_label()
+        return self.domain().tangent_vector(l, \
+            (~self._translations[l])(tangent_vector.point()), \
+            tangent_vector.vector(), \
+            ring = ring)
+
