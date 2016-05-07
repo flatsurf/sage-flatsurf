@@ -662,6 +662,8 @@ class CanonicalizePolygonsMapping(SimilaritySurfaceMapping):
         r"""
         Split the polygon with label p of surface s along the diagonal joining vertex v1 to vertex v2.
         """
+        if not s.is_finite():
+            raise ValueError("Currently only works with finite surfaces.""")
         ring=s.base_ring()
         T=TranslationGroup(ring)
         P=Polygons(ring)
@@ -711,3 +713,58 @@ class CanonicalizePolygonsMapping(SimilaritySurfaceMapping):
             tangent_vector.vector(), \
             ring = ring)
 
+class ReindexMapping(SimilaritySurfaceMapping):
+    r"""
+    Apply a dictionary to relabel the polygons.
+    """
+    def __init__(self,s,relabler):
+        r"""
+        The parameters should be a surface and a dictionary which takes as input a label and produces a new label.
+        """
+        if not s.is_finite():
+            raise ValueError("Currently only works with finite surfaces.""")
+        f = {} # map for labels going forward.
+        b = {} # map for labels going backward.
+        for l in s.polygon_labels():
+            if relabler.has_key(l):
+                l2=relabler[l]
+                f[l]=l2
+                if b.has_key(l2):
+                    raise ValueError("Provided dictionary has two keys mapping to the same value. Or you are mapping to a label you didn't change.")
+                b[l2]=l
+            else:
+                # If no key then don't change the label
+                f[l]=l
+                if b.has_key(l):
+                    raise ValueError("Provided dictionary has two keys mapping to the same value. Or you are mapping to a label you didn't change.")
+                b[l]=l
+
+        s2=SimilaritySurface_polygons_and_gluings(polygon_map,gluings)
+
+        self._f=f
+        self._b=b
+        
+        SimilaritySurfaceMapping.__init__(self, s, s2)
+        
+    def push_vector_forward(self,tangent_vector):
+        r"""Applies the mapping to the provided vector."""
+        # There is no change- we just move it to the new surface.
+        ring = tangent_vector.bundle().base_ring()
+        return self.codomain().tangent_vector( \
+            tangent_vector.polygon_label(), \
+            tangent_vector.point(), \
+            tangent_vector.vector(), \
+            ring = ring)
+
+    def pull_vector_back(self,tangent_vector):
+        r"""Applies the pullback mapping to the provided vector."""
+        ring = tangent_vector.bundle().base_ring()
+        return self.domain().tangent_vector( \
+            tangent_vector.polygon_label(), \
+            tangent_vector.point(), \
+            tangent_vector.vector(), \
+            ring = ring)
+
+#def canonicalize_mapping(s):
+#    r"""Return the translation surface in a canonical form."""
+    
