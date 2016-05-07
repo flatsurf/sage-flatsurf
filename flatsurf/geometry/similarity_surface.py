@@ -58,6 +58,8 @@ class SimilaritySurface_generic(SageObject):
           somewhat fixed polygon
         - opposite_edge(self, lab, edege): a couple (``other_lab``, ``other_edge``)
     """
+    _plot_options = {}
+
     def _check(self):
         r"""
         Run all the methods that start with _check
@@ -400,9 +402,13 @@ class SimilaritySurface_generic(SageObject):
             return self.tangent_bundle(ring)(lab, p, v)
         
     def graphical_surface(self, *args, **kwds):
-        r"""Return a GraphicalSurface representing this surface."""
+        r"""
+        Return a GraphicalSurface representing this surface.
+        """
+        opt = self._plot_options.copy()
+        opt.update(kwds)
         from flatsurf.graphical.surface import GraphicalSurface
-        return GraphicalSurface(self, *args, **kwds)
+        return GraphicalSurface(self, *args, **opt)
 
     surface_plot = graphical_surface
 
@@ -555,9 +561,6 @@ class TranslationSurface_generic(ConicSurface):
         else:
             end = "s"
         return "Translation surface built from %s polygon"%(self.num_polygons()) + end
-
-    def plot(self):
-        return TranslationSurfacePlot(self).plot()
 
     def edge_matrix(self, p, e=None):
         if e is None:
