@@ -597,9 +597,11 @@ class TranslationSurfaceGenerators:
 
         EXAMPLES::
 
-            sage:
+            sage: from flatsurf import translation_surfaces
+            sage: translation_surfaces.chamanara(1/2)
+            Chamanara surface with parameter 1/2
         """
-        from flatsurf.similarity_surface.chamanara import ChamanaraSurface
+        from flatsurf.geometry.chamanara import ChamanaraSurface
         return ChamanaraSurface(alpha)
 
 translation_surfaces = TranslationSurfaceGenerators()

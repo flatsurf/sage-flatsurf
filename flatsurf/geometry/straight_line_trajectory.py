@@ -10,20 +10,31 @@ class SegmentInPolygon:
     def __init__(self, tangent_vector, end_vector=None):
         r""" 
         Construct a segment associated to a vector which is 
-        either inside or pointed into a polygon."""
+        either inside or pointed into a polygon.
+        """
         if not end_vector is None:
-            self._start=tangent_vector
-            self._end=end_vector
+            self._start = tangent_vector
+            self._end = end_vector
         else:
-            self._end=tangent_vector.forward_to_polygon_boundary()
+            self._end = tangent_vector.forward_to_polygon_boundary()
             if tangent_vector.is_in_boundary_of_polygon():
-                self._start=tangent_vector
+                self._start = tangent_vector
             else:
-                self._start=self._end.forward_to_polygon_boundary()
+                self._start = self._end.forward_to_polygon_boundary()
 
     def __repr__(self):
-        return "Segment in polygon "+repr(self.polygon_label())+" starting at "+\
-            repr(self.start())+" and ending at "+repr(self.end())
+        r"""
+        TESTS::
+
+            sage: from flatsurf import *
+            sage: from flatsurf.geometry.straight_line_trajectory import SegmentInPolygon
+            sage: s = similarity_surfaces.example()
+            sage: v = s.tangent_vector(0, (0,0), (3,-1))
+            sage: SegmentInPolygon(v)
+            Segment in polygon 0 starting at (0, 0) and ending at (2, -2/3)
+        """
+        return "Segment in polygon {} starting at {} and ending at {}".format(
+                self.polygon_label(), self.start_point(), self.end_point())
 
     def start(self):
         r"""
@@ -81,37 +92,19 @@ class SegmentInPolygon:
         
         EXAMPLES::
         
-            sage: from flatsurf.geometry.similarity_surface_generators import SimilaritySurfaceGenerators
-            sage: s = SimilaritySurfaceGenerators.example()
-            sage: from flatsurf.geometry.tangent_bundle import SimilaritySurfaceTangentBundle
-            sage: tb = SimilaritySurfaceTangentBundle(s)
-            sage: print("Polygon 0 is "+str(s.polygon(0)))
-            Polygon 0 is Polygon: (0, 0), (2, -2), (2, 0)
-            sage: print("Polygon 1 is "+str(s.polygon(1)))
-            Polygon 1 is Polygon: (0, 0), (2, 0), (1, 3)
-            sage: from flatsurf.geometry.tangent_bundle import SimilaritySurfaceTangentVector
-            sage: V = tb.surface().vector_space()
-            sage: v = SimilaritySurfaceTangentVector(tb, 0, V((0,0)), V((3,-1)))
-            sage: from flatsurf.geometry.straight_line_trajectory import *
+            sage: from flatsurf import *
+            sage: from flatsurf.geometry.straight_line_trajectory import SegmentInPolygon
+
+            sage: s = similarity_surfaces.example()
+            sage: s.polygon(0)
+            Polygon: (0, 0), (2, -2), (2, 0)
+            sage: s.polygon(1)
+            Polygon: (0, 0), (2, 0), (1, 3)
+            sage: v = s.tangent_vector(0, (0,0), (3,-1))
             sage: seg = SegmentInPolygon(v)
-            sage: print(seg)
+            sage: seg
             Segment in polygon 0 starting at (0, 0) and ending at (2, -2/3)
-            sage: from flatsurf.geometry.similarity_surface_generators import SimilaritySurfaceGenerators
-            sage: s = SimilaritySurfaceGenerators.example()
-            sage: from flatsurf.geometry.tangent_bundle import SimilaritySurfaceTangentBundle
-            sage: tb = SimilaritySurfaceTangentBundle(s)
-            sage: print("Polygon 0 is "+str(s.polygon(0)))
-            Polygon 0 is Polygon: (0, 0), (2, -2), (2, 0)
-            sage: print("Polygon 1 is "+str(s.polygon(1)))
-            Polygon 1 is Polygon: (0, 0), (2, 0), (1, 3)
-            sage: from flatsurf.geometry.tangent_bundle import SimilaritySurfaceTangentVector
-            sage: V = tb.surface().vector_space()
-            sage: v = SimilaritySurfaceTangentVector(tb, 0, V((0,0)), V((3,-1)))
-            sage: from flatsurf.geometry.straight_line_trajectory import *
-            sage: seg = SegmentInPolygon(v)
-            sage: print(seg)
-            Segment in polygon 0 starting at (0, 0) and ending at (2, -2/3)
-            sage: print(seg.next())
+            sage: seg.next()
             Segment in polygon 1 starting at (2/3, 2) and ending at (14/9, 4/3)
         """        
         if self.end_is_singular():

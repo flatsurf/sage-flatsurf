@@ -8,7 +8,7 @@ EXAMPLES::
     sage: from flatsurf.geometry.chamanara import GraphicalChamanaraSurface
     sage: s = GraphicalChamanaraSurface(QQ(1)/2,8)
     sage: s.plot()
-    Graphics object consisting of 81 graphics primitives
+    Graphics object consisting of 115 graphics primitives
 """
 
 from flatsurf.geometry.similarity_surface import SimilaritySurface_generic
