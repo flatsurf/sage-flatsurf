@@ -21,13 +21,35 @@ class GraphicalSurface:
         sage: gs = GraphicalSurface(s)
         sage: gs.graphical_polygon(0).set_fill_color("red")
         sage: gs.graphical_polygon(0).plot()
-        Graphics object consisting of 2 graphics primitives
+        Graphics object consisting of 5 graphics primitives
     """
     def __init__(self, similarity_surface, polygon_labels=True, edge_labels=True):
         r"""
         Construct a GraphicalSurface from a similarity surface.
+
+        INPUT:
+
+        - ``similarity_surface`` -- a similarity surface
+
+        - ``polygon_labels`` -- a boolean (default ``True``) whether the label
+          of polygons are displayed
+
+        - ``edge_labels`` -- option to control the display of edge labels. It
+          can be one of
+
+            - ``False`` or ``None`` for no labels
+
+            - ``'gluings'`` -- to put on each side of each non-adjacent edge, the
+              name of the polygon to which it is glued
+
+            - ``'number'`` -- to put on each side of each edge the number of the
+              edge
+
+            - ``'gluings and numbers'`` -- full information
         """
         self._polygons_labels = polygon_labels
+
+        self._edge_labels = 'gluings' if edge_labels is True else edge_labels
 
         assert isinstance(similarity_surface, SimilaritySurface_generic)
         self._ss = similarity_surface
@@ -59,20 +81,27 @@ class GraphicalSurface:
     def make_all_visible(self, adjacent=True):
         r"""
         Attempt to show all invisible polygons by walking over the surface.
+
+        INPUT:
+
+        - ``adjacent`` -- (default ``True``) whether the newly added polygon are
+          set to be adjacent or not
         
         EXAMPLES::
 
             sage: from flatsurf import *
+
             sage: s = similarity_surfaces.example()
             sage: g = s.graphical_surface()
             sage: g.make_all_visible()
             sage: g.plot()
-            Graphics object consisting of 15 graphics primitives
+            Graphics object consisting of 13 graphics primitives
 
             sage: s = similarity_surfaces.example()
             sage: g = s.graphical_surface()
             sage: g.make_all_visible(adjacent=False)
             sage: g.plot()
+            Graphics object consisting of 16 graphics primitives
         """
         assert self._ss.is_finite()
 
@@ -89,11 +118,11 @@ class GraphicalSurface:
             for l in self._ss.polygon_labels():
                 if not self.is_visible(l):
                     poly = self._ss.polygon(l)
-                    sxmax = self.maxx()
+                    sxmax = self.xmax()
                     g = self.graphical_polygon(l)
-                    pxmin = g.minx()
-                    t = T((self.maxx() - g.minx() + 1,
-                        -(g.miny()+g.maxy())/2))
+                    pxmin = g.xmin()
+                    t = T((self.xmax() - g.xmin() + 1,
+                        -(g.ymin()+g.ymax())/2))
                     g.set_transformation(t)
                     self.make_visible(l)
 
@@ -103,7 +132,7 @@ class GraphicalSurface:
         """
         return self._ss
 
-    def minx(self):
+    def xmin(self):
         r"""
         Return the minimal x-coordinate of a vertex of a visible graphical polygon.
 
@@ -111,37 +140,25 @@ class GraphicalSurface:
 
             this should be xmin
         """
-        return min([self.graphical_polygon(label).minx() for label in self.visible()])
+        return min([self.graphical_polygon(label).xmin() for label in self.visible()])
 
-    def miny(self):
+    def ymin(self):
         r"""
         Return the minimal y-coordinate of a vertex of a visible graphical polygon.
-
-        .. TODO::
-
-            this should be ymin
         """
-        return min([self.graphical_polygon(label).miny() for label in self.visible()])
+        return min([self.graphical_polygon(label).ymin() for label in self.visible()])
 
-    def maxx(self):
+    def xmax(self):
         r"""
         Return the maximal x-coordinate of a vertex of a visible graphical polygon.
-
-        .. TODO::
-
-            this should be xmax
         """
-        return max([self.graphical_polygon(label).maxx() for label in self.visible()])
+        return max([self.graphical_polygon(label).xmax() for label in self.visible()])
 
-    def maxy(self):
+    def ymax(self):
         r"""
         Return the minimal y-coordinate of a vertex of a visible graphical polygon.
-
-        .. TODO::
-
-            this should be ymax
         """
-        return max([self.graphical_polygon(label).maxy() for label in self.visible()])
+        return max([self.graphical_polygon(label).ymax() for label in self.visible()])
 
     def bounding_box(self):
         r"""
@@ -149,7 +166,7 @@ class GraphicalSurface:
         x- and y-coordinates of a visible graphical polygon and x2 and y2 are the
         maximal x-and y- cordinates  of a visible graphical polygon.
         """
-        return self.minx(), self.miny(), self.maxx(), self.maxy()
+        return self.xmin(), self.ymin(), self.xmax(), self.ymax()
 
 
     def graphical_polygon(self, label):
@@ -169,20 +186,19 @@ class GraphicalSurface:
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.similarity_surface_generators import SimilaritySurfaceGenerators
-            sage: s = SimilaritySurfaceGenerators.example()
-            sage: from flatsurf.graphical.surface import GraphicalSurface
-            sage: gs = GraphicalSurface(s)
-            sage: print("Polygon 0: "+str(gs.graphical_polygon(0).vertices()))
+            sage: from flatsurf import *
+            sage: s = similarity_surfaces.example()
+            sage: gs = s.surface_plot()
+            sage: print gs.graphical_polygon(0)
             Polygon 0: [(0.0, 0.0), (2.0, -2.0), (2.0, 0.0)]
-            sage: print("Polygon 1: "+str(gs.graphical_polygon(1).vertices()))
+            sage: print gs.graphical_polygon(1)
             Polygon 1: [(0.0, 0.0), (2.0, 0.0), (1.0, 3.0)]
             sage: print("Polygon 0, edge 0 is opposite "+str(gs.opposite_edge(0,0)))
             Polygon 0, edge 0 is opposite (1, 1)
             sage: gs.make_adjacent(0,0)
-            sage: print("Polygon 0: "+str(gs.graphical_polygon(0).vertices()))
+            sage: print gs.graphical_polygon(0)
             Polygon 0: [(0.0, 0.0), (2.0, -2.0), (2.0, 0.0)]
-            sage: print("Polygon 1: "+str(gs.graphical_polygon(1).vertices()))
+            sage: print gs.graphical_polygon(1)
             Polygon 1: [(0.4, -2.8), (2.0, -2.0), (0.0, 0.0)]
         """
         pp,ee = self._ss.opposite_edge(p,e)
@@ -192,8 +208,10 @@ class GraphicalSurface:
         poly.set_transformation(h*g)
 
     def make_adjacent_and_visible(self, p, e):
-        r"""Move the polygon across the prescribed edge so that is adjacent,
-        and make the moved polygon visible."""
+        r"""
+        Move the polygon across the prescribed edge so that is adjacent,
+        and make the moved polygon visible.
+        """
         self.make_adjacent(p, e)
         self.make_visible(self._ss.opposite_edge(p,e)[0])
 
@@ -201,10 +219,29 @@ class GraphicalSurface:
         r"""
         Returns the truth value of the statement
         'The polygon opposite edge (p,e) is adjacent to that edge.'
+
+        EXAMPLES::
+
+            sage: from flatsurf import *
+            sage: s = similarity_surfaces.example()
+            sage: g = s.surface_plot()
+            sage: g.is_adjacent(0,0)
+            False
+            sage: g.is_adjacent(0,1)
+            False
+            sage: g.make_all_visible(adjacent=True)
+            sage: g.is_adjacent(0,0)
+            True
+            sage: g.is_adjacent(0,1)
+            False
         """
         pp,ee = self.opposite_edge(p,e)
-        return self.graphical_polygon(p).transformed_vertex(e)==self.graphical_polygon(pp).transformed_vertex(ee+1) and \
-            self.graphical_polygon(p).transformed_vertex(e+1)==self.graphical_polygon(pp).transformed_vertex(ee)
+        if not self.is_visible(pp):
+            return False
+        g = self.graphical_polygon(p)
+        gg = self.graphical_polygon(pp)
+        return g.transformed_vertex(e) == gg.transformed_vertex(ee+1) and \
+               g.transformed_vertex(e+1) == gg.transformed_vertex(ee)
 
     def opposite_edge(self, p, e):
         r"""
@@ -212,6 +249,69 @@ class GraphicalSurface:
         returns the pair (``pp``, ``ee``) to which this edge is glued.
         """
         return self._ss.opposite_edge(p,e)
+
+    def edge_labels(self, lab):
+        r"""
+        Return the edge label to be used for the polygon with label ``lab``
+
+        EXAMPLES::
+
+            sage: from flatsurf import *
+            sage: s = similarity_surfaces.example()
+            sage: g = s.graphical_surface()
+            sage: g.edge_labels(0)
+            ['1', '1', '1']
+            sage: g.make_all_visible(adjacent=True)
+            sage: g.edge_labels(0)
+            [None, '1', '1']
+
+            sage: g.make_adjacent(0,0)
+            sage: g.edge_labels(0)
+            [None, '1', '1']
+            sage: g.edge_labels(1)
+            ['0', None, '0']
+
+            sage: s = similarity_surfaces.example()
+            sage: g = s.graphical_surface(edge_labels='number')
+            sage: g.edge_labels(0)
+            ['0', '1', '2']
+
+            sage: g = s.graphical_surface(edge_labels='gluings and number')
+            sage: g.edge_labels(0)
+            ['0 -> (1, 1)', '1 -> (1, 2)', '2 -> (1, 0)']
+            sage: g.make_all_visible(adjacent=True)
+            sage: g.edge_labels(0)
+            ['0', '1 -> (1, 2)', '2 -> (1, 0)']
+        """
+        if not self._edge_labels:
+            return None
+
+        s = self._ss
+        g = self.graphical_polygon(lab)
+        p = g.base_polygon()
+
+        if self._edge_labels == 'gluings':
+            ans = []
+            for e in range(p.num_edges()):
+                if self.is_adjacent(lab, e):
+                    ans.append(None)
+                else: 
+                    llab,ee = s.opposite_edge(lab,e)
+                    ans.append(str(llab))
+        elif self._edge_labels == 'number':
+            ans = map(str, range(p.num_edges()))
+        elif self._edge_labels == 'gluings and number':
+            ans = []
+            for e in range(p.num_edges()):
+                if self.is_adjacent(lab, e):
+                    ans.append(str(e))
+                else:
+                    ans.append("{} -> {}".format(e, s.opposite_edge(lab,e)))
+        else:
+            raise RuntimeError("invalid option")
+
+        return ans
+
 
     def plot(self):
         r"""
@@ -225,11 +325,12 @@ class GraphicalSurface:
             sage: gs = GraphicalSurface(s)
             sage: gs.make_visible(1)
             sage: gs.plot()
-            Graphics object consisting of 9 graphics primitives
+            Graphics object consisting of 13 graphics primitives
         """
         p = Graphics()
         for label in self._visible:
             polygon = self.graphical_polygon(label)
+            polygon.set_edge_labels(self.edge_labels(label))
             p += polygon.plot()
             for e in range(polygon.base_polygon().num_edges()):
                 if not self.is_adjacent(label,e):

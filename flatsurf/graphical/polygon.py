@@ -15,6 +15,21 @@ class GraphicalPolygon:
 
     def __init__(self, polygon, transformation=None, outline_color=None,
             fill_color="#ccc", label=None, edge_labels=True):
+        r"""
+        INPUT:
+
+        - ``polygon`` -- the actual polygon
+
+        - ``transformation`` -- a transformation to be applied to the polygon
+
+        - ``outline_color`` -- a color
+
+        - ``fill_color`` -- another color
+
+        - ``label`` -- an optional label for the polygon
+
+        - ``edge_labels`` -- one of ``False``, ``True`` or a list of labels
+        """
         self._p = polygon
         self._edge_labels = edge_labels
 
@@ -26,11 +41,19 @@ class GraphicalPolygon:
         self.set_fill_color(fill_color)
         self.set_label(label)
 
-    def _repr_(self):
+    def __repr__(self):
         r"""
         String representation.
+
+        EXAMPLES::
+
+            sage: from flatsurf import *
+            sage: s = similarity_surfaces.example()
+            sage: gs = s.surface_plot()
+            sage: gs.graphical_polygon(0)
+            Polygon 0: [(0.0, 0.0), (2.0, -2.0), (2.0, 0.0)]
         """
-        return "Graphical Polygon based on "+repr(self._p)
+        return "Polygon {}: {}".format(self._label, self._v)
 
     def base_polygon(self):
         return self._p
@@ -38,7 +61,7 @@ class GraphicalPolygon:
     def transformed_vertex(self, e):
         return self._transformation(self._p.vertex(e))
 
-    def minx(self):
+    def xmin(self):
         r"""
         Return the minimal x-coordinate of a vertex.
 
@@ -48,7 +71,7 @@ class GraphicalPolygon:
         """
         return min([v[0] for v in self._v])
 
-    def miny(self):
+    def ymin(self):
         r"""
         Return the minimal y-coordinate of a vertex.
 
@@ -58,7 +81,7 @@ class GraphicalPolygon:
         """
         return min([v[1] for v in self._v])
 
-    def maxx(self):
+    def xmax(self):
         r"""
         Return the maximal x-coordinate of a vertex.
 
@@ -68,7 +91,7 @@ class GraphicalPolygon:
         """
         return max([v[0] for v in self._v])
 
-    def maxy(self):
+    def ymax(self):
         r"""
         Return the minimal y-coordinate of a vertex
 
@@ -83,7 +106,7 @@ class GraphicalPolygon:
         Return the quadruple (x1,y1,x2,y2) where x1 and y1 are the minimal
         x- and y-coordinates and x2 and y2 are the maximal x-and y- cordinates.
         """
-        return self.minx(), self.miny(), self.maxx(), self.maxy()
+        return self.xmin(), self.ymin(), self.xmax(), self.ymax()
 
     def transform(self, point, field=None):
         r"""
@@ -125,6 +148,9 @@ class GraphicalPolygon:
     def set_label(self, label):
         self._label = label
 
+    def set_edge_labels(self, edge_labels):
+        self._edge_labels = edge_labels
+
     def polygon_options(self):
         d = {'axes': False}
         if self._fill_color is not None:
@@ -157,7 +183,7 @@ class GraphicalPolygon:
             sage: gs = GraphicalSurface(s)
             sage: gs.graphical_polygon(0).set_fill_color("red")
             sage: gs.graphical_polygon(0).plot()
-            Graphics object consisting of 2 graphics primitives
+            Graphics object consisting of 5 graphics primitives
         """
         from sage.plot.point import point2d
         from sage.plot.polygon import polygon2d
@@ -174,9 +200,11 @@ class GraphicalPolygon:
             opt = self.edge_label_options()
             n = self.base_polygon().num_edges()
             for i in range(n):
-                e = self._v[(i+1)%n] - self._v[i]
-                no = V((-e[1], e[0]))
-                p += text(str(i), self._v[i] + 0.3 * e + 0.05  * no, **self.edge_label_options())
+                lab = str(i) if self._edge_labels is True else self._edge_labels[i]
+                if lab:
+                    e = self._v[(i+1)%n] - self._v[i]
+                    no = V((-e[1], e[0]))
+                    p += text(lab, self._v[i] + 0.3 * e + 0.05  * no, **self.edge_label_options())
 
         return p
 
