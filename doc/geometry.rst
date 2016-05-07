@@ -1,48 +1,48 @@
 The Geometry Package
 ********************
-.. automodule:: geometry.__init__
+.. automodule:: flatsurf.geometry
 
 Polygons
 ========
-.. automodule:: geometry.polygon
+.. automodule:: flatsurf.geometry.polygon
    :members:
    :undoc-members:
 
 Surfaces
 ========
-.. automodule:: geometry.similarity_surface
+.. automodule:: flatsurf.geometry.similarity_surface
    :members:
    :undoc-members:
 
 Matrices (2x2)
 ==============
-.. automodule:: geometry.matrix_2x2
+.. automodule:: flatsurf.geometry.matrix_2x2
    :members:
    :undoc-members:
 
 Similarities and Translations
 =============================
-.. automodule:: geometry.similarity
+.. automodule:: flatsurf.geometry.similarity
    :members:
-.. automodule:: geometry.translation
+.. automodule:: flatsurf.geometry.translation
    :members:
    :undoc-members:
 
 Tangent Bundle
 ==============
-.. automodule:: geometry.tangent_bundle
+.. automodule:: flatsurf.geometry.tangent_bundle
    :members:
    :undoc-members:
 
 Straight-line Flow
 ==================
-.. automodule:: geometry.straight_line_trajectory
+.. automodule:: flatsurf.geometry.straight_line_trajectory
    :members:
    :undoc-members:
 
 Homology
 ========
-.. automodule:: geometry.relative_homology
+.. automodule:: flatsurf.geometry.relative_homology
    :members:
    :undoc-members:
 

@@ -1,23 +1,23 @@
 The Graphical Package
 *********************
-.. automodule:: graphical.__init__
+.. automodule:: flatsurf.graphical
 
 Graphical Polygons
 ==================
-.. automodule:: graphical.polygon
+.. automodule:: flatsurf.graphical.polygon
    :members:
    :undoc-members:
 
 Graphical Surfaces
 ==================
-.. automodule:: graphical.surface
+.. automodule:: flatsurf.graphical.surface
    :members:
    :undoc-members:
 
 Graphical Straight-Line Trajectories
 ====================================
 
-.. automodule:: graphical.straight_line_trajectory
+.. automodule:: flatsurf.graphical.straight_line_trajectory
    :members:
    :undoc-members:
 
