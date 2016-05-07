@@ -2,19 +2,19 @@ from flatsurf.geometry.polygon import *
 
 class SimilaritySurfaceTangentVector:
     def __init__(self, tangent_bundle, polygon_label, point, vector):
-        self._bundle=tangent_bundle
-        p=self.surface().polygon(polygon_label)
-        pos=p.get_point_position(point)
+        self._bundle = tangent_bundle
+        p = self.surface().polygon(polygon_label)
+        pos = p.get_point_position(point)
         if vector == self._bundle.vector_space().zero():
             raise ValueError("Provided vector is zero. (Temporarily not supported.)")
         if pos.is_in_interior():
-            self._polygon_label=polygon_label
-            self._point=point
-            self._vector=vector
-            self._position=pos
+            self._polygon_label = polygon_label
+            self._point = point
+            self._vector = vector
+            self._position = pos
         elif pos.is_in_edge_interior():
-            e=pos.get_edge()
-            edge_v=p.edge(e)
+            e = pos.get_edge()
+            edge_v = p.edge(e)
             if wedge_product(edge_v,vector)<0 or is_opposite_direction(edge_v,vector):
                 # Need to move point and vector to opposite edge.
                 label2,e2 = self.surface().opposite_edge(polygon_label,e)
@@ -58,11 +58,11 @@ class SimilaritySurfaceTangentVector:
                 self._position=pos
         else:
             raise ValueError("Provided point lies outside the indexed polygon")
-    
+
     def __repr__(self):
         return "SimilaritySurfaceTangentVector in polygon "+repr(self._polygon_label)+\
             " based at "+repr(self._point)+" with vector "+repr(self._vector)
-    
+
     def __eq__(self, other):
         if isinstance(other, self.__class__):
             return self.surface()==other.surface() and \
@@ -86,37 +86,66 @@ class SimilaritySurfaceTangentVector:
         Return the truth value of the statement 'the base point for this vector is a singularity.'
         """
         return self._position.is_vertex()
-    
+
     def singularity(self):
         r"""Return the index of the vertex."""
         return self._position.get_vertex()
-    
+
     def is_in_boundary_of_polygon(self):
         r"""
-        Return the truth value of the statement 
-        'the base point for this vector lies on the boundary of 
+        Return the truth value of the statement
+        'the base point for this vector lies on the boundary of
         one of the polygons making up the surface.'
         """
         return self._position.is_in_boundary()
-        
+
     def bundle(self):
         r""" Return the tangent bundle containing this vector. """
         return self._bundle
-    
+
     def polygon_label(self):
         return self._polygon_label
 
     def polygon(self):
         return self.surface().polygon(self.polygon_label())
-        
+
     def point(self):
-        r""" Return the coordinates of the basepoint of the vector within the assigned polygon. """
+        r"""
+        Return the base point of this tangent vector as a vector.
+
+        The coordinates of output are given with respect to the polygon it
+        belongs to.
+
+        EXAMPLES::
+
+            sage: from flatsurf import similarity_surfaces
+
+            sage: s = similarity_surfaces.example()
+            sage: v = s.tangent_vector(0, (1/2,0), (0,1))
+            sage: v.point()
+            (1/2, 0)
+            sage: parent(_)
+            Vector space of dimension 2 over Rational Field
+        """
         return self._point
-    
+
     def vector(self):
-        r""" Return the coordinates of this vector within the assigned polygon. """
+        r"""
+        Return the coordinates of this vector within the assigned polygon.
+
+        EXAMPLES::
+
+            sage: from flatsurf import similarity_surfaces
+
+            sage: s = similarity_surfaces.example()
+            sage: v = s.tangent_vector(0, (1/2,0), (0,1))
+            sage: v.vector()
+            (0, 1)
+            sage: parent(_)
+            Vector space of dimension 2 over Rational Field
+        """
         return self._vector
-    
+
     def edge_pointing_along(self):
         r"""
         Returns the pair of (p,e) where p is the polygon label at the base point,
@@ -128,7 +157,7 @@ class SimilaritySurfaceTangentVector:
             if self.vector()==self.polygon().edge(e):
                 return (self.polygon_label(),e)
         return None
-    
+
     def differs_by_scaling(self, another_tangent_vector):
         r"""
         Returns true if the other vector just differs by scaling. This means they should lie
@@ -137,17 +166,17 @@ class SimilaritySurfaceTangentVector:
         return self.polygon_label()==another_tangent_vector.polygon_label() and \
             self.point()==another_tangent_vector.point() and \
             is_same_direction(self.vector(),another_tangent_vector.vector())
-        
+
     def invert(self):
         r"""
-        Returns the negation of this tangent vector. 
+        Returns the negation of this tangent vector.
         Raises a ValueError if the vector is based at a singularity.'
         """
         if self.is_based_at_singularity():
             raise ValueError("Can't invert tangent vector based at a singularity.")
         return SimilaritySurfaceTangentVector(
-            self.bundle(), 
-            self.polygon_label(), 
+            self.bundle(),
+            self.polygon_label(),
             self.point(),
             -self.vector())
 
@@ -156,14 +185,14 @@ class SimilaritySurfaceTangentVector:
         Flows forward (in the direction of the tangent vector) until the end
         of the polygon is reached.
         Returns the tangent vector based at the endpoint which point backward along the trajectory.
-        
-        NOTES:: 
-        
+
+        NOTES::
+
             We return the backward trajectory, because continuing forward does not make sense if a
             singularity is reached. You can obtain the forward vector by subsequently applying invert().
-        
+
         EXAMPLES::
-        
+
             sage: from flatsurf.geometry.similarity_surface_generators import SimilaritySurfaceGenerators
             sage: s = SimilaritySurfaceGenerators.example()
             sage: from flatsurf.geometry.tangent_bundle import SimilaritySurfaceTangentBundle
@@ -187,23 +216,23 @@ class SimilaritySurfaceTangentVector:
         point2,pos2 = p.flow_to_exit(self.point(), self.vector())
         #diff=point2-point
         new_vector = SimilaritySurfaceTangentVector(
-            self.bundle(), 
-            self.polygon_label(), 
+            self.bundle(),
+            self.polygon_label(),
             point2,
             -self.vector())
         return new_vector
-    
+
     def straight_line_trajectory(self):
         r"""
         Return the straight line trajectory associated to this vector.
         """
         from flatsurf.geometry.straight_line_trajectory import StraightLineTrajectory
         return StraightLineTrajectory(self)
-    
+
 class SimilaritySurfaceTangentBundle:
-    r""" 
-    Construct the tangent bundle of a given similarity surface. 
-    
+    r"""
+    Construct the tangent bundle of a given similarity surface.
+
     Needs work: We should check for coersion from the base_ring of the surface
     """
     def __init__(self, similarity_surface, ring=None):
@@ -226,7 +255,7 @@ class SimilaritySurfaceTangentBundle:
 
     def base_ring(self):
         return self._base_ring
-    
+
     field=base_ring
 
     def vector_space(self):
@@ -238,10 +267,10 @@ class SimilaritySurfaceTangentBundle:
     def surface(self):
         r"""Return the surface this bundle is over."""
         return self._s
-        
+
     def edge(self, polygon_label, edge_index):
-        r"""Return the vector leaving a vertex of the polygon which under straight-line flow travels 
-        counterclockwise around the boundary of the polygon along the edge with the provided index. 
+        r"""Return the vector leaving a vertex of the polygon which under straight-line flow travels
+        counterclockwise around the boundary of the polygon along the edge with the provided index.
         The length of the vector matches the length of the indexed edge.
 
         EXAMPLES::
@@ -261,11 +290,11 @@ class SimilaritySurfaceTangentBundle:
         return SimilaritySurfaceTangentVector(self, polygon_label, point, vector)
 
     def clockwise_edge(self, polygon_label, edge_index):
-        r"""Return the vector leaving a vertex of the polygon which under straight-line flow travels 
-        *clockwise* around the boundary of the polygon along the edge with the provided index. 
+        r"""Return the vector leaving a vertex of the polygon which under straight-line flow travels
+        *clockwise* around the boundary of the polygon along the edge with the provided index.
         The length of the vector matches the length of the indexed edge.
         Note that the point will be based in the polgon opposite the provided edge.
-        
+
         EXAMPLES::
 
             sage: from flatsurf.geometry.similarity_surface_generators import SimilaritySurfaceGenerators

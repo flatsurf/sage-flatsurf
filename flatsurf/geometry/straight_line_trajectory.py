@@ -4,23 +4,27 @@ from flatsurf.geometry.tangent_bundle import *
 from flatsurf.geometry.polygon import is_same_direction
 
 class SegmentInPolygon:
-    r""" 
-    Stores a maximal segment in a polygon of a translation surface.
+    r"""
+    Maximal segment in a polygon of a similarity surface
+
+    EXAMPLES::
+
+        sage: from flatsurf import *
+        sage: from flatsurf.geometry.straight_line_trajectory import SegmentInPolygon
+        sage: s = similarity_surfaces.example()
+        sage: v = s.tangent_vector(0, (1/3,-1/4), (0,1))
+        sage: SegmentInPolygon(v)
+        Segment in polygon 0 starting at (1/3, -1/3) and ending at (1/3, 0)
     """
-    def __init__(self, tangent_vector, end_vector=None):
-        r""" 
-        Construct a segment associated to a vector which is 
-        either inside or pointed into a polygon.
-        """
-        if not end_vector is None:
-            self._start = tangent_vector
-            self._end = end_vector
+    def __init__(self, start, end=None):
+        if not end is None:
+            # WARNING: here we assume that both start and end are on the
+            # boundary
+            self._start = start
+            self._end = end
         else:
-            self._end = tangent_vector.forward_to_polygon_boundary()
-            if tangent_vector.is_in_boundary_of_polygon():
-                self._start = tangent_vector
-            else:
-                self._start = self._end.forward_to_polygon_boundary()
+            self._end = start.forward_to_polygon_boundary()
+            self._start = self._end.forward_to_polygon_boundary()
 
     def __repr__(self):
         r"""
@@ -34,19 +38,13 @@ class SegmentInPolygon:
             Segment in polygon 0 starting at (0, 0) and ending at (2, -2/3)
         """
         return "Segment in polygon {} starting at {} and ending at {}".format(
-                self.polygon_label(), self.start_point(), self.end_point())
+                self.polygon_label(), self.start().point(), self.end().point())
 
     def start(self):
         r"""
-        Return a TangentVector associated to the start of a trajectory pointed forward.
+        Return the tangent vector associated to the start of a trajectory pointed forward.
         """
         return self._start
-
-    def start_point(self):
-        return self._start.point()
-        
-    def start_direction(self):
-        return self._start.vector()
 
     def start_is_singular(self):
         return self._start.is_based_at_singularity()
@@ -56,12 +54,6 @@ class SegmentInPolygon:
         Return a TangentVector associated to the end of a trajectory, pointed backward.
         """
         return self._end
-
-    def end_point(self):
-        return self._end.point()
-        
-    def end_direction(self):
-        return self._end.vector()
 
     def end_is_singular(self):
         return self._end.is_based_at_singularity()
@@ -84,14 +76,14 @@ class SegmentInPolygon:
         return self._start.polygon_label()
 
     def invert(self):
-        return SegmentInPolygon(self._end, end_vector=self._start)
+        return SegmentInPolygon(self._end, self._start)
 
     def next(self):
         r"""
         Return the next segment obtained by continuing straight through the end point.
-        
+
         EXAMPLES::
-        
+
             sage: from flatsurf import *
             sage: from flatsurf.geometry.straight_line_trajectory import SegmentInPolygon
 
@@ -106,7 +98,7 @@ class SegmentInPolygon:
             Segment in polygon 0 starting at (0, 0) and ending at (2, -2/3)
             sage: seg.next()
             Segment in polygon 1 starting at (2/3, 2) and ending at (14/9, 4/3)
-        """        
+        """
         if self.end_is_singular():
             raise ValueError("Cannot continue from singularity")
         return SegmentInPolygon(self._end.invert())
@@ -115,6 +107,30 @@ class SegmentInPolygon:
         if self.end_is_singular():
             raise ValueError("Cannot continue from singularity")
         return SegmentInPolygon(self._start.invert()).invert()
+
+
+    # DEPRECATED STUFF THAT WILL BE REMOVED
+
+    def start_point(self):
+        from sage.misc.superseded import deprecation
+        deprecation(1, "do not use start_point but start().point()")
+        return self._start.point()
+
+    def start_direction(self):
+        from sage.misc.superseded import deprecation
+        deprecation(1, "do not use start_direction but start().vector()")
+        return self._start.vector()
+
+    def end_point(self):
+        from sage.misc.superseded import deprecation
+        deprecation(1, "do not use end_point but end().point()")
+        return self._end.point()
+
+    def end_direction(self):
+        from sage.misc.superseded import deprecation
+        deprecation(1, "do not use end_direction but end().vector()")
+        return self._end.vector()
+
 
 
 class StraightLineTrajectory:
@@ -168,18 +184,18 @@ class StraightLineTrajectory:
 
     def is_saddle_connection(self):
         return (self._forward is None) and (self._backward is None)
-    
+
     def is_closed(self):
         return (not self.is_forward_separatrix()) and \
             self._forward.differs_by_scaling(self.initial_tangent_vector())
 
     def __repr__(self):
-        start = self._segments[0]
-        end = self._segments[-1]
+        start = self._segments[0].start()
+        end = self._segments[-1].end()
         return "Straight line trajectory made of {} segments from {} in polygon {} to {} in polygon {}".format(
                 len(self._segments),
-                start.start_point(), start.start().polygon_label(),
-                end.end_point(), end.end().polygon_label())
+                start.point(), start.polygon_label(),
+                end.point(), end.polygon_label())
 
     def flow(self, steps):
         r"""
@@ -216,7 +232,7 @@ class StraightLineTrajectory:
                 self._segments.appendleft(SegmentInPolygon(self._backward).invert())
                 self._setup_backward()
                 steps += 1
-    
+
     def graphical_trajectory(self, graphical_surface):
         r"""
         Returns a GraphicalStraightLineTrajectory corresponding to this trajectory in the provided GraphicalSurface.
