@@ -5,10 +5,10 @@ is called $X_\alpha$.
 
 EXAMPLES::
 
-    sage: from flatsurf.geometry.chamanara import GraphicalChamanaraSurface
-    sage: s = GraphicalChamanaraSurface(QQ(1)/2,8)
+    sage: from flatsurf import translation_surfaces
+    sage: s = translation_surfaces.chamanara(1/2)
     sage: s.plot()
-    Graphics object consisting of 115 graphics primitives
+    Graphics object consisting of 129 graphics primitives
 """
 
 from flatsurf.geometry.similarity_surface import SimilaritySurface_generic
@@ -42,10 +42,16 @@ class ChamanaraSurface(SimilaritySurface_generic):
         sage: ChamanaraSurface(1/2)
         Chamanara surface with parameter 1/2
     """
-    def __init__(self, alpha):
+    def __init__(self, alpha, n=8):
         self._p = ChamanaraPolygon(alpha)
         self._field = alpha.parent()
         self.rename('Chamanara surface with parameter {}'.format(alpha))
+
+        adjacencies = [(0,1)]
+        for i in range(n):
+            adjacencies.append((-i,3))
+            adjacencies.append((i+1,3))
+        self._plot_options['adjacencies'] = adjacencies
     
     def base_ring(self):
         return self._field
@@ -77,19 +83,3 @@ class ChamanaraSurface(SimilaritySurface_generic):
 
     def base_label(self):
         return ZZ(0)
-
-def GraphicalChamanaraSurface(alpha,n):
-    r"""Return a standard Graphical version of the ChamanaraSurface $X_{\alpha}$
-    with $2n$ polygons shown."""
-    s = ChamanaraSurface(alpha)
-    from flatsurf.graphical.surface import GraphicalSurface
-    gs = GraphicalSurface(s)
-    # Make polygon 1 visible
-    gs.make_adjacent_and_visible(0,1)
-    for i in range(n-1):
-        # Make polygon -i-1 visible
-        gs.make_adjacent_and_visible(-i,3)
-        # Make polygon i+2 visible
-        gs.make_adjacent_and_visible(i+1,3)
-    return gs
-

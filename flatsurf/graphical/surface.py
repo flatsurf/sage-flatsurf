@@ -23,7 +23,7 @@ class GraphicalSurface:
         sage: gs.graphical_polygon(0).plot()
         Graphics object consisting of 5 graphics primitives
     """
-    def __init__(self, similarity_surface, polygon_labels=True, edge_labels=True):
+    def __init__(self, similarity_surface, adjacencies=None, visible=None, polygon_labels=True, edge_labels=True):
         r"""
         Construct a GraphicalSurface from a similarity surface.
 
@@ -46,6 +46,9 @@ class GraphicalSurface:
               edge
 
             - ``'gluings and numbers'`` -- full information
+
+        - ``adjacencies`` -- a list of pairs ``(p,e)`` to be used to set
+          adjacencies of polygons
         """
         self._polygons_labels = polygon_labels
 
@@ -56,6 +59,10 @@ class GraphicalSurface:
 
         self._polygons = {}
         self._visible = set([self._ss.base_label()])
+
+        if adjacencies is not None:
+            for p,e in adjacencies:
+                self.make_adjacent_and_visible(p,e)
 
     def __repr__(self):
         return "Graphical version of Similarity Surface {!r}".format(self._ss)
