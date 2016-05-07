@@ -412,8 +412,8 @@ class SimilaritySurface_generic(SageObject):
 
     surface_plot = graphical_surface
 
-    def plot(self):
-        return self.surface_plot().plot()
+    def plot(self, *args, **kwds):
+        return self.surface_plot(*args, **kwds).plot()
 
 class SimilaritySurface_polygons_and_gluings(SimilaritySurface_generic):
     r"""
