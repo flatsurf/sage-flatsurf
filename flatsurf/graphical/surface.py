@@ -1,12 +1,14 @@
+from __future__ import absolute_import
+
 from sage.matrix.matrix_space import MatrixSpace
 from sage.modules.free_module import VectorSpace
-from sage.rings.real_double import RDF
 from sage.rings.rational_field import QQ
 
-from flatsurf.geometry.similarity_surface import SimilaritySurface_generic
-from flatsurf.graphical.polygon import *
-from flatsurf.graphical.edge_gluings import *
+from sage.plot.graphics import Graphics
 
+from flatsurf.geometry.similarity_surface import SimilaritySurface_generic
+from .polygon import *
+from .edge_gluings import *
 
 class GraphicalSurface:
     r"""
@@ -21,22 +23,17 @@ class GraphicalSurface:
         sage: gs.graphical_polygon(0).plot()
         Graphics object consisting of 2 graphics primitives
     """
-    def __init__(self, similarity_surface, name=None):
+    def __init__(self, similarity_surface, polygon_labels=True, edge_labels=True):
         r"""
         Construct a GraphicalSurface from a similarity surface.
         """
-        if name is None:
-            name="Graphical Surface based on "+repr(similarity_surface)
+        self._polygons_labels = polygon_labels
+
         assert isinstance(similarity_surface, SimilaritySurface_generic)
         self._ss = similarity_surface
-        self._field = self._ss.base_ring()
-        # Polygons
+
         self._polygons = {}
-        # Set of visible polygons
-        self._visible = set()
-        label = self._ss.base_label()
-        self._visible.add(label)
-        self._polygons[label] = GraphicalPolygon(self._ss.polygon(label), label=label)
+        self._visible = set([self._ss.base_label()])
 
     def __repr__(self):
         return "Graphical version of Similarity Surface {!r}".format(self._ss)
@@ -53,21 +50,52 @@ class GraphicalSurface:
         """
         return label in self._visible
 
-    def make_visible(self,label):
+    def make_visible(self, label):
         r"""
         Mark the polygon with the given label as visible.
         """
         self._visible.add(label)
 
-    def make_all_visible(self):
-        r"""Attempt to show all invisible polygons by walking over the surface."""
+    def make_all_visible(self, adjacent=True):
+        r"""
+        Attempt to show all invisible polygons by walking over the surface.
+        
+        EXAMPLES::
+
+            sage: from flatsurf import *
+            sage: s = similarity_surfaces.example()
+            sage: g = s.graphical_surface()
+            sage: g.make_all_visible()
+            sage: g.plot()
+            Graphics object consisting of 15 graphics primitives
+
+            sage: s = similarity_surfaces.example()
+            sage: g = s.graphical_surface()
+            sage: g.make_all_visible(adjacent=False)
+            sage: g.plot()
+        """
         assert self._ss.is_finite()
-        for l in self._ss.polygon_labels():
-            poly = self._ss.polygon(l)
-            for e in range(poly.base_polygon().num_edges()):
-                l2,e2 = self._ss.opposite_edge(l,e)
-                if not self.is_visible(l2):
-                    self.make_adjacent_and_visible(l,e)
+
+        if adjacent:
+            for l in self._ss.polygon_labels():
+                poly = self._ss.polygon(l)
+                for e in range(poly.num_edges()):
+                    l2,e2 = self._ss.opposite_edge(l,e)
+                    if not self.is_visible(l2):
+                        self.make_adjacent_and_visible(l,e)
+        else:
+            from flatsurf.geometry.translation import TranslationGroup
+            T = TranslationGroup(self._ss.base_ring())
+            for l in self._ss.polygon_labels():
+                if not self.is_visible(l):
+                    poly = self._ss.polygon(l)
+                    sxmax = self.maxx()
+                    g = self.graphical_polygon(l)
+                    pxmin = g.minx()
+                    t = T((self.maxx() - g.minx() + 1,
+                        -(g.miny()+g.maxy())/2))
+                    g.set_transformation(t)
+                    self.make_visible(l)
 
     def get_surface(self):
         r"""
@@ -199,24 +227,15 @@ class GraphicalSurface:
             sage: gs.plot()
             Graphics object consisting of 9 graphics primitives
         """
-        i = iter(self._visible)
-        label = i.next()
-        polygon = self.graphical_polygon(label)
-        p = polygon.plot()
-        for e in range(polygon.base_polygon().num_edges()):
-            if not self.is_adjacent(label,e):
-                p += polygon.plot_edge(e,color="blue")
-            else:
-                pp,ee = self.opposite_edge(label,e)
-                if label>pp or (label == pp and e > ee):
-                    p += polygon.plot_edge(e,color="blue",dotted=True)
-        for label in i:
+        p = Graphics()
+        for label in self._visible:
             polygon = self.graphical_polygon(label)
             p += polygon.plot()
             for e in range(polygon.base_polygon().num_edges()):
                 if not self.is_adjacent(label,e):
-                   p += polygon.plot_edge(e,color="blue")
+                    p += polygon.plot_edge(e,color="blue")
                 else:
+                    # we want to plot the edges only once!
                     pp,ee = self.opposite_edge(label,e)
                     if label>pp or (label == pp and e > ee):
                         p += polygon.plot_edge(e,color="blue",dotted=True)
