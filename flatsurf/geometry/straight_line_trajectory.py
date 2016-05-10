@@ -147,6 +147,88 @@ class StraightLineTrajectory:
     def segments(self):
         return self._segments
 
+    def coding(self, alphabet=None):
+        r"""
+        Return the coding of this trajectory with respect to the sides of the
+        polygons
+
+        INPUT:
+
+        - ``alphabet`` -- an optional dictionary ``(lab,nb) -> letter``. If some
+          labels are avoided then this crossing is simply ignored.
+
+        EXAMPLES::
+
+            sage: from flatsurf import *
+            sage: p = polygons.square()
+            sage: t = similarity_surfaces([p], {(0,0):(0,2), (0,1):(0,3)})
+
+            sage: v = t.tangent_vector(0, (1/2,0), (5,6))
+            sage: l = v.straight_line_trajectory()
+            sage: alphabet = {(0,0): 'a', (0,1): 'b', (0,2):'a', (0,3): 'b'}
+            sage: l.coding()
+            [(0, 0), (0, 1)]
+            sage: l.coding(alphabet)
+            ['a', 'b']
+            sage: l.flow(10); l.flow(-10)
+            sage: l.coding()
+            [(0, 2), (0, 1), (0, 2), (0, 1), (0, 2), (0, 1), (0, 2), (0, 1), (0, 2)]
+            sage: print ''.join(l.coding(alphabet))
+            ababababa
+
+            sage: v = t.tangent_vector(0, (1/2,0), (7,13))
+            sage: l = v.straight_line_trajectory()
+            sage: l.flow(10); l.flow(-10)
+            sage: print ''.join(l.coding(alphabet))
+            aabaabaababaabaabaaba
+
+        Check that the saddle connections that are obtained in the torus get the
+        expected coding::
+
+            sage: for _ in range(10):
+            ....:     x = ZZ.random_element(1,30)
+            ....:     y = ZZ.random_element(1,30)
+            ....:     x,y = x/gcd(x,y), y/gcd(x,y)
+            ....:     v = t.tangent_vector(0, (0,0), (x,y))
+            ....:     l = v.straight_line_trajectory()
+            ....:     l.flow(200); l.flow(-200)
+            ....:     w = ''.join(l.coding(alphabet))
+            ....:     assert Word(w+'ab'+w).is_balanced()
+            ....:     assert Word(w+'ba'+w).is_balanced()
+            ....:     assert w.count('a') == y-1
+            ....:     assert w.count('b') == x-1
+        """
+        ans = []
+
+        s = self._segments[0]
+        start = s.start()
+        if start._position._position_type == start._position.EDGE_INTERIOR:
+            p = s.polygon_label()
+            e = start._position.get_edge()
+            lab = (p,e) if alphabet is None else alphabet.get((p,e))
+            if lab is not None:
+                ans.append(lab)
+
+        for i in range(len(self._segments)-1):
+            s = self._segments[i]
+            end = s.end()
+            p = s.polygon_label()
+            e = end._position.get_edge()
+            lab = (p,e) if alphabet is None else alphabet.get((p,e))
+            if lab is not None:
+                ans.append(lab)
+
+        s = self._segments[-1]
+        end = s.end()
+        if end._position._position_type == end._position.EDGE_INTERIOR:
+            p = s.polygon_label()
+            e = end._position.get_edge()
+            lab = (p,e) if alphabet is None else alphabet.get((p,e))
+            if lab is not None:
+                ans.append(lab)
+
+        return ans
+
     def combinatorial_length(self):
         return len(self.segments())
 
