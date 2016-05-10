@@ -186,6 +186,43 @@ class StraightLineTrajectory:
         return (self._forward is None) and (self._backward is None)
 
     def is_closed(self):
+        r"""
+        Test whether this is a closed trajectory.
+
+        By convention, by a closed trajectory we mean a trajectory without any
+        singularities.
+
+        .. SEEALSO::
+
+            :meth:`is_saddle_connection`
+
+        EXAMPLES:
+
+        An example in the torus::
+
+            sage: from flatsurf import *
+            sage: p = polygons.square()
+            sage: t = similarity_surfaces([p], {(0,0):(0,3), (0,1):(0,2)})
+
+            sage: v = t.tangent_vector(0, (1/2,0), (1/3,7/5))
+            sage: l = v.straight_line_trajectory()
+            sage: l.is_closed()
+            False
+            sage: l.flow(100)
+            sage: l.is_closed()
+            True
+
+            sage: v = t.tangent_vector(0, (1/2,0), (1/3,2/5))
+            sage: l = v.straight_line_trajectory()
+            sage: l.flow(100)
+            sage: l.is_closed()
+            False
+            sage: l.is_saddle_connection()
+            False
+            sage: l.flow(-100)
+            sage: l.is_saddle_connection()
+            True
+        """
         return (not self.is_forward_separatrix()) and \
             self._forward.differs_by_scaling(self.initial_tangent_vector())
 
