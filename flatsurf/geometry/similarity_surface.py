@@ -2,6 +2,8 @@ r"""
 Translation surfaces.
 """
 
+from collections import deque
+
 from sage.misc.cachefunc import cached_method
 
 from sage.structure.sage_object import SageObject
@@ -87,13 +89,11 @@ class SimilaritySurface_generic(SageObject):
         """
         raise NotImplementedError
 
-    def polygon_labels(self):
+    def base_label(self):
         r"""
-        The set of labels used by the polygons.
-
-        This method must be overriden in subclasses.
+        Always returns the same label.
         """
-        raise NotImplementedError
+        return self.polygon_labels().an_element()
 
     def polygon(self, lab):
         r"""
@@ -112,40 +112,102 @@ class SimilaritySurface_generic(SageObject):
         """
         raise NotImplementedError
 
+    def is_finite(self):
+        r"""
+        Return whether or not the surface is finite.
+        """
+        raise NotImplementedError
 
-    #
+
+    # 
     # generic methods
     #
+
+    def opposite_edge_pair(self,label_edge_pair):
+        r"""
+        Same as opposite_edge(label, pair) except taking a pair as input.
+        """
+        return self.opposite_edge(label_edge_pair[0], label_edge_pair[1])
+
+    def label_walker(self):
+        try:
+            return self._lw
+        except AttributeError:
+            self._lw = LabelWalker(self)
+        return self._lw
+
+    def label_iterator(self):
+        r"""
+        Iterator over the polygon labels.
+        """
+        return iter(self.label_walker())
+
+    def polygon_iterator(self):
+        r"""
+        Iterate over the polygons.
+        """
+        return self.label_walker().polygon_iterator()
+
+    def label_polygon_iterator(self):
+        r"""
+        Iterate over pairs (label,polygon).
+        """
+        return self.label_walker().label_polygon_iterator()
+
+    def edge_iterator(self):
+        r"""
+        Iterate over the edges of polygons, which are pairs (l,e) where l is a polygon label, 0 <= e < N and N is the number of edges of the polygon with label l.
+        
+        EXAMPLES::
+            sage: from flatsurf.geometry.polygon import Polygons
+            sage: P=Polygons(QQ)
+            sage: tri0=P([(1,0),(0,1),(-1,-1)])
+            sage: tri1=P([(-1,0),(0,-1),(1,1)])
+            sage: gluings=[((0,0),(1,0)),((0,1),(1,1)),((0,2),(1,2))]
+            sage: from flatsurf.geometry.similarity_surface import TranslationSurface_polygons_and_gluings
+            sage: s=TranslationSurface_polygons_and_gluings([tri0,tri1], gluings)
+            sage: for edge in s.edge_iterator():
+            ...       print edge
+            (0, 0)
+            (0, 1)
+            (0, 2)
+            (1, 0)
+            (1, 1)
+            (1, 2)
+        """ 
+        return self.label_walker().edge_iterator()
+
+    def edge_gluing_iterator(self):
+        r"""
+        Iterate over the ordered pairs of edges being glued.
+        """
+        for label,edge in self.edge_iterator():
+            label2,edge2 = self.opposite_edge(label,edge)
+            yield ((label,edge),(label2,edge2))
 
     def num_polygons(self):
         r"""
         Return the number of polygons.
         """
-        return self.polygon_labels().cardinality()
-
-    def is_finite(self):
-        from sage.rings.infinity import Infinity
-        return self.num_polygons() != Infinity
-
-    def polygon_iterator(self):
-        r"""
-        Iterator over the polygons.
-        """
-        from itertools import imap
-        return imap(self.polygon, self.polygon_labels())
-
-    def num_edges(self):
-        r"""
-        Return the number of edges.
-        """
-        if self.polygon_labels().is_finite():
-            return sum(p.num_edges() for p in self.polygon_iterator())
+        if self.is_finite():
+            lw=self.label_walker()
+            lw.find_all_labels()
+            return len(lw)
         else:
             from sage.rings.infinity import Infinity
             return Infinity
 
-    def base_label(self):
-        return self.polygon_labels().an_element()
+    def num_edges(self):
+        r"""
+        Return the total number of edges of all polygons used.
+        """
+        if self.is_finite():
+            lw=self.label_walker()
+            lw.find_all_labels()
+            return sum(p.num_edges() for p in self.polygon_iterator())
+        else:
+            from sage.rings.infinity import Infinity
+            return Infinity
 
     def _repr_(self):
         if self.num_polygons() == Infinity:
@@ -223,17 +285,19 @@ class SimilaritySurface_generic(SageObject):
         if not self.is_finite():
             raise ValueError("the surface must be finite")
         edges = {}
-        for p in self.polygon_labels():
-            for e in xrange(self.polygon(p).num_edges()):
-                pp,ee = self.opposite_edge(p,e)
-                edges[(p,e)] = (pp,ee)
+        for l,p in self.label_polygon_iterator():
+            for e in xrange(p.num_edges()):
+                ll,ee = self.opposite_edge(l,e)
+                edges[(l,e)] = (ll,ee)
 
     def minimal_translation_cover(self):
         r"""
         Return the minimal translation cover.
 
-        Be careful that if the surface is not built from one polygon, this is
-        not the smallest translation cover of the surface.
+        "Be careful that if the surface is not built from one polygon, this is
+        not the smallest translation cover of the surface." - Vincent 
+        
+        "I disagree with the prior statement. Can you provide an example?" -Pat
 
         EXAMPLES::
 
@@ -247,45 +311,12 @@ class SimilaritySurface_generic(SageObject):
         """
         return MinimalTranslationCover(self)
 
-    def get_bundle(self):
-        # I plan to remove this
-        r"""
-        Return a pair (sm,sb), where sm is the active SurfaceManipulator, and sb is the surface
-        bundle for this surface (which is added if neccessary to the SurfaceManipulator).
-        If necessary, we create one or both objects.
-        """
-        from surface_manipulator import SurfaceManipulator
-        sm = SurfaceManipulator.launch()
-        sb = sm.find_bundle(self)
-        if sb is None:
-            from similarity_surface_bundle import SimilaritySurfaceBundle
-            sb = SimilaritySurfaceBundle(self, editor=sm)
-            sm.add_surface(sb)
-        return sm, sb
-
-    def edit(self):
-        # I plan to remove this.
-        r"""
-        Launch the tk editor to interactively modify ``self``.
-        """
-        sm,sb = self.get_bundle()
-        sm.set_surface(sb)
-        #old version below
-        #from translation_surface_editor import TranslationSurfaceEditor
-        #fse = TranslationSurfaceEditor(self)
-        #fse.window.mainloop()
-
     def vector_space(self):
         r"""
         Return the vector space in which self naturally embeds.
         """
         from sage.modules.free_module import VectorSpace
         return VectorSpace(self.base_ring(), 2)
-
-    def edge_iterator(self):
-        for p in self.polygon_labels():
-            for e in xrange(self.polygon(p).num_edges()):
-                yield p,e
 
     def fundamental_group_basis(self):
         r"""
@@ -415,6 +446,117 @@ class SimilaritySurface_generic(SageObject):
     def plot(self, *args, **kwds):
         return self.surface_plot(*args, **kwds).plot()
 
+class LabelWalker:
+    r"""
+    Take a canonical walk around the surface and find the labels.
+    """
+    
+    class LabelWalkerIterator:
+        def __init__(self, label_walker):
+            self._lw = label_walker
+            self._i = 0
+        
+        def next(self):
+            if self._i < len(self._lw):
+                label = self._lw.number_to_label(self._i)
+                self._i = self._i +1
+                return label
+            if self._i == len(self._lw):
+                label = self._lw.find_a_new_label()
+                if label is None:
+                    raise StopIteration()
+                self._i = self._i+1
+                return label
+            raise StopIteration()
+            
+        def __iter__(self):
+            return self
+    
+    def __init__(self, surface):
+        self._s=surface
+        self._labels=[self._s.base_label()]
+        self._label_dict={self._s.base_label():0}
+        self._walk=deque()
+        self._walk.append((self._s.base_label(),0))
+    
+    def label_dictionary(self):
+        r""" 
+        Return a dictionary mapping labels to integers which gives a canonical order on labels.
+        """
+        return self._label_dict
+    
+    def __iter__(self):
+        return LabelWalker.LabelWalkerIterator(self)
+
+    def polygon_iterator(self):
+        for label in self:
+            yield self._s.polygon(label)
+
+    def label_polygon_iterator(self):
+        for label in self:
+            yield label, self._s.polygon(label)
+
+    def edge_iterator(self):
+        for label,polygon in self.label_polygon_iterator():
+            for e in xrange(polygon.num_edges()):
+                yield label,e
+
+    def __len__(self):
+        r"""
+        Return the number of labels found.
+        """
+        return len(self._labels)
+
+    def find_a_new_label(self):
+        r"""
+        Finds a new label, stores it, and returns it. Returns None if we have already found all labels.
+        """
+        while len(self._walk)>0:
+            label,e = self._walk.popleft()
+            opposite_label,opposite_edge=self._s.opposite_edge(label,e)
+            e=e+1
+            if e < self._s.polygon(label).num_edges():
+                self._walk.appendleft((label,e))
+            if not opposite_label in self._label_dict:
+                n=len(self._labels)
+                self._labels.append(opposite_label)
+                self._label_dict[opposite_label]=n
+                self._walk.append((opposite_label,0))
+                return opposite_label
+        return None
+
+    def find_new_labels(self,n):
+        r"""
+        Look for n new labels. Return the list of labels found.
+        """
+        new_labels = []
+        for i in range(n):
+            label = self.find_a_new_label()
+            if label is None:
+                return new_labels
+            else:
+                new_labels.append(label)
+        return new_labels
+        
+        
+    def find_all_labels(self):
+        assert(self._s.is_finite())
+        label = self.find_a_new_label()
+        while not label is None:
+            label = self.find_a_new_label()
+            
+    def number_to_label(self, n):
+        r"""
+        Return the n-th label where n is less than the length.
+        """
+        return self._labels[n]
+    
+    def label_to_number(self, label):
+        r"""
+        Return the number associated to the provided label (which must have already been found).
+        """
+        return self._label_dict[label]
+
 class SimilaritySurface_polygons_and_gluings(SimilaritySurface_generic):
     r"""
     Similarity surface build from a list of polygons and gluings.
@@ -469,6 +611,12 @@ class SimilaritySurface_polygons_and_gluings(SimilaritySurface_generic):
             edge_identifications = identifications
 
         self._edge_identifications = edge_identifications
+
+    def is_finite(self):
+        r"""
+        Return whether or not the surface is finite.
+        """
+        return True
 
     def num_polygons(self):
         return self._polygons.cardinality()
@@ -600,6 +748,13 @@ class MinimalTranslationCover(TranslationSurface_generic):
         from sage.categories.cartesian_product import cartesian_product
         from sage.rings.semirings.non_negative_integer_semiring import NN
 
+    def is_infinite(self):
+        if not self._ss.is_finite():
+            return False
+        # Requires finding the similarity monodromy around a homological basis of the punctured 
+        # surface and verifying that each such similarity is a finite order rotation.
+        raise NotImplementedError
+
     def base_ring(self):
         return self._ss.base_ring()
 
@@ -655,6 +810,9 @@ class AbstractOrigami(TranslationSurface_generic):
 
     def _repr_(self):
         return "Some AbstractOrigami"
+
+    def is_finite(self):
+        return self._domain.is_finite()
 
     def num_polygons(self):
         r"""
