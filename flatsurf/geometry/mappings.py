@@ -1,8 +1,11 @@
 r"""Mappings between translation surfaces."""
 
 from flatsurf.geometry.polygon import Polygons, wedge_product
-from flatsurf.geometry.similarity_surface import SimilaritySurface_polygons_and_gluings
+from flatsurf.geometry.similarity_surface import SimilaritySurface_generic, SimilaritySurface_polygons_and_gluings
 from flatsurf.geometry.translation import TranslationGroup
+
+from sage.rings.infinity import Infinity
+from sage.structure.sage_object import SageObject
 
 class SimilaritySurfaceMapping:
     r"""Abstract class for any mapping between similarity surfaces."""
@@ -38,6 +41,85 @@ class SimilaritySurfaceMapping:
     def __rmul__(self,other):
         return SimilaritySurfaceMappingComposition(self,other)
 
+class FinitelyPerturbedSimilaritySurface(SimilaritySurface_generic):
+    def __init__(self, surface, polygon_dictionary=None, glue_dictionary=None, base_label=None, ring=None):
+        r"""
+        
+        Warning: No checks are made to make sure the surface is reasonable.
+        
+        PARAMETERS::
+            surface: The surface this is based on.
+            polygon_dictionary: A dictionary mapping labels to polygons which will override whatever was on the original surface.
+            glue_dictionary: A dictionary mapping edges to edges, which will override whatever was on the original surface. It will automatically be made symmetric.
+            base_label: A label representing the base_label on the new surface.
+            ring: A new ring containing the vertices.
+        """
+        self._s=surface
+        if polygon_dictionary is None:
+            self._pdict={}
+        else:
+            self._pdict=dict(polygon_dictionary)
+        self._gdict={}
+        if not glue_dictionary is None:
+            for edge1,edge2 in glue_dictionary.iteritems():
+                self._gdict[edge1]=edge2
+                self._gdict[edge2]=edge1
+        if base_label is None:
+            self._base_label = surface.base_label()
+        else:
+            self._base_label = base_label
+        if ring is None:
+            self._ring = surface.base_ring()
+        else:
+            self._ring = ring
+        self._is_finite = surface.is_finite()
+
+
+    def base_ring(self):
+        return self._ring
+
+    def base_label(self):
+        return self._base_label
+
+    def polygon(self, lab):
+        p = self._pdict.get(lab)
+        if p is None:
+            return self._s.polygon(lab)
+        return p
+
+    def opposite_edge(self, p, e):
+        edge = self._gdict.get((p,e))
+        if edge is None:
+            return self._s.opposite_edge(p,e)
+        return edge
+
+    def is_finite(self):
+        return self._is_finite
+
+
+class BaseLabelChangedSimilaritySurface(SimilaritySurface_generic):
+    def __init__(self, surface, base_label):
+        r"""
+        Construct a copy of the provided surface with a new base label.
+        """
+        self._s=surface
+        self._base_label = base_label
+
+    def base_ring(self):
+        return self._s.base_ring()
+
+    def base_label(self):
+        return self._base_label
+
+    def polygon(self, lab):
+        return self._s.polygon(lab)
+
+    def opposite_edge(self, p, e):
+        return self._s.opposite_edge(p,e)
+
+    def is_finite(self):
+        return self._s.is_finite()
+
 class SimilaritySurfaceMappingComposition(SimilaritySurfaceMapping):
     r"""
     Compose two mappings.
@@ -61,21 +143,54 @@ class SimilaritySurfaceMappingComposition(SimilaritySurfaceMapping):
         r"""Applies the inverse of the mapping to the provided vector."""
         return self._m1.pull_vector_back(self._m2.pull_vector_back(tangent_vector))
 
-class SL2RMapping(SimilaritySurfaceMapping):
-    r""" 
+class GL2RImageSurface(SimilaritySurface_generic):
+    def __init__(self, surface, m, ring=None):
+        self._s=surface
+        if m.determinant()<=0:
+            raise ValueError("Currently only works with matrices of positive determinant.""")
+        self._m=m
+        if ring is None:
+            if m.base_ring() == self._s.base_ring():
+                self._base_ring = self._s.base_ring()
+            else:
+                from sage.structure.element import get_coercion_model
+                cm = get_coercion_model()
+                self._base_ring = cm.common_parent(m.base_ring(), self._s.base_ring())
+        else:
+            self._base_ring=ring
+        self._P=Polygons(self._base_ring)
+
+    def base_ring(self):
+        return self._base_ring
+
+    def base_label(self):
+        return self._s.base_label()
+
+    def polygon(self, lab):
+        p = self._s.polygon(lab)
+        edges = [ self._m * p.edge(e) for e in xrange(p.num_edges())]
+        return self._P(edges)
+
+    def opposite_edge(self, p, e):
+        return self._s.opposite_edge(p,e)
+
+    def is_finite(self):
+        return self._s.is_finite()
+
+class GL2RMapping(SimilaritySurfaceMapping):
+    r"""
     This class pushes a surface forward under a matrix. 
     
     EXAMPLE::
-        sage: sys.path.append('/home/pat/active/talks/2016/Oaxaca-SAGE_Days/sage-flatsurf-master')
         sage: K.<sqrt2> = NumberField(x**2 - 2, embedding=1.414)
         sage: from flatsurf.geometry.polygon import Polygons
         sage: p = Polygons(K)([(1,0),(sqrt2/2, sqrt2/2),(0, 1),(-sqrt2/2, sqrt2/2),(-1,0),(-sqrt2/2, -sqrt2/2),(0, -1),(sqrt2/2, -sqrt2/2)])
         sage: gluings=[((0,i),(0,i+4)) for i in range(4)]
         sage: from flatsurf.geometry.similarity_surface import TranslationSurface_polygons_and_gluings
         sage: s=TranslationSurface_polygons_and_gluings([p], gluings)
-        sage: from flatsurf.geometry.mappings import SL2RMapping
+        sage: from flatsurf.geometry.mappings import GL2RMapping
         sage: mat=Matrix([[2,1],[1,1]])
-        sage: m=SL2RMapping(s,mat)
+        sage: m=GL2RMapping(s,mat)
         sage: s2=m.codomain()
         sage: print s2.polygon(0)
         Polygon: (0, 0), (2, 1), (3/2*sqrt2 + 2, sqrt2 + 1), (3/2*sqrt2 + 3, sqrt2 + 2), (sqrt2 + 3, sqrt2 + 2), (sqrt2 + 1, sqrt2 + 1), (-1/2*sqrt2 + 1, 1), (-1/2*sqrt2, 0)
@@ -88,26 +203,10 @@ class SL2RMapping(SimilaritySurfaceMapping):
         r"""
         Hit the surface s with the 2x2 matrix m which should have positive determinant.
         """
-        if not s.is_finite():
-            raise ValueError("Currently only works with finite surfaces.""")
-        if m.determinant()<=0:
-            raise ValueError("Currently only works with matrices of positive determinant.""")
-        if ring is None:
-            ring = s.base_ring()
-        polys={}
-        gluing=[]
-        P=Polygons(ring)
-        for l in s.polygon_labels():
-            poly=s.polygon(l)
-            vs=[m*e for e in poly.edges()]
-            polys[l]=P(vs)
-            for e in range(poly.num_edges()):
-                l2,e2=s.opposite_edge(l,e)
-                gluing.append( ((l,e),(l2,e2)) )
-        s2=SimilaritySurface_polygons_and_gluings(polys,gluing)
+        codomain = GL2RImageSurface(s,m,ring = ring)
         self._m=m
         self._im=~m
-        SimilaritySurfaceMapping.__init__(self, s, s2)
+        SimilaritySurfaceMapping.__init__(self, s, codomain)
 
     def push_vector_forward(self,tangent_vector):
         r"""Applies the mapping to the provided vector."""
@@ -123,9 +222,59 @@ class SL2RMapping(SimilaritySurfaceMapping):
                 self._im*tangent_vector.point(), \
                 self._im*tangent_vector.vector())
 
+class ExtraLabel(SageObject):
+    r""" 
+    Used to spit out new labels.
+    """
+    _next=int(0)
+    
+    def __init__(self):
+        r"""
+        Construct a new label.
+        """
+        self._label = int(ExtraLabel._next)
+        ExtraLabel._next = ExtraLabel._next + 1
+    
+    def __eq__(self, other):
+        return (isinstance(other, self.__class__)
+            and self._label == other._label)
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def __hash__(self):
+        return hash(23*self._label)
+        
+    def __str__(self):
+        return "ExtraLabel("+str(self._label)+")"
+    
+    def __repr__(self):
+        return "ExtraLabel("+str(self._label)+")"
+
 class SimilarityJoinPolygonsMapping(SimilaritySurfaceMapping):
     r"""
     Return a SimilaritySurfaceMapping joining two polygons together along the edge provided to the constructor.
+
+    EXAMPLES::
+        sage: from flatsurf.geometry.polygon import Polygons
+        sage: P=Polygons(QQ)
+        sage: tri0=P([(1,0),(0,1),(-1,-1)])
+        sage: tri1=P([(-1,0),(0,-1),(1,1)])
+        sage: gluings=[((0,0),(1,0)),((0,1),(1,1)),((0,2),(1,2))]
+        sage: from flatsurf.geometry.similarity_surface import TranslationSurface_polygons_and_gluings
+        sage: s=TranslationSurface_polygons_and_gluings([tri0,tri1], gluings)
+        sage: from flatsurf.geometry.mappings import *
+        sage: m=SimilarityJoinPolygonsMapping(s,0,2)
+        sage: s2=m.codomain()
+        sage: for label,polygon in s2.label_polygon_iterator():
+        ...       print "Polygon "+str(label)+" is "+str(polygon)+"."
+        Polygon 0 is Polygon: (0, 0), (1, 0), (1, 1), (0, 1).
+        sage: for label,edge in s2.edge_iterator():
+        ...       print str((label,edge))+" is glued to "+str(s2.opposite_edge(label,edge))+"."
+        (0, 0) is glued to (0, 2).
+        (0, 1) is glued to (0, 3).
+        (0, 2) is glued to (0, 0).
+        (0, 3) is glued to (0, 1).
     """
     def __init__(self, s, p1, e1):
         r"""
@@ -149,38 +298,31 @@ class SimilarityJoinPolygonsMapping(SimilaritySurfaceMapping):
         for i in range(e1+1, poly1.num_edges()):
             edge_map[len(vs)]=(p1,i)
             vs.append(poly1.edge(i))
-        
+
         inv_edge_map={}
         for key, value in edge_map.iteritems():
             inv_edge_map[value]=(p1,key)
+
+        base_label=s.base_label()
+        if base_label==p2:
+             base_label=p1
         
-        newpoly = Polygons(s.base_ring())(vs)
-        
-        if s.is_finite():
-            # Finite surface. Use a dictionary for polygons
-            polygons={}
-            for label in s.polygon_labels():
-                if label==p1:
-                    polygons[label]=newpoly
-                elif label != p2:
-                    polygons[label]=s.polygon(label)
-            gluings=[]
-            # Iterate over the new edges:
-            for ll1,pp1 in polygons.iteritems():
-                for ee1 in range(pp1.num_edges()):
-                    if ll1 == p1:
-                        ll2,ee2 = edge_map[ee1]
-                    else:
-                        ll2,ee2 = (ll1,ee1)
-                    ll3,ee3=s.opposite_edge(ll2,ee2)
-                    if ll3 == p1 or ll3 == p2:
-                        gluings.append( ( (ll1,ee1), inv_edge_map[(ll3,ee3)] ) )
-                    else:
-                        gluings.append( ( (ll1,ee1), (ll3,ee3) ) )
-            s2=SimilaritySurface_polygons_and_gluings(polygons,gluings)
-        else:
-            # There is no reason this could not be implemented.
-            raise NotImplementedError
+        glue_dictionary={}
+        for i in range(len(vs)):
+            p3,e3 = edge_map[i]
+            p4,e4 = s.opposite_edge(p3,e3)
+            if p4 == p1 or p4 == p2: 
+                glue_dictionary[(p1,i)] = inv_edge_map[(p4,e4)]
+            else:
+                glue_dictionary[(p1,i)] = (p4,e4)
+
+        s2 = FinitelyPerturbedSimilaritySurface(
+            s, 
+            polygon_dictionary={p1: Polygons(s.base_ring())(vs)}, 
+            glue_dictionary=glue_dictionary, 
+            base_label=base_label, 
+            ring = s.base_ring())      
+
         self._saved_label=p1
         self._removed_label=p2
         self._remove_map = t
@@ -258,10 +400,47 @@ class SimilarityJoinPolygonsMapping(SimilaritySurfaceMapping):
                 ring = ring)
 
 class SimilaritySplitPolygonsMapping(SimilaritySurfaceMapping):
-    def __init__(self, s, p, v1, v2):
+    r"""
+    Class for cutting a polygon along a diagonal.
+    
+    EXAMPLES::
+        sage: sys.path.insert(0,'/home/pat/active/FlatSurf/sage-flatsurf')
+        sage: K.<sqrt2> = NumberField(x**2 - 2, embedding=1.414)
+        sage: from flatsurf.geometry.polygon import Polygons
+        sage: p = Polygons(K)([(1,0),(sqrt2/2, sqrt2/2),(0, 1),(-sqrt2/2, sqrt2/2),(-1,0),(-sqrt2/2, -sqrt2/2),(0, -1),(sqrt2/2, -sqrt2/2)])
+        sage: gluings=[((0,i),(0,i+4)) for i in range(4)]
+        sage: from flatsurf.geometry.similarity_surface import TranslationSurface_polygons_and_gluings
+        sage: s=TranslationSurface_polygons_and_gluings([p], gluings)
+        sage: from flatsurf.geometry.mappings import SimilaritySplitPolygonsMapping
+        sage: m = SimilaritySplitPolygonsMapping(s,0,0,2)
+        sage: s2=m.codomain()
+        sage: for pair in s2.label_polygon_iterator():
+        ...       print pair
+        (0, Polygon: (0, 0), (1/2*sqrt2 + 1, 1/2*sqrt2), (1/2*sqrt2 + 1, 1/2*sqrt2 + 1), (1, sqrt2 + 1), (0, sqrt2 + 1), (-1/2*sqrt2, 1/2*sqrt2 + 1), (-1/2*sqrt2, 1/2*sqrt2))
+        (ExtraLabel(0), Polygon: (0, 0), (-1/2*sqrt2 - 1, -1/2*sqrt2), (-1/2*sqrt2, -1/2*sqrt2))
+        sage: for glue in s2.edge_gluing_iterator():
+        ...       print glue
+        ((0, 0), (ExtraLabel(0), 0))
+        ((0, 1), (0, 5))
+        ((0, 2), (0, 6))
+        ((0, 3), (ExtraLabel(0), 1))
+        ((0, 4), (ExtraLabel(0), 2))
+        ((0, 5), (0, 1))
+        ((0, 6), (0, 2))
+        ((ExtraLabel(0), 0), (0, 0))
+        ((ExtraLabel(0), 1), (0, 3))
+        ((ExtraLabel(0), 2), (0, 4))
+    """
+    
+    def __init__(self, s, p, v1, v2, new_label = None):
         r"""
         Split the polygon with label p of surface s along the diagonal joining vertex v1 to vertex v2.
+        
+        Warning: We do not ensure that new_label is not already in the list of labels unless it is None (as by default).
         """
+        if new_label is None:
+            new_label = ExtraLabel()
+        
         poly=s.polygon(p)
         ne=poly.num_edges()
         if v1<0 or v2<0 or v1>=ne or v2>=ne:
@@ -282,24 +461,7 @@ class SimilaritySplitPolygonsMapping(SimilaritySurfaceMapping):
         for i in range(v1,v2):
             newvertices2.append(poly.edge(i))
         newpoly2 = Polygons(s.base_ring())(newvertices2)
-
-        if not s.is_finite():
-            raise NotImplementedError
-
-        polygon_map={}
-        for label in s.polygon_labels():
-            if label == p:
-                polygon_map[label]=newpoly1
-            else:
-                polygon_map[label]=s.polygon(label)
-        success=False
-        
-        new_label=len(polygon_map)
-        # The following crap is to ensure that the new_label is not already in the dictionary by some fluke.
-        while polygon_map.has_key(new_label):
-            new_label=new_label+1
-        polygon_map[new_label]=newpoly2
-        
+            
         old_to_new_labels={}
         for i in range(ne):
             if i<v1:
@@ -311,38 +473,23 @@ class SimilaritySplitPolygonsMapping(SimilaritySurfaceMapping):
         new_to_old_labels={}
         for i,pair in old_to_new_labels.iteritems():
             new_to_old_labels[pair]=i
+
+        glue_dictionary = {(p,0):(new_label,0)}
+        for e in range(ne):
+            ll,ee = old_to_new_labels[e]
+            lll,eee = s.opposite_edge(p,e)
+            if lll == p:
+                glue_dictionary[(ll,ee)]=old_to_new_labels[eee]
+            else:
+                glue_dictionary[(ll,ee)]=(lll,eee)
         
-        gluings=[]
-        # Iterate over the new edges:
-        for l1,p1 in polygon_map.iteritems():
-            for e1 in range(p1.num_edges()):
-                if l1==p:
-                    if e1==0:
-                        # Special case, this is the cut
-                        gluings.append( ( (p,0),(new_label,0) ) )
-                        continue
-                    l2=p
-                    e2=new_to_old_labels[(p,e1)]
-                elif l1==new_label:
-                    if e1==0:
-                        # Special case, this is the cut
-                        gluings.append( ( (new_label,0),(p,0) ) )
-                        continue
-                    l2=p
-                    e2=new_to_old_labels[(new_label,e1)]
-                else:
-                    l2=l1
-                    e2=e1
-                l3,e3 = s.opposite_edge(l2,e2)
-                if l3==p:
-                    l4,e4=old_to_new_labels[e3]
-                else:
-                    l4=l3
-                    e4=e3
-                gluings.append( ( (l1,e1), (l4,e4) ) )
-
-        s2=SimilaritySurface_polygons_and_gluings(polygon_map,gluings)
-
+        s2 = FinitelyPerturbedSimilaritySurface(
+            s, 
+            polygon_dictionary={p: newpoly1, new_label: newpoly2}, 
+            glue_dictionary=glue_dictionary, 
+            base_label = s.base_label(), 
+            ring = s.base_ring())      
+        
         self._p=p
         self._v1=v1
         self._v2=v2
@@ -430,8 +577,7 @@ def subdivide_a_polygon(s):
     r"""
     Return a SimilaritySurfaceMapping which cuts one polygon along a diagonal or None if the surface is triangulated.
     """
-    for l in s.polygon_labels():
-        poly=s.polygon(l)
+    for l,poly in s.label_polygon_iterator():
         if poly.num_edges()>3:
             return SimilaritySplitPolygonsMapping(s,l,0,2)
     return None
@@ -441,33 +587,26 @@ def triangulation_mapping(s):
     r"""Return a  SimilaritySurfaceMapping triangulating the provided surface.
     
     EXAMPLES::
-    
+        
         sage: K.<sqrt2> = NumberField(x**2 - 2, embedding=1.414)
         sage: from flatsurf.geometry.polygon import Polygons
-        sage: p = Polygons(K)([(1,0),
-        ....: (sqrt2/2, sqrt2/2),
-        ....: (0, 1),
-        ....: (-sqrt2/2, sqrt2/2),
-        ....: (-1,0),
-        ....: (-sqrt2/2, -sqrt2/2),
-        ....: (0, -1),
-        ....: (sqrt2/2, -sqrt2/2)
-        ....: ])
+        sage: p = Polygons(K)([(1,0),(sqrt2/2, sqrt2/2),(0, 1),(-sqrt2/2, sqrt2/2),(-1,0),(-sqrt2/2, -sqrt2/2),(0, -1),(sqrt2/2, -sqrt2/2)])
         sage: gluings=[((0,i),(0,i+4)) for i in range(4)]
         sage: from flatsurf.geometry.similarity_surface import TranslationSurface_polygons_and_gluings
         sage: s=TranslationSurface_polygons_and_gluings([p], gluings)
-        sage: from flatsurf.geometry.mappings import triangulation_mapping
+        sage: from flatsurf.geometry.mappings import *
         sage: m=triangulation_mapping(s)
         sage: s2=m.codomain()
-        sage: for label in s2.polygon_labels():
-        ....:     print s2.polygon(label)
+        sage: for label,polygon in s2.label_polygon_iterator():
+        ...       print str(polygon)
         Polygon: (0, 0), (-1/2*sqrt2, 1/2*sqrt2 + 1), (-1/2*sqrt2, 1/2*sqrt2)
-        Polygon: (0, 0), (-1/2*sqrt2 - 1, -1/2*sqrt2), (-1/2*sqrt2, -1/2*sqrt2)
+        Polygon: (0, 0), (1/2*sqrt2, -1/2*sqrt2 - 1), (1/2*sqrt2, 1/2*sqrt2)
         Polygon: (0, 0), (-1/2*sqrt2 - 1, -1/2*sqrt2 - 1), (0, -1)
         Polygon: (0, 0), (-1, -sqrt2 - 1), (1/2*sqrt2, -1/2*sqrt2)
         Polygon: (0, 0), (0, -sqrt2 - 1), (1, 0)
-        Polygon: (0, 0), (1/2*sqrt2, -1/2*sqrt2 - 1), (1/2*sqrt2, 1/2*sqrt2)
+        Polygon: (0, 0), (-1/2*sqrt2 - 1, -1/2*sqrt2), (-1/2*sqrt2, -1/2*sqrt2)
     """
+    assert(s.is_finite())
     m=subdivide_a_polygon(s)
     if m is None:
         return None
@@ -498,28 +637,6 @@ def edge_needs_flip(s,p1,e1):
 def flip_edge_mapping(s,p1,e1):
     r"""
     Return a mapping whose domain is s which flips the provided edge.
-    
-    EXAMPLES::
-        sage: sys.path.append('/home/pat/active/talks/2016/Oaxaca-SAGE_Days/sage-flatsurf-master')
-        sage: K.<sqrt2> = NumberField(x**2 - 2, embedding=1.414)
-        sage: from flatsurf.geometry.polygon import Polygons
-        sage: p = Polygons(K)([(1,0),(sqrt2/2, sqrt2/2),(0, 1),(-sqrt2/2, sqrt2/2),(-1,0),(-sqrt2/2, -sqrt2/2),(0, -1),(sqrt2/2, -sqrt2/2)])
-        sage: gluings=[((0,i),(0,i+4)) for i in range(4)]
-        sage: from flatsurf.geometry.similarity_surface import TranslationSurface_polygons_and_gluings
-        sage: s=TranslationSurface_polygons_and_gluings([p], gluings)
-        sage: from flatsurf.geometry.mappings import triangulation_mapping, flip_edge_mapping
-        sage: m=triangulation_mapping(s)
-        sage: s2=m.codomain()
-        sage: m2=flip_edge_mapping(s2,1,0)
-        sage: s3=m2.codomain()
-        sage: for label in s3.polygon_labels():
-        ...       print s3.polygon(label)
-        Polygon: (0, 0), (-1/2*sqrt2, 1/2*sqrt2 + 1), (-1/2*sqrt2, 1/2*sqrt2)
-        Polygon: (0, 0), (-1/2*sqrt2, -1/2*sqrt2 - 1), (0, -1)
-        Polygon: (0, 0), (-1, -sqrt2 - 1), (1/2*sqrt2, -1/2*sqrt2)
-        Polygon: (0, 0), (0, -sqrt2 - 1), (1, 0)
-        Polygon: (0, 0), (1/2*sqrt2, -1/2*sqrt2 - 1), (1/2*sqrt2, 1/2*sqrt2)
-        Polygon: (0, 0), (1/2*sqrt2, 1/2*sqrt2 + 1), (-1, 0)
     """
     m1=SimilarityJoinPolygonsMapping(s,p1,e1)
     v1,v2=m1.glued_vertices()
@@ -530,8 +647,7 @@ def one_delaunay_flip_mapping(s):
     r"""
     Returns one delaunay flip, or none if no flips are needed.
     """
-    for p in s.polygon_labels():
-        poly=s.polygon(p)
+    for p,poly in s.label_polygon_iterator():
         for e in range(poly.num_edges()):
             if edge_needs_flip(s,p,e):
                 return flip_edge_mapping(s,p,e)
@@ -557,6 +673,7 @@ def delaunay_triangulation_mapping(s):
     r"""
     Returns a mapping to a Delaunay triangulation or None if the surface already is Delaunay triangulated.
     """
+    assert(s.is_finite())
     m=triangulation_mapping(s)
     if m is None:
         s1=s
@@ -587,8 +704,7 @@ def delaunay_decomposition_mapping(s):
     else:
         s1=m.codomain()
     edge_vectors=[]
-    for p in s1.polygon_labels():
-        poly=s1.polygon(p)
+    for p,poly in s1.label_polygon_iterator():
         for e in range(poly.num_edges()):
             pp,ee=s1.opposite_edge(p,e)
             if (p<pp or (p==pp and e<ee)) and edge_needs_join(s1,p,e):
@@ -632,31 +748,6 @@ class CanonicalizePolygonsMapping(SimilaritySurfaceMapping):
     r"""
     This is a mapping to a surface with the polygon vertices canonically determined.
     A canonical labeling is when the canonocal_first_vertex is the zero vertex.
-    
-    EXAMPLES::
-        sage: from flatsurf.geometry.polygon import Polygons
-        sage: K.<sqrt2> = NumberField(x**2 - 2, embedding=1.414)
-        sage: p = Polygons(K)([(1,0),(sqrt2/2, sqrt2/2),(0, 1),(-sqrt2/2, sqrt2/2),(-1,0),(-sqrt2/2, -sqrt2/2),(0, -1),(sqrt2/2, -sqrt2/2)])
-        sage: gluings=[((0,i),(0,i+4)) for i in range(4)]
-        sage: from flatsurf.geometry.similarity_surface import TranslationSurface_polygons_and_gluings
-        sage: s=TranslationSurface_polygons_and_gluings([p], gluings)
-        sage: from flatsurf.geometry.mappings import *
-        sage: mat=Matrix([[1,2+2*sqrt2],[0,1]])
-        sage: m1=SL2RMapping(s,mat)
-        sage: s2=m1.codomain()
-        sage: m2=delaunay_decomposition_mapping(s2)
-        sage: s3=m2.codomain()
-        sage: print s3.polygon(0)
-        Polygon: (0, 0), (1/2*sqrt2, -1/2*sqrt2), (1/2*sqrt2 + 1, -1/2*sqrt2), (sqrt2 + 1, 0), (sqrt2 + 1, 1), (1/2*sqrt2 + 1, 1/2*sqrt2 + 1), (1/2*sqrt2, 1/2*sqrt2 + 1), (0, 1)
-        sage: m3=CanonicalizePolygonsMapping(s3)
-        sage: s4=m3.codomain()
-        sage: s4.polygon(0)
-        Polygon: (0, 0), (1, 0), (1/2*sqrt2 + 1, 1/2*sqrt2), (1/2*sqrt2 + 1, 1/2*sqrt2 + 1), (1, sqrt2 + 1), (0, sqrt2 + 1), (-1/2*sqrt2, 1/2*sqrt2 + 1), (-1/2*sqrt2, 1/2*sqrt2)
-        sage: m=m3*m2*m1
-        sage: print m.push_vector_forward(s.tangent_vector(0,(0,0),(0,1)))
-        SimilaritySurfaceTangentVector in polygon 0 based at (0, 0) with vector (2*sqrt2 + 2, 1)
-        sage: print m.pull_vector_back(s4.tangent_vector(0,(0,0),(0,1)))
-        SimilaritySurfaceTangentVector in polygon 0 based at (1/2*sqrt2 + 1, 1/2*sqrt2 + 1) with vector (-2*sqrt2 - 2, 1)
     """
     def __init__(self, s):
         r"""
@@ -670,23 +761,21 @@ class CanonicalizePolygonsMapping(SimilaritySurfaceMapping):
         cv = {} # dictionary for canonical vertices
         newpolys={} # Polygons for new surfaces
         translations={} # translations bringing the canonical vertex to the origin.
-        for l in s.polygon_labels():
-            polygon=s.polygon(l)
-            cv[l]=canonical_first_vertex(polygon)
+        for l,polygon in s.label_polygon_iterator():
+            cv[l]=cvcur=canonical_first_vertex(polygon)
             newedges=[]
             for i in range(polygon.num_edges()):
-                newedges.append(polygon.edge( (i+cv[l]) % polygon.num_edges() ))
+                newedges.append(polygon.edge( (i+cvcur) % polygon.num_edges() ))
             newpolys[l]=P(newedges)
-            translations[l]=T( -polygon.vertex(cv[l]) )
+            translations[l]=T( -polygon.vertex(cvcur) )
         newgluing=[]
-        for l1 in s.polygon_labels():
-            polygon=s.polygon(l1)
+        for l1,polygon in s.label_polygon_iterator():
             for e1 in range(polygon.num_edges()):
                 l2,e2=s.opposite_edge(l1,e1)
                 ee1= (e1-cv[l1]+polygon.num_edges())%polygon.num_edges()
                 polygon2=s.polygon(l2)
                 ee2= (e2-cv[l2]+polygon2.num_edges())%polygon2.num_edges()
-                newgluing.append( ( (l1,ee1),(l1,ee2) ) )
+                newgluing.append( ( (l1,ee1),(l2,ee2) ) )
 
         s2=SimilaritySurface_polygons_and_gluings(newpolys,newgluing)
         
@@ -725,7 +814,7 @@ class ReindexMapping(SimilaritySurfaceMapping):
             raise ValueError("Currently only works with finite surfaces.""")
         f = {} # map for labels going forward.
         b = {} # map for labels going backward.
-        for l in s.polygon_labels():
+        for l in s.label_iterator():
             if relabler.has_key(l):
                 l2=relabler[l]
                 f[l]=l2
@@ -739,13 +828,37 @@ class ReindexMapping(SimilaritySurfaceMapping):
                     raise ValueError("Provided dictionary has two keys mapping to the same value. Or you are mapping to a label you didn't change.")
                 b[l]=l
 
-        s2=SimilaritySurface_polygons_and_gluings(polygon_map,gluings)
-
         self._f=f
         self._b=b
         
-        SimilaritySurfaceMapping.__init__(self, s, s2)
+        SimilaritySurfaceMapping.__init__(self, s, ReindexMapping.ReindexedSimilaritySurface(s,self))
+
+    class ReindexedSimilaritySurface(SimilaritySurface_generic):
+        def __init__(self, s, reindexmapping):
+            r"""
+            Represents a reindexed similarity surface.
+            """
+            self._s=s
+            self._r=reindexmapping
         
+        def base_ring(self):
+            return self._s.base_ring()
+        
+        def base_label(self):
+            return self._r._f[self._s.base_label()]
+        
+        def polygon(self, lab):
+            return self._s.polygon(self._r._b[lab])
+        
+        def opposite_edge(self, p, e):
+            p_back = self._r._b[p]
+            pp_back,ee = self._s.opposite_edge(p_back,e)
+            pp = self._r._f[pp_back]
+            return (pp,ee)
+        
+        def is_finite(self):
+            return self._s.is_finite()
+    
     def push_vector_forward(self,tangent_vector):
         r"""Applies the mapping to the provided vector."""
         # There is no change- we just move it to the new surface.
@@ -765,6 +878,110 @@ class ReindexMapping(SimilaritySurfaceMapping):
             tangent_vector.vector(), \
             ring = ring)
 
-#def canonicalize_mapping(s):
-#    r"""Return the translation surface in a canonical form."""
+def polygon_compare(poly1,poly2):
+    r"""
+    Compare two polygons first by area, then by number of sides,
+    then by lexigraphical ording on edge vectors."""
+    from sage.functions.generalized import sgn
+    res = int(sgn(-poly1.area()+poly2.area()))
+    if res!=0:
+        return res
+    res = int(sgn(poly1.num_edges()-poly2.num_edges()))
+    if res!=0:
+        return res
+    ne=poly1.num_edges()
+    for i in range(0,ne-1):
+        edge_diff = poly1.edge(i) - poly2.edge(i)
+        res = int(sgn(edge_diff[0]))
+        if res!=0:
+            return res
+        res = int(sgn(edge_diff[1]))
+        if res!=0:
+            return res
+    return 0
+    
+def translation_surface_cmp(s1, s2):
+    r"""
+    Compare two finite surfaces. 
+    The surfaces will be considered equal if and only if there is a translation automorphism
+    respecting the polygons and the base_labels.
+    """
+    if not s1.is_finite() or not s2.is_finite():
+        raise NotImplementedError
+    lw1=s1.label_walker()
+    lw2=s2.label_walker()
+    from itertools import izip_longest
+    for p1,p2 in izip_longest(lw1.polygon_iterator(), lw2.polygon_iterator()):
+        if p1 is None:
+            # s2 has more polygons
+            return -1
+        if p2 is None:
+            # s1 has more polygons
+            return 1
+        ret = polygon_compare(p1,p2)
+        if ret != 0:
+            return ret
+    # Polygons are identical. Compare edge gluings.
+    for pair1,pair2 in izip_longest(lw1.edge_iterator(), lw2.edge_iterator()):
+        l1,e1 = s1.opposite_edge_pair(pair1)
+        l2,e2 = s2.opposite_edge_pair(pair2)
+        num1 = lw1.label_to_number(l1)
+        num2 = lw2.label_to_number(l2)
+        ret = cmp(num1,num2)
+        if ret!=0:
+            return ret
+        ret = cmp(e1,e2)
+        if ret!=0:
+            return ret
+    return 0
+
+def canonicalize_translation_surface_mapping(s):
+    r"""
+    Return the translation surface in a canonical form.
+    
+    EXAMPLES::
+        sage: sys.path.insert(0,'/home/pat/FlatSurf/sage-flatsurf')
+        sage: from flatsurf.geometry.polygon import Polygons
+        sage: K.<sqrt2> = NumberField(x**2 - 2, embedding=1.414)
+        sage: octagon = Polygons(K)([(1,0),(sqrt2/2, sqrt2/2),(0, 1),(-sqrt2/2, sqrt2/2),(-1,0),(-sqrt2/2, -sqrt2/2),(0, -1),(sqrt2/2, -sqrt2/2)])
+        sage: square1 = Polygons(K)([(1,0),(0,1),(-1,0),(0,-1)])
+        sage: square2 = Polygons(K)([(sqrt2/2, sqrt2/2),(-sqrt2/2, sqrt2/2),(-sqrt2/2, -sqrt2/2),(sqrt2/2, -sqrt2/2)])
+        sage: gluings=[((1,i),(0, (2*i+4)%8 )) for i in range(4)]
+        sage: for i in range(4):
+        ...       gluings.append( ((2,i), (0, (2*i+1+4)%8 )) )
+        sage: from flatsurf.geometry.similarity_surface import TranslationSurface_polygons_and_gluings
+        sage: s=TranslationSurface_polygons_and_gluings([octagon,square1,square2], gluings)
+        sage: from flatsurf.geometry.mappings import *
+        sage: mat=Matrix([[1,2+sqrt2],[0,1]])
+        sage: m1=GL2RMapping(s,mat)
+        sage: m2=canonicalize_translation_surface_mapping(m1.codomain())
+        sage: m=m2*m1
+        sage: translation_surface_cmp(m.domain(),m.codomain())==0
+        True
+        sage: s=m.domain()
+        sage: v=s.tangent_vector(0,(0,0),(1,1))
+        sage: w=m.push_vector_forward(v)
+        sage: print(w)
+        SimilaritySurfaceTangentVector in polygon 0 based at (0, 0) with vector (sqrt2 + 3, 1)
+    """
+    if not s.is_finite():
+        raise NotImplementedError
+    m1=delaunay_decomposition_mapping(s)
+    s2=m1.codomain()
+    m2=CanonicalizePolygonsMapping(s2)
+    m=SimilaritySurfaceMappingComposition(m1,m2)
+    s2=m.codomain()
+    it = s2.label_iterator()
+    min_label = it.next()
+    smin=BaseLabelChangedSimilaritySurface(s2,min_label)
+    for test_label in it:
+        stest = BaseLabelChangedSimilaritySurface(s2,test_label)
+        c = translation_surface_cmp(smin,stest)
+        if c>0:
+            min_label = test_label
+            smin = stest
+    lw=smin.label_walker()
+    lw.find_all_labels()
+    m3=ReindexMapping(s2,lw.label_dictionary())
+    return SimilaritySurfaceMappingComposition(m,m3)
     
