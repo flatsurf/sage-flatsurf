@@ -113,8 +113,7 @@ class GraphicalSurface:
         assert self._ss.is_finite()
 
         if adjacent:
-            for l in self._ss.polygon_labels():
-                poly = self._ss.polygon(l)
+            for l,poly in self._ss.label_polygon_iterator():
                 for e in range(poly.num_edges()):
                     l2,e2 = self._ss.opposite_edge(l,e)
                     if not self.is_visible(l2):
@@ -122,7 +121,7 @@ class GraphicalSurface:
         else:
             from flatsurf.geometry.translation import TranslationGroup
             T = TranslationGroup(self._ss.base_ring())
-            for l in self._ss.polygon_labels():
+            for l in self._ss.label_iterator():
                 if not self.is_visible(l):
                     poly = self._ss.polygon(l)
                     sxmax = self.xmax()
