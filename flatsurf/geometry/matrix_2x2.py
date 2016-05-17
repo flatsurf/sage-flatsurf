@@ -238,8 +238,12 @@ def is_cosine_sine_of_rational(c,s):
         sage: c = (AA(sqrt(5)) + 1)/4; s = (1 - c**2).sqrt()
         sage: is_cosine_sine_of_rational(c,s)
         True
+
+        sage: K.<sqrt2> = NumberField(x**2 - 2, embedding=1.414)
+        sage: is_cosine_sine_of_rational(K.zero(),-K.one())
+        True
     """
-    return (c + QQbar.gen() * s).minpoly().is_cyclotomic()
+    return (QQbar(c) + QQbar.gen() * QQbar(s)).minpoly().is_cyclotomic()
 
 def angle(u, v, assume_rational=False):
     r"""
