@@ -33,6 +33,52 @@ from flatsurf.geometry.matrix_2x2 import (is_similarity,
                     rotation_matrix_angle)
 from flatsurf.geometry.similarity import SimilarityGroup
 
+class SurfaceType:
+    r"""
+    This class contains a list of integers representing the various surface types. These surface types
+    are related to the derivatives of the affine linear maps identifying the edges of the polygons in 
+    the decomposition.
+    """
+    
+    SIMILARITY = 0
+    r"""
+    Polygons with edges glued by similarity (Euclidean isometry followed by scaling)
+    """
+    
+    HALF_DILATION = 1
+    r"""Polygons glued by non-zero diagonal matrices."""
+    
+    DILATION = 2
+    r"""Polygons glued by positive diagonal matrices."""
+
+    CONE = 3
+    r"""Polygons glued by Euclidean isometries."""
+    
+    RATIONAL_CONE = 4
+    r"""Polygons glued by translations and finite order rotations."""
+    
+    HALF_TRANSLATION = 5
+    r"""Polygons glued by translations and 180 degree rotations."""
+    
+    TRANSLATION = 6
+    r"""Polygons glued by translation."""
+    
+    _type_to_string = { \
+        0 : "Similarity Surface", \
+        1 : "Half Dilation Surface", \
+        2 : "Dilation Surface", \
+        3 : "Cone Surface", \
+        4 : "Rational Cone Surface", \
+        5 : "Half Translation Surface", \
+        6 : "Translation Surface"}
+        
+    def str(surface_type):
+        r"""
+        Return a string representation of the provided integer reprenting a surface type.
+        """
+        return _type_to_string[surface_type]
+
+
 class SimilaritySurface_generic(SageObject):
     r"""
     An oriented surface built from a set of polygons and edges identified with
@@ -118,10 +164,62 @@ class SimilaritySurface_generic(SageObject):
         """
         raise NotImplementedError
 
+    def surface_type(self):
+        r"""
+        Return an integer representing the surface's type. The convention is that a surface has the given type 
+        if and only if all its 2x2 edge gluing matrixes lie in a certain matrix group.
+        """
+        raise NotImplementedError
 
     # 
     # generic methods
     #
+    
+    def is_half_dilation_surface(self):
+        r"""Return if all the 2x2 gluing matrices are diagonal matrices."""
+        st = self.surface_type()
+        return \
+            st == SurfaceType.HALF_DILATION or \
+            st == SurfaceType.DILATION or \
+            st == SurfaceType.HALF_TRANSLATION or \
+            st == SurfaceType.TRANSLATION
+
+    def is_dilation_surface(self):
+        r"""Return if all the 2x2 gluing matrices are positive diagonal matrices."""
+        st = self.surface_type()
+        return \
+            st == SurfaceType.DILATION or \
+            st == SurfaceType.TRANSLATION
+
+    def is_cone_surface(self):
+        r"""Return if all the 2x2 gluing matrices lie in O(2)."""
+        st = self.surface_type()
+        return \
+            st == SurfaceType.CONE or \
+            st == SurfaceType.RATIONAL_CONE or \
+            st == SurfaceType.HALF_TRANSLATION or \
+            st == SurfaceType.TRANSLATION
+
+    def is_rational_cone_surface(self):
+        r"""Return if all the 2x2 gluing matrices are finite order elements of O(2)."""
+        st = self.surface_type()
+        return \
+            st == SurfaceType.RATIONAL_CONE or \
+            st == SurfaceType.HALF_TRANSLATION or \
+            st == SurfaceType.TRANSLATION
+
+    def is_half_translation_surface(self):
+        r"""Return if all the 2x2 gluing matrices are in {I, -I}."""
+        st = self.surface_type()
+        return \
+            st == SurfaceType.HALF_TRANSLATION or \
+            st == SurfaceType.TRANSLATION
+
+    def is_translation_surface(self):
+        r"""Return if all the 2x2 gluing matrices are in {I, -I}."""
+        st = self.surface_type()
+        return \
+            st == SurfaceType.TRANSLATION
 
     def opposite_edge_pair(self,label_edge_pair):
         r"""
