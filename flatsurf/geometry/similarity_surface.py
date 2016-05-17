@@ -193,13 +193,10 @@ class SimilaritySurface_generic(SageObject):
                 print "done"
 
     def _check_gluings(self):
-        for lab in self.polygon_labels().some_elements():
-            p = self.polygon(lab)
-            for e in xrange(p.num_edges()):
-                llab,ee = self.opposite_edge(lab,e)
-                lllab,eee = self.opposite_edge(llab,ee)
-                if (lllab,eee) != (lab,e):
-                    raise ValueError("edges not glued correctly:\n(%s,%s) -> (%s,%s) -> (%s,%s)"%(lab,e,llab,ee,lllab,eee))
+        # iterate over pairs with pair1 glued to pair2
+        for pair1,pair2 in self.edge_gluing_iterator():
+            if not self.opposite_edge_pair(pair2)==pair1:
+                raise ValueError("edges not glued correctly:\n%s -> %s -> %s"%(pair1,pair2,self.opposite_edge_pair(pair2)))
 
     def base_ring(self):
         r"""
@@ -916,11 +913,19 @@ class TranslationSurface_generic(ConicSurface):
     - canonical labelings of polygons
     - Delaunay triangulation
     """
+    
     def minimal_translation_cover(self):
         return self
 
     def surface_type(self):
         return SurfaceType.TRANSLATION
+
+    def _check_surface_type(self):
+        r"""
+        Check the compatibility condition
+        """
+        
+
 
     def _check_edge_matrix(self):
         r"""
