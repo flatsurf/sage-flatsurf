@@ -389,7 +389,7 @@ class SimilaritySurfaceGenerators:
 
             sage: from flatsurf import *
             sage: similarity_surfaces.example()
-            Similarity Surface built from 2 polygons
+            Similarity surface built from 2 polygons
         """
         from flatsurf.geometry.similarity_surface import SimilaritySurface_polygons_and_gluings
         from flatsurf.geometry.polygon import polygons
@@ -411,7 +411,7 @@ class SimilaritySurfaceGenerators:
             sage: P = polygons(vertices=[(0,0), (1,0), (0,1)])
             sage: Q = similarity_surfaces.billard(P)
             sage: Q
-            Rational Cone Surface built from 2 polygons
+            Rational cone surface built from 2 polygons
             sage: Q.minimal_translation_cover()
             Translation surface built from 8 polygons
         """
@@ -434,7 +434,7 @@ class SimilaritySurfaceGenerators:
 
             sage: from flatsurf import *
             sage: similarity_surfaces.right_angle_triangle(2, 3)
-            Cone Surface built from 2 polygons
+            Cone surface built from 2 polygons
         """
         from sage.structure.sequence import Sequence
         from flatsurf.geometry.polygon import Polygons
