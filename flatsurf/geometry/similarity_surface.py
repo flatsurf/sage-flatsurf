@@ -66,13 +66,13 @@ class SurfaceType:
     r"""Polygons glued by translation."""
     
     _type_to_string = { \
-        0 : "Similarity Surface", \
-        1 : "Half Dilation Surface", \
-        2 : "Dilation Surface", \
-        3 : "Cone Surface", \
-        4 : "Rational Cone Surface", \
-        5 : "Half Translation Surface", \
-        6 : "Translation Surface"}
+        0 : "Similarity surface", \
+        1 : "Half-dilation surface", \
+        2 : "Dilation surface", \
+        3 : "Cone surface", \
+        4 : "Rational cone surface", \
+        5 : "Half-translation surface", \
+        6 : "Translation surface"}
         
 def surface_type_to_str(surface_type):
     r"""
@@ -249,7 +249,7 @@ class SimilaritySurface_generic(SageObject):
     # generic methods
     #
     
-    def compute_surface_type(self,limit=None):
+    def compute_surface_type_from_gluings(self,limit=None):
         r"""
         Compute the surface type by looking at the edge gluings. 
         If limit is defined, we try to guess the type by looking at limit many edges.
@@ -507,9 +507,9 @@ class SimilaritySurface_generic(SageObject):
             sage: S = similarity_surfaces.example()
             sage: T = S.minimal_translation_cover()
             sage: T
-            Translation surface built from +Infinity polygons
-            sage: T.polygon(T.polygon_labels().an_element())
-            Polygon: (0, 0), (8/5, -4/5), (6/5, 2/5)
+            Translation surface built from infinitely many polygons
+            sage: T.polygon(T.base_label())
+            Polygon: (0, 0), (2, -2), (2, 0)
         """
         return MinimalTranslationCover(self)
 
@@ -814,24 +814,27 @@ class SimilaritySurface_polygons_and_gluings(SimilaritySurface_generic):
 
         self._edge_identifications = edge_identifications
         
-        self._surface_type = self.compute_surface_type()
+        self._surface_type = self.compute_surface_type_from_gluings()
 
     def surface_type(self):
         r"""
+        Return the type of this surface.
+        We use compute_surface_type_from_gluings() to compute it.
+        
         EXAMPLES::
 
-        sage: from flatsurf.geometry.polygon import Polygons
-        sage: K.<sqrt2> = NumberField(x**2 - 2, embedding=1.414)
-        sage: octagon = Polygons(K)([(1,0),(sqrt2/2, sqrt2/2),(0, 1),(-sqrt2/2, sqrt2/2),(-1,0),(-sqrt2/2, -sqrt2/2),(0, -1),(sqrt2/2, -sqrt2/2)])
-        sage: square1 = Polygons(K)([(1,0),(0,1),(-1,0),(0,-1)])
-        sage: square2 = Polygons(K)([(sqrt2/2, sqrt2/2),(-sqrt2/2, sqrt2/2),(-sqrt2/2, -sqrt2/2),(sqrt2/2, -sqrt2/2)])
-        sage: gluings=[((1,i),(0, (2*i+3)%8 )) for i in range(4)]
-        sage: for i in range(4):
-        ...       gluings.append( ((2,i), (0, (2*i+2)%8 )) )
-        sage: from flatsurf.geometry.similarity_surface import SimilaritySurface_polygons_and_gluings
-        sage: s=SimilaritySurface_polygons_and_gluings([octagon,square1,square2], gluings)
-        sage: s
-        Rational Cone Surface built from 3 polygons
+            sage: from flatsurf.geometry.polygon import Polygons
+            sage: K.<sqrt2> = NumberField(x**2 - 2, embedding=1.414)
+            sage: octagon = Polygons(K)([(1,0),(sqrt2/2, sqrt2/2),(0, 1),(-sqrt2/2, sqrt2/2),(-1,0),(-sqrt2/2, -sqrt2/2),(0, -1),(sqrt2/2, -sqrt2/2)])
+            sage: square1 = Polygons(K)([(1,0),(0,1),(-1,0),(0,-1)])
+            sage: square2 = Polygons(K)([(sqrt2/2, sqrt2/2),(-sqrt2/2, sqrt2/2),(-sqrt2/2, -sqrt2/2),(sqrt2/2, -sqrt2/2)])
+            sage: gluings=[((1,i),(0, (2*i+3)%8 )) for i in range(4)]
+            sage: for i in range(4):
+            ...       gluings.append( ((2,i), (0, (2*i+2)%8 )) )
+            sage: from flatsurf.geometry.similarity_surface import SimilaritySurface_polygons_and_gluings
+            sage: s=SimilaritySurface_polygons_and_gluings([octagon,square1,square2], gluings)
+            sage: s
+            Rational cone surface built from 3 polygons
         """
         return self._surface_type
     
@@ -916,6 +919,9 @@ class TranslationSurface_generic(ConicSurface):
     def minimal_translation_cover(self):
         return self
 
+    def surface_type(self):
+        return SurfaceType.TRANSLATION
+
     def _check_edge_matrix(self):
         r"""
         Check the compatibility condition
@@ -925,13 +931,6 @@ class TranslationSurface_generic(ConicSurface):
             for e in xrange(p.num_edges()):
                 if not self.edge_matrix(lab,e).is_one():
                     raise ValueError("gluings of (%s,%s) is not through translation"%(lab,e))
-
-    def _repr_(self):
-        if self.num_polygons() == 1:
-            end = ""
-        else:
-            end = "s"
-        return "Translation surface built from %s polygon"%(self.num_polygons()) + end
 
     def edge_matrix(self, p, e=None):
         if e is None:
@@ -987,22 +986,6 @@ class MinimalTranslationCover(TranslationSurface_generic):
 
     def polygon(self, lab):
         return lab[1] * self._ss.polygon(lab[0])
-
-    def polygon_labels(self):
-        r"""
-        Return the set of polygons used for the labels.
-        """
-        from flatsurf.geometry.cartesian_product import CartesianProduct
-        from flatsurf.geometry.finitely_generated_matrix_group import FinitelyGenerated2x2MatrixGroup
-
-        ss = self._ss
-
-        M = [ss.edge_matrix(p,e) for p,e in ss.edge_iterator()]
-        for m in M: m.set_immutable()
-        M = sorted(set(M))
-        for m in M: m.set_immutable()
-        G = FinitelyGenerated2x2MatrixGroup(M)
-        return CartesianProduct([ss.polygon_labels(), G])
 
     def opposite_edge(self, p, e):
         pp,m = p  # this is the polygon m * ss.polygon(p)
