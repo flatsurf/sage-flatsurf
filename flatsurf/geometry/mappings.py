@@ -363,6 +363,12 @@ class SimilarityJoinPolygonsMapping(SurfaceMapping):
         self._glued_edge=e1
         SurfaceMapping.__init__(self, s, s2)
 
+    def removed_label(self):
+        r"""
+        Return the label that was removed in the joining process.
+        """
+        return self._removed_label
+
     def glued_vertices(self):
         r"""
         Return the vertices of the newly glued polygon which bound the diagonal formed by the glue.
@@ -673,7 +679,8 @@ def flip_edge_mapping(s,p1,e1):
     """
     m1=SimilarityJoinPolygonsMapping(s,p1,e1)
     v1,v2=m1.glued_vertices()
-    m2=SimilaritySplitPolygonsMapping(m1.codomain(), p1, (v1+1)%4, (v1+3)%4)
+    removed_label = m1.removed_label()
+    m2=SimilaritySplitPolygonsMapping(m1.codomain(), p1, (v1+1)%4, (v1+3)%4, new_label = removed_label)
     return SurfaceMappingComposition(m1,m2)
 
 def one_delaunay_flip_mapping(s):
