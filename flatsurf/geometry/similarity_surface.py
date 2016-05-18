@@ -107,7 +107,7 @@ class SimilaritySurface_generic(SageObject):
         r"""
         Always returns the same label.
         """
-        return NotImplementedError
+        raise NotImplementedError
 
     def opposite_edge(self, p, e):
         r"""
@@ -145,20 +145,24 @@ class SimilaritySurface_generic(SageObject):
                 raise ValueError("Need a limit when working with an infinite surface.")
             it = self.edge_iterator()
             label,edge = it.next()
-            m = self.edge_matrix(label,edge)
+            # Use honest matrices!
+            m = SimilaritySurface_generic.edge_matrix(self,label,edge)
             surface_type = surface_type_from_matrix(m)
             for label,edge in it:
-                m = self.edge_matrix(label,edge)
+                # Use honest matrices!
+                m = SimilaritySurface_generic.edge_matrix(self,label,edge)
                 surface_type = combine_surface_types(surface_type, surface_type_from_matrix(m))
             return surface_type
         else:
             count=0
             it = self.edge_iterator()
             label,edge = it.next()
-            m = self.edge_matrix(label,edge)
+            # Use honest matrices!
+            m = SimilaritySurface_generic.edge_matrix(self,label,edge)
             surface_type = surface_type_from_matrix(m)
             for label,edge in it:
-                m = self.edge_matrix(label,edge)
+                # Use honest matrices!
+                m = SimilaritySurface_generic.edge_matrix(self,label,edge)
                 surface_type = combine_surface_types(surface_type, surface_type_from_matrix(m))
                 count=count+1
                 if count >= limit:
@@ -519,9 +523,12 @@ class SimilaritySurface_generic(SageObject):
         - their base rings are equal,
         - their base labels are equal,
         - their polygons are equal and labeled and glued in the same way.
+        For infinite surfaces we use reference equality.
         """
         if not self.is_finite():
-            raise ValueError("Can not compare infinite surfaces.")
+            return self is other
+        if self is other:
+            return True
         if not isinstance(other, SimilaritySurface_generic):
             raise TypeError
         if not other.is_finite():
@@ -648,32 +655,6 @@ class SimilaritySurface_polygons_and_gluings(SimilaritySurface_generic):
             self._edge_identifications = edge_identifications
         else:
             raise ValueError("Can only be called with one or two arguments.")
-
-    def surface_type(self):
-        r"""
-        Return the type of this surface.
-        We use compute_surface_type_from_gluings() to compute it.
-        
-        EXAMPLES::
-
-            sage: from flatsurf.geometry.polygon import Polygons
-            sage: K.<sqrt2> = NumberField(x**2 - 2, embedding=1.414)
-            sage: octagon = Polygons(K)([(1,0),(sqrt2/2, sqrt2/2),(0, 1),(-sqrt2/2, sqrt2/2),(-1,0),(-sqrt2/2, -sqrt2/2),(0, -1),(sqrt2/2, -sqrt2/2)])
-            sage: square1 = Polygons(K)([(1,0),(0,1),(-1,0),(0,-1)])
-            sage: square2 = Polygons(K)([(sqrt2/2, sqrt2/2),(-sqrt2/2, sqrt2/2),(-sqrt2/2, -sqrt2/2),(sqrt2/2, -sqrt2/2)])
-            sage: gluings=[((1,i),(0, (2*i+3)%8 )) for i in range(4)]
-            sage: for i in range(4):
-            ...       gluings.append( ((2,i), (0, (2*i+2)%8 )) )
-            sage: from flatsurf.geometry.similarity_surface import SimilaritySurface_polygons_and_gluings
-            sage: s=SimilaritySurface_polygons_and_gluings([octagon,square1,square2], gluings)
-            sage: s
-            Rational cone surface built from 3 polygons
-        """
-        if not hasattr(self, '_surface_type'):
-            self._surface_type = self.compute_surface_type_from_gluings()
-        return self._surface_type
-    
-    
     
     def is_finite(self):
         r"""
@@ -745,7 +726,7 @@ class SimilaritySurface_wrapper(SimilaritySurface_generic):
             return self._polygons[lab]
         except KeyError:
             p = self._s.polygon(lab)
-            self._polygon[lab]=p
+            self._polygons[lab]=p
             return p
 
     def base_label(self):
