@@ -50,17 +50,17 @@ class SimilaritySurface_generic(SageObject):
 
         This class is abstract and should not be called directly. Instead you
         can either use SimilaritySurface_from_polygons_and_identifications or
-        inherit from it and implement the methods:
+        inherit from SimilaritySurface_generic and implement the methods:
 
-        - num_polygons(self): the number of polygons in that surface
         - base_ring(self): the base ring in which coordinates lives
         - polygon(self, lab): the polygon associated to the label ``lab``
+        - base_label(self): return a first label
+        - opposite_edge(self, lab, edge): a couple (``other_label``, ``other_edge``) representing the edge being glued
+        - is_finite(self): return true if the surface is built from finitely many labeled polygons
 
-    It might also be good to implement
+        Also if your type is more specific than Similarity Surface then you should override:
 
-        - base_polygon(self): a couple (``label``, ``polygon``) that is a
-          somewhat fixed polygon
-        - opposite_edge(self, lab, edege): a couple (``other_lab``, ``other_edge``)
+        - surface_type(self): return the appropriate SurfaceType (see flatsurf.geometry.surface)
     """
     _plot_options = {}
 
@@ -80,6 +80,13 @@ class SimilaritySurface_generic(SageObject):
             if not self.opposite_edge_pair(pair2)==pair1:
                 raise ValueError("edges not glued correctly:\n%s -> %s -> %s"%(pair1,pair2,self.opposite_edge_pair(pair2)))
 
+    def _check_type(self):
+        claimed_type = self.surface_type()
+        computed_type = self.compute_surface_type_from_gluings(limit=100)
+        if claimed_type != combine_surface_types(claimed_type,computed_type):
+            raise ValueError("Surface computed to be of type %s which is not more specific than the claimed type of %s."%(
+                surface_type_to_str(computed_type), surface_type_to_str(claimed_type)))
+    
     def base_ring(self):
         r"""
         The field on which the coordinates of ``self`` live.
@@ -88,12 +95,6 @@ class SimilaritySurface_generic(SageObject):
         """
         raise NotImplementedError
 
-    def base_label(self):
-        r"""
-        Always returns the same label.
-        """
-        return self.polygon_labels().an_element()
-
     def polygon(self, lab):
         r"""
         Return the polygon with label ``lab``.
@@ -101,6 +102,12 @@ class SimilaritySurface_generic(SageObject):
         This method must be overriden in subclasses.
         """
         raise NotImplementedError
+
+    def base_label(self):
+        r"""
+        Always returns the same label.
+        """
+        return NotImplementedError
 
     def opposite_edge(self, p, e):
         r"""
@@ -122,7 +129,7 @@ class SimilaritySurface_generic(SageObject):
         Return an integer representing the surface's type. The convention is that a surface has the given type 
         if and only if all its 2x2 edge gluing matrixes lie in a certain matrix group.
         """
-        raise NotImplementedError
+        return SurfaceType.SIMILARITY
 
     # 
     # generic methods
@@ -134,6 +141,8 @@ class SimilaritySurface_generic(SageObject):
         If limit is defined, we try to guess the type by looking at limit many edges.
         """
         if limit is None:
+            if not self.is_finite():
+                raise ValueError("Need a limit when working with an infinite surface.")
             it = self.edge_iterator()
             label,edge = it.next()
             m = self.edge_matrix(label,edge)
@@ -292,8 +301,6 @@ class SimilaritySurface_generic(SageObject):
         applied.
         """
         if e is None:
-            # What does the following line do?
-            # -Pat
             p,e = p
         u = self.polygon(p).edge(e)
         pp,ee = self.opposite_edge(p,e)
@@ -506,12 +513,60 @@ class SimilaritySurface_generic(SageObject):
     def plot(self, *args, **kwds):
         return self.surface_plot(*args, **kwds).plot()
 
+    def __eq__(self, other):
+        r"""
+        Implements a naive notion of equality where two finite surfaces are equal if:
+        - their base rings are equal,
+        - their base labels are equal,
+        - their polygons are equal and labeled and glued in the same way.
+        """
+        if not self.is_finite():
+            raise ValueError("Can not compare infinite surfaces.")
+        if not isinstance(other, SimilaritySurface_generic):
+            raise TypeError
+        if not other.is_finite():
+            raise ValueError("Can not compare infinite surfaces.")
+        if self.base_ring() != other.base_ring():
+            return False
+        if self.base_label() != other.base_label():
+            return False
+        if self.num_polygons() != other.num_polygons():
+            return False
+        for label,polygon in self.label_polygon_iterator():
+            try:
+                polygon2 = other.polygon(label)
+            except ValueError:
+                return False
+            if polygon != polygon2:
+                return False
+            for edge in xrange(polygon.num_edges()):
+                if self.opposite_edge(label,edge) != other.opposite_edge(label,edge):
+                    return False
+        return True
+
+    def __ne__(self, other):
+        return not self == other
+
+    def __hash__(self):
+        r"""
+        Hash compatible with equals.
+        """
+        h = 17*hash(self.base_ring())+23*hash(self.base_label())
+        for pair in self.label_polygon_iterator():
+            h = h + 7*hash(pair)
+        for edgepair in self.edge_gluing_iterator():
+            h = h + 3*hash(edgepair)
+        return h
+
 class SimilaritySurface_polygons_and_gluings(SimilaritySurface_generic):
     r"""
     Similarity surface build from a list of polygons and gluings.
     """
-    def __init__(self, polygons=None, identifications=None):
+    def __init__(self, *args):
         r"""
+        The constructor either acts as a copy constructor for a finite surface, or you can pass two options:
+        polygons and identifications.
+        
         INPUT:
 
         - ``polygons`` - a family of polygons (might be a list, a dictionnary
@@ -521,47 +576,78 @@ class SimilaritySurface_polygons_and_gluings(SimilaritySurface_generic):
           ((p0,e0),(p1,e1)) or
 
         EXAMPLES::
-
-            sage: from flatsurf.geometry.polygon import polygons
+            sage: from flatsurf.geometry.polygon import Polygons
+            sage: K.<sqrt2> = NumberField(x**2 - 2, embedding=1.414)
+            sage: octagon = Polygons(K)([(1,0),(sqrt2/2, sqrt2/2),(0, 1),(-sqrt2/2, sqrt2/2),(-1,0),(-sqrt2/2, -sqrt2/2),(0, -1),(sqrt2/2, -sqrt2/2)])
+            sage: square1 = Polygons(K)([(1,0),(0,1),(-1,0),(0,-1)])
+            sage: square2 = Polygons(K)([(sqrt2/2, sqrt2/2),(-sqrt2/2, sqrt2/2),(-sqrt2/2, -sqrt2/2),(sqrt2/2, -sqrt2/2)])
+            sage: gluings=[(('b',i),('a', (2*i+4)%8 )) for i in range(4)]
+            sage: for i in range(4):
+            ...       gluings.append( (('c',i), ('a', (2*i+5)%8 )) )
+            sage: from flatsurf.geometry.similarity_surface import SimilaritySurface_polygons_and_gluings
+            sage: s=SimilaritySurface_polygons_and_gluings({'a':octagon,'b':square1,'c':square2}, gluings)
+            sage: s2=SimilaritySurface_polygons_and_gluings(s)
+            sage: s2==s
+            True
+            sage: hash(s2)==hash(s)
+            True
         """
-        self._polygons = Family(polygons)
+        if len(args)==2:
+            polygons=args[0]
+            identifications=args[1]
 
-        if self._polygons.cardinality() == 0:
-            raise ValueError("there should be at least one polygon")
+            self._polygons = Family(polygons)
 
-        self._field = self._polygons.an_element().parent().field()
+            if self._polygons.cardinality() == 0:
+                raise ValueError("there should be at least one polygon")
 
-        n = 0
-        for p in self._polygons:
-            if p.parent().field() != self._field:
-                raise ValueError("the field must be the same for all polygons")
-            n += 1
-            if n > 10:  # the number of polygons may be infinite...
-                break
+            self._field = self._polygons.an_element().parent().field()
 
-        if isinstance(identifications, (list,dict)):
-            edge_identifications = {}
-            if isinstance(identifications, dict):
-                it = identifications.iteritems()
-            else:
-                it = iter(identifications)
-            for e0,e1 in it:
-                edge_identifications[e0] = e1
-                # Check that e0 makes sense. 
-                assert e0[1]>=0 and e0[1]<self._polygons[e0[0]].num_edges()
-                # Check that e1 makes sense. 
-                assert e1[1]>=0 and e1[1]<self._polygons[e1[0]].num_edges()
-                
-                if e1 in edge_identifications:
-                    assert edge_identifications[e1] == e0
+            n = 0
+            for p in self._polygons:
+                if p.parent().field() != self._field:
+                    raise ValueError("the field must be the same for all polygons")
+                n += 1
+                if n > 10:  # the number of polygons may be infinite...
+                    break
+
+            if isinstance(identifications, (list,dict)):
+                edge_identifications = {}
+                if isinstance(identifications, dict):
+                    it = identifications.iteritems()
                 else:
-                    edge_identifications[e1] = e0
-        else:
-            edge_identifications = identifications
+                    it = iter(identifications)
+                for e0,e1 in it:
+                    edge_identifications[e0] = e1
+                    # Check that e0 makes sense. 
+                    assert e0[1]>=0 and e0[1]<self._polygons[e0[0]].num_edges()
+                    # Check that e1 makes sense. 
+                    assert e1[1]>=0 and e1[1]<self._polygons[e1[0]].num_edges()
+                    
+                    if e1 in edge_identifications:
+                        assert edge_identifications[e1] == e0
+                    else:
+                        edge_identifications[e1] = e0
+            else:
+                edge_identifications = identifications
 
-        self._edge_identifications = edge_identifications
-        
-        self._surface_type = self.compute_surface_type_from_gluings()
+            self._edge_identifications = edge_identifications
+        elif len(args)==1:
+            # Copy constructor for finite surface.
+            s = args[0]
+            if not s.is_finite():
+                raise ValueError("Can only copy finite surface.")
+            polygons = {}
+            edge_identifications = {}
+            for label,polygon in s.label_polygon_iterator():
+                polygons[label]=polygon
+                for edge in xrange(polygon.num_edges()):
+                    edge_identifications[(label,edge)]=s.opposite_edge(label,edge)
+            self._field = s.base_ring()
+            self._polygons=Family(polygons)
+            self._edge_identifications = edge_identifications
+        else:
+            raise ValueError("Can only be called with one or two arguments.")
 
     def surface_type(self):
         r"""
@@ -583,19 +669,27 @@ class SimilaritySurface_polygons_and_gluings(SimilaritySurface_generic):
             sage: s
             Rational cone surface built from 3 polygons
         """
+        if not hasattr(self, '_surface_type'):
+            self._surface_type = self.compute_surface_type_from_gluings()
         return self._surface_type
+    
+    
     
     def is_finite(self):
         r"""
         Return whether or not the surface is finite.
         """
-        return True
+        from sage.rings.infinity import Infinity
+        return self._polygons.cardinality() != Infinity
 
     def num_polygons(self):
         return self._polygons.cardinality()
 
     def base_ring(self):
         return self._field
+
+    def base_label(self):
+        return self.polygon_labels().an_element()
 
     def polygon_labels(self):
         from sage.combinat.words.alphabet import build_alphabet
@@ -613,7 +707,6 @@ class SimilaritySurface_polygons_and_gluings(SimilaritySurface_generic):
             if (p,e) not in self._edge_identifications:
                 raise ValueError("The pair"+str((p,e))+" is not a valid edge identifier.")
         return self._edge_identifications[(p,e)]
-
-
+    
 
 
