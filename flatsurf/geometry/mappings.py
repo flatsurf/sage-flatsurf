@@ -41,6 +41,7 @@ class SimilaritySurfaceMapping:
     def __rmul__(self,other):
         return SimilaritySurfaceMappingComposition(self,other)
 
+
 class FinitelyPerturbedSimilaritySurface(SimilaritySurface_generic):
     def __init__(self, surface, polygon_dictionary=None, glue_dictionary=None, base_label=None, ring=None):
         r"""
@@ -142,6 +143,38 @@ class SimilaritySurfaceMappingComposition(SimilaritySurfaceMapping):
     def pull_vector_back(self,tangent_vector):
         r"""Applies the inverse of the mapping to the provided vector."""
         return self._m1.pull_vector_back(self._m2.pull_vector_back(tangent_vector))
+
+class IdentityMapping(SimilaritySurfaceMapping):
+    r"""
+    Construct an identity map between two `equal' surfaces.
+    """
+    def __init__(self,domain,codomain):
+        SimilaritySurfaceMapping.__init__(self, domain, codomain)
+
+    def push_vector_forward(self,tangent_vector):
+        r"""Applies the mapping to the provided vector."""
+        return self._m2.push_vector_forward(self._m1.push_vector_forward(tangent_vector))
+
+    def pull_vector_back(self,tangent_vector):
+        r"""Applies the inverse of the mapping to the provided vector."""
+        return self._m1.pull_vector_back(self._m2.pull_vector_back(tangent_vector))
+
+    def push_vector_forward(self,tangent_vector):
+        r"""Applies the mapping to the provided vector."""
+        return self._codomain.tangent_vector( \
+            tangent_vector.polygon_label(), \
+            tangent_vector.point(), \
+            tangent_vector.vector(), \
+            ring = ring)
+
+
+    def pull_vector_back(self,tangent_vector):
+        r"""Applies the pullback mapping to the provided vector."""
+        return self._domain.tangent_vector( \
+            tangent_vector.polygon_label(), \
+            tangent_vector.point(), \
+            tangent_vector.vector(), \
+            ring = ring)
 
 class GL2RImageSurface(SimilaritySurface_generic):
     def __init__(self, surface, m, ring=None):
