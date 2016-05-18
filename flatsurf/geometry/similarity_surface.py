@@ -708,5 +708,67 @@ class SimilaritySurface_polygons_and_gluings(SimilaritySurface_generic):
                 raise ValueError("The pair"+str((p,e))+" is not a valid edge identifier.")
         return self._edge_identifications[(p,e)]
     
+class SimilaritySurface_wrapper(SimilaritySurface_generic):
+    r"""
+    Wraps a surface in a SimilaritySurface package. This is primarily for changing the type of infinite surfaces.
+    
+    EXAMPLES::
+        sage: from flatsurf.geometry.similarity_surface_generators import InfiniteStaircase
+        sage: s=InfiniteStaircase()
+        sage: from flatsurf.geometry.similarity_surface import convert_to_similarity_surface
+        sage: s2=convert_to_similarity_surface(s)
+        sage: print s2
+        Similarity surface built from infinitely many polygons
+    """
+    def __init__(self, surface):
+        if isinstance(surface, SimilaritySurface_wrapper):
+            # It's a party. We'll share data!
+            self._s = surface._s
+            self._base_ring = surface._base_ring
+            self._base_label = surface._base_label
+            self._polygons= surface._polygons
+            self._edge_identifications = surface._edge_identifications
+            self._is_finite = s._is_finite()
+        else:
+            self._s = surface
+            self._base_ring = surface.base_ring()
+            self._base_label = surface.base_label()
+            self._polygons={}
+            self._edge_identifications={}
+            self._is_finite = surface.is_finite()
 
+    def base_ring(self):
+        return self._base_ring
+
+    def polygon(self, lab):
+        try:
+            return self._polygons[lab]
+        except KeyError:
+            p = self._s.polygon(lab)
+            self._polygon[lab]=p
+            return p
+
+    def base_label(self):
+        return self._base_label
+
+    def opposite_edge(self, p, e):
+        try:
+            return self._edge_identifications[(p,e)]
+        except KeyError:
+            pair = self._s.opposite_edge(p,e)
+            self._edge_identifications[(p,e)]=pair
+            self._edge_identifications[pair]=(p,e)
+            return pair
+
+    def is_finite(self):
+        return self._is_finite
+
+def convert_to_similarity_surface(surface):
+    r"""
+    Returns a similarity surface version of the provided surface.
+    """
+    if surface.is_finite():
+        return SimilaritySurface_polygons_and_gluings(surface)
+    else:
+        return SimilaritySurface_wrapper(surface)
 
