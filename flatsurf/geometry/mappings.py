@@ -673,6 +673,53 @@ def edge_needs_flip(s,p1,e1):
     sim=sim1*sim2
     return sim[1][0] < 0
     
+def edge_needs_flip_Linfinity(s, p1, e1):
+    r"""
+    Check whether the provided edge which bouds two triangles should be flipped
+    to get closer to the L-infinity Delaunay decomposition.
+
+    EXAMPLES::
+
+        sage: from flatsurf import *
+        sage: t1 = polygons(vertices=[(0,0), (1,0), (1,1)])
+        sage: t2 = polygons(vertices=[(0,0), (1,1), (0,1)])
+        sage: m = matrix(2, [2,1,1,1])
+        sage: t1 = m*t1
+        sage: t2 = m*t2
+        sage: s = similarity_surfaces([t1,t2], {(0,0):(1,1), (0,1):(1,2), (0,2):(1,0)})
+
+        sage: from flatsurf.geometry.mappings import edge_needs_flip_Linfinity
+        sage: edge_needs_flip_Linfinity(s, 0, 0)
+        False
+        sage: edge_needs_flip_Linfinity(s, 0, 1)
+        False
+        sage: edge_needs_flip_Linfinity(s, 0, 2)
+        True
+        sage: edge_needs_flip_Linfinity(s, 1, 0)
+        True
+        sage: edge_needs_flip_Linfinity(s, 1, 1)
+        False
+        sage: edge_needs_flip_Linfinity(s, 1, 2)
+        False
+    """
+    p2,e2 = s.opposite_edge(p1,e1)
+    poly1 = s.polygon(p1)
+    poly2 = s.polygon(p2)
+    assert poly1.num_edges() == 3
+    assert poly2.num_edges() == 3
+
+    # convexity check of the quadrilateral
+    if wedge_product(poly2.edge(e2-1), poly1.edge(e1+1)) <= 0 or \
+       wedge_product(poly1.edge(e1-1), poly2.edge(e2+1)) <=0:
+        return False
+
+    # compare the norms
+    edge1 = poly1.edge(e1)
+    edge = poly2.edge(e2-1) + poly1.edge(e1+1)
+    n1 = max(abs(edge1[0]), abs(edge1[1]))
+    n = max(abs(edge[0]), abs(edge[1]))
+    return n < n1
+
 def flip_edge_mapping(s,p1,e1):
     r"""
     Return a mapping whose domain is s which flips the provided edge.
