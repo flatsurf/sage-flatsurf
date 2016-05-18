@@ -484,7 +484,7 @@ class TranslationSurfaceGenerators:
         polygons = [polygons.regular_ngon(8)]
         identifications = {}
         identifications.update(dict(((0,i),(0,i+4)) for i in xrange(4)))
-        return TranslationSurface_polygons_and_gluings(polygons=polygons, identifications=identifications)
+        return TranslationSurface_polygons_and_gluings(polygons, identifications)
 
     @staticmethod
     def octagon_and_squares():
@@ -518,7 +518,7 @@ class TranslationSurfaceGenerators:
             (0,6): (1,2),
             (0,7): (2,2),
             }
-        return TranslationSurface_polygons_and_gluings(polygons=polygons, identifications=identifications)
+        return TranslationSurface_polygons_and_gluings(polygons, identifications)
 
     @staticmethod
     def origami(r,u,rr=None,uu=None,domain=None):
