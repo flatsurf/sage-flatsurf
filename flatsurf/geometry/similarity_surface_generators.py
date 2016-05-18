@@ -4,7 +4,7 @@ from sage.misc.cachefunc import cached_method
 ZZ_1 = ZZ(1)
 ZZ_2 = ZZ(2)
 
-from flatsurf.geometry.similarity_surface import TranslationSurface_generic
+from flatsurf.geometry.translation_surface import TranslationSurface_generic
 
 class InfiniteStaircase(TranslationSurface_generic):
     r"""
@@ -480,7 +480,7 @@ class TranslationSurfaceGenerators:
             H(2)
         """
         from flatsurf.geometry.polygon import polygons
-        from flatsurf.geometry.similarity_surface import TranslationSurface_polygons_and_gluings
+        from flatsurf.geometry.translation_surface import TranslationSurface_polygons_and_gluings
         polygons = [polygons.regular_ngon(8)]
         identifications = {}
         identifications.update(dict(((0,i),(0,i+4)) for i in xrange(4)))
@@ -497,7 +497,7 @@ class TranslationSurfaceGenerators:
         """
         from flatsurf.geometry.polygon import polygons
         from sage.matrix.matrix_space import MatrixSpace
-        from flatsurf.geometry.similarity_surface import TranslationSurface_polygons_and_gluings
+        from flatsurf.geometry.translation_surface import TranslationSurface_polygons_and_gluings
 
         o = polygons.regular_ngon(8)
         K = o.parent().field()
@@ -538,7 +538,7 @@ class TranslationSurfaceGenerators:
             sage: o.stratum()
             H(2)
         """
-        from flatsurf.geometry.similarity_surface import Origami
+        from flatsurf.geometry.translation_surface import Origami
         return Origami(r,u,rr,uu,domain)
 
     @staticmethod
@@ -569,7 +569,7 @@ class TranslationSurfaceGenerators:
             Origami defined by r=<function <lambda> at ...> and
             u=<function <lambda> at ...>
         """
-        from flatsurf.geometry.similarity_surface import Origami
+        from flatsurf.geometry.translation_surface import Origami
         return Origami(
                 lambda x: x+1 if x%2 else x-1,  # r  (edge 1)
                 lambda x: x-1 if x%2 else x+1,  # u  (edge 2)
