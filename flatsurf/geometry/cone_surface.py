@@ -1,9 +1,17 @@
-from flatsurf.geometry.similarity_surface import SimilaritySurface_generic, SimilaritySurface_polygons_and_gluings
+from flatsurf.geometry.similarity_surface import (
+    SimilaritySurface_generic, 
+    SimilaritySurface_polygons_and_gluings,
+    SimilaritySurface_wrapper)
+
+from flatsurf.geometry.surface import SurfaceType, convert_to_type
 
 class ConeSurface_generic(SimilaritySurface_generic):
     r"""
-    A conic surface.
+    A Euclidean cone surface.
     """
+    def surface_type(self):
+        return SurfaceType.CONE
+
     def angles(self):
         r"""
         Return the set of angles around the vertices of the surface.
@@ -32,6 +40,21 @@ class ConeSurface_generic(SimilaritySurface_generic):
         return angles
 
 class ConeSurface_polygons_and_gluings(
-        SimilaritySurface_polygons_and_gluings, 
+        SimilaritySurface_polygons_and_gluings,
         ConeSurface_generic):
     pass
+
+class ConeSurface_wrapper(
+        SimilaritySurface_wrapper,
+        ConeSurface_generic):
+    pass
+
+def convert_to_cone_surface(surface):
+    r"""
+    Returns a cone surface version of the provided surface.
+    """
+    if surface.is_finite():
+        return ConeSurface_polygons_and_gluings(surface)
+    else:
+        return ConeSurface_wrapper(surface)
+
