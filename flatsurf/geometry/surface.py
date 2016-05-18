@@ -168,7 +168,7 @@ def is_translation_surface_type(st):
         st == SurfaceType.TRANSLATION
 
 ######
-###### surface_from_polygons_and_gluings
+###### Returning best surface types
 
 
 def surface_from_polygons_and_gluings(polygons, gluings):
@@ -186,21 +186,38 @@ def surface_from_polygons_and_gluings(polygons, gluings):
         ...       gluings.append( ((2,i), (0, (2*i+5)%8 )) )
         sage: from flatsurf.geometry.surface import surface_from_polygons_and_gluings
         sage: s=surface_from_polygons_and_gluings([octagon,square1,square2], gluings)
-        _check_edge_matrix ... done
-        _check_gluings ... done
         sage: type(s)
         <class 'flatsurf.geometry.translation_surface.TranslationSurface_polygons_and_gluings'>
     """
     from flatsurf.geometry.similarity_surface import SimilaritySurface_polygons_and_gluings
     surface = SimilaritySurface_polygons_and_gluings(polygons,gluings)
-    if surface.is_translation_surface():
+    surface_type = surface.compute_surface_type_from_gluings()
+    if is_translation_surface_type(surface_type):
         from flatsurf.geometry.translation_surface import TranslationSurface_polygons_and_gluings
         surface = TranslationSurface_polygons_and_gluings(polygons,gluings)
-    elif surface.is_cone_surface():
+    elif is_rational_cone_surface_type(surface_type):
+        from flatsurf.geometry.rational_cone_surface import RationalConeSurface_polygons_and_gluings
+        surface = RationalConeSurface_polygons_and_gluings(polygons,gluings)
+    elif is_cone_surface_type(surface_type):
         from flatsurf.geometry.cone_surface import ConeSurface_polygons_and_gluings
         surface = ConeSurface_polygons_and_gluings(polygons,gluings)
-    surface._check()
+    #surface._check()
     return surface
+    
+def convert_to_type(surface, surface_type):
+    r"""
+    Converts the provided surface to one of the given type.
+    """
+    if surface_type == SurfaceType.SIMILARITY:
+        from flatsurf.geometry.similarity_surface import convert_to_similarity_surface
+        return convert_to_similarity_surface(surface)
+    if surface_type == SurfaceType.HALF_DILATION:
+        from flatsurf.geometry.half_dilation_surface import convert_to_half_dilation_surface
+        return convert_to_half_dilation_surface(surface)
+    if surface_type == SurfaceType.TRANSLATION:
+        from flatsurf.geometry.translation_surface import convert_to_translation_surface
+        return convert_to_translation_surface(surface)
+    raise NotImplementedException("Not implemented for surfaces of type %s."%surface_type_to_str(surface_type))
 
 #####
 ##### LABEL WALKER
