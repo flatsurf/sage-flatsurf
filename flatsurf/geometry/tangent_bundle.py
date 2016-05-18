@@ -69,7 +69,7 @@ class SimilaritySurfaceTangentVector:
                 self.polygon_label() == other.polygon_label() and \
                 self.point() == other.point() and \
                 self.vector() == other.vector()
-        return NotImplemented
+        raise NotImplemented
 
     def __ne__(self, other):
         return not self.__eq__(other)
