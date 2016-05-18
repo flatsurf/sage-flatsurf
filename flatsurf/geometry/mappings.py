@@ -7,8 +7,8 @@ from flatsurf.geometry.translation import TranslationGroup
 from sage.rings.infinity import Infinity
 from sage.structure.sage_object import SageObject
 
-class SimilaritySurfaceMapping:
-    r"""Abstract class for any mapping between similarity surfaces."""
+class SurfaceMapping:
+    r"""Abstract class for any mapping between surfaces."""
     
     def __init__(self, domain, codomain):
         self._domain=domain
@@ -35,11 +35,11 @@ class SimilaritySurfaceMapping:
         raise NotImplementedError
         
     def __mul__(self,other):
-        # Compose SimilaritySurfaceMappings
-        return SimilaritySurfaceMappingComposition(other,self)
+        # Compose SurfaceMappings
+        return SurfaceMappingComposition(other,self)
     
     def __rmul__(self,other):
-        return SimilaritySurfaceMappingComposition(self,other)
+        return SurfaceMappingComposition(self,other)
 
 
 class FinitelyPerturbedSimilaritySurface(SimilaritySurface_generic):
@@ -121,7 +121,7 @@ class BaseLabelChangedSimilaritySurface(SimilaritySurface_generic):
     def is_finite(self):
         return self._s.is_finite()
 
-class SimilaritySurfaceMappingComposition(SimilaritySurfaceMapping):
+class SurfaceMappingComposition(SurfaceMapping):
     r"""
     Compose two mappings.
     """
@@ -134,7 +134,7 @@ class SimilaritySurfaceMappingComposition(SimilaritySurfaceMapping):
             raise ValueError("Codomain of mapping1 must be equal to the domain of mapping2")
         self._m1=mapping1
         self._m2=mapping2
-        SimilaritySurfaceMapping.__init__(self, self._m1.domain(), self._m2.codomain())
+        SurfaceMapping.__init__(self, self._m1.domain(), self._m2.codomain())
 
     def push_vector_forward(self,tangent_vector):
         r"""Applies the mapping to the provided vector."""
@@ -144,12 +144,12 @@ class SimilaritySurfaceMappingComposition(SimilaritySurfaceMapping):
         r"""Applies the inverse of the mapping to the provided vector."""
         return self._m1.pull_vector_back(self._m2.pull_vector_back(tangent_vector))
 
-class IdentityMapping(SimilaritySurfaceMapping):
+class IdentityMapping(SurfaceMapping):
     r"""
     Construct an identity map between two `equal' surfaces.
     """
     def __init__(self,domain,codomain):
-        SimilaritySurfaceMapping.__init__(self, domain, codomain)
+        SurfaceMapping.__init__(self, domain, codomain)
 
     def push_vector_forward(self,tangent_vector):
         r"""Applies the mapping to the provided vector."""
@@ -210,7 +210,7 @@ class GL2RImageSurface(SimilaritySurface_generic):
     def is_finite(self):
         return self._s.is_finite()
 
-class GL2RMapping(SimilaritySurfaceMapping):
+class GL2RMapping(SurfaceMapping):
     r"""
     This class pushes a surface forward under a matrix. 
     
@@ -239,7 +239,7 @@ class GL2RMapping(SimilaritySurfaceMapping):
         codomain = GL2RImageSurface(s,m,ring = ring)
         self._m=m
         self._im=~m
-        SimilaritySurfaceMapping.__init__(self, s, codomain)
+        SurfaceMapping.__init__(self, s, codomain)
 
     def push_vector_forward(self,tangent_vector):
         r"""Applies the mapping to the provided vector."""
@@ -284,9 +284,9 @@ class ExtraLabel(SageObject):
     def __repr__(self):
         return "ExtraLabel("+str(self._label)+")"
 
-class SimilarityJoinPolygonsMapping(SimilaritySurfaceMapping):
+class SimilarityJoinPolygonsMapping(SurfaceMapping):
     r"""
-    Return a SimilaritySurfaceMapping joining two polygons together along the edge provided to the constructor.
+    Return a SurfaceMapping joining two polygons together along the edge provided to the constructor.
 
     EXAMPLES::
         sage: from flatsurf.geometry.polygon import Polygons
@@ -361,7 +361,7 @@ class SimilarityJoinPolygonsMapping(SimilaritySurfaceMapping):
         self._remove_map = t
         self._remove_map_derivative = dt
         self._glued_edge=e1
-        SimilaritySurfaceMapping.__init__(self, s, s2)
+        SurfaceMapping.__init__(self, s, s2)
 
     def glued_vertices(self):
         r"""
@@ -432,7 +432,7 @@ class SimilarityJoinPolygonsMapping(SimilaritySurfaceMapping):
                 tangent_vector.vector(), \
                 ring = ring)
 
-class SimilaritySplitPolygonsMapping(SimilaritySurfaceMapping):
+class SimilaritySplitPolygonsMapping(SurfaceMapping):
     r"""
     Class for cutting a polygon along a diagonal.
     
@@ -531,7 +531,7 @@ class SimilaritySplitPolygonsMapping(SimilaritySurfaceMapping):
         TG=TranslationGroup(s.base_ring())
         self._tp = TG(-s.polygon(p).vertex(v1))
         self._tnew_label = TG(-s.polygon(p).vertex(v2))
-        SimilaritySurfaceMapping.__init__(self, s, s2)
+        SurfaceMapping.__init__(self, s, s2)
 
     def push_vector_forward(self,tangent_vector):
         r"""Applies the mapping to the provided vector."""
@@ -608,7 +608,7 @@ class SimilaritySplitPolygonsMapping(SimilaritySurfaceMapping):
 
 def subdivide_a_polygon(s):
     r"""
-    Return a SimilaritySurfaceMapping which cuts one polygon along a diagonal or None if the surface is triangulated.
+    Return a SurfaceMapping which cuts one polygon along a diagonal or None if the surface is triangulated.
     """
     for l,poly in s.label_polygon_iterator():
         if poly.num_edges()>3:
@@ -617,7 +617,7 @@ def subdivide_a_polygon(s):
 
 
 def triangulation_mapping(s):
-    r"""Return a  SimilaritySurfaceMapping triangulating the provided surface.
+    r"""Return a  SurfaceMapping triangulating the provided surface.
     
     EXAMPLES::
         
@@ -649,7 +649,7 @@ def triangulation_mapping(s):
         if m2 is None:
             return m
         s1=m2.codomain()
-        m=SimilaritySurfaceMappingComposition(m,m2)
+        m=SurfaceMappingComposition(m,m2)
 
 def edge_needs_flip(s,p1,e1):
     r"""
@@ -674,7 +674,7 @@ def flip_edge_mapping(s,p1,e1):
     m1=SimilarityJoinPolygonsMapping(s,p1,e1)
     v1,v2=m1.glued_vertices()
     m2=SimilaritySplitPolygonsMapping(m1.codomain(), p1, (v1+1)%4, (v1+3)%4)
-    return SimilaritySurfaceMappingComposition(m1,m2)
+    return SurfaceMappingComposition(m1,m2)
 
 def one_delaunay_flip_mapping(s):
     r"""
@@ -718,14 +718,14 @@ def delaunay_triangulation_mapping(s):
     if m is None:
         m=m1
     else:
-        m=SimilaritySurfaceMappingComposition(m,m1)
+        m=SurfaceMappingComposition(m,m1)
     s1=m1.codomain()
     while True:
         m1=one_delaunay_flip_mapping(s1)
         if m1 is None:
             return m
         s1=m1.codomain()
-        m=SimilaritySurfaceMappingComposition(m,m1)
+        m=SurfaceMappingComposition(m,m1)
 
 def delaunay_decomposition_mapping(s):
     r"""
@@ -752,12 +752,12 @@ def delaunay_decomposition_mapping(s):
             ev2=m1.push_vector_forward(ev)
             p,e=ev2.edge_pointing_along()
             mtemp=SimilarityJoinPolygonsMapping(s2,p,e)
-            m1=SimilaritySurfaceMappingComposition(m1,mtemp)
+            m1=SurfaceMappingComposition(m1,mtemp)
             s2=m1.codomain()
         if m is None:
             return m1
         else:
-            return SimilaritySurfaceMappingComposition(m,m1)
+            return SurfaceMappingComposition(m,m1)
     return m
     
 def canonical_first_vertex(polygon):
@@ -777,7 +777,7 @@ def canonical_first_vertex(polygon):
             return v
     return best
    
-class CanonicalizePolygonsMapping(SimilaritySurfaceMapping):
+class CanonicalizePolygonsMapping(SurfaceMapping):
     r"""
     This is a mapping to a surface with the polygon vertices canonically determined.
     A canonical labeling is when the canonocal_first_vertex is the zero vertex.
@@ -815,7 +815,7 @@ class CanonicalizePolygonsMapping(SimilaritySurfaceMapping):
         self._cv=cv
         self._translations=translations
 
-        SimilaritySurfaceMapping.__init__(self, s, s2)
+        SurfaceMapping.__init__(self, s, s2)
 
     def push_vector_forward(self,tangent_vector):
         r"""Applies the mapping to the provided vector."""
@@ -835,7 +835,7 @@ class CanonicalizePolygonsMapping(SimilaritySurfaceMapping):
             tangent_vector.vector(), \
             ring = ring)
 
-class ReindexMapping(SimilaritySurfaceMapping):
+class ReindexMapping(SurfaceMapping):
     r"""
     Apply a dictionary to relabel the polygons.
     """
@@ -864,7 +864,7 @@ class ReindexMapping(SimilaritySurfaceMapping):
         self._f=f
         self._b=b
         
-        SimilaritySurfaceMapping.__init__(self, s, ReindexMapping.ReindexedSimilaritySurface(s,self))
+        SurfaceMapping.__init__(self, s, ReindexMapping.ReindexedSimilaritySurface(s,self))
 
     class ReindexedSimilaritySurface(SimilaritySurface_generic):
         def __init__(self, s, reindexmapping):
@@ -1002,7 +1002,7 @@ def canonicalize_translation_surface_mapping(s):
     m1=delaunay_decomposition_mapping(s)
     s2=m1.codomain()
     m2=CanonicalizePolygonsMapping(s2)
-    m=SimilaritySurfaceMappingComposition(m1,m2)
+    m=SurfaceMappingComposition(m1,m2)
     s2=m.codomain()
     it = s2.label_iterator()
     min_label = it.next()
@@ -1016,5 +1016,5 @@ def canonicalize_translation_surface_mapping(s):
     lw=smin.label_walker()
     lw.find_all_labels()
     m3=ReindexMapping(s2,lw.label_dictionary())
-    return SimilaritySurfaceMappingComposition(m,m3)
+    return SurfaceMappingComposition(m,m3)
     
