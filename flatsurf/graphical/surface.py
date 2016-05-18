@@ -85,7 +85,7 @@ class GraphicalSurface:
         """
         self._visible.add(label)
 
-    def make_all_visible(self, adjacent=True):
+    def make_all_visible(self, adjacent=True, limit=None):
         r"""
         Attempt to show all invisible polygons by walking over the surface.
 
@@ -93,7 +93,7 @@ class GraphicalSurface:
 
         - ``adjacent`` -- (default ``True``) whether the newly added polygon are
           set to be adjacent or not
-        
+        - ``limit`` -- (default ``None``) maximal number of additional polygons to make visible
         EXAMPLES::
 
             sage: from flatsurf import *
@@ -110,27 +110,56 @@ class GraphicalSurface:
             sage: g.plot()
             Graphics object consisting of 16 graphics primitives
         """
-        assert self._ss.is_finite()
-
-        if adjacent:
-            for l,poly in self._ss.label_polygon_iterator():
-                for e in range(poly.num_edges()):
-                    l2,e2 = self._ss.opposite_edge(l,e)
-                    if not self.is_visible(l2):
-                        self.make_adjacent_and_visible(l,e)
+        if limit is None:
+            assert self._ss.is_finite()
+            if adjacent:
+                for l,poly in self._ss.label_polygon_iterator():
+                    for e in range(poly.num_edges()):
+                        l2,e2 = self._ss.opposite_edge(l,e)
+                        if not self.is_visible(l2):
+                            self.make_adjacent_and_visible(l,e)
+            else:
+                from flatsurf.geometry.translation import TranslationGroup
+                T = TranslationGroup(self._ss.base_ring())
+                for l in self._ss.label_iterator():
+                    if not self.is_visible(l):
+                        poly = self._ss.polygon(l)
+                        sxmax = self.xmax()
+                        g = self.graphical_polygon(l)
+                        pxmin = g.xmin()
+                        t = T((self.xmax() - g.xmin() + 1,
+                            -(g.ymin()+g.ymax())/2))
+                        g.set_transformation(t)
+                        self.make_visible(l)
         else:
-            from flatsurf.geometry.translation import TranslationGroup
-            T = TranslationGroup(self._ss.base_ring())
-            for l in self._ss.label_iterator():
-                if not self.is_visible(l):
-                    poly = self._ss.polygon(l)
-                    sxmax = self.xmax()
-                    g = self.graphical_polygon(l)
-                    pxmin = g.xmin()
-                    t = T((self.xmax() - g.xmin() + 1,
-                        -(g.ymin()+g.ymax())/2))
-                    g.set_transformation(t)
-                    self.make_visible(l)
+            assert limit>0
+            if adjacent:
+                i = 0
+                for l,poly in self._ss.label_polygon_iterator():
+                    for e in range(poly.num_edges()):
+                        l2,e2 = self._ss.opposite_edge(l,e)
+                        if not self.is_visible(l2):
+                            self.make_adjacent_and_visible(l,e)
+                            i=i+1
+                            if i>=limit:
+                                return
+            else:
+                from flatsurf.geometry.translation import TranslationGroup
+                T = TranslationGroup(self._ss.base_ring())
+                i = 0
+                for l in self._ss.label_iterator():
+                    if not self.is_visible(l):
+                        poly = self._ss.polygon(l)
+                        sxmax = self.xmax()
+                        g = self.graphical_polygon(l)
+                        pxmin = g.xmin()
+                        t = T((self.xmax() - g.xmin() + 1,
+                            -(g.ymin()+g.ymax())/2))
+                        g.set_transformation(t)
+                        self.make_visible(l)
+                        i=i+1
+                        if i>=limit:
+                            return
 
     def get_surface(self):
         r"""
