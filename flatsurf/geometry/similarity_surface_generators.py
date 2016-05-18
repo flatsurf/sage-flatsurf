@@ -59,6 +59,9 @@ class InfiniteStaircase(TranslationSurface_generic):
         else:
             return p-1,(e+2)%4
 
+    def is_finite(self):
+        return False
+        
 class EInfinity(TranslationSurface_generic):
     r"""
     The surface based on the $E_\infinity$ graph.
@@ -200,6 +203,9 @@ class EInfinity(TranslationSurface_generic):
                 return -p,(e+2)%4
             else:
                 return 1-p,(e+2)%4
+
+    def is_finite(self):
+        return False
 
 class TFractal(TranslationSurface_generic):
     r"""
@@ -375,6 +381,9 @@ class TFractal(TranslationSurface_generic):
 
     def base_label(self):
         return self.polygon_labels()._cartesian_product_of_elements((self._words(''), 0))
+
+    def is_finite(self):
+        return False
 
 class SimilaritySurfaceGenerators:
     r"""
