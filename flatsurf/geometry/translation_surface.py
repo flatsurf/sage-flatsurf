@@ -1,13 +1,20 @@
 r"""
 Translation Surfaces.
 """
-from flatsurf.geometry.cone_surface import ConeSurface_generic, ConeSurface_polygons_and_gluings
+from flatsurf.geometry.cone_surface import (
+    ConeSurface_generic, 
+    ConeSurface_polygons_and_gluings, 
+    ConeSurface_wrapper)
+from flatsurf.geometry.half_dilation_surface import(
+    HalfDilationSurface_generic, 
+    HalfDilationSurface_polygons_and_gluings,
+    HalfDilationSurface_wrapper)
 
 from flatsurf.geometry.surface import SurfaceType
 
 from sage.matrix.constructor import matrix, identity_matrix
 
-class TranslationSurface_generic(ConeSurface_generic):
+class TranslationSurface_generic(ConeSurface_generic, HalfDilationSurface_generic):
     r"""
     A surface with a flat metric and conical singularities (not necessarily
     multiple angle of pi or 2pi).
@@ -64,10 +71,60 @@ class TranslationSurface_generic(ConeSurface_generic):
         from sage.rings.integer_ring import ZZ
         return AbelianStratum([ZZ(a-1) for a in self.angles()])
 
+    angles = ConeSurface_generic.angles
+
+    def canonicalize_mapping(self):
+        r"""
+        Return a SurfaceMapping canonicalizing this translation surface.
+        """
+        from flatsurf.geometry.mappings import canonicalize_translation_surface_mapping, IdentityMapping
+        mapping = canonicalize_translation_surface_mapping(self)
+        new_codomain = convert_to_translation_surface(mapping.codomain())
+        identity = IdentityMapping(mapping.codomain(), new_codomain)
+        return identity*mapping
+        
+    def canonicalize(self):
+        r"""
+        Return a canonical version of this translation surface.
+        
+        EXAMPLES::
+            sage: # We will check if an element lies in the Veech group
+            sage: from flatsurf.geometry.polygon import Polygons
+            sage: K.<sqrt2> = NumberField(x**2 - 2, embedding=1.414)
+            sage: octagon = Polygons(K)([(1,0),(sqrt2/2, sqrt2/2),(0, 1),(-sqrt2/2, sqrt2/2),(-1,0),(-sqrt2/2, -sqrt2/2),(0, -1),(sqrt2/2, -sqrt2/2)])
+            sage: square1 = Polygons(K)([(1,0),(0,1),(-1,0),(0,-1)])
+            sage: square2 = Polygons(K)([(sqrt2/2, sqrt2/2),(-sqrt2/2, sqrt2/2),(-sqrt2/2, -sqrt2/2),(sqrt2/2, -sqrt2/2)])
+            sage: gluings=[((1,i),(0, (2*i+4)%8 )) for i in range(4)]
+            sage: for i in range(4):
+            ...       gluings.append( ((2,i), (0, (2*i+5)%8 )) )
+            sage: from flatsurf.geometry.surface import surface_from_polygons_and_gluings
+            sage: s=surface_from_polygons_and_gluings([octagon,square1,square2],gluings)
+            sage: print s
+            Translation surface built from 3 polygons
+            sage: mat=Matrix([[1,2+sqrt2],[0,1]])
+            sage: s.canonicalize()==(mat*s).canonicalize()
+            True
+        """
+        return self.canonicalize_mapping().codomain()
+
 class TranslationSurface_polygons_and_gluings(
-        TranslationSurface_generic,
-        ConeSurface_polygons_and_gluings):
+        HalfDilationSurface_polygons_and_gluings,
+        TranslationSurface_generic):
     pass
+
+class TranslationSurface_wrapper(
+        HalfDilationSurface_wrapper,
+        TranslationSurface_generic):
+    pass
+
+def convert_to_translation_surface(surface):
+    r"""
+    Returns a similarity surface version of the provided surface.
+    """
+    if surface.is_finite():
+        return TranslationSurface_polygons_and_gluings(surface)
+    else:
+        return TranslationSurface_wrapper(surface)
 
 class MinimalTranslationCover(TranslationSurface_generic):
     r"""
