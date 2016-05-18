@@ -8,9 +8,27 @@ Polygons
    :members:
    :undoc-members:
 
-Surfaces
-========
+Surface Basics
+==============
+.. automodule:: flatsurf.geometry.surface
+   :members:
+   :undoc-members:
+
+Similarity Surfaces
+===================
 .. automodule:: flatsurf.geometry.similarity_surface
+   :members:
+   :undoc-members:
+
+Cone Surfaces
+=============
+.. automodule:: flatsurf.geometry.cone_surface
+   :members:
+   :undoc-members:
+
+Translation Surfaces
+====================
+.. automodule:: flatsurf.geometry.translation_surface
    :members:
    :undoc-members:
 
@@ -32,6 +50,12 @@ Similarities and Translations
 Tangent Bundle
 ==============
 .. automodule:: flatsurf.geometry.tangent_bundle
+   :members:
+   :undoc-members:
+
+Maps between Surfaces
+=====================
+.. automodule:: flatsurf.geometry.mappings
    :members:
    :undoc-members:
 
