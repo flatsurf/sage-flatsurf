@@ -35,6 +35,9 @@ class InfiniteStaircase(TranslationSurface_generic):
         from sage.rings.rational_field import QQ
         return QQ
 
+    def base_label(self):
+        return ZZ.zero()
+
     def polygon(self, lab):
         r"""
         Return the polygon labeled by ``lab``.
@@ -107,6 +110,9 @@ class EInfinity(TranslationSurface_generic):
         Return the rational field.
         """
         return self._field
+
+    def base_label(self):
+        return ZZ.zero()
 
     @cached_method
     def get_white(self,n):
@@ -252,6 +258,9 @@ class TFractal(TranslationSurface_generic):
     def _repr_(self):
         return "The T-fractal surface with parameters w=%s, r=%s, h1=%s, h2=%s"%(
                 self._w, self._r, self._h1, self._h2)
+
+    def base_label(self):
+        return ZZ.zero()
 
     def base_ring(self):
         return self._field
@@ -410,7 +419,7 @@ class SimilaritySurfaceGenerators:
 
 
     @staticmethod
-    def billard(P):
+    def billiard(P):
         r"""
         Return the billiard in the polygon ``P``.
 
@@ -418,14 +427,14 @@ class SimilaritySurfaceGenerators:
 
             sage: from flatsurf import *
             sage: P = polygons(vertices=[(0,0), (1,0), (0,1)])
-            sage: Q = similarity_surfaces.billard(P)
+            sage: Q = similarity_surfaces.billiard(P)
             sage: Q
             Rational cone surface built from 2 polygons
             sage: Q.minimal_translation_cover()
             Translation surface built from 8 polygons
         """
         from flatsurf.geometry.polygon import polygons
-        from flatsurf.geometry.similarity_surface import SimilaritySurface_polygons_and_gluings
+        from flatsurf.geometry.surface import surface_from_polygons_and_gluings
         from sage.matrix.constructor import matrix
 
         n = P.num_edges()
@@ -434,7 +443,7 @@ class SimilaritySurfaceGenerators:
 
         glue = {(0,i): (1,n-i-1) for i in range(n)}
         glue.update({(1,i): (0,n-i-1) for i in range(P.num_edges())})
-        return SimilaritySurface_polygons_and_gluings((P,P), glue)
+        return surface_from_polygons_and_gluings((P,P), glue)
 
     @staticmethod
     def right_angle_triangle(w,h):
@@ -449,7 +458,7 @@ class SimilaritySurfaceGenerators:
         from flatsurf.geometry.polygon import Polygons
         from sage.modules.free_module import VectorSpace
         from sage.modules.free_module_element import vector
-        from flatsurf.geometry.similarity_surface import SimilaritySurface_polygons_and_gluings
+        from flatsurf.geometry.surface import surface_from_polygons_and_gluings
 
         F = Sequence([w,h]).universe()
         if not F.is_field():
@@ -460,7 +469,7 @@ class SimilaritySurfaceGenerators:
         p2 = P([V((0,h)),V((-w,-h)),V((w,0))])
         ps = (p1,p2)
         glue = {(0,0):(1,2),(0,1):(1,1),(0,2):(1,0)}
-        return SimilaritySurface_polygons_and_gluings(ps,glue)
+        return surface_from_polygons_and_gluings(ps,glue)
 
     def __call__(self, *args, **kwds):
         from flatsurf.geometry.similarity_surface import SimilaritySurface_polygons_and_gluings
