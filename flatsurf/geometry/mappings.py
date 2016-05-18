@@ -186,7 +186,7 @@ class GL2RMapping(SimilaritySurfaceMapping):
         sage: from flatsurf.geometry.polygon import Polygons
         sage: p = Polygons(K)([(1,0),(sqrt2/2, sqrt2/2),(0, 1),(-sqrt2/2, sqrt2/2),(-1,0),(-sqrt2/2, -sqrt2/2),(0, -1),(sqrt2/2, -sqrt2/2)])
         sage: gluings=[((0,i),(0,i+4)) for i in range(4)]
-        sage: from flatsurf.geometry.similarity_surface import TranslationSurface_polygons_and_gluings
+        sage: from flatsurf.geometry.translation_surface import TranslationSurface_polygons_and_gluings
         sage: s=TranslationSurface_polygons_and_gluings([p], gluings)
         sage: from flatsurf.geometry.mappings import GL2RMapping
         sage: mat=Matrix([[2,1],[1,1]])
@@ -261,7 +261,7 @@ class SimilarityJoinPolygonsMapping(SimilaritySurfaceMapping):
         sage: tri0=P([(1,0),(0,1),(-1,-1)])
         sage: tri1=P([(-1,0),(0,-1),(1,1)])
         sage: gluings=[((0,0),(1,0)),((0,1),(1,1)),((0,2),(1,2))]
-        sage: from flatsurf.geometry.similarity_surface import TranslationSurface_polygons_and_gluings
+        sage: from flatsurf.geometry.translation_surface import TranslationSurface_polygons_and_gluings
         sage: s=TranslationSurface_polygons_and_gluings([tri0,tri1], gluings)
         sage: from flatsurf.geometry.mappings import *
         sage: m=SimilarityJoinPolygonsMapping(s,0,2)
@@ -409,7 +409,7 @@ class SimilaritySplitPolygonsMapping(SimilaritySurfaceMapping):
         sage: from flatsurf.geometry.polygon import Polygons
         sage: p = Polygons(K)([(1,0),(sqrt2/2, sqrt2/2),(0, 1),(-sqrt2/2, sqrt2/2),(-1,0),(-sqrt2/2, -sqrt2/2),(0, -1),(sqrt2/2, -sqrt2/2)])
         sage: gluings=[((0,i),(0,i+4)) for i in range(4)]
-        sage: from flatsurf.geometry.similarity_surface import TranslationSurface_polygons_and_gluings
+        sage: from flatsurf.geometry.translation_surface import TranslationSurface_polygons_and_gluings
         sage: s=TranslationSurface_polygons_and_gluings([p], gluings)
         sage: from flatsurf.geometry.mappings import SimilaritySplitPolygonsMapping
         sage: m = SimilaritySplitPolygonsMapping(s,0,0,2)
@@ -592,7 +592,7 @@ def triangulation_mapping(s):
         sage: from flatsurf.geometry.polygon import Polygons
         sage: p = Polygons(K)([(1,0),(sqrt2/2, sqrt2/2),(0, 1),(-sqrt2/2, sqrt2/2),(-1,0),(-sqrt2/2, -sqrt2/2),(0, -1),(sqrt2/2, -sqrt2/2)])
         sage: gluings=[((0,i),(0,i+4)) for i in range(4)]
-        sage: from flatsurf.geometry.similarity_surface import TranslationSurface_polygons_and_gluings
+        sage: from flatsurf.geometry.translation_surface import TranslationSurface_polygons_and_gluings
         sage: s=TranslationSurface_polygons_and_gluings([p], gluings)
         sage: from flatsurf.geometry.mappings import *
         sage: m=triangulation_mapping(s)
@@ -949,7 +949,7 @@ def canonicalize_translation_surface_mapping(s):
         sage: gluings=[((1,i),(0, (2*i+4)%8 )) for i in range(4)]
         sage: for i in range(4):
         ...       gluings.append( ((2,i), (0, (2*i+1+4)%8 )) )
-        sage: from flatsurf.geometry.similarity_surface import TranslationSurface_polygons_and_gluings
+        sage: from flatsurf.geometry.translation_surface import TranslationSurface_polygons_and_gluings
         sage: s=TranslationSurface_polygons_and_gluings([octagon,square1,square2], gluings)
         sage: from flatsurf.geometry.mappings import *
         sage: mat=Matrix([[1,2+sqrt2],[0,1]])
