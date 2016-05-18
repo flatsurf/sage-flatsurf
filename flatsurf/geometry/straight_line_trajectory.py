@@ -155,7 +155,7 @@ class StraightLineTrajectory:
         INPUT:
 
         - ``alphabet`` -- an optional dictionary ``(lab,nb) -> letter``. If some
-          labels are avoided then this crossing is simply ignored.
+          labels are avoided then these crossings are ignored.
 
         EXAMPLES::
 
@@ -181,6 +181,17 @@ class StraightLineTrajectory:
             sage: l.flow(10); l.flow(-10)
             sage: print ''.join(l.coding(alphabet))
             aabaabaababaabaabaaba
+
+        For a closed trajectory, the last label (corresponding also to the
+        starting point) is not considered::
+
+            sage: v = t.tangent_vector(0, (1/5,1/7), (1,1))
+            sage: l = v.straight_line_trajectory()
+            sage: l.flow(10)
+            sage: l.is_closed()
+            True
+            sage: l.coding(alphabet)
+            ['a', 'b']
 
         Check that the saddle connections that are obtained in the torus get the
         expected coding::
@@ -220,7 +231,8 @@ class StraightLineTrajectory:
 
         s = self._segments[-1]
         end = s.end()
-        if end._position._position_type == end._position.EDGE_INTERIOR:
+        if end._position._position_type == end._position.EDGE_INTERIOR and \
+           end.invert() != start:
             p = s.polygon_label()
             e = end._position.get_edge()
             lab = (p,e) if alphabet is None else alphabet.get((p,e))
