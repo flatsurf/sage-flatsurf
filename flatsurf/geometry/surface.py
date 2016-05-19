@@ -214,10 +214,16 @@ def convert_to_type(surface, surface_type):
     if surface_type == SurfaceType.HALF_DILATION:
         from flatsurf.geometry.half_dilation_surface import convert_to_half_dilation_surface
         return convert_to_half_dilation_surface(surface)
+    if surface_type == SurfaceType.CONE:
+        from flatsurf.geometry.cone_surface import convert_to_cone_surface
+        return convert_to_cone_surface(surface)
+    if surface_type == SurfaceType.RATIONAL_CONE:
+        from flatsurf.geometry.rational_cone_surface import convert_to_rational_cone_surface
+        return convert_to_rational_cone_surface(surface)
     if surface_type == SurfaceType.TRANSLATION:
         from flatsurf.geometry.translation_surface import convert_to_translation_surface
         return convert_to_translation_surface(surface)
-    raise NotImplementedException("Not implemented for surfaces of type %s."%surface_type_to_str(surface_type))
+    raise NotImplementedError("Not implemented for surfaces of type %s."%surface_type_to_str(surface_type))
 
 #####
 ##### LABEL WALKER
@@ -261,6 +267,10 @@ class LabelWalker:
         self._s=surface
         self._labels=[self._s.base_label()]
         self._label_dict={self._s.base_label():0}
+        
+        # This will stores an edge to move through to get to a polygon closer to the base_polygon
+        self._label_edge_back = {self._s.base_label():None} 
+        
         self._walk=deque()
         self._walk.append((self._s.base_label(),0))
     
@@ -269,6 +279,28 @@ class LabelWalker:
         Return a dictionary mapping labels to integers which gives a canonical order on labels.
         """
         return self._label_dict
+    
+    def edge_back(self, label, limit=None):
+        r"""
+        Return the `canonical' edge to walk through to get closer to the base_label, 
+        or None if label already is the base_label.
+        
+        Remark: This could be slow on infinite surfaces!
+        """
+        try:
+            return self._label_edge_back[label]
+        except KeyError:
+            if limit is None:
+                if not self._s.is_finite():
+                    limit=1000
+                else:
+                    limit=self._s.num_polygons()
+            for i in xrange(limit):
+                new_label=self.find_a_new_label()
+                if label == new_label:
+                    return self._label_edge_back[label]
+        # Maybe the surface is not connected?
+        raise KeyError("Unable to find label %s. Are you sure the surface is connected?"%(label))
     
     def __iter__(self):
         return LabelWalker.LabelWalkerIterator(self)
@@ -307,6 +339,7 @@ class LabelWalker:
                 self._labels.append(opposite_label)
                 self._label_dict[opposite_label]=n
                 self._walk.append((opposite_label,0))
+                self._label_edge_back[opposite_label]=opposite_edge
                 return opposite_label
         return None
 
@@ -342,4 +375,5 @@ class LabelWalker:
         """
         return self._label_dict[label]
 
-
+    def surface(self):
+        return self._s
