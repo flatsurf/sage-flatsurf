@@ -517,6 +517,80 @@ class SimilaritySurface_generic(SageObject):
     def plot(self, *args, **kwds):
         return self.surface_plot(*args, **kwds).plot()
 
+    def minimize_monodromy_mapping(self):
+        r"""
+        Return a mapping from this surface to a similarity surface
+        with a minimal monodromy group. 
+        Note that this may be slow for infinite surfaces.
+        
+        EXAMPLES::
+            sage: from flatsurf.geometry.polygon import Polygons
+            sage: K.<sqrt2> = NumberField(x**2 - 2, embedding=1.414)
+            sage: octagon = Polygons(K)([(1,0),(sqrt2/2, sqrt2/2),(0, 1),(-sqrt2/2, sqrt2/2),(-1,0),(-sqrt2/2, -sqrt2/2),(0, -1),(sqrt2/2, -sqrt2/2)])
+            sage: square = Polygons(K)([(1,0),(0,1),(-1,0),(0,-1)])
+            sage: gluings = [((0,i),(1+(i%2),i//2)) for i in range(8)]
+            sage: from flatsurf.geometry.surface import surface_from_polygons_and_gluings
+            sage: s=surface_from_polygons_and_gluings([octagon,square,square],gluings)
+            sage: print s
+            Rational cone surface built from 3 polygons
+            sage: m=s.minimize_monodromy_mapping()
+            sage: s2=m.codomain()
+            sage: print s2
+            Translation surface built from 3 polygons
+            sage: v=s.tangent_vector(2,(0,0),(1,0))
+            sage: print m.push_vector_forward(v)
+            SimilaritySurfaceTangentVector in polygon 2 based at (0, 0) with vector (-1/2*sqrt2, -1/2*sqrt2)
+            sage: w=s2.tangent_vector(2,(0,0),(0,-1))
+            sage: print m.pull_vector_back(w)
+            SimilaritySurfaceTangentVector in polygon 2 based at (0, 0) with vector (1/2*sqrt2, 1/2*sqrt2)
+        """
+        lw = self.label_walker()
+        class MatrixFunction:
+            def __init__(self, lw):
+                self._lw=lw
+                from sage.matrix.constructor import identity_matrix
+                self._d = {lw.surface().base_label():
+                    identity_matrix(lw.surface().base_ring(), n=2)}
+            def __call__(self, label):
+                try:
+                    return self._d[label]
+                except KeyError:
+                    e = self._lw.edge_back(label)
+                    label2,e2 = self._lw.surface().opposite_edge(label,e)
+                    m=self._lw.surface().edge_matrix(label,e) * self(label2)
+                    self._d[label]=m
+                    return m
+        mf = MatrixFunction(lw)
+        from flatsurf.geometry.mappings import (
+            MatrixListDeformedSurfaceMapping,
+            IdentityMapping)
+        mapping = MatrixListDeformedSurfaceMapping(self, mf)
+        surface_type = mapping.codomain().compute_surface_type_from_gluings(limit=100)
+        new_codomain = convert_to_type(mapping.codomain(),surface_type)
+        identity = IdentityMapping(mapping.codomain(), new_codomain)
+        return identity * mapping
+    
+    def minimal_monodromy_surface(self):
+        r"""
+        Return an equivalent similarity surface with minimal monodromy.
+        Note that this may be slow for infinite surfaces.
+        
+        EXAMPLES::
+            sage: from flatsurf.geometry.polygon import Polygons
+            sage: K.<sqrt2> = NumberField(x**2 - 2, embedding=1.414)
+            sage: octagon = Polygons(K)([(1,0),(sqrt2/2, sqrt2/2),(0, 1),(-sqrt2/2, sqrt2/2),(-1,0),(-sqrt2/2, -sqrt2/2),(0, -1),(sqrt2/2, -sqrt2/2)])
+            sage: square = Polygons(K)([(1,0),(0,1),(-1,0),(0,-1)])
+            sage: gluings = [((0,i),(1+(i%2),i//2)) for i in range(8)]
+            sage: from flatsurf.geometry.surface import surface_from_polygons_and_gluings
+            sage: s=surface_from_polygons_and_gluings([octagon,square,square],gluings)
+            sage: print s
+            Rational cone surface built from 3 polygons
+            sage: s2=s.minimal_monodromy_surface()
+            sage: print s2
+            Translation surface built from 3 polygons
+        """
+        return self.minimize_monodromy_mapping().codomain()
+        
     def __eq__(self, other):
         r"""
         Implements a naive notion of equality where two finite surfaces are equal if:
