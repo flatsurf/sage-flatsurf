@@ -657,6 +657,7 @@ class SimilaritySurface_polygons_and_gluings(SimilaritySurface_generic):
           ((p0,e0),(p1,e1)) or
 
         EXAMPLES::
+
             sage: from flatsurf.geometry.polygon import Polygons
             sage: K.<sqrt2> = NumberField(x**2 - 2, embedding=1.414)
             sage: octagon = Polygons(K)([(1,0),(sqrt2/2, sqrt2/2),(0, 1),(-sqrt2/2, sqrt2/2),(-1,0),(-sqrt2/2, -sqrt2/2),(0, -1),(sqrt2/2, -sqrt2/2)])
@@ -672,6 +673,20 @@ class SimilaritySurface_polygons_and_gluings(SimilaritySurface_generic):
             True
             sage: hash(s2)==hash(s)
             True
+
+        TESTS::
+
+            sage: from flatsurf import *
+            sage: t1 = polygons(vertices=[(0,0), (1,0), (1,1)])
+            sage: t2 = polygons(vertices=[(0,0), (1,1), (0,1)])
+            sage: s = similarity_surfaces([t1,t2], {(0,0):(1,1), (0,1):(1,2), (0,2):(1,0)})
+            sage: s.plot(edge_labels='number')
+            Graphics object consisting of 15 graphics primitives
+            sage: translation_surfaces.chamanara(1/2).plot()
+            Graphics object consisting of 129 graphics primitives
+            sage: s = similarity_surfaces([t1,t2], {(0,0):(1,1), (0,1):(1,2), (0,2):(1,0)})
+            sage: s.plot(edge_labels='number')
+            Graphics object consisting of 15 graphics primitives
         """
         if len(args)==2:
             polygons=args[0]
@@ -730,6 +745,20 @@ class SimilaritySurface_polygons_and_gluings(SimilaritySurface_generic):
         else:
             raise ValueError("Can only be called with one or two arguments.")
     
+        # display everything by default
+        adj = []
+        todo = [self.base_label()]
+        labs = set(self.polygon_labels())
+        labs.remove(self.base_label())
+        while todo:
+            p1 = todo.pop()
+            for e1 in range(self.polygon(p1).num_edges()):
+                p2,e2 = self.opposite_edge(p1,e1)
+                if p2 in labs:
+                    labs.remove(p2)
+                    adj.append((p1,e1))
+        self._plot_options = {'adjacencies': adj}
+
     def is_finite(self):
         r"""
         Return whether or not the surface is finite.
