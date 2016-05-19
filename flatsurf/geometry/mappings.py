@@ -153,14 +153,7 @@ class IdentityMapping(SurfaceMapping):
 
     def push_vector_forward(self,tangent_vector):
         r"""Applies the mapping to the provided vector."""
-        return self._m2.push_vector_forward(self._m1.push_vector_forward(tangent_vector))
-
-    def pull_vector_back(self,tangent_vector):
-        r"""Applies the inverse of the mapping to the provided vector."""
-        return self._m1.pull_vector_back(self._m2.pull_vector_back(tangent_vector))
-
-    def push_vector_forward(self,tangent_vector):
-        r"""Applies the mapping to the provided vector."""
+        ring = tangent_vector.bundle().base_ring()
         return self._codomain.tangent_vector( \
             tangent_vector.polygon_label(), \
             tangent_vector.point(), \
@@ -170,6 +163,7 @@ class IdentityMapping(SurfaceMapping):
 
     def pull_vector_back(self,tangent_vector):
         r"""Applies the pullback mapping to the provided vector."""
+        ring = tangent_vector.bundle().base_ring()
         return self._domain.tangent_vector( \
             tangent_vector.polygon_label(), \
             tangent_vector.point(), \
@@ -254,6 +248,64 @@ class GL2RMapping(SurfaceMapping):
                 tangent_vector.polygon_label(), \
                 self._im*tangent_vector.point(), \
                 self._im*tangent_vector.vector())
+
+class MatrixListDeformedSurface(SimilaritySurface_generic):
+    r"""
+    Apply a different matrix to each polygon in the surface. 
+    Here matrix_function is a python function mapping labels to 2x2 matrices with positive determinant.
+    """
+    def __init__(self, surface, matrix_function, ring=None):
+        self._s=surface
+        self._m=matrix_function
+        if ring is None:
+            self._base_ring = self._s.base_ring()
+        else:
+            self._base_ring=ring
+        self._P=Polygons(self._base_ring)
+
+    def base_ring(self):
+        return self._base_ring
+
+    def base_label(self):
+        return self._s.base_label()
+
+    def polygon(self, lab):
+        p = self._s.polygon(lab)
+        edges = [ self._m(lab) * p.edge(e) for e in xrange(p.num_edges())]
+        return self._P(edges)
+
+    def opposite_edge(self, p, e):
+        return self._s.opposite_edge(p,e)
+
+    def is_finite(self):
+        return self._s.is_finite()
+
+class MatrixListDeformedSurfaceMapping(SurfaceMapping):
+    r"""
+    This mapping applies a possibly different linear matrix to each polygon.
+    The matrix is determined by the matrix_function which should be a python
+    object.
+    """
+    def __init__(self, s, matrix_function, ring=None):
+        codomain = MatrixListDeformedSurface(s,matrix_function,ring = ring)
+        self._m=matrix_function
+        SurfaceMapping.__init__(self, s, codomain)
+
+    def push_vector_forward(self,tangent_vector):
+        label = tangent_vector.polygon_label()
+        m = self._m(label)
+        return self.codomain().tangent_vector(
+                label, \
+                m*tangent_vector.point(), \
+                m*tangent_vector.vector())
+
+    def pull_vector_back(self,tangent_vector):
+        label = tangent_vector.polygon_label()
+        im = ~self._m(label)
+        return self.domain().tangent_vector(
+                label, \
+                im*tangent_vector.point(), \
+                im*tangent_vector.vector())
 
 class ExtraLabel(SageObject):
     r""" 
