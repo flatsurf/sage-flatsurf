@@ -24,24 +24,28 @@ EXAMPLES::
 
 import operator
 
+from sage.misc.cachefunc import cached_method
+
 from sage.structure.element import Element
 from sage.structure.parent import Parent
+from sage.structure.unique_representation import UniqueRepresentation
+
 from sage.categories.sets_cat import Sets
 from sage.categories.fields import Fields
-from sage.misc.cachefunc import cached_method
+from sage.categories.action import Action
+
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
 from sage.rings.real_mpfr import RR
 from sage.rings.qqbar import AA
 from sage.modules.free_module import VectorSpace
-from sage.categories.action import Action
 
 from flatsurf.geometry.matrix_2x2 import angle
 
 # we implement action of GL(2,K) on polygons
 
-ZZ_0=ZZ.zero()
-ZZ_2=ZZ(2)
+ZZ_0 = ZZ.zero()
+ZZ_2 = ZZ(2)
 
 def wedge_product(v,w):
     return v[0]*w[1]-v[1]*w[0]
@@ -168,7 +172,7 @@ class PolygonPosition:
             if edge is None:
                 raise ValueError("Constructed edge position with no specified edge.")
             self._edge=edge
-    
+
     def __repr__(self):
         if self.is_outside():
             return "point positioned outside polygon"
@@ -182,7 +186,7 @@ class PolygonPosition:
         return self._position_type == PolygonPosition.OUTSIDE
 
     def is_inside(self):
-        r""" 
+        r"""
         Return true if the position is not outside the closure of the polygon
         """
         return bool(self._position_type)
@@ -211,7 +215,7 @@ class PolygonPosition:
         if not self.is_in_edge_interior():
             raise ValueError("Asked for edge when not in edge interior.")
         return self._edge
-    
+
     def get_vertex(self):
         if not self.is_vertex():
             raise ValueError("Asked for vertex when not a vertex.")
@@ -223,7 +227,7 @@ class ConvexPolygon(Element):
     """
     def __init__(self, parent, vertices):
         r"""
-        To construct the polygon you should either use a list of edge vectors 
+        To construct the polygon you should either use a list of edge vectors
         or a list of vertices. Using both will result in a ValueError. The polygon
         needs to be convex with postively oriented boundary.
 
@@ -257,9 +261,7 @@ class ConvexPolygon(Element):
             sage: p1 == p3
             False
         """
-        if not isinstance(other, ConvexPolygon):
-            raise TypeError
-        return self._v == other._v
+        return isinstance(other, ConvexPolygon) and self._v == other._v
 
     def __ne__(self, other):
         r"""
@@ -275,9 +277,7 @@ class ConvexPolygon(Element):
             sage: p1 != p3
             True
         """
-        if not isinstance(other, ConvexPolygon):
-            raise TypeError
-        return self._v != other._v
+        return not isinstance(other, ConvexPolygon) or self._v != other._v
 
     def is_strictly_convex(self):
         r"""
@@ -294,7 +294,6 @@ class ConvexPolygon(Element):
         for i in range(self.num_edges()):
             if wedge_product(self.edge(i), self.edge(i+1)).is_zero():
                 return False
-
         return True
 
     def _convexity_check(self):
@@ -326,7 +325,6 @@ class ConvexPolygon(Element):
                 raise ValueError("not convex")
             if is_opposite_direction(self.edge(i), self.edge(i+1)):
                 raise ValueError("degenerate polygon")
-
 
     def base_ring(self):
         return self.parent().base_ring()
@@ -419,7 +417,7 @@ class ConvexPolygon(Element):
             if w == 0:
                 # Lies on the line through edge i!
                 n=self.num_edges()
-                # index and edge after v1 
+                # index and edge after v1
                 ip1=(i+1)%n
                 e=self.edge(ip1)
                 w=wedge_product(e,point-v1)
@@ -478,7 +476,7 @@ class ConvexPolygon(Element):
                 t=ret[1]
                 #print "s="+str(s)+" and t="+str(t)
                 # What if the matrix is non-invertible?
-                
+
                 # Answer: You'll get a ZeroDivisionError which means that the edge is parallel
                 # to the direction.
 
@@ -499,7 +497,7 @@ class ConvexPolygon(Element):
             except ZeroDivisionError:
                 # Here we know the edge and the direction are parallel
                 if wedge_product(e,point-v0)==0:
-                    # In this case point lies on the edge. 
+                    # In this case point lies on the edge.
                     # We need to work out which direction to move in.
                     if (point-v0).is_zero() or is_same_direction(e,point-v0):
                         # exits through vertex i+1
@@ -664,15 +662,47 @@ class ConvexPolygon(Element):
         return total/ZZ_2
 
 
-class ConvexPolygons(Parent):
+class ConvexPolygons(UniqueRepresentation, Parent):
+    r"""
+    The set of convex polygons with a fixed base field.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.polygon import ConvexPolygons
+        sage: C = ConvexPolygons(QQ)
+        sage: C(vertices=[(0,0), (2,0), (1,1)])
+        Polygon: (0, 0), (2, 0), (1, 1)
+        sage: C(edges=[(1,0), (0,1), (-1,0), (0,-1)])
+        Polygon: (0, 0), (1, 0), (1, 1), (0, 1)
+
+    TESTS::
+
+        sage: ConvexPolygons(QQ) is ConvexPolygons(QQ)
+        True
+        sage: TestSuite(ConvexPolygons(QQ)).run()
+        sage: TestSuite(ConvexPolygons(QQbar)).run()
+    """
     Element = ConvexPolygon
 
     def __init__(self, field):
         Parent.__init__(self, category=Sets())
+        if not field in Fields():
+            raise ValueError("'field' must be a field")
         self._field = field
         self.register_action(MatrixActionOnPolygons(self))
 
     def has_coerce_map_from(self, other):
+        r"""
+        TESTS::
+
+            sage: from flatsurf.geometry.polygon import ConvexPolygons
+            sage: C1 = ConvexPolygons(QQ)
+            sage: C2 = ConvexPolygons(AA)
+            sage: C2.has_coerce_map_from(C1)
+            True
+            sage: C1.has_coerce_map_from(C2)
+            False
+        """
         return isinstance(other, Polygons) and self.field().has_coerce_map_from(other.field())
 
     def _an_element_(self):
@@ -689,34 +719,69 @@ class ConvexPolygons(Parent):
     @cached_method
     def vector_space(self):
         r"""
-        Return the vector space in which self naturally embeds.
+        Return the vector space in which this polygon embeds.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.polygon import ConvexPolygons
+            sage: C = ConvexPolygons(QQ)
+            sage: C.vector_space()
+            Vector space of dimension 2 over Rational Field
         """
         from sage.modules.free_module import VectorSpace
         return VectorSpace(self.base_ring(), 2)
 
     def _element_constructor_(self, *args, **kwds):
-        vertices = kwds.get('vertices')
-        edges = kwds.get('edges')
+        r"""
+        TESTS::
 
-        if vertices is None:
-            if edges is None:
-                if not args:
-                    raise ValueError("need something!")
-                if len(args) == 1:
-                    edges = args[0]
+            sage: from flatsurf.geometry.polygon import ConvexPolygons
+
+            sage: C = ConvexPolygons(QQ)
+            sage: p = C(vertices=[(0,0),(1,0),(2,0),(1,1)])
+            sage: p
+            Polygon: (0, 0), (1, 0), (2, 0), (1, 1)
+            sage: C(p) is p
+            True
+
+            sage: D = ConvexPolygons(QQbar)
+            sage: D(p)
+            Polygon: (0, 0), (1, 0), (2, 0), (1, 1)
+            sage: D(vertices=p.vertices())
+            Polygon: (0, 0), (1, 0), (2, 0), (1, 1)
+            sage: D(edges=p.edges())
+            Polygon: (0, 0), (1, 0), (2, 0), (1, 1)
+        """
+        if len(args) == 1 and isinstance(args[0], ConvexPolygon):
+            a = args[0]
+            if a.parent() is self:
+                return a
+            vertices = map(self.vector_space(), a.vertices())
+            args = None
+
+        else:
+            vertices = kwds.get('vertices')
+            edges = kwds.get('edges')
+
+            if vertices is None:
+                if edges is None:
+                    if not args:
+                        raise ValueError("need something!")
+                    if len(args) == 1:
+                        edges = args[0]
+                    else:
+                        edges = args
+                if edges is not None:
+                    v = self.vector_space().zero()
+                    vertices = []
+                    for e in map(self.vector_space(), edges):
+                        vertices.append(v)
+                        v += e
                 else:
-                    edges = args
-            if edges is not None:
-                v = self.vector_space().zero()
-                vertices = []
-                for e in map(self.vector_space(), edges):
-                    vertices.append(v)
-                    v += e
-            else:
-                raise ValueError("either vertices or edges should be provided")
+                    raise ValueError("either vertices or edges should be provided")
 
-        if vertices is None and edges is None:
-            raise ValueError("exactly one of 'vertices' or 'edges' should be provided")
+            if vertices is None and edges is None:
+                raise ValueError("exactly one of 'vertices' or 'edges' should be provided")
 
         return self.element_class(self, vertices)
 
