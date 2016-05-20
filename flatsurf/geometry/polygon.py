@@ -145,7 +145,7 @@ class MatrixActionOnPolygons(Action):
         if g.det() <= 0:
             # Maybe we can allow an action, which also reverses the edge ordering? -Pat
             raise ValueError("can not act with matrix with negative determinant")
-        return x.parent()([g*e for e in x.edges()])
+        return x.parent()(vertices=[g*v for v in x.vertices()])
 
 
 class PolygonPosition:
@@ -219,47 +219,26 @@ class PolygonPosition:
 
 class ConvexPolygon(Element):
     r"""
-    A convex polygon in the plane RR^2 defined up to translation.
+    A convex polygon in the plane RR^2
     """
-    def __init__(self, parent, edges=None, vertices=None, translation=None):
+    def __init__(self, parent, vertices):
         r"""
         To construct the polygon you should either use a list of edge vectors 
         or a list of vertices. Using both will result in a ValueError. The polygon
         needs to be convex with postively oriented boundary.
+
         INPUT:
 
         - ``parent`` -- a parent
-        - ``edges`` -- a list of vectors or couples whose sum is zero
+
         - ``vertices`` -- a list of vertices of the polygon
-        - ``translation`` -- a vector representing an addition translation to be applied to the resulting polygon
         """
         Element.__init__(self, parent)
+
         V = parent.vector_space()
-        if translation is None:
-            t = V.zero()
-        else:
-            t = V(translation)
-        if edges is not None:
-            if vertices is not None:
-                raise ValueError("both edges and vertices are defined which is not allowed")
-            self._v = [V.zero()]
-            total=t
-            for i in range(len(edges)-1):
-                total += V(edges[i])
-                self._v.append(total)
-            # Linear Time Sanity Checks
-            total += V( edges[len(edges)-1] )
-            if total != V.zero():
-                raise ValueError("the sum over the edges do not sum up to 0")
-        elif vertices is not None:
-            self._v = [V(x)+t for x in vertices]
-        else:
-            raise ValueError("edges and vertices can't both be None")
-        # Make the polgon immutable:
-        self._v = tuple(self._v)
+        self._v = tuple(map(V, vertices))
+        for vv in self._v: vv.set_immutable()
         self._convexity_check()
-        for vv in self._v:
-            vv.set_immutable()
 
     def __hash__(self):
         return hash(self._v)
@@ -300,13 +279,54 @@ class ConvexPolygon(Element):
             raise TypeError
         return self._v != other._v
 
+    def is_strictly_convex(self):
+        r"""
+        Check whether the polygon is strictly convex
+
+        EXAMPLES::
+
+            sage: from flatsurf import *
+            sage: polygons(vertices=[(0,0), (1,0), (1,1)]).is_strictly_convex()
+            True
+            sage: polygons(vertices=[(0,0), (1,0), (2,0), (1,1)]).is_strictly_convex()
+            False
+        """
+        for i in range(self.num_edges()):
+            if wedge_product(self.edge(i), self.edge(i+1)).is_zero():
+                return False
+
+        return True
+
     def _convexity_check(self):
-        # Updated convexity check
-        edges = self.edges()
-        pc=PolygonCreator(field=self.base_ring())
-        for v in self.vertices():
-            if not pc.add_vertex(v):
-                raise ValueError("not convex!")
+        r"""
+        TESTS::
+
+            sage: from flatsurf import *
+            sage: polygons(vertices=[(0,0),(1,0)])
+            Traceback (most recent call last):
+            ...
+            ValueError: a polygon should have more than two edges!
+            sage: polygons(vertices=[(0,0),(1,2),(0,1),(-1,2)])
+            Traceback (most recent call last):
+            ...
+            ValueError: not convex
+            sage: polygons(vertices=[(0,0),(1,0),(2,0)])
+            Traceback (most recent call last):
+            ...
+            ValueError: degenerate polygon
+        """
+        if self.num_edges() <= 2:
+            raise ValueError("a polygon should have more than two edges!")
+
+        if not sum(self.edges()).is_zero():
+            raise ValueError("the sum over the edges do not sum up to 0")
+
+        for i in range(self.num_edges()):
+            if wedge_product(self.edge(i), self.edge(i+1)) < 0:
+                raise ValueError("not convex")
+            if is_opposite_direction(self.edge(i), self.edge(i+1)):
+                raise ValueError("degenerate polygon")
+
 
     def base_ring(self):
         return self.parent().base_ring()
@@ -323,31 +343,37 @@ class ConvexPolygon(Element):
         return "Polygon: " + ", ".join(map(str,self.vertices()))
 
     def vector_space(self):
-        r"""Return the vector space containing the vertices."""
+        r"""
+        Return the vector space containing the vertices.
+        """
         return self.parent().vector_space()
 
     def vertices(self, translation=None):
         r"""
         Return the set of vertices as vectors.
         """
-        if translation is not None:
-            raise RuntimeError("the 'translation' argument is ignored and should not be used")
-        return self._v
+        if translation is None:
+            return self._v
 
-    def vertex(self,index):
-        return self._v[index % self.num_edges()]
+        translation = self.parent().vector_space()(translation)
+        return [t+v for v in self.vertices()]
 
+    def vertex(self, i):
+        r"""
+        Return the ``i``-th vertex as a vector
+        """
+        return self._v[i % len(self._v)]
 
     def __iter__(self):
         return iter(self.vertices())
 
-    def contains_point(self,point,translation=None):
+    def contains_point(self, point, translation=None):
         r"""
         Return true if the point is within the polygon (after the polygon is possibly translated)
         """
         return self.get_point_position(point,translation=translation).is_inside()
 
-    def get_point_position(self,point,translation=None):
+    def get_point_position(self, point, translation=None):
         r"""
         Get a combinatorial position of a points position compared to the polygon
 
@@ -489,8 +515,7 @@ class ConvexPolygon(Element):
             raise ValueError("Started with point outside polygon")
         raise ValueError("Point on boundary of polygon and direction not pointed into the polygon.")
 
-
-    def flow(self,point,holonomy,translation=None):
+    def flow(self, point, holonomy, translation=None):
         r"""
         Flow a point in the direction of holonomy for the length of the
         holonomy, or until the point leaves the polygon.  Note that ValueErrors
@@ -517,9 +542,9 @@ class ConvexPolygon(Element):
 
             sage: from flatsurf.geometry.polygon import polygons
             sage: s = polygons.square()
-            sage: V=s.parent().vector_space()
-            sage: p=V((1/2,1/2))
-            sage: w=V((2,0))
+            sage: V = s.parent().vector_space()
+            sage: p = V((1/2,1/2))
+            sage: w = V((2,0))
             sage: s.flow(p,w)
             ((1, 1/2), (3/2, 0), point positioned on interior of edge 1 of polygon)
         """
@@ -575,7 +600,7 @@ class ConvexPolygon(Element):
 
     def edges(self):
         r"""
-        Return the list of edges as vectors.
+        Return an iterator overt the edges
         """
         return [self.edge(i) for i in range(self.num_edges())]
 
@@ -583,7 +608,7 @@ class ConvexPolygon(Element):
         r"""
         Return a vector representing the ``i``-th edge of the polygon.
         """
-        return self.vertex(i+1)-self.vertex(i)
+        return self.vertex(i+1) - self.vertex(i)
 
     def plot(self, translation=None):
         r"""
@@ -641,6 +666,7 @@ class ConvexPolygon(Element):
 
 class ConvexPolygons(Parent):
     Element = ConvexPolygon
+
     def __init__(self, field):
         Parent.__init__(self, category=Sets())
         self._field = field
@@ -669,7 +695,30 @@ class ConvexPolygons(Parent):
         return VectorSpace(self.base_ring(), 2)
 
     def _element_constructor_(self, *args, **kwds):
-        return self.element_class(self, *args, **kwds)
+        vertices = kwds.get('vertices')
+        edges = kwds.get('edges')
+
+        if vertices is None:
+            if edges is None:
+                if not args:
+                    raise ValueError("need something!")
+                if len(args) == 1:
+                    edges = args[0]
+                else:
+                    edges = args
+            if edges is not None:
+                v = self.vector_space().zero()
+                vertices = []
+                for e in map(self.vector_space(), edges):
+                    vertices.append(v)
+                    v += e
+            else:
+                raise ValueError("either vertices or edges should be provided")
+
+        if vertices is None and edges is None:
+            raise ValueError("exactly one of 'vertices' or 'edges' should be provided")
+
+        return self.element_class(self, vertices)
 
 Polygons = ConvexPolygons
 
@@ -758,7 +807,7 @@ class PolygonsConstructor:
             cn,sn = c*cn - s*sn, c*sn + s*cn
             edges.append((cn,sn))
 
-        return Polygons(field)(edges)
+        return Polygons(field)(edges=edges)
 
     def __call__(self, *args, **kwds):
         r"""
@@ -776,6 +825,10 @@ class PolygonsConstructor:
             sage: polygons(vertices=[(0,0), (1,0), (0,1)])
             Polygon: (0, 0), (1, 0), (0, 1)
         """
+        from sage.modules.free_module_element import vector
+        from sage.modules.free_module import VectorSpace
+        from sage.structure.sequence import Sequence
+
         base_ring = None
         if 'ring' in kwds:
             base_ring = kwds.pop('ring')
@@ -784,30 +837,29 @@ class PolygonsConstructor:
         if 'field' in kwds:
             base_ring = kwds.pop('field')
 
-        if 'vertices' in kwds:
-            if args:
-                raise ValueError("if vertices is not None then the polygon should be given by edges")
-            from sage.modules.free_module_element import vector
-            verts = map(vector, kwds.pop('vertices'))
-            args = [verts[i+1] - verts[i] for i in range(len(verts)-1)]
-            args.append(verts[0] - verts[-1])
-
-        if base_ring is None:
-            from sage.structure.sequence import Sequence
-            from sage.modules.free_module_element import vector
-
-            s = Sequence(map(vector, args))
-            V = s.universe()
-            base_ring = V.base_ring()
+        vertices = edges = None
+        if 'edges' in kwds:
+            edges = kwds.pop('edges')
+        elif 'vertices' in kwds:
+            vertices = kwds.pop('vertices')
+        elif args:
+            edges = args
         else:
-            from sage.modules.free_module import VectorSpace
-            V = VectorSpace(base_ring,2)
-            s = map(V, args)
+            raise ValueError
+
+        if vertices is not None:
+            vertices = map(vector, vertices)
+            if base_ring is None:
+                base_ring = Sequence(vertices).universe().base_ring()
+        if edges is not None:
+            edges = map(vector, edges)
+            if base_ring is None:
+                base_ring = Sequence(edges).universe().base_ring()
 
         if base_ring not in Fields():
             base_ring = base_ring.fraction_field()
 
-        return ConvexPolygons(base_ring)(s, **kwds)
+        return ConvexPolygons(base_ring)(vertices=vertices, edges=edges)
 
 polygons = PolygonsConstructor()
 
