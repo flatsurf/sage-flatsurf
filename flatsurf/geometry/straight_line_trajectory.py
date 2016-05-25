@@ -180,7 +180,7 @@ class StraightLineTrajectory:
             sage: l = v.straight_line_trajectory()
             sage: l.flow(10); l.flow(-10)
             sage: print ''.join(l.coding(alphabet))
-            aabaabaababaabaabaaba
+            aabaabaababaabaabaab
 
         For a closed trajectory, the last label (corresponding also to the
         starting point) is not considered::
