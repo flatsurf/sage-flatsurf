@@ -1,61 +1,46 @@
 r"""
 Translation Surfaces.
 """
-from flatsurf.geometry.cone_surface import (
-    ConeSurface_generic, 
-    ConeSurface_polygons_and_gluings, 
-    ConeSurface_wrapper)
-from flatsurf.geometry.half_dilation_surface import(
-    HalfDilationSurface_generic, 
-    HalfDilationSurface_polygons_and_gluings,
-    HalfDilationSurface_wrapper)
-
-from flatsurf.geometry.surface import SurfaceType
+from flatsurf.geometry.surface import Surface
+from flatsurf.geometry.half_translation_surface import HalfTranslationSurface 
+from flatsurf.geometry.dilation_surface import DilationSurface
 
 from sage.matrix.constructor import matrix, identity_matrix
 
-class TranslationSurface_generic(ConeSurface_generic, HalfDilationSurface_generic):
+class TranslationSurface(HalfTranslationSurface, DilationSurface):
     r"""
-    A surface with a flat metric and conical singularities (not necessarily
-    multiple angle of pi or 2pi).
-
-    - polygon = polygon + vertex (or equivalently, canonical ordering)
-
-    A translation surface is:
-
-    - field embedded in R
-    - index set for the (convex) polygons + favorite polygon
-    - edges: ((t1,e1),(t2,e2))
-
-    For finite case:
-
-    - canonical labelings of polygons
-    - Delaunay triangulation
+    A surface with a flat metric and conical singularities whose cone angles are a multiple of pi.
     """
     
     def minimal_translation_cover(self):
         return self
 
-    def surface_type(self):
-        return SurfaceType.TRANSLATION
-
     def _check_edge_matrix(self):
         r"""
         Check the compatibility condition
         """
-        for lab in self.polygon_labels().some_elements():
-            p = self.polygon(lab)
-            for e in xrange(p.num_edges()):
-                if not self.edge_matrix(lab,e).is_one():
-                    raise ValueError("gluings of (%s,%s) is not through translation"%(lab,e))
+        from flatsurf.geometry.similarity_surface import SimilaritySurface
+        if self.is_finite():
+            for lab in self.label_iterator():
+                p = self.polygon(lab)
+                for e in xrange(p.num_edges()):
+                    if not SimilaritySurface.edge_matrix(self,lab,e).is_one():
+                        raise ValueError("gluings of (%s,%s) is not through translation"%(lab,e))
+        else:
+            count = 0
+            for lab in self.label_iterator():
+                p = self.polygon(lab)
+                for e in xrange(p.num_edges()):
+                    if notSimilaritySurface.edge_matrix(self,lab,e).is_one():
+                        raise ValueError("gluings of (%s,%s) is not through translation"%(lab,e))
+                count  = count+1
+                if count >= 10:
+                    break
     
     def edge_matrix(self, p, e=None):
         if e is None:
             p,e = p
-        if p not in self.polygon_labels():
-            from sage.structure.element import parent
-            raise ValueError("p (={!r}) with parent {!r} is not a valid label".format(p,parent(p)))
-        elif e < 0 or e >= self.polygon(p).num_edges():
+        if e < 0 or e >= self.polygon(p).num_edges():
             raise ValueError
         return identity_matrix(self.base_ring(),2)
 
@@ -71,17 +56,14 @@ class TranslationSurface_generic(ConeSurface_generic, HalfDilationSurface_generi
         from sage.rings.integer_ring import ZZ
         return AbelianStratum([ZZ(a-1) for a in self.angles()])
 
-    angles = ConeSurface_generic.angles
+    #angles = ConeSurface_generic.angles
 
     def canonicalize_mapping(self):
         r"""
         Return a SurfaceMapping canonicalizing this translation surface.
         """
         from flatsurf.geometry.mappings import canonicalize_translation_surface_mapping, IdentityMapping
-        mapping = canonicalize_translation_surface_mapping(self)
-        new_codomain = convert_to_translation_surface(mapping.codomain())
-        identity = IdentityMapping(mapping.codomain(), new_codomain)
-        return identity*mapping
+        return canonicalize_translation_surface_mapping(self)
         
     def canonicalize(self):
         r"""
@@ -97,50 +79,29 @@ class TranslationSurface_generic(ConeSurface_generic, HalfDilationSurface_generi
             sage: gluings=[((1,i),(0, (2*i+4)%8 )) for i in range(4)]
             sage: for i in range(4):
             ...       gluings.append( ((2,i), (0, (2*i+5)%8 )) )
-            sage: from flatsurf.geometry.surface import surface_from_polygons_and_gluings
-            sage: s=surface_from_polygons_and_gluings([octagon,square1,square2],gluings)
+            sage: from flatsurf.geometry.surface import Surface_polygons_and_gluings
+            sage: from flatsurf.geometry.translation_surface import TranslationSurface
+            sage: s=TranslationSurface(Surface_polygons_and_gluings([octagon,square1,square2],gluings))
             sage: print s
-            Translation surface built from 3 polygons
+            TranslationSurface built from 3 polygons
             sage: mat=Matrix([[1,2+sqrt2],[0,1]])
             sage: s.canonicalize()==(mat*s).canonicalize()
             True
         """
         return self.canonicalize_mapping().codomain()
 
-class TranslationSurface_polygons_and_gluings(
-        HalfDilationSurface_polygons_and_gluings,
-        TranslationSurface_generic):
-    pass
-
-class TranslationSurface_wrapper(
-        HalfDilationSurface_wrapper,
-        TranslationSurface_generic):
-    pass
-
-def convert_to_translation_surface(surface):
-    r"""
-    Returns a similarity surface version of the provided surface.
-    """
-    if surface.is_finite():
-        return TranslationSurface_polygons_and_gluings(surface)
-    else:
-        return TranslationSurface_wrapper(surface)
-
-class MinimalTranslationCover(TranslationSurface_generic):
+class MinimalTranslationCover(Surface):
     r"""
     We label copy by cartesian product (polygon from bot, matrix).
     """
     def __init__(self, similarity_surface):
         self._ss = similarity_surface
 
-        from sage.matrix.matrix_space import MatrixSpace
-        from sage.categories.cartesian_product import cartesian_product
-        from sage.rings.semirings.non_negative_integer_semiring import NN
-
     def is_finite(self):
         if not self._ss.is_finite():
             return False
-        return self._ss.is_rational_cone_surface()
+        from flatsurf.geometry.rational_cone_surface import RationalConeSurface
+        return isinstance(self._ss, RationalConeSurface)
 
     def base_ring(self):
         return self._ss.base_ring()
@@ -162,7 +123,7 @@ class MinimalTranslationCover(TranslationSurface_generic):
         mm.set_immutable()
         return ((p2,mm),e2)
 
-class AbstractOrigami(TranslationSurface_generic):
+class AbstractOrigami(Surface):
     r'''Abstract base class for origamis.
     Realization needs just to define a _domain and four cardinal directions.
     '''
@@ -190,6 +151,9 @@ class AbstractOrigami(TranslationSurface_generic):
         Returns the number of polygons.
         """
         return self._domain.cardinality()
+
+    def base_label(self):
+        return self._domain.an_element()
 
     def polygon_labels(self):
         return self._domain

@@ -6,8 +6,6 @@ from sage.misc.cachefunc import cached_method
 
 from sage.structure.sage_object import SageObject
 
-from sage.sets.family import Family
-
 from sage.rings.integer import Integer
 from sage.rings.rational import Rational
 from sage.rings.infinity import Infinity
@@ -33,9 +31,9 @@ from flatsurf.geometry.matrix_2x2 import (is_similarity,
                     
 from flatsurf.geometry.similarity import SimilarityGroup
 
-from flatsurf.geometry.surface import *
+from flatsurf.geometry.surface import Surface, LabelWalker
 
-class SimilaritySurface_generic(SageObject):
+class SimilaritySurface(Surface):
     r"""
     An oriented surface built from a set of polygons and edges identified with
     similarities (i.e. composition of homothety, rotations and translations).
@@ -57,16 +55,36 @@ class SimilaritySurface_generic(SageObject):
         - base_label(self): return a first label
         - opposite_edge(self, lab, edge): a couple (``other_label``, ``other_edge``) representing the edge being glued
         - is_finite(self): return true if the surface is built from finitely many labeled polygons
-
-        Also if your type is more specific than Similarity Surface then you should override:
-
-        - surface_type(self): return the appropriate SurfaceType (see flatsurf.geometry.surface)
     """
-    _plot_options = {}
+    
+    # This was causing errors because it is stored statically and doesn't apply to all surfaces. -Pat
+    #_plot_options = {}
+
+    def __init__(self, surface):
+        if isinstance(surface,SimilaritySurface):
+            self._s=surface.underlying_surface()
+        else:
+            self._s=surface
+
+    def underlying_surface(self):
+        r"""
+        Return the surface underlying this SimilaritySurface.
+        """
+        return self._s
 
     def _check(self):
         r"""
         Run all the methods that start with _check
+        
+        EXAMPLES::
+            sage: from flatsurf import *
+            sage: n=6
+            sage: ps=[polygons.regular_ngon(2*n)]
+            sage: gluings=[((0,i),(0,i+n)) for i in range(n)]
+            sage: s=TranslationSurface(Surface_polygons_and_gluings(ps,gluings))
+            sage: s._check()
+            _check_edge_matrix ... done
+            _check_gluings ... done
         """
         for name in dir(self):
             if name.startswith('_check') and name != '_check':
@@ -79,13 +97,6 @@ class SimilaritySurface_generic(SageObject):
         for pair1,pair2 in self.edge_gluing_iterator():
             if not self.opposite_edge_pair(pair2)==pair1:
                 raise ValueError("edges not glued correctly:\n%s -> %s -> %s"%(pair1,pair2,self.opposite_edge_pair(pair2)))
-
-    def _check_type(self):
-        claimed_type = self.surface_type()
-        computed_type = self.compute_surface_type_from_gluings(limit=100)
-        if claimed_type != combine_surface_types(claimed_type,computed_type):
-            raise ValueError("Surface computed to be of type %s which is not more specific than the claimed type of %s."%(
-                surface_type_to_str(computed_type), surface_type_to_str(claimed_type)))
     
     def base_ring(self):
         r"""
@@ -93,7 +104,7 @@ class SimilaritySurface_generic(SageObject):
 
         This method must be overriden in subclasses!
         """
-        raise NotImplementedError
+        return self._s.base_ring()
 
     def polygon(self, lab):
         r"""
@@ -101,13 +112,13 @@ class SimilaritySurface_generic(SageObject):
 
         This method must be overriden in subclasses.
         """
-        raise NotImplementedError
+        return self._s.polygon(lab)
 
     def base_label(self):
         r"""
         Always returns the same label.
         """
-        raise NotImplementedError
+        return self._s.base_label()
 
     def opposite_edge(self, p, e):
         r"""
@@ -116,82 +127,51 @@ class SimilaritySurface_generic(SageObject):
 
         This method must be overriden in subclasses.
         """
-        raise NotImplementedError
+        return self._s.opposite_edge(p,e)
 
     def is_finite(self):
         r"""
         Return whether or not the surface is finite.
         """
-        raise NotImplementedError
-
-    def surface_type(self):
-        r"""
-        Return an integer representing the surface's type. The convention is that a surface has the given type 
-        if and only if all its 2x2 edge gluing matrixes lie in a certain matrix group.
-        """
-        return SurfaceType.SIMILARITY
+        return self._s.is_finite()
 
     # 
     # generic methods
     #
     
-    def compute_surface_type_from_gluings(self,limit=None):
-        r"""
-        Compute the surface type by looking at the edge gluings. 
-        If limit is defined, we try to guess the type by looking at limit many edges.
-        """
-        if limit is None:
-            if not self.is_finite():
-                raise ValueError("Need a limit when working with an infinite surface.")
-            it = self.edge_iterator()
-            label,edge = it.next()
-            # Use honest matrices!
-            m = SimilaritySurface_generic.edge_matrix(self,label,edge)
-            surface_type = surface_type_from_matrix(m)
-            for label,edge in it:
-                # Use honest matrices!
-                m = SimilaritySurface_generic.edge_matrix(self,label,edge)
-                surface_type = combine_surface_types(surface_type, surface_type_from_matrix(m))
-            return surface_type
-        else:
-            count=0
-            it = self.edge_iterator()
-            label,edge = it.next()
-            # Use honest matrices!
-            m = SimilaritySurface_generic.edge_matrix(self,label,edge)
-            surface_type = surface_type_from_matrix(m)
-            for label,edge in it:
-                # Use honest matrices!
-                m = SimilaritySurface_generic.edge_matrix(self,label,edge)
-                surface_type = combine_surface_types(surface_type, surface_type_from_matrix(m))
-                count=count+1
-                if count >= limit:
-                    return surface_type
-            return surface_type
-
-    def is_half_dilation_surface(self):
-        r"""Return if all the 2x2 gluing matrices are diagonal matrices."""
-        return is_half_dilation_surface_type(self.surface_type())
-
-    def is_dilation_surface(self):
-        r"""Return if all the 2x2 gluing matrices are positive diagonal matrices."""
-        return is_dilation_surface_type(self.surface_type())
-
-    def is_cone_surface(self):
-        r"""Return if all the 2x2 gluing matrices lie in O(2)."""
-        return is_cone_surface_type(self.surface_type())
-
-    def is_rational_cone_surface(self):
-        r"""Return if all the 2x2 gluing matrices are finite order elements of O(2)."""
-        return is_rational_cone_surface_type(self.surface_type())
-
-    def is_half_translation_surface(self):
-        r"""Return if all the 2x2 gluing matrices are in {I, -I}."""
-        return is_half_translation_surface_type(self.surface_type())
-
-    def is_translation_surface(self):
-        r"""Return if all the 2x2 gluing matrices are in {I, -I}."""
-        return is_translation_surface_type(self.surface_type())
+    #def compute_surface_type_from_gluings(self,limit=None):
+    #    r"""
+    #    Compute the surface type by looking at the edge gluings. 
+    #    If limit is defined, we try to guess the type by looking at limit many edges.
+    #    """
+    #    if limit is None:
+    #        if not self.is_finite():
+    #            raise ValueError("Need a limit when working with an infinite surface.")
+    #        it = self.edge_iterator()
+    #        label,edge = it.next()
+    #        # Use honest matrices!
+    #        m = SimilaritySurface_generic.edge_matrix(self,label,edge)
+    #        surface_type = surface_type_from_matrix(m)
+    #        for label,edge in it:
+    #            # Use honest matrices!
+    #            m = SimilaritySurface_generic.edge_matrix(self,label,edge)
+    #            surface_type = combine_surface_types(surface_type, surface_type_from_matrix(m))
+    #        return surface_type
+    #    else:
+    #        count=0
+    #        it = self.edge_iterator()
+    #        label,edge = it.next()
+    #        # Use honest matrices!
+    #        m = SimilaritySurface_generic.edge_matrix(self,label,edge)
+    #        surface_type = surface_type_from_matrix(m)
+    #        for label,edge in it:
+    #            # Use honest matrices!
+    #            m = SimilaritySurface_generic.edge_matrix(self,label,edge)
+    #            surface_type = combine_surface_types(surface_type, surface_type_from_matrix(m))
+    #            count=count+1
+    #            if count >= limit:
+    #                return surface_type
+    #        return surface_type
 
     def opposite_edge_pair(self,label_edge_pair):
         r"""
@@ -234,8 +214,9 @@ class SimilaritySurface_generic(SageObject):
             sage: tri0=P([(1,0),(0,1),(-1,-1)])
             sage: tri1=P([(-1,0),(0,-1),(1,1)])
             sage: gluings=[((0,0),(1,0)),((0,1),(1,1)),((0,2),(1,2))]
-            sage: from flatsurf.geometry.translation_surface import TranslationSurface_polygons_and_gluings
-            sage: s=TranslationSurface_polygons_and_gluings([tri0,tri1], gluings)
+            sage: from flatsurf.geometry.surface import Surface_polygons_and_gluings
+            sage: from flatsurf.geometry.translation_surface import TranslationSurface
+            sage: s=TranslationSurface(Surface_polygons_and_gluings([tri0,tri1], gluings))
             sage: for edge in s.edge_iterator():
             ...       print edge
             (0, 0)
@@ -285,14 +266,12 @@ class SimilaritySurface_generic(SageObject):
         else:
             num = str(self.num_polygons())
 
-        st = surface_type_to_str(self.surface_type())
-
         if self.num_polygons() == 1:
             end = ""
         else:
             end = "s"
 
-        return "{} built from {} polygon{}".format(st, num, end)
+        return "{} built from {} polygon{}".format(self.__class__.__name__, num, end)
 
     def area(self):
         if self.num_polygons.is_finite():
@@ -375,12 +354,12 @@ class SimilaritySurface_generic(SageObject):
             sage: S = similarity_surfaces.example()
             sage: T = S.minimal_translation_cover()
             sage: T
-            Translation surface built from infinitely many polygons
+            TranslationSurface built from infinitely many polygons
             sage: T.polygon(T.base_label())
             Polygon: (0, 0), (2, -2), (2, 0)
         """
-        from flatsurf.geometry.translation_surface import MinimalTranslationCover
-        return MinimalTranslationCover(self)
+        from flatsurf.geometry.translation_surface import MinimalTranslationCover, TranslationSurface
+        return TranslationSurface(MinimalTranslationCover(self))
 
     def vector_space(self):
         r"""
@@ -458,23 +437,24 @@ class SimilaritySurface_generic(SageObject):
         - ``p`` -- coordinates of a point in the polygon
 
         - ``v`` -- coordinates of a vector in R^2
+        
+        # Comment out until ChamanaraSurface is fixed.
+        #EXAMPLES::
 
-        EXAMPLES::
+            #sage: from flatsurf.geometry.chamanara import ChamanaraSurface
+            #sage: S = ChamanaraSurface(1/2)
+            #sage: S.tangent_vector(0, (1/2,1/2), (1,1))
+            #SimilaritySurfaceTangentVector in polygon 1 based at (-1/2, 3/2) with vector
+            #(-1, -1)
+            #sage: K.<sqrt2> = QuadraticField(2)
+            #sage: S.tangent_vector(0, (1/2,1/2), (1,sqrt2))
+            #SimilaritySurfaceTangentVector in polygon 1 based at (-1/2, 3/2) with vector
+            #(-1, -sqrt2)
 
-            sage: from flatsurf.geometry.chamanara import ChamanaraSurface
-            sage: S = ChamanaraSurface(1/2)
-            sage: S.tangent_vector(0, (1/2,1/2), (1,1))
-            SimilaritySurfaceTangentVector in polygon 1 based at (-1/2, 3/2) with vector
-            (-1, -1)
-            sage: K.<sqrt2> = QuadraticField(2)
-            sage: S.tangent_vector(0, (1/2,1/2), (1,sqrt2))
-            SimilaritySurfaceTangentVector in polygon 1 based at (-1/2, 3/2) with vector
-            (-1, -sqrt2)
-
-            sage: S = ChamanaraSurface(sqrt2/2)
-            sage: S.tangent_vector(1, (0,1), (1,1))
-            SimilaritySurfaceTangentVector in polygon 0 based at (-sqrt2, sqrt2
-            + 1) with vector (-1, -1)
+            #sage: S = ChamanaraSurface(sqrt2/2)
+            #sage: S.tangent_vector(1, (0,1), (1,1))
+            #SimilaritySurfaceTangentVector in polygon 0 based at (-sqrt2, sqrt2
+            #+ 1) with vector (-1, -1)
         """
         p = vector(p)
         v = vector(v)
@@ -502,12 +482,25 @@ class SimilaritySurface_generic(SageObject):
             return self.tangent_bundle(R)(lab, p, v)
         else:
             return self.tangent_bundle(ring)(lab, p, v)
-        
+    
+    def plot_options(self):
+        r"""
+        Return a dictionary with plot options for this surface.
+        """
+        try:
+            return self._plot_options
+        except AttributeError:
+            self._plot_options = {}
+        return self._plot_options
+
     def graphical_surface(self, *args, **kwds):
         r"""
         Return a GraphicalSurface representing this surface.
         """
-        opt = self._plot_options.copy()
+        try:
+            opt = self._plot_options.copy()
+        except AttributeError:
+            opt = {}
         opt.update(kwds)
         from flatsurf.graphical.surface import GraphicalSurface
         return GraphicalSurface(self, *args, **opt)
@@ -517,80 +510,82 @@ class SimilaritySurface_generic(SageObject):
     def plot(self, *args, **kwds):
         return self.surface_plot(*args, **kwds).plot()
 
-    def minimize_monodromy_mapping(self):
-        r"""
-        Return a mapping from this surface to a similarity surface
-        with a minimal monodromy group. 
-        Note that this may be slow for infinite surfaces.
-        
-        EXAMPLES::
-            sage: from flatsurf.geometry.polygon import Polygons
-            sage: K.<sqrt2> = NumberField(x**2 - 2, embedding=1.414)
-            sage: octagon = Polygons(K)([(1,0),(sqrt2/2, sqrt2/2),(0, 1),(-sqrt2/2, sqrt2/2),(-1,0),(-sqrt2/2, -sqrt2/2),(0, -1),(sqrt2/2, -sqrt2/2)])
-            sage: square = Polygons(K)([(1,0),(0,1),(-1,0),(0,-1)])
-            sage: gluings = [((0,i),(1+(i%2),i//2)) for i in range(8)]
-            sage: from flatsurf.geometry.surface import surface_from_polygons_and_gluings
-            sage: s=surface_from_polygons_and_gluings([octagon,square,square],gluings)
-            sage: print s
-            Rational cone surface built from 3 polygons
-            sage: m=s.minimize_monodromy_mapping()
-            sage: s2=m.codomain()
-            sage: print s2
-            Translation surface built from 3 polygons
-            sage: v=s.tangent_vector(2,(0,0),(1,0))
-            sage: print m.push_vector_forward(v)
-            SimilaritySurfaceTangentVector in polygon 2 based at (0, 0) with vector (-1/2*sqrt2, -1/2*sqrt2)
-            sage: w=s2.tangent_vector(2,(0,0),(0,-1))
-            sage: print m.pull_vector_back(w)
-            SimilaritySurfaceTangentVector in polygon 2 based at (0, 0) with vector (1/2*sqrt2, 1/2*sqrt2)
-        """
-        lw = self.label_walker()
-        class MatrixFunction:
-            def __init__(self, lw):
-                self._lw=lw
-                from sage.matrix.constructor import identity_matrix
-                self._d = {lw.surface().base_label():
-                    identity_matrix(lw.surface().base_ring(), n=2)}
-            def __call__(self, label):
-                try:
-                    return self._d[label]
-                except KeyError:
-                    e = self._lw.edge_back(label)
-                    label2,e2 = self._lw.surface().opposite_edge(label,e)
-                    m=self._lw.surface().edge_matrix(label,e) * self(label2)
-                    self._d[label]=m
-                    return m
-        mf = MatrixFunction(lw)
-        from flatsurf.geometry.mappings import (
-            MatrixListDeformedSurfaceMapping,
-            IdentityMapping)
-        mapping = MatrixListDeformedSurfaceMapping(self, mf)
-        surface_type = mapping.codomain().compute_surface_type_from_gluings(limit=100)
-        new_codomain = convert_to_type(mapping.codomain(),surface_type)
-        identity = IdentityMapping(mapping.codomain(), new_codomain)
-        return identity * mapping
+# I'm not sure we want to support this...
+#
+#    def minimize_monodromy_mapping(self):
+#        r"""
+#        Return a mapping from this surface to a similarity surface
+#        with a minimal monodromy group. 
+#        Note that this may be slow for infinite surfaces.
+#        
+#        EXAMPLES::
+#            sage: from flatsurf.geometry.polygon import Polygons
+#            sage: K.<sqrt2> = NumberField(x**2 - 2, embedding=1.414)
+#            sage: octagon = Polygons(K)([(1,0),(sqrt2/2, sqrt2/2),(0, 1),(-sqrt2/2, sqrt2/2),(-1,0),(-sqrt2/2, -sqrt2/2),(0, -1),(sqrt2/2, -sqrt2/2)])
+#            sage: square = Polygons(K)([(1,0),(0,1),(-1,0),(0,-1)])
+#            sage: gluings = [((0,i),(1+(i%2),i//2)) for i in range(8)]
+#            sage: from flatsurf.geometry.surface import surface_from_polygons_and_gluings
+#            sage: s=surface_from_polygons_and_gluings([octagon,square,square],gluings)
+#            sage: print s
+#            Rational cone surface built from 3 polygons
+#            sage: m=s.minimize_monodromy_mapping()
+#            sage: s2=m.codomain()
+#            sage: print s2
+#            Translation surface built from 3 polygons
+#            sage: v=s.tangent_vector(2,(0,0),(1,0))
+#            sage: print m.push_vector_forward(v)
+#            SimilaritySurfaceTangentVector in polygon 2 based at (0, 0) with vector (-1/2*sqrt2, -1/2*sqrt2)
+#            sage: w=s2.tangent_vector(2,(0,0),(0,-1))
+#            sage: print m.pull_vector_back(w)
+#            SimilaritySurfaceTangentVector in polygon 2 based at (0, 0) with vector (1/2*sqrt2, 1/2*sqrt2)
+#        """
+#        lw = self.label_walker()
+#        class MatrixFunction:
+#            def __init__(self, lw):
+#                self._lw=lw
+#                from sage.matrix.constructor import identity_matrix
+#                self._d = {lw.surface().base_label():
+#                    identity_matrix(lw.surface().base_ring(), n=2)}
+#            def __call__(self, label):
+#                try:
+#                    return self._d[label]
+#                except KeyError:
+#                    e = self._lw.edge_back(label)
+#                    label2,e2 = self._lw.surface().opposite_edge(label,e)
+#                    m=self._lw.surface().edge_matrix(label,e) * self(label2)
+#                    self._d[label]=m
+#                    return m
+#        mf = MatrixFunction(lw)
+#        from flatsurf.geometry.mappings import (
+#            MatrixListDeformedSurfaceMapping,
+#            IdentityMapping)
+#        mapping = MatrixListDeformedSurfaceMapping(self, mf)
+#        surface_type = mapping.codomain().compute_surface_type_from_gluings(limit=100)
+#        new_codomain = convert_to_type(mapping.codomain(),surface_type)
+#        identity = IdentityMapping(mapping.codomain(), new_codomain)
+#        return identity * mapping
+#    
+#    def minimal_monodromy_surface(self):
+#        r"""
+#        Return an equivalent similarity surface with minimal monodromy.
+#        Note that this may be slow for infinite surfaces.
+#        
+#        EXAMPLES::
+#            sage: from flatsurf.geometry.polygon import Polygons
+#            sage: K.<sqrt2> = NumberField(x**2 - 2, embedding=1.414)
+#            sage: octagon = Polygons(K)([(1,0),(sqrt2/2, sqrt2/2),(0, 1),(-sqrt2/2, sqrt2/2),(-1,0),(-sqrt2/2, -sqrt2/2),(0, -1),(sqrt2/2, -sqrt2/2)])
+#            sage: square = Polygons(K)([(1,0),(0,1),(-1,0),(0,-1)])
+#            sage: gluings = [((0,i),(1+(i%2),i//2)) for i in range(8)]
+#            sage: from flatsurf.geometry.surface import surface_from_polygons_and_gluings
+#            sage: s=surface_from_polygons_and_gluings([octagon,square,square],gluings)
+#            sage: print s
+#            Rational cone surface built from 3 polygons
+#            sage: s2=s.minimal_monodromy_surface()
+#            sage: print s2
+#            Translation surface built from 3 polygons
+#        """
+#        return self.minimize_monodromy_mapping().codomain()
     
-    def minimal_monodromy_surface(self):
-        r"""
-        Return an equivalent similarity surface with minimal monodromy.
-        Note that this may be slow for infinite surfaces.
-        
-        EXAMPLES::
-            sage: from flatsurf.geometry.polygon import Polygons
-            sage: K.<sqrt2> = NumberField(x**2 - 2, embedding=1.414)
-            sage: octagon = Polygons(K)([(1,0),(sqrt2/2, sqrt2/2),(0, 1),(-sqrt2/2, sqrt2/2),(-1,0),(-sqrt2/2, -sqrt2/2),(0, -1),(sqrt2/2, -sqrt2/2)])
-            sage: square = Polygons(K)([(1,0),(0,1),(-1,0),(0,-1)])
-            sage: gluings = [((0,i),(1+(i%2),i//2)) for i in range(8)]
-            sage: from flatsurf.geometry.surface import surface_from_polygons_and_gluings
-            sage: s=surface_from_polygons_and_gluings([octagon,square,square],gluings)
-            sage: print s
-            Rational cone surface built from 3 polygons
-            sage: s2=s.minimal_monodromy_surface()
-            sage: print s2
-            Translation surface built from 3 polygons
-        """
-        return self.minimize_monodromy_mapping().codomain()
-        
     def __eq__(self, other):
         r"""
         Implements a naive notion of equality where two finite surfaces are equal if:
@@ -603,7 +598,7 @@ class SimilaritySurface_generic(SageObject):
             return self is other
         if self is other:
             return True
-        if not isinstance(other, SimilaritySurface_generic):
+        if not isinstance(other, SimilaritySurface):
             raise TypeError
         if not other.is_finite():
             raise ValueError("Can not compare infinite surfaces.")
@@ -638,221 +633,4 @@ class SimilaritySurface_generic(SageObject):
         for edgepair in self.edge_gluing_iterator():
             h = h + 3*hash(edgepair)
         return h
-
-class SimilaritySurface_polygons_and_gluings(SimilaritySurface_generic):
-    r"""
-    Similarity surface build from a list of polygons and gluings.
-    """
-    def __init__(self, *args):
-        r"""
-        The constructor either acts as a copy constructor for a finite surface, or you can pass two options:
-        polygons and identifications.
-        
-        INPUT:
-
-        - ``polygons`` - a family of polygons (might be a list, a dictionnary
-          label -> polygon or more generally a Family)
-
-        - ``identifications`` - the identification of the edges. A list of pairs
-          ((p0,e0),(p1,e1)) or
-
-        EXAMPLES::
-
-            sage: from flatsurf.geometry.polygon import Polygons
-            sage: K.<sqrt2> = NumberField(x**2 - 2, embedding=1.414)
-            sage: octagon = Polygons(K)([(1,0),(sqrt2/2, sqrt2/2),(0, 1),(-sqrt2/2, sqrt2/2),(-1,0),(-sqrt2/2, -sqrt2/2),(0, -1),(sqrt2/2, -sqrt2/2)])
-            sage: square1 = Polygons(K)([(1,0),(0,1),(-1,0),(0,-1)])
-            sage: square2 = Polygons(K)([(sqrt2/2, sqrt2/2),(-sqrt2/2, sqrt2/2),(-sqrt2/2, -sqrt2/2),(sqrt2/2, -sqrt2/2)])
-            sage: gluings=[(('b',i),('a', (2*i+4)%8 )) for i in range(4)]
-            sage: for i in range(4):
-            ...       gluings.append( (('c',i), ('a', (2*i+5)%8 )) )
-            sage: from flatsurf.geometry.similarity_surface import SimilaritySurface_polygons_and_gluings
-            sage: s=SimilaritySurface_polygons_and_gluings({'a':octagon,'b':square1,'c':square2}, gluings)
-            sage: s2=SimilaritySurface_polygons_and_gluings(s)
-            sage: s2==s
-            True
-            sage: hash(s2)==hash(s)
-            True
-
-        TESTS::
-
-            sage: from flatsurf import *
-            sage: t1 = polygons(vertices=[(0,0), (1,0), (1,1)])
-            sage: t2 = polygons(vertices=[(0,0), (1,1), (0,1)])
-            sage: s = similarity_surfaces([t1,t2], {(0,0):(1,1), (0,1):(1,2), (0,2):(1,0)})
-            sage: s.plot(edge_labels='number')
-            Graphics object consisting of 15 graphics primitives
-            sage: translation_surfaces.chamanara(1/2).plot()
-            Graphics object consisting of 129 graphics primitives
-            sage: s = similarity_surfaces([t1,t2], {(0,0):(1,1), (0,1):(1,2), (0,2):(1,0)})
-            sage: s.plot(edge_labels='number')
-            Graphics object consisting of 15 graphics primitives
-        """
-        if len(args)==2:
-            polygons=args[0]
-            identifications=args[1]
-
-            self._polygons = Family(polygons)
-
-            if self._polygons.cardinality() == 0:
-                raise ValueError("there should be at least one polygon")
-
-            self._field = self._polygons.an_element().parent().field()
-
-            n = 0
-            for p in self._polygons:
-                if p.parent().field() != self._field:
-                    raise ValueError("the field must be the same for all polygons")
-                n += 1
-                if n > 10:  # the number of polygons may be infinite...
-                    break
-
-            if isinstance(identifications, (list,dict)):
-                edge_identifications = {}
-                if isinstance(identifications, dict):
-                    it = identifications.iteritems()
-                else:
-                    it = iter(identifications)
-                for e0,e1 in it:
-                    edge_identifications[e0] = e1
-                    # Check that e0 makes sense. 
-                    assert e0[1]>=0 and e0[1]<self._polygons[e0[0]].num_edges()
-                    # Check that e1 makes sense. 
-                    assert e1[1]>=0 and e1[1]<self._polygons[e1[0]].num_edges()
-                    
-                    if e1 in edge_identifications:
-                        assert edge_identifications[e1] == e0
-                    else:
-                        edge_identifications[e1] = e0
-            else:
-                edge_identifications = identifications
-
-            self._edge_identifications = edge_identifications
-        elif len(args)==1:
-            # Copy constructor for finite surface.
-            s = args[0]
-            if not s.is_finite():
-                raise ValueError("Can only copy finite surface.")
-            polygons = {}
-            edge_identifications = {}
-            for label,polygon in s.label_polygon_iterator():
-                polygons[label]=polygon
-                for edge in xrange(polygon.num_edges()):
-                    edge_identifications[(label,edge)]=s.opposite_edge(label,edge)
-            self._field = s.base_ring()
-            self._polygons=Family(polygons)
-            self._edge_identifications = edge_identifications
-        else:
-            raise ValueError("Can only be called with one or two arguments.")
-    
-        # display everything by default
-        adj = []
-        todo = [self.base_label()]
-        labs = set(self.polygon_labels())
-        labs.remove(self.base_label())
-        while todo:
-            p1 = todo.pop()
-            for e1 in range(self.polygon(p1).num_edges()):
-                p2,e2 = self.opposite_edge(p1,e1)
-                if p2 in labs:
-                    labs.remove(p2)
-                    adj.append((p1,e1))
-        self._plot_options = {'adjacencies': adj}
-
-    def is_finite(self):
-        r"""
-        Return whether or not the surface is finite.
-        """
-        from sage.rings.infinity import Infinity
-        return self._polygons.cardinality() != Infinity
-
-    def num_polygons(self):
-        return self._polygons.cardinality()
-
-    def base_ring(self):
-        return self._field
-
-    def base_label(self):
-        return self.polygon_labels().an_element()
-
-    def polygon_labels(self):
-        from sage.combinat.words.alphabet import build_alphabet
-        return build_alphabet(self._polygons.keys())
-
-    def polygon(self, lab):
-        r"""
-        Return the polygon with label ``lab``.
-        """
-        return self._polygons[lab]
-
-    def opposite_edge(self, p, e):
-        if (p,e) not in self._edge_identifications:
-            e = e % self._polygons[p].num_edges()
-            if (p,e) not in self._edge_identifications:
-                raise ValueError("The pair"+str((p,e))+" is not a valid edge identifier.")
-        return self._edge_identifications[(p,e)]
-    
-class SimilaritySurface_wrapper(SimilaritySurface_generic):
-    r"""
-    Wraps a surface in a SimilaritySurface package. This is primarily for changing the type of infinite surfaces.
-    
-    EXAMPLES::
-        sage: from flatsurf.geometry.similarity_surface_generators import InfiniteStaircase
-        sage: s=InfiniteStaircase()
-        sage: from flatsurf.geometry.similarity_surface import convert_to_similarity_surface
-        sage: s2=convert_to_similarity_surface(s)
-        sage: print s2
-        Similarity surface built from infinitely many polygons
-    """
-    def __init__(self, surface):
-        if isinstance(surface, SimilaritySurface_wrapper):
-            # It's a party. We'll share data!
-            self._s = surface._s
-            self._base_ring = surface._base_ring
-            self._base_label = surface._base_label
-            self._polygons= surface._polygons
-            self._edge_identifications = surface._edge_identifications
-            self._is_finite = s._is_finite()
-        else:
-            self._s = surface
-            self._base_ring = surface.base_ring()
-            self._base_label = surface.base_label()
-            self._polygons={}
-            self._edge_identifications={}
-            self._is_finite = surface.is_finite()
-
-    def base_ring(self):
-        return self._base_ring
-
-    def polygon(self, lab):
-        try:
-            return self._polygons[lab]
-        except KeyError:
-            p = self._s.polygon(lab)
-            self._polygons[lab]=p
-            return p
-
-    def base_label(self):
-        return self._base_label
-
-    def opposite_edge(self, p, e):
-        try:
-            return self._edge_identifications[(p,e)]
-        except KeyError:
-            pair = self._s.opposite_edge(p,e)
-            self._edge_identifications[(p,e)]=pair
-            self._edge_identifications[pair]=(p,e)
-            return pair
-
-    def is_finite(self):
-        return self._is_finite
-
-def convert_to_similarity_surface(surface):
-    r"""
-    Returns a similarity surface version of the provided surface.
-    """
-    if surface.is_finite():
-        return SimilaritySurface_polygons_and_gluings(surface)
-    else:
-        return SimilaritySurface_wrapper(surface)
 

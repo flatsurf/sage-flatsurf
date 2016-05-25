@@ -6,7 +6,7 @@ from sage.rings.rational_field import QQ
 
 from sage.plot.graphics import Graphics
 
-from flatsurf.geometry.similarity_surface import SimilaritySurface_generic
+from flatsurf.geometry.similarity_surface import SimilaritySurface
 from .polygon import *
 from .edge_gluings import *
 
@@ -54,7 +54,7 @@ class GraphicalSurface:
 
         self._edge_labels = 'gluings' if edge_labels is True else edge_labels
 
-        assert isinstance(similarity_surface, SimilaritySurface_generic)
+        assert isinstance(similarity_surface, SimilaritySurface)
         self._ss = similarity_surface
 
         self._polygons = {}
