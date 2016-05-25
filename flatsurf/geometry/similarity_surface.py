@@ -75,6 +75,16 @@ class SimilaritySurface(Surface):
     def _check(self):
         r"""
         Run all the methods that start with _check
+        
+        EXAMPLES::
+            sage: from flatsurf import *
+            sage: n=6
+            sage: ps=[polygons.regular_ngon(2*n)]
+            sage: gluings=[((0,i),(0,i+n)) for i in range(n)]
+            sage: s=TranslationSurface(Surface_polygons_and_gluings(ps,gluings))
+            sage: s._check()
+            _check_edge_matrix ... done
+            _check_gluings ... done
         """
         for name in dir(self):
             if name.startswith('_check') and name != '_check':
@@ -87,13 +97,6 @@ class SimilaritySurface(Surface):
         for pair1,pair2 in self.edge_gluing_iterator():
             if not self.opposite_edge_pair(pair2)==pair1:
                 raise ValueError("edges not glued correctly:\n%s -> %s -> %s"%(pair1,pair2,self.opposite_edge_pair(pair2)))
-
-    def _check_type(self):
-        claimed_type = self.surface_type()
-        computed_type = self.compute_surface_type_from_gluings(limit=100)
-        if claimed_type != combine_surface_types(claimed_type,computed_type):
-            raise ValueError("Surface computed to be of type %s which is not more specific than the claimed type of %s."%(
-                surface_type_to_str(computed_type), surface_type_to_str(claimed_type)))
     
     def base_ring(self):
         r"""
