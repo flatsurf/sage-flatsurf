@@ -19,18 +19,19 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
         r"""
         Check the compatibility condition
         """
+        from flatsurf.geometry.similarity_surface import SimilaritySurface
         if self.is_finite():
             for lab in self.label_iterator():
                 p = self.polygon(lab)
                 for e in xrange(p.num_edges()):
-                    if not self.edge_matrix(lab,e).is_one():
+                    if not SimilaritySurface.edge_matrix(self,lab,e).is_one():
                         raise ValueError("gluings of (%s,%s) is not through translation"%(lab,e))
         else:
             count = 0
             for lab in self.label_iterator():
                 p = self.polygon(lab)
                 for e in xrange(p.num_edges()):
-                    if not self.edge_matrix(lab,e).is_one():
+                    if notSimilaritySurface.edge_matrix(self,lab,e).is_one():
                         raise ValueError("gluings of (%s,%s) is not through translation"%(lab,e))
                 count  = count+1
                 if count >= 10:
@@ -39,10 +40,7 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
     def edge_matrix(self, p, e=None):
         if e is None:
             p,e = p
-        if p not in self.polygon_labels():
-            from sage.structure.element import parent
-            raise ValueError("p (={!r}) with parent {!r} is not a valid label".format(p,parent(p)))
-        elif e < 0 or e >= self.polygon(p).num_edges():
+        if e < 0 or e >= self.polygon(p).num_edges():
             raise ValueError
         return identity_matrix(self.base_ring(),2)
 
