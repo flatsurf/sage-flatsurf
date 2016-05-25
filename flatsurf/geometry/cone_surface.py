@@ -1,16 +1,9 @@
-from flatsurf.geometry.similarity_surface import (
-    SimilaritySurface_generic, 
-    SimilaritySurface_polygons_and_gluings,
-    SimilaritySurface_wrapper)
+from flatsurf.geometry.similarity_surface import SimilaritySurface
 
-from flatsurf.geometry.surface import SurfaceType, convert_to_type
-
-class ConeSurface_generic(SimilaritySurface_generic):
+class ConeSurface(SimilaritySurface):
     r"""
     A Euclidean cone surface.
     """
-    def surface_type(self):
-        return SurfaceType.CONE
 
     def angles(self):
         r"""
@@ -25,7 +18,7 @@ class ConeSurface_generic(SimilaritySurface_generic):
         if not self.is_finite():
             raise NotImplementedError("the set of edges is infinite!")
 
-        edges = [(p,e) for p in self.polygon_labels() for e in range(self.polygon(p).num_edges())]
+        edges = [pair for pair in self.edge_iterator()]
         edges = set(edges)
         angles = []
         while edges:
@@ -38,23 +31,4 @@ class ConeSurface_generic(SimilaritySurface_generic):
                 pp,ee = self.opposite_edge(pp,(ee-1)%self.polygon(pp).num_edges())
             angles.append(angle)
         return angles
-
-class ConeSurface_polygons_and_gluings(
-        SimilaritySurface_polygons_and_gluings,
-        ConeSurface_generic):
-    pass
-
-class ConeSurface_wrapper(
-        SimilaritySurface_wrapper,
-        ConeSurface_generic):
-    pass
-
-def convert_to_cone_surface(surface):
-    r"""
-    Returns a cone surface version of the provided surface.
-    """
-    if surface.is_finite():
-        return ConeSurface_polygons_and_gluings(surface)
-    else:
-        return ConeSurface_wrapper(surface)
 
