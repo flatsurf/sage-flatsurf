@@ -17,6 +17,7 @@ class HalfDilationSurface(SimilaritySurface):
     def __rmul__(self,matrix):
         r"""
         EXAMPLES::
+
             sage: from flatsurf.geometry.similarity_surface_generators import infinite_staircase
             sage: s=infinite_staircase()
             sage: print s.underlying_surface()
@@ -73,6 +74,7 @@ class GL2RMapping(SurfaceMapping):
     This class pushes a surface forward under a matrix. 
     
     EXAMPLE::
+
         sage: K.<sqrt2> = NumberField(x**2 - 2, embedding=1.414)
         sage: from flatsurf.geometry.polygon import Polygons
         sage: p = Polygons(K)([(1,0),(sqrt2/2, sqrt2/2),(0, 1),(-sqrt2/2, sqrt2/2),(-1,0),(-sqrt2/2, -sqrt2/2),(0, -1),(sqrt2/2, -sqrt2/2)])

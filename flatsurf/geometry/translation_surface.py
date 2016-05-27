@@ -69,8 +69,10 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
         r"""
         Return a canonical version of this translation surface.
         
-        EXAMPLES::
-            sage: # We will check if an element lies in the Veech group
+        EXAMPLES:
+
+        We will check if an element lies in the Veech group::
+
             sage: from flatsurf.geometry.polygon import Polygons
             sage: K.<sqrt2> = NumberField(x**2 - 2, embedding=1.414)
             sage: octagon = Polygons(K)([(1,0),(sqrt2/2, sqrt2/2),(0, 1),(-sqrt2/2, sqrt2/2),(-1,0),(-sqrt2/2, -sqrt2/2),(0, -1),(sqrt2/2, -sqrt2/2)])

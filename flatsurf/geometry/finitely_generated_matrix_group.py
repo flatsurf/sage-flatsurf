@@ -218,7 +218,6 @@ class FinitelyGenerated2x2MatrixGroup(Group):
             move this method inside Sage
 
         EXAMPLES::
- 
 
             sage: from flatsurf.geometry.finitely_generated_matrix_group import  FinitelyGenerated2x2MatrixGroup
 

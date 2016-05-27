@@ -263,6 +263,7 @@ class SimilarityJoinPolygonsMapping(SurfaceMapping):
     Return a SurfaceMapping joining two polygons together along the edge provided to the constructor.
 
     EXAMPLES::
+
         sage: from flatsurf.geometry.polygon import Polygons
         sage: P=Polygons(QQ)
         sage: tri0=P([(1,0),(0,1),(-1,-1)])
@@ -418,7 +419,7 @@ class SplitPolygonsMapping(SurfaceMapping):
     Class for cutting a polygon along a diagonal.
     
     EXAMPLES::
-        sage: sys.path.insert(0,'/home/pat/active/FlatSurf/sage-flatsurf')
+
         sage: K.<sqrt2> = NumberField(x**2 - 2, embedding=1.414)
         sage: from flatsurf.geometry.polygon import Polygons
         sage: p = Polygons(K)([(1,0),(sqrt2/2, sqrt2/2),(0, 1),(-sqrt2/2, sqrt2/2),(-1,0),(-sqrt2/2, -sqrt2/2),(0, -1),(sqrt2/2, -sqrt2/2)])
@@ -1004,7 +1005,7 @@ def canonicalize_translation_surface_mapping(s):
     Return the translation surface in a canonical form.
     
     EXAMPLES::
-        sage: sys.path.insert(0,'/home/pat/FlatSurf/sage-flatsurf')
+
         sage: from flatsurf.geometry.polygon import Polygons
         sage: K.<sqrt2> = NumberField(x**2 - 2, embedding=1.414)
         sage: octagon = Polygons(K)([(1,0),(sqrt2/2, sqrt2/2),(0, 1),(-sqrt2/2, sqrt2/2),(-1,0),(-sqrt2/2, -sqrt2/2),(0, -1),(sqrt2/2, -sqrt2/2)])

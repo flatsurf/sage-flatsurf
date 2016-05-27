@@ -77,6 +77,7 @@ class SimilaritySurface(Surface):
         Run all the methods that start with _check
         
         EXAMPLES::
+
             sage: from flatsurf import *
             sage: n=6
             sage: ps=[polygons.regular_ngon(2*n)]
@@ -209,6 +210,7 @@ class SimilaritySurface(Surface):
         Iterate over the edges of polygons, which are pairs (l,e) where l is a polygon label, 0 <= e < N and N is the number of edges of the polygon with label l.
         
         EXAMPLES::
+
             sage: from flatsurf.geometry.polygon import Polygons
             sage: P=Polygons(QQ)
             sage: tri0=P([(1,0),(0,1),(-1,-1)])
@@ -438,23 +440,21 @@ class SimilaritySurface(Surface):
 
         - ``v`` -- coordinates of a vector in R^2
         
-        # Comment out until ChamanaraSurface is fixed.
-        #EXAMPLES::
+        EXAMPLES::
 
-            #sage: from flatsurf.geometry.chamanara import ChamanaraSurface
-            #sage: S = ChamanaraSurface(1/2)
-            #sage: S.tangent_vector(0, (1/2,1/2), (1,1))
-            #SimilaritySurfaceTangentVector in polygon 1 based at (-1/2, 3/2) with vector
-            #(-1, -1)
-            #sage: K.<sqrt2> = QuadraticField(2)
-            #sage: S.tangent_vector(0, (1/2,1/2), (1,sqrt2))
-            #SimilaritySurfaceTangentVector in polygon 1 based at (-1/2, 3/2) with vector
-            #(-1, -sqrt2)
+            sage: from flatsurf.geometry.chamanara import ChamanaraSurface
+            sage: S = ChamanaraSurface(1/2)
+            sage: S.tangent_vector(0, (1/2,1/2), (1,1))
+            SimilaritySurfaceTangentVector in polygon 1 based at (-1/2, 3/2) with vector
+            (-1, -1)
+            sage: K.<sqrt2> = QuadraticField(2)
+            sage: S.tangent_vector(0, (1/2,1/2), (1,sqrt2))
+            SimilaritySurfaceTangentVector in polygon 1 based at (-1/2, 3/2) with vector
+            (-1, -sqrt2)
 
-            #sage: S = ChamanaraSurface(sqrt2/2)
-            #sage: S.tangent_vector(1, (0,1), (1,1))
-            #SimilaritySurfaceTangentVector in polygon 0 based at (-sqrt2, sqrt2
-            #+ 1) with vector (-1, -1)
+            sage: S = ChamanaraSurface(sqrt2/2)
+            sage: S.tangent_vector(1, (0,1), (1,1))
+            SimilaritySurfaceTangentVector in polygon 0 based at (-sqrt2, sqrt2 + 1) with vector (-1, -1)
         """
         p = vector(p)
         v = vector(v)
