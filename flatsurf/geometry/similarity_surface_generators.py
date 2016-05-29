@@ -538,6 +538,50 @@ class TranslationSurfaceGenerators:
         return TranslationSurface(Surface_polygons_and_gluings(polygons, identifications))
 
     @staticmethod
+    def mcmullen_L(l1,l2,l3,l4):
+        r"""
+        Return McMullen's L shaped surface with parameters l1, l2, l3, l4.
+
+        Polygon labels and lengths are marked below.
+        
+        +-----+
+        |     |
+        |  1  |l1
+        |     |
+        |     |    l4
+        +-----+---------+
+        |               |
+        |       0       |l2
+        |               |
+        +-----+---------+
+          l3        
+
+        Note that this surface may not work correctly yet due to a non-strictly 
+        convex polygon in the representation.
+
+        EXAMPLES::
+
+            sage: from flatsurf import *
+            sage: s=translation_surfaces.mcmullen_L(1,1,1,1)
+            sage: s._check()
+            _check_edge_matrix ... done
+            _check_gluings ... done
+        """
+        from flatsurf.geometry.polygon import polygons
+        from flatsurf.geometry.surface import Surface_polygons_and_gluings
+        from flatsurf.geometry.translation_surface import TranslationSurface
+        polygons = {
+            0:polygons((l3,0),(l4,0),(0,l2),(-l4,0),(-l3,0),(0,-l2)), 
+            1:polygons((l3,0),(0,l1),(-l3,0),(0,-l1)) }
+        identifications = {
+            (0,0):(1,2),
+            (0,1):(0,3),
+            (0,2):(0,5),
+            (0,4):(1,0),
+            (1,1):(1,3)}
+        return TranslationSurface(Surface_polygons_and_gluings(polygons, identifications))
+
+    @staticmethod
     def octagon_and_squares():
         r"""
         EXAMPLES::
