@@ -147,8 +147,10 @@ class Surface_polygons_and_gluings(Surface):
             self._edge_identifications = edge_identifications
         else:
             raise ValueError("Can only be called with one or two arguments.")
-    
+        
         # display everything by default
+        # I don't think we should be doing this by default whenever we create
+        # a surface. -Pat
         adj = []
         todo = [self.base_label()]
         labs = set(self.polygon_labels())
