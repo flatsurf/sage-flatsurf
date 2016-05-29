@@ -1,6 +1,8 @@
 r"""
 Translation Surfaces.
 """
+from sage.misc.cachefunc import cached_method
+
 from flatsurf.geometry.surface import Surface
 from flatsurf.geometry.half_translation_surface import HalfTranslationSurface 
 from flatsurf.geometry.dilation_surface import DilationSurface
@@ -167,7 +169,20 @@ class AbstractOrigami(Surface):
         from flatsurf.geometry.polygon import polygons
         return polygons.square()
 
+    @cached_method
     def base_ring(self):
+        r"""
+        EXAMPLES::
+
+            sage: from flatsurf import *
+            sage: S = SymmetricGroup(3)
+            sage: r = S('(1,2)')
+            sage: u = S('(1,3)')
+            sage: o = translation_surfaces.origami(r,u)
+            sage: o.base_ring()
+            Rational Field
+        """
+        from sage.rings.rational_field import QQ
         return QQ
 
     def opposite_edge(self, p, e):
