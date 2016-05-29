@@ -442,19 +442,15 @@ class SimilaritySurface(Surface):
         
         EXAMPLES::
 
-            sage: from flatsurf.geometry.chamanara import ChamanaraSurface
-            sage: S = ChamanaraSurface(1/2)
-            sage: S.tangent_vector(0, (1/2,1/2), (1,1))
-            SimilaritySurfaceTangentVector in polygon 1 based at (-1/2, 3/2) with vector
-            (-1, -1)
+            sage: from flatsurf.geometry.chamanara import chamanara_surface
+            sage: S = chamanara_surface(1/2)
+            sage: S.tangent_vector(S.base_label(), (1/2,1/2), (1,1))
+            SimilaritySurfaceTangentVector in polygon (1, [-1  0]
+            [ 0 -1]) based at (1/2, -3/2) with vector (1, 1)
             sage: K.<sqrt2> = QuadraticField(2)
-            sage: S.tangent_vector(0, (1/2,1/2), (1,sqrt2))
-            SimilaritySurfaceTangentVector in polygon 1 based at (-1/2, 3/2) with vector
-            (-1, -sqrt2)
-
-            sage: S = ChamanaraSurface(sqrt2/2)
-            sage: S.tangent_vector(1, (0,1), (1,1))
-            SimilaritySurfaceTangentVector in polygon 0 based at (-sqrt2, sqrt2 + 1) with vector (-1, -1)
+            sage: S.tangent_vector(S.base_label(), (1/2,1/2), (1,sqrt2))
+            SimilaritySurfaceTangentVector in polygon (1, [-1  0]
+            [ 0 -1]) based at (1/2, -3/2) with vector (1, sqrt2)
         """
         p = vector(p)
         v = vector(v)
