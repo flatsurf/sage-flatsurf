@@ -96,7 +96,7 @@ def chamanara_half_dilation_surface(alpha, n=8):
     
 def chamanara_surface(alpha,n=8):
     r"""
-    Return Chamanara's surface thought of as a similarity surface.
+    Return Chamanara's surface thought of as a translation surface.
     """
     s = chamanara_half_dilation_surface(alpha).minimal_translation_cover()
     l = s.base_label()
