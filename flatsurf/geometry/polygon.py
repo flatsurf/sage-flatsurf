@@ -47,6 +47,9 @@ from flatsurf.geometry.matrix_2x2 import angle
 ZZ_0 = ZZ.zero()
 ZZ_2 = ZZ(2)
 
+def dot_product(v,w):
+    return v[0]*w[0]+v[1]*w[1]
+
 def wedge_product(v,w):
     return v[0]*w[1]-v[1]*w[0]
 
@@ -398,6 +401,21 @@ class ConvexPolygon(Element):
             point positioned on interior of edge 1 of polygon
             sage: s.get_point_position(V((1,3/2)))
             point positioned outside polygon
+
+            sage: p=polygons(edges=[(1,0),(1,0),(1,0),(0,1),(-3,0),(0,-1)])
+            sage: V=p.vector_space()
+            sage: print p.get_point_position(V([10,0]))
+            point positioned outside polygon
+            sage: print p.get_point_position(V([1/2,0]))
+            point positioned on interior of edge 0 of polygon
+            sage: print p.get_point_position(V([3/2,0]))
+            point positioned on interior of edge 1 of polygon
+            sage: print p.get_point_position(V([2,0]))
+            point positioned on vertex 2 of polygon
+            sage: print p.get_point_position(V([5/2,0]))
+            point positioned on interior of edge 2 of polygon
+            sage: print p.get_point_position(V([5/2,1/4]))
+            point positioned in interior of polygon
         """
         V = self.vector_space()
         if translation is None:
@@ -416,29 +434,13 @@ class ConvexPolygon(Element):
                 return PolygonPosition(PolygonPosition.OUTSIDE)
             if w == 0:
                 # Lies on the line through edge i!
-                n=self.num_edges()
-                # index and edge after v1
-                ip1=(i+1)%n
-                e=self.edge(ip1)
-                w=wedge_product(e,point-v1)
-                if w<0:
-                    return PolygonPosition(PolygonPosition.OUTSIDE)
-                if w==0:
-                    # Found vertex ip1!
-                    return PolygonPosition(PolygonPosition.VERTEX, vertex=ip1)
-                # index, edge and vertex prior to v0
-                im1=(i+n-1)%n
-                e=self.edge(im1)
-                vm1=v0-e
-                w=wedge_product(e,point-vm1)
-                if w<0:
-                    return PolygonPosition(PolygonPosition.OUTSIDE)
-                if w==0:
-                    # Found vertex i!
+                dp1 = dot_product(e,point-v0)
+                if dp1 == 0:
                     return PolygonPosition(PolygonPosition.VERTEX, vertex=i)
-                # Otherwise we found the interior of edge i:
-                return PolygonPosition(PolygonPosition.EDGE_INTERIOR, edge=i)
-        # Loop terminated (on positive side of each edge)
+                dp2 = dot_product(e,e)
+                if 0 < dp1 and dp1 < dp2:
+                    return PolygonPosition(PolygonPosition.EDGE_INTERIOR, edge=i)
+        # Loop terminated (on inside of each edge)
         return PolygonPosition(PolygonPosition.INTERIOR)
 
     def flow_to_exit(self,point,direction):
