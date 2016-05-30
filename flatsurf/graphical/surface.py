@@ -23,7 +23,7 @@ class GraphicalSurface:
         sage: gs.graphical_polygon(0).plot()
         Graphics object consisting of 5 graphics primitives
     """
-    def __init__(self, similarity_surface, adjacencies=None, visible=None, polygon_labels=True, edge_labels=True):
+    def __init__(self, similarity_surface, adjacencies=None, polygon_labels=True, edge_labels=True):
         r"""
         Construct a GraphicalSurface from a similarity surface.
 
@@ -48,7 +48,10 @@ class GraphicalSurface:
             - ``'gluings and numbers'`` -- full information
 
         - ``adjacencies`` -- a list of pairs ``(p,e)`` to be used to set
-          adjacencies of polygons
+          adjacencies of polygons. 
+          
+        If adjacencies is not defined and the surface is finite, make_all_visible()
+        is called to make all polygons visible.
         """
         self._polygons_labels = polygon_labels
 
@@ -60,9 +63,25 @@ class GraphicalSurface:
         self._polygons = {}
         self._visible = set([self._ss.base_label()])
 
-        if adjacencies is not None:
+        if adjacencies is None:
+            if self._ss.is_finite():
+                self.make_all_visible()
+        else:
             for p,e in adjacencies:
                 self.make_adjacent_and_visible(p,e)
+
+    def process_options(self, adjacencies=None, polygon_labels=None, edge_labels=None):
+        r"""
+        Process the options listed as if the graphical_surface was first
+        created.
+        """
+        if not adjacencies is None:
+            for p,e in adjacencies:
+                self.make_adjacent_and_visible(p,e)
+        if not polygon_labels is None:
+            self._polygons_labels = polygon_labels
+        if not edge_labels is None:
+            self._edge_labels = 'gluings' if edge_labels is True else edge_labels
 
     def __repr__(self):
         return "Graphical version of Similarity Surface {!r}".format(self._ss)
@@ -105,7 +124,7 @@ class GraphicalSurface:
             Graphics object consisting of 13 graphics primitives
 
             sage: s = similarity_surfaces.example()
-            sage: g = s.graphical_surface()
+            sage: g = s.graphical_surface(cached=False, adjacencies=[])
             sage: g.make_all_visible(adjacent=False)
             sage: g.plot()
             Graphics object consisting of 16 graphics primitives
@@ -223,7 +242,7 @@ class GraphicalSurface:
 
             sage: from flatsurf import *
             sage: s = similarity_surfaces.example()
-            sage: gs = s.surface_plot()
+            sage: gs = s.graphical_surface(adjacencies=[])
             sage: print gs.graphical_polygon(0)
             Polygon 0: [(0.0, 0.0), (2.0, -2.0), (2.0, 0.0)]
             sage: print gs.graphical_polygon(1)
@@ -259,7 +278,7 @@ class GraphicalSurface:
 
             sage: from flatsurf import *
             sage: s = similarity_surfaces.example()
-            sage: g = s.surface_plot()
+            sage: g = s.graphical_surface(adjacencies=[])
             sage: g.is_adjacent(0,0)
             False
             sage: g.is_adjacent(0,1)
@@ -293,7 +312,7 @@ class GraphicalSurface:
 
             sage: from flatsurf import *
             sage: s = similarity_surfaces.example()
-            sage: g = s.graphical_surface()
+            sage: g = s.graphical_surface(cached=False, adjacencies=[])
             sage: g.edge_labels(0)
             ['1', '1', '1']
             sage: g.make_all_visible(adjacent=True)
@@ -307,11 +326,11 @@ class GraphicalSurface:
             ['0', None, '0']
 
             sage: s = similarity_surfaces.example()
-            sage: g = s.graphical_surface(edge_labels='number')
+            sage: g = s.graphical_surface(cached=False, adjacencies=[], edge_labels='number')
             sage: g.edge_labels(0)
             ['0', '1', '2']
 
-            sage: g = s.graphical_surface(edge_labels='gluings and number')
+            sage: g = s.graphical_surface(cached=False, adjacencies=[], edge_labels='gluings and number')
             sage: g.edge_labels(0)
             ['0 -> (1, 1)', '1 -> (1, 2)', '2 -> (1, 0)']
             sage: g.make_all_visible(adjacent=True)
