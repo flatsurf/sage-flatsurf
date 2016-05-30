@@ -515,6 +515,34 @@ class TranslationSurfaceGenerators:
     Common and less common translation surfaces.
     """
     @staticmethod
+    def square_torus():
+        r"""
+        Return flat torus obtained by identification of the opposite sides of a
+        square.
+
+        EXAMPLES::
+
+            sage: from flatsurf import *
+            sage: T = translation_surfaces.square_torus()
+            sage: T
+            TranslationSurface built from 1 polygon
+
+        Rational directions are completely periodic::
+
+            sage: v = T.tangent_vector(0, (1/33, 1/257), (13,17))
+            sage: L = v.straight_line_trajectory()
+            sage: L.flow(13+17)
+            sage: L.is_closed()
+            True
+        """
+        from flatsurf.geometry.polygon import polygons
+        from flatsurf.geometry.surface import Surface_polygons_and_gluings
+        from flatsurf.geometry.translation_surface import TranslationSurface
+        polygons = [polygons.square()]
+        identifications = {(0,0):(0,2), (0,1):(0,3)}
+        return TranslationSurface(Surface_polygons_and_gluings(polygons, identifications))
+
+    @staticmethod
     def regular_octagon():
         r"""
         Return the translation surface built from the regular octagon by
