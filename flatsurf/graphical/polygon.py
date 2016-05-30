@@ -49,7 +49,7 @@ class GraphicalPolygon:
 
             sage: from flatsurf import *
             sage: s = similarity_surfaces.example()
-            sage: gs = s.surface_plot()
+            sage: gs = s.graphical_surface()
             sage: gs.graphical_polygon(0)
             Polygon 0: [(0.0, 0.0), (2.0, -2.0), (2.0, 0.0)]
         """
