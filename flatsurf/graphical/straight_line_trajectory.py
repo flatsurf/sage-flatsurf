@@ -80,7 +80,7 @@ class GraphicalStraightLineTrajectory:
             sage: traj.flow(-5)
             sage: gtraj = traj.graphical_trajectory(gs)
             sage: gs.plot() + gtraj.plot()
-            Graphics object consisting of 61 graphics primitives
+            Graphics object consisting of 119 graphics primitives
         """        
         from sage.plot.graphics import Graphics
         p = Graphics()
