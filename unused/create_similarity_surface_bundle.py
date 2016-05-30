@@ -49,7 +49,7 @@ class CreateSimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
             n=polygon.num_edges()
             coords=canvas.coords(handle)
             for edge in range(n):
-                if self._edge_to_label_handle.has_key((index,edge)):
+                if (index,edge) in self._edge_to_label_handle:
                     label_handle = self._edge_to_label_handle[(index,edge)]
                     canvas.delete(label_handle)
                     del self._edge_to_label_handle[(index,edge)]

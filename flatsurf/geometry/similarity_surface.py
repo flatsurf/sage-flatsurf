@@ -547,7 +547,7 @@ class SimilaritySurface(Surface):
             Graphics object consisting of 18 graphics primitives
         """
         from flatsurf.graphical.surface import GraphicalSurface
-        if kwds.has_key("cached"):
+        if "cached" in kwds:
             if not kwds["cached"]:
                 # cached=False: return a new surface.
                 kwds.pop("cached",None)

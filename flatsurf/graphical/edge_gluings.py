@@ -116,7 +116,7 @@ class EdgeLabels:
         raise NotImplementedError("get_opposite must be overriden in subclasses")
 
     def remove_label(self, label):
-        if self._label_to_edge.has_key(label):
+        if label in self._label_to_edge:
             pair1=self.get_edge(label)
             pair2=self.get_opposite(pair1[0], pair1[1])
             del self._labels[pair1]
