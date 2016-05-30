@@ -58,8 +58,9 @@ class GraphicalSegmentInPolygon:
             return Graphics()
 
 class GraphicalStraightLineTrajectory:
-    r"""Allows for the rendering of a straight-line trajectory through a graphical surface."""
-    
+    r"""
+    Allows for the rendering of a straight-line trajectory through a graphical surface.
+    """
     def __init__(self, graphical_surface, trajectory):
         self._gs = graphical_surface
         self._traj = trajectory
@@ -69,23 +70,17 @@ class GraphicalStraightLineTrajectory:
         r"""
         EXAMPLES::
         
-            from flatsurf.geometry.similarity_surface_generators import SimilaritySurfaceGenerators
-            s=SimilaritySurfaceGenerators.example()
-            from flatsurf.graphical.surface import GraphicalSurface
-            gs=GraphicalSurface(s)
-            gs.make_visible(1)
-            from flatsurf.geometry.tangent_bundle import *
-            K.<sqrt2>=NumberField(x^2-2,embedding=1)
-            tb = SimilaritySurfaceTangentBundle(s)
-            from flatsurf.sage.modules.free_module_element import vector
-            v=SimilaritySurfaceTangentVector(tb, 0, vector((1,-1)), vector((sqrt2,-1)))
-            from flatsurf.geometry.straight_line_trajectory import *
-            traj = StraightLineTrajectory(v)
-            traj.flow(100)
-            traj.flow(-5)
-            from flatsurf.graphical.straight_line_trajectory import *
-            gtraj = GraphicalStraightLineTrajectory(gs, traj)
-            show(gs.plot()+gtraj.plot())
+            sage: from flatsurf import *
+            sage: s = similarity_surfaces.example()
+            sage: gs = s.graphical_surface()
+            sage: K.<sqrt2>=NumberField(x^2-2,embedding=1)
+            sage: v = s.tangent_vector(0, (1,-1), (sqrt2,-1))
+            sage: traj = v.straight_line_trajectory()
+            sage: traj.flow(100)
+            sage: traj.flow(-5)
+            sage: gtraj = traj.graphical_trajectory(gs)
+            sage: gs.plot() + gtraj.plot()
+            Graphics object consisting of 61 graphics primitives
         """        
         from sage.plot.graphics import Graphics
         p = Graphics()
