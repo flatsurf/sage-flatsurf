@@ -479,6 +479,29 @@ class SimilaritySurface(Surface):
         else:
             return self.tangent_bundle(ring)(lab, p, v)
     
+    def triangulation_mapping(self):
+        r"""
+        Return a SurfaceMapping triangulating the suface.
+        """
+        from flatsurf.geometry.mappings import triangulation_mapping
+        return triangulation_mapping(self)
+    
+    def triangulate(self):
+        r"""
+        Return a triangulated version of this surface.
+
+        EXAMPLES::
+
+            sage: from flatsurf import *
+            sage: s=translation_surfaces.mcmullen_L(1,1,1,1)
+            sage: ss=s.triangulate()
+            sage: gs=ss.graphical_surface()
+            sage: gs.make_all_visible()
+            sage: print(gs)
+            Graphical version of Similarity Surface TranslationSurface built from 6 polygons
+        """
+        return self.triangulation_mapping().codomain()
+        
     def plot_options(self):
         r"""
         Return a dictionary with plot options for this surface.
