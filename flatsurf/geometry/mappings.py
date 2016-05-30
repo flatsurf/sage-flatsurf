@@ -253,7 +253,7 @@ class ExtraLabel(SageObject):
         return hash(23*self._label)
         
     def __str__(self):
-        return "ExtraLabel("+str(self._label)+")"
+        return "E"+str(self._label)
     
     def __repr__(self):
         return "ExtraLabel("+str(self._label)+")"
@@ -593,9 +593,17 @@ def subdivide_a_polygon(s):
     r"""
     Return a SurfaceMapping which cuts one polygon along a diagonal or None if the surface is triangulated.
     """
+    from flatsurf.geometry.polygon import wedge_product
     for l,poly in s.label_polygon_iterator():
-        if poly.num_edges()>3:
-            return SplitPolygonsMapping(s,l,0,2)
+        n = poly.num_edges() 
+        if n>3:
+            for i in xrange(n):
+                e1=poly.edge(i)
+                e2=poly.edge((i+1)%n)
+                if wedge_product(e1,e2) != 0:
+                    return SplitPolygonsMapping(s,l,i, (i+2)%n)
+            raise ValueError("Unable to triangulate polygon with label "+str(l)+\
+                ": "+str(poly))
     return None
 
 
