@@ -1,7 +1,53 @@
-from collections import deque
+from collections import deque, defaultdict
 
 from flatsurf.geometry.tangent_bundle import *
 from flatsurf.geometry.polygon import is_same_direction
+
+# Vincent question:
+# using deque has the disadvantage of losing the initial points
+# ideally doig
+#  my_line[i]
+# we should always access to the same element
+
+def get_linearity_coeff(u, v):
+    r"""
+    Given the two 2-dimensional vectors ``u`` and ``v``, return ``a`` so that
+    ``v = a*u``
+
+    If the vectors are not colinear, a ``ValueError`` is raised.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.straight_line_trajectory import get_linearity_coeff
+
+        sage: V = VectorSpace(QQ,2)
+        sage: get_linearity_coeff(V((1,0)), V((2,0)))
+        2
+        sage: get_linearity_coeff(V((2,0)), V((1,0)))
+        1/2
+        sage: get_linearity_coeff(V((0,1)), V((0,2)))
+        2
+        sage: get_linearity_coeff(V((0,2)), V((0,1)))
+        1/2
+        sage: get_linearity_coeff(V((1,2)), V((-2,-4)))
+        -2
+
+        sage: get_linearity_coeff(V((1,1)), V((-1,1)))
+        Traceback (most recent call last):
+        ...
+        ValueError: non colinear
+    """
+    if u[0]:
+        a = v[0]/u[0]
+        if v[1] != a*u[1]:
+            raise ValueError("non colinear")
+        return a
+    elif v[0]:
+        raise ValueError("non colinear")
+    elif u[1]:
+        return v[1]/u[1]
+    else:
+        raise ValueError("zero vector")
 
 class SegmentInPolygon:
     r"""
@@ -25,6 +71,16 @@ class SegmentInPolygon:
         else:
             self._end = start.forward_to_polygon_boundary()
             self._start = self._end.forward_to_polygon_boundary()
+
+    def __eq__(self, other):
+        return type(self) is type(other) and \
+               self._start == other._start and \
+               self._end == other._end
+
+    def __ne__(self, other):
+        return type(self) is not type(other) or \
+               self._start != other._start or \
+               self._end != other._end
 
     def __repr__(self):
         r"""
@@ -131,21 +187,28 @@ class SegmentInPolygon:
         deprecation(1, "do not use end_direction but end().vector()")
         return self._end.vector()
 
-
-
-class StraightLineTrajectory:
+class AbstractStraightLineTrajectory:
     r"""
-    Straight-line trajectory in a translation surface.
-    """
-    def __init__(self, tangent_vector):
-        self._segments=deque()
-        seg = SegmentInPolygon(tangent_vector)
-        self._segments.append(seg)
-        self._setup_forward()
-        self._setup_backward()
+    You need to implement:
 
-    def segments(self):
-        return self._segments
+    - ``def segment(self, i)``
+    - ``def segments(self)``
+    """
+    def __repr__(self):
+        start = self.segment(0).start()
+        end = self.segment(-1).end()
+        return "Straight line trajectory made of {} segments from {} in polygon {} to {} in polygon {}".format(
+                self.combinatorial_length(),
+                start.point(), start.polygon_label(),
+                end.point(), end.polygon_label())
+
+    def graphical_trajectory(self, graphical_surface):
+        r"""
+        Returns a ``GraphicalStraightLineTrajectory`` corresponding to this
+        trajectory in the provided  ``GraphicalSurface``.
+        """
+        from flatsurf.graphical.straight_line_trajectory import GraphicalStraightLineTrajectory
+        return GraphicalStraightLineTrajectory(graphical_surface, self)
 
     def coding(self, alphabet=None):
         r"""
@@ -160,8 +223,7 @@ class StraightLineTrajectory:
         EXAMPLES::
 
             sage: from flatsurf import *
-            sage: p = polygons.square()
-            sage: t = similarity_surfaces([p], {(0,0):(0,2), (0,1):(0,3)})
+            sage: t = translation_surfaces.square_torus()
 
             sage: v = t.tangent_vector(0, (1/2,0), (5,6))
             sage: l = v.straight_line_trajectory()
@@ -241,34 +303,65 @@ class StraightLineTrajectory:
 
         return ans
 
+class StraightLineTrajectory(AbstractStraightLineTrajectory):
+    r"""
+    Straight-line trajectory in a similarity surface.
+    """
+    def __init__(self, tangent_vector):
+        self._segments = deque()
+        seg = SegmentInPolygon(tangent_vector)
+        self._segments.append(seg)
+        self._setup_forward()
+        self._setup_backward()
+
+    def segment(self, i):
+        r"""
+        EXAMPLES::
+
+            sage: from flatsurf import *
+
+            sage: O = translation_surfaces.regular_octagon()
+            sage: v = O.tangent_vector(0, (1,1), (33,45))
+            sage: L = v.straight_line_trajectory()
+            sage: L.segment(0)
+            Segment in polygon 0 starting at (4/15, 0) and ending at (11/26*a +
+            1, 15/26*a + 1)
+            sage: L.flow(-1)
+            sage: L.segment(0)
+            Segment in polygon 0 starting at (-1/2*a, 7/22*a + 7/11) and ending
+            at (4/15, a + 1)
+            sage: L.flow(1)
+            sage: L.segment(2)
+            Segment in polygon 0 starting at (-1/13*a, 1/13*a) and ending at
+            (9/26*a + 11/13, 17/26*a + 15/13)
+        """
+        return self.segments()[i]
+
     def combinatorial_length(self):
         return len(self.segments())
 
+    def segments(self):
+        return self._segments
+
     def _setup_forward(self):
-        v=self.terminal_tangent_vector()
+        v = self.terminal_tangent_vector()
         if v.is_based_at_singularity():
-            self._forward=None
+            self._forward = None
         else:
-            self._forward=v.invert()
+            self._forward = v.invert()
 
     def _setup_backward(self):
-        v=self.initial_tangent_vector()
+        v = self.initial_tangent_vector()
         if v.is_based_at_singularity():
-            self._backward=None
+            self._backward = None
         else:
-            self._backward=v.invert()
-
-    def initial_segment(self):
-        return self._segments[0]
-
-    def terminal_segment(self):
-        return self._segments[-1]
+            self._backward = v.invert()
 
     def initial_tangent_vector(self):
-        return self.initial_segment().start()
+        return self._segments[0].start()
 
     def terminal_tangent_vector(self):
-        return self.terminal_segment().end()
+        return self._segments[-1].end()
 
     def is_forward_separatrix(self):
         return self._forward is None
@@ -320,14 +413,6 @@ class StraightLineTrajectory:
         return (not self.is_forward_separatrix()) and \
             self._forward.differs_by_scaling(self.initial_tangent_vector())
 
-    def __repr__(self):
-        start = self._segments[0].start()
-        end = self._segments[-1].end()
-        return "Straight line trajectory made of {} segments from {} in polygon {} to {} in polygon {}".format(
-                len(self._segments),
-                start.point(), start.polygon_label(),
-                end.point(), end.polygon_label())
-
     def flow(self, steps):
         r"""
         Append or preprend segments to the trajectory.
@@ -364,9 +449,199 @@ class StraightLineTrajectory:
                 self._setup_backward()
                 steps += 1
 
-    def graphical_trajectory(self, graphical_surface):
+    # DEPRECATED STUFF
+
+    def initial_segment(self):
+        from sage.misc.superseded import deprecation
+        deprecation(-1, "initial_segment is deprecated... use self.segments()[0]")
+        return self._segments[0]
+
+    def terminal_segment(self):
+        from sage.misc.superseded import deprecation
+        deprecation(-1, "terminal_segment is deprecated... use self.segments()[0]")
+        return self._segments[-1]
+
+class StraightLineTrajectoryTranslation(AbstractStraightLineTrajectory):
+    r"""
+    Straight line trajectory in a translation surface.
+
+    This is similar to :class:`StraightLineTrajectory` but implemented using
+    interval exchange maps. It should be faster than the implementation via
+    segments and flowing in polygons.
+
+    Though, there is one big difference, this class can model an edge!
+
+    This class only stores a list of triples ``(p, e, x)`` where:
+    
+    - ``p`` is a label of a polygon
+    
+    - ``e`` is the number of some edge in ``p``
+
+    - ``x`` is the position of the point in ``e`` (be careful that it is not
+      necessarily a number between 0 and 1. It is given relatively to the length
+      of the induced interval in the iet)
+
+    (see the methods :meth:`_prev` and :meth:`_next`)
+    """
+    def __init__(self, tangent_vector):
+        t = tangent_vector.polygon_label()
+        self._vector = tangent_vector.vector()
+        self._s = tangent_vector.surface()
+
+        start = SegmentInPolygon(tangent_vector).start()
+        pos = start._position
+        if pos._position_type == pos.EDGE_INTERIOR:
+            i = pos.get_edge()
+        elif pos._position_type == pos.VERTEX:
+            i = pos.get_vertex()
+        else:
+            raise RuntimeError("PROBLEM!")
+
+        p = start.polygon_label()
+        poly = self._s.polygon(p)
+
+        T = self._get_iet(p)
+        x = get_linearity_coeff(poly.vertex(i+1) - poly.vertex(i),
+                                start.point() - poly.vertex(i))
+        x *= T.length_bot(i)
+
+        self._points = deque() # we store triples (lab, edge, rel_pos)
+        self._points.append((p, i, x))
+
+    def _next(self, p, e, x):
         r"""
-        Returns a GraphicalStraightLineTrajectory corresponding to this trajectory in the provided GraphicalSurface.
+        Return the image of ``(p, e, x)``
+
+        EXAMPLES::
+
+            sage: from flatsurf import *
+            sage: from flatsurf.geometry.straight_line_trajectory import StraightLineTrajectoryTranslation
+            sage: S = SymmetricGroup(3)
+            sage: r = S('(1,2)')
+            sage: u = S('(1,3)')
+            sage: o = translation_surfaces.origami(r,u)
+            sage: v = o.tangent_vector(1, (1/3,1/7), (5,13))
+            sage: L = StraightLineTrajectoryTranslation(v)
+            sage: t0 = (1,0,1/3)
+            sage: t1 = L._next(*t0)
+            sage: t2 = L._next(*t1)
+            sage: t0,t1,t2
+            ((1, 0, 1/3), (3, 0, 16/3), (1, 0, 31/3))
+            sage: assert L._previous(*t2) == t1
+            sage: assert L._previous(*t1) == t0
         """
-        from flatsurf.graphical.straight_line_trajectory import GraphicalStraightLineTrajectory
-        return GraphicalStraightLineTrajectory(graphical_surface, self)
+        e, x = self._get_iet(p).forward_image(e, x)
+        p, e = self._s.opposite_edge(p, e)
+        return (p, e, x)
+
+    def _previous(self, p, e, x):
+        r"""
+        Return the preimage of ``(p, e, x)``
+        """
+        p, e = self._s.opposite_edge(p, e)
+        e, x = self._get_iet(p).backward_image(e, x)
+        return (p, e, x)
+
+    def combinatorial_length(self):
+        return len(self._points)
+
+    def _get_iet(self, label):
+        polygon = self._s.polygon(label)
+        try:
+            return self._iets[polygon]
+        except AttributeError:
+            self._iets = {polygon: polygon.flow_map(self._vector)}
+        except KeyError:
+            self._iets[polygon] = polygon.flow_map(self._vector)
+        return self._iets[polygon]
+
+    def segment(self, i):
+        r"""
+        EXAMPLES::
+
+            sage: from flatsurf import *
+            sage: from flatsurf.geometry.straight_line_trajectory import StraightLineTrajectoryTranslation
+
+            sage: O = translation_surfaces.regular_octagon()
+            sage: v = O.tangent_vector(0, (1,1), (33,45))
+            sage: L = StraightLineTrajectoryTranslation(v)
+            sage: L.segment(0)
+            Segment in polygon 0 starting at (4/15, 0) and ending at (11/26*a +
+            1, 15/26*a + 1)
+            sage: L.flow(-1)
+            sage: L.segment(0)
+            Segment in polygon 0 starting at (-1/2*a, 7/22*a + 7/11) and ending
+            at (4/15, a + 1)
+            sage: L.flow(1)
+            sage: L.segment(2)
+            Segment in polygon 0 starting at (-1/13*a, 1/13*a) and ending at
+            (9/26*a + 11/13, 17/26*a + 15/13)
+        """
+        lab, e0, x0 = self._points[i]
+        iet = self._get_iet(lab)
+        e1, x1 = iet.forward_image(e0, x0)
+        poly = self._s.polygon(lab)
+
+        l0 = iet.length_bot(e0)
+        l1 = iet.length_top(e1)
+
+        point0 = poly.vertex(e0) + poly.edge(e0) * x0/l0
+        point1 = poly.vertex(e1) + poly.edge(e1) * (l1-x1)/l1
+        v0 = self._s.tangent_vector(lab, point0, self._vector)
+        v1 = self._s.tangent_vector(lab, point1, -self._vector)
+        return SegmentInPolygon(v0,v1)
+
+    def segments(self):
+        return [self.segment(i) for i in self.combinatorial_length()]
+
+    def is_closed(self):
+        return self._points[0] == self._next(*self._points[-1])
+
+    def is_forward_separatrix(self):
+        p1,e1,x1 = self._next(*self._points[-1])
+        return x1.is_zero()
+
+    def is_backward_separatrix(self):
+        return self._points[0][2].is_zero()
+
+    def is_saddle_connection(self):
+        r"""
+        EXAMPLES::
+
+            sage: from flatsurf import *
+            sage: from flatsurf.geometry.straight_line_trajectory import StraightLineTrajectoryTranslation
+
+            sage: torus = translation_surfaces.square_torus()
+            sage: v = torus.tangent_vector(0, (1/2,1/2), (1,1))
+            sage: S = StraightLineTrajectoryTranslation(v)
+            sage: S.is_saddle_connection()
+            True
+
+            sage: v = torus.tangent_vector(0, (1/3,2/3), (1,2))
+            sage: S = StraightLineTrajectoryTranslation(v)
+            sage: S.is_saddle_connection()
+            False
+            sage: S.flow(1)
+            sage: S.is_saddle_connection()
+            True
+        """
+        return self.is_forward_separatrix() and self.is_backward_separatrix() 
+
+    def flow(self, steps):
+        if steps > 0:
+            t = self._points[-1]
+            for i in range(steps):
+                t = self._next(*t)
+                if t == self._points[0] or t[2].is_zero():
+                    break
+                self._points.append(t)
+        elif steps < 0:
+            t = self._points[0]
+            for i in range(-steps):
+                if t[2].is_zero():
+                    break
+                t = self._previous(*t)
+                if t == self._points[-1]:
+                    # closed curve or backward separatrix
+                    break
+                self._points.appendleft(t)

@@ -38,7 +38,9 @@ from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
 from sage.rings.real_mpfr import RR
 from sage.rings.qqbar import AA
+
 from sage.modules.free_module import VectorSpace
+from sage.modules.free_module_element import vector
 
 from flatsurf.geometry.matrix_2x2 import angle
 
@@ -141,6 +143,41 @@ def is_opposite_direction(v,w):
     if not v or not w:
         raise TypeError("zero vector has no direction")
     return not wedge_product(v,w) and (v[0]*w[0] < 0 or v[1]*w[1] < 0)
+
+def solve(x,u,y,v):
+    r"""
+    Return (a,b) so that: x + au = y + bv
+
+    INPUT:
+
+    - ``x``, ``u``, ``y``, ``v`` -- two dimensional vectors
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.polygon import solve
+        sage: K.<sqrt2> = NumberField(x^2 - 2, embedding=AA(2).sqrt())
+        sage: x = V((1,-sqrt2))
+        sage: y = V((1,1))
+        sage: a = V((0,1))
+        sage: b = V((-sqrt2, sqrt2+1))
+        sage: u = V((0,1))
+        sage: v = V((-sqrt2, sqrt2+1))
+        sage: a, b = solve(x,u,y,v)
+        sage: x + a*u == y + b*v
+        True
+
+        sage: u = V((1,1))
+        sage: v = V((1,sqrt2))
+        sage: a, b = solve(x,u,y,v)
+        sage: x + a*u == y + b*v
+        True
+    """
+    d = -u[0] * v[1] + u[1] * v[0]
+    if d.is_zero():
+        raise ValueError("parallel vectors")
+    a = v[1] * (x[0]-y[0]) + v[0] * (y[1] - x[1])
+    b = u[1] * (x[0]-y[0]) + u[0] * (y[1] - x[1])
+    return (a/d, b/d)
 
 class MatrixActionOnPolygons(Action):
     def __init__(self, polygons):
@@ -514,6 +551,86 @@ class ConvexPolygon(Element):
         if pos.is_outside():
             raise ValueError("Started with point outside polygon")
         raise ValueError("Point on boundary of polygon and direction not pointed into the polygon.")
+
+    def flow_map(self, direction):
+        r"""
+        Return a polygonal map associated to the flow in ``direction`` in this
+        polygon.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.polygon import polygons
+            sage: S = polygons(vertices=[(0,0),(2,0),(2,2),(1,2),(0,2),(0,1)])
+            sage: S.flow_map((0,1))
+             3 2
+             0
+            top lengths: [1, 1]
+            bot lengths: [2]
+            sage: S.flow_map((1,1))
+            Interval exchange transformation:
+             3 2 1
+             4 5 0
+            top lengths: [1, 1, 2]
+            bot lengths: [1, 1, 2]
+            sage: S.flow_map((-1,-1))
+            Interval exchange transformation:
+             0 5 4
+             1 2 3
+            top lengths: [2, 1, 1]
+            bot lengths: [2, 1, 1]
+
+            sage: K.<sqrt2> = NumberField(x^2 - 2, embedding=AA(2).sqrt())
+            sage: S.flow_map((sqrt2,1))
+            Interval exchange transformation:
+             3 2 1
+             4 5 0
+            top lengths: [1, 1, 2*sqrt2]
+            bot lengths: [sqrt2, sqrt2, 2]
+        """
+        direction = vector(direction)
+        DP = direction.parent()
+        P = self.vector_space()
+        if DP != P:
+            from sage.structure.element import get_coercion_model
+            cm = get_coercion_model()
+            P = cm.common_parent(DP,P)
+            ring = P.base_ring()
+            direction = direction.change_ring(ring)
+        else:
+            ring = P.base_ring()
+
+        # first compute the transversal length of each edge
+        t = P([direction[1], -direction[0]])
+        lengths = [t.dot_product(e) for e in self.edges()]
+        n = len(lengths)
+        for i in range(n):
+            j = (i+1)%len(lengths)
+            l0 = lengths[i]
+            l1 = lengths[j]
+            if l0 >= 0 and l1 <  0: rt = j
+            if l0 >  0 and l1 <= 0: rb = j
+            if l0 <= 0 and l1 >  0: lb = j
+            if l0 <  0 and l1 >= 0: lt = j
+
+        if rt < lt:
+            top_lengths = lengths[rt:lt]
+            top_labels = range(rt,lt)
+        else:
+            top_lengths = lengths[rt:] + lengths[:lt]
+            top_labels = range(rt,n) + range(lt)
+        top_lengths = [-x for x in reversed(top_lengths)]
+        top_labels.reverse()
+
+        if lb < rb:
+            bot_lengths = lengths[lb:rb]
+            bot_labels = range(lb,rb)
+        else:
+            bot_lengths = lengths[lb:] + lengths[:rb]
+            bot_labels = range(lb,n) + range(rb)
+
+        from interval_exchange_transformation import FlowPolygonMap
+        return FlowPolygonMap(ring, bot_labels, bot_lengths,
+                                                    top_labels, top_lengths)
 
     def flow(self, point, holonomy, translation=None):
         r"""
