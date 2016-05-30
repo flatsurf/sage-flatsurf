@@ -151,18 +151,18 @@ class Surface_polygons_and_gluings(Surface):
         # display everything by default
         # I don't think we should be doing this by default whenever we create
         # a surface. -Pat
-        adj = []
-        todo = [self.base_label()]
-        labs = set(self.polygon_labels())
-        labs.remove(self.base_label())
-        while todo:
-            p1 = todo.pop()
-            for e1 in range(self.polygon(p1).num_edges()):
-                p2,e2 = self.opposite_edge(p1,e1)
-                if p2 in labs:
-                    labs.remove(p2)
-                    adj.append((p1,e1))
-        self._plot_options = {'adjacencies': adj}
+        #adj = []
+        #todo = [self.base_label()]
+        #labs = set(self.polygon_labels())
+        #labs.remove(self.base_label())
+        #while todo:
+        #    p1 = todo.pop()
+        #    for e1 in range(self.polygon(p1).num_edges()):
+        #        p2,e2 = self.opposite_edge(p1,e1)
+        #        if p2 in labs:
+        #            labs.remove(p2)
+        #            adj.append((p1,e1))
+        #self._plot_options = {'adjacencies': adj}
 
     def is_finite(self):
         r"""
