@@ -57,9 +57,6 @@ class SimilaritySurface(Surface):
         - is_finite(self): return true if the surface is built from finitely many labeled polygons
     """
     
-    # This was causing errors because it is stored statically and doesn't apply to all surfaces. -Pat
-    #_plot_options = {}
-
     def __init__(self, surface):
         if isinstance(surface,SimilaritySurface):
             self._s=surface.underlying_surface()
@@ -513,32 +510,57 @@ class SimilaritySurface(Surface):
         """
         return self.triangulation_mapping().codomain()
         
-    def plot_options(self):
-        r"""
-        Return a dictionary with plot options for this surface.
-        """
-        try:
-            return self._plot_options
-        except AttributeError:
-            self._plot_options = {}
-        return self._plot_options
-
     def graphical_surface(self, *args, **kwds):
         r"""
         Return a GraphicalSurface representing this surface.
-        """
-        try:
-            opt = self._plot_options.copy()
-        except AttributeError:
-            opt = {}
-        opt.update(kwds)
-        from flatsurf.graphical.surface import GraphicalSurface
-        return GraphicalSurface(self, *args, **opt)
+        
+        By default this returns a cached version of the GraphicalSurface. If
+        ``cached=False'' is provided as a keyword option then a new 
+        GraphicalSurface is returned. Other keyword options:
 
-    surface_plot = graphical_surface
+        INPUT:
+
+        - ``polygon_labels`` -- a boolean (default ``True``) whether the label
+          of polygons are displayed
+
+        - ``edge_labels`` -- option to control the display of edge labels. It
+          can be one of
+
+            - ``False`` or ``None`` for no labels
+
+            - ``'gluings'`` -- to put on each side of each non-adjacent edge, the
+              name of the polygon to which it is glued
+
+            - ``'number'`` -- to put on each side of each edge the number of the
+              edge
+
+            - ``'gluings and numbers'`` -- full information
+
+        EXAMPLES::
+
+            sage: # Test the difference between the cached graphical_surface and the uncached version.
+            sage: from flatsurf import *
+            sage: s=translation_surfaces.octagon_and_squares()
+            sage: print(s.plot())
+            Graphics object consisting of 32 graphics primitives
+            sage: print(s.graphical_surface(cached=False,adjacencies=[]).plot())
+            Graphics object consisting of 18 graphics primitives
+        """
+        from flatsurf.graphical.surface import GraphicalSurface
+        if kwds.has_key("cached"):
+            if not kwds["cached"]:
+                # cached=False: return a new surface.
+                kwds.pop("cached",None)
+                return GraphicalSurface(self, *args, **kwds)
+            kwds.pop("cached",None)
+        if hasattr(self, '_gs'):
+            self._gs.process_options(*args, **kwds)
+        else:
+            self._gs = GraphicalSurface(self, *args, **kwds)
+        return self._gs
 
     def plot(self, *args, **kwds):
-        return self.surface_plot(*args, **kwds).plot()
+        return self.graphical_surface(*args, **kwds).plot()
 
 # I'm not sure we want to support this...
 #
