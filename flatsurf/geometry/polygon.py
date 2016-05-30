@@ -156,6 +156,7 @@ def solve(x,u,y,v):
 
         sage: from flatsurf.geometry.polygon import solve
         sage: K.<sqrt2> = NumberField(x^2 - 2, embedding=AA(2).sqrt())
+        sage: V = VectorSpace(K,2)
         sage: x = V((1,-sqrt2))
         sage: y = V((1,1))
         sage: a = V((0,1))
@@ -562,18 +563,19 @@ class ConvexPolygon(Element):
             sage: from flatsurf.geometry.polygon import polygons
             sage: S = polygons(vertices=[(0,0),(2,0),(2,2),(1,2),(0,2),(0,1)])
             sage: S.flow_map((0,1))
-             3 2
-             0
-            top lengths: [1, 1]
-            bot lengths: [2]
+             Flow polygon map:
+              3 2
+              0
+             top lengths: [1, 1]
+             bot lengths: [2]
             sage: S.flow_map((1,1))
-            Interval exchange transformation:
+            Flow polygon map:
              3 2 1
              4 5 0
             top lengths: [1, 1, 2]
             bot lengths: [1, 1, 2]
             sage: S.flow_map((-1,-1))
-            Interval exchange transformation:
+            Flow polygon map:
              0 5 4
              1 2 3
             top lengths: [2, 1, 1]
@@ -581,7 +583,7 @@ class ConvexPolygon(Element):
 
             sage: K.<sqrt2> = NumberField(x^2 - 2, embedding=AA(2).sqrt())
             sage: S.flow_map((sqrt2,1))
-            Interval exchange transformation:
+            Flow polygon map:
              3 2 1
              4 5 0
             top lengths: [1, 1, 2*sqrt2]
