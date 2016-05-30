@@ -99,6 +99,13 @@ class SimilaritySurfaceTangentVector:
         """
         return self._position.is_in_boundary()
 
+    def position(self):
+        r"""
+        Return the PolygonPosition representing the location of
+        the basepoint of the vector in the polygon that contains it.
+        """
+        return self._position
+
     def bundle(self):
         r""" Return the tangent bundle containing this vector. """
         return self._bundle
