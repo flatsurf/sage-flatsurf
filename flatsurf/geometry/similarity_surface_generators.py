@@ -432,8 +432,10 @@ class SimilaritySurfaceGenerators:
         TESTS::
 
             sage: from flatsurf import *
-            sage: similarity_surfaces.example()
+            sage: ex = similarity_surfaces.example()
+            sage: ex
             SimilaritySurface built from 2 polygons
+            sage: TestSuite(ex).run()
         """
         from flatsurf.geometry.similarity_surface import SimilaritySurface
         from flatsurf.geometry.surface import Surface_polygons_and_gluings
@@ -460,8 +462,10 @@ class SimilaritySurfaceGenerators:
             RationalConeSurface built from 2 polygons
             sage: Q.underlying_surface()
             <class 'flatsurf.geometry.surface.Surface_polygons_and_gluings'>
-            sage: Q.minimal_translation_cover()
+            sage: M = Q.minimal_translation_cover()
+            sage: M
             TranslationSurface built from 8 polygons
+            sage: TestSuite(M).run()
         """
         from flatsurf.geometry.polygon import polygons
         from flatsurf.geometry.surface import Surface_polygons_and_gluings
@@ -482,8 +486,10 @@ class SimilaritySurfaceGenerators:
         TESTS::
 
             sage: from flatsurf import *
-            sage: similarity_surfaces.right_angle_triangle(2, 3)
+            sage: R = similarity_surfaces.right_angle_triangle(2, 3)
+            sage: R
             ConeSurface built from 2 polygons
+            sage: TestSuite(R).run()
         """
         from sage.structure.sequence import Sequence
         from flatsurf.geometry.polygon import Polygons
@@ -534,6 +540,10 @@ class TranslationSurfaceGenerators:
             sage: L.flow(13+17)
             sage: L.is_closed()
             True
+
+        TESTS::
+
+            sage: TestSuite(T).run()
         """
         from flatsurf.geometry.polygon import polygons
         from flatsurf.geometry.surface import Surface_polygons_and_gluings
@@ -556,6 +566,7 @@ class TranslationSurfaceGenerators:
             TranslationSurface built from 1 polygon
             sage: T.stratum()
             H(2)
+            sage: TestSuite(T).run()
         """
         from flatsurf.geometry.polygon import polygons
         from flatsurf.geometry.surface import Surface_polygons_and_gluings
@@ -590,10 +601,8 @@ class TranslationSurfaceGenerators:
         EXAMPLES::
 
             sage: from flatsurf import *
-            sage: s=translation_surfaces.mcmullen_L(1,1,1,1)
-            sage: s._check()
-            _check_edge_matrix ... done
-            _check_gluings ... done
+            sage: s = translation_surfaces.mcmullen_L(1,1,1,1)
+            sage: TestSuite(s).run()
         """
         from flatsurf.geometry.polygon import polygons
         from flatsurf.geometry.surface import Surface_polygons_and_gluings
@@ -615,8 +624,10 @@ class TranslationSurfaceGenerators:
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: translation_surfaces.octagon_and_squares()
+            sage: os = translation_surfaces.octagon_and_squares()
+            sage: os
             TranslationSurface built from 3 polygons
+            sage: TestSuite(os).run()
         """
         from flatsurf.geometry.polygon import polygons
         from sage.matrix.matrix_space import MatrixSpace
@@ -661,6 +672,7 @@ class TranslationSurfaceGenerators:
             Origami defined by r=(1,2) and u=(1,3)
             sage: o.stratum()
             H(2)
+            sage: TestSuite(o).run()
         """
         from flatsurf.geometry.translation_surface import Origami
         return TranslationSurface(Origami(r,u,rr,uu,domain))
@@ -676,6 +688,7 @@ class TranslationSurfaceGenerators:
             sage: S = translation_surfaces.infinite_staircase1()
             sage: S
             TranslationSurface built from infinitely many polygons
+            sage: TestSuite(S).run(skip='_test_pickling')
         """
         return infinite_staircase()
 
@@ -692,6 +705,7 @@ class TranslationSurfaceGenerators:
             sage: S.underlying_surface()
             Origami defined by r=<function <lambda> at ...> and
             u=<function <lambda> at ...>
+            sage: TestSuite(S).run(skip='_test_pickling')
         """
         from flatsurf.geometry.translation_surface import Origami, TranslationSurface
         return TranslationSurface(Origami(
@@ -709,8 +723,10 @@ class TranslationSurfaceGenerators:
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: translation_surfaces.t_fractal().underlying_surface()
+            sage: tf = translation_surfaces.t_fractal().underlying_surface()
+            sage: tf
             The T-fractal surface with parameters w=1, r=2, h1=1, h2=1
+            sage: TestSuite(tf).run(skip='_test_pickling')
         """
         return tfractal_surface(w,r,h1,h2)
 
@@ -722,8 +738,10 @@ class TranslationSurfaceGenerators:
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: translation_surfaces.chamanara(1/2)
+            sage: C = translation_surfaces.chamanara(1/2)
+            sage: C
             TranslationSurface built from infinitely many polygons
+            sage: TestSuite(C).run(skip='_test_pickling')
         """
         from flatsurf.geometry.chamanara import chamanara_surface
         return chamanara_surface(alpha)

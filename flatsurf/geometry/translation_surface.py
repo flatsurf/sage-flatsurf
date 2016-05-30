@@ -17,28 +17,24 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
     def minimal_translation_cover(self):
         return self
 
-    def _check_edge_matrix(self):
+    def _test_edge_matrix(self, **options):
         r"""
         Check the compatibility condition
         """
+        tester = self._tester(**options)
+
         from flatsurf.geometry.similarity_surface import SimilaritySurface
         if self.is_finite():
-            for lab in self.label_iterator():
-                p = self.polygon(lab)
-                for e in xrange(p.num_edges()):
-                    if not SimilaritySurface.edge_matrix(self,lab,e).is_one():
-                        raise ValueError("gluings of (%s,%s) is not through translation"%(lab,e))
+            it = self.label_iterator()
         else:
-            count = 0
-            for lab in self.label_iterator():
-                p = self.polygon(lab)
-                for e in xrange(p.num_edges()):
-                    if notSimilaritySurface.edge_matrix(self,lab,e).is_one():
-                        raise ValueError("gluings of (%s,%s) is not through translation"%(lab,e))
-                count  = count+1
-                if count >= 10:
-                    break
-    
+            from itertools import islice
+            it = islice(self.label_iterator(), 30)
+
+        for lab in it:
+            p = self.polygon(lab)
+            for e in xrange(p.num_edges()):
+                tester.assertTrue(self.edge_matrix(lab,e).is_one())
+
     def edge_matrix(self, p, e=None):
         if e is None:
             p,e = p

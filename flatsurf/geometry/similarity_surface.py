@@ -74,31 +74,42 @@ class SimilaritySurface(Surface):
 
     def _check(self):
         r"""
-        Run all the methods that start with _check
-        
+        DEPRECATED
+
+        Just use the standard test suite to implement tests
+
         EXAMPLES::
 
             sage: from flatsurf import *
-            sage: n=6
-            sage: ps=[polygons.regular_ngon(2*n)]
-            sage: gluings=[((0,i),(0,i+n)) for i in range(n)]
-            sage: s=TranslationSurface(Surface_polygons_and_gluings(ps,gluings))
-            sage: s._check()
-            _check_edge_matrix ... done
-            _check_gluings ... done
+            sage: n = 6
+            sage: ps = [polygons.regular_ngon(2*n)]
+            sage: gluings = [((0,i),(0,i+n)) for i in range(n)]
+            sage: s = TranslationSurface(Surface_polygons_and_gluings(ps,gluings))
+            sage: TestSuite(s).run(verbose=True)
+            running ._test_category() . . . pass
+            running ._test_edge_matrix() . . . pass
+            running ._test_gluings() . . . pass
+            running ._test_not_implemented_methods() . . . pass
+            running ._test_pickling() . . . pass
         """
-        for name in dir(self):
-            if name.startswith('_check') and name != '_check':
-                print name, "...",
-                getattr(self, name)()
-                print "done"
+        from sage.misc.superseded import deprecation
+        deprecation(33, "Just use TestSuite!...")
+        from sage.misc.sage_unittest import TestSuite
+        TestSuite(self).run()
 
-    def _check_gluings(self):
+    def _test_gluings(self, **options):
         # iterate over pairs with pair1 glued to pair2
-        for pair1,pair2 in self.edge_gluing_iterator():
-            if not self.opposite_edge_pair(pair2)==pair1:
-                raise ValueError("edges not glued correctly:\n%s -> %s -> %s"%(pair1,pair2,self.opposite_edge_pair(pair2)))
-    
+        tester = self._tester(**options)
+        if self.is_finite():
+            it = self.edge_gluing_iterator()
+        else:
+            from itertools import islice
+            it = islice(self.edge_gluing_iterator(), 30)
+
+        for pair1,pair2 in it:
+            tester.assertEqual(self.opposite_edge_pair(pair2), pair1,
+                "edges not glued correctly:\n%s -> %s -> %s"%(pair1,pair2,self.opposite_edge_pair(pair2)))
+
     def base_ring(self):
         r"""
         The field on which the coordinates of ``self`` live.

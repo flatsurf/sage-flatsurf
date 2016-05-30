@@ -21,7 +21,6 @@ EXAMPLES::
     Polygon: (0, 0), (1, 0), (sqrt2 + 4, sqrt2 + 1)
 """
 
-
 import operator
 
 from sage.misc.cachefunc import cached_method
@@ -1051,7 +1050,7 @@ polygons = PolygonsConstructor()
 
 def regular_octagon(field=None):
     from sage.misc.superseded import deprecation
-    deprecation(33, "Do not use this function anymore but regular_ngon")
+    deprecation(33, "Do not use this function anymore but regular_ngon(8)")
     return polygons.regular_ngon(8)
 
 class PolygonCreator():
