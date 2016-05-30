@@ -91,7 +91,7 @@ def chamanara_half_dilation_surface(alpha, n=8):
     for i in range(n):
         adjacencies.append((-i,3))
         adjacencies.append((i+1,3))
-    s.plot_options()['adjacencies'] = adjacencies
+    s.graphical_surface(adjacencies=adjacencies)
     return s
     
 def chamanara_surface(alpha,n=8):
@@ -109,6 +109,6 @@ def chamanara_surface(alpha,n=8):
     for i in range(n):
         adjacencies.append((l,3))
         l = s.opposite_edge(l,3)[0]
-    s.plot_options()['adjacencies'] = adjacencies
+    s.graphical_surface(adjacencies=adjacencies)
     return s
 
