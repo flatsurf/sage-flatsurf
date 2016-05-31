@@ -33,7 +33,7 @@ from flatsurf.geometry.similarity import SimilarityGroup
 
 from flatsurf.geometry.surface import Surface, LabelWalker
 
-class SimilaritySurface(Surface):
+class SimilaritySurface(SageObject):
     r"""
     An oriented surface built from a set of polygons and edges identified with
     similarities (i.e. composition of homothety, rotations and translations).
@@ -658,6 +658,8 @@ class SimilaritySurface(Surface):
         r"""
         Hash compatible with equals.
         """
+        if self._s.is_mutable():
+            raise ValueError("Attempting to hash with mutable underlying surface.")
         h = 17*hash(self.base_ring())+23*hash(self.base_label())
         for pair in self.label_polygon_iterator():
             h = h + 7*hash(pair)
