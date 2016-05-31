@@ -277,7 +277,7 @@ class SimilarityJoinPolygonsMapping(SurfaceMapping):
         sage: from flatsurf.geometry.mappings import *
         sage: m=SimilarityJoinPolygonsMapping(s,0,2)
         sage: s2=m.codomain()
-        sage: for label,polygon in s2.label_polygon_iterator():
+        sage: for label,polygon in s2.label_iterator(polygons=True):
         ...       print "Polygon "+str(label)+" is "+str(polygon)+"."
         Polygon 0 is Polygon: (0, 0), (1, 0), (1, 1), (0, 1).
         sage: for label,edge in s2.edge_iterator():
@@ -432,11 +432,11 @@ class SplitPolygonsMapping(SurfaceMapping):
         sage: from flatsurf.geometry.mappings import SplitPolygonsMapping
         sage: m = SplitPolygonsMapping(s,0,0,2)
         sage: s2=m.codomain()
-        sage: for pair in s2.label_polygon_iterator():
+        sage: for pair in s2.label_iterator(polygons=True):
         ...       print pair
         (0, Polygon: (0, 0), (1/2*sqrt2 + 1, 1/2*sqrt2), (1/2*sqrt2 + 1, 1/2*sqrt2 + 1), (1, sqrt2 + 1), (0, sqrt2 + 1), (-1/2*sqrt2, 1/2*sqrt2 + 1), (-1/2*sqrt2, 1/2*sqrt2))
         (ExtraLabel(0), Polygon: (0, 0), (-1/2*sqrt2 - 1, -1/2*sqrt2), (-1/2*sqrt2, -1/2*sqrt2))
-        sage: for glue in s2.edge_gluing_iterator():
+        sage: for glue in s2.edge_iterator(gluings=True):
         ...       print glue
         ((0, 0), (ExtraLabel(0), 0))
         ((0, 1), (0, 5))
@@ -596,7 +596,7 @@ def subdivide_a_polygon(s):
     Return a SurfaceMapping which cuts one polygon along a diagonal or None if the surface is triangulated.
     """
     from flatsurf.geometry.polygon import wedge_product
-    for l,poly in s.label_polygon_iterator():
+    for l,poly in s.label_iterator(polygons=True):
         n = poly.num_edges() 
         if n>3:
             for i in xrange(n):
@@ -624,7 +624,7 @@ def triangulation_mapping(s):
         sage: from flatsurf.geometry.mappings import *
         sage: m=triangulation_mapping(s)
         sage: s2=m.codomain()
-        sage: for label,polygon in s2.label_polygon_iterator():
+        sage: for label,polygon in s2.label_iterator(polygons=True):
         ...       print str(polygon)
         Polygon: (0, 0), (-1/2*sqrt2, 1/2*sqrt2 + 1), (-1/2*sqrt2, 1/2*sqrt2)
         Polygon: (0, 0), (1/2*sqrt2, -1/2*sqrt2 - 1), (1/2*sqrt2, 1/2*sqrt2)
@@ -722,7 +722,7 @@ def one_delaunay_flip_mapping(s):
     r"""
     Returns one delaunay flip, or none if no flips are needed.
     """
-    for p,poly in s.label_polygon_iterator():
+    for p,poly in s.label_iterator(polygons=True):
         for e in range(poly.num_edges()):
             if edge_needs_flip(s,p,e):
                 return flip_edge_mapping(s,p,e)
@@ -779,7 +779,7 @@ def delaunay_decomposition_mapping(s):
     else:
         s1=m.codomain()
     edge_vectors=[]
-    for p,poly in s1.label_polygon_iterator():
+    for p,poly in s1.label_iterator(polygons=True):
         for e in range(poly.num_edges()):
             pp,ee=s1.opposite_edge(p,e)
             if (p<pp or (p==pp and e<ee)) and edge_needs_join(s1,p,e):
@@ -836,7 +836,7 @@ class CanonicalizePolygonsMapping(SurfaceMapping):
         cv = {} # dictionary for canonical vertices
         newpolys={} # Polygons for new surfaces
         translations={} # translations bringing the canonical vertex to the origin.
-        for l,polygon in s.label_polygon_iterator():
+        for l,polygon in s.label_iterator(polygons=True):
             cv[l]=cvcur=canonical_first_vertex(polygon)
             newedges=[]
             for i in range(polygon.num_edges()):
@@ -844,7 +844,7 @@ class CanonicalizePolygonsMapping(SurfaceMapping):
             newpolys[l]=P(newedges)
             translations[l]=T( -polygon.vertex(cvcur) )
         newgluing=[]
-        for l1,polygon in s.label_polygon_iterator():
+        for l1,polygon in s.label_iterator(polygons=True):
             for e1 in range(polygon.num_edges()):
                 l2,e2=s.opposite_edge(l1,e1)
                 ee1= (e1-cv[l1]+polygon.num_edges())%polygon.num_edges()
@@ -984,8 +984,8 @@ def translation_surface_cmp(s1, s2):
     """
     if not s1.is_finite() or not s2.is_finite():
         raise NotImplementedError
-    lw1=s1.label_walker()
-    lw2=s2.label_walker()
+    lw1=s1.walker()
+    lw2=s2.walker()
     from itertools import izip_longest
     for p1,p2 in izip_longest(lw1.polygon_iterator(), lw2.polygon_iterator()):
         if p1 is None:
@@ -999,8 +999,8 @@ def translation_surface_cmp(s1, s2):
             return ret
     # Polygons are identical. Compare edge gluings.
     for pair1,pair2 in izip_longest(lw1.edge_iterator(), lw2.edge_iterator()):
-        l1,e1 = s1.opposite_edge_pair(pair1)
-        l2,e2 = s2.opposite_edge_pair(pair2)
+        l1,e1 = s1.opposite_edge(pair1)
+        l2,e2 = s2.opposite_edge(pair2)
         num1 = lw1.label_to_number(l1)
         num2 = lw2.label_to_number(l2)
         ret = cmp(num1,num2)
@@ -1061,7 +1061,7 @@ def canonicalize_translation_surface_mapping(s):
         if c>0:
             min_label = test_label
             smin = stest
-    lw=smin.label_walker()
+    lw=smin.walker()
     lw.find_all_labels()
     m3=ReindexMapping(s2,lw.label_dictionary())
     return SurfaceMappingComposition(m,m3)
