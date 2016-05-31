@@ -32,3 +32,10 @@ class ConeSurface(SimilaritySurface):
             angles.append(angle)
         return angles
 
+
+    def area(self):
+        r"""
+        Return the area of this surface.
+        """
+        return self._s.area()
+
