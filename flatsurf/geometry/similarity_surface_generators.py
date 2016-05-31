@@ -7,6 +7,98 @@ ZZ_2 = ZZ(2)
 from flatsurf.geometry.surface import Surface
 from flatsurf.geometry.translation_surface import TranslationSurface
 
+def flipper_nf_to_sage(K, name='a'):
+    r"""
+    Convert a flipper number field into a Sage number field
+
+    .. NOTE::
+
+        Currently, the code is not careful at all with root isolation.
+
+    EXAMPLES::
+
+        sage: import flipper
+        sage: from flatsurf.geometry.similarity_surface_generators import flipper_nf_to_sage
+        sage: p = flipper.kernel.Polynomial([-2r] + [0r]*5 + [1r])
+        sage: r1,r2 = p.real_roots()
+        sage: K = flipper.kernel.NumberField(r1)
+        sage: K_sage = flipper_nf_to_sage(K)
+        sage: K_sage
+        Number Field in a with defining polynomial x^6 - 2
+        sage: AA(K_sage.gen())
+        -1.122462048309373?
+    """
+    from sage.rings.number_field.number_field import NumberField
+    from sage.rings.all import QQ,RIF,AA
+
+    r = K.lmbda.interval_approximation()
+    l = r.lower * ZZ(10)**(-r.precision)
+    u = r.upper * ZZ(10)**(-r.precision)
+
+    p = QQ['x'](K.polynomial.coefficients)
+    s = AA.polynomial_root(p, RIF(l,u))
+    return NumberField(p, name, embedding=s)
+
+def flipper_flat_structure_to_sage(f):
+    r"""
+    Use a flipper flat structure to build a flat surface
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.similarity_surface_generators import flipper_flat_structure_to_sage
+
+        sage: import flipper
+        sage: T = flipper.create_triangulation([(0r,1r,2r), (~0r,~1r,~2r)])
+        sage: L1 = T.lamination([1r,0r,1r])
+        sage: L2 = T.lamination([0r,1r,1r])
+        sage: h1 = L1.encode_twist()
+        sage: h2 = L2.encode_twist()
+        sage: h = h1*h2^(-1r)
+        sage: flipper_flat_structure_to_sage(h.flat_structure())
+        HalfTranslationSurface built from 2 polygons
+
+    A flipper failing example::
+
+        sage: T = flipper.load('SB_4')
+        sage: h = T.mapping_class('s_0S_1s_2S_3s_1S_2')
+        sage: h.is_pseudo_anosov()
+        True
+        sage: flipper_flat_structure_to_sage(h.flat_structure())
+        Traceback (most recent call last):
+        ...
+        ValueError: t = (~5, ~4, ~2), edges = [(2.00000, 1.00000), (-3.23607,
+        0.618034), (1.23607, -1.61803)]
+    """
+    from sage.modules.free_module import VectorSpace
+    from flatsurf.geometry.polygon import ConvexPolygons
+    from flatsurf.geometry.surface import Surface_polygons_and_gluings
+    from flatsurf.geometry.half_translation_surface import HalfTranslationSurface
+
+    x = next(f.edge_vectors.itervalues()).x
+    K = flipper_nf_to_sage(x.number_field)
+    V = VectorSpace(K, 2)
+    edge_vectors = {i: V((K(e.x.linear_combination), K(e.y.linear_combination)))
+            for i,e in f.edge_vectors.iteritems()}
+
+    to_polygon_number = {k:(i,2-j) for i,t in enumerate(f.triangulation) for j,k in enumerate(t)}
+
+    C = ConvexPolygons(K)
+
+    polys = []
+    adjacencies = {}
+    for i,t in enumerate(f.triangulation):
+        for j,k in enumerate(t):
+            adjacencies[(i,2-j)] = to_polygon_number[~k]
+        try:
+            poly = C([edge_vectors[i] for i in reversed(tuple(t))])
+        except ValueError:
+            raise ValueError("t = {}, edges = {}".format(
+                t, [edge_vectors[i].n(digits=6) for i in t]))
+        polys.append(poly)
+
+    return HalfTranslationSurface(Surface_polygons_and_gluings(polys, adjacencies))
+
+
 class InfiniteStaircase(Surface):
     r"""
     The infinite staircase.
