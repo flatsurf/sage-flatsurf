@@ -543,6 +543,25 @@ class SimilaritySurfaceGenerators:
         glue={ (0,2):(1,0), (0,0):(1,1), (0,1):(1,2), (1,0):(0,2), (1,1):(0,0), (1,2):(0,1) }
         return SimilaritySurface(Surface_polygons_and_gluings(ps,glue))
 
+    @staticmethod
+    def self_glued_polygon(P):
+        r"""
+        Return the HalfTranslationSurface formed by gluing all edges of P to themselves.
+        
+        EXAMPLES::
+
+            sage: from flatsurf import *
+            sage: p=polygons((2,0),(-1,3),(-1,-3))
+            sage: s=similarity_surfaces.self_glued_polygon(p)
+            sage: TestSuite(s).run()
+        """
+        from flatsurf.geometry.surface import Surface_fast
+        from flatsurf.geometry.half_translation_surface import HalfTranslationSurface
+        s = Surface_fast(base_ring=P.base_ring(), mutable=True)
+        glue = [(0,i) for i in xrange(P.num_edges())]
+        s.add_polygon(P,glue)
+        s.make_immutable()
+        return HalfTranslationSurface(s)
 
     @staticmethod
     def billiard(P):
@@ -728,7 +747,6 @@ class TranslationSurfaceGenerators:
         """
         from flatsurf.geometry.polygon import polygons
         from sage.matrix.matrix_space import MatrixSpace
-        from flatsurf.geometry.surface import Surface_polygons_and_gluings
         from flatsurf.geometry.translation_surface import TranslationSurface
 
         o = polygons.regular_ngon(8)
@@ -739,19 +757,30 @@ class TranslationSurfaceGenerators:
 
         s = ZZ_2 * polygons.square(field=K)
 
-        polygons = [o, s, rot * s]
-        identifications = {
-            (0,0): (1,3),
-            (0,1): (2,3),
-            (0,2): (1,0),
-            (0,3): (2,0),
-            (0,4): (1,1),
-            (0,5): (2,1),
-            (0,6): (1,2),
-            (0,7): (2,2),
-            }
-        
-        return TranslationSurface(Surface_polygons_and_gluings(polygons, identifications))
+        from flatsurf.geometry.surface import Surface_fast
+        ss = Surface_fast(base_ring=K)
+        ss.add_polygon(o,[(1,3),(2,3),(1,0),(2,0),(1,1),(2,1),(1,2),(2,2)])
+        ss.add_polygon(s,[(0,2),(0,4),(0,6),(0,0)])
+        ss.add_polygon(s,[(0,3),(0,5),(0,7),(0,1)])
+        ss.make_immutable()
+        return TranslationSurface(ss)
+
+        # Old version using Surface_polygons_and_gluings
+        # from flatsurf.geometry.surface import Surface_polygons_and_gluings
+        #
+        #polygons = [o, s, rot * s]
+        #identifications = {
+        #    (0,0): (1,3),
+        #    (0,1): (2,3),
+        #    (0,2): (1,0),
+        #    (0,3): (2,0),
+        #    (0,4): (1,1),
+        #    (0,5): (2,1),
+        #    (0,6): (1,2),
+        #    (0,7): (2,2),
+        #    }
+        #
+        #return TranslationSurface(Surface_polygons_and_gluings(polygons, identifications))
 
     @staticmethod
     def origami(r,u,rr=None,uu=None,domain=None):
