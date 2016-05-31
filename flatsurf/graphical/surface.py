@@ -132,7 +132,7 @@ class GraphicalSurface:
         if limit is None:
             assert self._ss.is_finite()
             if adjacent:
-                for l,poly in self._ss.label_polygon_iterator():
+                for l,poly in self._ss.label_iterator(polygons=True):
                     for e in range(poly.num_edges()):
                         l2,e2 = self._ss.opposite_edge(l,e)
                         if not self.is_visible(l2):
@@ -154,7 +154,7 @@ class GraphicalSurface:
             assert limit>0
             if adjacent:
                 i = 0
-                for l,poly in self._ss.label_polygon_iterator():
+                for l,poly in self._ss.label_iterator(polygons=True):
                     for e in range(poly.num_edges()):
                         l2,e2 = self._ss.opposite_edge(l,e)
                         if not self.is_visible(l2):
