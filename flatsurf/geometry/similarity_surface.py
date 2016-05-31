@@ -186,32 +186,29 @@ class SimilaritySurface(Surface):
         r"""
         Same as opposite_edge(label, pair) except taking a pair as input.
         """
-        return self.opposite_edge(label_edge_pair[0], label_edge_pair[1])
+        return self._s.opposite_edge_pair(label_edge_pair)
 
     def label_walker(self):
-        try:
-            return self._lw
-        except AttributeError:
-            self._lw = LabelWalker(self)
-        return self._lw
+        return self._s.label_walker()
 
     def label_iterator(self):
         r"""
-        Iterator over the polygon labels.
+        Iterator over all polygon labels.
         """
-        return iter(self.label_walker())
+        return self._s.label_iterator()
 
-    def polygon_iterator(self):
-        r"""
-        Iterate over the polygons.
-        """
-        return self.label_walker().polygon_iterator()
+    # Removing this. I doubt we ever use it.
+    #def polygon_iterator(self):
+    #    r"""
+    #    Iterate over the polygons.
+    #    """
+    #    return self.label_walker().polygon_iterator()
 
     def label_polygon_iterator(self):
         r"""
         Iterate over pairs (label,polygon).
         """
-        return self.label_walker().label_polygon_iterator()
+        return self._s.label_polygon_iterator()
 
     def edge_iterator(self):
         r"""
@@ -236,40 +233,26 @@ class SimilaritySurface(Surface):
             (1, 1)
             (1, 2)
         """ 
-        return self.label_walker().edge_iterator()
+        return self._s.edge_iterator()
 
     def edge_gluing_iterator(self):
         r"""
         Iterate over the ordered pairs of edges being glued.
         """
-        for label,edge in self.edge_iterator():
-            label2,edge2 = self.opposite_edge(label,edge)
-            yield ((label,edge),(label2,edge2))
+        return self._s.edge_gluing_iterator()
 
     def num_polygons(self):
         r"""
         Return the number of polygons.
         """
-        if self.is_finite():
-            lw=self.label_walker()
-            lw.find_all_labels()
-            return len(lw)
-        else:
-            from sage.rings.infinity import Infinity
-            return Infinity
+        return self._s.num_polygons()
 
     def num_edges(self):
         r"""
         Return the total number of edges of all polygons used.
         """
-        if self.is_finite():
-            lw=self.label_walker()
-            lw.find_all_labels()
-            return sum(p.num_edges() for p in self.polygon_iterator())
-        else:
-            from sage.rings.infinity import Infinity
-            return Infinity
-
+        return self._s.num_edges()
+        
     def _repr_(self):
         if self.num_polygons() == Infinity:
             num = 'infinitely many'
@@ -282,11 +265,6 @@ class SimilaritySurface(Surface):
             end = "s"
 
         return "{} built from {} polygon{}".format(self.__class__.__name__, num, end)
-
-    def area(self):
-        if self.num_polygons.is_finite():
-            return sum(p.area() for p in self.polygon_iterator())
-        raise NotImplementedError("area is not implemented for surfaces built from an infinite number of polygons")
 
     def edge_matrix(self, p, e=None):
         r"""
@@ -340,14 +318,15 @@ class SimilaritySurface(Surface):
         # This is the similarity carrying (a,b) to (aa,bb):
         return gg*(~g)
 
-    def edge_dict(self):
-        if not self.is_finite():
-            raise ValueError("the surface must be finite")
-        edges = {}
-        for l,p in self.label_polygon_iterator():
-            for e in xrange(p.num_edges()):
-                ll,ee = self.opposite_edge(l,e)
-                edges[(l,e)] = (ll,ee)
+    # This seems not do noting!
+    #def edge_dict(self):
+    #    if not self.is_finite():
+    #        raise ValueError("the surface must be finite")
+    #    edges = {}
+    #    for l,p in self.label_polygon_iterator():
+    #        for e in xrange(p.num_edges()):
+    #            ll,ee = self.opposite_edge(l,e)
+    #            edges[(l,e)] = (ll,ee)
 
     def minimal_translation_cover(self):
         r"""
