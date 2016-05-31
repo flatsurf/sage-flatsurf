@@ -109,7 +109,8 @@ class Surface(SageObject):
         r"""
         Internal method for change_base_label. Should not be called directly.
         """
-
+        raise NotImplementedError
+        
     #
     # generic methods: you might consider overriding these for speed or for enabling mutability.
     #
@@ -121,7 +122,7 @@ class Surface(SageObject):
         This is a generic method. On a finite surface it will be linear time in the edges the first time it is run, then constant time (assuming not mutation occurs).
         """
         if self.is_finite():
-            lw=self.label_walker()
+            lw=self.walker()
             lw.find_all_labels()
             return len(lw)
         else:
@@ -132,7 +133,7 @@ class Surface(SageObject):
         r"""
         Iterator over all polygon labels.
         """
-        return iter(self.label_walker())
+        return iter(self.walker())
 
     def label_polygon_iterator(self):
         r"""
@@ -162,12 +163,6 @@ class Surface(SageObject):
             from sage.rings.infinity import Infinity
             return Infinity
 
-    def opposite_edge_pair(self,label_edge_pair):
-        r"""
-        Same as opposite_edge(label, pair) except taking a pair as input.
-        """
-        return self.opposite_edge(label_edge_pair[0], label_edge_pair[1])
-
     def area(self):
         r"""
         Return the area of this surface.
@@ -196,7 +191,8 @@ class Surface(SageObject):
         Iterate over the ordered pairs of edges being glued.
         """
         for label_edge_pair in self.edge_iterator():
-            yield (label_edge_pair, self.opposite_edge_pair(label_edge_pair))
+            yield (label_edge_pair, \
+                self.opposite_edge(label_edge_pair[0], label_edge_pair[1]))
 
     #
     # Methods which should not be overriden
@@ -214,7 +210,7 @@ class Surface(SageObject):
         """
         self._mutable = False
 
-    def label_walker(self):
+    def walker(self):
         r"""
         Return a LabelWalker which walks over the surface in a canonical way.
         """
@@ -265,7 +261,7 @@ class Surface(SageObject):
         """
         self.__mutate()
         assert gluing_list is None or new_polygon.num_edges() == len(gluing_list)
-        return self._add_polygon(label, new_polygon, gluing_list)
+        return self._add_polygon(new_polygon, gluing_list)
 
     def remove_polygon(self, label):
         r"""
@@ -289,19 +285,43 @@ class Surface_fast(Surface):
         r"""
         Needs documentation
         """
+        self._base_label = 0
         if surface is None:
             if base_ring is None:
                 raise ValueError("Either surface or base_ring must be provided.")
             self._base_ring= base_ring
-            if not mutability is None:
+            if not mutable is None:
                 if not mutable:
                     raise ValueError("If no surface is provided, then mutable must be true.")
             self._p = []
             Surface.__init__(self, mutable=True)
         else:
+            from flatsurf.geometry.similarity_surface import SimilaritySurface
+            if isinstance(surface,SimilaritySurface):
+                surface=surface.underlying_surface()
+            if not isinstance(surface,Surface):
+                raise ValueError("surface must be either a Surface or SimilaritySurface")
             if not base_ring is None:
                 raise ValueError("You currently can not provide both a surface and a base_ring.")
-            
+            self._base_ring = surface.base_ring()
+            if not surface.is_finite():
+                raise ValueError("Can not copy an infinite surface.")
+            Surface.__init__(self, mutable=True)
+            self._p=[]
+            label_dict = {}
+            p = 0
+            for label,polygon in surface.label_polygon_iterator():
+                label_dict[label] = p
+                p=p+1
+                self.add_polygon(polygon)
+            for pair1,pair2 in surface.edge_gluing_iterator():
+                l1,e1=pair1
+                l2,e2=pair2
+                ll1=label_dict[l1]
+                ll2=label_dict[l2]
+                self._p[ll1][1][e1]=(ll2,e2)
+            if mutable is None or not mutable:
+                self.make_immutable()
 
     def base_ring(self):
         r"""
@@ -314,8 +334,6 @@ class Surface_fast(Surface):
     def polygon(self, lab):
         r"""
         Return the polygon with label ``lab``.
-
-        This method must be overriden in subclasses.
         """
         return self._p[lab][0]
 
@@ -323,14 +341,12 @@ class Surface_fast(Surface):
         r"""
         Always returns the same label.
         """
-        return 0
+        return self._base_label
 
     def opposite_edge(self, p, e):
         r"""
         Given the label ``p`` of a polygon and an edge ``e`` in that polygon
         returns the pair (``pp``, ``ee``) to which this edge is glued.
-
-        This method must be overriden in subclasses.
         """
         return self._p[p][1][e]
 
@@ -364,7 +380,7 @@ class Surface_fast(Surface):
         Internal method used by change_edge_gluing(). Should not be called directly.
         """
         self._p[label1][1][edge1]=(label2,edge2)
-        self._p[label1][1][edge1]=(label2,edge2)
+        self._p[label2][1][edge2]=(label1,edge1)
             
 
     def _add_polygon(self, new_polygon, gluing_list=None):
@@ -390,13 +406,20 @@ class Surface_fast(Surface):
         r"""
         Iterator over all polygon labels.
         """
-        return iter(xrange(self.num_polygons))
+        return iter(xrange(self.num_polygons()))
+
+    def _change_base_polygon(self, new_base_label):
+        r"""
+        Internal method for change_base_label. Should not be called directly.
+        """
+        self._base_label =  new_base_label
+
 
 class Surface_polygons_and_gluings(Surface):
     r"""
     Similarity surface build from a list of polygons and gluings.
     """
-    def __init__(self, *args):
+    def __init__(self, *args, **kwds):
         r"""
         The constructor either acts as a copy constructor for a finite surface, or you can pass two options:
         polygons and identifications.
