@@ -1,7 +1,7 @@
 r"""Mappings between translation surfaces."""
 
 from flatsurf.geometry.polygon import Polygons, wedge_product
-from flatsurf.geometry.surface import Surface, Surface_polygons_and_gluings
+from flatsurf.geometry.surface import Surface, Surface_polygons_and_gluings, ExtraLabel
 from flatsurf.geometry.similarity_surface import SimilaritySurface
 from flatsurf.geometry.translation import TranslationGroup
 
@@ -230,35 +230,6 @@ class MatrixListDeformedSurfaceMapping(SurfaceMapping):
                 label, \
                 im*tangent_vector.point(), \
                 im*tangent_vector.vector())
-
-class ExtraLabel(SageObject):
-    r""" 
-    Used to spit out new labels.
-    """
-    _next=int(0)
-    
-    def __init__(self):
-        r"""
-        Construct a new label.
-        """
-        self._label = int(ExtraLabel._next)
-        ExtraLabel._next = ExtraLabel._next + 1
-    
-    def __eq__(self, other):
-        return (isinstance(other, self.__class__)
-            and self._label == other._label)
-
-    def __ne__(self, other):
-        return not self.__eq__(other)
-
-    def __hash__(self):
-        return hash(23*self._label)
-        
-    def __str__(self):
-        return "E"+str(self._label)
-    
-    def __repr__(self):
-        return "ExtraLabel("+str(self._label)+")"
 
 class SimilarityJoinPolygonsMapping(SurfaceMapping):
     r"""
