@@ -96,7 +96,8 @@ class MinimalTranslationCover(Surface):
     """
     def __init__(self, similarity_surface):
         self._ss = similarity_surface
-
+        Surface.__init__(self)
+        
     def is_finite(self):
         if not self._ss.is_finite():
             return False
@@ -127,6 +128,8 @@ class AbstractOrigami(Surface):
     r'''Abstract base class for origamis.
     Realization needs just to define a _domain and four cardinal directions.
     '''
+    def __init__(self):
+        Surface.__init__(self)
 
     def up(self, label):
         raise NotImplementedError
@@ -224,6 +227,7 @@ class Origami(AbstractOrigami):
                     raise ValueError("uu o u is not identity on %s"%a)
 
         self._perms = [uu,r,u,rr] # down,right,up,left
+        AbstractOrigami.__init__(self)
 
     def opposite_edge(self, p, e):
         if p not in self._domain:
