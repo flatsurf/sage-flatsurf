@@ -279,13 +279,17 @@ class Surface(SageObject):
 
 class Surface_fast(Surface):
     r"""
-    A fast mutable implementation of surface that does not support polygon removal.
+    A fast mutable implementation of surface.
     """
-    def __init__(self, surface = None, base_ring=None, mutable=None):
+    def __init__(self, surface = None, base_ring=None, mutable=None, dictionary=False):
         r"""
         Needs documentation
         """
         self._base_label = 0
+        if dictionary:
+            self._p={}
+        else:
+            self._p = []
         if surface is None:
             if base_ring is None:
                 raise ValueError("Either surface or base_ring must be provided.")
@@ -293,7 +297,6 @@ class Surface_fast(Surface):
             if not mutable is None:
                 if not mutable:
                     raise ValueError("If no surface is provided, then mutable must be true.")
-            self._p = []
             Surface.__init__(self, mutable=True)
         else:
             from flatsurf.geometry.similarity_surface import SimilaritySurface
@@ -307,19 +310,23 @@ class Surface_fast(Surface):
             if not surface.is_finite():
                 raise ValueError("Can not copy an infinite surface.")
             Surface.__init__(self, mutable=True)
-            self._p=[]
-            label_dict = {}
-            p = 0
-            for label,polygon in surface.label_polygon_iterator():
-                label_dict[label] = p
-                p=p+1
-                self.add_polygon(polygon)
-            for pair1,pair2 in surface.edge_gluing_iterator():
-                l1,e1=pair1
-                l2,e2=pair2
-                ll1=label_dict[l1]
-                ll2=label_dict[l2]
-                self._p[ll1][1][e1]=(ll2,e2)
+            if dictionary:
+                for label,polygon in surface.label_polygon_iterator():
+                    glue = [self.opposite_edge(label,e) for e in xrange(polygon.num_edges())]
+                    self._p[label]=[polygon,glue]
+            else:
+                label_dict = {}
+                p = 0
+                for label,polygon in surface.label_polygon_iterator():
+                    label_dict[label] = p
+                    p=p+1
+                    self.add_polygon(polygon)
+                for pair1,pair2 in surface.edge_gluing_iterator():
+                    l1,e1=pair1
+                    l2,e2=pair2
+                    ll1=label_dict[l1]
+                    ll2=label_dict[l2]
+                    self._p[ll1][1][e1]=(ll2,e2)
             if mutable is None or not mutable:
                 self.make_immutable()
 
@@ -364,7 +371,8 @@ class Surface_fast(Surface):
         """
         self._p[label][0]=new_polygon
         if gluing_list is None:
-            self._p[label][1]=[None for e in xrange(new_polygon.num_edges())]
+            if new_polygon.num_edges() != len(self._p[label][1]):
+                self._p[label][1]=[None for e in xrange(new_polygon.num_edges())]
         else:
             if not isinstance(gluing_list,list):
                 raise ValueError("gluing_list must be None or a list.")
@@ -381,21 +389,29 @@ class Surface_fast(Surface):
         """
         self._p[label1][1][edge1]=(label2,edge2)
         self._p[label2][1][edge2]=(label1,edge1)
-            
 
     def _add_polygon(self, new_polygon, gluing_list=None):
         r"""
         Internal method used by add_polygon(). Should not be called directly.
         """
-        new_label = len(self._p)
         if gluing_list is None:
-            self._p.append([new_polygon,\
-                [None for i in xrange(new_polygon.num_edges())]])
+            gluing_list = [None for i in xrange(new_polygon.num_edges())]
         else:
             if not isinstance(gluing_list,list):
                 raise ValueError("gluing_list must be None or a list.")
+            if len(gluing_list) != new_polygon.num_edges():
+                raise ValueError("gluing list must have the same length as the number of edges of new_polygon")
+
+        if isinstance(self._p,list):
+            # List implementation
+            new_label = len(self._p)
             self._p.append([new_polygon,gluing_list])
-    
+            return new_label
+        else:
+            # Dictionary implementation.
+            new_label = ExtraLabel()
+            self._p[new_label]=[new_polygon,gluing_list]
+            
     def num_polygons(self):
         r""" 
         Return the number of polygons making up the surface in constant time.
@@ -406,7 +422,11 @@ class Surface_fast(Surface):
         r"""
         Iterator over all polygon labels.
         """
-        return iter(xrange(self.num_polygons()))
+        if isinstance(self._p,list):
+            return iter(xrange(self.num_polygons()))
+        else:
+            # dictionary implementation
+            return iter(self._p)
 
     def _change_base_polygon(self, new_base_label):
         r"""
@@ -414,6 +434,32 @@ class Surface_fast(Surface):
         """
         self._base_label =  new_base_label
 
+    def label_polygon_iterator(self):
+        r"""
+        Iterate over pairs (label,polygon).
+        """
+        if isinstance(self._p,list):
+            # list implementation
+            for i in xrange(self.num_polygons()):
+                yield i,self._p[i][0]
+        else:
+            # dict implementation
+            for key,value in self._p.iteritems():
+                yield key,value[0]
+
+    def _remove_polygon(self, label):
+        r"""
+        Internal method used by remove_polygon(). Should not be called directly.
+        """
+        if isinstance(self._p,list):
+            # list implementation
+            if label == len(self._p)-1:
+                last = self._p.pop()
+            else:
+                self._p[label]=None
+        else:
+            # Dictionary implementation
+            del self._p[label]
 
 class Surface_polygons_and_gluings(Surface):
     r"""
@@ -672,3 +718,37 @@ class LabelWalker:
 
     def surface(self):
         return self._s
+
+######
+###### ExtraLabels
+######
+
+class ExtraLabel(SageObject):
+    r""" 
+    Used to spit out new labels.
+    """
+    _next=int(0)
+    
+    def __init__(self):
+        r"""
+        Construct a new label.
+        """
+        self._label = int(ExtraLabel._next)
+        ExtraLabel._next = ExtraLabel._next + 1
+    
+    def __eq__(self, other):
+        return (isinstance(other, self.__class__)
+            and self._label == other._label)
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def __hash__(self):
+        return hash(23*self._label)
+        
+    def __str__(self):
+        return "E"+str(self._label)
+    
+    def __repr__(self):
+        return "ExtraLabel("+str(self._label)+")"
+
