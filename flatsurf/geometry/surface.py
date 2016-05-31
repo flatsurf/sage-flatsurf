@@ -25,6 +25,10 @@ class Surface(SageObject):
         - opposite_edge(self, lab, edge): a couple (``other_label``, ``other_edge``) representing the edge being glued
         - is_finite(self): return true if the surface is built from finitely many labeled polygons
     """
+    
+    def __init__(self, mutable=False):
+        self._mutable = mutable
+    
     # Do we really want to inherit from SageObject?
     
     def base_ring(self):
@@ -64,14 +68,114 @@ class Surface(SageObject):
         """
         raise NotImplementedError
 
-    # OPTIONAL EXTRA INFORMATION
+    # 
+    # generic methods: you might consider overriding these for speed or for enabling mutability.
+    #
+
     def num_polygons(self):
         r""" 
-        Return the number of polygons making up the surface, or sage.rings.infinity.Infinity
-        if the surface is infinite.
+        Return the number of polygons making up the surface, or sage.rings.infinity.Infinity if the surface is infinite.
+        
+        This is a generic method. On a finite surface it will be linear time in the edges the first time it is run, then constant time (assuming not mutation occurs).
         """
-        raise NotImplementedError
+        if self.is_finite():
+            lw=self.label_walker()
+            lw.find_all_labels()
+            return len(lw)
+        else:
+            from sage.rings.infinity import Infinity
+            return Infinity
 
+    def num_edges(self):
+        r"""
+        Return the total number of edges of all polygons used.
+        """
+        if self.is_finite():
+            lw=self.label_walker()
+            lw.find_all_labels()
+            raise RunTimeWarning("This default implementation of Surface.num_edges() is slow when called multiple times.")
+            return sum(p.num_edges() for p in self.polygon_iterator())
+        else:
+            from sage.rings.infinity import Infinity
+            return Infinity
+
+    def label_iterator(self):
+        r"""
+        Iterator over all polygon labels.
+        """
+        return iter(self.label_walker())
+
+    def label_polygon_iterator(self):
+        r"""
+        Iterate over pairs (label,polygon).
+        """
+        for label in self.label_iterator():
+            yield label, self.polygon(label)
+
+    def edge_iterator(self):
+        r"""
+        Iterate over the edges of polygons, which are pairs (l,e) where l is a polygon label, 0 <= e < N and N is the number of edges of the polygon with label l.
+        """ 
+        for label,polygon in self.label_polygon_iterator():
+            for edge in xrange(polygon.num_edges()):
+                yield label, edge
+
+    def edge_gluing_iterator(self):
+        r"""
+        Iterate over the ordered pairs of edges being glued.
+        """
+        for label_edge_pair in self.edge_iterator():
+            yield (label_edge_pair, self.opposite_edge_pair(label_edge_pair))
+
+    def area(self):
+        r"""
+        Return the area of this surface.
+        """
+        if self.is_finite():
+            return sum(p.area() for p in self.polygon_iterator())
+        raise NotImplementedError("area is not implemented for surfaces built from an infinite number of polygons")
+
+
+    #
+    # Methods which you probably do not want to override.
+    #
+
+    def opposite_edge_pair(self,label_edge_pair):
+        r"""
+        Same as opposite_edge(label, pair) except taking a pair as input.
+        """
+        return self.opposite_edge(label_edge_pair[0], label_edge_pair[1])
+
+    #
+    # Methods which should not be overriden
+    #
+
+    def is_mutable(self):
+        r"""
+        Return if this surface is mutable.
+        """
+        return self._mutable
+
+    def make_immutable(self):
+        r"""
+        Mark this surface as immutable. 
+        """
+        self._mutable = False
+
+    def label_walker(self):
+        try:
+            return self._lw
+        except AttributeError:
+            self._lw = LabelWalker(self)
+        return self._lw
+
+    def _mutate(self):
+        r"""
+        Call before a mutation occurs.
+        """
+        assert(self.is_mutable())
+        # Remove the label walker because it will be invalid.
+        del self._lw
 
 
 class Surface_polygons_and_gluings(Surface):
@@ -147,23 +251,7 @@ class Surface_polygons_and_gluings(Surface):
             self._edge_identifications = edge_identifications
         else:
             raise ValueError("Can only be called with one or two arguments.")
-        
-        # display everything by default
-        # I don't think we should be doing this by default whenever we create
-        # a surface. -Pat
-        #adj = []
-        #todo = [self.base_label()]
-        #labs = set(self.polygon_labels())
-        #labs.remove(self.base_label())
-        #while todo:
-        #    p1 = todo.pop()
-        #    for e1 in range(self.polygon(p1).num_edges()):
-        #        p2,e2 = self.opposite_edge(p1,e1)
-        #        if p2 in labs:
-        #            labs.remove(p2)
-        #            adj.append((p1,e1))
-        #self._plot_options = {'adjacencies': adj}
-
+    
     def is_finite(self):
         r"""
         Return whether or not the surface is finite.
