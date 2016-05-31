@@ -26,9 +26,17 @@ class Surface(SageObject):
         - is_finite(self): return true if the surface is built from finitely many labeled polygons
     """
     
+    #class CachedData:
+    #    r"""
+    #    This class is just for storing cached data, e.g. the area, number of polygons, number of edges, etc.
+    #    """
+    #    pass
+    
     def __init__(self, mutable=False):
         self._mutable = mutable
-    
+        #self._cache=Surface.CachedData()
+        self._cache = {}
+        
     # Do we really want to inherit from SageObject?
     
     def base_ring(self):
@@ -69,6 +77,40 @@ class Surface(SageObject):
         raise NotImplementedError
 
     # 
+    # If the surface can be changed, implement the following methods:
+    #
+
+        
+    def _change_polygon(self, label, new_polygon, gluing_list=None):
+        r"""
+        Internal method used by change_polygon(). Should not be called directly.
+        """
+        raise NotImplementedError
+    
+    def _change_edge_gluing(self, label1, edge1, label2, edge2):
+        r"""
+        Internal method used by change_edge_gluing(). Should not be called directly.
+        """
+        raise NotImplementedError
+
+    def _add_polygon(self, new_polygon, gluing_list=None):
+        r"""
+        Internal method used by add_polygon(). Should not be called directly.
+        """
+        raise NotImplementedError
+
+    def _remove_polygon(self, label):
+        r"""
+        Internal method used by remove_polygon(). Should not be called directly.
+        """
+        raise NotImplementedError
+
+    def _change_base_polygon(self, new_base_label):
+        r"""
+        Internal method for change_base_label. Should not be called directly.
+        """
+
+    #
     # generic methods: you might consider overriding these for speed or for enabling mutability.
     #
 
@@ -86,19 +128,6 @@ class Surface(SageObject):
             from sage.rings.infinity import Infinity
             return Infinity
 
-    def num_edges(self):
-        r"""
-        Return the total number of edges of all polygons used.
-        """
-        if self.is_finite():
-            lw=self.label_walker()
-            lw.find_all_labels()
-            raise RunTimeWarning("This default implementation of Surface.num_edges() is slow when called multiple times.")
-            return sum(p.num_edges() for p in self.polygon_iterator())
-        else:
-            from sage.rings.infinity import Infinity
-            return Infinity
-
     def label_iterator(self):
         r"""
         Iterator over all polygon labels.
@@ -111,6 +140,48 @@ class Surface(SageObject):
         """
         for label in self.label_iterator():
             yield label, self.polygon(label)
+
+    #
+    # Methods which you probably do not want to override.
+    #
+
+    def num_edges(self):
+        r"""
+        Return the total number of edges of all polygons used.
+        
+        Not cached. Will be likely be linear in the number of edges.
+        """
+        if self.is_finite():
+            try:
+                return self._cache["num_edges"]
+            except KeyError:
+                num_edges = sum(p.num_edges() for l,p in self.label_polygon_iterator())
+                self._cache["num_edges"] = num_edges
+                return num_edges
+        else:
+            from sage.rings.infinity import Infinity
+            return Infinity
+
+    def opposite_edge_pair(self,label_edge_pair):
+        r"""
+        Same as opposite_edge(label, pair) except taking a pair as input.
+        """
+        return self.opposite_edge(label_edge_pair[0], label_edge_pair[1])
+
+    def area(self):
+        r"""
+        Return the area of this surface.
+        
+        By default this method is not cached.
+        """
+        if self.is_finite():
+            try:
+                return self._cache["area"]
+            except KeyError:
+                area = sum(p.area() for l,p in self.label_polygon_iterator())
+                self._cache["area"] = area
+                return area
+        raise NotImplementedError("area is not implemented for surfaces built from an infinite number of polygons")
 
     def edge_iterator(self):
         r"""
@@ -126,25 +197,6 @@ class Surface(SageObject):
         """
         for label_edge_pair in self.edge_iterator():
             yield (label_edge_pair, self.opposite_edge_pair(label_edge_pair))
-
-    def area(self):
-        r"""
-        Return the area of this surface.
-        """
-        if self.is_finite():
-            return sum(p.area() for p in self.polygon_iterator())
-        raise NotImplementedError("area is not implemented for surfaces built from an infinite number of polygons")
-
-
-    #
-    # Methods which you probably do not want to override.
-    #
-
-    def opposite_edge_pair(self,label_edge_pair):
-        r"""
-        Same as opposite_edge(label, pair) except taking a pair as input.
-        """
-        return self.opposite_edge(label_edge_pair[0], label_edge_pair[1])
 
     #
     # Methods which should not be overriden
@@ -163,20 +215,182 @@ class Surface(SageObject):
         self._mutable = False
 
     def label_walker(self):
-        try:
-            return self._lw
-        except AttributeError:
-            self._lw = LabelWalker(self)
-        return self._lw
-
-    def _mutate(self):
         r"""
-        Call before a mutation occurs.
+        Return a LabelWalker which walks over the surface in a canonical way.
+        """
+        try:
+            return self._cache["lw"]
+        except KeyError:
+            lw = LabelWalker(self)
+            self._cache["lw"] = lw
+            return lw
+
+    def __mutate(self):
+        r"""
+        Called before a mutation occurs. Do not call directly.
         """
         assert(self.is_mutable())
-        # Remove the label walker because it will be invalid.
-        del self._lw
+        # Remove the cache which will likely be invalidated.
+        #self._cache=CachedData()
+        self._cache = {}
 
+    def change_polygon(self, label, new_polygon, gluing_list=None):
+        r"""
+        Assuming label is currently in the list of labels, change the 
+        poygon assigned to the provided label to new_polygon, and 
+        glue the edges according to gluing_list (which must be a list
+        of pairs of length equal to number of edges of the polygon). 
+        
+        Warning: the gluing_list may be incorporated by reference.
+        """
+        self.__mutate()
+        assert gluing_list is None or new_polygon.num_edges() == len(gluing_list)
+        self._change_polygon(label, new_polygon, gluing_list)
+
+    def change_edge_gluing(self, label1, edge1, label2, edge2):
+        r"""
+        Updates the gluing so that (label,edge1) is glued to (label2, edge2) 
+        and vice versa.
+        """
+        self.__mutate()
+        self._change_edge_gluing(label1, edge1, label2, edge2)
+    
+    def add_polygon(self, new_polygon, gluing_list=None):
+        r"""
+        Adds a the provided polygon to the surface. Utilizes gluing_list
+        for the gluing data for edges (which must be a list
+        of pairs of length equal to number of edges of the polygon).
+        
+        Return the label assigned to the new_polygon.
+        """
+        self.__mutate()
+        assert gluing_list is None or new_polygon.num_edges() == len(gluing_list)
+        return self._add_polygon(label, new_polygon, gluing_list)
+
+    def remove_polygon(self, label):
+        r"""
+        Remove the polygon with the provided label.
+        """
+        self.__mutate()
+        return self._remove_polygon(label)
+
+    def change_base_polygon(self, new_base_label):
+        r"""
+        Change the base_label to the provided label.
+        """
+        self.__mutate()
+        return self._change_base_polygon(new_base_label)
+
+class Surface_fast(Surface):
+    r"""
+    A fast mutable implementation of surface that does not support polygon removal.
+    """
+    def __init__(self, surface = None, base_ring=None, mutable=None):
+        r"""
+        Needs documentation
+        """
+        if surface is None:
+            if base_ring is None:
+                raise ValueError("Either surface or base_ring must be provided.")
+            self._base_ring= base_ring
+            if not mutability is None:
+                if not mutable:
+                    raise ValueError("If no surface is provided, then mutable must be true.")
+            self._p = []
+            Surface.__init__(self, mutable=True)
+        else:
+            if not base_ring is None:
+                raise ValueError("You currently can not provide both a surface and a base_ring.")
+            
+
+    def base_ring(self):
+        r"""
+        The field on which the coordinates of ``self`` live.
+
+        This method must be overriden in subclasses!
+        """
+        return self._base_ring
+
+    def polygon(self, lab):
+        r"""
+        Return the polygon with label ``lab``.
+
+        This method must be overriden in subclasses.
+        """
+        return self._p[lab][0]
+
+    def base_label(self):
+        r"""
+        Always returns the same label.
+        """
+        return 0
+
+    def opposite_edge(self, p, e):
+        r"""
+        Given the label ``p`` of a polygon and an edge ``e`` in that polygon
+        returns the pair (``pp``, ``ee``) to which this edge is glued.
+
+        This method must be overriden in subclasses.
+        """
+        return self._p[p][1][e]
+
+    def is_finite(self):
+        r"""
+        Return whether or not the surface is finite.
+        """
+        return True
+
+    # Methods for changing the surface
+
+    def _change_polygon(self, label, new_polygon, gluing_list=None):
+        r"""
+        Internal method used by change_polygon(). Should not be called directly.
+        """
+        self._p[label][0]=new_polygon
+        if gluing_list is None:
+            self._p[label][1]=[None for e in xrange(new_polygon.num_edges())]
+        else:
+            if not isinstance(gluing_list,list):
+                raise ValueError("gluing_list must be None or a list.")
+            self._p[label][1]=gluing_list
+            for e in range(new_polygon.num_sides()):
+                pair = gluing_list[e]
+                if not pair is None:
+                    l2,e2 = pair
+                    self._p[l2][1][e2] = (label, e)
+    
+    def _change_edge_gluing(self, label1, edge1, label2, edge2):
+        r"""
+        Internal method used by change_edge_gluing(). Should not be called directly.
+        """
+        self._p[label1][1][edge1]=(label2,edge2)
+        self._p[label1][1][edge1]=(label2,edge2)
+            
+
+    def _add_polygon(self, new_polygon, gluing_list=None):
+        r"""
+        Internal method used by add_polygon(). Should not be called directly.
+        """
+        new_label = len(self._p)
+        if gluing_list is None:
+            self._p.append([new_polygon,\
+                [None for i in xrange(new_polygon.num_edges())]])
+        else:
+            if not isinstance(gluing_list,list):
+                raise ValueError("gluing_list must be None or a list.")
+            self._p.append([new_polygon,gluing_list])
+    
+    def num_polygons(self):
+        r""" 
+        Return the number of polygons making up the surface in constant time.
+        """
+        return len(self._p)
+    
+    def label_iterator(self):
+        r"""
+        Iterator over all polygon labels.
+        """
+        return iter(xrange(self.num_polygons))
 
 class Surface_polygons_and_gluings(Surface):
     r"""
@@ -251,6 +465,7 @@ class Surface_polygons_and_gluings(Surface):
             self._edge_identifications = edge_identifications
         else:
             raise ValueError("Can only be called with one or two arguments.")
+        Surface.__init__(self)
     
     def is_finite(self):
         r"""
