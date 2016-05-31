@@ -400,9 +400,12 @@ class SimilaritySurface(SageObject):
             from flatsurf.geometry.polygon import wedge_product
             return wedge_product(p1.edge((e1+2)%3), hol) > 0 and \
                 wedge_product(p1.edge((e1+1)%3), hol) > 0
-        if not in_place:
-            raise NotImplementedError("Only in place triangle flips are currently supported.")
-        s=self.underlying_surface()
+        if in_place:
+            s=self.underlying_surface()
+        else:
+            from flatsurf.geometry.surface import Surface_fast
+            s=Surface_fast(surface=self.underlying_surface(), \
+                mutable=True, dictionary=True)
         p1=self.polygon(l1)
         if not p1.num_edges()==3:
             raise ValueError("The polygon with the provided label is not a triangle.")
