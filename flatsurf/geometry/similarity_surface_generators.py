@@ -115,6 +115,9 @@ class InfiniteStaircase(Surface):
               +--+--+
                   ...
     """
+    def __init__(self):
+        Surface.__init__(self)
+    
     def _repr_(self):
         r"""
         String representation.
@@ -195,6 +198,7 @@ class EInfinitySurface(Surface):
             else:
                 self._field=field
                 self._l=field(lambda_squared)
+        Surface.__init__(self)
 
     def _repr_(self):
         r"""
@@ -369,6 +373,7 @@ class TFractalSurface(Surface):
         self._words = Words('LR', finite=True, infinite=False)
         self._wL = self._words('L')
         self._wR = self._words('R')
+        Surface.__init__(self)
 
     def _repr_(self):
         return "The T-fractal surface with parameters w=%s, r=%s, h1=%s, h2=%s"%(
@@ -745,6 +750,7 @@ class TranslationSurfaceGenerators:
             (0,6): (1,2),
             (0,7): (2,2),
             }
+        
         return TranslationSurface(Surface_polygons_and_gluings(polygons, identifications))
 
     @staticmethod
