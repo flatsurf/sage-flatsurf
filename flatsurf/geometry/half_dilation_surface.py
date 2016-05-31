@@ -50,6 +50,7 @@ class GL2RImageSurface(Surface):
         else:
             self._base_ring=ring
         self._P=Polygons(self._base_ring)
+        Surface.__init__(self)
 
     def base_ring(self):
         return self._base_ring
