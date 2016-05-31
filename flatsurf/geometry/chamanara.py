@@ -47,6 +47,7 @@ class ChamanaraSurface(Surface):
         self._p = ChamanaraPolygon(alpha)
         self._field = alpha.parent()
         self.rename('Chamanara surface with parameter {}'.format(alpha))
+        Surface.__init__(self)
     
     def base_ring(self):
         return self._field
