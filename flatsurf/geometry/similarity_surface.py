@@ -62,6 +62,7 @@ class SimilaritySurface(SageObject):
             self._s=surface.underlying_surface()
         else:
             self._s=surface
+        assert isinstance(self._s,Surface)
 
     def underlying_surface(self):
         r"""
@@ -98,14 +99,14 @@ class SimilaritySurface(SageObject):
         # iterate over pairs with pair1 glued to pair2
         tester = self._tester(**options)
         if self.is_finite():
-            it = self.edge_gluing_iterator()
+            it = self.edge_iterator(gluings=True)
         else:
             from itertools import islice
-            it = islice(self.edge_gluing_iterator(), 30)
+            it = islice(self.edge_iterator(gluings=True), 30)
 
         for pair1,pair2 in it:
-            tester.assertEqual(self.opposite_edge_pair(pair2), pair1,
-                "edges not glued correctly:\n%s -> %s -> %s"%(pair1,pair2,self.opposite_edge_pair(pair2)))
+            tester.assertEqual(self.opposite_edge(pair2), pair1,
+                "edges not glued correctly:\n%s -> %s -> %s"%(pair1,pair2,self.opposite_edge(pair2)))
 
     def base_ring(self):
         r"""
@@ -118,8 +119,6 @@ class SimilaritySurface(SageObject):
     def polygon(self, lab):
         r"""
         Return the polygon with label ``lab``.
-
-        This method must be overriden in subclasses.
         """
         return self._s.polygon(lab)
 
@@ -129,13 +128,13 @@ class SimilaritySurface(SageObject):
         """
         return self._s.base_label()
 
-    def opposite_edge(self, p, e):
+    def opposite_edge(self, p, e=None):
         r"""
         Given the label ``p`` of a polygon and an edge ``e`` in that polygon
         returns the pair (``pp``, ``ee``) to which this edge is glued.
-
-        This method must be overriden in subclasses.
         """
+        if e is None:
+            return self._s.opposite_edge(p[0],p[1])
         return self._s.opposite_edge(p,e)
 
     def is_finite(self):
@@ -182,37 +181,27 @@ class SimilaritySurface(SageObject):
     #                return surface_type
     #        return surface_type
 
-    def opposite_edge_pair(self,label_edge_pair):
-        r"""
-        Same as opposite_edge(label, pair) except taking a pair as input.
-        """
-        return self._s.opposite_edge_pair(label_edge_pair)
+    def walker(self):
+        return self._s.walker()
 
-    def label_walker(self):
-        return self._s.label_walker()
-
-    def label_iterator(self):
+    def label_iterator(self, polygons=False):
         r"""
         Iterator over all polygon labels.
+        
+        If the keyword polygons is True then we return pairs (label, polygon)
+        instead of just labels.
         """
-        return self._s.label_iterator()
+        if polygons:
+            return self._s.label_polygon_iterator()
+        else:
+            return self._s.label_iterator()
 
-    # Removing this. I doubt we ever use it.
-    #def polygon_iterator(self):
-    #    r"""
-    #    Iterate over the polygons.
-    #    """
-    #    return self.label_walker().polygon_iterator()
-
-    def label_polygon_iterator(self):
-        r"""
-        Iterate over pairs (label,polygon).
-        """
-        return self._s.label_polygon_iterator()
-
-    def edge_iterator(self):
+    def edge_iterator(self, gluings=False):
         r"""
         Iterate over the edges of polygons, which are pairs (l,e) where l is a polygon label, 0 <= e < N and N is the number of edges of the polygon with label l.
+        
+        If the keyword gluings is set to true, then we iterate over ordered 
+        pairs of edges ((l,e),(ll,ee)) where edge (l,e) is glued to (ll,ee).
         
         EXAMPLES::
 
@@ -232,14 +221,11 @@ class SimilaritySurface(SageObject):
             (1, 0)
             (1, 1)
             (1, 2)
-        """ 
-        return self._s.edge_iterator()
-
-    def edge_gluing_iterator(self):
-        r"""
-        Iterate over the ordered pairs of edges being glued.
         """
-        return self._s.edge_gluing_iterator()
+        if gluings:
+            return self._s.edge_gluing_iterator()
+        else:
+            return self._s.edge_iterator()
 
     def num_polygons(self):
         r"""
@@ -318,15 +304,163 @@ class SimilaritySurface(SageObject):
         # This is the similarity carrying (a,b) to (aa,bb):
         return gg*(~g)
 
-    # This seems not do noting!
-    #def edge_dict(self):
-    #    if not self.is_finite():
-    #        raise ValueError("the surface must be finite")
-    #    edges = {}
-    #    for l,p in self.label_polygon_iterator():
-    #        for e in xrange(p.num_edges()):
-    #            ll,ee = self.opposite_edge(l,e)
-    #            edges[(l,e)] = (ll,ee)
+    def triangle_flip(self, l1, e1, in_place=False, test=False):
+        r"""
+        Flips the diagonal of the quadrilateral formed by two triangles
+        glued together along the provided edge (l1,e1). This can be broken 
+        into two steps: join along the edge to form a convex quadilateral,
+        then cut along the other diagonal. Raises a ValueError if this 
+        quadrilateral would be non-convex.
+        
+        Parameters
+        ----------
+        l1
+            label of polygon
+        e1 : integer
+            edge of the polygon
+        in_place : boolean
+            if True do the flip to the current surface which must be mutable. 
+            In this case the updated surface will be returned.
+            Otherwise a mutable copy is made and then an edge is flipped, which is then returned.
+        test : boolean
+            if True we don't actually flip, and we return True or False depending
+            on whether or not the flip would be successful.
+        
+        EXAMPLES::
+
+            sage: from flatsurf import *
+            sage: s=similarity_surfaces.right_angle_triangle(ZZ(1),ZZ(1))
+            sage: print(s.polygon(0))
+            Polygon: (0, 0), (1, 0), (0, 1)
+            sage: print s.triangle_flip(0, 0, test=True)
+            False
+            sage: print s.triangle_flip(0, 1, test=True)
+            True
+            sage: print s.triangle_flip(0, 2, test=True)
+            False
+
+            sage: from flatsurf import *
+            sage: s=similarity_surfaces.right_angle_triangle(ZZ(1),ZZ(1))
+            sage: from flatsurf.geometry.surface import Surface_fast
+            sage: s=s.__class__(Surface_fast(s, mutable=True))
+            sage: try:
+            ....:     s.triangle_flip(0,0,in_place=True)
+            ....: except ValueError as e:
+            ....:     print e
+            Gluing triangles along this edge yields a non-convex quadrilateral.
+            sage: print s.triangle_flip(0,1,in_place=True)
+            ConeSurface built from 2 polygons
+            sage: print s.polygon(0)
+            Polygon: (0, 0), (1, 1), (0, 1)
+            sage: print s.polygon(1)
+            Polygon: (0, 0), (-1, -1), (0, -1)
+            sage: for p in s.edge_iterator(gluings=True):
+            ....:     print p
+            ((0, 0), (1, 0))
+            ((0, 1), (0, 2))
+            ((0, 2), (0, 1))
+            ((1, 0), (0, 0))
+            ((1, 1), (1, 2))
+            ((1, 2), (1, 1))
+            sage: try:
+            ....:     s.triangle_flip(0,2,in_place=True)
+            ....: except ValueError as e:
+            ....:     print e
+            ....: 
+            Gluing triangles along this edge yields a non-convex quadrilateral.
+
+            sage: from flatsurf import *
+            sage: p=polygons((2,0),(-1,3),(-1,-3))
+            sage: s=similarity_surfaces.self_glued_polygon(p)
+            sage: from flatsurf.geometry.surface import Surface_fast
+            sage: s=s.__class__(Surface_fast(s,mutable=True))
+            sage: s.triangle_flip(0,1,in_place=True)
+            HalfTranslationSurface built from 1 polygon
+            sage: for x in s.label_iterator(polygons=True):
+            ....:     print x
+            (0, Polygon: (0, 0), (3, 3), (1, 3))
+            sage: for x in s.edge_iterator(gluings=True):
+            ....:     print x
+            ((0, 0), (0, 0))
+            ((0, 1), (0, 1))
+            ((0, 2), (0, 2))
+            sage: TestSuite(s).run()
+        """
+        if test:
+            # Just test if the flip would be successful
+            p1=self.polygon(l1)
+            if not p1.num_edges()==3:
+                return false
+            l2,e2 = self.opposite_edge(l1,e1)
+            p2 = self.polygon(l2)
+            if not p2.num_edges()==3:
+                return false
+            sim = self.edge_transformation(l2,e2)
+            hol = sim( p2.vertex( (e2+2)%3 ) - p1.vertex((e1+2)%3) )
+            from flatsurf.geometry.polygon import wedge_product
+            return wedge_product(p1.edge((e1+2)%3), hol) > 0 and \
+                wedge_product(p1.edge((e1+1)%3), hol) > 0
+        if not in_place:
+            raise NotImplementedError("Only in place triangle flips are currently supported.")
+        s=self.underlying_surface()
+        p1=self.polygon(l1)
+        if not p1.num_edges()==3:
+            raise ValueError("The polygon with the provided label is not a triangle.")
+        l2,e2 = self.opposite_edge(l1,e1)
+        p2 = self.polygon(l2)
+        if not p2.num_edges()==3:
+            raise ValueError("The polygon opposite the provided edge is not a triangle.")
+        sim = self.edge_transformation(l2,e2)
+        m = sim.derivative()
+        hol = sim( p2.vertex( (e2+2)%3 ) - p1.vertex((e1+2)%3) )
+        from flatsurf import polygons
+        # The new polygons
+        #print [hol, m*p2.edge((e2+2)%3), p1.edge((e1+1)%3)]
+        #print [-hol, p1.edge((e1+2)%3), m*p2.edge((e2+1)%3)]
+        try:
+            np1 = polygons(edges=[hol, m * p2.edge((e2+2)%3), p1.edge((e1+1)%3)])
+            np2 = polygons(edges=[-hol, p1.edge((e1+2)%3), m * p2.edge((e2+1)%3)])
+        except ValueError:
+            raise ValueError("Gluing triangles along this edge yields a non-convex quadrilateral.")
+        except TypeError:
+            raise ValueError("Gluing triangles along this edge yields a non-convex quadrilateral.")
+        # Old gluings:
+        pairs = [self.opposite_edge(l2,(e2+2)%3), \
+            self.opposite_edge(l1,(e1+1)%3), \
+            self.opposite_edge(l1,(e1+2)%3), \
+            self.opposite_edge(l2,(e2+1)%3)]
+        for i, (l,e) in enumerate(pairs):
+            if l==l1:
+                if e==(e1+1)%3:
+                    pairs[i]=(l1,2)
+                elif e==(e1+2)%3:
+                    pairs[i]=(l2,1)
+                else:
+                    raise ValueError("Surfaced passed has errors in polygon gluings.")
+            elif l==l2:
+                if e==(e2+1)%3:
+                    pairs[i]=(l2,2)
+                elif e==(e2+2)%3:
+                    pairs[i]=(l1,1)
+                else:
+                    raise ValueError("Surfaced passed has errors in polygon gluings.")
+        if l1==l2:
+            s.change_polygon(l1,np1)
+            s.change_edge_gluing(l1,0,l1,0)
+            s.change_edge_gluing(l1,1,pairs[0][0],pairs[0][1])
+            s.change_edge_gluing(l1,2,pairs[1][0],pairs[1][1])
+        else:
+            s.change_polygon(l1,np1)
+            s.change_polygon(l2,np2)
+            s.change_edge_gluing(l1,0,l2,0)
+            s.change_edge_gluing(l1,1,pairs[0][0],pairs[0][1])
+            s.change_edge_gluing(l1,2,pairs[1][0],pairs[1][1])
+            s.change_edge_gluing(l2,1,pairs[2][0],pairs[2][1])
+            s.change_edge_gluing(l2,2,pairs[3][0],pairs[3][1])
+        if in_place:
+            return self
+        else:
+            return self.__class__(s)
 
     def minimal_translation_cover(self):
         r"""
@@ -570,7 +704,7 @@ class SimilaritySurface(SageObject):
 #            sage: print m.pull_vector_back(w)
 #            SimilaritySurfaceTangentVector in polygon 2 based at (0, 0) with vector (1/2*sqrt2, 1/2*sqrt2)
 #        """
-#        lw = self.label_walker()
+#        lw = self.walker()
 #        class MatrixFunction:
 #            def __init__(self, lw):
 #                self._lw=lw
@@ -639,7 +773,7 @@ class SimilaritySurface(SageObject):
             return False
         if self.num_polygons() != other.num_polygons():
             return False
-        for label,polygon in self.label_polygon_iterator():
+        for label,polygon in self.label_iterator(polygons=True):
             try:
                 polygon2 = other.polygon(label)
             except ValueError:
@@ -661,9 +795,9 @@ class SimilaritySurface(SageObject):
         if self._s.is_mutable():
             raise ValueError("Attempting to hash with mutable underlying surface.")
         h = 17*hash(self.base_ring())+23*hash(self.base_label())
-        for pair in self.label_polygon_iterator():
+        for pair in self.label_iterator(polygons=True):
             h = h + 7*hash(pair)
-        for edgepair in self.edge_gluing_iterator():
+        for edgepair in self.edge_iterator(gluings=True):
             h = h + 3*hash(edgepair)
         return h
 
