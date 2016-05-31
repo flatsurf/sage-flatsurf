@@ -75,7 +75,7 @@ class FinitelyPerturbedSurface(Surface):
         else:
             self._ring = ring
         self._is_finite = surface.is_finite()
-
+        Surface.__init__(self)
 
     def base_ring(self):
         return self._ring
@@ -106,6 +106,7 @@ class BaseLabelChangedSurface(Surface):
         """
         self._s=surface
         self._base_label = base_label
+        Surface.__init__(self)
 
     def base_ring(self):
         return self._s.base_ring()
@@ -184,6 +185,7 @@ class MatrixListDeformedSurface(Surface):
         else:
             self._base_ring=ring
         self._P=Polygons(self._base_ring)
+        Surface.__init__(self)
 
     def base_ring(self):
         return self._base_ring
@@ -913,6 +915,7 @@ class ReindexMapping(SurfaceMapping):
             """
             self._s=s
             self._r=reindexmapping
+            Surface.__init__(self)
         
         def base_ring(self):
             return self._s.base_ring()
