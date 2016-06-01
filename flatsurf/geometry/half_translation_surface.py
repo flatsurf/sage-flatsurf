@@ -6,7 +6,28 @@ class HalfTranslationSurface(HalfDilationSurface, RationalConeSurface):
     r"""
     A half translation surface has gluings between polygons whose monodromy is +I or -I.
     """
-    pass
+    
+    def _test_edge_matrix(self, **options):
+        r"""
+        Check the compatibility condition
+        """
+        tester = self._tester(**options)
+
+        from flatsurf.geometry.similarity_surface import SimilaritySurface
+        if self.is_finite():
+            it = self.label_iterator()
+        else:
+            from itertools import islice
+            it = islice(self.label_iterator(), 30)
+
+        for lab in it:
+            p = self.polygon(lab)
+            for e in xrange(p.num_edges()):
+                # Warning: check the matrices computed from the edges,
+                # rather the ones overriden by TranslationSurface.
+                tester.assertTrue(SimilaritySurface.edge_matrix(self,lab,e).is_one() or \
+                    (-SimilaritySurface.edge_matrix(self,lab,e)).is_one() )
+
     
 # This was all implemented in HalfDilationSurface now.
 #    
