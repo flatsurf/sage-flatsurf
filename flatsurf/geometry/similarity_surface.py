@@ -335,10 +335,10 @@ class SimilaritySurface(SageObject):
             sage: g((2,-2))
             (2, 0)
         """
-        q=self.polygon(p)
         G=SimilarityGroup(self.base_ring())
-        a=self.polygon(p).vertex(e)
-        b=self.polygon(p).vertex(e+1)
+        q=self.polygon(p)
+        a=q.vertex(e)
+        b=q.vertex(e+1)
         # This is the similarity carrying the origin to a and (1,0) to b:
         g=G(b[0]-a[0],b[1]-a[1],a[0],a[1])
 
@@ -1045,6 +1045,30 @@ class SimilaritySurface(SageObject):
         return self._gs
 
     def plot(self, *args, **kwds):
+        r"""
+        Returns a plot of the GraphicalSurface. Takes a number options listed below.
+
+        INPUT:
+
+        - ``polygon_labels`` -- a boolean (default ``True``) whether the label
+          of polygons are displayed
+
+        - ``edge_labels`` -- option to control the display of edge labels. It
+          can be one of
+
+            - ``False`` or ``None`` for no labels
+
+            - ``'gluings'`` -- to put on each side of each non-adjacent edge, the
+              name of the polygon to which it is glued
+
+            - ``'number'`` -- to put on each side of each edge the number of the
+              edge
+
+            - ``'gluings and number'`` -- full information
+
+        - ``adjacencies`` -- a list of pairs ``(p,e)`` to be used to set
+          adjacencies of polygons. 
+        """
         return self.graphical_surface(*args, **kwds).plot()
 
 # I'm not sure we want to support this...
