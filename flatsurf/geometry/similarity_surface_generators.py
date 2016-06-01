@@ -735,6 +735,39 @@ class TranslationSurfaceGenerators:
         return TranslationSurface(Surface_polygons_and_gluings(polygons, identifications))
 
     @staticmethod
+    def ward(n):
+        r"""
+        Return the surface formed by gluing a regular 2n-gon to two regular n-gons.
+        These surfaces have Veech's lattice property due to work of Ward.
+        
+        EXAMPLES::
+
+            sage: from flatsurf import *
+            sage: s=translation_surfaces.ward(3)
+            sage: TestSuite(s).run()
+            sage: s=translation_surfaces.ward(7)
+            sage: TestSuite(s).run()
+        """
+        assert n>=3
+        from flatsurf.geometry.polygon import polygons
+        from flatsurf.geometry.surface import Surface_fast
+        from flatsurf.geometry.translation_surface import TranslationSurface
+        o = ZZ_2*polygons.regular_ngon(2*n)
+        p1 = polygons(*[o.edge((2*i+n)%(2*n)) for i in xrange(n)])
+        p2 = polygons(*[o.edge((2*i+n+1)%(2*n)) for i in xrange(n)])
+        from flatsurf.geometry.surface import Surface_fast
+        ss = Surface_fast(base_ring=o.parent().field())
+        olist=[]
+        for i in xrange(n):
+            olist.append((1,i))
+            olist.append((2,i))
+        ss.add_polygon(o,olist)
+        ss.add_polygon(p1,[(0,2*i) for i in xrange(n)])
+        ss.add_polygon(p2,[(0,2*i+1) for i in xrange(n)])
+        ss.make_immutable()
+        return TranslationSurface(ss)
+
+    @staticmethod
     def octagon_and_squares():
         r"""
         EXAMPLES::
