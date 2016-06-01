@@ -141,7 +141,7 @@ class Path(MultiplicativeGroupElement):
             sage: t = translation_surfaces.square_torus()
             sage: a,b = t.fundamental_group().gens()
             sage: a*b
-            0 --0-- 0 --1--0
+            0 --0-- 0 --1-- 0
         """
         sp = self._polys[:]
         se = self._edges[:]
@@ -206,7 +206,7 @@ class Path(MultiplicativeGroupElement):
             sage: x3 = ~b*~b*a
             sage: (x1*x2).intersection(x3) == x1.intersection(x3) + x2.intersection(x3)
             True
-            sage: (x2*x1*~x2).intersection(x2*x3*~x2) == x1.intersection(x2)
+            sage: (x2*x1*~x2).intersection(x2*x3*~x2) == x1.intersection(x3)
             True
 
         A little bit more involved example::
@@ -282,7 +282,7 @@ class FundamentalGroup(UniqueRepresentation, Group):
         r"""
         TESTS::
 
-            sage: sage: from flatsurf import *
+            sage: from flatsurf import *
             sage: S = SymmetricGroup(4)
             sage: r = S('(1,2)(3,4)')
             sage: u = S('(2,3)')
