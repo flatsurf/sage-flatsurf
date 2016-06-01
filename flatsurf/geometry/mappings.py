@@ -683,21 +683,21 @@ def one_delaunay_flip_mapping(s):
                 return flip_edge_mapping(s,p,e)
     return None
 
-def edge_needs_join(s,p1,e1):
-    r"""
-    Return if the provided edge which bounds two triangles should be flipped
-    to get closer to the Delaunay decomposition
-    """
-    p2,e2=s.opposite_edge(p1,e1)
-    poly1=s.polygon(p1)
-    poly2=s.polygon(p2)
-    assert poly1.num_edges()==3
-    assert poly2.num_edges()==3
-    from flatsurf.geometry.matrix_2x2 import similarity_from_vectors
-    sim1=similarity_from_vectors(poly1.edge(e1+2),-poly1.edge(e1+1))
-    sim2=similarity_from_vectors(poly2.edge(e2+2),-poly2.edge(e2+1))
-    sim=sim1*sim2
-    return sim[1][0] == 0
+#def edge_needs_join(s,p1,e1):
+#    r"""
+#    Return if the provided edge which bounds two triangles should be flipped
+#    to get closer to the Delaunay decomposition
+#    """
+#    p2,e2=s.opposite_edge(p1,e1)
+#    poly1=s.polygon(p1)
+#    poly2=s.polygon(p2)
+#    assert poly1.num_edges()==3
+#    assert poly2.num_edges()==3
+#    from flatsurf.geometry.matrix_2x2 import similarity_from_vectors
+#    sim1=similarity_from_vectors(poly1.edge(e1+2),-poly1.edge(e1+1))
+#    sim2=similarity_from_vectors(poly2.edge(e2+2),-poly2.edge(e2+1))
+#    sim=sim1*sim2
+#    return sim[1][0] == 0
 
 def delaunay_triangulation_mapping(s):
     r"""
@@ -737,7 +737,7 @@ def delaunay_decomposition_mapping(s):
     for p,poly in s1.label_iterator(polygons=True):
         for e in range(poly.num_edges()):
             pp,ee=s1.opposite_edge(p,e)
-            if (p<pp or (p==pp and e<ee)) and edge_needs_join(s1,p,e):
+            if (p<pp or (p==pp and e<ee)) and s1._edge_needs_join(p,e):
                 edge_vectors.append( s1.tangent_vector(p,poly.vertex(e),poly.edge(e)) )
     if len(edge_vectors)>0:
         ev=edge_vectors.pop()
