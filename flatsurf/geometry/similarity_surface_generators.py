@@ -547,11 +547,35 @@ class SimilaritySurfaceGenerators:
 
         n = P.num_edges()
         r = matrix(2, [-1,0,0,1])
-        Q = polygons(*[r*v for v in reversed(P.edges())])
+        Q = polygons(edges=[r*v for v in reversed(P.edges())])
 
         glue = {(0,i): (1,n-i-1) for i in range(n)}
-        glue.update({(1,i): (0,n-i-1) for i in range(P.num_edges())})
-        return ConeSurface(Surface_polygons_and_gluings((P,P), glue))
+        glue.update({(1,i): (0,n-i-1) for i in range(n)})
+        s=ConeSurface(Surface_polygons_and_gluings((P,Q), glue))
+        gs=s.graphical_surface()
+        gs.process_options(edge_labels=None,polygon_labels=False)
+        gs.make_adjacent(0,0,reverse=True)
+        return s
+
+    @staticmethod
+    def polygon_double(P):
+        r"""
+        Return the ConeSurface associated to the billiard in the polygon ``P``.
+        Differs from billiard(P) only in the graphical display. Here, we display
+        the polygons separately.
+        """
+        from flatsurf.geometry.polygon import polygons
+        from flatsurf.geometry.surface import Surface_polygons_and_gluings
+        from flatsurf.geometry.cone_surface import ConeSurface
+        from sage.matrix.constructor import matrix
+
+        n = P.num_edges()
+        r = matrix(2, [-1,0,0,1])
+        Q = polygons(edges=[r*v for v in reversed(P.edges())])
+
+        glue = {(0,i): (1,n-i-1) for i in range(n)}
+        glue.update({(1,i): (0,n-i-1) for i in range(n)})
+        return ConeSurface(Surface_polygons_and_gluings((P,Q), glue))
 
     @staticmethod
     def right_angle_triangle(w,h):
