@@ -89,6 +89,12 @@ class Translation(MultiplicativeGroupElement):
     def t(self):
         return self._t
 
+    def sign(self):
+        r"""
+        Records that this transformation is orientation preserving.
+        """
+        return 1
+
 class TranslationGroup(UniqueRepresentation,Group):
     r'''Group representing translations in the plane with a multiplicative group operation.
     '''
