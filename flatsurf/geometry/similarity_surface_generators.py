@@ -17,15 +17,15 @@ def flipper_nf_to_sage(K, name='a'):
 
     EXAMPLES::
 
-        sage: import flipper
+        sage: import flipper  # optional - flipper
         sage: from flatsurf.geometry.similarity_surface_generators import flipper_nf_to_sage
-        sage: p = flipper.kernel.Polynomial([-2r] + [0r]*5 + [1r])
-        sage: r1,r2 = p.real_roots()
-        sage: K = flipper.kernel.NumberField(r1)
-        sage: K_sage = flipper_nf_to_sage(K)
-        sage: K_sage
+        sage: p = flipper.kernel.Polynomial([-2r] + [0r]*5 + [1r]) # optional - flipper
+        sage: r1,r2 = p.real_roots()                               # optional - flipper
+        sage: K = flipper.kernel.NumberField(r1)                   # optional - flipper
+        sage: K_sage = flipper_nf_to_sage(K)                       # optional - flipper
+        sage: K_sage                                               # optional - flipper
         Number Field in a with defining polynomial x^6 - 2
-        sage: AA(K_sage.gen())
+        sage: AA(K_sage.gen())                                     # optional - flipper
         -1.122462048309373?
     """
     from sage.rings.number_field.number_field import NumberField
@@ -39,69 +39,22 @@ def flipper_nf_to_sage(K, name='a'):
     s = AA.polynomial_root(p, RIF(l,u))
     return NumberField(p, name, embedding=s)
 
-def flipper_flat_structure_to_sage(f):
+def flipper_nf_element_to_sage(x):
     r"""
-    Build a translation or half-translation surface from flipper
+    Convert a flipper number field element into Sage
 
     EXAMPLES::
 
-        sage: from flatsurf.geometry.similarity_surface_generators import flipper_flat_structure_to_sage
-        sage: import flipper                             # optional - flipper
-
-    A torus example::
-
-        sage: t1 = (0r,1r,2r)                            # optional - flipper
-        sage: t2 = (~0r,~1r,~2r)                         # optional - flipper
-        sage: T = flipper.create_triangulation([t1,t2])  # optional - flipper
-        sage: L1 = T.lamination([1r,0r,1r])              # optional - flipper
-        sage: L2 = T.lamination([0r,1r,1r])              # optional - flipper
-        sage: h1 = L1.encode_twist()                     # optional - flipper
-        sage: h2 = L2.encode_twist()                     # optional - flipper
-        sage: h = h1*h2^(-1r)                            # optional - flipper
-        sage: f = h.flat_structure()                     # optional - flipper
-        sage: flipper_flat_structure_to_sage(f)          # optional - flipper
-        HalfTranslationSurface built from 2 polygons     # optional - flipper
-
-    A non-orientable example::
-
-        sage: T = flipper.load('SB_4')                   # optional - flipper
-        sage: h = T.mapping_class('s_0S_1s_2S_3s_1S_2')  # optional - flipper
-        sage: h.is_pseudo_anosov()                       # optional - flipper
-        True
-        sage: f = h.flat_structure()                     # optional - flipper
-        sage: S = flipper_flat_structure_to_sage(f)      # optional - flipper
-        sage: S.num_polygons()                           # optional - flipper
-        4
+        sage: from flatsurf.geometry.similarity_surface_generators import flipper_nf_element_to_sage
+        sage: import flipper                               # optional - flipper
+        sage: T = flipper.load('SB_6')                     # optional - flipper
+        sage: h = T.mapping_class('s_0S_1S_2s_3s_4s_3S_5') # optional - flipper
+        sage: flipper_nf_element_to_sage(h.dilatation())   # optional - flipper
+        a
+        sage: AA(_)                                        # optional - flipper
+        6.45052513748511?
     """
-    from sage.modules.free_module import VectorSpace
-    from flatsurf.geometry.polygon import ConvexPolygons
-    from flatsurf.geometry.surface import Surface_polygons_and_gluings
-    from flatsurf.geometry.half_translation_surface import HalfTranslationSurface
-
-    x = next(f.edge_vectors.itervalues()).x
-    K = flipper_nf_to_sage(x.number_field)
-    V = VectorSpace(K, 2)
-    edge_vectors = {i: V((K(e.x.linear_combination), K(e.y.linear_combination)))
-            for i,e in f.edge_vectors.iteritems()}
-
-    to_polygon_number = {k:(i,2-j) for i,t in enumerate(f.triangulation) for j,k in enumerate(t)}
-
-    C = ConvexPolygons(K)
-
-    polys = []
-    adjacencies = {}
-    for i,t in enumerate(f.triangulation):
-        for j,k in enumerate(t):
-            adjacencies[(i,2-j)] = to_polygon_number[~k]
-        try:
-            poly = C([edge_vectors[i] for i in reversed(tuple(t))])
-        except ValueError:
-            raise ValueError("t = {}, edges = {}".format(
-                t, [edge_vectors[i].n(digits=6) for i in t]))
-        polys.append(poly)
-
-    return HalfTranslationSurface(Surface_polygons_and_gluings(polys, adjacencies))
-
+    return flipper_nf_to_sage(x.number_field)(x.linear_combination)
 
 class InfiniteStaircase(Surface):
     r"""
@@ -555,8 +508,8 @@ class SimilaritySurfaceGenerators:
         EXAMPLES::
 
             sage: from flatsurf import *
-            sage: p=polygons((2,0),(-1,3),(-1,-3))
-            sage: s=similarity_surfaces.self_glued_polygon(p)
+            sage: p = polygons((2,0),(-1,3),(-1,-3))
+            sage: s = similarity_surfaces.self_glued_polygon(p)
             sage: TestSuite(s).run()
         """
         from flatsurf.geometry.surface import Surface_fast
@@ -802,6 +755,74 @@ class TranslationSurfaceGenerators:
         ss.add_polygon(rot*s,[(0,5),(0,7),(0,1),(0,3)])
         ss.make_immutable()
         return TranslationSurface(ss)
+
+    @staticmethod
+    def from_flipper(h):
+        r"""
+        Build a translation or half-translation surface from a flipper
+        pseudo-Anosov
+
+        EXAMPLES::
+
+            sage: from flatsurf import *
+            sage: import flipper                             # optional - flipper
+
+        A torus example::
+
+            sage: t1 = (0r,1r,2r)                            # optional - flipper
+            sage: t2 = (~0r,~1r,~2r)                         # optional - flipper
+            sage: T = flipper.create_triangulation([t1,t2])  # optional - flipper
+            sage: L1 = T.lamination([1r,0r,1r])              # optional - flipper
+            sage: L2 = T.lamination([0r,1r,1r])              # optional - flipper
+            sage: h1 = L1.encode_twist()                     # optional - flipper
+            sage: h2 = L2.encode_twist()                     # optional - flipper
+            sage: h = h1*h2^(-1r)                            # optional - flipper
+            sage: f = h.flat_structure()                     # optional - flipper
+            sage: translation_surfaces.from_flipper(h)       # optional - flipper
+            HalfTranslationSurface built from 2 polygons     # optional - flipper
+
+        A non-orientable example::
+
+            sage: T = flipper.load('SB_4')                   # optional - flipper
+            sage: h = T.mapping_class('s_0S_1s_2S_3s_1S_2')  # optional - flipper
+            sage: h.is_pseudo_anosov()                       # optional - flipper
+            True
+            sage: S = translation_surfaces.from_flipper(h)   # optional - flipper
+            sage: S.num_polygons()                           # optional - flipper
+            4
+            sage: from flatsurf.geometry.similarity_surface_generators import flipper_nf_element_to_sage
+            sage: a = flipper_nf_element_to_sage(h.dilatation())  # optional - flipper
+        """
+        from sage.modules.free_module import VectorSpace
+        from flatsurf.geometry.polygon import ConvexPolygons
+        from flatsurf.geometry.surface import Surface_polygons_and_gluings
+        from flatsurf.geometry.half_translation_surface import HalfTranslationSurface
+
+        f = h.flat_structure()
+
+        x = next(f.edge_vectors.itervalues()).x
+        K = flipper_nf_to_sage(x.number_field)
+        V = VectorSpace(K, 2)
+        edge_vectors = {i: V((K(e.x.linear_combination), K(e.y.linear_combination)))
+                for i,e in f.edge_vectors.iteritems()}
+
+        to_polygon_number = {k:(i,2-j) for i,t in enumerate(f.triangulation) for j,k in enumerate(t)}
+
+        C = ConvexPolygons(K)
+
+        polys = []
+        adjacencies = {}
+        for i,t in enumerate(f.triangulation):
+            for j,k in enumerate(t):
+                adjacencies[(i,2-j)] = to_polygon_number[~k]
+            try:
+                poly = C([edge_vectors[i] for i in reversed(tuple(t))])
+            except ValueError:
+                raise ValueError("t = {}, edges = {}".format(
+                    t, [edge_vectors[i].n(digits=6) for i in t]))
+            polys.append(poly)
+
+        return HalfTranslationSurface(Surface_polygons_and_gluings(polys, adjacencies))
 
         # Old version using Surface_polygons_and_gluings
         # from flatsurf.geometry.surface import Surface_polygons_and_gluings
