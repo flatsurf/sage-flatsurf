@@ -245,6 +245,47 @@ class SimilaritySurface(SageObject):
         """
         return self._s.num_edges()
         
+    def num_singularities(self):
+        r"""
+        EXAMPLES::
+
+            sage: from flatsurf import *
+
+            sage: translation_surfaces.regular_octagon().num_singularities()
+            1
+
+            sage: S = SymmetricGroup(4)
+            sage: r = S('(1,2)(3,4)')
+            sage: u = S('(2,3)')
+            sage: translation_surfaces.origami(r,u).num_singularities()
+            2
+
+            sage: S = SymmetricGroup(8)
+            sage: r = S('(1,2,3,4,5,6,7,8)')
+            sage: u = S('(1,8,5,4)(2,3)(6,7)')
+            sage: translation_surfaces.origami(r,u).num_singularities()
+            4
+        """
+        if not self.is_finite():
+            raise ValueError("the method only work for finite surfaces")
+
+        # NOTE:
+        # the very same code is implemented in the method angles (translation
+        # surfaces). we should factor out the code
+        edges = set((p,e) for p in self.label_iterator() for e in range(self.polygon(p).num_edges()))
+
+        n = ZZ(0)
+        while edges:
+            p,e = edges.pop()
+            n += 1
+            ee = (e-1) % self.polygon(p).num_edges()
+            p,e = self.opposite_edge(p,ee)
+            while (p,e) in edges:
+                edges.remove((p,e))
+                ee = (e-1) % self.polygon(p).num_edges()
+                p,e = self.opposite_edge(p,ee)
+        return n
+
     def _repr_(self):
         if self.num_polygons() == Infinity:
             num = 'infinitely many'
@@ -500,40 +541,16 @@ class SimilaritySurface(SageObject):
         from sage.modules.free_module import VectorSpace
         return VectorSpace(self.base_ring(), 2)
 
-    def fundamental_group_basis(self):
+    def fundamental_group(self, base_label=None):
         r"""
-        Return a basis for the fundamental group as a sequence of paths:
-
-        [vertex0, edge0, vertex1, edge1, ...].
+        Return the fundamental group of this surface.
         """
-        raise NotImplementedError
         if not self.is_finite():
-            raise ValueError("the method would dramatically fails for infinite surfaces!!!")
-
-        tree = {}   # goes from leaves to root self.polygon_labels()
-        basis = []
-
-        p = self.base_label() # the root of the tree
-        tree[p] = (None,None)
-
-        wait = [] # list of triples p1 -- e --> p2
-        for e in xrange(self.polygon(p).num_edges()):
-            pp,ee = self.opposite_edge(p,e)
-            wait.append((pp,ee,p,e))
-        while wait:
-            p1,e1,p2,e2 = wait.pop()
-            if p1 in tree: # new cycle
-                if p1 < p2 or (p1 == p2 and e1 < e2):
-                    i = p1
-                    p1_to_root = [i]
-                    while i != None:
-                        i,e = tree[i]
-                        p1_to_root.append(e)
-                        p1_to_root.append(i)
-            else:
-                tree[p1] = (p2,e)
-
-        return tree,bridges
+            raise ValueError("the method only work for finite surfaces")
+        if base_label is None:
+            base_label = self.base_label()
+        from fundamental_group import FundamentalGroup
+        return FundamentalGroup(self, base_label)
 
     def tangent_bundle(self, ring=None):
         r"""
