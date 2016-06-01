@@ -755,13 +755,14 @@ class TranslationSurfaceGenerators:
 
         rot = MatrixSpace(K,2)([[sqrt2/ZZ_2,-sqrt2/ZZ_2],[sqrt2/ZZ_2,sqrt2/ZZ_2]])
 
+        o = ZZ_2 * o
         s = ZZ_2 * polygons.square(field=K)
 
         from flatsurf.geometry.surface import Surface_fast
         ss = Surface_fast(base_ring=K)
-        ss.add_polygon(o,[(1,3),(2,3),(1,0),(2,0),(1,1),(2,1),(1,2),(2,2)])
-        ss.add_polygon(s,[(0,2),(0,4),(0,6),(0,0)])
-        ss.add_polygon(s,[(0,3),(0,5),(0,7),(0,1)])
+        ss.add_polygon(o,[(1,2),(2,2),(1,3),(2,3),(1,0),(2,0),(1,1),(2,1)])
+        ss.add_polygon(s,[(0,4),(0,6),(0,0),(0,2)])
+        ss.add_polygon(rot*s,[(0,5),(0,7),(0,1),(0,3)])
         ss.make_immutable()
         return TranslationSurface(ss)
 
