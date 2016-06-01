@@ -32,8 +32,8 @@ from flatsurf.geometry.matrix_2x2 import (is_similarity,
                     is_cosine_sine_of_rational)
                     
 from flatsurf.geometry.similarity import SimilarityGroup
-
-from flatsurf.geometry.surface import Surface, LabelWalker
+from flatsurf.geometry.polygon import Polygons, wedge_product
+from flatsurf.geometry.surface import Surface, LabelWalker, ExtraLabel
 
 class SimilaritySurface(SageObject):
     r"""
@@ -634,6 +634,82 @@ class SimilaritySurface(SageObject):
         
         return ss
 
+    def subdivide_polygon(self, p, v1, v2, new_label = None, test=False):
+        r"""
+        Cut the polygon with label p along the diagonal joining vertex
+        v1 to vertex v2. This cuts p into two polygons, one will keep the same
+        label. The other will get a new label, which can be provided
+        via new_label. Otherwise a default new label will be provided.
+        If test=False, then the surface will be changed (in place). If
+        test=True, then it just checks to see if the change would be successful
+        
+        The change will be done in place.
+        """        
+        poly=self.polygon(p)
+        ne=poly.num_edges()
+        if v1<0 or v2<0 or v1>=ne or v2>=ne:
+            if test:
+                return False
+            else:
+                raise ValueError('Provided vertices out of bounds.')
+        if abs(v1-v2)<=1 or abs(v1-v2)>=ne-1:
+            if test:
+                return False
+            else:
+                raise ValueError('Provided diagonal is not a diagonal.')
+
+        if v2<v1:
+            temp=v1
+            v1=v2
+            v2=temp
+            
+        newvertices1=[poly.vertex(v2)-poly.vertex(v1)]
+        for i in range(v2, v1+ne):
+            newvertices1.append(poly.edge(i))
+        newpoly1 = Polygons(self.base_ring())(newvertices1)
+        
+        newvertices2=[poly.vertex(v1)-poly.vertex(v2)]
+        for i in range(v1,v2):
+            newvertices2.append(poly.edge(i))
+        newpoly2 = Polygons(self.base_ring())(newvertices2)
+
+        if new_label is None:
+            new_label = self.underlying_surface().add_polygon(None)
+            
+        old_to_new_labels={}
+        for i in range(ne):
+            if i<v1:
+                old_to_new_labels[i]=(p,i+ne-v2+1)
+            elif i<v2:
+                old_to_new_labels[i]=(new_label,i-v1+1)
+            else: # i>=v2
+                old_to_new_labels[i]=(p,i-v2+1)
+        new_to_old_labels={}
+        for i,pair in old_to_new_labels.iteritems():
+            new_to_old_labels[pair]=i
+
+        glue_dictionary = {(p,0):(new_label,0)}
+
+        glue1 = [None for i in xrange(newpoly1.num_edges())]
+        glue1[0]=(new_label,0)
+        glue2 = [None for i in xrange(newpoly2.num_edges())]
+        glue2[0]=(p,0)
+        for e in range(ne):
+            ll,ee = old_to_new_labels[e]
+            lll,eee = self.opposite_edge(p,e)
+            if lll == p:
+                if ll==p:
+                    glue1[ee]=old_to_new_labels[eee]
+                else:
+                    glue2[ee]=old_to_new_labels[eee]
+            else:
+                if ll==p:
+                    glue1[ee]=(lll,eee)
+                else:
+                    glue2[ee]=(lll,eee)
+        
+        self.underlying_surface().change_polygon(new_label, newpoly2, glue2)
+        self.underlying_surface().change_polygon(p, newpoly1, glue1)
 
     def minimal_translation_cover(self):
         r"""
@@ -749,6 +825,8 @@ class SimilaritySurface(SageObject):
         else:
             return self.tangent_bundle(ring)(lab, p, v)
     
+    
+    
     def triangulation_mapping(self):
         r"""
         Return a SurfaceMapping triangulating the suface or None if the surface is already triangulated.
@@ -771,12 +849,30 @@ class SimilaritySurface(SageObject):
             Graphical version of Similarity Surface TranslationSurface built from 6 polygons
         """
         if in_place:
-            raise NotImplementedError("In place triangulation not supported yet.")
-        m = self.triangulation_mapping()
-        if m is None:
-            return self
+            s=self
         else:
-            return m.codomain()
+            s=self.mutable_copy()
+        from flatsurf.geometry.polygon import wedge_product
+        loop=True
+        while loop:
+            loop=False
+            for l,poly in s.label_iterator(polygons=True):
+                n = poly.num_edges() 
+                if n>3:
+                    for i in xrange(n):
+                        e1=poly.edge(i)
+                        e2=poly.edge((i+1)%n)
+                        if wedge_product(e1,e2) != 0:
+                            s.subdivide_polygon(l,i,(i+2)%n)
+                            loop=True
+                            break
+                    if loop:
+                        break
+                    else:
+                        # This should never happen:
+                        raise ValueError("Unable to triangulate polygon with label "+ \
+                            str(l)+": "+str(poly))
+        return s
     
     def _edge_needs_flip(self,p1,e1):
         r"""
