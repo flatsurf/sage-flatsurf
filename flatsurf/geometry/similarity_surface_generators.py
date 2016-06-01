@@ -41,33 +41,37 @@ def flipper_nf_to_sage(K, name='a'):
 
 def flipper_flat_structure_to_sage(f):
     r"""
-    Use a flipper flat structure to build a flat surface
+    Build a translation or half-translation surface from flipper
 
     EXAMPLES::
 
         sage: from flatsurf.geometry.similarity_surface_generators import flipper_flat_structure_to_sage
+        sage: import flipper                             # optional - flipper
 
-        sage: import flipper
-        sage: T = flipper.create_triangulation([(0r,1r,2r), (~0r,~1r,~2r)])
-        sage: L1 = T.lamination([1r,0r,1r])
-        sage: L2 = T.lamination([0r,1r,1r])
-        sage: h1 = L1.encode_twist()
-        sage: h2 = L2.encode_twist()
-        sage: h = h1*h2^(-1r)
-        sage: flipper_flat_structure_to_sage(h.flat_structure())
-        HalfTranslationSurface built from 2 polygons
+    A torus example::
 
-    A flipper failing example::
+        sage: t1 = (0r,1r,2r)                            # optional - flipper
+        sage: t2 = (~0r,~1r,~2r)                         # optional - flipper
+        sage: T = flipper.create_triangulation([t1,t2])  # optional - flipper
+        sage: L1 = T.lamination([1r,0r,1r])              # optional - flipper
+        sage: L2 = T.lamination([0r,1r,1r])              # optional - flipper
+        sage: h1 = L1.encode_twist()                     # optional - flipper
+        sage: h2 = L2.encode_twist()                     # optional - flipper
+        sage: h = h1*h2^(-1r)                            # optional - flipper
+        sage: f = h.flat_structure()                     # optional - flipper
+        sage: flipper_flat_structure_to_sage(f)          # optional - flipper
+        HalfTranslationSurface built from 2 polygons     # optional - flipper
 
-        sage: T = flipper.load('SB_4')
-        sage: h = T.mapping_class('s_0S_1s_2S_3s_1S_2')
-        sage: h.is_pseudo_anosov()
+    A non-orientable example::
+
+        sage: T = flipper.load('SB_4')                   # optional - flipper
+        sage: h = T.mapping_class('s_0S_1s_2S_3s_1S_2')  # optional - flipper
+        sage: h.is_pseudo_anosov()                       # optional - flipper
         True
-        sage: flipper_flat_structure_to_sage(h.flat_structure())
-        Traceback (most recent call last):
-        ...
-        ValueError: t = (~5, ~4, ~2), edges = [(2.00000, 1.00000), (-3.23607,
-        0.618034), (1.23607, -1.61803)]
+        sage: f = h.flat_structure()                     # optional - flipper
+        sage: S = flipper_flat_structure_to_sage(f)      # optional - flipper
+        sage: S.num_polygons()                           # optional - flipper
+        4
     """
     from sage.modules.free_module import VectorSpace
     from flatsurf.geometry.polygon import ConvexPolygons

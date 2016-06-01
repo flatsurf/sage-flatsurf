@@ -7,18 +7,76 @@ from sage.groups.group import Group
 from sage.structure.element import MultiplicativeGroupElement
 from sage.structure.unique_representation import UniqueRepresentation
 
+def intersection(i0, j0, i1, j1):
+    r"""
+    Intersection inside a polygon.
+
+    In case of equality we consider that i0 < i1 < j1 < j0
+
+    INPUT:
+
+    - ``i0``, ``j0`` -- start and end of the first curve
+
+    - ``i1``, ``j1`` -- start and end of the second curve
+
+    TESTS::
+
+        sage: from flatsurf.geometry.fundamental_group import intersection
+        sage: intersection(3,0,3,2)
+        1
+        sage: intersection(0,1,1,2)
+        1
+        sage: intersection(0,2,3,1)
+        -1
+        sage: intersection(0,3,3,2)
+        0
+        sage: intersection(1,1,1,1)
+        0
+        sage: intersection(3,2,3,2)
+        0
+        sage: intersection(3,2,0,3)
+        0
+        sage: intersection(0,3,0,3)
+        0
+        sage: intersection(0,2,0,2)
+        0
+    """
+    if i0 <= j0:  # that is i0 < j0 or i0 == j0
+        return (i0 <= i1 <= j0) - (i0 <= j1 <= j0)
+    else:
+        return (j0 < j1 < i0) - (j0 < i1 < i0)
 
 class Path(MultiplicativeGroupElement):
 # activating the following somehow break the discovery of the Python _mul_
 # method below...
 #    __slots__ = ['_polys', '_edges', '_edges_rev']
 
-    def __init__(self, parent, polys, edge, edge_rev):
+    def __init__(self, parent, polys, edge, edge_rev, check=True, reduced=False):
         self._polys = tuple(polys)
         self._edges = tuple(edge)
         self._edges_rev = tuple(edge_rev)
         MultiplicativeGroupElement.__init__(self, parent)
-        self._check()
+
+        if not reduced:
+            self._reduce()
+        if check:
+            self._check()
+
+    def _reduce(self):
+        r"""
+        Remove
+        """
+        pass
+
+    def _poly_cross_dict(self):
+        d = {p: [] for p in self.parent()._s.label_iterator()}
+        d[self._polys[0]].append((self._edges_rev[-1], self._edges[0]))
+        for i in range(1, len(self._polys)-1):
+            p = self._polys[i]
+            e0 = self._edges_rev[i-1]
+            e1 = self._edges[i]
+            d[p].append((e0,e1))
+        return d
 
     def __hash__(self):
         return hash(self._polys) ^ hash(self._edges)
@@ -71,7 +129,7 @@ class Path(MultiplicativeGroupElement):
         return not self._edges
 
     def _repr_(self):
-        return " ".join("{} --{}--".format(p,e)
+        return "".join("{} --{}-- ".format(p,e)
               for p,e in zip(self._polys, self._edges)) + \
                "{}".format(self._polys[-1]) 
 
@@ -127,6 +185,79 @@ class Path(MultiplicativeGroupElement):
                 self._edges_rev[::-1],
                 self._edges[::-1])
 
+    def intersection(self, other):
+        r"""
+        The intersection number of this element with ``other``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import *
+            sage: t = translation_surfaces.square_torus()
+            sage: a,b = t.fundamental_group().gens()
+            sage: a.intersection(b)
+            1
+            sage: b.intersection(a)
+            -1
+
+        This is an Abelian invariant::
+
+            sage: x1 = a*b*b*~a*~a*b*b*a*~b*~b
+            sage: x2 = a*b*a*b
+            sage: x3 = ~b*~b*a
+            sage: (x1*x2).intersection(x3) == x1.intersection(x3) + x2.intersection(x3)
+            True
+            sage: (x2*x1*~x2).intersection(x2*x3*~x2) == x1.intersection(x2)
+            True
+
+        A little bit more involved example::
+
+            sage: S = SymmetricGroup(4)
+            sage: r = S('(1,2)(3,4)')
+            sage: u = S('(2,3)')
+            sage: o = translation_surfaces.origami(r,u)
+            sage: F = o.fundamental_group()
+            sage: x = F([1,2,2,3])
+            sage: x.intersection(x)
+            0
+
+            sage: a = F.gens()
+            sage: m = matrix(ZZ, 5, lambda i,j: a[i].intersection(a[j]))
+            sage: m
+            [ 0  1  0  0  0]
+            [-1  0 -1  0  0]
+            [ 0  1  0  1  0]
+            [ 0  0 -1  0 -1]
+            [ 0  0  0  1  0]
+
+        A slightly more involved example::
+
+            sage: S = SymmetricGroup(8)
+            sage: r = S('(1,2,3,4,5,6,7,8)')
+            sage: u = S('(1,8,5,4)(2,3)(6,7)')
+            sage: o = translation_surfaces.origami(r,u)
+            sage: a = o.fundamental_group().gens()
+            sage: m = matrix(ZZ, 9, lambda i,j: a[i].intersection(a[j]))
+            sage: m
+            [ 0 -1  1 -1  1 -1 -1 -1  1]
+            [ 1  0  1  0  0 -1 -1 -1  1]
+            [-1 -1  0  0  0  0  0  0  0]
+            [ 1  0  0  0 -1  0  0  0  0]
+            [-1  0  0  1  0  0  0  0  0]
+            [ 1  1  0  0  0  0  0  0  0]
+            [ 1  1  0  0  0  0  0  1 -1]
+            [ 1  1  0  0  0  0 -1  0 -1]
+            [-1 -1  0  0  0  0  1  1  0]
+        """
+        si = self._poly_cross_dict()
+        oi = other._poly_cross_dict()
+        n = 0
+        for p in self.parent()._s.label_iterator():
+            for e0,e1 in si[p]:
+                for f0,f1 in oi[p]:
+                    n += intersection(e0,e1,f0,f1)
+        return n
+
+
 class FundamentalGroup(UniqueRepresentation, Group):
     r"""
     The fundamental group of a punctured surface
@@ -136,7 +267,6 @@ class FundamentalGroup(UniqueRepresentation, Group):
         sage: from flatsurf import *
         sage: t = translation_surfaces.square_torus()
         sage: TestSuite(t.fundamental_group()).run()
-
     """
     Element = Path
 
@@ -147,6 +277,40 @@ class FundamentalGroup(UniqueRepresentation, Group):
         self._b = base
 
         Group.__init__(self, category=Groups().Infinite())
+
+    def _element_constructor_(self, *args):
+        r"""
+        TESTS::
+
+            sage: sage: from flatsurf import *
+            sage: S = SymmetricGroup(4)
+            sage: r = S('(1,2)(3,4)')
+            sage: u = S('(2,3)')
+            sage: o = translation_surfaces.origami(r,u)
+            sage: F = o.fundamental_group()
+            sage: F([1,1])
+            1 --1-- 2 --1-- 1
+            sage: F([1,2,2,3])
+            1 --1-- 2 --2-- 3 --2-- 2 --3-- 1
+
+            sage: F([1,2,3])
+            Traceback (most recent call last):
+            ...
+            AssertionError
+        """
+        if len(args) == 1 and isinstance(args[0], (tuple,list)):
+            args = args[0]
+        s = self._s
+        p = [self._b]
+        e = []
+        er = []
+        for i in args:
+            i = int(i) % s.polygon(p[-1]).num_edges()
+            q,j = s.opposite_edge(p[-1],i)
+            p.append(q)
+            e.append(i)
+            er.append(j)
+        return self.element_class(self, p, e, er)
 
     def _repr_(self):
         return "Fundamental group of {} based at polygon {}".format(
@@ -160,6 +324,8 @@ class FundamentalGroup(UniqueRepresentation, Group):
     @cached_method
     def gens(self):
         r"""
+        Return a generating set
+
         EXAMPLES::
 
             sage: from flatsurf import *
