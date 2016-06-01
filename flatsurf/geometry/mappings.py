@@ -615,22 +615,6 @@ def triangulation_mapping(s):
             return m
         s1=m2.codomain()
         m=SurfaceMappingComposition(m,m2)
-
-def edge_needs_flip(s,p1,e1):
-    r"""
-    Return if the provided edge which bounds two triangles should be flipped
-    to get closer to the Delaunay decomposition
-    """
-    p2,e2=s.opposite_edge(p1,e1)
-    poly1=s.polygon(p1)
-    poly2=s.polygon(p2)
-    assert poly1.num_edges()==3
-    assert poly2.num_edges()==3
-    from flatsurf.geometry.matrix_2x2 import similarity_from_vectors
-    sim1=similarity_from_vectors(poly1.edge(e1+2),-poly1.edge(e1+1))
-    sim2=similarity_from_vectors(poly2.edge(e2+2),-poly2.edge(e2+1))
-    sim=sim1*sim2
-    return sim[1][0] < 0
     
 def edge_needs_flip_Linfinity(s, p1, e1):
     r"""
@@ -695,7 +679,7 @@ def one_delaunay_flip_mapping(s):
     """
     for p,poly in s.label_iterator(polygons=True):
         for e in range(poly.num_edges()):
-            if edge_needs_flip(s,p,e):
+            if s._edge_needs_flip(p,e):
                 return flip_edge_mapping(s,p,e)
     return None
 
