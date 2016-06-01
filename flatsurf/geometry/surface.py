@@ -105,7 +105,7 @@ class Surface(SageObject):
         """
         raise NotImplementedError
 
-    def _change_base_polygon(self, new_base_label):
+    def _change_base_label(self, new_base_label):
         r"""
         Internal method for change_base_label. Should not be called directly.
         """
@@ -270,12 +270,12 @@ class Surface(SageObject):
         self.__mutate()
         return self._remove_polygon(label)
 
-    def change_base_polygon(self, new_base_label):
+    def change_base_label(self, new_base_label):
         r"""
         Change the base_label to the provided label.
         """
         self.__mutate()
-        return self._change_base_polygon(new_base_label)
+        return self._change_base_label(new_base_label)
 
 class Surface_fast(Surface):
     r"""
@@ -297,6 +297,7 @@ class Surface_fast(Surface):
             if not mutable is None:
                 if not mutable:
                     raise ValueError("If no surface is provided, then mutable must be true.")
+            self._num_polygons=0
             Surface.__init__(self, mutable=True)
         else:
             from flatsurf.geometry.similarity_surface import SimilaritySurface
@@ -310,16 +311,19 @@ class Surface_fast(Surface):
             if not surface.is_finite():
                 raise ValueError("Can not copy an infinite surface.")
             Surface.__init__(self, mutable=True)
+            self._num_polygons=0
             if dictionary:
                 for label,polygon in surface.label_polygon_iterator():
-                    glue = [self.opposite_edge(label,e) for e in xrange(polygon.num_edges())]
+                    glue = [surface.opposite_edge(label,e) for e in xrange(polygon.num_edges())]
                     self._p[label]=[polygon,glue]
+                    self._num_polygons += 1
             else:
                 label_dict = {}
                 p = 0
                 for label,polygon in surface.label_polygon_iterator():
                     label_dict[label] = p
                     p=p+1
+                    # This automatically adds one to the count.
                     self.add_polygon(polygon)
                 for pair1,pair2 in surface.edge_gluing_iterator():
                     l1,e1=pair1
@@ -377,7 +381,7 @@ class Surface_fast(Surface):
             if not isinstance(gluing_list,list):
                 raise ValueError("gluing_list must be None or a list.")
             self._p[label][1]=gluing_list
-            for e in range(new_polygon.num_sides()):
+            for e in range(new_polygon.num_edges()):
                 pair = gluing_list[e]
                 if not pair is None:
                     l2,e2 = pair
@@ -406,29 +410,40 @@ class Surface_fast(Surface):
             # List implementation
             new_label = len(self._p)
             self._p.append([new_polygon,gluing_list])
+            self._num_polygons += 1
             return new_label
         else:
             # Dictionary implementation.
             new_label = ExtraLabel()
             self._p[new_label]=[new_polygon,gluing_list]
+            self._num_polygons += 1
+            return new_label
             
     def num_polygons(self):
         r""" 
         Return the number of polygons making up the surface in constant time.
         """
-        return len(self._p)
+        return self._num_polygons
     
     def label_iterator(self):
         r"""
         Iterator over all polygon labels.
         """
         if isinstance(self._p,list):
-            return iter(xrange(self.num_polygons()))
+            if self._num_polygons == len(self._p):
+                for i in xrange(self.num_polygons()):
+                    yield i
+            else:
+                # We've removed some labels
+                for i in xrange(self.num_polygons()):
+                    if not self._p[i] is None:
+                        yield i
         else:
             # dictionary implementation
-            return iter(self._p)
+            for i in iter(self._p):
+                yield i
 
-    def _change_base_polygon(self, new_base_label):
+    def _change_base_label(self, new_base_label):
         r"""
         Internal method for change_base_label. Should not be called directly.
         """
@@ -440,8 +455,13 @@ class Surface_fast(Surface):
         """
         if isinstance(self._p,list):
             # list implementation
-            for i in xrange(self.num_polygons()):
-                yield i,self._p[i][0]
+            if self._num_polygons == len(self._p):
+                for i in xrange(self.num_polygons()):
+                    yield i,self._p[i][0]
+            else:
+                for i in xrange(self.num_polygons()):
+                    if not self._p[i] is None:
+                        yield i,self._p[i][0]
         else:
             # dict implementation
             for key,value in self._p.iteritems():
@@ -460,6 +480,7 @@ class Surface_fast(Surface):
         else:
             # Dictionary implementation
             del self._p[label]
+        self._num_polygons -= 1
 
 class Surface_polygons_and_gluings(Surface):
     r"""
