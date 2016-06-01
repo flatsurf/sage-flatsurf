@@ -45,7 +45,7 @@ class GraphicalSurface:
             - ``'number'`` -- to put on each side of each edge the number of the
               edge
 
-            - ``'gluings and numbers'`` -- full information
+            - ``'gluings and number'`` -- full information
 
         - ``adjacencies`` -- a list of pairs ``(p,e)`` to be used to set
           adjacencies of polygons. 
@@ -234,7 +234,7 @@ class GraphicalSurface:
             self._polygons[label] = p
             return p
 
-    def make_adjacent(self, p, e):
+    def make_adjacent(self, p, e,reverse=False):
         r"""
         Move the polygon across the prescribed edge so that is adjacent.
 
@@ -256,17 +256,42 @@ class GraphicalSurface:
             Polygon 1: [(0.4, -2.8), (2.0, -2.0), (0.0, 0.0)]
         """
         pp,ee = self._ss.opposite_edge(p,e)
-        poly = self.graphical_polygon(pp)
-        g = self._ss.edge_transformation(pp,ee)
-        h = self.graphical_polygon(p).transformation()
-        poly.set_transformation(h*g)
+        if reverse:
+            from flatsurf.geometry.similarity import SimilarityGroup, SimilarityReflectionGroup
+            G=SimilarityGroup(self._ss.base_ring())
+            GG=SimilarityReflectionGroup(self._ss.base_ring())
 
-    def make_adjacent_and_visible(self, p, e):
+            q=self._ss.polygon(p)
+            a=q.vertex(e)
+            b=q.vertex(e+1)
+            # This is the similarity carrying the origin to a and (1,0) to b:
+            g=G(b[0]-a[0],b[1]-a[1],a[0],a[1])
+
+            qq=self._ss.polygon(pp)
+            aa=qq.vertex(ee+1)
+            bb=qq.vertex(ee)
+            # This is the similarity carrying the origin to aa and (1,0) to bb:
+            gg=G(bb[0]-aa[0],bb[1]-aa[1],aa[0],aa[1])
+            
+            reflection=GG(
+                self._ss.base_ring().one(),
+                self._ss.base_ring().zero(),
+                self._ss.base_ring().zero(),
+                self._ss.base_ring().zero(),-1)
+            
+            # This is the similarity carrying (a,b) to (aa,bb):
+            g = gg*reflection*(~g)
+        else:
+            g = self._ss.edge_transformation(pp,ee)
+        h = self.graphical_polygon(p).transformation()
+        self.graphical_polygon(pp).set_transformation(h*g)
+
+    def make_adjacent_and_visible(self, p, e, reverse=False):
         r"""
         Move the polygon across the prescribed edge so that is adjacent,
         and make the moved polygon visible.
         """
-        self.make_adjacent(p, e)
+        self.make_adjacent(p, e, reverse=reverse)
         self.make_visible(self._ss.opposite_edge(p,e)[0])
 
     def is_adjacent(self,p,e):
@@ -385,15 +410,21 @@ class GraphicalSurface:
         for label in self._visible:
             polygon = self.graphical_polygon(label)
             polygon.set_edge_labels(self.edge_labels(label))
-            p += polygon.plot()
+            if polygon.transformation().sign()==1:
+                p += polygon.plot()
             for e in range(polygon.base_polygon().num_edges()):
-                if not self.is_adjacent(label,e):
-                    p += polygon.plot_edge(e,color="blue")
-                else:
+                if self.is_adjacent(label,e):
                     # we want to plot the edges only once!
                     pp,ee = self.opposite_edge(label,e)
+                    sign = polygon.transformation().sign() * \
+                        self.graphical_polygon(pp).transformation().sign()
                     if label>pp or (label == pp and e > ee):
-                        p += polygon.plot_edge(e,color="blue",dotted=True)
+                        if sign==1:
+                            p += polygon.plot_edge(e,color="blue",dotted=True)
+                        else:
+                            p += polygon.plot_edge(e,color="purple")
+                else:
+                    p += polygon.plot_edge(e,color="blue")
         return p
 
 
