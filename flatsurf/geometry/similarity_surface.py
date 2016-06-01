@@ -493,11 +493,10 @@ class SimilaritySurface(SageObject):
             raise ValueError("The polygon opposite the provided edge is not a triangle.")
         sim = self.edge_transformation(l2,e2)
         m = sim.derivative()
-        hol = sim( p2.vertex( (e2+2)%3 ) - p1.vertex((e1+2)%3) )
+        hol = sim( p2.vertex( (e2+2)%3 ) ) - p1.vertex((e1+2)%3)
+
         from flatsurf import polygons
-        # The new polygons
-        #print [hol, m*p2.edge((e2+2)%3), p1.edge((e1+1)%3)]
-        #print [-hol, p1.edge((e1+2)%3), m*p2.edge((e2+1)%3)]
+
         try:
             np1 = polygons(edges=[hol, m * p2.edge((e2+2)%3), p1.edge((e1+1)%3)])
             np2 = polygons(edges=[-hol, p1.edge((e1+2)%3), m * p2.edge((e2+1)%3)])
@@ -970,6 +969,12 @@ class SimilaritySurface(SageObject):
             Polygon: (0, 0), (0, -2), (2, -2), (2, 0)
             sage: ss.polygon(2)
             Polygon: (0, 0), (-a, a), (-2*a, 0), (-a, -a)
+
+            sage: from flatsurf import *
+            sage: p=polygons((4,0),(-2,1),(-2,-1))
+            sage: s0=similarity_surfaces.self_glued_polygon(p)
+            sage: s=s0.delaunay_decomposition()
+            sage: TestSuite(s).run()
         """
         if not self.is_finite():
             raise NotImplementedError("Not implemented for infinite surfaces.")
