@@ -33,7 +33,9 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
         for lab in it:
             p = self.polygon(lab)
             for e in xrange(p.num_edges()):
-                tester.assertTrue(self.edge_matrix(lab,e).is_one())
+                # Warning: check the matrices computed from the edges,
+                # rather the ones overriden by TranslationSurface.
+                tester.assertTrue(SimilaritySurface.edge_matrix(self,lab,e).is_one())
 
     def edge_matrix(self, p, e=None):
         if e is None:
