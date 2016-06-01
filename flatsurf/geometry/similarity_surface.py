@@ -957,6 +957,19 @@ class SimilaritySurface(SageObject):
             Polygon: (0, 0), (0, -2), (2, -2), (2, 0)
             sage: ss.polygon(2)
             Polygon: (0, 0), (-a, a), (-2*a, 0), (-a, -a)
+
+            sage: from flatsurf import *
+            sage: s0=translation_surfaces.octagon_and_squares()
+            sage: a=s0.base_ring().gens()[0]
+            sage: m=Matrix([[1,2+a],[0,1]])
+            sage: s=m*s0
+            sage: ss=s.delaunay_decomposition()
+            sage: ss.polygon(0)
+            Polygon: (0, 0), (0, -2), (a, -a - 2), (a + 2, -a - 2), (2*a + 2, -2), (2*a + 2, 0), (a + 2, a), (a, a)
+            sage: ss.polygon(1)
+            Polygon: (0, 0), (0, -2), (2, -2), (2, 0)
+            sage: ss.polygon(2)
+            Polygon: (0, 0), (-a, a), (-2*a, 0), (-a, -a)
         """
         if not self.is_finite():
             raise NotImplementedError("Not implemented for infinite surfaces.")
@@ -965,7 +978,7 @@ class SimilaritySurface(SageObject):
         else:
             s=self.mutable_copy()
         if not delaunay_triangulated:
-            s.delaunay_triangulation(triangulated=triangulated,in_place=True)
+            s=s.delaunay_triangulation(triangulated=triangulated,in_place=True)
         # Now s is the Delaunay Triangulated
         loop=True
         while loop:
