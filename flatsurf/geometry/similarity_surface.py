@@ -23,6 +23,8 @@ from sage.matrix.constructor import matrix, identity_matrix
 ZZ_1 = Integer(1)
 ZZ_2 = Integer(2)
 
+from flatsurf import *
+
 from flatsurf.geometry.matrix_2x2 import (is_similarity,
                     homothety_rotation_decomposition,
                     similarity_from_vectors,
@@ -310,6 +312,35 @@ class SimilaritySurface(SageObject):
         # This is the similarity carrying (a,b) to (aa,bb):
         return gg*(~g)
 
+    def mutable_copy(self, dictionary=True):
+        r"""
+        Returns a mutable copy of this surface.
+        
+        If dictionary is false, labels will be changed, but the resulting
+        surface will be slightly more efficient (as a list will be used
+        for storing polygons rather than a dictionary). See Surface_fast.
+        
+        EXAMPLES::
+
+            sage: from flatsurf import *
+            sage: ss=translation_surfaces.ward(3)
+            sage: print(ss.is_mutable())
+            False
+            sage: from flatsurf.geometry.surface import Surface_fast
+            sage: s=ss.mutable_copy()
+            sage: print(s.is_mutable())
+            True
+            sage: TestSuite(s).run()
+            sage: print(s==ss)
+            True
+        """
+        if self.is_finite():
+            from flatsurf.geometry.surface import Surface_fast
+            return self.__class__(Surface_fast(surface=self,\
+                mutable=True,dictionary=dictionary))
+        else:
+            raise NotImplementedError("Mutable copy not implemented yet for infinite surfaces.")
+    
     def triangle_flip(self, l1, e1, in_place=False, test=False):
         r"""
         Flips the diagonal of the quadrilateral formed by two triangles
@@ -429,9 +460,7 @@ class SimilaritySurface(SageObject):
         try:
             np1 = polygons(edges=[hol, m * p2.edge((e2+2)%3), p1.edge((e1+1)%3)])
             np2 = polygons(edges=[-hol, p1.edge((e1+2)%3), m * p2.edge((e2+1)%3)])
-        except ValueError:
-            raise ValueError("Gluing triangles along this edge yields a non-convex quadrilateral.")
-        except TypeError:
+        except (ValueError, TypeError):
             raise ValueError("Gluing triangles along this edge yields a non-convex quadrilateral.")
         # Old gluings:
         pairs = [self.opposite_edge(l2,(e2+2)%3), \
@@ -470,6 +499,100 @@ class SimilaritySurface(SageObject):
             return self
         else:
             return self.__class__(s)
+
+    def join_polygons(self, p1, e1, test=False, in_place=False):
+        r"""
+        Join polygons across the provided edge (p1,e1). By default,
+        it returns the surface obtained by joining the two polygons 
+        together. It raises a ValueError if gluing the two polygons
+        together results in a non-convex polygon. This is done to the 
+        current surface if in_place is True, and otherwise a mutable 
+        copy is made and then modified. 
+        
+        If test is True then instead of changing the surface, it just
+        checks to see if the change would be successful and returns
+        True if successful or False if not.
+        
+        EXAMPLES::
+
+            sage: from flatsurf import *
+            sage: ss=translation_surfaces.ward(3)
+            sage: from flatsurf.geometry.surface import Surface_fast
+            sage: s=ss.mutable_copy(dictionary=False)
+            sage: s.join_polygons(0,0, in_place=True)
+            TranslationSurface built from 2 polygons
+            sage: print(s.polygon(0))
+            Polygon: (0, 0), (1, -a), (2, 0), (3, a), (2, 2*a), (0, 2*a), (-1, a)
+            sage: s.join_polygons(0,4, in_place=True)
+            TranslationSurface built from 1 polygon
+            sage: print(s.polygon(0))
+            Polygon: (0, 0), (1, -a), (2, 0), (3, a), (2, 2*a), (1, 3*a), (0, 2*a), (-1, a)
+        """
+        poly1=self.polygon(p1)
+        p2,e2 = self.opposite_edge(p1,e1)
+        poly2=self.polygon(p2)
+        if p1==p2:
+            if test:
+                return False
+            else:
+                raise ValueError("Can't glue polygon to itself.")
+        t=self.edge_transformation(p2, e2)
+        dt=t.derivative()
+        vs = []
+        edge_map={} # Store the pairs for the old edges.
+        for i in range(e1):
+            edge_map[len(vs)]=(p1,i)
+            vs.append(poly1.edge(i))
+        ne=poly2.num_edges()
+        for i in range(1,ne):
+            ee=(e2+i)%ne
+            edge_map[len(vs)]=(p2,ee)
+            vs.append(dt * poly2.edge( ee ))
+        for i in range(e1+1, poly1.num_edges()):
+            edge_map[len(vs)]=(p1,i)
+            vs.append(poly1.edge(i))
+
+        from flatsurf.geometry.polygon import Polygons
+        try:
+            new_polygon = Polygons(self.base_ring())(vs)
+        except (ValueError, TypeError):
+            if test:
+                return False
+            else:
+                raise ValueError("Joining polygons along this edge results in a non-convex polygon.")
+        
+        if test:
+            # Gluing would be successful
+            return True
+        
+        # Now no longer testing. Do the gluing.
+        if in_place:
+            ss=self
+        else:
+            ss=self.mutable_copy()
+        s=ss.underlying_surface()
+
+        inv_edge_map={}
+        for key, value in edge_map.iteritems():
+            inv_edge_map[value]=(p1,key)
+        
+        glue_list=[]
+        for i in range(len(vs)):
+            p3,e3 = edge_map[i]
+            p4,e4 = self.opposite_edge(p3,e3)
+            if p4 == p1 or p4 == p2: 
+                glue_list.append(inv_edge_map[(p4,e4)])
+            else:
+                glue_list.append((p4,e4))
+
+        if s.base_label()==p2:
+             s.change_base_polygon(p1)
+        s.remove_polygon(p2)
+        
+        s.change_polygon(p1, new_polygon, glue_list)
+        
+        return ss
+
 
     def minimal_translation_cover(self):
         r"""
@@ -640,19 +763,44 @@ class SimilaritySurface(SageObject):
     
     def _edge_needs_flip(self,p1,e1):
         r"""
-        Return if the provided edge which bounds two triangles should be flipped
-        to get closer to the Delaunay decomposition
+        Returns -1 if the the provided edge incident to two triangles which 
+        should be flipped to get closer to the Delaunay decomposition. 
+        Returns 0 if the quadrilateral formed by the triangles is inscribed 
+        in a circle, and returns 1 otherwise.
+        
+        A ValueError is raised if the edge is not indident to two triangles.
         """
         p2,e2=self.opposite_edge(p1,e1)
         poly1=self.polygon(p1)
         poly2=self.polygon(p2)
-        assert poly1.num_edges()==3
-        assert poly2.num_edges()==3
+        if poly1.num_edges()!=3 or poly2.num_edges()!=3:
+            raise ValueError("Edge must be adjacent to two triangles.")
         from flatsurf.geometry.matrix_2x2 import similarity_from_vectors
         sim1=similarity_from_vectors(poly1.edge(e1+2),-poly1.edge(e1+1))
         sim2=similarity_from_vectors(poly2.edge(e2+2),-poly2.edge(e2+1))
         sim=sim1*sim2
-        return sim[1][0] < 0
+        return sim[1][0]<0
+
+    def _edge_needs_join(self,p1,e1):
+        r"""
+        Returns -1 if the the provided edge incident to two triangles which 
+        should be flipped to get closer to the Delaunay decomposition. 
+        Returns 0 if the quadrilateral formed by the triangles is inscribed 
+        in a circle, and returns 1 otherwise.
+        
+        A ValueError is raised if the edge is not indident to two triangles.
+        """
+        p2,e2=self.opposite_edge(p1,e1)
+        poly1=self.polygon(p1)
+        poly2=self.polygon(p2)
+        from flatsurf.geometry.matrix_2x2 import similarity_from_vectors
+        sim1=similarity_from_vectors(poly1.vertex(e1) - poly1.vertex(e1+2),\
+            -poly1.edge(e1+1))
+        sim2=similarity_from_vectors(poly2.vertex(e2) - poly2.vertex(e2+2),\
+            -poly2.edge(e2+1))
+        sim=sim1*sim2
+        from sage.functions.generalized import sgn
+        return sim[1][0]==0
     
     def delaunay_triangulation(self, triangulated=False, in_place=False):
         if not self.is_finite():
@@ -672,6 +820,46 @@ class SimilaritySurface(SageObject):
             for (l1,e1),(l2,e2) in s.edge_iterator(gluings=True):
                 if (l1<l2 or (l1==l2 and e1<=e2)) and s._edge_needs_flip(l1,e1):
                     s.triangle_flip(l1, e1, in_place=True)
+                    loop=True
+                    break
+        return s
+    
+    def delaunay_decomposition(self, triangulated=False, \
+            delaunay_triangulated=False, in_place=False):
+        r"""
+        Return the Delaunay Decomposition of this surface.
+    
+        EXAMPLES::
+
+            sage: from flatsurf import *
+            sage: s0=translation_surfaces.octagon_and_squares()
+            sage: a=s0.base_ring().gens()[0]
+            sage: m=Matrix([[1,2+a],[0,1]])
+            sage: s=m*s0
+            sage: s=s.triangulate()
+            sage: ss=s.delaunay_decomposition(triangulated=True)
+            sage: ss.polygon(0)
+            Polygon: (0, 0), (0, -2), (a, -a - 2), (a + 2, -a - 2), (2*a + 2, -2), (2*a + 2, 0), (a + 2, a), (a, a)
+            sage: ss.polygon(1)
+            Polygon: (0, 0), (0, -2), (2, -2), (2, 0)
+            sage: ss.polygon(2)
+            Polygon: (0, 0), (-a, a), (-2*a, 0), (-a, -a)
+        """
+        if not self.is_finite():
+            raise NotImplementedError("Not implemented for infinite surfaces.")
+        if in_place:
+            s=self
+        else:
+            s=self.mutable_copy()
+        if not delaunay_triangulated:
+            s.delaunay_triangulation(triangulated=triangulated,in_place=True)
+        # Now s is the Delaunay Triangulated
+        loop=True
+        while loop:
+            loop=False
+            for (l1,e1),(l2,e2) in s.edge_iterator(gluings=True):
+                if (l1<l2 or (l1==l2 and e1<=e2)) and s._edge_needs_join(l1,e1):
+                    s.join_polygons(l1, e1, in_place=True)
                     loop=True
                     break
         return s
