@@ -143,6 +143,12 @@ class SimilaritySurface(SageObject):
         """
         return self._s.is_finite()
 
+    def is_mutable(self):
+        r"""
+        Return if the underlying surface is mutable.
+        """
+        return self._s.is_mutable()
+
     # 
     # generic methods
     #
@@ -605,12 +611,12 @@ class SimilaritySurface(SageObject):
     
     def triangulation_mapping(self):
         r"""
-        Return a SurfaceMapping triangulating the suface.
+        Return a SurfaceMapping triangulating the suface or None if the surface is already triangulated.
         """
         from flatsurf.geometry.mappings import triangulation_mapping
         return triangulation_mapping(self)
     
-    def triangulate(self):
+    def triangulate(self, in_place=False):
         r"""
         Return a triangulated version of this surface.
 
@@ -624,8 +630,52 @@ class SimilaritySurface(SageObject):
             sage: print(gs)
             Graphical version of Similarity Surface TranslationSurface built from 6 polygons
         """
-        return self.triangulation_mapping().codomain()
-        
+        if in_place:
+            raise NotImplementedError("In place triangulation not supported yet.")
+        m = self.triangulation_mapping()
+        if m is None:
+            return self
+        else:
+            return m.codomain()
+    
+    def _edge_needs_flip(self,p1,e1):
+        r"""
+        Return if the provided edge which bounds two triangles should be flipped
+        to get closer to the Delaunay decomposition
+        """
+        p2,e2=self.opposite_edge(p1,e1)
+        poly1=self.polygon(p1)
+        poly2=self.polygon(p2)
+        assert poly1.num_edges()==3
+        assert poly2.num_edges()==3
+        from flatsurf.geometry.matrix_2x2 import similarity_from_vectors
+        sim1=similarity_from_vectors(poly1.edge(e1+2),-poly1.edge(e1+1))
+        sim2=similarity_from_vectors(poly2.edge(e2+2),-poly2.edge(e2+1))
+        sim=sim1*sim2
+        return sim[1][0] < 0
+    
+    def delaunay_triangulation(self, triangulated=False, in_place=False):
+        if not self.is_finite():
+            raise NotImplementedError("Not implemented for infinite surfaces.")
+        if triangulated:
+            if in_place:
+                s=self
+            else:
+                from flatsurf.geometry.surface import Surface_fast
+                s=self.__class__(Surface_fast(self,mutable=True))
+        else:
+            from flatsurf.geometry.surface import Surface_fast
+            s=self.__class__(Surface_fast(self.triangulate(in_place=in_place),mutable=True))
+        loop=True
+        while loop:
+            loop=False
+            for (l1,e1),(l2,e2) in s.edge_iterator(gluings=True):
+                if (l1<l2 or (l1==l2 and e1<=e2)) and s._edge_needs_flip(l1,e1):
+                    s.triangle_flip(l1, e1, in_place=True)
+                    loop=True
+                    break
+        return s
+    
     def graphical_surface(self, *args, **kwds):
         r"""
         Return a GraphicalSurface representing this surface.
@@ -770,6 +820,11 @@ class SimilaritySurface(SageObject):
             raise TypeError
         if not other.is_finite():
             raise ValueError("Can not compare infinite surfaces.")
+        if not self.is_mutable() and not other.is_mutable():
+            hash1 = hash(self)
+            hash2 = hash(other)
+            if hash1 != hash2:
+                return False
         if self.base_ring() != other.base_ring():
             return False
         if self.base_label() != other.base_label():
@@ -803,4 +858,6 @@ class SimilaritySurface(SageObject):
         for edgepair in self.edge_iterator(gluings=True):
             h = h + 3*hash(edgepair)
         return h
+
+
 
