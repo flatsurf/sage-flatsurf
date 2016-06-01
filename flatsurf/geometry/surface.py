@@ -256,6 +256,7 @@ class Surface(SageObject):
         Adds a the provided polygon to the surface. Utilizes gluing_list
         for the gluing data for edges (which must be a list
         of pairs of length equal to number of edges of the polygon).
+        If new_polygon is None it should implement a place holder and return a new label.
         
         Return the label assigned to the new_polygon.
         """
@@ -373,7 +374,11 @@ class Surface_fast(Surface):
         r"""
         Internal method used by change_polygon(). Should not be called directly.
         """
-        self._p[label][0]=new_polygon
+        if self._p[label] is None:
+            self._num_polygons += 1
+            self._p[label]=[new_polygon,[]]
+        else:
+            self._p[label][0]=new_polygon
         if gluing_list is None:
             if new_polygon.num_edges() != len(self._p[label][1]):
                 self._p[label][1]=[None for e in xrange(new_polygon.num_edges())]
@@ -398,6 +403,18 @@ class Surface_fast(Surface):
         r"""
         Internal method used by add_polygon(). Should not be called directly.
         """
+        if new_polygon is None:
+            # Here we just return a new label and make room for the coming data.
+            if isinstance(self._p,list):
+                # List implementation
+                new_label = len(self._p)
+                self._p.append(None)
+                return new_label
+            else:
+                # Dictionary implementation.
+                new_label = ExtraLabel()
+                self._p[new_label]=None
+                return new_label
         if gluing_list is None:
             gluing_list = [None for i in xrange(new_polygon.num_edges())]
         else:
