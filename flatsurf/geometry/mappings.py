@@ -836,7 +836,7 @@ class ReindexMapping(SurfaceMapping):
     r"""
     Apply a dictionary to relabel the polygons.
     """
-    def __init__(self,s,relabler):
+    def __init__(self,s,relabler,new_base_label=None):
         r"""
         The parameters should be a surface and a dictionary which takes as input a label and produces a new label.
         """
@@ -861,22 +861,27 @@ class ReindexMapping(SurfaceMapping):
         self._f=f
         self._b=b
         
-        SurfaceMapping.__init__(self, s, s.__class__(ReindexMapping.ReindexedSurface(s,self)))
+        
+        SurfaceMapping.__init__(self, s, s.__class__(ReindexMapping.ReindexedSurface(s,self,new_base_label)))
 
     class ReindexedSurface(Surface):
-        def __init__(self, s, reindexmapping):
+        def __init__(self, s, reindexmapping,new_base_label=None):
             r"""
             Represents a reindexed similarity surface.
             """
             self._s=s
             self._r=reindexmapping
+            if new_base_label is None:
+                self._base_label=self._r._f[self._s.base_label()]
+            else:
+                self._base_label=new_base_label
             Surface.__init__(self)
         
         def base_ring(self):
             return self._s.base_ring()
         
         def base_label(self):
-            return self._r._f[self._s.base_label()]
+            return self._base_label
         
         def polygon(self, lab):
             return self._s.polygon(self._r._b[lab])
@@ -909,24 +914,33 @@ class ReindexMapping(SurfaceMapping):
             tangent_vector.vector(), \
             ring = ring)
 
+def my_sgn(val):
+    if val>0:
+        return 1
+    elif val<0:
+        return -1
+    else:
+        return 0
+
 def polygon_compare(poly1,poly2):
     r"""
     Compare two polygons first by area, then by number of sides,
     then by lexigraphical ording on edge vectors."""
-    from sage.functions.generalized import sgn
-    res = int(sgn(-poly1.area()+poly2.area()))
+    # This should not be used is broken!!
+    #from sage.functions.generalized import sgn
+    res = my_sgn(-poly1.area()+poly2.area())
     if res!=0:
         return res
-    res = int(sgn(poly1.num_edges()-poly2.num_edges()))
+    res = my_sgn(poly1.num_edges()-poly2.num_edges())
     if res!=0:
         return res
     ne=poly1.num_edges()
     for i in range(0,ne-1):
         edge_diff = poly1.edge(i) - poly2.edge(i)
-        res = int(sgn(edge_diff[0]))
+        res = my_sgn(edge_diff[0])
         if res!=0:
             return res
-        res = int(sgn(edge_diff[1]))
+        res = my_sgn(edge_diff[1])
         if res!=0:
             return res
     return 0
@@ -1018,6 +1032,6 @@ def canonicalize_translation_surface_mapping(s):
             smin = stest
     lw=smin.walker()
     lw.find_all_labels()
-    m3=ReindexMapping(s2,lw.label_dictionary())
+    m3=ReindexMapping(s2,lw.label_dictionary(),0)
     return SurfaceMappingComposition(m,m3)
     
