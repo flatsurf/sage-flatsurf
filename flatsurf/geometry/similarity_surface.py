@@ -725,6 +725,7 @@ class SimilaritySurface(SageObject):
             sage: S = similarity_surfaces.example()
             sage: T = S.minimal_translation_cover()
             sage: T
+            Warning: Could be indicating infinite surface falsely.
             TranslationSurface built from infinitely many polygons
             sage: T.polygon(T.base_label())
             Polygon: (0, 0), (2, -2), (2, 0)
@@ -913,7 +914,19 @@ class SimilaritySurface(SageObject):
         sim=sim1*sim2
         from sage.functions.generalized import sgn
         return sim[1][0]==0
-    
+
+    def delaunay_single_flip(self):
+        r"""
+        Does a single in place flip of a triangulated mutable surface.
+        """
+        if not self.is_finite():
+            raise NotImplementedError("Not implemented for infinite surfaces.")
+        for (l1,e1),(l2,e2) in self.edge_iterator(gluings=True):
+            if (l1<l2 or (l1==l2 and e1<=e2)) and self._edge_needs_flip(l1,e1):
+                self.triangle_flip(l1, e1, in_place=True)
+                return True
+        return False
+
     def delaunay_triangulation(self, triangulated=False, in_place=False):
         if not self.is_finite():
             raise NotImplementedError("Not implemented for infinite surfaces.")
@@ -935,7 +948,16 @@ class SimilaritySurface(SageObject):
                     loop=True
                     break
         return s
-    
+
+    def delaunay_single_join(self):
+        if not self.is_finite():
+            raise NotImplementedError("Not implemented for infinite surfaces.")
+        for (l1,e1),(l2,e2) in self.edge_iterator(gluings=True):
+            if (l1<l2 or (l1==l2 and e1<=e2)) and self._edge_needs_join(l1,e1):
+                self.join_polygons(l1, e1, in_place=True)
+                return True
+        return False
+        
     def delaunay_decomposition(self, triangulated=False, \
             delaunay_triangulated=False, in_place=False):
         r"""
@@ -1201,6 +1223,13 @@ class SimilaritySurface(SageObject):
         for edgepair in self.edge_iterator(gluings=True):
             h = h + 3*hash(edgepair)
         return h
+        
+    def relabeled_copy(self):
+        r"""
+        Return a copy of this surface with labels given by the integers.
+        """
+        from flatsurf.geometry.surface import Surface_fast
+        return self.__class__(Surface_fast(surface=self))
+    
 
-
-
+    
