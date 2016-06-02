@@ -194,6 +194,9 @@ class AbstractStraightLineTrajectory:
     - ``def segment(self, i)``
     - ``def segments(self)``
     """
+    def surface(self):
+        raise NotImplementedError
+
     def __repr__(self):
         start = self.segment(0).start()
         end = self.segment(-1).end()
@@ -202,12 +205,17 @@ class AbstractStraightLineTrajectory:
                 start.point(), start.polygon_label(),
                 end.point(), end.polygon_label())
 
-    def graphical_trajectory(self, graphical_surface):
+    def plot(self, graphical_surface = None):
+        return self.graphical_trajectory(graphical_surface = graphical_surface).plot()
+
+    def graphical_trajectory(self, graphical_surface = None):
         r"""
         Returns a ``GraphicalStraightLineTrajectory`` corresponding to this
         trajectory in the provided  ``GraphicalSurface``.
         """
         from flatsurf.graphical.straight_line_trajectory import GraphicalStraightLineTrajectory
+        if graphical_surface is None:
+            graphical_surface=self.surface().graphical_surface()
         return GraphicalStraightLineTrajectory(graphical_surface, self)
 
     def coding(self, alphabet=None):
@@ -313,6 +321,10 @@ class StraightLineTrajectory(AbstractStraightLineTrajectory):
         self._segments.append(seg)
         self._setup_forward()
         self._setup_backward()
+        self._s=tangent_vector.surface()
+
+    def surface(self):
+        return self._s
 
     def segment(self, i):
         r"""
