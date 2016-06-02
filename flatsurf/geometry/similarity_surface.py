@@ -1224,12 +1224,18 @@ class SimilaritySurface(SageObject):
             h = h + 3*hash(edgepair)
         return h
         
-    def relabeled_copy(self):
+    def relabeled_copy(self, mutable=False):
         r"""
-        Return a copy of this surface with labels given by the integers.
+        Return a copy of this surface with labels given by the non-negative integers.
+        The mutable flag allows the returned copy to be mutable.
         """
-        from flatsurf.geometry.surface import Surface_fast
-        return self.__class__(Surface_fast(surface=self))
+        from flatsurf.geometry.surface import Surface_list
+        if self.is_finite():
+            surface = Surface_list(surface=self,mutable=mutable)
+        else:
+            # Infinite surfaces have to store a reference.
+            surface = Surface_list(surface=self,copy=False, mutable=mutable)
+        return self.__class__(surface)
     
 
     
