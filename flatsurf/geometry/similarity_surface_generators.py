@@ -4,7 +4,7 @@ from sage.misc.cachefunc import cached_method
 ZZ_1 = ZZ(1)
 ZZ_2 = ZZ(2)
 
-from flatsurf.geometry.surface import Surface
+from flatsurf.geometry.surface import Surface, Surface_list
 from flatsurf.geometry.translation_surface import TranslationSurface
 
 def flipper_nf_to_sage(K, name='a'):
@@ -534,7 +534,7 @@ class SimilaritySurfaceGenerators:
             sage: Q
             RationalConeSurface built from 2 polygons
             sage: Q.underlying_surface()
-            <class 'flatsurf.geometry.surface.Surface_polygons_and_gluings'>
+            <class 'flatsurf.geometry.surface.Surface_list'>
             sage: M = Q.minimal_translation_cover()
             sage: M
             TranslationSurface built from 8 polygons
@@ -549,9 +549,11 @@ class SimilaritySurfaceGenerators:
         r = matrix(2, [-1,0,0,1])
         Q = polygons(edges=[r*v for v in reversed(P.edges())])
 
-        glue = {(0,i): (1,n-i-1) for i in range(n)}
-        glue.update({(1,i): (0,n-i-1) for i in range(n)})
-        s=ConeSurface(Surface_polygons_and_gluings((P,Q), glue))
+        surface = Surface_list(base_ring = P.base_ring())
+        surface.add_polygon(P,[(1,n-i-1) for i in xrange(n)])
+        surface.add_polygon(Q,[(0,n-i-1) for i in xrange(n)])
+        surface.make_immutable()
+        s=ConeSurface(surface)
         gs=s.graphical_surface()
         gs.process_options(edge_labels=None,polygon_labels=False)
         gs.make_adjacent(0,0,reverse=True)
@@ -565,7 +567,6 @@ class SimilaritySurfaceGenerators:
         the polygons separately.
         """
         from flatsurf.geometry.polygon import polygons
-        from flatsurf.geometry.surface import Surface_polygons_and_gluings
         from flatsurf.geometry.cone_surface import ConeSurface
         from sage.matrix.constructor import matrix
 
@@ -573,9 +574,11 @@ class SimilaritySurfaceGenerators:
         r = matrix(2, [-1,0,0,1])
         Q = polygons(edges=[r*v for v in reversed(P.edges())])
 
-        glue = {(0,i): (1,n-i-1) for i in range(n)}
-        glue.update({(1,i): (0,n-i-1) for i in range(n)})
-        return ConeSurface(Surface_polygons_and_gluings((P,Q), glue))
+        surface = Surface_list(base_ring = P.base_ring())
+        surface.add_polygon(P,[(1,n-i-1) for i in xrange(n)])
+        surface.add_polygon(Q,[(0,n-i-1) for i in xrange(n)])
+        surface.make_immutable()
+        return ConeSurface(surface)
 
     @staticmethod
     def right_angle_triangle(w,h):
@@ -773,7 +776,7 @@ class TranslationSurfaceGenerators:
         s = ZZ_2 * polygons.square(field=K)
 
         from flatsurf.geometry.surface import Surface_fast
-        ss = Surface_fast(base_ring=K)
+        ss = Surface_list(base_ring=K)
         ss.add_polygon(o,[(1,2),(2,2),(1,3),(2,3),(1,0),(2,0),(1,1),(2,1)])
         ss.add_polygon(s,[(0,4),(0,6),(0,0),(0,2)])
         ss.add_polygon(rot*s,[(0,5),(0,7),(0,1),(0,3)])
