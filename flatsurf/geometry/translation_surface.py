@@ -98,13 +98,28 @@ class MinimalTranslationCover(Surface):
     """
     def __init__(self, similarity_surface):
         self._ss = similarity_surface
+        # Try to figure out if we are finite.
         Surface.__init__(self)
         
     def is_finite(self):
+        try:
+            return self._is_finite
+        except AttributeError:
+            pass
         if not self._ss.is_finite():
-            return False
-        from flatsurf.geometry.rational_cone_surface import RationalConeSurface
-        return isinstance(self._ss, RationalConeSurface)
+            answer = False
+        else:
+            try:
+                from flatsurf.geometry.rational_cone_surface import RationalConeSurface
+                rcs = RationalConeSurface(self._ss)
+                rcs._test_edge_matrix()
+                answer=True
+            except AssertionError:
+                print("Warning: Could be indicating infinite surface falsely.")
+                answer=False
+        if not self._ss.underlying_surface().is_mutable():
+            self._is_finite=answer
+        return answer
 
     def base_ring(self):
         return self._ss.base_ring()
