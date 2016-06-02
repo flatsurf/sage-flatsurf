@@ -74,6 +74,27 @@ class GraphicalSurface:
         r"""
         Process the options listed as if the graphical_surface was first
         created.
+
+        INPUT:
+
+        - ``polygon_labels`` -- a boolean (default ``True``) whether the label
+          of polygons are displayed
+
+        - ``edge_labels`` -- option to control the display of edge labels. It
+          can be one of
+
+            - ``False`` or ``None`` for no labels
+
+            - ``'gluings'`` -- to put on each side of each non-adjacent edge, the
+              name of the polygon to which it is glued
+
+            - ``'number'`` -- to put on each side of each edge the number of the
+              edge
+
+            - ``'gluings and number'`` -- full information
+
+        - ``adjacencies`` -- a list of pairs ``(p,e)`` to be used to set
+          adjacencies of polygons. 
         """
         if not adjacencies is None:
             for p,e in adjacencies:
@@ -407,11 +428,12 @@ class GraphicalSurface:
             Graphics object consisting of 13 graphics primitives
         """
         p = Graphics()
+        draw_labels = self._polygons_labels is None or self._polygons_labels!=False
         for label in self._visible:
             polygon = self.graphical_polygon(label)
             polygon.set_edge_labels(self.edge_labels(label))
             if polygon.transformation().sign()==1:
-                p += polygon.plot()
+                p += polygon.plot(draw_polygon_label=draw_labels)
             for e in range(polygon.base_polygon().num_edges()):
                 if self.is_adjacent(label,e):
                     # we want to plot the edges only once!
