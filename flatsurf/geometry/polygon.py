@@ -994,6 +994,28 @@ class PolygonsConstructor:
 
         return Polygons(field)(edges=edges)
 
+    @staticmethod
+    def right_triangle(angle,leg0=None, leg1=None, hypotenuse=None):
+        r"""
+        Return a right triangle in a numberfield with an angle of pi*m/n.
+        You can specify the length of the first leg (leg0), the second leg (leg1),
+        or the hypotenuse.
+        """
+        from sage.rings.qqbar import QQbar
+        z=QQbar.zeta(2*angle.denom())**angle.numer()
+        c = z.real()
+        s = z.imag()
+
+        if not leg0 is None:
+            c,s = leg0*c/c,leg0*s/c
+        elif not leg1 is None:
+            c,s = leg1*c/s,leg1*s/s
+        elif not hypotenuse is None:
+            c,s = hypotenuse*c, hypotenuse*s
+        
+        field, (c,s) = number_field_elements_from_algebraics((c,s))
+        return Polygons(field)(edges=[(c,field.zero()),(field.zero(),s),(-c,-s)])
+        
     def __call__(self, *args, **kwds):
         r"""
         EXAMPLES::
