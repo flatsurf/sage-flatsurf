@@ -751,6 +751,10 @@ class Surface_list(Surface):
                 self._ref_to_int={}
                 self._int_to_ref=[]
                 self.__get_label(surface.base_label())
+ 
+                # Cache the base polygon
+                polygon = surface.polygon(surface.base_label())
+                self._p[0]=[polygon, [None for i in xrange(polygon.num_edges())]]
 
                 self._num_polygons = self._reference_surface.num_polygons()
 
@@ -763,15 +767,20 @@ class Surface_list(Surface):
                 #self.label_iterator = super(Surface, self).label_iterator
 
     def __get_label(self, ref_label):
+        r"""
+        Returns a corresponding label. Creates a new label if necessary.
+        """
         try:
             return self._ref_to_int[ref_label]
         except KeyError:
+            polygon = self._reference_surface.polygon(ref_label)
+            data = [polygon,[None for i in xrange(polygon.num_edges())]]
             if len(self._removed_labels)>0:
                 i = self._removed_labels.pop()
-                self._p[i]=[None,None]
+                self._p[i]=data
             else:
                 i = len(self._p)
-                self._p.append([None,None])
+                self._p.append(data)
             self._ref_to_int[ref_label]=i
             self._int_to_ref.append(ref_label)
             return i
@@ -789,26 +798,13 @@ class Surface_list(Surface):
         try:
             data = self._p[lab]
         except IndexError:
-             raise ValueError("No known polygon with provided label. "+\
+             raise ValueError("No known polygon with provided label "+str(lab)+". "+\
                 "This can be caused by failing to explore your surface. "+\
                 "See the documentation in flatsurf.geometry.surface.Surface_list.")
         try:
-            polygon = data[0]
+            return data[0]
         except TypeError:
             raise ValueError("Provided label was removed.")
-        if polygon is None:
-            if self._has_reference:
-                ref_label = self._int_to_ref[lab]
-                polygon = self._reference_surface.polygon(ref_label)
-                self._p[lab][0]=polygon
-                self._p[lab][1]=[None for i in xrange(polygon.num_edges())]
-                return polygon
-            else:
-                # Perhaps None was stored here for some reason?
-                return None
-        else:
-            # Success.
-            return polygon
 
     def base_label(self):
         r"""
@@ -837,7 +833,7 @@ class Surface_list(Surface):
             if self._has_reference:
                 ref_p = self._int_to_ref[p]
                 ref_pp, ref_ee = self._reference_surface.opposite_edge(ref_p, e)
-                pp = self.__get_label(ref_pp)
+                pp= self.__get_label(ref_pp)
                 return_value = (pp, ref_ee)
                 glue[e] = return_value
                 return return_value
@@ -881,8 +877,20 @@ class Surface_list(Surface):
         r"""
         Internal method used by change_edge_gluing(). Should not be called directly.
         """
-        self._p[label1][1][edge1]=(label2,edge2)
-        self._p[label2][1][edge2]=(label1,edge1)
+        try:
+            data = self._p[label1]
+        except KeyError:
+            raise ValueError("No known polygon with provided label1="+str(label1))
+        if data is None:
+            raise ValueError("Provided label1="+str(label1)+" was removed from the surface.")
+        data[1][edge1]=(label2,edge2)
+        try:
+            data = self._p[label2]
+        except KeyError:
+            raise ValueError("No known polygon with provided label2="+str(label2))
+        if data is None:
+            raise ValueError("Provided label2="+str(label2)+" was removed from the surface.")
+        data[1][edge2]=(label1,edge1)
 
     def _add_polygon(self, new_polygon, gluing_list=None):
         r"""
