@@ -927,9 +927,26 @@ class SimilaritySurface(SageObject):
                 return True
         return False
 
-    def delaunay_triangulation(self, triangulated=False, in_place=False):
-        if not self.is_finite():
-            raise NotImplementedError("Not implemented for infinite surfaces.")
+    def delaunay_triangulation(self, triangulated=False, in_place=False, limit=None):
+        r"""
+        Returns a Delaunay triangulation of a surface, or make some
+        triangle flips to get closer to the Delaunay decomposition.
+        
+        Parameters
+        ----------
+        triangulated : boolean
+            If true, the algorithm assumes the surface is already triangulated. It
+            does this without verification.
+        in_place : boolean
+            If true, the triangulating and the triangle flips are done in place.
+            Otherwise, a mutable copy of the surface is made.
+        limit : None or Integer
+            If None, this will return a Delaunay triangulation. If limit
+            is an integer 1 or larger, then at most limit many diagonal flips 
+            will be done.
+        """
+        if not self.is_finite() and limit is None:
+            raise NotImplementedError("Not implemented for infinite surfaces unless limit is set")
         if triangulated:
             if in_place:
                 s=self
@@ -940,11 +957,15 @@ class SimilaritySurface(SageObject):
             from flatsurf.geometry.surface import Surface_fast
             s=self.__class__(Surface_fast(self.triangulate(in_place=in_place),mutable=True))
         loop=True
+        count=0
         while loop:
             loop=False
             for (l1,e1),(l2,e2) in s.edge_iterator(gluings=True):
                 if (l1<l2 or (l1==l2 and e1<=e2)) and s._edge_needs_flip(l1,e1):
                     s.triangle_flip(l1, e1, in_place=True)
+                    count += 1
+                    if not limit is None and count>=limit:
+                        return s
                     loop=True
                     break
         return s
@@ -1026,6 +1047,8 @@ class SimilaritySurface(SageObject):
         GraphicalSurface is returned. Other keyword options:
 
         INPUT:
+        - ``cached`` -- a boolean (default ``True``). If true return a cached
+          GraphicalSurface. Otherwise we make a new one.
 
         - ``polygon_labels`` -- a boolean (default ``True``) whether the label
           of polygons are displayed
@@ -1236,6 +1259,4 @@ class SimilaritySurface(SageObject):
             # Infinite surfaces have to store a reference.
             surface = Surface_list(surface=self,copy=False, mutable=mutable)
         return self.__class__(surface)
-    
 
-    
