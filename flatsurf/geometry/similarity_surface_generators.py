@@ -550,8 +550,10 @@ class SimilaritySurfaceGenerators:
         Q = polygons(edges=[r*v for v in reversed(P.edges())])
 
         surface = Surface_list(base_ring = P.base_ring())
-        surface.add_polygon(P,[(1,n-i-1) for i in xrange(n)])
-        surface.add_polygon(Q,[(0,n-i-1) for i in xrange(n)])
+        surface.add_polygon(P) # gets label 0)
+        surface.add_polygon(Q) # gets label 1
+        surface.change_polygon_gluings(0,[(1,n-i-1) for i in xrange(n)])
+        
         surface.make_immutable()
         s=ConeSurface(surface)
         gs=s.graphical_surface()
@@ -575,8 +577,9 @@ class SimilaritySurfaceGenerators:
         Q = polygons(edges=[r*v for v in reversed(P.edges())])
 
         surface = Surface_list(base_ring = P.base_ring())
-        surface.add_polygon(P,[(1,n-i-1) for i in xrange(n)])
-        surface.add_polygon(Q,[(0,n-i-1) for i in xrange(n)])
+        surface.add_polygon(P) # gets label 0)
+        surface.add_polygon(Q) # gets label 1
+        surface.change_polygon_gluings(0,[(1,n-i-1) for i in xrange(n)])
         surface.make_immutable()
         return ConeSurface(surface)
 
@@ -777,9 +780,10 @@ class TranslationSurfaceGenerators:
 
         from flatsurf.geometry.surface import Surface_fast
         ss = Surface_list(base_ring=K)
-        ss.add_polygon(o,[(1,2),(2,2),(1,3),(2,3),(1,0),(2,0),(1,1),(2,1)])
-        ss.add_polygon(s,[(0,4),(0,6),(0,0),(0,2)])
-        ss.add_polygon(rot*s,[(0,5),(0,7),(0,1),(0,3)])
+        ss.add_polygon(o)     # polygon 0
+        ss.add_polygon(s)     # polygon 1
+        ss.add_polygon(rot*s) # polygon 2
+        ss.change_polygon_gluings(0, [(1,2),(2,2),(1,3),(2,3),(1,0),(2,0),(1,1),(2,1)])
         ss.make_immutable()
         return TranslationSurface(ss)
 
