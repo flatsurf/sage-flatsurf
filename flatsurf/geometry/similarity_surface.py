@@ -382,7 +382,7 @@ class SimilaritySurface(SageObject):
         else:
             raise NotImplementedError("Mutable copy not implemented yet for infinite surfaces.")
     
-    def triangle_flip(self, l1, e1, in_place=False, test=False):
+    def triangle_flip(self, l1, e1, in_place=False, test=False, direction=None):
         r"""
         Flips the diagonal of the quadrilateral formed by two triangles
         glued together along the provided edge (l1,e1). This can be broken 
@@ -502,39 +502,79 @@ class SimilaritySurface(SageObject):
             np2 = polygons(edges=[-hol, p1.edge((e1+2)%3), m * p2.edge((e2+1)%3)])
         except (ValueError, TypeError):
             raise ValueError("Gluing triangles along this edge yields a non-convex quadrilateral.")
-        # Old gluings:
+
+        # This statement works out how the new triangles should be labeled.
+        if l1==l2 or direction is None:
+            # If l1==l2 then the triangle is glued it self so assignment irrelevant
+            # If direction is None, we have no promise to glue in a particular way.
+            standard=True
+        else:
+            vertex1,dir1 = p1.find_separatrix(direction=direction)
+            vertex2,dir2 = np1.find_separatrix(direction=direction)
+            # This checks if both the separatrices travel in the same direction.
+            standard = (dir1 == dir2)
+
+        # This records the current gluing rules.
         pairs = [self.opposite_edge(l2,(e2+2)%3), \
             self.opposite_edge(l1,(e1+1)%3), \
             self.opposite_edge(l1,(e1+2)%3), \
             self.opposite_edge(l2,(e2+1)%3)]
-        for i, (l,e) in enumerate(pairs):
-            if l==l1:
-                if e==(e1+1)%3:
-                    pairs[i]=(l1,2)
-                elif e==(e1+2)%3:
-                    pairs[i]=(l2,1)
-                else:
-                    raise ValueError("Surfaced passed has errors in polygon gluings.")
-            elif l==l2:
-                if e==(e2+1)%3:
-                    pairs[i]=(l2,2)
-                elif e==(e2+2)%3:
-                    pairs[i]=(l1,1)
-                else:
-                    raise ValueError("Surfaced passed has errors in polygon gluings.")
-        if l1==l2:
-            s.change_polygon(l1,np1)
-            s.change_edge_gluing(l1,0,l1,0)
-            s.change_edge_gluing(l1,1,pairs[0][0],pairs[0][1])
-            s.change_edge_gluing(l1,2,pairs[1][0],pairs[1][1])
+
+        if standard:
+            for i, (l,e) in enumerate(pairs):
+                if l==l1:
+                    if e==(e1+1)%3:
+                        pairs[i]=(l1,2)
+                    elif e==(e1+2)%3:
+                        pairs[i]=(l2,1)
+                    else:
+                        raise ValueError("Surfaced passed has errors in polygon gluings.")
+                elif l==l2:
+                    if e==(e2+1)%3:
+                        pairs[i]=(l2,2)
+                    elif e==(e2+2)%3:
+                        pairs[i]=(l1,1)
+                    else:
+                        raise ValueError("Surfaced passed has errors in polygon gluings.")
+            if l1==l2:
+                # Special case: the triangle is glued to itself.
+                s.change_polygon(l1,np1)
+                s.change_edge_gluing(l1,0,l1,0)
+                s.change_edge_gluing(l1,1,pairs[0][0],pairs[0][1])
+                s.change_edge_gluing(l1,2,pairs[1][0],pairs[1][1])
+            else:
+                s.change_polygon(l1,np1)
+                s.change_polygon(l2,np2)
+                s.change_edge_gluing(l1,0,l2,0)
+                s.change_edge_gluing(l1,1,pairs[0][0],pairs[0][1])
+                s.change_edge_gluing(l1,2,pairs[1][0],pairs[1][1])
+                s.change_edge_gluing(l2,1,pairs[2][0],pairs[2][1])
+                s.change_edge_gluing(l2,2,pairs[3][0],pairs[3][1])
         else:
-            s.change_polygon(l1,np1)
-            s.change_polygon(l2,np2)
+            for i, (l,e) in enumerate(pairs):
+                if l==l1:
+                    if e==(e1+1)%3:
+                        pairs[i]=(l2,2)
+                    elif e==(e1+2)%3:
+                        pairs[i]=(l1,1)
+                    else:
+                        raise ValueError("Surface passed has errors in polygon gluings.")
+                elif l==l2:
+                    if e==(e2+1)%3:
+                        pairs[i]=(l1,2)
+                    elif e==(e2+2)%3:
+                        pairs[i]=(l2,1)
+                    else:
+                        raise ValueError("Surface passed has errors in polygon gluings.")
+            # Special case: the triangle is glued to itself was ruled out above
+            s.change_polygon(l1,np2)
+            s.change_polygon(l2,np1)
             s.change_edge_gluing(l1,0,l2,0)
-            s.change_edge_gluing(l1,1,pairs[0][0],pairs[0][1])
-            s.change_edge_gluing(l1,2,pairs[1][0],pairs[1][1])
-            s.change_edge_gluing(l2,1,pairs[2][0],pairs[2][1])
-            s.change_edge_gluing(l2,2,pairs[3][0],pairs[3][1])
+            s.change_edge_gluing(l2,1,pairs[0][0],pairs[0][1])
+            s.change_edge_gluing(l2,2,pairs[1][0],pairs[1][1])
+            s.change_edge_gluing(l1,1,pairs[2][0],pairs[2][1])
+            s.change_edge_gluing(l1,2,pairs[3][0],pairs[3][1])
+
         if in_place:
             return self
         else:
@@ -633,7 +673,7 @@ class SimilaritySurface(SageObject):
         
         return ss
 
-    def subdivide_polygon(self, p, v1, v2, new_label = None, test=False):
+    def subdivide_polygon(self, p, v1, v2, test=False):
         r"""
         Cut the polygon with label p along the diagonal joining vertex
         v1 to vertex v2. This cuts p into two polygons, one will keep the same
@@ -641,6 +681,10 @@ class SimilaritySurface(SageObject):
         via new_label. Otherwise a default new label will be provided.
         If test=False, then the surface will be changed (in place). If
         test=True, then it just checks to see if the change would be successful
+        
+        The convention is that the resulting subdivided polygon which has an oriented
+        edge going from the original vertex v1 to vertex v2 will keep the label p.
+        The other polygon will get a new label.
         
         The change will be done in place.
         """        
@@ -655,34 +699,28 @@ class SimilaritySurface(SageObject):
             if test:
                 return False
             else:
-                raise ValueError('Provided diagonal is not a diagonal.')
+                raise ValueError('Provided diagonal is not actually a diagonal.')
 
         if v2<v1:
-            temp=v1
-            v1=v2
-            v2=temp
-            
-        newvertices1=[poly.vertex(v2)-poly.vertex(v1)]
-        for i in range(v2, v1+ne):
-            newvertices1.append(poly.edge(i))
-        newpoly1 = Polygons(self.base_ring())(newvertices1)
+            v2=v2+ne
         
-        newvertices2=[poly.vertex(v1)-poly.vertex(v2)]
+        newedges1=[poly.vertex(v2)-poly.vertex(v1)]
+        for i in range(v2, v1+ne):
+            newedges1.append(poly.edge(i))
+        newpoly1 = Polygons(self.base_ring())(newedges1)
+        
+        newedges2=[poly.vertex(v1)-poly.vertex(v2)]
         for i in range(v1,v2):
-            newvertices2.append(poly.edge(i))
-        newpoly2 = Polygons(self.base_ring())(newvertices2)
+            newedges2.append(poly.edge(i))
+        newpoly2 = Polygons(self.base_ring())(newedges2)
 
-        if new_label is None:
-            new_label = self.underlying_surface().add_polygon(None)
+        new_label = self.underlying_surface().add_polygon(None)
             
         old_to_new_labels={}
-        for i in range(ne):
-            if i<v1:
-                old_to_new_labels[i]=(p,i+ne-v2+1)
-            elif i<v2:
-                old_to_new_labels[i]=(new_label,i-v1+1)
-            else: # i>=v2
-                old_to_new_labels[i]=(p,i-v2+1)
+        for i in range(v1, v2):
+            old_to_new_labels[i%ne]=(new_label,i-v1+1)
+        for i in range(v2, ne+v1):
+            old_to_new_labels[i%ne]=(p,i-v2+1)
         new_to_old_labels={}
         for i,pair in old_to_new_labels.iteritems():
             new_to_old_labels[pair]=i
@@ -834,9 +872,16 @@ class SimilaritySurface(SageObject):
         from flatsurf.geometry.mappings import triangulation_mapping
         return triangulation_mapping(self)
     
-    def triangulate(self, in_place=False):
+    def triangulate(self, in_place=False, label = None):
         r"""
-        Return a triangulated version of this surface.
+        Return a triangulated version of this surface. (This may be mutable
+        or not depending on the input.)
+        
+        This is done in place if in_place is True (defaults to False).
+        
+        If label=None (as default) all polygons are triangulated. Otherwise,
+        label should be a polygon label. In this case, just this polygon
+        is split into triangles.
 
         EXAMPLES::
 
@@ -848,31 +893,48 @@ class SimilaritySurface(SageObject):
             sage: print(gs)
             Graphical version of Similarity Surface TranslationSurface built from 6 polygons
         """
-        if in_place:
-            s=self
-        else:
-            s=self.mutable_copy()
-        from flatsurf.geometry.polygon import wedge_product
-        loop=True
-        while loop:
-            loop=False
-            for l,poly in s.label_iterator(polygons=True):
-                n = poly.num_edges() 
-                if n>3:
-                    for i in xrange(n):
-                        e1=poly.edge(i)
-                        e2=poly.edge((i+1)%n)
-                        if wedge_product(e1,e2) != 0:
-                            s.subdivide_polygon(l,i,(i+2)%n)
+        if label is None:
+            if self.is_finite():
+                if in_place:
+                    s=self
+                else:
+                    s=self.mutable_copy()
+                loop=True
+                while loop:
+                    loop = False
+                    for l,poly in s.label_iterator(polygons=True):
+                        if poly.num_edges()>3:
+                            s = s.triangulate(in_place=True, label=l)
                             loop=True
                             break
-                    if loop:
-                        break
-                    else:
-                        # This should never happen:
-                        raise ValueError("Unable to triangulate polygon with label "+ \
-                            str(l)+": "+str(poly))
-        return s
+                return s
+            else:
+                if in_place:
+                    raise ValueError("You can't triangulate an infinite surface in place.")
+                from flatsurf.geometry.delaunay import LazyTriangulatedSurface
+                return self.__class__(LazyTriangulatedSurface(self))
+        else:
+            poly = self.polygon(label)
+            n=poly.num_edges()
+            if n>3:
+                if in_place:
+                    s=self
+                else:
+                    s=self.mutable_copy()
+                from flatsurf.geometry.polygon import wedge_product
+                for i in xrange(n):
+                    e1=poly.edge(i)
+                    e2=poly.edge((i+1)%n)
+                    if wedge_product(e1,e2) != 0:
+                        new_label = s.subdivide_polygon(label,i,(i+2)%n)
+                        if n>4:
+                            return s.triangulate(in_place=True, label=label)
+                        else:
+                            return s
+                raise RuntimeError("Geometrically impossible polygon")
+            else:
+                return self
+        raise RuntimeError("Failed to return anything!")
     
     def _edge_needs_flip(self,p1,e1):
         r"""
@@ -927,7 +989,7 @@ class SimilaritySurface(SageObject):
                 return True
         return False
 
-    def delaunay_triangulation(self, triangulated=False, in_place=False, limit=None):
+    def delaunay_triangulation(self, triangulated=False, in_place=False, limit=None, direction=None):
         r"""
         Returns a Delaunay triangulation of a surface, or make some
         triangle flips to get closer to the Delaunay decomposition.
@@ -957,12 +1019,17 @@ class SimilaritySurface(SageObject):
             from flatsurf.geometry.surface import Surface_fast
             s=self.__class__(Surface_fast(self.triangulate(in_place=in_place),mutable=True))
         loop=True
+        if direction is None:
+            base_ring = self.base_ring()
+            direction = self.vector_space()( (base_ring.zero(), base_ring.one()) )
+        else:
+            assert not direction.is_zero()
         count=0
         while loop:
             loop=False
             for (l1,e1),(l2,e2) in s.edge_iterator(gluings=True):
                 if (l1<l2 or (l1==l2 and e1<=e2)) and s._edge_needs_flip(l1,e1):
-                    s.triangle_flip(l1, e1, in_place=True)
+                    s.triangle_flip(l1, e1, in_place=True, direction=direction)
                     count += 1
                     if not limit is None and count>=limit:
                         return s
@@ -993,12 +1060,12 @@ class SimilaritySurface(SageObject):
             sage: s=m*s0
             sage: s=s.triangulate()
             sage: ss=s.delaunay_decomposition(triangulated=True)
-            sage: ss.polygon(0)
+            sage: for label,polygon in ss.label_iterator(polygons=True):
+            ....:         print(str(polygon))
+            ....:     
             Polygon: (0, 0), (0, -2), (a, -a - 2), (a + 2, -a - 2), (2*a + 2, -2), (2*a + 2, 0), (a + 2, a), (a, a)
-            sage: ss.polygon(1)
             Polygon: (0, 0), (0, -2), (2, -2), (2, 0)
-            sage: ss.polygon(2)
-            Polygon: (0, 0), (-a, a), (-2*a, 0), (-a, -a)
+            Polygon: (0, 0), (a, -a), (2*a, 0), (a, a)
 
             sage: from flatsurf import *
             sage: s0=translation_surfaces.octagon_and_squares()
@@ -1006,12 +1073,12 @@ class SimilaritySurface(SageObject):
             sage: m=Matrix([[1,2+a],[0,1]])
             sage: s=m*s0
             sage: ss=s.delaunay_decomposition()
-            sage: ss.polygon(0)
-            Polygon: (0, 0), (0, -2), (a, -a - 2), (a + 2, -a - 2), (2*a + 2, -2), (2*a + 2, 0), (a + 2, a), (a, a)
-            sage: ss.polygon(1)
-            Polygon: (0, 0), (0, -2), (2, -2), (2, 0)
-            sage: ss.polygon(2)
-            Polygon: (0, 0), (-a, a), (-2*a, 0), (-a, -a)
+            sage: for label,polygon in ss.label_iterator(polygons=True):
+            ....:         print(str(label)+" -> "+str(polygon))
+            ....:     
+            0 -> Polygon: (0, 0), (0, -2), (a, -a - 2), (a + 2, -a - 2), (2*a + 2, -2), (2*a + 2, 0), (a + 2, a), (a, a)
+            1 -> Polygon: (0, 0), (0, -2), (2, -2), (2, 0)
+            4 -> Polygon: (0, 0), (a, -a), (2*a, 0), (a, a)
 
             sage: from flatsurf import *
             sage: p=polygons((4,0),(-2,1),(-2,-1))
