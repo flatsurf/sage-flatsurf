@@ -366,6 +366,54 @@ class ConvexPolygon(Element):
             if is_opposite_direction(self.edge(i), self.edge(i+1)):
                 raise ValueError("degenerate polygon")
 
+    def find_separatrix(self, direction=None, start_vertex=0):
+        r"""
+        Returns a pair (v,same) where v is a vertex and dir is a boolean.
+        The provided parameter "direction" should be a non-zero vector with 
+        two entries, or by default direction=(0,1).
+        
+        A separatrix is a ray leaving a vertex and entering the polygon.
+        
+        The vertex v will have a separatrix leaving it which is parallel to 
+        direction. The returned value "same" answers the question if this separatrix
+        points in the same direction as "direction". There is a boundary case:
+        we allow the separatrix to be an edge if and only if traveling along
+        the sepatrix from the vertex would travel in a counter-clockwise
+        direction about the polygon.
+        
+        The vertex returned is uniquely defined from the above if the polygon
+        is a triangle. Otherwise, we return the first vertex with this property
+        obtained by inspecting starting at start_vertex (defaults to 0) and
+        then moving in the counter-clockwise direction.
+        
+        EXAMPLES::
+
+        sage: from flatsurf import polygons
+        sage: p=polygons.square()
+        sage: print(p.find_separatrix())
+        (1, True)
+        sage: print(p.find_separatrix(start_vertex=2))
+        (3, False)
+        """
+        if direction is None:
+            direction = self.vector_space()((self.base_ring().zero(), self.base_ring().one()))
+            #print direction, "ring=", self.base_ring()
+        else:
+            assert not direction.is_zero()
+        v=start_vertex
+        n=self.num_edges()
+        zero=self.base_ring().zero()
+        for i in xrange(self.num_edges()):
+            #print (v, direction, wedge_product(self.edge(v),direction), wedge_product(self.edge(v+n-1),direction))
+            if wedge_product(self.edge(v),direction) >= zero and \
+                wedge_product(self.edge(v+n-1),direction) > zero:
+                return v,True
+            if wedge_product(self.edge(v),direction) <= zero and \
+                wedge_product(self.edge(v+n-1),direction) < zero:
+                return v,False
+            v=v+1%n
+        raise RuntimeError("Failed to find a separatrix")
+
     def base_ring(self):
         return self.parent().base_ring()
 
@@ -780,6 +828,24 @@ class ConvexPolygon(Element):
         for i in range(self.num_edges()):
             total += (self.vertex(i)[0]+self.vertex(i+1)[0])*self.edge(i)[1]
         return total/ZZ_2
+    
+    def circumscribing_circle(self):
+        r"""
+        Returns the circle which circumscribes this polygon.
+        Raises a ValueError if the polygon is not circumscribed by a circle.
+
+        EXAMPLES::
+
+            sage: from flatsurf import *
+            sage: print polygons(vertices=[(0,0),(1,0),(2,1),(-1,1)]).circumscribing_circle()
+            circle with center (1/2, 3/2) and radius squared 5/2
+        """
+        from flatsurf.geometry.circle import circle_from_three_points
+        circle = circle_from_three_points(self.vertex(0), self.vertex(1), self.vertex(2), self.base_ring())
+        for i in xrange(3,self.num_edges()):
+            if not circle.point_position(self.vertex(i))==0:
+                raise ValueError("Vertex "+str(i)+" is not on the circle.")
+        return circle
 
 
 class ConvexPolygons(UniqueRepresentation, Parent):
@@ -978,6 +1044,10 @@ class PolygonsConstructor:
             sage: p
             Polygon: (0, 0), (1, 0), ..., (-1/2*a^14 + 15/2*a^12 - 45*a^10 + 275/2*a^8 - 225*a^6 + 189*a^4 - 70*a^2 + 15/2, 1/2*a)
         """
+        # The code below crashes for n=4!
+        if n==4:
+            return polygons.square(QQ(1))
+        
         from sage.rings.qqbar import QQbar
 
         c = QQbar.zeta(n).real()
