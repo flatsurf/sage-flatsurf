@@ -236,8 +236,6 @@ class Surface(SageObject):
         poygon assigned to the provided label to new_polygon, and 
         glue the edges according to gluing_list (which must be a list
         of pairs of length equal to number of edges of the polygon). 
-        
-        Warning: the gluing_list may be incorporated by reference.
         """
         self.__mutate()
         assert gluing_list is None or new_polygon.num_edges() == len(gluing_list)
@@ -250,6 +248,16 @@ class Surface(SageObject):
         """
         self.__mutate()
         self._change_edge_gluing(label1, edge1, label2, edge2)
+    
+    def change_polygon_gluings(self, label, glue_list):
+        r"""
+        Updates the list of glued polygons according to the provided list,
+        which is a list of pairs (pp,ee) whose position in the list
+        describes the edge of the polygon with the provided label.
+        """
+        self.__mutate()
+        for e,(pp,ee) in enumerate(glue_list):
+            self._change_edge_gluing(label, e, pp, ee)
     
     def add_polygon(self, new_polygon, gluing_list=None):
         r"""
@@ -452,9 +460,14 @@ class Surface_fast(Surface):
                     yield i
             else:
                 # We've removed some labels
-                for i in xrange(self.num_polygons()):
+                i=0
+                count = 0
+                n = self.num_polygons()
+                while count<n:
                     if not self._p[i] is None:
                         yield i
+                        count += 1
+                    i+=1
         else:
             # dictionary implementation
             for i in iter(self._p):
@@ -476,9 +489,15 @@ class Surface_fast(Surface):
                 for i in xrange(self.num_polygons()):
                     yield i,self._p[i][0]
             else:
-                for i in xrange(self.num_polygons()):
+                # We've removed some labels
+                i=0
+                count = 0
+                n = self.num_polygons()
+                while count<n:
                     if not self._p[i] is None:
-                        yield i,self._p[i][0]
+                        yield i, self._p[i][0]
+                        count += 1
+                    i+=1
         else:
             # dict implementation
             for key,value in self._p.iteritems():
@@ -863,15 +882,10 @@ class Surface_list(Surface):
         if data is None:
             raise ValueError("Provided label was removed from the surface.")
         data[0]=new_polygon
-        if gluing_list is None:
-            if new_polygon.num_edges() != len(data[1]):
-                data[1]=[None for e in xrange(new_polygon.num_edges())]
-        else:
-            if not isinstance(gluing_list,list):
-                raise ValueError("gluing_list must be None or a list.")
-            if new_polygon.num_edges() != len(gluing_list):
-                raise ValueError("gluing_list length must match the number of edges of the polygon.")
-            self._p[label][1]=gluing_list
+        if data[1] is None or new_polygon.num_edges() != len(data[1]):
+            data[1]=[None for e in xrange(new_polygon.num_edges())]
+        if not gluing_list is None:
+            self.change_polygon_gluings(label,gluing_list)
 
     def _change_edge_gluing(self, label1, edge1, label2, edge2):
         r"""
@@ -897,15 +911,9 @@ class Surface_list(Surface):
         Internal method used by add_polygon(). Should not be called directly.
         """
         if new_polygon is None:
-            gluing_list = None
-        elif gluing_list is None:
-            gluing_list = [None for i in xrange(new_polygon.num_edges())]
+            data=[None,None]
         else:
-            if not isinstance(gluing_list,list):
-                raise ValueError("gluing_list must be None or a list.")
-            if len(gluing_list) != new_polygon.num_edges():
-                raise ValueError("gluing_list must have the same length as the number of edges of the polygon.")
-        data = [new_polygon,gluing_list]
+            data=[new_polygon, [None for i in xrange(new_polygon.num_edges())] ]
         if len(self._removed_labels)>0:
             new_label = self._removed_labels.pop()
             self._p[new_label]=data
@@ -913,8 +921,10 @@ class Surface_list(Surface):
             new_label = len(self._p)
             self._p.append(data)
             if self._has_reference:
-                # Need a blank in this list:
+                # Need a blank in this list for algorithmic reasons
                 self._int_to_ref.append(None)
+        if not gluing_list is None:
+            self.change_polygon_gluings(new_label,gluing_list)
         self._num_polygons += 1
         return new_label
             
@@ -936,9 +946,14 @@ class Surface_list(Surface):
                 yield i
         else:
             # We've removed some labels
-            for i in xrange(self.num_polygons()):
+            found=0
+            i=0
+            while found <= self._num_polygons():
                 if not self._p[i] is None:
+                    print "found",i
+                    found += 1
                     yield i
+                i += 1
 
     def _change_base_label(self, new_base_label):
         r"""
