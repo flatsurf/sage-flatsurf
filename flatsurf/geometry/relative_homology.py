@@ -43,14 +43,14 @@ class RelativeHomologyClass(ModuleElement):
         d=dict()
         r=self.parent().base_ring()
         for k,v in self._d.iteritems():
-            if other._d.has_key(k):
+            if k in other._d:
                 total = v + other._d[k]
                 if total != self.parent().base_ring().zero():
                     d[k] = r(total)
             else:
                 d[k]=r(v)
         for k,v in other._d.iteritems():
-            if not self._d.has_key(k):
+            if k not in self._d:
                 d[k]=r(v)
         return self.parent()._element_from_dict(d)
     
@@ -138,7 +138,7 @@ class RelativeHomology(Module):
             has_all_others = True
             for i in range(1,num_edges):
                 e2=(e+i)%num_edges
-                if not self._cached_edges.has_key((label,e2)):
+                if (label,e2) not in self._cached_edges:
                     has_all_others=False
                     break
             if has_all_others:

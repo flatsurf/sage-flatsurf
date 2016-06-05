@@ -845,16 +845,16 @@ class ReindexMapping(SurfaceMapping):
         f = {} # map for labels going forward.
         b = {} # map for labels going backward.
         for l in s.label_iterator():
-            if relabler.has_key(l):
+            if l in relabler:
                 l2=relabler[l]
                 f[l]=l2
-                if b.has_key(l2):
+                if l2 in b:
                     raise ValueError("Provided dictionary has two keys mapping to the same value. Or you are mapping to a label you didn't change.")
                 b[l2]=l
             else:
                 # If no key then don't change the label
                 f[l]=l
-                if b.has_key(l):
+                if l in b:
                     raise ValueError("Provided dictionary has two keys mapping to the same value. Or you are mapping to a label you didn't change.")
                 b[l]=l
 

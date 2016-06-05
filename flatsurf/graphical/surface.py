@@ -248,7 +248,7 @@ class GraphicalSurface:
         r"""
         Return the graphical_polygon with the given label.
         """
-        if self._polygons.has_key(label):
+        if label in self._polygons:
             return self._polygons[label]
         else:
             p = GraphicalPolygon(self._ss.polygon(label), label=label)
