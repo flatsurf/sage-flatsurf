@@ -79,7 +79,6 @@ class Surface(SageObject):
     # 
     # If the surface can be changed, implement the following methods:
     #
-
         
     def _change_polygon(self, label, new_polygon, gluing_list=None):
         r"""
@@ -294,14 +293,14 @@ class Surface(SageObject):
         r"""
         Hash compatible with equals.
         """
-        if self._s.is_mutable():
+        if self.is_mutable():
             raise ValueError("Attempting to hash mutable surface.")
-        if not self._s.is_finite:
+        if not self.is_finite():
             raise ValueError("Attempting to hash infinite surface.")
         h = 73+17*hash(self.base_ring())+23*hash(self.base_label())
-        for pair in self.label_iterator(polygons=True):
+        for pair in self.label_polygon_iterator():
             h = h + 7*hash(pair)
-        for edgepair in self.edge_iterator(gluings=True):
+        for edgepair in self.edge_gluing_iterator():
             h = h + 3*hash(edgepair)
         return h
 
@@ -460,7 +459,22 @@ class Surface_polygons_and_gluings(Surface):
 
 class Surface_list(Surface):
     r"""
-    A fast mutable implementation of surface.
+    A fast mutable implementation of surface using a list to store polygons and gluings.
+    
+    EXAMPLES::
+
+        sage: from flatsurf import *
+        sage: from flatsurf.geometry.surface import Surface_list
+        sage: p=polygons.regular_ngon(5)
+        sage: s=Surface_list(base_ring=p.base_ring())
+        sage: s.add_polygon(p) # gets label 0
+        0
+        sage: s.add_polygon( (-matrix.identity(2))*p ) # gets label 1
+        1
+        sage: s.change_polygon_gluings(0,[(1,e) for e in xrange(5)])
+        sage: # base label defaults to zero.
+        sage: s.make_immutable()
+        sage: TestSuite(s).run()
     """
     def __init__(self, base_ring=None, surface = None, copy=True, mutable=None):
         r"""
@@ -808,18 +822,23 @@ class Surface_list(Surface):
 
 class Surface_dict(Surface):
     r"""
-    A fast mutable implementation of surface using a dictionary.
+    A mutable implementation of surface using a dictionary to store polygons and gluings. The dictionary
+    implementation has the advantage that many label types are supported.
+    
+    The example below indicates how to construct a Surface_dict.
 
     EXAMPLES::
 
-        from flatsurf import *
-        from flatsurf.geometry.surface import Surface_dict
-        p=polygons.regular_ngon(10)
-        s=Surface_dict(base_ring=p.base_ring())
-        s.add_polygon(p,label="A")
-        s.change_polygon_gluings("A",[("A",(e+5)%10) for e in xrange(10)])
-        s.change_base_label("A")
-        TestSuite(s).run()
+        sage: from flatsurf import *
+        sage: from flatsurf.geometry.surface import Surface_dict
+        sage: p=polygons.regular_ngon(10)
+        sage: s=Surface_dict(base_ring=p.base_ring())
+        sage: s.add_polygon(p,label="A")
+        'A'
+        sage: s.change_polygon_gluings("A",[("A",(e+5)%10) for e in xrange(10)])
+        sage: s.change_base_label("A")
+        sage: s.make_immutable()
+        sage: TestSuite(s).run()
     """
     ###
     ### Brief summary of internal workings.
