@@ -476,6 +476,20 @@ class Surface_list(Surface):
         sage: s.make_immutable()
         sage: TestSuite(s).run()
     """
+    ###
+    ### Brief summary of internal workings.
+    ###
+    #
+    # The Surface_list maintains a list self._p for storing polygons together with gluing data.
+    # Here self._p[label] is typically a list of two elements [polygon, gluing_list].
+    # The gluing_list is then a list of pairs (other_label, other_edge) so that typically
+    # self.opposite_edge(label, edge) returns self._p[label][1][edge].
+    #
+    # If constructed with a surface parameter which is not None and copy=False, then Surface_list
+    # stores a reference to the provided surface as self._reference_surface. 
+    # (Otherwise self._reference_surface is None). If we have a reference surface, then to represent a removed 
+    # polygon or a label which is not in use by seting self._p[label]=None.
+    #
     def __init__(self, base_ring=None, surface = None, copy=True, mutable=None):
         r"""
         Surface_list is a Surface implementation which uses int for labels.
@@ -753,20 +767,70 @@ class Surface_list(Surface):
     def _add_polygon(self, new_polygon, gluing_list=None, label=None):
         r"""
         Internal method used by add_polygon(). Should not be called directly.
+
+        EXAMPLES::
+
+            sage: from flatsurf import *
+            sage: from flatsurf.geometry.surface import Surface_list
+            sage: p=polygons.regular_ngon(5)
+            sage: s=Surface_list(base_ring=p.base_ring())
+            sage: s.add_polygon(p, label=3)
+            3
+            sage: s.add_polygon( (-matrix.identity(2))*p, label=30)
+            30
+            sage: s.change_polygon_gluings(3,[(30,e) for e in xrange(5)])
+            sage: s.change_base_label(30)
+            sage: s.num_polygons()
+            2
+            sage: TestSuite(s).run()
+            sage: s.remove_polygon(3)
+            sage: s.add_polygon(p, label=6)
+            6
+            sage: s.change_polygon_gluings(6,[(30,e) for e in xrange(5)])
+            sage: s.num_polygons()
+            2
+            sage: TestSuite(s).run()
+            sage: s.remove_polygon(30)
+            sage: label = s.add_polygon((-matrix.identity(2))*p)
+            sage: s.change_polygon_gluings(6,[(label,e) for e in xrange(5)])
+            sage: s.change_base_label(6)
+            sage: TestSuite(s).run()
         """
         if new_polygon is None:
             data=[None,None]
         else:
             data=[new_polygon, [None for i in xrange(new_polygon.num_edges())] ]
-        if len(self._removed_labels)>0:
-            new_label = self._removed_labels.pop()
-            self._p[new_label]=data
+        if label is None:
+            if len(self._removed_labels)>0:
+                new_label = self._removed_labels.pop()
+                self._p[new_label]=data
+            else:
+                new_label = len(self._p)
+                self._p.append(data)
+                if not self._reference_surface is None:
+                    # Need a blank in this list for algorithmic reasons
+                    self._int_to_ref.append(None)
         else:
-            new_label = len(self._p)
-            self._p.append(data)
-            if not self._reference_surface is None:
-                # Need a blank in this list for algorithmic reasons
-                self._int_to_ref.append(None)
+            new_label=int(label)
+            if new_label<len(self._p):
+                if not self._p[new_label] is None:
+                    raise ValueError("Trying to add a polygon with label="+str(label)+" which already indexes a polygon.")
+                self._p[new_label]=data
+            else:
+                if new_label-len(self._p)>100:
+                    raise ValueError("Adding a polygon with label="+str(label)+" would add more than 100 entries in our list.")
+                for i in xrange(len(self._p),new_label):
+                    self._p.append(None)
+                    self._removed_labels.append(i)
+                    if not self._reference_surface is None:
+                        # Need a blank in this list for algorithmic reasons
+                        self._int_to_ref.append(None)
+                
+                self._p.append(data)
+                if not self._reference_surface is None:
+                    # Need a blank in this list for algorithmic reasons
+                    self._int_to_ref.append(None)
+
         if not gluing_list is None:
             self.change_polygon_gluings(new_label,gluing_list)
         self._num_polygons += 1
@@ -852,7 +916,7 @@ class Surface_dict(Surface):
     # If constructed with a surface parameter which is not None and copy=False, then Surface_dict
     # stores a reference to the provided surface as self._reference_surface. 
     # (Otherwise self._reference_surface is None). If we have a reference surface, then to represent a removed 
-    # surface we set self._[label]=None.
+    # polygon we set self._p[label]=None.
     #
     def __init__(self, base_ring=None, surface = None, copy=True, mutable=None):
         r"""
