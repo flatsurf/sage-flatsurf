@@ -353,35 +353,53 @@ class SimilaritySurface(SageObject):
         # This is the similarity carrying (a,b) to (aa,bb):
         return gg*(~g)
 
-    def mutable_copy(self):
+    def copy(self, relabel=False, mutable=False, lazy=None):
         r"""
-        Returns a mutable copy of this surface.
+        Returns a copy of this surface. The method takes several flags to modify how the copy is taken.
         
-        If dictionary is false, labels will be changed, but the resulting
-        surface will be slightly more efficient (as a list will be used
-        for storing polygons rather than a dictionary).
+        If relabel is True, then instead of returning an exact copy, it returns a copy indexed by the 
+        non-negative integers. This uses the Surface_list implementation. If relabel is False (default),
+        then we return an exact copy. The returned surface uses the Surface_dict implementation.
         
+        The mutability flag returns if the resulting surface should be mutable or not. By default, the 
+        resulting surface will not be mutable.
+        
+        If lazy is True, then the surface is copied by reference. This is the only type of copy
+        possible for infinite surfaces. The parameter defaults to False for finite surfaces, and
+        defaults to True for infinite surfaces.
+
         EXAMPLES::
 
             sage: from flatsurf import *
             sage: ss=translation_surfaces.ward(3)
             sage: print(ss.is_mutable())
             False
-            sage: s=ss.mutable_copy()
+            sage: s=ss.copy(mutable=True)
             sage: print(s.is_mutable())
             True
             sage: TestSuite(s).run()
             sage: print(s==ss)
             True
         """
-        from flatsurf.geometry.surface import Surface_dict
         if self.is_finite():
-            return self.__class__(Surface_dict(surface=self, mutable=True))
+            if relabel:
+                from flatsurf.geometry.surface import Surface_list
+                return self.__class__(Surface_list(surface=self, copy=not lazy, mutable=mutable))
+            else:
+                from flatsurf.geometry.surface import Surface_dict
+                return self.__class__(Surface_dict(surface=self, copy=not lazy, mutable=mutable))
         else:
-            if self.is_mutable():
-                raise ValueError("If a surface is infinite, can only call mutable_copy() on immutable surface.")
-            return self.__class__(Surface_dict(surface=self, copy=False, mutable=True))
-    
+            if lazy==False:
+                raise ValueError("Only lazy copying available for infinite surfaces.")
+            if self.underlying_surface().is_mutable():
+                raise ValueError("An infinite surface can only be copied if it is immutable.")
+            if relabel:
+                from flatsurf.geometry.surface import Surface_list
+                return self.__class__(Surface_list(surface=self, copy=False, mutable=mutable))
+            else:
+                from flatsurf.geometry.surface import Surface_dict
+                return self.__class__(Surface_dict(surface=self, copy=False, mutable=mutable))
+
     def triangle_flip(self, l1, e1, in_place=False, test=False, direction=None):
         r"""
         Flips the diagonal of the quadrilateral formed by two triangles
@@ -597,7 +615,7 @@ class SimilaritySurface(SageObject):
 
             sage: from flatsurf import *
             sage: ss=translation_surfaces.ward(3)
-            sage: s=ss.mutable_copy()
+            sage: s=ss.copy(mutable=True)
             sage: s.join_polygons(0,0, in_place=True)
             TranslationSurface built from 2 polygons
             sage: print(s.polygon(0))
@@ -648,7 +666,7 @@ class SimilaritySurface(SageObject):
         if in_place:
             ss=self
         else:
-            ss=self.mutable_copy()
+            ss=self.copy(mutable=True)
         s=ss.underlying_surface()
 
         inv_edge_map={}
@@ -901,7 +919,7 @@ class SimilaritySurface(SageObject):
                 if in_place:
                     s=self
                 else:
-                    s=self.mutable_copy()
+                    s=self.copy(mutable=True)
                 # Subdivide each polygon in turn.
                 for l in labels:
                     s = s.triangulate(in_place=True, label=l)
@@ -918,7 +936,7 @@ class SimilaritySurface(SageObject):
                 if in_place:
                     s=self
                 else:
-                    s=self.mutable_copy()
+                    s=self.copy(mutable=True)
             else:
                 # This polygon is already a triangle. 
                 return self
@@ -1090,7 +1108,7 @@ class SimilaritySurface(SageObject):
         if in_place:
             s=self
         else:
-            s=self.mutable_copy()
+            s=self.copy(mutable=True)
         if not delaunay_triangulated:
             s=s.delaunay_triangulation(triangulated=triangulated,in_place=True)
         # Now s is Delaunay Triangulated
@@ -1312,17 +1330,4 @@ class SimilaritySurface(SageObject):
         for edgepair in self.edge_iterator(gluings=True):
             h = h + 3*hash(edgepair)
         return h
-        
-    def relabeled_copy(self, mutable=False):
-        r"""
-        Return a copy of this surface with labels given by the non-negative integers.
-        The mutable flag allows the returned copy to be mutable.
-        """
-        from flatsurf.geometry.surface import Surface_list
-        if self.is_finite():
-            surface = Surface_list(surface=self,mutable=mutable)
-        else:
-            # Infinite surfaces have to store a reference.
-            surface = Surface_list(surface=self,copy=False, mutable=mutable)
-        return self.__class__(surface)
 
