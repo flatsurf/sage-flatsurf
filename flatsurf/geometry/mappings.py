@@ -249,10 +249,10 @@ class SimilarityJoinPolygonsMapping(SurfaceMapping):
         sage: m=SimilarityJoinPolygonsMapping(s,0,2)
         sage: s2=m.codomain()
         sage: for label,polygon in s2.label_iterator(polygons=True):
-        ...       print "Polygon "+str(label)+" is "+str(polygon)+"."
+        ....:     print("Polygon "+str(label)+" is "+str(polygon)+".")
         Polygon 0 is Polygon: (0, 0), (1, 0), (1, 1), (0, 1).
         sage: for label,edge in s2.edge_iterator():
-        ...       print str((label,edge))+" is glued to "+str(s2.opposite_edge(label,edge))+"."
+        ....:     print(str((label,edge))+" is glued to "+str(s2.opposite_edge(label,edge))+".")
         (0, 0) is glued to (0, 2).
         (0, 1) is glued to (0, 3).
         (0, 2) is glued to (0, 0).
@@ -404,11 +404,11 @@ class SplitPolygonsMapping(SurfaceMapping):
         sage: m = SplitPolygonsMapping(s,0,0,2)
         sage: s2=m.codomain()
         sage: for pair in s2.label_iterator(polygons=True):
-        ...       print pair
+        ....:     print(pair)
         (0, Polygon: (0, 0), (1/2*sqrt2 + 1, 1/2*sqrt2), (1/2*sqrt2 + 1, 1/2*sqrt2 + 1), (1, sqrt2 + 1), (0, sqrt2 + 1), (-1/2*sqrt2, 1/2*sqrt2 + 1), (-1/2*sqrt2, 1/2*sqrt2))
         (ExtraLabel(0), Polygon: (0, 0), (-1/2*sqrt2 - 1, -1/2*sqrt2), (-1/2*sqrt2, -1/2*sqrt2))
         sage: for glue in s2.edge_iterator(gluings=True):
-        ...       print glue
+        ....:     print(glue)
         ((0, 0), (ExtraLabel(0), 0))
         ((0, 1), (0, 5))
         ((0, 2), (0, 6))
@@ -596,7 +596,7 @@ def triangulation_mapping(s):
         sage: m=triangulation_mapping(s)
         sage: s2=m.codomain()
         sage: for label,polygon in s2.label_iterator(polygons=True):
-        ...       print str(polygon)
+        ....:     print(str(polygon))
         Polygon: (0, 0), (-1/2*sqrt2, 1/2*sqrt2 + 1), (-1/2*sqrt2, 1/2*sqrt2)
         Polygon: (0, 0), (1/2*sqrt2, -1/2*sqrt2 - 1), (1/2*sqrt2, 1/2*sqrt2)
         Polygon: (0, 0), (-1/2*sqrt2 - 1, -1/2*sqrt2 - 1), (0, -1)
@@ -993,7 +993,7 @@ def canonicalize_translation_surface_mapping(s):
         sage: square2 = Polygons(K)([(sqrt2/2, sqrt2/2),(-sqrt2/2, sqrt2/2),(-sqrt2/2, -sqrt2/2),(sqrt2/2, -sqrt2/2)])
         sage: gluings=[((1,i),(0, (2*i+4)%8 )) for i in range(4)]
         sage: for i in range(4):
-        ...       gluings.append( ((2,i), (0, (2*i+1+4)%8 )) )
+        ....:     gluings.append( ((2,i), (0, (2*i+1+4)%8 )) )
         sage: from flatsurf.geometry.surface import Surface_polygons_and_gluings
         sage: from flatsurf.geometry.translation_surface import TranslationSurface
         sage: s=TranslationSurface(Surface_polygons_and_gluings([octagon,square1,square2], gluings))
