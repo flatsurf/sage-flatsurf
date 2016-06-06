@@ -512,11 +512,10 @@ class SimilaritySurfaceGenerators:
             sage: s = similarity_surfaces.self_glued_polygon(p)
             sage: TestSuite(s).run()
         """
-        from flatsurf.geometry.surface import Surface_fast
+        from flatsurf.geometry.surface import Surface_list
         from flatsurf.geometry.half_translation_surface import HalfTranslationSurface
-        s = Surface_fast(base_ring=P.base_ring(), mutable=True)
-        glue = [(0,i) for i in xrange(P.num_edges())]
-        s.add_polygon(P,glue)
+        s = Surface_list(base_ring=P.base_ring(), mutable=True)
+        s.add_polygon(P,[(0,i) for i in xrange(P.num_edges())])
         s.make_immutable()
         return HalfTranslationSurface(s)
 
@@ -737,22 +736,19 @@ class TranslationSurfaceGenerators:
         """
         assert n>=3
         from flatsurf.geometry.polygon import polygons
-        from flatsurf.geometry.surface import Surface_fast
+        from flatsurf.geometry.surface import Surface_list
         from flatsurf.geometry.translation_surface import TranslationSurface
         o = ZZ_2*polygons.regular_ngon(2*n)
         p1 = polygons(*[o.edge((2*i+n)%(2*n)) for i in xrange(n)])
         p2 = polygons(*[o.edge((2*i+n+1)%(2*n)) for i in xrange(n)])
-        from flatsurf.geometry.surface import Surface_fast
-        ss = Surface_fast(base_ring=o.parent().field())
-        olist=[]
-        for i in xrange(n):
-            olist.append((1,i))
-            olist.append((2,i))
-        ss.add_polygon(o,olist)
-        ss.add_polygon(p1,[(0,2*i) for i in xrange(n)])
-        ss.add_polygon(p2,[(0,2*i+1) for i in xrange(n)])
-        ss.make_immutable()
-        return TranslationSurface(ss)
+        s = Surface_list(base_ring=o.parent().field())
+        s.add_polygon(o)
+        s.add_polygon(p1)
+        s.add_polygon(p2)
+        s.change_polygon_gluings(1, [(0,2*i) for i in xrange(n)])
+        s.change_polygon_gluings(2, [(0,2*i+1) for i in xrange(n)])
+        s.make_immutable()
+        return TranslationSurface(s)
 
     @staticmethod
     def octagon_and_squares():
@@ -768,24 +764,7 @@ class TranslationSurfaceGenerators:
         from flatsurf.geometry.polygon import polygons
         from sage.matrix.matrix_space import MatrixSpace
         from flatsurf.geometry.translation_surface import TranslationSurface
-
-        o = polygons.regular_ngon(8)
-        K = o.parent().field()
-        sqrt2 = K.gen()
-
-        rot = MatrixSpace(K,2)([[sqrt2/ZZ_2,-sqrt2/ZZ_2],[sqrt2/ZZ_2,sqrt2/ZZ_2]])
-
-        o = ZZ_2 * o
-        s = ZZ_2 * polygons.square(field=K)
-
-        from flatsurf.geometry.surface import Surface_fast
-        ss = Surface_list(base_ring=K)
-        ss.add_polygon(o)     # polygon 0
-        ss.add_polygon(s)     # polygon 1
-        ss.add_polygon(rot*s) # polygon 2
-        ss.change_polygon_gluings(0, [(1,2),(2,2),(1,3),(2,3),(1,0),(2,0),(1,1),(2,1)])
-        ss.make_immutable()
-        return TranslationSurface(ss)
+        return translation_surfaces.ward(4)
 
     @staticmethod
     def from_flipper(h):
