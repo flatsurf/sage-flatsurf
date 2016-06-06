@@ -353,13 +353,13 @@ class SimilaritySurface(SageObject):
         # This is the similarity carrying (a,b) to (aa,bb):
         return gg*(~g)
 
-    def mutable_copy(self, dictionary=True):
+    def mutable_copy(self):
         r"""
         Returns a mutable copy of this surface.
         
         If dictionary is false, labels will be changed, but the resulting
         surface will be slightly more efficient (as a list will be used
-        for storing polygons rather than a dictionary). See Surface_fast.
+        for storing polygons rather than a dictionary).
         
         EXAMPLES::
 
@@ -367,7 +367,6 @@ class SimilaritySurface(SageObject):
             sage: ss=translation_surfaces.ward(3)
             sage: print(ss.is_mutable())
             False
-            sage: from flatsurf.geometry.surface import Surface_fast
             sage: s=ss.mutable_copy()
             sage: print(s.is_mutable())
             True
@@ -375,12 +374,13 @@ class SimilaritySurface(SageObject):
             sage: print(s==ss)
             True
         """
+        from flatsurf.geometry.surface import Surface_dict
         if self.is_finite():
-            from flatsurf.geometry.surface import Surface_fast
-            return self.__class__(Surface_fast(surface=self,\
-                mutable=True,dictionary=dictionary))
+            return self.__class__(Surface_dict(surface=self, mutable=True))
         else:
-            raise NotImplementedError("Mutable copy not implemented yet for infinite surfaces.")
+            if self.is_mutable():
+                raise ValueError("If a surface is infinite, can only call mutable_copy() on immutable surface.")
+            return self.__class__(Surface_dict(surface=self, copy=False, mutable=True))
     
     def triangle_flip(self, l1, e1, in_place=False, test=False, direction=None):
         r"""
@@ -419,8 +419,8 @@ class SimilaritySurface(SageObject):
 
             sage: from flatsurf import *
             sage: s=similarity_surfaces.right_angle_triangle(ZZ(1),ZZ(1))
-            sage: from flatsurf.geometry.surface import Surface_fast
-            sage: s=s.__class__(Surface_fast(s, mutable=True))
+            sage: from flatsurf.geometry.surface import Surface_list
+            sage: s=s.__class__(Surface_list(surface=s, mutable=True))
             sage: try:
             ....:     s.triangle_flip(0,0,in_place=True)
             ....: except ValueError as e:
@@ -450,8 +450,8 @@ class SimilaritySurface(SageObject):
             sage: from flatsurf import *
             sage: p=polygons((2,0),(-1,3),(-1,-3))
             sage: s=similarity_surfaces.self_glued_polygon(p)
-            sage: from flatsurf.geometry.surface import Surface_fast
-            sage: s=s.__class__(Surface_fast(s,mutable=True))
+            sage: from flatsurf.geometry.surface import Surface_list
+            sage: s=s.__class__(Surface_list(surface=s,mutable=True))
             sage: s.triangle_flip(0,1,in_place=True)
             HalfTranslationSurface built from 1 polygon
             sage: for x in s.label_iterator(polygons=True):
@@ -481,9 +481,9 @@ class SimilaritySurface(SageObject):
         if in_place:
             s=self.underlying_surface()
         else:
-            from flatsurf.geometry.surface import Surface_fast
-            s=Surface_fast(surface=self.underlying_surface(), \
-                mutable=True, dictionary=True)
+            from flatsurf.geometry.surface import Surface_dict
+            s=Surface_dict(surface=self.underlying_surface(), \
+                mutable=True)
         p1=self.polygon(l1)
         if not p1.num_edges()==3:
             raise ValueError("The polygon with the provided label is not a triangle.")
@@ -597,8 +597,7 @@ class SimilaritySurface(SageObject):
 
             sage: from flatsurf import *
             sage: ss=translation_surfaces.ward(3)
-            sage: from flatsurf.geometry.surface import Surface_fast
-            sage: s=ss.mutable_copy(dictionary=False)
+            sage: s=ss.mutable_copy()
             sage: s.join_polygons(0,0, in_place=True)
             TranslationSurface built from 2 polygons
             sage: print(s.polygon(0))
@@ -673,7 +672,7 @@ class SimilaritySurface(SageObject):
         
         return ss
 
-    def subdivide_polygon(self, p, v1, v2, test=False):
+    def subdivide_polygon(self, p, v1, v2, test=False, new_label=None):
         r"""
         Cut the polygon with label p along the diagonal joining vertex
         v1 to vertex v2. This cuts p into two polygons, one will keep the same
@@ -714,39 +713,41 @@ class SimilaritySurface(SageObject):
             newedges2.append(poly.edge(i))
         newpoly2 = Polygons(self.base_ring())(newedges2)
 
-        new_label = self.underlying_surface().add_polygon(None)
-            
+        # Store the old gluings
+        old_gluings = {(p,i): self.opposite_edge(p,i) for i in xrange(ne)}
+        #print "old "+str(old_gluings)
+
+        # Update the polygon with label p, add a new polygon.
+        self.underlying_surface().change_polygon(p, newpoly1)
+        if new_label is None:
+            new_label = self.underlying_surface().add_polygon(newpoly2)
+        else:
+            new_label = self.underlying_surface().add_polygon(newpoly2, label=new_label)
+        # This gluing is the diagonal we used.
+        self.underlying_surface().change_edge_gluing(p, 0, new_label, 0)
+
+        # Setup conversion from old to new labels.
         old_to_new_labels={}
         for i in range(v1, v2):
-            old_to_new_labels[i%ne]=(new_label,i-v1+1)
+            old_to_new_labels[(p,i%ne)]=(new_label,i-v1+1)
         for i in range(v2, ne+v1):
-            old_to_new_labels[i%ne]=(p,i-v2+1)
-        new_to_old_labels={}
-        for i,pair in old_to_new_labels.iteritems():
-            new_to_old_labels[pair]=i
-
-        glue_dictionary = {(p,0):(new_label,0)}
-
-        glue1 = [None for i in xrange(newpoly1.num_edges())]
-        glue1[0]=(new_label,0)
-        glue2 = [None for i in xrange(newpoly2.num_edges())]
-        glue2[0]=(p,0)
-        for e in range(ne):
-            ll,ee = old_to_new_labels[e]
-            lll,eee = self.opposite_edge(p,e)
-            if lll == p:
-                if ll==p:
-                    glue1[ee]=old_to_new_labels[eee]
-                else:
-                    glue2[ee]=old_to_new_labels[eee]
-            else:
-                if ll==p:
-                    glue1[ee]=(lll,eee)
-                else:
-                    glue2[ee]=(lll,eee)
+            old_to_new_labels[(p,i%ne)]=(p,i-v2+1)
+        #print "old_to_new "+ str(old_to_new_labels)
         
-        self.underlying_surface().change_polygon(new_label, newpoly2, glue2)
-        self.underlying_surface().change_polygon(p, newpoly1, glue1)
+        for e in xrange(1, newpoly1.num_edges()):
+            pair = old_gluings[(p,(v2+e-1)%ne)]
+            if pair in old_to_new_labels:
+                pair = old_to_new_labels[pair]
+            self.underlying_surface().change_edge_gluing(p, e, pair[0], pair[1])
+
+        for e in xrange(1, newpoly2.num_edges()):
+            #print "gluing: "+str((p,(v1+e-1)%ne))
+            pair = old_gluings[(p,(v1+e-1)%ne)]
+            #print "old: "+str(e)+" -> "+str(pair)
+            if pair in old_to_new_labels:
+                pair = old_to_new_labels[pair]
+                #print "new: "+str(e)+" -> "+str(pair)
+            self.underlying_surface().change_edge_gluing(new_label, e, pair[0], pair[1])
 
     def minimal_translation_cover(self):
         r"""
@@ -895,18 +896,15 @@ class SimilaritySurface(SageObject):
         """
         if label is None:
             if self.is_finite():
+                # Store the current labels.
+                labels = [label for label in self.label_iterator()]
                 if in_place:
                     s=self
                 else:
                     s=self.mutable_copy()
-                loop=True
-                while loop:
-                    loop = False
-                    for l,poly in s.label_iterator(polygons=True):
-                        if poly.num_edges()>3:
-                            s = s.triangulate(in_place=True, label=l)
-                            loop=True
-                            break
+                # Subdivide each polygon in turn.
+                for l in labels:
+                    s = s.triangulate(in_place=True, label=l)
                 return s
             else:
                 if in_place:
@@ -921,19 +919,20 @@ class SimilaritySurface(SageObject):
                     s=self
                 else:
                     s=self.mutable_copy()
-                from flatsurf.geometry.polygon import wedge_product
+            else:
+                # This polygon is already a triangle. 
+                return self
+            from flatsurf.geometry.polygon import wedge_product
+            for i in xrange(n-3):
+                poly = s.polygon(label)
+                n=poly.num_edges()
                 for i in xrange(n):
                     e1=poly.edge(i)
                     e2=poly.edge((i+1)%n)
                     if wedge_product(e1,e2) != 0:
-                        new_label = s.subdivide_polygon(label,i,(i+2)%n)
-                        if n>4:
-                            return s.triangulate(in_place=True, label=label)
-                        else:
-                            return s
-                raise RuntimeError("Geometrically impossible polygon")
-            else:
-                return self
+                        s.subdivide_polygon(label,i,(i+2)%n)
+                        break
+            return s
         raise RuntimeError("Failed to return anything!")
     
     def _edge_needs_flip(self,p1,e1):
@@ -1013,11 +1012,11 @@ class SimilaritySurface(SageObject):
             if in_place:
                 s=self
             else:
-                from flatsurf.geometry.surface import Surface_fast
-                s=self.__class__(Surface_fast(self,mutable=True))
+                from flatsurf.geometry.surface import Surface_dict
+                s=self.__class__(Surface_dict(surface=self,mutable=True))
         else:
-            from flatsurf.geometry.surface import Surface_fast
-            s=self.__class__(Surface_fast(self.triangulate(in_place=in_place),mutable=True))
+            from flatsurf.geometry.surface import Surface_list
+            s=self.__class__(Surface_list(surface=self.triangulate(in_place=in_place),mutable=True))
         loop=True
         if direction is None:
             base_ring = self.base_ring()
@@ -1064,7 +1063,7 @@ class SimilaritySurface(SageObject):
             ....:         print(str(polygon))
             ....:     
             Polygon: (0, 0), (0, -2), (a, -a - 2), (a + 2, -a - 2), (2*a + 2, -2), (2*a + 2, 0), (a + 2, a), (a, a)
-            Polygon: (0, 0), (0, -2), (2, -2), (2, 0)
+            Polygon: (0, 0), (0, 2), (-2, 2), (-2, 0)
             Polygon: (0, 0), (a, -a), (2*a, 0), (a, a)
 
             sage: from flatsurf import *
@@ -1077,7 +1076,7 @@ class SimilaritySurface(SageObject):
             ....:         print(str(label)+" -> "+str(polygon))
             ....:     
             0 -> Polygon: (0, 0), (0, -2), (a, -a - 2), (a + 2, -a - 2), (2*a + 2, -2), (2*a + 2, 0), (a + 2, a), (a, a)
-            1 -> Polygon: (0, 0), (0, -2), (2, -2), (2, 0)
+            1 -> Polygon: (0, 0), (0, 2), (-2, 2), (-2, 0)
             4 -> Polygon: (0, 0), (a, -a), (2*a, 0), (a, a)
 
             sage: from flatsurf import *
@@ -1094,7 +1093,7 @@ class SimilaritySurface(SageObject):
             s=self.mutable_copy()
         if not delaunay_triangulated:
             s=s.delaunay_triangulation(triangulated=triangulated,in_place=True)
-        # Now s is the Delaunay Triangulated
+        # Now s is Delaunay Triangulated
         loop=True
         while loop:
             loop=False
