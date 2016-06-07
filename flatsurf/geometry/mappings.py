@@ -616,52 +616,6 @@ def triangulation_mapping(s):
         s1=m2.codomain()
         m=SurfaceMappingComposition(m,m2)
     
-def edge_needs_flip_Linfinity(s, p1, e1):
-    r"""
-    Check whether the provided edge which bouds two triangles should be flipped
-    to get closer to the L-infinity Delaunay decomposition.
-
-    EXAMPLES::
-
-        sage: from flatsurf import *
-        sage: t1 = polygons(vertices=[(0,0), (1,0), (1,1)])
-        sage: t2 = polygons(vertices=[(0,0), (1,1), (0,1)])
-        sage: m = matrix(2, [2,1,1,1])
-        sage: t1 = m*t1
-        sage: t2 = m*t2
-        sage: s = similarity_surfaces([t1,t2], {(0,0):(1,1), (0,1):(1,2), (0,2):(1,0)})
-
-        sage: from flatsurf.geometry.mappings import edge_needs_flip_Linfinity
-        sage: edge_needs_flip_Linfinity(s, 0, 0)
-        False
-        sage: edge_needs_flip_Linfinity(s, 0, 1)
-        False
-        sage: edge_needs_flip_Linfinity(s, 0, 2)
-        True
-        sage: edge_needs_flip_Linfinity(s, 1, 0)
-        True
-        sage: edge_needs_flip_Linfinity(s, 1, 1)
-        False
-        sage: edge_needs_flip_Linfinity(s, 1, 2)
-        False
-    """
-    p2,e2 = s.opposite_edge(p1,e1)
-    poly1 = s.polygon(p1)
-    poly2 = s.polygon(p2)
-    assert poly1.num_edges() == 3
-    assert poly2.num_edges() == 3
-
-    # convexity check of the quadrilateral
-    if wedge_product(poly2.edge(e2-1), poly1.edge(e1+1)) <= 0 or \
-       wedge_product(poly1.edge(e1-1), poly2.edge(e2+1)) <=0:
-        return False
-
-    # compare the norms
-    edge1 = poly1.edge(e1)
-    edge = poly2.edge(e2-1) + poly1.edge(e1+1)
-    n1 = max(abs(edge1[0]), abs(edge1[1]))
-    n = max(abs(edge[0]), abs(edge[1]))
-    return n < n1
 
 def flip_edge_mapping(s,p1,e1):
     r"""
@@ -682,22 +636,6 @@ def one_delaunay_flip_mapping(s):
             if s._edge_needs_flip(p,e):
                 return flip_edge_mapping(s,p,e)
     return None
-
-#def edge_needs_join(s,p1,e1):
-#    r"""
-#    Return if the provided edge which bounds two triangles should be flipped
-#    to get closer to the Delaunay decomposition
-#    """
-#    p2,e2=s.opposite_edge(p1,e1)
-#    poly1=s.polygon(p1)
-#    poly2=s.polygon(p2)
-#    assert poly1.num_edges()==3
-#    assert poly2.num_edges()==3
-#    from flatsurf.geometry.matrix_2x2 import similarity_from_vectors
-#    sim1=similarity_from_vectors(poly1.edge(e1+2),-poly1.edge(e1+1))
-#    sim2=similarity_from_vectors(poly2.edge(e2+2),-poly2.edge(e2+1))
-#    sim=sim1*sim2
-#    return sim[1][0] == 0
 
 def delaunay_triangulation_mapping(s):
     r"""
@@ -1017,9 +955,15 @@ def canonicalize_translation_surface_mapping(s):
     if not isinstance(s,TranslationSurface):
         raise ValueError("Only defined for TranslationSurfaces")
     m1=delaunay_decomposition_mapping(s)
-    s2=m1.codomain()
+    if m1 is None:
+        s2=s
+    else:
+        s2=m1.codomain()
     m2=CanonicalizePolygonsMapping(s2)
-    m=SurfaceMappingComposition(m1,m2)
+    if m1 is None:
+        m=m2
+    else:
+        m=SurfaceMappingComposition(m1,m2)
     s2=m.codomain()
     it = s2.label_iterator()
     min_label = it.next()
