@@ -401,112 +401,6 @@ class Surface(SageObject):
             tester.assertTrue(isinstance(self.polygon(label), ConvexPolygon), \
                 "polygon(label) does not return a ConvexPolygon when label="+str(label))
 
-
-class Surface_polygons_and_gluings(Surface):
-    r"""
-    Similarity surface build from a list of polygons and gluings.
-    """
-    def __init__(self, *args, **kwds):
-        r"""
-        The constructor either acts as a copy constructor for a finite surface, or you can pass two options:
-        polygons and identifications.
-        
-        INPUT:
-
-        - ``polygons`` - a family of polygons (might be a list, a dictionnary
-          label -> polygon or more generally a Family)
-
-        - ``identifications`` - the identification of the edges. A list of pairs
-          ((p0,e0),(p1,e1)).
-        """
-        if len(args)==2:
-            polygons=args[0]
-            identifications=args[1]
-
-            self._polygons = Family(polygons)
-
-            if self._polygons.cardinality() == 0:
-                raise ValueError("there should be at least one polygon")
-
-            self._field = self._polygons.an_element().parent().field()
-
-            n = 0
-            for p in self._polygons:
-                if p.parent().field() != self._field:
-                    raise ValueError("the field must be the same for all polygons")
-                n += 1
-                if n > 10:  # the number of polygons may be infinite...
-                    break
-
-            if isinstance(identifications, (list,dict)):
-                edge_identifications = {}
-                if isinstance(identifications, dict):
-                    it = identifications.iteritems()
-                else:
-                    it = iter(identifications)
-                for e0,e1 in it:
-                    edge_identifications[e0] = e1
-                    # Check that e0 makes sense. 
-                    assert e0[1]>=0 and e0[1]<self._polygons[e0[0]].num_edges()
-                    # Check that e1 makes sense. 
-                    assert e1[1]>=0 and e1[1]<self._polygons[e1[0]].num_edges()
-                    
-                    if e1 in edge_identifications:
-                        assert edge_identifications[e1] == e0
-                    else:
-                        edge_identifications[e1] = e0
-            else:
-                edge_identifications = identifications
-
-            self._edge_identifications = edge_identifications
-        elif len(args)==1:
-            # Copy constructor for finite surface.
-            s = args[0]
-            if not s.is_finite():
-                raise ValueError("Can only copy finite surface.")
-            polygons = {}
-            edge_identifications = {}
-            for label,polygon in s.label_polygon_iterator():
-                polygons[label]=polygon
-                for edge in xrange(polygon.num_edges()):
-                    edge_identifications[(label,edge)]=s.opposite_edge(label,edge)
-            self._field = s.base_ring()
-            self._polygons=Family(polygons)
-            self._edge_identifications = edge_identifications
-        else:
-            raise ValueError("Can only be called with one or two arguments.")
-        Surface.__init__(self)
-    
-    def is_finite(self):
-        r"""
-        Return whether or not the surface is finite.
-        """
-        from sage.rings.infinity import Infinity
-        return self._polygons.cardinality() != Infinity
-    
-    def base_ring(self):
-        return self._field
-
-    def polygon_labels(self):
-        from sage.combinat.words.alphabet import build_alphabet
-        return build_alphabet(self._polygons.keys())
-
-    def base_label(self):
-        return self.polygon_labels().an_element()
-
-    def polygon(self, lab):
-        r"""
-        Return the polygon with label ``lab``.
-        """
-        return self._polygons[lab]
-
-    def opposite_edge(self, p, e):
-        if (p,e) not in self._edge_identifications:
-            e = e % self._polygons[p].num_edges()
-            if (p,e) not in self._edge_identifications:
-                raise ValueError("The pair"+str((p,e))+" is not a valid edge identifier.")
-        return self._edge_identifications[(p,e)]
-
 ####
 #### Surface_list
 ####
@@ -933,6 +827,30 @@ class Surface_list(Surface):
             self._p[label]=None
             self._removed_labels.append(label)
         self._num_polygons -= 1
+
+def surface_list_from_polygons_and_gluings(polygons, gluings, mutable=False):
+    r"""
+    Take a list of polygons and gluings (given either as a list of pairs of edges, or as a dictionary),
+    and produce a Surface_list from it. The mutable parameter determines the mutability of the resulting
+    surface.
+    """
+    if not (isinstance(polygons,list) or isinstance(polygons,tuple)):
+        raise ValueError("polygons must be a list or tuple.")
+    field = polygons[0].parent().field()
+    s=Surface_list(base_ring=field)
+    for p in polygons:
+        s.add_polygon(p)
+    try:
+        # dict case:
+        it = gluings.iteritems()
+    except AttributeError:
+        # list case:
+        it = gluings
+    for (l1,e1),(l2,e2) in it:
+        s.change_edge_gluing(l1,e1,l2,e2)
+    if not mutable:
+        s.make_immutable()
+    return s
 
 ####
 #### Surface_dict
