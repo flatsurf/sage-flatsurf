@@ -86,11 +86,14 @@ class SimilaritySurface(SageObject):
             sage: gluings = [((0,i),(0,i+n)) for i in range(n)]
             sage: s = TranslationSurface(Surface_polygons_and_gluings(ps,gluings))
             sage: TestSuite(s).run(verbose=True)
+            running ._test_base_label() . . . pass
+            running ._test_base_ring() . . . pass
             running ._test_category() . . . pass
             running ._test_edge_matrix() . . . pass
             running ._test_gluings() . . . pass
             running ._test_not_implemented_methods() . . . pass
             running ._test_pickling() . . . pass
+            running ._test_polygons() . . . pass
         """
         from sage.misc.superseded import deprecation
         deprecation(33, "Just use TestSuite!...")
@@ -98,17 +101,33 @@ class SimilaritySurface(SageObject):
         TestSuite(self).run()
 
     def _test_gluings(self, **options):
-        # iterate over pairs with pair1 glued to pair2
+        # This test was moved to Surface. We still want to run it though.
         tester = self._tester(**options)
-        if self.is_finite():
-            it = self.edge_iterator(gluings=True)
-        else:
-            from itertools import islice
-            it = islice(self.edge_iterator(gluings=True), 30)
+        options2 = options.copy()
+        options2['tester']=tester
+        self.underlying_surface()._test_gluings(**options2)
 
-        for pair1,pair2 in it:
-            tester.assertEqual(self.opposite_edge(pair2), pair1,
-                "edges not glued correctly:\n%s -> %s -> %s"%(pair1,pair2,self.opposite_edge(pair2)))
+    def _test_base_label(self, **options):
+        # This test is in Surface.
+        tester = self._tester(**options)
+        options2 = options.copy()
+        options2['tester']=tester
+        self.underlying_surface()._test_base_label(**options2)
+
+    def _test_base_ring(self, **options):
+        # This test is in Surface.
+        tester = self._tester(**options)
+        options2 = options.copy()
+        options2['tester']=tester
+        self.underlying_surface()._test_base_label(**options2)
+
+    def _test_polygons(self, **options):
+        # This test is in Surface.
+        tester = self._tester(**options)
+        options2 = options.copy()
+        options2['tester']=tester
+        self.underlying_surface()._test_polygons(**options2)
+
 
     def base_ring(self):
         r"""
@@ -1083,8 +1102,8 @@ class SimilaritySurface(SageObject):
             sage: s=m*s0
             sage: s=s.triangulate()
             sage: ss=s.delaunay_decomposition(triangulated=True)
-            sage: ss.polygon(2)
-            Polygon: (0, 0), (a, -a), (a + 2, -a), (2*a + 2, 0), (2*a + 2, 2), (a + 2, a + 2), (a, a + 2), (0, 2)
+            sage: ss.num_polygons()
+            3
 
             sage: from flatsurf import *
             sage: s0=translation_surfaces.octagon_and_squares()
