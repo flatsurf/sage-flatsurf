@@ -5,7 +5,7 @@ from .geometry.polygon import polygons
 from .geometry.similarity_surface_generators import (similarity_surfaces,
         translation_surfaces)
 
-from .geometry.surface import Surface_polygons_and_gluings
+from .geometry.surface import Surface_list, Surface_dict
 
 # The various surface types
 from .geometry.similarity_surface import SimilaritySurface
