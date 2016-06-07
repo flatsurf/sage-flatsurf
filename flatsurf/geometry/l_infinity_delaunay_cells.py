@@ -343,6 +343,6 @@ class LInfinityMarkedTriangulation:
             e3 = (b[6*p+4], b[6*p+5])
             triangles.append(C([e1,e2,e3]))
         
-        from surface import Surface_polygons_and_gluings
+        from surface import surface_list_from_polygons_and_gluings
         from translation_surface import TranslationSurface
-        return TranslationSurface(Surface_polygons_and_gluings(triangles, self._edge_identifications))
+        return TranslationSurface(surface_list_from_polygons_and_gluings(triangles, self._edge_identifications))

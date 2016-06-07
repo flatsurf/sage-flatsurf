@@ -492,13 +492,15 @@ class SimilaritySurfaceGenerators:
             sage: TestSuite(ex).run()
         """
         from flatsurf.geometry.similarity_surface import SimilaritySurface
-        from flatsurf.geometry.surface import Surface_polygons_and_gluings
+        from flatsurf.geometry.surface import Surface_list
         from flatsurf.geometry.polygon import polygons
-        p0 = polygons(vertices=[(0,0), (2,-2), (2,0)])
-        p1 = polygons(vertices=[(0,0), (2,0), (1,3)])
-        ps = (p0,p1)
-        glue={ (0,2):(1,0), (0,0):(1,1), (0,1):(1,2), (1,0):(0,2), (1,1):(0,0), (1,2):(0,1) }
-        return SimilaritySurface(Surface_polygons_and_gluings(ps,glue))
+        from sage.rings.rational_field import QQ
+        s=Surface_list(base_ring=QQ)
+        s.add_polygon(polygons(vertices=[(0,0), (2,-2), (2,0)],ring=QQ)) # gets label 0
+        s.add_polygon(polygons(vertices=[(0,0), (2,0), (1,3)],ring=QQ)) # gets label 1
+        s.change_polygon_gluings(0, [(1,1), (1,2), (1,0)])
+        s.make_immutable()
+        return SimilaritySurface(s)
 
     @staticmethod
     def self_glued_polygon(P):
@@ -540,7 +542,7 @@ class SimilaritySurfaceGenerators:
             sage: TestSuite(M).run()
         """
         from flatsurf.geometry.polygon import polygons
-        from flatsurf.geometry.surface import Surface_polygons_and_gluings
+        from flatsurf.geometry.surface import Surface_list
         from flatsurf.geometry.cone_surface import ConeSurface
         from sage.matrix.constructor import matrix
 
@@ -597,24 +599,27 @@ class SimilaritySurfaceGenerators:
         from flatsurf.geometry.polygon import Polygons
         from sage.modules.free_module import VectorSpace
         from sage.modules.free_module_element import vector
-        from flatsurf.geometry.surface import Surface_polygons_and_gluings
         from flatsurf.geometry.cone_surface import ConeSurface
 
         F = Sequence([w,h]).universe()
+        
         if not F.is_field():
             F = F.fraction_field()
         V = VectorSpace(F,2)
         P = Polygons(F)
-        p1 = P([V((w,0)),V((-w,h)),V((0,-h))])
-        p2 = P([V((0,h)),V((-w,-h)),V((w,0))])
-        ps = (p1,p2)
-        glue = {(0,0):(1,2),(0,1):(1,1),(0,2):(1,0)}
-        return ConeSurface(Surface_polygons_and_gluings(ps,glue))
+        s=Surface_list(base_ring=F)
+        s.add_polygon(P([V((w,0)),V((-w,h)),V((0,-h))])) # gets label 0
+        s.add_polygon(P([V((0,h)),V((-w,-h)),V((w,0))])) # gets label 1
+        s.change_polygon_gluings(0,[(1,2),(1,1),(1,0)])
+        s.make_immutable()
+        return ConeSurface(s)
 
-    def __call__(self, *args, **kwds):
-        from flatsurf.geometry.surface import Surface_polygons_and_gluings
-        from flatsurf.geometry.similarity_surface import SimilaritySurface
-        return SimilaritySurface(Surface_polygons_and_gluings(*args, **kwds))
+    # Removed because Surface_polygons_and_gluings is gone.
+    #
+    #def __call__(self, *args, **kwds):
+    #    from flatsurf.geometry.surface import Surface_polygons_and_gluings
+    #    from flatsurf.geometry.similarity_surface import SimilaritySurface
+    #    return SimilaritySurface(Surface_polygons_and_gluings(*args, **kwds))
 
 similarity_surfaces = SimilaritySurfaceGenerators()
 
@@ -634,7 +639,8 @@ class TranslationSurfaceGenerators:
             sage: T = translation_surfaces.square_torus()
             sage: T
             TranslationSurface built from 1 polygon
-
+            sage: TestSuite(T).run()
+            
         Rational directions are completely periodic::
 
             sage: v = T.tangent_vector(0, (1/33, 1/257), (13,17))
@@ -648,11 +654,12 @@ class TranslationSurfaceGenerators:
             sage: TestSuite(T).run()
         """
         from flatsurf.geometry.polygon import polygons
-        from flatsurf.geometry.surface import Surface_polygons_and_gluings
         from flatsurf.geometry.translation_surface import TranslationSurface
-        polygons = [polygons.square()]
-        identifications = {(0,0):(0,2), (0,1):(0,3)}
-        return TranslationSurface(Surface_polygons_and_gluings(polygons, identifications))
+        from sage.rings.rational_field import QQ
+        s=Surface_list(base_ring=QQ)
+        s.add_polygon(polygons.square(),[(0,2),(0,3),(0,0),(0,1)])
+        s.make_immutable()
+        return TranslationSurface(s)
 
     @staticmethod
     def veech_2n_gon(n):
@@ -716,13 +723,7 @@ class TranslationSurfaceGenerators:
             H(2)
             sage: TestSuite(T).run()
         """
-        from flatsurf.geometry.polygon import polygons
-        from flatsurf.geometry.surface import Surface_polygons_and_gluings
-        from flatsurf.geometry.translation_surface import TranslationSurface
-        polygons = [polygons.regular_ngon(8)]
-        identifications = {}
-        identifications.update(dict(((0,i),(0,i+4)) for i in xrange(4)))
-        return TranslationSurface(Surface_polygons_and_gluings(polygons, identifications))
+        return translation_surfaces.veech_2n_gon(4)
 
     @staticmethod
     def mcmullen_L(l1,l2,l3,l4):
@@ -753,18 +754,24 @@ class TranslationSurfaceGenerators:
             sage: TestSuite(s).run()
         """
         from flatsurf.geometry.polygon import polygons
-        from flatsurf.geometry.surface import Surface_polygons_and_gluings
+        from flatsurf.geometry.surface import Surface_list
         from flatsurf.geometry.translation_surface import TranslationSurface
-        polygons = {
-            0:polygons((l3,0),(l4,0),(0,l2),(-l4,0),(-l3,0),(0,-l2)), 
-            1:polygons((l3,0),(0,l1),(-l3,0),(0,-l1)) }
-        identifications = {
-            (0,0):(1,2),
-            (0,1):(0,3),
-            (0,2):(0,5),
-            (0,4):(1,0),
-            (1,1):(1,3)}
-        return TranslationSurface(Surface_polygons_and_gluings(polygons, identifications))
+        from sage.structure.sequence import Sequence
+        
+        field = Sequence([l1,l2,l3,l4]).universe()
+        if not field.is_field():
+            field = field.fraction_field()
+
+        s=Surface_list(base_ring=field)
+        s.add_polygon(polygons((l3,0),(l4,0),(0,l2),(-l4,0),(-l3,0),(0,-l2), ring=field))
+        s.add_polygon(polygons((l3,0),(0,l1),(-l3,0),(0,-l1), ring=field))
+        s.change_edge_gluing(0,0,1,2)
+        s.change_edge_gluing(0,1,0,3)
+        s.change_edge_gluing(0,2,0,5)
+        s.change_edge_gluing(0,4,1,0)
+        s.change_edge_gluing(1,1,1,3)
+        s.make_immutable()
+        return TranslationSurface(s)
 
     @staticmethod
     def ward(n):
@@ -851,7 +858,7 @@ class TranslationSurfaceGenerators:
         """
         from sage.modules.free_module import VectorSpace
         from flatsurf.geometry.polygon import ConvexPolygons
-        from flatsurf.geometry.surface import Surface_polygons_and_gluings
+        from flatsurf.geometry.surface import surface_list_from_polygons_and_gluings
         from flatsurf.geometry.half_translation_surface import HalfTranslationSurface
 
         f = h.flat_structure()
@@ -878,24 +885,7 @@ class TranslationSurfaceGenerators:
                     t, [edge_vectors[i].n(digits=6) for i in t]))
             polys.append(poly)
 
-        return HalfTranslationSurface(Surface_polygons_and_gluings(polys, adjacencies))
-
-        # Old version using Surface_polygons_and_gluings
-        # from flatsurf.geometry.surface import Surface_polygons_and_gluings
-        #
-        #polygons = [o, s, rot * s]
-        #identifications = {
-        #    (0,0): (1,3),
-        #    (0,1): (2,3),
-        #    (0,2): (1,0),
-        #    (0,3): (2,0),
-        #    (0,4): (1,1),
-        #    (0,5): (2,1),
-        #    (0,6): (1,2),
-        #    (0,7): (2,2),
-        #    }
-        #
-        #return TranslationSurface(Surface_polygons_and_gluings(polygons, identifications))
+        return HalfTranslationSurface(surface_list_from_polygons_and_gluings(polys, adjacencies))
 
     @staticmethod
     def origami(r,u,rr=None,uu=None,domain=None):

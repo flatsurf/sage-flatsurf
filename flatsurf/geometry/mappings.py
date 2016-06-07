@@ -1,7 +1,7 @@
 r"""Mappings between translation surfaces."""
 
 from flatsurf.geometry.polygon import Polygons, wedge_product
-from flatsurf.geometry.surface import Surface, Surface_polygons_and_gluings, ExtraLabel
+from flatsurf.geometry.surface import Surface, Surface_list, Surface_dict, ExtraLabel
 from flatsurf.geometry.similarity_surface import SimilaritySurface
 from flatsurf.geometry.translation import TranslationGroup
 
@@ -237,14 +237,18 @@ class SimilarityJoinPolygonsMapping(SurfaceMapping):
 
     EXAMPLES::
 
+        sage: from flatsurf.geometry.surface import Surface_list
+        sage: from flatsurf.geometry.translation_surface import TranslationSurface
         sage: from flatsurf.geometry.polygon import Polygons
         sage: P=Polygons(QQ)
-        sage: tri0=P([(1,0),(0,1),(-1,-1)])
-        sage: tri1=P([(-1,0),(0,-1),(1,1)])
-        sage: gluings=[((0,0),(1,0)),((0,1),(1,1)),((0,2),(1,2))]
-        sage: from flatsurf.geometry.surface import Surface_polygons_and_gluings
-        sage: from flatsurf.geometry.translation_surface import TranslationSurface
-        sage: s=TranslationSurface(Surface_polygons_and_gluings([tri0,tri1], gluings))
+        sage: s0=Surface_list(base_ring=QQ)
+        sage: s0.add_polygon(P([(1,0),(0,1),(-1,-1)])) # gets label=0
+        0
+        sage: s0.add_polygon(P([(-1,0),(0,-1),(1,1)])) # gets label=1
+        1
+        sage: s0.change_polygon_gluings(0,[(1,0),(1,1),(1,2)])
+        sage: s0.make_immutable()
+        sage: s=TranslationSurface(s0)
         sage: from flatsurf.geometry.mappings import *
         sage: m=SimilarityJoinPolygonsMapping(s,0,2)
         sage: s2=m.codomain()
@@ -393,20 +397,16 @@ class SplitPolygonsMapping(SurfaceMapping):
     
     EXAMPLES::
 
-        sage: K.<sqrt2> = NumberField(x**2 - 2, embedding=1.414)
-        sage: from flatsurf.geometry.polygon import Polygons
-        sage: p = Polygons(K)([(1,0),(sqrt2/2, sqrt2/2),(0, 1),(-sqrt2/2, sqrt2/2),(-1,0),(-sqrt2/2, -sqrt2/2),(0, -1),(sqrt2/2, -sqrt2/2)])
-        sage: gluings=[((0,i),(0,i+4)) for i in range(4)]
-        sage: from flatsurf.geometry.surface import Surface_polygons_and_gluings
-        sage: from flatsurf.geometry.translation_surface import TranslationSurface
-        sage: s=TranslationSurface(Surface_polygons_and_gluings([p], gluings))
+        sage: from flatsurf import *
+        sage: s=translation_surfaces.veech_2n_gon(4)
         sage: from flatsurf.geometry.mappings import SplitPolygonsMapping
         sage: m = SplitPolygonsMapping(s,0,0,2)
         sage: s2=m.codomain()
+        sage: TestSuite(s2).run()
         sage: for pair in s2.label_iterator(polygons=True):
         ...       print pair
-        (0, Polygon: (0, 0), (1/2*sqrt2 + 1, 1/2*sqrt2), (1/2*sqrt2 + 1, 1/2*sqrt2 + 1), (1, sqrt2 + 1), (0, sqrt2 + 1), (-1/2*sqrt2, 1/2*sqrt2 + 1), (-1/2*sqrt2, 1/2*sqrt2))
-        (ExtraLabel(0), Polygon: (0, 0), (-1/2*sqrt2 - 1, -1/2*sqrt2), (-1/2*sqrt2, -1/2*sqrt2))
+        (0, Polygon: (0, 0), (1/2*a + 1, 1/2*a), (1/2*a + 1, 1/2*a + 1), (1, a + 1), (0, a + 1), (-1/2*a, 1/2*a + 1), (-1/2*a, 1/2*a))
+        (ExtraLabel(0), Polygon: (0, 0), (-1/2*a - 1, -1/2*a), (-1/2*a, -1/2*a))
         sage: for glue in s2.edge_iterator(gluings=True):
         ...       print glue
         ((0, 0), (ExtraLabel(0), 0))
@@ -585,24 +585,20 @@ def triangulation_mapping(s):
     
     EXAMPLES::
         
-        sage: K.<sqrt2> = NumberField(x**2 - 2, embedding=1.414)
-        sage: from flatsurf.geometry.polygon import Polygons
-        sage: p = Polygons(K)([(1,0),(sqrt2/2, sqrt2/2),(0, 1),(-sqrt2/2, sqrt2/2),(-1,0),(-sqrt2/2, -sqrt2/2),(0, -1),(sqrt2/2, -sqrt2/2)])
-        sage: gluings=[((0,i),(0,i+4)) for i in range(4)]
-        sage: from flatsurf.geometry.surface import Surface_polygons_and_gluings
-        sage: from flatsurf.geometry.translation_surface import TranslationSurface
-        sage: s=TranslationSurface(Surface_polygons_and_gluings([p], gluings))
+        sage: from flatsurf import *
+        sage: s=translation_surfaces.veech_2n_gon(4)
         sage: from flatsurf.geometry.mappings import *
         sage: m=triangulation_mapping(s)
         sage: s2=m.codomain()
+        sage: TestSuite(s2).run()
         sage: for label,polygon in s2.label_iterator(polygons=True):
         ...       print str(polygon)
-        Polygon: (0, 0), (-1/2*sqrt2, 1/2*sqrt2 + 1), (-1/2*sqrt2, 1/2*sqrt2)
-        Polygon: (0, 0), (1/2*sqrt2, -1/2*sqrt2 - 1), (1/2*sqrt2, 1/2*sqrt2)
-        Polygon: (0, 0), (-1/2*sqrt2 - 1, -1/2*sqrt2 - 1), (0, -1)
-        Polygon: (0, 0), (-1, -sqrt2 - 1), (1/2*sqrt2, -1/2*sqrt2)
-        Polygon: (0, 0), (0, -sqrt2 - 1), (1, 0)
-        Polygon: (0, 0), (-1/2*sqrt2 - 1, -1/2*sqrt2), (-1/2*sqrt2, -1/2*sqrt2)
+        Polygon: (0, 0), (-1/2*a, 1/2*a + 1), (-1/2*a, 1/2*a)
+        Polygon: (0, 0), (1/2*a, -1/2*a - 1), (1/2*a, 1/2*a)
+        Polygon: (0, 0), (-1/2*a - 1, -1/2*a - 1), (0, -1)
+        Polygon: (0, 0), (-1, -a - 1), (1/2*a, -1/2*a)
+        Polygon: (0, 0), (0, -a - 1), (1, 0)
+        Polygon: (0, 0), (-1/2*a - 1, -1/2*a), (-1/2*a, -1/2*a)
     """
     assert(s.is_finite())
     m=subdivide_a_polygon(s)
@@ -722,35 +718,36 @@ class CanonicalizePolygonsMapping(SurfaceMapping):
         Split the polygon with label p of surface s along the diagonal joining vertex v1 to vertex v2.
         """
         if not s.is_finite():
-            raise ValueError("Currently only works with finite surfaces.""")
+            raise ValueError("Currently only works with finite surfaces.")
         ring=s.base_ring()
         T=TranslationGroup(ring)
         P=Polygons(ring)
         cv = {} # dictionary for canonical vertices
-        newpolys={} # Polygons for new surfaces
         translations={} # translations bringing the canonical vertex to the origin.
+        s2 = Surface_dict(base_ring=ring)
         for l,polygon in s.label_iterator(polygons=True):
             cv[l]=cvcur=canonical_first_vertex(polygon)
             newedges=[]
             for i in range(polygon.num_edges()):
                 newedges.append(polygon.edge( (i+cvcur) % polygon.num_edges() ))
-            newpolys[l]=P(newedges)
+            s2.add_polygon(P(newedges), label=l)
             translations[l]=T( -polygon.vertex(cvcur) )
-        newgluing=[]
         for l1,polygon in s.label_iterator(polygons=True):
             for e1 in range(polygon.num_edges()):
                 l2,e2=s.opposite_edge(l1,e1)
                 ee1= (e1-cv[l1]+polygon.num_edges())%polygon.num_edges()
                 polygon2=s.polygon(l2)
                 ee2= (e2-cv[l2]+polygon2.num_edges())%polygon2.num_edges()
-                newgluing.append( ( (l1,ee1),(l2,ee2) ) )
-
-        s2=s.__class__(Surface_polygons_and_gluings(newpolys,newgluing))
+                # newgluing.append( ( (l1,ee1),(l2,ee2) ) )
+                s2.change_edge_gluing(l1,ee1,l2,ee2)
+        s2.change_base_label(s.base_label())
+        s2.make_immutable()
+        ss2=s.__class__(s2)
         
         self._cv=cv
         self._translations=translations
 
-        SurfaceMapping.__init__(self, s, s2)
+        SurfaceMapping.__init__(self, s, ss2)
 
     def push_vector_forward(self,tangent_vector):
         r"""Applies the mapping to the provided vector."""
@@ -769,6 +766,38 @@ class CanonicalizePolygonsMapping(SurfaceMapping):
             (~self._translations[l])(tangent_vector.point()), \
             tangent_vector.vector(), \
             ring = ring)
+
+class ReindexedSurface(Surface):
+    def __init__(self, s, reindexmapping,new_base_label=None):
+        r"""
+        Represents a reindexed similarity surface.
+        """
+        self._s=s
+        self._r=reindexmapping
+        if new_base_label is None:
+            self._base_label=self._r._f[self._s.base_label()]
+        else:
+            self._base_label=new_base_label
+        Surface.__init__(self)
+    
+    def base_ring(self):
+        return self._s.base_ring()
+    
+    def base_label(self):
+        return self._base_label
+    
+    def polygon(self, lab):
+        return self._s.polygon(self._r._b[lab])
+    
+    def opposite_edge(self, p, e):
+        p_back = self._r._b[p]
+        pp_back,ee = self._s.opposite_edge(p_back,e)
+        pp = self._r._f[pp_back]
+        return (pp,ee)
+    
+    def is_finite(self):
+        return self._s.is_finite()
+
 
 class ReindexMapping(SurfaceMapping):
     r"""
@@ -800,38 +829,7 @@ class ReindexMapping(SurfaceMapping):
         self._b=b
         
         
-        SurfaceMapping.__init__(self, s, s.__class__(ReindexMapping.ReindexedSurface(s,self,new_base_label)))
-
-    class ReindexedSurface(Surface):
-        def __init__(self, s, reindexmapping,new_base_label=None):
-            r"""
-            Represents a reindexed similarity surface.
-            """
-            self._s=s
-            self._r=reindexmapping
-            if new_base_label is None:
-                self._base_label=self._r._f[self._s.base_label()]
-            else:
-                self._base_label=new_base_label
-            Surface.__init__(self)
-        
-        def base_ring(self):
-            return self._s.base_ring()
-        
-        def base_label(self):
-            return self._base_label
-        
-        def polygon(self, lab):
-            return self._s.polygon(self._r._b[lab])
-        
-        def opposite_edge(self, p, e):
-            p_back = self._r._b[p]
-            pp_back,ee = self._s.opposite_edge(p_back,e)
-            pp = self._r._f[pp_back]
-            return (pp,ee)
-        
-        def is_finite(self):
-            return self._s.is_finite()
+        SurfaceMapping.__init__(self, s, s.__class__(ReindexedSurface(s,self,new_base_label)))
     
     def push_vector_forward(self,tangent_vector):
         r"""Applies the mapping to the provided vector."""
@@ -924,30 +922,24 @@ def canonicalize_translation_surface_mapping(s):
     
     EXAMPLES::
 
-        sage: from flatsurf.geometry.polygon import Polygons
-        sage: K.<sqrt2> = NumberField(x**2 - 2, embedding=1.414)
-        sage: octagon = Polygons(K)([(1,0),(sqrt2/2, sqrt2/2),(0, 1),(-sqrt2/2, sqrt2/2),(-1,0),(-sqrt2/2, -sqrt2/2),(0, -1),(sqrt2/2, -sqrt2/2)])
-        sage: square1 = Polygons(K)([(1,0),(0,1),(-1,0),(0,-1)])
-        sage: square2 = Polygons(K)([(sqrt2/2, sqrt2/2),(-sqrt2/2, sqrt2/2),(-sqrt2/2, -sqrt2/2),(sqrt2/2, -sqrt2/2)])
-        sage: gluings=[((1,i),(0, (2*i+4)%8 )) for i in range(4)]
-        sage: for i in range(4):
-        ...       gluings.append( ((2,i), (0, (2*i+1+4)%8 )) )
-        sage: from flatsurf.geometry.surface import Surface_polygons_and_gluings
-        sage: from flatsurf.geometry.translation_surface import TranslationSurface
-        sage: s=TranslationSurface(Surface_polygons_and_gluings([octagon,square1,square2], gluings))
+        sage: from flatsurf import *
+        sage: s=translation_surfaces.octagon_and_squares().canonicalize()
+        sage: TestSuite(s).run()
+        sage: a = s.base_ring().gen() # a is the square root of 2.
         sage: from flatsurf.geometry.mappings import *
-        sage: mat=Matrix([[1,2+sqrt2],[0,1]])
+        sage: mat=Matrix([[1,2+a],[0,1]])
         sage: from flatsurf.geometry.half_dilation_surface import GL2RMapping
         sage: m1=GL2RMapping(s,mat)
         sage: m2=canonicalize_translation_surface_mapping(m1.codomain())
         sage: m=m2*m1
         sage: translation_surface_cmp(m.domain(),m.codomain())==0
         True
+        sage: TestSuite(m.codomain()).run()
         sage: s=m.domain()
         sage: v=s.tangent_vector(0,(0,0),(1,1))
         sage: w=m.push_vector_forward(v)
         sage: print(w)
-        SimilaritySurfaceTangentVector in polygon 0 based at (0, 0) with vector (sqrt2 + 3, 1)
+        SimilaritySurfaceTangentVector in polygon 0 based at (0, 0) with vector (a + 3, 1)
     """
     from flatsurf.geometry.translation_surface import TranslationSurface
     if not s.is_finite():

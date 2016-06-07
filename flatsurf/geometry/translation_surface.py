@@ -69,24 +69,16 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
         r"""
         Return a canonical version of this translation surface.
         
-        EXAMPLES:
+        EXAMPLES::
 
         We will check if an element lies in the Veech group::
 
-            sage: from flatsurf.geometry.polygon import Polygons
-            sage: K.<sqrt2> = NumberField(x**2 - 2, embedding=1.414)
-            sage: octagon = Polygons(K)([(1,0),(sqrt2/2, sqrt2/2),(0, 1),(-sqrt2/2, sqrt2/2),(-1,0),(-sqrt2/2, -sqrt2/2),(0, -1),(sqrt2/2, -sqrt2/2)])
-            sage: square1 = Polygons(K)([(1,0),(0,1),(-1,0),(0,-1)])
-            sage: square2 = Polygons(K)([(sqrt2/2, sqrt2/2),(-sqrt2/2, sqrt2/2),(-sqrt2/2, -sqrt2/2),(sqrt2/2, -sqrt2/2)])
-            sage: gluings=[((1,i),(0, (2*i+4)%8 )) for i in range(4)]
-            sage: for i in range(4):
-            ...       gluings.append( ((2,i), (0, (2*i+5)%8 )) )
-            sage: from flatsurf.geometry.surface import Surface_polygons_and_gluings
-            sage: from flatsurf.geometry.translation_surface import TranslationSurface
-            sage: s=TranslationSurface(Surface_polygons_and_gluings([octagon,square1,square2],gluings))
+            sage: from flatsurf import *
+            sage: s=translation_surfaces.octagon_and_squares()
             sage: print s
             TranslationSurface built from 3 polygons
-            sage: mat=Matrix([[1,2+sqrt2],[0,1]])
+            sage: a = s.base_ring().gen()
+            sage: mat=Matrix([[1,2+a],[0,1]])
             sage: s.canonicalize()==(mat*s).canonicalize()
             True
         """

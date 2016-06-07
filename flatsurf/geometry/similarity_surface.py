@@ -81,10 +81,7 @@ class SimilaritySurface(SageObject):
         EXAMPLES::
 
             sage: from flatsurf import *
-            sage: n = 6
-            sage: ps = [polygons.regular_ngon(2*n)]
-            sage: gluings = [((0,i),(0,i+n)) for i in range(n)]
-            sage: s = TranslationSurface(Surface_polygons_and_gluings(ps,gluings))
+            sage: s = translation_surfaces.veech_2n_gon(6)
             sage: TestSuite(s).run(verbose=True)
             running ._test_base_label() . . . pass
             running ._test_base_ring() . . . pass
@@ -237,9 +234,9 @@ class SimilaritySurface(SageObject):
             sage: tri0=P([(1,0),(0,1),(-1,-1)])
             sage: tri1=P([(-1,0),(0,-1),(1,1)])
             sage: gluings=[((0,0),(1,0)),((0,1),(1,1)),((0,2),(1,2))]
-            sage: from flatsurf.geometry.surface import Surface_polygons_and_gluings
+            sage: from flatsurf.geometry.surface import surface_list_from_polygons_and_gluings
             sage: from flatsurf.geometry.translation_surface import TranslationSurface
-            sage: s=TranslationSurface(Surface_polygons_and_gluings([tri0,tri1], gluings))
+            sage: s=TranslationSurface(surface_list_from_polygons_and_gluings([tri0,tri1], gluings))
             sage: for edge in s.edge_iterator():
             ...       print edge
             (0, 0)

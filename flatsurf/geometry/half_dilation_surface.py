@@ -161,24 +161,19 @@ class GL2RImageSurface(Surface):
 
     def is_finite(self):
         return self._s.is_finite()
-    
 
 class GL2RMapping(SurfaceMapping):
     r"""
-    This class pushes a surface forward under a matrix. 
+    This class pushes a surface forward under a matrix.
     
     EXAMPLE::
 
-        sage: K.<sqrt2> = NumberField(x**2 - 2, embedding=1.414)
-        sage: from flatsurf.geometry.polygon import Polygons
-        sage: p = Polygons(K)([(1,0),(sqrt2/2, sqrt2/2),(0, 1),(-sqrt2/2, sqrt2/2),(-1,0),(-sqrt2/2, -sqrt2/2),(0, -1),(sqrt2/2, -sqrt2/2)])
-        sage: gluings=[((0,i),(0,i+4)) for i in range(4)]
-        sage: from flatsurf.geometry.surface import Surface_polygons_and_gluings
-        sage: from flatsurf.geometry.translation_surface import TranslationSurface
-        sage: s=TranslationSurface(Surface_polygons_and_gluings([p], gluings))
+        sage: from flatsurf import *
+        sage: s=translation_surfaces.veech_2n_gon(4)
         sage: from flatsurf.geometry.half_dilation_surface import GL2RMapping
         sage: mat=Matrix([[2,1],[1,1]])
         sage: m=GL2RMapping(s,mat)
+        sage: TestSuite(m.codomain()).run()
     """
     def __init__(self, s, m, ring=None):
         r"""
