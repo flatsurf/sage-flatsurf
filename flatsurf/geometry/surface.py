@@ -348,6 +348,60 @@ class Surface(SageObject):
     def __ne__(self, other):
         return not self == other
 
+    def _test_base_ring(self, **options):
+        # Test that the base_label is associated to a polygon
+        if 'tester' in options:
+            tester = options['tester']
+        else:
+            tester = self._tester(**options)
+        from sage.rings.ring import Field
+        tester.assertTrue(isinstance(self.base_ring(), Field), \
+            "base_ring="+str(self.base_ring())+" is not a Field.")
+
+    def _test_base_label(self, **options):
+        # Test that the base_label is associated to a polygon
+        if 'tester' in options:
+            tester = options['tester']
+        else:
+            tester = self._tester(**options)
+        from flatsurf.geometry.polygon import ConvexPolygon
+        tester.assertTrue(isinstance(self.polygon(self.base_label()), ConvexPolygon), \
+            "polygon(base_label) does not return a ConvexPolygon. "+\
+            "Here base_label="+str(self.base_label()))
+
+    def _test_gluings(self, **options):
+        # iterate over pairs with pair1 glued to pair2
+        if 'tester' in options:
+            tester = options['tester']
+        else:
+            tester = self._tester(**options)
+        if self.is_finite():
+            it = self.edge_gluing_iterator()
+        else:
+            from itertools import islice
+            it = islice(self.edge_gluing_iterator(), 30)
+
+        for pair1,pair2 in it:
+            tester.assertEqual(self.opposite_edge(pair2[0], pair2[1]), pair1,
+                "edges not glued correctly:\n%s -> %s -> %s"%(pair1,pair2,self.opposite_edge(pair2[0], pair2[1])))
+
+    def _test_polygons(self, **options):
+        # Test that the base_label is associated to a polygon
+        if 'tester' in options:
+            tester = options['tester']
+        else:
+            tester = self._tester(**options)
+        from flatsurf.geometry.polygon import ConvexPolygon
+        if self.is_finite():
+            it = self.label_iterator()
+        else:
+            from itertools import islice
+            it = islice(self.label_iterator(), 30)
+        for label in it:
+            tester.assertTrue(isinstance(self.polygon(label), ConvexPolygon), \
+                "polygon(label) does not return a ConvexPolygon when label="+str(label))
+
+
 class Surface_polygons_and_gluings(Surface):
     r"""
     Similarity surface build from a list of polygons and gluings.
