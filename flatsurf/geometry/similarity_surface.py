@@ -1023,6 +1023,12 @@ class SimilaritySurface(SageObject):
             If None, this will return a Delaunay triangulation. If limit
             is an integer 1 or larger, then at most limit many diagonal flips 
             will be done.
+        direction : None or Vector with two entries in the base field
+            Used to determine labels when a pair of triangles is flipped. Each triangle
+            has a unique separatrix which points in the provided direction or its 
+            negation. As such a vector determines a sign for each triangle.
+            A pair of adjacent triangles have opposite signs. Labels are chosen
+            so that this sign is preserved (as a function of labels).
         """
         if not self.is_finite() and limit is None:
             raise NotImplementedError("Not implemented for infinite surfaces unless limit is set")
@@ -1077,12 +1083,8 @@ class SimilaritySurface(SageObject):
             sage: s=m*s0
             sage: s=s.triangulate()
             sage: ss=s.delaunay_decomposition(triangulated=True)
-            sage: for label,polygon in ss.label_iterator(polygons=True):
-            ....:         print(str(polygon))
-            ....:     
-            Polygon: (0, 0), (0, -2), (a, -a - 2), (a + 2, -a - 2), (2*a + 2, -2), (2*a + 2, 0), (a + 2, a), (a, a)
-            Polygon: (0, 0), (0, 2), (-2, 2), (-2, 0)
-            Polygon: (0, 0), (a, -a), (2*a, 0), (a, a)
+            sage: ss.polygon(2)
+            Polygon: (0, 0), (a, -a), (a + 2, -a), (2*a + 2, 0), (2*a + 2, 2), (a + 2, a + 2), (a, a + 2), (0, 2)
 
             sage: from flatsurf import *
             sage: s0=translation_surfaces.octagon_and_squares()
