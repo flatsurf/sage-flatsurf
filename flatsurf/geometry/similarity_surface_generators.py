@@ -17,8 +17,8 @@ def flipper_nf_to_sage(K, name='a'):
 
     EXAMPLES::
 
-        sage: import flipper  # optional - flipper
-        sage: from flatsurf.geometry.similarity_surface_generators import flipper_nf_to_sage
+        sage: import flipper                                       # optional - flipper
+        sage: from flatsurf.geometry.similarity_surface_generators import flipper_nf_to_sage # optional - flipper
         sage: p = flipper.kernel.Polynomial([-2r] + [0r]*5 + [1r]) # optional - flipper
         sage: r1,r2 = p.real_roots()                               # optional - flipper
         sage: K = flipper.kernel.NumberField(r1)                   # optional - flipper
@@ -45,7 +45,7 @@ def flipper_nf_element_to_sage(x):
 
     EXAMPLES::
 
-        sage: from flatsurf.geometry.similarity_surface_generators import flipper_nf_element_to_sage
+        sage: from flatsurf.geometry.similarity_surface_generators import flipper_nf_element_to_sage # optional - flipper
         sage: import flipper                               # optional - flipper
         sage: T = flipper.load('SB_6')                     # optional - flipper
         sage: h = T.mapping_class('s_0S_1S_2s_3s_4s_3S_5') # optional - flipper
@@ -827,7 +827,7 @@ class TranslationSurfaceGenerators:
 
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import *                     # optional - flipper
             sage: import flipper                             # optional - flipper
 
         A torus example::
@@ -842,7 +842,7 @@ class TranslationSurfaceGenerators:
             sage: h = h1*h2^(-1r)                            # optional - flipper
             sage: f = h.flat_structure()                     # optional - flipper
             sage: translation_surfaces.from_flipper(h)       # optional - flipper
-            HalfTranslationSurface built from 2 polygons     # optional - flipper
+            HalfTranslationSurface built from 2 polygons
 
         A non-orientable example::
 
@@ -853,7 +853,7 @@ class TranslationSurfaceGenerators:
             sage: S = translation_surfaces.from_flipper(h)   # optional - flipper
             sage: S.num_polygons()                           # optional - flipper
             4
-            sage: from flatsurf.geometry.similarity_surface_generators import flipper_nf_element_to_sage
+            sage: from flatsurf.geometry.similarity_surface_generators import flipper_nf_element_to_sage # optional - flipper
             sage: a = flipper_nf_element_to_sage(h.dilatation())  # optional - flipper
         """
         from sage.modules.free_module import VectorSpace
