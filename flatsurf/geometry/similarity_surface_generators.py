@@ -655,6 +655,52 @@ class TranslationSurfaceGenerators:
         return TranslationSurface(Surface_polygons_and_gluings(polygons, identifications))
 
     @staticmethod
+    def veech_2n_gon(n):
+        r"""
+        The regular 2n-gon with opposite sides identified.
+        
+        EXAMPLES::
+
+            sage: from flatsurf import *
+            sage: s=translation_surfaces.veech_2n_gon(5)
+            sage: s.polygon(0)
+            Polygon: (0, 0), (1, 0), (-1/2*a^2 + 5/2, 1/2*a), (-a^2 + 7/2, -1/2*a^3 + 2*a), (-1/2*a^2 + 5/2, -a^3 + 7/2*a), (1, -a^3 + 4*a), (0, -a^3 + 4*a), (1/2*a^2 - 3/2, -a^3 + 7/2*a), (a^2 - 5/2, -1/2*a^3 + 2*a), (1/2*a^2 - 3/2, 1/2*a)
+            sage: TestSuite(s).run()
+        """
+        from flatsurf.geometry.polygon import polygons
+        from flatsurf.geometry.surface import Surface_list
+        from flatsurf.geometry.translation_surface import TranslationSurface
+        p = polygons.regular_ngon(2*n)
+        s = Surface_list(base_ring=p.base_ring())
+        s.add_polygon(p,[ ( 0, (i+n)%(2*n) ) for i in xrange(2*n)] )
+        s.make_immutable()
+        return TranslationSurface(s)
+
+    @staticmethod
+    def veech_double_n_gon(n):
+        r"""
+        A pair of regular n-gons with each edge of one identified to an edge of the other to make a translation surface.
+        
+        EXAMPLES::
+
+            sage: from flatsurf import *
+            sage: s=translation_surfaces.veech_double_n_gon(5)
+            sage: TestSuite(s).run()
+        """
+        from flatsurf.geometry.polygon import polygons
+        from flatsurf.geometry.surface import Surface_list
+        from flatsurf.geometry.translation_surface import TranslationSurface
+        from sage.matrix.constructor import Matrix
+        p = polygons.regular_ngon(n)
+        s = Surface_list(base_ring=p.base_ring())
+        m = Matrix([[-1,0],[0,-1]])
+        s.add_polygon(p) # label=0
+        s.add_polygon(m*p, [(0,i) for i in xrange(n)])
+        s.make_immutable()
+        return TranslationSurface(s)
+
+
+    @staticmethod
     def regular_octagon():
         r"""
         Return the translation surface built from the regular octagon by
