@@ -171,7 +171,7 @@ class GraphicalPolygon:
             return {'color': self._outline_color}
         return {}
 
-    def plot(self, draw_polygon_label=True):
+    def plot(self, polygon_label=True):
         r"""
         Returns a plot of the GraphicalPolygon.
 
@@ -192,7 +192,7 @@ class GraphicalPolygon:
 
         p = polygon2d(self._v, **self.polygon_options())
 
-        if self._label is not None and draw_polygon_label:
+        if self._label is not None and polygon_label:
             p += text(str(self._label), sum(self._v) / len(self._v),
                     **self.polygon_label_options())
 

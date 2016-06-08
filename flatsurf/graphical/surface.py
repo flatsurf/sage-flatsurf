@@ -53,10 +53,6 @@ class GraphicalSurface:
         If adjacencies is not defined and the surface is finite, make_all_visible()
         is called to make all polygons visible.
         """
-        self._polygons_labels = polygon_labels
-
-        self._edge_labels = 'gluings' if edge_labels is True else edge_labels
-
         assert isinstance(similarity_surface, SimilaritySurface)
         self._ss = similarity_surface
 
@@ -66,9 +62,10 @@ class GraphicalSurface:
         if adjacencies is None:
             if self._ss.is_finite():
                 self.make_all_visible()
-        else:
-            for p,e in adjacencies:
-                self.make_adjacent_and_visible(p,e)
+        self._polygon_labels = None
+        self._edge_labels = None
+        self.process_options(adjacencies=adjacencies,
+                polygon_labels=polygon_labels, edge_labels=edge_labels)
 
     def process_options(self, adjacencies=None, polygon_labels=None, edge_labels=None):
         r"""
@@ -96,12 +93,12 @@ class GraphicalSurface:
         - ``adjacencies`` -- a list of pairs ``(p,e)`` to be used to set
           adjacencies of polygons. 
         """
-        if not adjacencies is None:
+        if adjacencies is not None:
             for p,e in adjacencies:
                 self.make_adjacent_and_visible(p,e)
-        if not polygon_labels is None:
-            self._polygons_labels = polygon_labels
-        if not edge_labels is None:
+        if polygon_labels is not None:
+            self._polygon_labels = polygon_labels
+        if edge_labels is not None:
             self._edge_labels = 'gluings' if edge_labels is True else edge_labels
 
     def __repr__(self):
@@ -419,21 +416,33 @@ class GraphicalSurface:
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.similarity_surface_generators import SimilaritySurfaceGenerators
-            sage: s = SimilaritySurfaceGenerators.example()
+            sage: from flatsurf import *
+            sage: s = similarity_surfaces.example()
             sage: from flatsurf.graphical.surface import GraphicalSurface
             sage: gs = GraphicalSurface(s)
             sage: gs.make_visible(1)
             sage: gs.plot()
             Graphics object consisting of 13 graphics primitives
+
+
+        Check that label options are handled correctly::
+
+            sage: S = translation_surfaces.square_torus()
+            sage: S.plot(polygon_labels=True, edge_labels=True)
+            Graphics object consisting of 10 graphics primitives
+            sage: S.plot(polygon_labels=False, edge_labels=True)
+            Graphics object consisting of 9 graphics primitives
+            sage: S.plot(polygon_labels=True, edge_labels=False)
+            Graphics object consisting of 6 graphics primitives
+            sage: S.plot(polygon_labels=False, edge_labels=False)
+            Graphics object consisting of 5 graphics primitives
         """
         p = Graphics()
-        draw_labels = self._polygons_labels is None or self._polygons_labels!=False
         for label in self._visible:
             polygon = self.graphical_polygon(label)
             polygon.set_edge_labels(self.edge_labels(label))
             if polygon.transformation().sign()==1:
-                p += polygon.plot(draw_polygon_label=draw_labels)
+                p += polygon.plot(polygon_label=self._polygon_labels)
             for e in range(polygon.base_polygon().num_edges()):
                 if self.is_adjacent(label,e):
                     # we want to plot the edges only once!
