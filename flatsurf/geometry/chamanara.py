@@ -54,10 +54,19 @@ class ChamanaraSurface(Surface):
 
         Surface.__init__(self, field, ZZ(0), finite=False)
     
-    def polygon_labels(self):
-        return ZZ
-        
     def polygon(self, lab):
+        r"""
+        EXAMPLES::
+
+            sage: from flatsurf import *
+            sage: C = translation_surfaces.chamanara(1/2)
+            sage: C.polygon('a')
+            Traceback (most recent call last):
+            ...
+            ValueError: invalid label 'a'
+        """
+        if lab not in ZZ:
+            raise ValueError("invalid label {!r}".format(lab))
         return self._p
 
     def opposite_edge(self, p, e):
@@ -78,6 +87,9 @@ class ChamanaraSurface(Surface):
             else:
                 # p>=1
                 return p+1,1
+
+    def base_label(self):
+        return ZZ.zero()
 
 def chamanara_half_dilation_surface(alpha, n=8):
     r"""

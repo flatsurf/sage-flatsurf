@@ -450,8 +450,7 @@ class SimilaritySurfaceGenerators:
         
         surface.make_immutable()
         s=ConeSurface(surface)
-        gs=s.graphical_surface()
-        gs.process_options(edge_labels=None,polygon_labels=False)
+        gs = s.graphical_surface(edge_labels=False, polygon_labels=False)
         gs.make_adjacent(0,0,reverse=True)
         return s
 

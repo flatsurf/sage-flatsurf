@@ -205,18 +205,30 @@ class AbstractStraightLineTrajectory:
                 start.point(), start.polygon_label(),
                 end.point(), end.polygon_label())
 
-    def plot(self, graphical_surface = None):
-        return self.graphical_trajectory(graphical_surface = graphical_surface).plot()
+    def plot(self, **options):
+        r"""
+        EXAMPLES::
 
-    def graphical_trajectory(self, graphical_surface = None):
+            sage: from flatsurf import *
+            sage: T = translation_surfaces.square_torus()
+            sage: v = T.tangent_vector(0, (0,0), (5,7))
+            sage: L = v.straight_line_trajectory()
+            sage: L.plot()
+            Graphics object consisting of 1 graphics primitive
+            sage: L.plot(color='red')
+            Graphics object consisting of 1 graphics primitive
+        """
+        return self.graphical_trajectory(**options).plot()
+
+    def graphical_trajectory(self, graphical_surface=None, **options):
         r"""
         Returns a ``GraphicalStraightLineTrajectory`` corresponding to this
         trajectory in the provided  ``GraphicalSurface``.
         """
         from flatsurf.graphical.straight_line_trajectory import GraphicalStraightLineTrajectory
         if graphical_surface is None:
-            graphical_surface=self.surface().graphical_surface()
-        return GraphicalStraightLineTrajectory(graphical_surface, self)
+            graphical_surface = self.surface().graphical_surface()
+        return GraphicalStraightLineTrajectory(graphical_surface, self, **options)
 
     def coding(self, alphabet=None):
         r"""

@@ -92,6 +92,17 @@ class GraphicalSurface:
 
         - ``adjacencies`` -- a list of pairs ``(p,e)`` to be used to set
           adjacencies of polygons. 
+
+        TESTS::
+
+            sage: from flatsurf import *
+
+            sage: c = translation_surfaces.chamanara(1/2)
+            sage: gs = c.graphical_surface()
+            sage: gs.process_options(edge_labels='hey')
+            Traceback (most recent call last):
+            ...
+            ValueError: invalid value for edge_labels (='hey')
         """
         if adjacencies is not None:
             for p,e in adjacencies:
@@ -99,7 +110,13 @@ class GraphicalSurface:
         if polygon_labels is not None:
             self._polygon_labels = polygon_labels
         if edge_labels is not None:
-            self._edge_labels = 'gluings' if edge_labels is True else edge_labels
+            if edge_labels is True:
+                edge_labels = 'gluings'
+            elif edge_labels is False:
+                edge_labels = None
+            if edge_labels not in [None,'gluings', 'number', 'gluings and number']:
+                raise ValueError("invalid value for edge_labels (={!r})".format(edge_labels))
+            self._edge_labels = edge_labels
 
     def __repr__(self):
         return "Graphical version of Similarity Surface {!r}".format(self._ss)
