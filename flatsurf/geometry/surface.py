@@ -31,16 +31,6 @@ class Surface(SageObject):
         See the documentation of those methods for details.
     """
     
-    polygon_finiteness_bound = 300
-    r"""
-    Bound used for tests to avoid infinite loops in moving through polygons.
-    """
-    
-    edge_finiteness_bound = 1000
-    r"""
-    Bound used for tests to avoid infinite loops in moving through edges.
-    """
-    
     def __init__(self, base_ring, base_label, finite=None, mutable=False):
         r"""
         Represents a surface defined using polygons whose vertices lie
@@ -145,31 +135,9 @@ class Surface(SageObject):
     # Methods which you probably do not want to override.
     #
 
-    def base_ring(self):
-        r"""
-        The field on which the coordinates of ``self`` live.
-
-        This method must be overriden in subclasses!
-        """
-        return self._base_ring
-
-    def base_label(self):
-        r"""
-        Always returns the same label.
-        """
-        return self._base_label
-
-    def is_finite(self):
-        r"""
-        Return whether or not the surface is finite.
-        """
-        return self._finite
-
     def num_edges(self):
         r"""
         Return the total number of edges of all polygons used.
-        
-        Not cached. Will be likely be linear in the number of edges.
         """
         if self.is_finite():
             try:
@@ -185,8 +153,6 @@ class Surface(SageObject):
     def area(self):
         r"""
         Return the area of this surface.
-        
-        By default this method is not cached.
         """
         if self.is_finite():
             try:
@@ -216,6 +182,26 @@ class Surface(SageObject):
     #
     # Methods which should not be overriden
     #
+
+    def base_ring(self):
+        r"""
+        The field on which the coordinates of ``self`` live.
+
+        This method must be overriden in subclasses!
+        """
+        return self._base_ring
+
+    def base_label(self):
+        r"""
+        Always returns the same label.
+        """
+        return self._base_label
+
+    def is_finite(self):
+        r"""
+        Return whether or not the surface is finite.
+        """
+        return self._finite
 
     def is_mutable(self):
         r"""
@@ -273,6 +259,9 @@ class Surface(SageObject):
         Updates the list of glued polygons according to the provided list,
         which is a list of pairs (pp,ee) whose position in the list
         describes the edge of the polygon with the provided label.
+        
+        This method updates both the edges of the polygon with label "label"
+        and updates the edges listed in the glue_list.
         """
         self.__mutate()
         for e,(pp,ee) in enumerate(glue_list):
@@ -282,7 +271,8 @@ class Surface(SageObject):
         r"""
         Adds a the provided polygon to the surface. Utilizes gluing_list
         for the gluing data for edges (which must be a list
-        of pairs of length equal to number of edges of the polygon).
+        of pairs representing edges of length equal to number of edges 
+        of the polygon).
 
         If the parameter label is provided, the Surface attempts to use
         this as the label for the new_polygon. However, this may fail 
@@ -388,30 +378,6 @@ class Surface(SageObject):
         tester.assertTrue(isinstance(self.polygon(self.base_label()), ConvexPolygon), \
             "polygon(base_label) does not return a ConvexPolygon. "+\
             "Here base_label="+str(self.base_label()))
-
-    def _test__finiteness(self, **options):
-        # Extra underscore above to make sure the test is run first.
-        # Hoping to avoid infinite loops!
-        #
-        # Test if is_finite() returns the correct answer.
-        if 'tester' in options:
-            tester = options['tester']
-        else:
-            tester = self._tester(**options)
-        if self.is_finite():
-            count = 0
-            for label in self.label_iterator():
-                count +=1
-                tester.failUnless(count<Surface.polygon_finiteness_bound,"Surface claimed to be finite, but has at least "+\
-                    str(Surface.polygon_finiteness_bound)+" polygons. Fix or increase Surface.polygon_finiteness_bound.")
-        else:
-            # Check that the surface has at least 30 polygons.
-            count = 0
-            from itertools import islice
-            it = islice(self.label_iterator(), 30)
-            for label in it:
-                count += 1
-            tester.assertTrue(count==30, "Surface claimed to be infinite but only had "+str(count)+" polygons.")
             
     def _test_gluings(self, **options):
         # iterate over pairs with pair1 glued to pair2
@@ -425,14 +391,66 @@ class Surface(SageObject):
             from itertools import islice
             it = islice(self.edge_gluing_iterator(), 30)
 
-        count = 0
         for pair1,pair2 in it:
             tester.assertEqual(self.opposite_edge(pair2[0], pair2[1]), pair1,
                 "edges not glued correctly:\n%s -> %s -> %s"%(pair1,pair2,self.opposite_edge(pair2[0], pair2[1])))
-            count += 1
-            tester.failUnless(count<Surface.edge_finiteness_bound,"Surface claimed to be finite, but has at least "+\
-                str(Surface.edge_finiteness_bound)+" edges. Fix or increase Surface.edge_finiteness_bound.")
 
+    def _test_override(self, **options):
+        # Test that the required methods have been overridden and that some other methods have not been overridden.
+
+        # Of course, we don't care if the methods are overridden or not we just want to warn the programmer.
+        if 'tester' in options:
+            tester = options['tester']
+        else:
+            tester = self._tester(**options)
+        # Build a naive Surface.
+        from sage.rings.rational_field import QQ
+        s=Surface(QQ,0,finite=True)
+        
+        # Check for override:
+        tester.assertNotEqual(self.polygon.im_func,s.polygon.im_func, \
+            "Method polygon of Surface must be overridden. The Surface is of type "+str(type(self))+".")
+        tester.assertNotEqual(self.opposite_edge.im_func,s.opposite_edge.im_func, \
+            "Method opposite_edge of Surface must be overridden. The Surface is of type "+str(type(self))+".")
+        
+        # Check not overridden:
+        tester.assertEqual(self.base_ring.im_func, s.base_ring.im_func, \
+            "Method base_ring of Surface should not be overridden. The Surface is of type "+str(type(self))+".")
+        tester.assertEqual(self.base_label.im_func, s.base_label.im_func, \
+            "Method base_label of Surface should not be overridden. The Surface is of type "+str(type(self))+".")
+        tester.assertEqual(self.is_finite.im_func, s.is_finite.im_func, \
+            "Method is_finite of Surface should not be overridden. The Surface is of type "+str(type(self))+".")
+        tester.assertEqual(self.is_mutable.im_func, s.is_mutable.im_func, \
+            "Method is_mutable of Surface should not be overridden. The Surface is of type "+str(type(self))+".")
+        tester.assertEqual(self.make_immutable.im_func, s.make_immutable.im_func, \
+            "Method make_immutable of Surface should not be overridden. The Surface is of type "+str(type(self))+".")
+        tester.assertEqual(self.walker.im_func, s.walker.im_func, \
+            "Method walker of Surface should not be overridden. The Surface is of type "+str(type(self))+".")
+        tester.assertEqual(self.change_polygon.im_func, s.change_polygon.im_func, \
+            "Method change_polygon of Surface should not be overridden. The Surface is of type "+str(type(self))+".")
+        tester.assertEqual(self.change_polygon_gluings.im_func, s.change_polygon_gluings.im_func, \
+            "Method change_polygon_gluings of Surface should not be overridden. The Surface is of type "+str(type(self))+".")
+        tester.assertEqual(self.change_edge_gluing.im_func, s.change_edge_gluing.im_func, \
+            "Method change_edge_gluing of Surface should not be overridden. The Surface is of type "+str(type(self))+".")
+        tester.assertEqual(self.add_polygon.im_func, s.add_polygon.im_func, \
+            "Method add_polygon of Surface should not be overridden. The Surface is of type "+str(type(self))+".")
+        tester.assertEqual(self.remove_polygon.im_func, s.remove_polygon.im_func, \
+            "Method remove_polygon of Surface should not be overridden. The Surface is of type "+str(type(self))+".")
+        tester.assertEqual(self.change_base_label.im_func, s.change_base_label.im_func, \
+            "Method change_base_label of Surface should not be overridden. The Surface is of type "+str(type(self))+".")
+        
+        if self.is_mutable():
+            # Check for override:
+            tester.assertNotEqual(self._change_polygon.im_func,s._change_polygon.im_func,\
+                "Method _change_polygon of Surface must be overridden in a mutable surface. "+\
+                "The Surface is of type "+str(type(self))+".")
+            tester.assertNotEqual(self._change_edge_gluing.im_func,s._change_edge_gluing.im_func,\
+                "Method _change_edge_gluing of Surface must be overridden in a mutable surface. "+\
+                "The Surface is of type "+str(type(self))+".")
+            tester.assertNotEqual(self._add_polygon.im_func,s._add_polygon.im_func,"Method _add_polygon of Surface must be overridden in a mutable surface. "+\
+                "The Surface is of type "+str(type(self))+".")
+            tester.assertNotEqual(self._remove_polygon.im_func,s._remove_polygon.im_func,"Method _remove_polygon of Surface must be overridden in a mutable surface. "+\
+                "The Surface is of type "+str(type(self))+".")
 
     def _test_polygons(self, **options):
         # Test that the base_label is associated to a polygon
@@ -446,13 +464,9 @@ class Surface(SageObject):
         else:
             from itertools import islice
             it = islice(self.label_iterator(), 30)
-        count = 0
         for label in it:
             tester.assertTrue(isinstance(self.polygon(label), ConvexPolygon), \
                 "polygon(label) does not return a ConvexPolygon when label="+str(label))
-            count +=1
-            tester.failUnless(count<Surface.polygon_finiteness_bound,"Surface claimed to be finite, but has at least "+\
-                str(Surface.polygon_finiteness_bound)+" polygons. Fix or increase Surface.polygon_finiteness_bound.")
 
 ####
 #### Surface_list
