@@ -157,12 +157,6 @@ class GL2RImageSurface(Surface):
 
         Surface.__init__(self, base_ring, self._s.base_label(), finite=self._s.is_finite())
 
-    def base_ring(self):
-        return self._base_ring
-
-    def base_label(self):
-        return self._s.base_label()
-
     def polygon(self, lab):
         p = self._s.polygon(lab)
         edges = [ self._m * p.edge(e) for e in xrange(p.num_edges())]
@@ -170,9 +164,6 @@ class GL2RImageSurface(Surface):
 
     def opposite_edge(self, p, e):
         return self._s.opposite_edge(p,e)
-
-    def is_finite(self):
-        return self._s.is_finite()
 
 class GL2RMapping(SurfaceMapping):
     r"""
