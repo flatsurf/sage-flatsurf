@@ -20,7 +20,6 @@ class HalfTranslationSurface(HalfDilationSurface, RationalConeSurface):
             from itertools import islice
             it = islice(self.label_iterator(), 30)
 
-        count = 0
         for lab in it:
             p = self.polygon(lab)
             for e in xrange(p.num_edges()):
@@ -28,9 +27,6 @@ class HalfTranslationSurface(HalfDilationSurface, RationalConeSurface):
                 # rather the ones overriden by TranslationSurface.
                 tester.assertTrue(SimilaritySurface.edge_matrix(self,lab,e).is_one() or \
                     (-SimilaritySurface.edge_matrix(self,lab,e)).is_one() )
-                count += 1
-                tester.failUnless(count<Surface.edge_finiteness_bound,"Surface claimed to be finite, but has at least "+\
-                    str(Surface.edge_finiteness_bound)+" edges. Fix or increase Surface.edge_finiteness_bound.")
 
     
 # This was all implemented in HalfDilationSurface now.
