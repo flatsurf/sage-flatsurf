@@ -83,6 +83,7 @@ class SimilaritySurface(SageObject):
             sage: from flatsurf import *
             sage: s = translation_surfaces.veech_2n_gon(6)
             sage: TestSuite(s).run(verbose=True)
+            running ._test__finiteness() . . . pass
             running ._test_base_label() . . . pass
             running ._test_base_ring() . . . pass
             running ._test_category() . . . pass
@@ -116,7 +117,14 @@ class SimilaritySurface(SageObject):
         tester = self._tester(**options)
         options2 = options.copy()
         options2['tester']=tester
-        self.underlying_surface()._test_base_label(**options2)
+        self.underlying_surface()._test_base_ring(**options2)
+
+    def _test__finiteness(self, **options):
+        # This test is in Surface.
+        tester = self._tester(**options)
+        options2 = options.copy()
+        options2['tester']=tester
+        self.underlying_surface()._test__finiteness(**options2)
 
     def _test_polygons(self, **options):
         # This test is in Surface.
@@ -797,8 +805,8 @@ class SimilaritySurface(SageObject):
             sage: from flatsurf import *
             sage: S = similarity_surfaces.example()
             sage: T = S.minimal_translation_cover()
-            sage: T
             Warning: Could be indicating infinite surface falsely.
+            sage: T
             TranslationSurface built from infinitely many polygons
             sage: T.polygon(T.base_label())
             Polygon: (0, 0), (2, -2), (2, 0)

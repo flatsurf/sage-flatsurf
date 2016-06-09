@@ -45,22 +45,21 @@ class ChamanaraSurface(Surface):
     """
     def __init__(self, alpha):
         self._p = ChamanaraPolygon(alpha)
-        self._field = alpha.parent()
+        
+        field = alpha.parent()
+        if not field.is_field():
+            field = field.fraction_field()
+
         self.rename('Chamanara surface with parameter {}'.format(alpha))
-        Surface.__init__(self)
-    
-    def base_ring(self):
-        return self._field
+
+        Surface.__init__(self, field, ZZ(0), finite=False)
     
     def polygon_labels(self):
         return ZZ
         
     def polygon(self, lab):
         return self._p
-    
-    def is_finite(self):
-        return False
-    
+
     def opposite_edge(self, p, e):
         if e==0 or e==2:
             return 1-p,e
@@ -80,12 +79,15 @@ class ChamanaraSurface(Surface):
                 # p>=1
                 return p+1,1
 
-    def base_label(self):
-        return ZZ(0)
-
 def chamanara_half_dilation_surface(alpha, n=8):
     r"""
     Return Chamanara's surface thought of as a Half Dilation surface.
+    
+    EXAMPLES::
+    
+        sage: from flatsurf.geometry.chamanara import chamanara_half_dilation_surface
+        sage: s = chamanara_half_dilation_surface(1/2)
+        sage: TestSuite(s).run(skip='_test_pickling')
     """
     s=HalfDilationSurface(ChamanaraSurface(alpha))
     adjacencies = [(0,1)]
@@ -98,6 +100,12 @@ def chamanara_half_dilation_surface(alpha, n=8):
 def chamanara_surface(alpha,n=8):
     r"""
     Return Chamanara's surface thought of as a translation surface.
+
+    EXAMPLES::
+    
+        sage: from flatsurf.geometry.chamanara import chamanara_surface
+        sage: s = chamanara_surface(1/2)
+        sage: TestSuite(s).run(skip='_test_pickling')
     """
     s = chamanara_half_dilation_surface(alpha).minimal_translation_cover()
     l = s.base_label()

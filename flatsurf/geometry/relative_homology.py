@@ -14,7 +14,7 @@ from sage.structure.element import ModuleElement
 from sage.modules.module import Module
 from sage.rings.integer_ring import ZZ
 
-from flatsurf.geometry.similarity_surface import SimilaritySurface_generic as Surface
+from flatsurf.geometry.similarity_surface import SimilaritySurface
 
 
 class RelativeHomologyClass(ModuleElement):
@@ -95,6 +95,8 @@ class RelativeHomology(Module):
     Element = RelativeHomologyClass
     def __init__(self, surface, base_ring=ZZ):
         self._base_ring=base_ring
+        if not isinstance(surface,SimilaritySurface):
+            raise ValueError("RelativeHomology only defined for SimilaritySurfaces (and better).")
         self._s=surface
         self._cached_edges=dict()
         Module.__init__(self, base_ring)

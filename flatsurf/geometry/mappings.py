@@ -43,85 +43,60 @@ class SurfaceMapping:
         return SurfaceMappingComposition(self,other)
 
 
-class FinitelyPerturbedSurface(Surface):
-    def __init__(self, surface, polygon_dictionary=None, glue_dictionary=None, base_label=None, ring=None):
-        r"""
-        
-        Warning: No checks are made to make sure the surface is reasonable.
-        
-        PARAMETERS::
-            surface: The surface this is based on.
-            polygon_dictionary: A dictionary mapping labels to polygons which will override whatever was on the original surface.
-            glue_dictionary: A dictionary mapping edges to edges, which will override whatever was on the original surface. It will automatically be made symmetric.
-            base_label: A label representing the base_label on the new surface.
-            ring: A new ring containing the vertices.
-        """
-        self._s=surface
-        if polygon_dictionary is None:
-            self._pdict={}
-        else:
-            self._pdict=dict(polygon_dictionary)
-        self._gdict={}
-        if not glue_dictionary is None:
-            for edge1,edge2 in glue_dictionary.iteritems():
-                self._gdict[edge1]=edge2
-                self._gdict[edge2]=edge1
-        if base_label is None:
-            self._base_label = surface.base_label()
-        else:
-            self._base_label = base_label
-        if ring is None:
-            self._ring = surface.base_ring()
-        else:
-            self._ring = ring
-        self._is_finite = surface.is_finite()
-        Surface.__init__(self)
+#class FinitelyPerturbedSurface(Surface):
+#    def __init__(self, surface, polygon_dictionary=None, glue_dictionary=None, base_label=None, ring=None):
+#        r"""
+#        
+#        Warning: No checks are made to make sure the surface is reasonable.
+#        
+#        PARAMETERS::
+#            surface: The surface this is based on.
+#            polygon_dictionary: A dictionary mapping labels to polygons which will override whatever was on the original surface.
+#            glue_dictionary: A dictionary mapping edges to edges, which will override whatever was on the original surface. It will automatically be made symmetric.
+#            base_label: A label representing the base_label on the new surface.
+#            ring: A new ring containing the vertices.
+#        """
+#        self._s=surface
+#        if polygon_dictionary is None:
+#            self._pdict={}
+#        else:
+#            self._pdict=dict(polygon_dictionary)
+#        self._gdict={}
+#        if not glue_dictionary is None:
+#            for edge1,edge2 in glue_dictionary.iteritems():
+#                self._gdict[edge1]=edge2
+#                self._gdict[edge2]=edge1
+#        if base_label is None:
+#            self._base_label = surface.base_label()
+#        else:
+#            self._base_label = base_label
+#        if ring is None:
+#            self._ring = surface.base_ring()
+#        else:
+#            self._ring = ring
+#        self._is_finite = surface.is_finite()
+#        Surface.__init__(self, )
 
-    def base_ring(self):
-        return self._ring
+#    def base_ring(self):
+#        return self._ring
 
-    def base_label(self):
-        return self._base_label
+#    def base_label(self):
+#        return self._base_label
 
-    def polygon(self, lab):
-        p = self._pdict.get(lab)
-        if p is None:
-            return self._s.polygon(lab)
-        return p
+#    def polygon(self, lab):
+#        p = self._pdict.get(lab)
+#        if p is None:
+#            return self._s.polygon(lab)
+#        return p
 
-    def opposite_edge(self, p, e):
-        edge = self._gdict.get((p,e))
-        if edge is None:
-            return self._s.opposite_edge(p,e)
-        return edge
+#    def opposite_edge(self, p, e):
+#        edge = self._gdict.get((p,e))
+#        if edge is None:
+#            return self._s.opposite_edge(p,e)
+#        return edge
 
-    def is_finite(self):
-        return self._is_finite
-
-
-class BaseLabelChangedSurface(Surface):
-    def __init__(self, surface, base_label):
-        r"""
-        Construct a copy of the provided surface with a new base label.
-        """
-        self._s=surface
-        self._base_label = base_label
-        Surface.__init__(self)
-
-    def base_ring(self):
-        return self._s.base_ring()
-
-    def base_label(self):
-        return self._base_label
-
-    def polygon(self, lab):
-        return self._s.polygon(lab)
-
-    def opposite_edge(self, p, e):
-        return self._s.opposite_edge(p,e)
-
-    def is_finite(self):
-        return self._s.is_finite()
+#    def is_finite(self):
+#        return self._is_finite
 
 class SurfaceMappingComposition(SurfaceMapping):
     r"""
@@ -266,12 +241,18 @@ class SimilarityJoinPolygonsMapping(SurfaceMapping):
         r"""
         Join polygon with label p1 of s to polygon sharing edge e1.
         """
+        if s.is_mutable():
+            raise ValueError("Can only construct SimilarityJoinPolygonsMapping for immutable surfaces.")
+
+        ss2=s.copy(lazy=True,mutable=True)
+        s2=ss2.underlying_surface()
+
         poly1=s.polygon(p1)
         p2,e2 = s.opposite_edge(p1,e1)
         poly2=s.polygon(p2)
         t=s.edge_transformation(p2, e2)
         dt=t.derivative()
-        vs = []
+        vs = []  # actually stores new edges...
         edge_map={} # Store the pairs for the old edges.
         for i in range(e1):
             edge_map[len(vs)]=(p1,i)
@@ -289,32 +270,29 @@ class SimilarityJoinPolygonsMapping(SurfaceMapping):
         for key, value in edge_map.iteritems():
             inv_edge_map[value]=(p1,key)
 
-        base_label=s.base_label()
-        if base_label==p2:
-             base_label=p1
+        if s.base_label()==p2:
+            # The polygon with the base label is being removed.
+            s2.change_base_label(p1)
         
-        glue_dictionary={}
+        s2.change_polygon(p1, Polygons(s.base_ring())(vs))
+        
         for i in range(len(vs)):
             p3,e3 = edge_map[i]
             p4,e4 = s.opposite_edge(p3,e3)
             if p4 == p1 or p4 == p2: 
-                glue_dictionary[(p1,i)] = inv_edge_map[(p4,e4)]
+                pp,ee = inv_edge_map[(p4,e4)]
+                s2.change_edge_gluing(p1,i,pp,ee)
             else:
-                glue_dictionary[(p1,i)] = (p4,e4)
+                s2.change_edge_gluing(p1,i,p4,e4)
 
-        s2 = s.__class__(FinitelyPerturbedSurface(
-            s, 
-            polygon_dictionary={p1: Polygons(s.base_ring())(vs)}, 
-            glue_dictionary=glue_dictionary, 
-            base_label=base_label, 
-            ring = s.base_ring()))
-
+        s2.make_immutable()
+        
         self._saved_label=p1
         self._removed_label=p2
         self._remove_map = t
         self._remove_map_derivative = dt
         self._glued_edge=e1
-        SurfaceMapping.__init__(self, s, s2)
+        SurfaceMapping.__init__(self, s, ss2)
 
     def removed_label(self):
         r"""
@@ -427,9 +405,9 @@ class SplitPolygonsMapping(SurfaceMapping):
         
         Warning: We do not ensure that new_label is not already in the list of labels unless it is None (as by default).
         """
-        if new_label is None:
-            new_label = ExtraLabel()
-        
+        if s.is_mutable():
+            raise ValueError("The surface should be immutable.")
+
         poly=s.polygon(p)
         ne=poly.num_edges()
         if v1<0 or v2<0 or v1>=ne or v2>=ne:
@@ -450,7 +428,12 @@ class SplitPolygonsMapping(SurfaceMapping):
         for i in range(v1,v2):
             newvertices2.append(poly.edge(i))
         newpoly2 = Polygons(s.base_ring())(newvertices2)
-            
+
+        ss2 = s.copy(mutable=True,lazy=True)
+        s2 = ss2.underlying_surface()
+        s2.change_polygon(p,newpoly1)
+        new_label = s2.add_polygon(newpoly2, label=new_label)
+
         old_to_new_labels={}
         for i in range(ne):
             if i<v1:
@@ -463,21 +446,18 @@ class SplitPolygonsMapping(SurfaceMapping):
         for i,pair in old_to_new_labels.iteritems():
             new_to_old_labels[pair]=i
 
-        glue_dictionary = {(p,0):(new_label,0)}
+        # This glues the split polygons together.
+        s2.change_edge_gluing(p,0,new_label,0)
         for e in range(ne):
             ll,ee = old_to_new_labels[e]
             lll,eee = s.opposite_edge(p,e)
             if lll == p:
-                glue_dictionary[(ll,ee)]=old_to_new_labels[eee]
+                gl,ge = old_to_new_labels[eee]
+                s2.change_edge_gluing(ll,ee,gl,ge)
             else:
-                glue_dictionary[(ll,ee)]=(lll,eee)
+                s2.change_edge_gluing(ll,ee,lll,eee)
         
-        s2 = s.__class__(FinitelyPerturbedSurface(
-            s, 
-            polygon_dictionary={p: newpoly1, new_label: newpoly2}, 
-            glue_dictionary=glue_dictionary, 
-            base_label = s.base_label(), 
-            ring = s.base_ring()))
+        s2.make_immutable()
         
         self._p=p
         self._v1=v1
@@ -487,7 +467,7 @@ class SplitPolygonsMapping(SurfaceMapping):
         TG=TranslationGroup(s.base_ring())
         self._tp = TG(-s.polygon(p).vertex(v1))
         self._tnew_label = TG(-s.polygon(p).vertex(v2))
-        SurfaceMapping.__init__(self, s, s2)
+        SurfaceMapping.__init__(self, s, ss2)
 
     def push_vector_forward(self,tangent_vector):
         r"""Applies the mapping to the provided vector."""
@@ -768,23 +748,19 @@ class CanonicalizePolygonsMapping(SurfaceMapping):
             ring = ring)
 
 class ReindexedSurface(Surface):
-    def __init__(self, s, reindexmapping,new_base_label=None):
+    def __init__(self, s, reindexmapping, new_base_label=None):
         r"""
         Represents a reindexed similarity surface.
         """
+        if not s.is_finite():
+            raise ValueError("Only works for finite surfaces.")
+        if s.is_mutable():
+            raise ValueError("Only works for immutable surfaces.")
         self._s=s
         self._r=reindexmapping
         if new_base_label is None:
-            self._base_label=self._r._f[self._s.base_label()]
-        else:
-            self._base_label=new_base_label
-        Surface.__init__(self)
-    
-    def base_ring(self):
-        return self._s.base_ring()
-    
-    def base_label(self):
-        return self._base_label
+            new_base_label=self._r._f[self._s.base_label()]
+        Surface.__init__(self, self._s.base_ring(), new_base_label, finite=True)
     
     def polygon(self, lab):
         return self._s.polygon(self._r._b[lab])
@@ -794,10 +770,6 @@ class ReindexedSurface(Surface):
         pp_back,ee = self._s.opposite_edge(p_back,e)
         pp = self._r._f[pp_back]
         return (pp,ee)
-    
-    def is_finite(self):
-        return self._s.is_finite()
-
 
 class ReindexMapping(SurfaceMapping):
     r"""
@@ -959,9 +931,13 @@ def canonicalize_translation_surface_mapping(s):
     s2=m.codomain()
     it = s2.label_iterator()
     min_label = it.next()
-    smin=TranslationSurface(BaseLabelChangedSurface(s2,min_label))
+    smin=s2.copy(lazy=True,mutable=True)
+    smin.underlying_surface().change_base_label(min_label)
+    smin.underlying_surface().make_immutable()
     for test_label in it:
-        stest = TranslationSurface(BaseLabelChangedSurface(s2,test_label))
+        stest=s2.copy(lazy=True,mutable=True)
+        stest.underlying_surface().change_base_label(test_label)
+        stest.underlying_surface().make_immutable()
         c = translation_surface_cmp(smin,stest)
         if c>0:
             min_label = test_label

@@ -30,12 +30,16 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
             from itertools import islice
             it = islice(self.label_iterator(), 30)
 
+        count = 0
         for lab in it:
             p = self.polygon(lab)
             for e in xrange(p.num_edges()):
                 # Warning: check the matrices computed from the edges,
                 # rather the ones overriden by TranslationSurface.
                 tester.assertTrue(SimilaritySurface.edge_matrix(self,lab,e).is_one())
+                count += 1
+                tester.failUnless(count<Surface.edge_finiteness_bound,"Surface claimed to be finite, but has at least "+\
+                    str(Surface.edge_finiteness_bound)+" edges. Fix or increase Surface.edge_finiteness_bound.")
 
     def edge_matrix(self, p, e=None):
         if e is None:
@@ -89,38 +93,33 @@ class MinimalTranslationCover(Surface):
     We label copy by cartesian product (polygon from bot, matrix).
     """
     def __init__(self, similarity_surface):
-        self._ss = similarity_surface
-        # Try to figure out if we are finite.
-        Surface.__init__(self)
-        
-    def is_finite(self):
-        try:
-            return self._is_finite
-        except AttributeError:
-            pass
+        if similarity_surface.underlying_surface().is_mutable():
+            if similarity_surface.is_finite():
+                self._ss=similarity_surface.copy()
+            else:
+                raise ValueError("Can not construct MinimalTranslationCover of a surface that is mutable and infinite.")
+        else:
+            self._ss = similarity_surface
+
+        # We are finite if and only if self._ss is a finite RationalConeSurface.
         if not self._ss.is_finite():
-            answer = False
+            finite = False
         else:
             try:
                 from flatsurf.geometry.rational_cone_surface import RationalConeSurface
                 rcs = RationalConeSurface(self._ss)
                 rcs._test_edge_matrix()
-                answer=True
+                finite=True
             except AssertionError:
                 print("Warning: Could be indicating infinite surface falsely.")
-                answer=False
-        if not self._ss.underlying_surface().is_mutable():
-            self._is_finite=answer
-        return answer
-
-    def base_ring(self):
-        return self._ss.base_ring()
-
-    def base_label(self):
+                finite=False
+        
         from sage.matrix.constructor import identity_matrix
-        I = identity_matrix(self.base_ring(),2)
+        I = identity_matrix(self._ss.base_ring(),2)
         I.set_immutable()
-        return (self._ss.base_label(), I)
+        base_label=(self._ss.base_label(), I)
+        
+        Surface.__init__(self, self._ss.base_ring(), base_label, finite=finite, mutable=False)
 
     def polygon(self, lab):
         return lab[1] * self._ss.polygon(lab[0])
@@ -137,8 +136,12 @@ class AbstractOrigami(Surface):
     r'''Abstract base class for origamis.
     Realization needs just to define a _domain and four cardinal directions.
     '''
-    def __init__(self):
-        Surface.__init__(self)
+    def __init__(self, domain, base_label=None):
+        self._domain=domain
+        if base_label is None:
+            base_label = domain.an_element()
+        from sage.rings.rational_field import QQ
+        Surface.__init__(self,QQ,base_label,finite=domain.is_finite(),mutable=False)
 
     def up(self, label):
         raise NotImplementedError
@@ -155,17 +158,11 @@ class AbstractOrigami(Surface):
     def _repr_(self):
         return "Some AbstractOrigami"
 
-    def is_finite(self):
-        return self._domain.is_finite()
-
     def num_polygons(self):
         r"""
         Returns the number of polygons.
         """
         return self._domain.cardinality()
-
-    def base_label(self):
-        return self._domain.an_element()
 
     def polygon_labels(self):
         return self._domain
@@ -176,22 +173,6 @@ class AbstractOrigami(Surface):
             raise ValueError("Label "+str(lab)+" is not in the domain")
         from flatsurf.geometry.polygon import polygons
         return polygons.square()
-
-    @cached_method
-    def base_ring(self):
-        r"""
-        EXAMPLES::
-
-            sage: from flatsurf import *
-            sage: S = SymmetricGroup(3)
-            sage: r = S('(1,2)')
-            sage: u = S('(1,3)')
-            sage: o = translation_surfaces.origami(r,u)
-            sage: o.base_ring()
-            Rational Field
-        """
-        from sage.rings.rational_field import QQ
-        return QQ
 
     def opposite_edge(self, p, e):
         if p not in self._domain:
@@ -210,18 +191,16 @@ class AbstractOrigami(Surface):
 
 
 class Origami(AbstractOrigami):
-    def __init__(self, r, u, rr=None, uu=None, domain=None):
+    def __init__(self, r, u, rr=None, uu=None, domain=None, base_label=None):
         if domain is None:
-            self._domain = r.parent().domain()
-        else:
-            self._domain = domain
+            domain = r.parent().domain()
 
         self._r = r
         self._u = u
         if rr is None:
             rr = ~r
         else:
-            for a in self._domain.some_elements():
+            for a in domain.some_elements():
                 if r(rr(a)) != a:
                     raise ValueError("r o rr is not identity on %s"%a)
                 if rr(r(a)) != a:
@@ -229,14 +208,14 @@ class Origami(AbstractOrigami):
         if uu is None:
             uu = ~u
         else:
-            for a in self._domain.some_elements():
+            for a in domain.some_elements():
                 if u(uu(a)) != a:
                     raise ValueError("u o uu is not identity on %s"%a)
                 if uu(u(a)) != a:
                     raise ValueError("uu o u is not identity on %s"%a)
 
         self._perms = [uu,r,u,rr] # down,right,up,left
-        AbstractOrigami.__init__(self)
+        AbstractOrigami.__init__(self,domain,base_label)
 
     def opposite_edge(self, p, e):
         if p not in self._domain:

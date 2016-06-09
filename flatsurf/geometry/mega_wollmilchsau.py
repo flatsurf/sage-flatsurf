@@ -6,7 +6,7 @@ from sage.algebras.quatalg.quaternion_algebra import QuaternionAlgebra
 from sage.rings.infinity import infinity
 from sage.rings.integer_ring import ZZ
 
-from flatsurf.geometry.similarity_surface import AbstractOrigami
+from flatsurf.geometry.translation_surface import AbstractOrigami
 
 _Q=QuaternionAlgebra(-1, -1)
 _i,_j,_k=_Q.gens()

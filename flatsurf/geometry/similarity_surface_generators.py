@@ -56,72 +56,6 @@ def flipper_nf_element_to_sage(x):
     """
     return flipper_nf_to_sage(x.number_field)(x.linear_combination)
 
-class InfiniteStaircase(Surface):
-    r"""
-    The infinite staircase.
-
-     ...
-     +--+--+
-     |  |  |
-     +--+--+--+
-        |  |  |
-        +--+--+--+
-           |  |  |
-           +--+--+--+
-              |  |  |
-              +--+--+
-                  ...
-    """
-    def __init__(self):
-        Surface.__init__(self)
-    
-    def _repr_(self):
-        r"""
-        String representation.
-        """
-        return "The infinite staircase"
-
-    def base_ring(self):
-        r"""
-        Return the rational field.
-        """
-        from sage.rings.rational_field import QQ
-        return QQ
-
-    def base_label(self):
-        return ZZ.zero()
-
-    def polygon(self, lab):
-        r"""
-        Return the polygon labeled by ``lab``.
-        """
-        if lab not in self.polygon_labels():
-            raise ValueError("lab (=%s) not a valid label"%lab)
-        from flatsurf.geometry.polygon import polygons
-        return polygons.square()
-
-    def polygon_labels(self):
-        r"""
-        The set of labels used for the polygons.
-        """
-        return ZZ
-
-    def opposite_edge(self, p, e):
-        r"""
-        Return the pair ``(pp,ee)`` to which the edge ``(p,e)`` is glued to.
-        """
-        if (p+e) % 2:
-            return p+1,(e+2)%4
-        else:
-            return p-1,(e+2)%4
-
-    def is_finite(self):
-        return False
-
-def infinite_staircase():
-    return TranslationSurface(InfiniteStaircase())
-
-
 class EInfinitySurface(Surface):
     r"""
     The surface based on the $E_\infinity$ graph.
@@ -139,38 +73,27 @@ class EInfinitySurface(Surface):
     represent horizontal cylinders.
     """
     def __init__(self,lambda_squared=None, field=None):
-        TranslationSurface_generic.__init__(self)
         if lambda_squared==None:
             from sage.rings.number_field.number_field import NumberField
             from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
             R=PolynomialRing(ZZ,'x')
             x = R.gen()
             from sage.rings.qqbar import AA
-            self._field=NumberField(x**3-ZZ(5)*x**2+ZZ(4)*x-ZZ(1), 'r', embedding=AA(ZZ(4)))
-            self._l=self._field.gen()
+            field=NumberField(x**3-ZZ(5)*x**2+ZZ(4)*x-ZZ(1), 'r', embedding=AA(ZZ(4)))
+            self._l=field.gen()
         else:
             if field is None:
                 self._l=lambda_squared
-                self._field=lambda_squared.parent()
+                field=lambda_squared.parent()
             else:
-                self._field=field
                 self._l=field(lambda_squared)
-        Surface.__init__(self)
+        Surface.__init__(self,field, ZZ.zero(), finite=False)
 
     def _repr_(self):
         r"""
         String representation.
         """
         return "The E-infinity surface"
-
-    def base_ring(self):
-        r"""
-        Return the rational field.
-        """
-        return self._field
-
-    def base_label(self):
-        return ZZ.zero()
 
     @cached_method
     def get_white(self,n):
@@ -193,7 +116,7 @@ class EInfinitySurface(Surface):
         r"""Get the weight of the black endpoint of edge n."""
         l=self._l
         if n==0:
-            return self._field(1)
+            return self.base_ring().one()
         if n==1 or n==-1 or n==2:
             return l-1
         if n>2:
@@ -208,8 +131,8 @@ class EInfinitySurface(Surface):
         """
         if lab not in self.polygon_labels():
             raise ValueError("lab (=%s) not a valid label"%lab)
-        from flatsurf.geometry.polygon import rectangle
-        return rectangle(2*self.get_black(lab),self.get_white(lab))
+        from flatsurf import polygons
+        return polygons.rectangle(2*self.get_black(lab),self.get_white(lab))
 
     def polygon_labels(self):
         r"""
@@ -267,28 +190,7 @@ class EInfinitySurface(Surface):
                 return -p,(e+2)%4
             else:
                 return 1-p,(e+2)%4
-
-    def is_finite(self):
-        return False
         
-def e_infinity_surface(lambda_squared=None, field=None):
-    r"""
-    The translation surface based on the $E_\infinity$ graph.
-
-    The biparite graph is shown below, with edges numbered:
-
-      0   1   2  -2   3  -3   4  -4 
-    *---o---*---o---*---o---*---o---*...
-            |
-            |-1
-            o
-
-    Here, black vertices are colored *, and white o. 
-    Black nodes represent vertical cylinders and white nodes
-    represent horizontal cylinders.
-    """
-    return TranslationSurface(EInfinitySurface(lambda_squared, field))
-
 class TFractalSurface(Surface):
     r"""
     The TFractal surface.
@@ -320,27 +222,24 @@ class TFractalSurface(Surface):
         from sage.structure.sequence import Sequence
         from sage.combinat.words.words import Words
 
-        self._field = Sequence([w,r,h1,h2]).universe()
-        if not self._field.is_field():
-            self._field = self._field.fraction_field()
-        self._w = self._field(w)
-        self._r = self._field(r)
-        self._h1 = self._field(h1)
-        self._h2 = self._field(h2)
+        field = Sequence([w,r,h1,h2]).universe()
+        if not field.is_field():
+            field = field.fraction_field()
+        self._w = field(w)
+        self._r = field(r)
+        self._h1 = field(h1)
+        self._h2 = field(h2)
         self._words = Words('LR', finite=True, infinite=False)
         self._wL = self._words('L')
         self._wR = self._words('R')
-        Surface.__init__(self)
+        
+        base_label=self.polygon_labels()._cartesian_product_of_elements((self._words(''), 0))
+        
+        Surface.__init__(self, field, base_label, finite=False)
 
     def _repr_(self):
         return "The T-fractal surface with parameters w=%s, r=%s, h1=%s, h2=%s"%(
                 self._w, self._r, self._h1, self._h2)
-
-    def base_label(self):
-        return ZZ.zero()
-
-    def base_ring(self):
-        return self._field
 
     @cached_method
     def polygon_labels(self):
@@ -465,12 +364,6 @@ class TFractalSurface(Surface):
             h = self._h2
         return Polygons(self.base_ring())([(w,0),(0,h),(-w,0),(0,-h)])
 
-    def base_label(self):
-        return self.polygon_labels()._cartesian_product_of_elements((self._words(''), 0))
-
-    def is_finite(self):
-        return False
-
 def tfractal_surface(w=ZZ_1, r=ZZ_2, h1=ZZ_1, h2=ZZ_1):
     return TranslationSurface(TFractalSurface(w,r,h1,h2))
 
@@ -557,7 +450,8 @@ class SimilaritySurfaceGenerators:
         
         surface.make_immutable()
         s=ConeSurface(surface)
-        gs = s.graphical_surface(edge_labels=None, polygon_labels=False)
+        gs=s.graphical_surface()
+        gs.process_options(edge_labels=None,polygon_labels=False)
         gs.make_adjacent(0,0,reverse=True)
         return s
 
@@ -909,22 +803,7 @@ class TranslationSurfaceGenerators:
         return TranslationSurface(Origami(r,u,rr,uu,domain))
 
     @staticmethod
-    def infinite_staircase1():
-        r"""
-        Return the infinite staircase
-
-        EXAMPLES::
-
-            sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.infinite_staircase1()
-            sage: S
-            TranslationSurface built from infinitely many polygons
-            sage: TestSuite(S).run(skip='_test_pickling')
-        """
-        return infinite_staircase()
-
-    @staticmethod
-    def infinite_staircase2():
+    def infinite_staircase():
         r"""
         Return the infinite staircase built as an origami
 
@@ -932,19 +811,21 @@ class TranslationSurfaceGenerators:
 
             sage: from flatsurf import translation_surfaces
 
-            sage: S = translation_surfaces.infinite_staircase2()
+            sage: S = translation_surfaces.infinite_staircase()
             sage: S.underlying_surface()
-            Origami defined by r=<function <lambda> at ...> and
-            u=<function <lambda> at ...>
+            The infinite staircase
             sage: TestSuite(S).run(skip='_test_pickling')
         """
         from flatsurf.geometry.translation_surface import Origami, TranslationSurface
-        return TranslationSurface(Origami(
+        o = Origami(
                 lambda x: x+1 if x%2 else x-1,  # r  (edge 1)
                 lambda x: x-1 if x%2 else x+1,  # u  (edge 2)
                 lambda x: x+1 if x%2 else x-1,  # rr (edge 3)
                 lambda x: x-1 if x%2 else x+1,  # uu (edge 0)
-                domain = ZZ))
+                domain = ZZ,
+                base_label=ZZ(0))
+        o.rename("The infinite staircase")
+        return TranslationSurface(o)
 
     @staticmethod
     def t_fractal(w=ZZ_1, r=ZZ_2, h1=ZZ_1, h2=ZZ_1):
@@ -960,6 +841,32 @@ class TranslationSurfaceGenerators:
             sage: TestSuite(tf).run(skip='_test_pickling')
         """
         return tfractal_surface(w,r,h1,h2)
+
+    @staticmethod
+    def e_infinity_surface(lambda_squared=None, field=None):
+        r"""
+        The translation surface based on the $E_\infinity$ graph.
+
+        The biparite graph is shown below, with edges numbered:
+
+          0   1   2  -2   3  -3   4  -4 
+        *---o---*---o---*---o---*---o---*...
+                |
+                |-1
+                o
+
+        Here, black vertices are colored *, and white o. 
+        Black nodes represent vertical cylinders and white nodes
+        represent horizontal cylinders.
+        
+        EXAMPLES::
+
+            sage: from flatsurf import *
+            sage: s = translation_surfaces.e_infinity_surface()
+            sage: TestSuite(s).run(skip='_test_pickling')
+        """
+        return TranslationSurface(EInfinitySurface(lambda_squared, field))
+
 
     @staticmethod
     def chamanara(alpha):

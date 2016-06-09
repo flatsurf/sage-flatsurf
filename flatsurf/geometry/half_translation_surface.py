@@ -1,3 +1,4 @@
+from flatsurf.geometry.surface import Surface
 from flatsurf.geometry.half_dilation_surface import HalfDilationSurface
 from flatsurf.geometry.rational_cone_surface import RationalConeSurface
 
@@ -12,7 +13,6 @@ class HalfTranslationSurface(HalfDilationSurface, RationalConeSurface):
         Check the compatibility condition
         """
         tester = self._tester(**options)
-
         from flatsurf.geometry.similarity_surface import SimilaritySurface
         if self.is_finite():
             it = self.label_iterator()
@@ -20,6 +20,7 @@ class HalfTranslationSurface(HalfDilationSurface, RationalConeSurface):
             from itertools import islice
             it = islice(self.label_iterator(), 30)
 
+        count = 0
         for lab in it:
             p = self.polygon(lab)
             for e in xrange(p.num_edges()):
@@ -27,6 +28,9 @@ class HalfTranslationSurface(HalfDilationSurface, RationalConeSurface):
                 # rather the ones overriden by TranslationSurface.
                 tester.assertTrue(SimilaritySurface.edge_matrix(self,lab,e).is_one() or \
                     (-SimilaritySurface.edge_matrix(self,lab,e)).is_one() )
+                count += 1
+                tester.failUnless(count<Surface.edge_finiteness_bound,"Surface claimed to be finite, but has at least "+\
+                    str(Surface.edge_finiteness_bound)+" edges. Fix or increase Surface.edge_finiteness_bound.")
 
     
 # This was all implemented in HalfDilationSurface now.

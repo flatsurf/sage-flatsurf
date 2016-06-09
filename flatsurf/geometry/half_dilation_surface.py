@@ -18,12 +18,13 @@ class HalfDilationSurface(SimilaritySurface):
         r"""
         EXAMPLES::
 
-            sage: from flatsurf.geometry.similarity_surface_generators import infinite_staircase
-            sage: s=infinite_staircase()
+            sage: from flatsurf import *
+            sage: s=translation_surfaces.infinite_staircase()
             sage: print s.underlying_surface()
             The infinite staircase
             sage: m=Matrix([[1,2],[0,1]])
             sage: s2=m*s
+            sage: TestSuite(s2).run(skip='_test_pickling')
             sage: print s2.polygon(0)
             Polygon: (0, 0), (1, 0), (3, 1), (2, 1)
         """
@@ -129,21 +130,32 @@ class HalfDilationSurface(SimilaritySurface):
 
 class GL2RImageSurface(Surface):
     def __init__(self, surface, m, ring=None):
-        self._s=surface
+
+        if surface.is_mutable():
+            if surface.is_finite():
+                self._s=surface.copy()
+            else:
+                raise ValueError("Can not apply matrix to mutable infinite surface.")
+        else:
+            self._s=surface
+
         if m.determinant()<=0:
-            raise ValueError("Currently only works with matrices of positive determinant.""")
+            raise ValueError("Currently only works with matrices of positive determinant.")
         self._m=m
+
         if ring is None:
             if m.base_ring() == self._s.base_ring():
-                self._base_ring = self._s.base_ring()
+                base_ring = self._s.base_ring()
             else:
                 from sage.structure.element import get_coercion_model
                 cm = get_coercion_model()
-                self._base_ring = cm.common_parent(m.base_ring(), self._s.base_ring())
+                base_ring = cm.common_parent(m.base_ring(), self._s.base_ring())
         else:
-            self._base_ring=ring
-        self._P=Polygons(self._base_ring)
-        Surface.__init__(self)
+            base_ring=ring
+
+        self._P=Polygons(base_ring)
+
+        Surface.__init__(self, base_ring, self._s.base_label(), finite=self._s.is_finite())
 
     def base_ring(self):
         return self._base_ring
