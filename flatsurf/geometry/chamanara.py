@@ -88,9 +88,6 @@ class ChamanaraSurface(Surface):
                 # p>=1
                 return p+1,1
 
-    def base_label(self):
-        return ZZ.zero()
-
 def chamanara_half_dilation_surface(alpha, n=8):
     r"""
     Return Chamanara's surface thought of as a Half Dilation surface.
