@@ -377,6 +377,70 @@ class SimilaritySurface(SageObject):
         # This is the similarity carrying (a,b) to (aa,bb):
         return gg*(~g)
 
+    def set_vertex_zero(self, label, v, in_place=False):
+        r"""
+            Applies a combinatorial rotation to the polygon with the provided label. 
+            This makes what is currently vertex v of this polygon vertex 0. In other words,
+            what is currently vertex (or edge) e will now become vertex (e-v)%n where
+            n is the number of sides of the polygon.
+
+            EXAMPLES::
+
+            Example with polygon glued to another polygon::
+
+                sage: from flatsurf import *
+                sage: s=translation_surfaces.veech_double_n_gon(4)
+                sage: s.polygon(0)
+                Polygon: (0, 0), (1, 0), (1, 1), (0, 1)
+                sage: [s.opposite_edge(0,i) for i in range(4)]
+                [(1, 0), (1, 1), (1, 2), (1, 3)]
+                sage: ss=s.set_vertex_zero(0,1)
+                sage: ss.polygon(0)
+                Polygon: (0, 0), (0, 1), (-1, 1), (-1, 0)
+                sage: [ss.opposite_edge(0,i) for i in range(4)]
+                [(1, 1), (1, 2), (1, 3), (1, 0)]
+                sage: TestSuite(ss).run()
+
+            Example with polygon glued to self::
+
+                sage: from flatsurf import *
+                sage: s=translation_surfaces.veech_2n_gon(2)
+                sage: s.polygon(0)
+                Polygon: (0, 0), (1, 0), (1, 1), (0, 1)
+                sage: [s.opposite_edge(0,i) for i in range(4)]
+                [(0, 2), (0, 3), (0, 0), (0, 1)]
+                sage: ss=s.set_vertex_zero(0,3)
+                sage: ss.polygon(0)
+                Polygon: (0, 0), (0, -1), (1, -1), (1, 0)
+                sage: [ss.opposite_edge(0,i) for i in range(4)]
+                [(0, 2), (0, 3), (0, 0), (0, 1)]
+                sage: TestSuite(ss).run()
+        """
+        if in_place:
+            us = self.underlying_surface()
+            if not us.is_mutable():
+                raise ValueError("set_vertex_zero can only be done in_place for a mutable surface.")
+            p = us.polygon(label)
+            n=p.num_edges()
+            assert 0<=v and v<n
+            glue=[]
+            from flatsurf.geometry.polygon import Polygons
+            P=Polygons(us.base_ring())
+            pp = P(edges=[p.edge((i+v)%n) for i in xrange(n)])
+            
+            for i in xrange(n):
+                e=(v+i)%n
+                ll,ee = us.opposite_edge(label,e)
+                if ll==label:
+                    ee = (ee+n-v)%n
+                glue.append((ll,ee))
+            
+            us.change_polygon(label,pp,gluing_list=glue)
+            return self
+        else:
+            return self.copy(mutable=True).set_vertex_zero(label,v,in_place=True)
+
+
     def relabel(self, relabeling_map, in_place=False):
         r"""
         Attempt to relabel the polygons according to a relabeling_map, which takes as input
