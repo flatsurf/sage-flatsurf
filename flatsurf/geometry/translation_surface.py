@@ -56,7 +56,68 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
         from sage.rings.integer_ring import ZZ
         return AbelianStratum([ZZ(a-1) for a in self.angles()])
 
-    #angles = ConeSurface_generic.angles
+    def _canonical_first_vertex(polygon):
+        r"""
+        Return the index of the vertex with smallest y-coordinate.
+        If two vertices have the same y-coordinate, then the one with least x-coordinate is returned.
+        """
+        best=0
+        best_pt=polygon.vertex(best)
+        for v in range(1,polygon.num_edges()):
+            pt=polygon.vertex(v)
+            if pt[1]<best_pt[1]:
+                best=v
+                best_pt=pt
+        if best==0:
+            if pt[1]==best_pt[1]:
+                return v
+        return best
+
+    def standardize_polygons(self, in_place=False):
+        r"""
+        Replaces each polygon with a combinatorially rotated polygons (i.e., with
+        reindexed vertices) so that all vertices of the polygon lie in the upper half plane,
+        or in the x-axis with non-negative x-coordinate.
+        
+        This is done to the current surface if in_place=True. A mutable copy is created and returned
+        if in_place=False (as default).
+        
+        EXAMPLES::
+
+            sage: from flatsurf import *
+            sage: s=translation_surfaces.veech_double_n_gon(4)
+            sage: s.polygon(1)
+            Polygon: (0, 0), (-1, 0), (-1, -1), (0, -1)
+            sage: [s.opposite_edge(0,i) for i in range(4)]
+            [(1, 0), (1, 1), (1, 2), (1, 3)]
+            sage: ss=s.standardize_polygons()
+            sage: ss.polygon(1)
+            Polygon: (0, 0), (1, 0), (1, 1), (0, 1)
+            sage: [ss.opposite_edge(0,i) for i in range(4)]
+            [(1, 2), (1, 3), (1, 0), (1, 1)]
+            sage: TestSuite(ss).run()
+        """
+        if in_place:
+            if not self.is_mutable():
+                raise ValueError("An in_place call for standardize_polygons can only be done for a mutable surface.")
+            s=self
+        else:
+            s=self.copy(mutable=True)
+        cv = {} # dictionary for non-zero canonical vertices
+        translations={} # translations bringing the canonical vertex to the origin.
+        for l,polygon in s.label_iterator(polygons=True):
+            best=0
+            best_pt=polygon.vertex(best)
+            for v in range(1,polygon.num_edges()):
+                pt=polygon.vertex(v)
+                if (pt[1]<best_pt[1]) or (pt[1]==best_pt[1] and pt[0]<best_pt[0]):
+                    best=v
+                    best_pt=pt
+            if best!=0:
+                cv[l]=best
+        for l,v in cv.iteritems():
+            s.set_vertex_zero(l,v,in_place=True)
+        return s
 
     def canonicalize_mapping(self):
         r"""
