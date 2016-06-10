@@ -377,6 +377,113 @@ class SimilaritySurface(SageObject):
         # This is the similarity carrying (a,b) to (aa,bb):
         return gg*(~g)
 
+    def relabel(self, relabeling_map, in_place=False):
+        r"""
+        Attempt to relabel the polygons according to a relabeling_map, which takes as input
+        a current label and outputs a new label for the same polygon. The method returns a pair
+        (surface,success) where surface is the relabeled surface, and success is a boolean value
+        indicating the success of the operation. The operation will fail if the implementation of the
+        underlying surface does not support labels used in the image of the relabeling map. In this case,
+        other (arbitrary) labels will be used to replace the labels of the surface, and the resulting
+        surface should still be okay.
+
+        Currently, the relabeling_map must be a dictionary.
+
+        If in_place is True then the relabeling is done to the current surface, otherwise a
+        mutable copy is made before relabeling.
+
+        ToDo:
+          - Allow relabeling_map to be a function rather than just a dictionary. This will allow it 
+            to work for infinite surfaces.
+
+        EXAMPLES::
+
+            sage: from flatsurf import *
+            sage: s=translation_surfaces.veech_double_n_gon(5)
+            sage: ss,valid=s.relabel({0:1,1:2})
+            sage: valid
+            True
+            sage: ss.base_label()
+            1
+            sage: ss.opposite_edge(1,0)
+            (2, 0)
+            sage: ss.num_polygons()
+            2
+            sage: TestSuite(ss).run()
+        """
+        if in_place:
+            us = self.underlying_surface()
+            if not us.is_mutable():
+                raise ValueError("Your surface is not mutable, so can not be relabeled in place.")
+            if not isinstance(relabeling_map,dict):
+                raise NotImplementedError("Currently relabeling is only implemented via a dictionary.")
+            domain=set()
+            codomain=set()
+            data={}
+            for l1,l2 in relabeling_map.iteritems():
+                p=us.polygon(l1)
+                glue = []
+                for e in xrange(p.num_edges()):
+                    ll,ee = us.opposite_edge(l1,e)
+                    try:
+                        lll=relabeling_map[ll]
+                    except KeyError:
+                        lll=ll
+                    glue.append((lll,ee))
+                data[l2]=(p,glue)
+                domain.add(l1)
+                codomain.add(l2)
+            if len(domain)!=len(codomain):
+                raise ValueError("The relabeling_map must be injective. Received "+str(relabeling_map))
+            changed_labels = domain.intersection(codomain)
+            added_labels=codomain.difference(domain)
+            removed_labels=domain.difference(codomain)
+            # Pass to add_polygons
+            relabel_errors={}
+            for l2 in added_labels:
+                p,glue=data[l2]
+                l3 = us.add_polygon(p, label=l2)
+                if not l2==l3:
+                    # This means the label l2 could not be added for some reason.
+                    # Perhaps the implementation does not support this type of label.
+                    # Or perhaps there is already a polygon with this label.
+                    relabel_errors[l2]=l3
+            # Pass to change polygons
+            for l2 in changed_labels:
+                p,glue=data[l2]
+                # This should always work since the domain of the relabeling map should be labels for polygons.
+                us.change_polygon(l2,p)
+            # Pass to remove polygons:
+            for l1 in removed_labels:
+                us.remove_polygon(l1)
+            # Pass to update the edge gluings
+            if len(relabel_errors)==0:
+                # No problems. Update the gluings.
+                for l2 in codomain:
+                    p,glue=data[l2]
+                    us.change_polygon_gluings(l2, glue)
+            else:
+                # Use the gluings provided by relabel_errors when necessary
+                for l2 in codomain:
+                    p,glue=data[l2]
+                    for e in xrange(p.num_edges()):
+                        ll,ee=glue[e]
+                        try:
+                            # First try the error dictionary
+                            us.change_edge_gluing(l2, e, relabel_errors[ll],ee)
+                        except KeyError:
+                            us.change_edge_gluing(l2, e, ll,ee)
+            # Deal with the base_label
+            base_label = us.base_label()
+            if base_label in relabeling_map:
+                base_label = relabeling_map[base_label]
+                if base_label in relabel_errors:
+                    base_label = relabel_errors[base_label]
+                us.change_base_label(base_label)
+            return self, len(relabel_errors)==0
+        else:
+            return self.copy(mutable=True).relabel(relabeling_map, in_place=True)
+
     def copy(self, relabel=False, mutable=False, lazy=None):
         r"""
         Returns a copy of this surface. The method takes several flags to modify how the copy is taken.
