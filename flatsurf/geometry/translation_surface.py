@@ -119,6 +119,41 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
             s.set_vertex_zero(l,v,in_place=True)
         return s
 
+    def cmp_translation_surface(self,s2):
+        r"""
+        Compare two finite surfaces. 
+        The surfaces will be considered equal if and only if there is a translation automorphism
+        respecting the polygons and the base_labels.
+        """
+        if not self.is_finite() or not s2.is_finite():
+            raise NotImplementedError("Only implemented for finite surfaces.")
+        sign = self.num_polygons()-s2.num_polygons()
+        if sign>0:
+            return 1
+        if sign<0:
+            return -1
+        lw1=self.walker()
+        lw2=self.walker()
+        from itertools import izip
+        for p1,p2 in izip(lw1.polygon_iterator(), lw2.polygon_iterator()):
+            # Uses Polygon.__cmp__:
+            ret = cmp(p1,p2)
+            if ret != 0:
+                return ret
+        # Polygons are identical. Compare edge gluings.
+        for pair1,pair2 in izip(lw1.edge_iterator(), lw2.edge_iterator()):
+            l1,e1 = self.opposite_edge(pair1)
+            l2,e2 = s2.opposite_edge(pair2)
+            num1 = lw1.label_to_number(l1)
+            num2 = lw2.label_to_number(l2)
+            ret = cmp(num1,num2)
+            if ret!=0:
+                return ret
+            ret = cmp(e1,e2)
+            if ret!=0:
+                return ret
+        return 0
+
     def canonicalize_mapping(self):
         r"""
         Return a SurfaceMapping canonicalizing this translation surface.
@@ -126,7 +161,7 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
         from flatsurf.geometry.mappings import canonicalize_translation_surface_mapping, IdentityMapping
         return canonicalize_translation_surface_mapping(self)
         
-    def canonicalize(self):
+    def canonicalize(self, in_place=False):
         r"""
         Return a canonical version of this translation surface.
         
@@ -140,10 +175,34 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
             TranslationSurface built from 3 polygons
             sage: a = s.base_ring().gen()
             sage: mat=Matrix([[1,2+a],[0,1]])
-            sage: s.canonicalize()==(mat*s).canonicalize()
+            sage: s.canonicalize().cmp_translation_surface((mat*s).canonicalize())==0
             True
         """
-        return self.canonicalize_mapping().codomain()
+        # Old version
+        #return self.canonicalize_mapping().codomain()
+        if in_place:
+            if not self.is_mutable():
+                raise ValueError("canonicalize with in_place=True is only defined for mutable translation surfaces.")
+            s=self
+        else:
+            s=self.copy(mutable=True)
+        if not s.is_finite():
+            raise ValueError("canonicalize is only defined for finite translation surfaces.")
+        ret=s.delaunay_decomposition(in_place=True)
+        s.standardize_polygons(in_place=True)
+        ss=s.copy(mutable=True)
+        labels={label for label in s.label_iterator()}
+        labels.remove(s.base_label())
+        for label in labels:
+            ss.underlying_surface().change_base_label(label)
+            if ss.cmp_translation_surface(s)>0:
+                s.underlying_surface().change_base_label(label)
+        # We now have the base_label correct.
+        # We will use the label walker to generate the canonical labeling of polygons.
+        w=s.walker()
+        w.find_all_labels()
+        s.relabel(w.label_dictionary(), in_place=True)
+        return s
 
 class MinimalTranslationCover(Surface):
     r"""
