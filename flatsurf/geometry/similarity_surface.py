@@ -1227,15 +1227,21 @@ class SimilaritySurface(SageObject):
         """
         if not self.is_finite() and limit is None:
             raise NotImplementedError("Not implemented for infinite surfaces unless limit is set")
+        if in_place and not self.is_mutable():
+            raise ValueError("in_place delaunay_triangulation only defined for mutable surfaces")
         if triangulated:
             if in_place:
                 s=self
             else:
                 from flatsurf.geometry.surface import Surface_dict
-                s=self.__class__(Surface_dict(surface=self,mutable=True))
+                s=self.copy(mutable=True)
         else:
-            from flatsurf.geometry.surface import Surface_list
-            s=self.__class__(Surface_list(surface=self.triangulate(in_place=in_place),mutable=True))
+            if in_place:
+                s=self
+                self.triangulate(in_place=True)
+            else:
+                s=self.copy(relabel=True,mutable=True)
+                s.triangulate(in_place=True)
         loop=True
         if direction is None:
             base_ring = self.base_ring()
@@ -1282,19 +1288,6 @@ class SimilaritySurface(SageObject):
             3
 
             sage: from flatsurf import *
-            sage: s0=translation_surfaces.octagon_and_squares()
-            sage: a=s0.base_ring().gens()[0]
-            sage: m=Matrix([[1,2+a],[0,1]])
-            sage: s=m*s0
-            sage: ss=s.delaunay_decomposition()
-            sage: for label,polygon in ss.label_iterator(polygons=True):
-            ....:         print(str(label)+" -> "+str(polygon))
-            ....:     
-            0 -> Polygon: (0, 0), (0, -2), (a, -a - 2), (a + 2, -a - 2), (2*a + 2, -2), (2*a + 2, 0), (a + 2, a), (a, a)
-            1 -> Polygon: (0, 0), (0, 2), (-2, 2), (-2, 0)
-            4 -> Polygon: (0, 0), (a, -a), (2*a, 0), (a, a)
-
-            sage: from flatsurf import *
             sage: p=polygons((4,0),(-2,1),(-2,-1))
             sage: s0=similarity_surfaces.self_glued_polygon(p)
             sage: s=s0.delaunay_decomposition()
@@ -1307,7 +1300,7 @@ class SimilaritySurface(SageObject):
         else:
             s=self.copy(mutable=True)
         if not delaunay_triangulated:
-            s=s.delaunay_triangulation(triangulated=triangulated,in_place=True)
+            s.delaunay_triangulation(triangulated=triangulated,in_place=True)
         # Now s is Delaunay Triangulated
         loop=True
         while loop:
