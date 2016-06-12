@@ -517,6 +517,13 @@ class SimilaritySurface(SageObject):
                 p,glue=data[l2]
                 # This should always work since the domain of the relabeling map should be labels for polygons.
                 us.change_polygon(l2,p)
+            # Deal with the base_label
+            base_label = us.base_label()
+            if base_label in relabeling_map:
+                base_label = relabeling_map[base_label]
+                if base_label in relabel_errors:
+                    base_label = relabel_errors[base_label]
+                us.change_base_label(base_label)
             # Pass to remove polygons:
             for l1 in removed_labels:
                 us.remove_polygon(l1)
@@ -537,13 +544,6 @@ class SimilaritySurface(SageObject):
                             us.change_edge_gluing(l2, e, relabel_errors[ll],ee)
                         except KeyError:
                             us.change_edge_gluing(l2, e, ll,ee)
-            # Deal with the base_label
-            base_label = us.base_label()
-            if base_label in relabeling_map:
-                base_label = relabeling_map[base_label]
-                if base_label in relabel_errors:
-                    base_label = relabel_errors[base_label]
-                us.change_base_label(base_label)
             return self, len(relabel_errors)==0
         else:
             return self.copy(mutable=True).relabel(relabeling_map, in_place=True)
@@ -878,7 +878,8 @@ class SimilaritySurface(SageObject):
                 glue_list.append((p4,e4))
 
         if s.base_label()==p2:
-             s.change_base_polygon(p1)
+             s.change_base_label(p1)
+        
         s.remove_polygon(p2)
         
         s.change_polygon(p1, new_polygon, glue_list)
@@ -899,7 +900,7 @@ class SimilaritySurface(SageObject):
         The other polygon will get a new label.
         
         The change will be done in place.
-        """        
+        """
         poly=self.polygon(p)
         ne=poly.num_edges()
         if v1<0 or v2<0 or v1>=ne or v2>=ne:
@@ -1086,16 +1087,21 @@ class SimilaritySurface(SageObject):
         from flatsurf.geometry.mappings import triangulation_mapping
         return triangulation_mapping(self)
     
-    def triangulate(self, in_place=False, label = None):
+    def triangulate(self, in_place=False, label = None, relabel=False):
         r"""
         Return a triangulated version of this surface. (This may be mutable
         or not depending on the input.)
         
-        This is done in place if in_place is True (defaults to False).
-        
         If label=None (as default) all polygons are triangulated. Otherwise,
         label should be a polygon label. In this case, just this polygon
         is split into triangles.
+
+        This is done in place if in_place is True (defaults to False).
+        
+        If we are not doing triangulation in_place, then we must make a copy.
+        This can be a relabeled copy (indexed by the non-negative ints)
+        or a label preserving copy. The copy is relabeled if relabel=True
+        (default False).
 
         EXAMPLES::
 
@@ -1108,6 +1114,7 @@ class SimilaritySurface(SageObject):
             Graphical version of Similarity Surface TranslationSurface built from 6 polygons
         """
         if label is None:
+            # We triangulate the whole surface
             if self.is_finite():
                 # Store the current labels.
                 labels = [label for label in self.label_iterator()]
@@ -1201,11 +1208,24 @@ class SimilaritySurface(SageObject):
                 return True
         return False
 
-    def delaunay_triangulation(self, triangulated=False, in_place=False, limit=None, direction=None):
+    def delaunay_triangulation(self, triangulated=False, in_place=False, limit=None, direction=None, relabel=False):
         r"""
         Returns a Delaunay triangulation of a surface, or make some
         triangle flips to get closer to the Delaunay decomposition.
         
+        EXAMPLES::
+
+            sage: from flatsurf import *
+            sage: from flatsurf.geometry.delaunay import *
+            sage: m=matrix([[2,1],[1,1]])
+            sage: s=m*translation_surfaces.infinite_staircase()
+            sage: ss=s.delaunay_triangulation(relabel=True)
+            sage: ss.base_label()
+            0
+            sage: ss.polygon(0)
+            Polygon: (0, 0), (0, -1), (1, 0)
+            sage: TestSuite(ss).run(skip="_test_pickling")
+
         Parameters
         ----------
         triangulated : boolean
@@ -1224,9 +1244,21 @@ class SimilaritySurface(SageObject):
             negation. As such a vector determines a sign for each triangle.
             A pair of adjacent triangles have opposite signs. Labels are chosen
             so that this sign is preserved (as a function of labels).
+        relabel : boolean
+            If in_place is False, then a copy must be made. By default relabel
+            is False and labels will be respected by this copy. If relabel is 
+            True then polygons will be reindexed in an arbitrary way by the 
+            non-negative integers.
         """
         if not self.is_finite() and limit is None:
-            raise NotImplementedError("Not implemented for infinite surfaces unless limit is set")
+            if in_place:
+                raise ValueError("in_place delaunay triangulation is not possible for infinite surfaces unless a limit is set.")
+            if self.underlying_surface().is_mutable():
+                raise ValueError("delaunay_triangulation only works on infinite "+\
+                    "surfaces if they are immutable or if a limit is set.")
+            from flatsurf.geometry.delaunay import LazyDelaunayTriangulatedSurface
+            return self.__class__(LazyDelaunayTriangulatedSurface( \
+                self,direction=direction, relabel=relabel))
         if in_place and not self.is_mutable():
             raise ValueError("in_place delaunay_triangulation only defined for mutable surfaces")
         if triangulated:
@@ -1271,10 +1303,49 @@ class SimilaritySurface(SageObject):
         return False
         
     def delaunay_decomposition(self, triangulated=False, \
-            delaunay_triangulated=False, in_place=False):
+            delaunay_triangulated=False, in_place=False, direction=None,\
+            relabel=False):
         r"""
         Return the Delaunay Decomposition of this surface.
-    
+
+        EXAMPLES::
+
+            sage: from flatsurf import *
+            sage: from flatsurf.geometry.delaunay import *
+            sage: m=matrix([[2,1],[1,1]])
+            sage: s=m*translation_surfaces.infinite_staircase()
+            sage: ss=s.delaunay_decomposition()
+            sage: ss.base_label()
+            0
+            sage: ss.polygon(0)
+            Polygon: (0, 0), (0, -1), (1, -1), (1, 0)
+            sage: TestSuite(ss).run(skip="_test_pickling")
+
+        Parameters
+        ----------
+        triangulated : boolean
+            If true, the algorithm assumes the surface is already triangulated. It
+            does this without verification.
+        delaunay_triangulated : boolean
+            If true, the algorithm assumes the surface is already 
+            delaunay_triangulated. It does this without verification.
+        in_place : boolean
+            If true, the triangulating and the triangle flips are done in place.
+            Otherwise, a mutable copy of the surface is made.
+        relabel : None or Integer
+            If in_place is False, then a copy must be made of the surface.
+            If relabel is False (as default), the copy has the same labels
+            as the original surface. Note that in this case, labels will be 
+            added if it is necessary to subdivide polygons into triangles. 
+            If relabel is True, the new surface will have polygons labeled by 
+            the non-negative integers in an arbitrary way.
+        direction : None or Vector with two entries in the base field
+            Used to determine labels when a pair of triangles is flipped. Each triangle
+            has a unique separatrix which points in the provided direction or its 
+            negation. As such a vector determines a sign for each triangle.
+            A pair of adjacent triangles have opposite signs. Labels are chosen
+            so that this sign is preserved (as a function of labels).
+
         EXAMPLES::
 
             sage: from flatsurf import *
@@ -1294,13 +1365,21 @@ class SimilaritySurface(SageObject):
             sage: TestSuite(s).run()
         """
         if not self.is_finite():
-            raise NotImplementedError("Not implemented for infinite surfaces.")
+            if in_place:
+                raise ValueError("in_place delaunay_decomposition is not possible for infinite surfaces.")
+            if self.underlying_surface().is_mutable():
+                raise ValueError("delaunay_decomposition only works on infinite "+\
+                    "surfaces if they are immutable.")
+            from flatsurf.geometry.delaunay import LazyDelaunaySurface
+            return self.__class__(LazyDelaunaySurface( \
+                self,direction=direction, relabel=relabel))
         if in_place:
             s=self
         else:
-            s=self.copy(mutable=True)
+            s=self.copy(mutable=True, relabel=relabel)
         if not delaunay_triangulated:
-            s.delaunay_triangulation(triangulated=triangulated,in_place=True)
+            s.delaunay_triangulation(triangulated=triangulated, in_place=True, \
+                direction=direction)
         # Now s is Delaunay Triangulated
         loop=True
         while loop:
