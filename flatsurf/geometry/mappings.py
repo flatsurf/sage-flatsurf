@@ -228,10 +228,10 @@ class SimilarityJoinPolygonsMapping(SurfaceMapping):
         sage: m=SimilarityJoinPolygonsMapping(s,0,2)
         sage: s2=m.codomain()
         sage: for label,polygon in s2.label_iterator(polygons=True):
-        ...       print "Polygon "+str(label)+" is "+str(polygon)+"."
+        ....:     print("Polygon "+str(label)+" is "+str(polygon)+".")
         Polygon 0 is Polygon: (0, 0), (1, 0), (1, 1), (0, 1).
         sage: for label,edge in s2.edge_iterator():
-        ...       print str((label,edge))+" is glued to "+str(s2.opposite_edge(label,edge))+"."
+        ....:     print(str((label,edge))+" is glued to "+str(s2.opposite_edge(label,edge))+".")
         (0, 0) is glued to (0, 2).
         (0, 1) is glued to (0, 3).
         (0, 2) is glued to (0, 0).
@@ -382,11 +382,11 @@ class SplitPolygonsMapping(SurfaceMapping):
         sage: s2=m.codomain()
         sage: TestSuite(s2).run()
         sage: for pair in s2.label_iterator(polygons=True):
-        ...       print pair
+        ....:     print(pair)
         (0, Polygon: (0, 0), (1/2*a + 1, 1/2*a), (1/2*a + 1, 1/2*a + 1), (1, a + 1), (0, a + 1), (-1/2*a, 1/2*a + 1), (-1/2*a, 1/2*a))
         (ExtraLabel(0), Polygon: (0, 0), (-1/2*a - 1, -1/2*a), (-1/2*a, -1/2*a))
         sage: for glue in s2.edge_iterator(gluings=True):
-        ...       print glue
+        ....:     print(glue)
         ((0, 0), (ExtraLabel(0), 0))
         ((0, 1), (0, 5))
         ((0, 2), (0, 6))
@@ -572,7 +572,7 @@ def triangulation_mapping(s):
         sage: s2=m.codomain()
         sage: TestSuite(s2).run()
         sage: for label,polygon in s2.label_iterator(polygons=True):
-        ...       print str(polygon)
+        ....:     print(str(polygon))
         Polygon: (0, 0), (-1/2*a, 1/2*a + 1), (-1/2*a, 1/2*a)
         Polygon: (0, 0), (1/2*a, -1/2*a - 1), (1/2*a, 1/2*a)
         Polygon: (0, 0), (-1/2*a - 1, -1/2*a - 1), (0, -1)
@@ -898,6 +898,7 @@ def canonicalize_translation_surface_mapping(s):
         sage: s=translation_surfaces.octagon_and_squares().canonicalize()
         sage: TestSuite(s).run()
         sage: a = s.base_ring().gen() # a is the square root of 2.
+
         sage: from flatsurf.geometry.mappings import *
         sage: mat=Matrix([[1,2+a],[0,1]])
         sage: from flatsurf.geometry.half_dilation_surface import GL2RMapping
