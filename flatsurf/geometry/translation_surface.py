@@ -35,8 +35,9 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
             for e in xrange(p.num_edges()):
                 # Warning: check the matrices computed from the edges,
                 # rather the ones overriden by TranslationSurface.
-                tester.assertTrue(SimilaritySurface.edge_matrix(self,lab,e).is_one())
-
+                m=SimilaritySurface.edge_matrix(self,lab,e)
+                tester.assertTrue(m.is_one(), \
+                    "edge_matrix of edge "+str((lab,e))+" is not a translation.")
     def edge_matrix(self, p, e=None):
         if e is None:
             p,e = p
@@ -348,9 +349,9 @@ class Origami(AbstractOrigami):
 
     def opposite_edge(self, p, e):
         if p not in self._domain:
-            raise ValueError
+            raise ValueError("Polygon label p="+str(p)+" is not in domain="+str(self._domain))
         if e < 0 or e > 3:
-            raise ValueError
+            raise ValueError("Edge value e="+str(e)+" does not satisfy 0<=e<4.")
         return self._perms[e](p), (e+2)%4
 
     def up(self, label):
