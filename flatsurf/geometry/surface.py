@@ -264,6 +264,11 @@ class Surface(SageObject):
         and updates the edges listed in the glue_list.
         """
         self.__mutate()
+        p=self.polygon(label)
+        if p.num_edges() != len(glue_list):
+            raise ValueEror("len(glue_list)="+str(len(glue_list))+\
+                " and number of sides of polygon="+str(p.num_edges())+\
+                " should be the same.")
         for e,(pp,ee) in enumerate(glue_list):
             self._change_edge_gluing(label, e, pp, ee)
     
@@ -287,8 +292,11 @@ class Surface(SageObject):
 
     def remove_polygon(self, label):
         r"""
-        Remove the polygon with the provided label.
+        Remove the polygon with the provided label. Causes a ValueError
+        if the base_label is removed.
         """
+        if label==self._base_label:
+            raise ValueError("Can not remove the base_label.")
         self.__mutate()
         return self._remove_polygon(label)
 
@@ -495,16 +503,18 @@ class Surface_list(Surface):
     ### Brief summary of internal workings.
     ###
     #
-    # The Surface_list maintains a list self._p for storing polygons together with gluing data.
-    # Here self._p[label] is typically a list of two elements [polygon, gluing_list].
-    # The gluing_list is then a list of pairs (other_label, other_edge) so that typically
+    # The Surface_list maintains a list self._p for storing polygons together 
+    # with gluing data.
+    #
+    # Here self._p[label] is typically a list of two elements 
+    # [polygon, gluing_list]. The gluing_list is then a list of pairs 
+    # (other_label, other_edge) so that typically 
     # self.opposite_edge(label, edge) returns self._p[label][1][edge].
     #
-    # If constructed with a surface parameter which is not None and copy=False, then Surface_list
-    # stores a reference to the provided surface as self._reference_surface. 
-    # (Otherwise self._reference_surface is None). If we have a reference surface, then to represent a removed 
-    # polygon or a label which is not in use by seting self._p[label]=None.
-    #
+    # If constructed with a surface parameter which is not None and copy=False, 
+    # then Surface_list stores a reference to the provided surface as 
+    # self._reference_surface. (Otherwise self._reference_surface is None). 
+    # 
     def __init__(self, base_ring=None, surface = None, copy=True, mutable=None):
         r"""
         Surface_list is a Surface implementation which uses int for labels.
@@ -665,11 +675,17 @@ class Surface_list(Surface):
             if len(self._removed_labels)>0:
                 i = self._removed_labels.pop()
                 self._p[i]=data
+                self._ref_to_int[ref_label]=i
+                self._int_to_ref[i]=ref_label
             else:
                 i = len(self._p)
+                if i!=len(self._int_to_ref):
+                    raise RuntimeError("length of self._int_to_ref is "+\
+                        str(len(self._int_to_ref))+" should be the same as "+\
+                        "i="+str(i))
                 self._p.append(data)
-            self._ref_to_int[ref_label]=i
-            self._int_to_ref.append(ref_label)
+                self._ref_to_int[ref_label]=i
+                self._int_to_ref.append(ref_label)
             return i
 
     def polygon(self, lab):
@@ -685,6 +701,7 @@ class Surface_list(Surface):
         try:
             return data[0]
         except TypeError:
+            # Here data is probably None...
             raise ValueError("Provided label was removed.")
 
     def opposite_edge(self, p, e):
@@ -699,15 +716,16 @@ class Surface_list(Surface):
         try:
             glue = data[1]
         except TypeError:
+            # Here data=None
             raise ValueError("Provided label was removed.")
         try:
             oe = glue[e]
         except KeyError:
-            raise ValueError("Invalid edge")
+            raise ValueError("Edge out of range of polygon.")
         if oe is None:
             if self._reference_surface is None:
                 # Perhaps the user of this class left an edge unglued?
-                return None
+                raise RuntimeError("Obtained None as opposite_edge.")
             else:
                 ref_p = self._int_to_ref[p]
                 ref_pp, ref_ee = self._reference_surface.opposite_edge(ref_p, e)
@@ -782,10 +800,10 @@ class Surface_list(Surface):
             sage: s.num_polygons()
             2
             sage: TestSuite(s).run()
+            sage: s.change_base_label(6)
             sage: s.remove_polygon(30)
             sage: label = s.add_polygon((-matrix.identity(2))*p)
             sage: s.change_polygon_gluings(6,[(label,e) for e in xrange(5)])
-            sage: s.change_base_label(6)
             sage: TestSuite(s).run()
         """
         if new_polygon is None:
@@ -860,10 +878,20 @@ class Surface_list(Surface):
         Internal method used by remove_polygon(). Should not be called directly.
         """
         if label == len(self._p)-1:
-            last = self._p.pop()
+            self._p.pop()
+            if not self._reference_surface is None:
+                ref_label = self._int_to_ref.pop()
+                assert(len(self._int_to_ref)==label)
+                if not ref_label is None:
+                    del self._ref_to_int[ref_label]
         else:
             self._p[label]=None
             self._removed_labels.append(label)
+            if not self._reference_surface is None:
+                ref_label = self._int_to_ref[label]
+                if not ref_label is None:
+                    self._int_to_ref[label]=None
+                    del self._ref_to_int[ref_label]
         self._num_polygons -= 1
 
 def surface_list_from_polygons_and_gluings(polygons, gluings, mutable=False):
@@ -1351,12 +1379,15 @@ class ExtraLabel(SageObject):
     """
     _next=int(0)
     
-    def __init__(self):
+    def __init__(self, value=None):
         r"""
         Construct a new label.
         """
-        self._label = int(ExtraLabel._next)
-        ExtraLabel._next = ExtraLabel._next + 1
+        if value is None:
+            self._label = int(ExtraLabel._next)
+            ExtraLabel._next = ExtraLabel._next + 1
+        else:
+            self._label = value
     
     def __eq__(self, other):
         return (isinstance(other, self.__class__)
