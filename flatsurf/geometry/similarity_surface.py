@@ -1112,6 +1112,14 @@ class SimilaritySurface(SageObject):
             sage: gs.make_all_visible()
             sage: print(gs)
             Graphical version of Similarity Surface TranslationSurface built from 6 polygons
+
+        A non-strictly convex example that caused trouble:
+
+            sage: from flatsurf import *
+            sage: s=similarity_surfaces.self_glued_polygon(polygons(edges=[(1,1),(-3,-1),(1,0),(1,0)]))
+            sage: s=s.triangulate()
+            sage: s.polygon(0).num_edges()
+            3
         """
         if label is None:
             # We triangulate the whole surface
@@ -1150,8 +1158,11 @@ class SimilaritySurface(SageObject):
                     e1=poly.edge(i)
                     e2=poly.edge((i+1)%n)
                     if wedge_product(e1,e2) != 0:
-                        s.subdivide_polygon(label,i,(i+2)%n)
-                        break
+                        # This is in case the polygon is a triangle with subdivided edge.
+                        e3=poly.edge((i+2)%n)
+                        if wedge_product(e1+e2,e3) != 0:
+                            s.subdivide_polygon(label,i,(i+2)%n)
+                            break
             return s
         raise RuntimeError("Failed to return anything!")
     
