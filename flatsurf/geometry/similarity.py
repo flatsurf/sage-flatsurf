@@ -115,6 +115,11 @@ class Similarity(MultiplicativeGroupElement):
             [self._a, -self._b],
             [self._b,  self._a]])
 
+    def det(self):
+        r"""
+        Return the determinant of the derivative of the map.
+        """
+        return self._a**2+self._b**2
 
 class SimilarityGroup(UniqueRepresentation,Group):
     r'''Group representing all similarities in the plane.
