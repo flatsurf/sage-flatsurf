@@ -4,15 +4,14 @@ from sage.structure.element import MultiplicativeGroupElement, parent
 from sage.structure.unique_representation import UniqueRepresentation
 
 from sage.categories.groups import Groups
-from sage.categories.fields import Fields
 
+from sage.modules.free_module_element import vector
+from sage.matrix.matrix import Matrix
 from sage.groups.group import Group
 from sage.rings.integer import Integer
-from sage.modules.free_module_element import vector
-from sage.matrix.constructor import matrix
-from sage.matrix.matrix import Matrix
+from sage.rings.integer_ring import ZZ
 from sage.modules.free_module_element import FreeModuleElement
-from sage.rings.all import ZZ,QQ
+
 
 ZZ_0 = Integer(0)
 ZZ_1 = Integer(1)
@@ -175,7 +174,15 @@ class Similarity(MultiplicativeGroupElement):
 
     def __call__(self,w):
         r"""
-        Return m*w+v.
+        TESTS::
+
+            sage: from flatsurf.geometry.similarity import SimilarityGroup
+            sage: S = SimilarityGroup(AA)
+            sage: a = S((1,-1,AA(2).sqrt(),0))
+            sage: a((1,2))
+            (4.414213562373095?, 1)
+            sage: a.matrix()*vector((1,2,1))
+            (4.414213562373095?, 1, 1)
         """
         if self._sign.is_one():
             return vector([self._a*w[0]-self._b*w[1]+self._s, self._b*w[0]+self._a*w[1]+self._t])
