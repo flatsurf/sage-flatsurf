@@ -1,14 +1,7 @@
 from __future__ import absolute_import
 
-from sage.matrix.matrix_space import MatrixSpace
-from sage.modules.free_module import VectorSpace
-from sage.rings.rational_field import QQ
-
-from sage.plot.graphics import Graphics
-
 from flatsurf.geometry.similarity_surface import SimilaritySurface
 from .polygon import *
-from .edge_gluings import *
 
 class GraphicalSurface:
     r"""
@@ -173,8 +166,8 @@ class GraphicalSurface:
                         if not self.is_visible(l2):
                             self.make_adjacent_and_visible(l,e)
             else:
-                from flatsurf.geometry.translation import TranslationGroup
-                T = TranslationGroup(self._ss.base_ring())
+                from flatsurf.geometry.similarity import SimilarityGroup
+                T = SimilarityGroup(self._ss.base_ring())
                 for l in self._ss.label_iterator():
                     if not self.is_visible(l):
                         poly = self._ss.polygon(l)
@@ -198,8 +191,8 @@ class GraphicalSurface:
                             if i>=limit:
                                 return
             else:
-                from flatsurf.geometry.translation import TranslationGroup
-                T = TranslationGroup(self._ss.base_ring())
+                from flatsurf.geometry.translation import SimilarityGroup
+                T = SimilarityGroup(self._ss.base_ring())
                 i = 0
                 for l in self._ss.label_iterator():
                     if not self.is_visible(l):
@@ -292,27 +285,27 @@ class GraphicalSurface:
         """
         pp,ee = self._ss.opposite_edge(p,e)
         if reverse:
-            from flatsurf.geometry.similarity import SimilarityGroup, SimilarityReflectionGroup
-            G=SimilarityGroup(self._ss.base_ring())
-            GG=SimilarityReflectionGroup(self._ss.base_ring())
+            from flatsurf.geometry.similarity import SimilarityGroup
+            G = SimilarityGroup(self._ss.base_ring())
 
-            q=self._ss.polygon(p)
-            a=q.vertex(e)
-            b=q.vertex(e+1)
+            q = self._ss.polygon(p)
+            a = q.vertex(e)
+            b = q.vertex(e+1)
             # This is the similarity carrying the origin to a and (1,0) to b:
-            g=G(b[0]-a[0],b[1]-a[1],a[0],a[1])
+            g = G(b[0]-a[0],b[1]-a[1],a[0],a[1])
 
-            qq=self._ss.polygon(pp)
-            aa=qq.vertex(ee+1)
-            bb=qq.vertex(ee)
+            qq = self._ss.polygon(pp)
+            aa = qq.vertex(ee+1)
+            bb = qq.vertex(ee)
             # This is the similarity carrying the origin to aa and (1,0) to bb:
-            gg=G(bb[0]-aa[0],bb[1]-aa[1],aa[0],aa[1])
+            gg = G(bb[0]-aa[0],bb[1]-aa[1],aa[0],aa[1])
             
-            reflection=GG(
+            reflection = G(
                 self._ss.base_ring().one(),
                 self._ss.base_ring().zero(),
                 self._ss.base_ring().zero(),
-                self._ss.base_ring().zero(),-1)
+                self._ss.base_ring().zero(),
+                -1)
             
             # This is the similarity carrying (a,b) to (aa,bb):
             g = gg*reflection*(~g)
@@ -454,6 +447,7 @@ class GraphicalSurface:
             sage: S.plot(polygon_labels=False, edge_labels=False)
             Graphics object consisting of 5 graphics primitives
         """
+        from sage.plot.graphics import Graphics
         p = Graphics()
         for label in self._visible:
             polygon = self.graphical_polygon(label)

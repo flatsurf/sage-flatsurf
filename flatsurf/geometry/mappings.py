@@ -3,7 +3,6 @@ r"""Mappings between translation surfaces."""
 from flatsurf.geometry.polygon import Polygons, wedge_product
 from flatsurf.geometry.surface import Surface, Surface_list, Surface_dict, ExtraLabel
 from flatsurf.geometry.similarity_surface import SimilaritySurface
-from flatsurf.geometry.translation import TranslationGroup
 
 from sage.rings.infinity import Infinity
 from sage.structure.sage_object import SageObject
@@ -463,8 +462,8 @@ class SplitPolygonsMapping(SurfaceMapping):
         self._v1=v1
         self._v2=v2
         self._new_label=new_label
-        from flatsurf.geometry.translation import TranslationGroup
-        TG=TranslationGroup(s.base_ring())
+        from flatsurf.geometry.similarity import SimilarityGroup
+        TG = SimilarityGroup(s.base_ring())
         self._tp = TG(-s.polygon(p).vertex(v1))
         self._tnew_label = TG(-s.polygon(p).vertex(v2))
         SurfaceMapping.__init__(self, s, ss2)
@@ -700,7 +699,8 @@ class CanonicalizePolygonsMapping(SurfaceMapping):
         if not s.is_finite():
             raise ValueError("Currently only works with finite surfaces.")
         ring=s.base_ring()
-        T=TranslationGroup(ring)
+        from flatsurf.geometry.similarity import SimilarityGroup
+        T = SimilarityGroup(ring)
         P=Polygons(ring)
         cv = {} # dictionary for canonical vertices
         translations={} # translations bringing the canonical vertex to the origin.

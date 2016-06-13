@@ -187,7 +187,7 @@ class Circle:
             sage: c
             Circle((1/2, 1/2), 1/2)
             sage: s.edge_transformation(0,2)
-            Similarity (x,y) mapsto (1*x-0*y+0, 0*x+1*y+-1)
+            (x, y) |-> (x, y - 1)
             sage: s.edge_transformation(0,2)*c
             Circle((1/2, -1/2), 1/2)
         """

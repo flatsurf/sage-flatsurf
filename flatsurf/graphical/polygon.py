@@ -4,7 +4,6 @@ from sage.rings.real_double import RDF
 from sage.modules.free_module import VectorSpace
 
 from flatsurf.geometry.similarity import SimilarityGroup
-from flatsurf.geometry.translation import TranslationGroup
 
 V = VectorSpace(RDF, 2)
 
@@ -127,7 +126,7 @@ class GraphicalPolygon:
     def set_transformation(self, transformation):
         r"""Set the transformation to be applied to the polygon."""
         if transformation is None:
-            self._transformation = TranslationGroup(self._p.base_ring()).one()
+            self._transformation = SimilarityGroup(self._p.base_ring()).one()
         else:
             self._transformation = transformation
         # recompute the location of vertices:
