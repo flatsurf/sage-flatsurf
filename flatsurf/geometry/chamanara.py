@@ -11,8 +11,10 @@ EXAMPLES::
     Graphics object consisting of 129 graphics primitives
 """
 
-from flatsurf.geometry.surface import Surface
-from flatsurf.geometry.half_dilation_surface import HalfDilationSurface
+from __future__ import absolute_import
+
+from .surface import Surface
+from .half_dilation_surface import HalfDilationSurface
 from sage.rings.integer_ring import ZZ
 
 def ChamanaraPolygon(alpha):
@@ -24,7 +26,7 @@ def ChamanaraPolygon(alpha):
         ValueError("The value of alpha must be between zero and one.")
     # The value of x is $\sum_{n=0}^\infty \alpha^n$.
     x=1/(1-alpha)
-    from flatsurf.geometry.polygon import polygons
+    from .polygon import polygons
     return polygons((1,0), (-x,x), (0,-1), (x-1,1-x))
 #    pc=PolygonCreator(field=field)
 #    pc.add_vertex((0,0))

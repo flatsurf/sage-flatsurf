@@ -1,5 +1,8 @@
-from flatsurf.geometry.cone_surface import ConeSurface
-from flatsurf.geometry.matrix_2x2 import is_cosine_sine_of_rational
+from __future__ import absolute_import
+
+from .cone_surface import ConeSurface
+from .matrix_2x2 import is_cosine_sine_of_rational
+
 class RationalConeSurface(ConeSurface):
     r"""
     A Euclidean cone surface whose cone angles are all rational multiples of pi.
@@ -10,7 +13,7 @@ class RationalConeSurface(ConeSurface):
         """
         tester = self._tester(**options)
 
-        from flatsurf.geometry.similarity_surface import SimilaritySurface
+        from .similarity_surface import SimilaritySurface
         if self.is_finite():
             it = self.label_iterator()
         else:

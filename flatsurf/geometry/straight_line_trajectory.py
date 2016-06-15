@@ -1,7 +1,8 @@
+from __future__ import absolute_import
+
 from collections import deque, defaultdict
 
-from flatsurf.geometry.tangent_bundle import *
-from flatsurf.geometry.polygon import is_same_direction
+from .polygon import is_same_direction
 
 # Vincent question:
 # using deque has the disadvantage of losing the initial points

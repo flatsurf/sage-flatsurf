@@ -2,38 +2,33 @@ r"""
 Similarity surfaces.
 """
 
+from __future__ import absolute_import
+
 from sage.misc.cachefunc import cached_method
 
 from sage.structure.sage_object import SageObject
 
-from sage.rings.integer import Integer
-from sage.rings.rational import Rational
 from sage.rings.infinity import Infinity
 
-from sage.rings.integer_ring import ZZ
-from sage.rings.rational_field import QQ
-from sage.rings.qqbar import AA
-from sage.rings.real_mpfr import RR
-from sage.rings.real_mpfi import RIF
+from sage.rings.all import ZZ, QQ, AA, RIF, RR
 
 from sage.modules.free_module_element import vector
 
 from sage.matrix.constructor import matrix, identity_matrix
 
-ZZ_1 = Integer(1)
-ZZ_2 = Integer(2)
-
-from flatsurf import *
-
-from flatsurf.geometry.matrix_2x2 import (is_similarity,
+from .matrix_2x2 import (is_similarity,
                     homothety_rotation_decomposition,
                     similarity_from_vectors,
                     rotation_matrix_angle,
                     is_cosine_sine_of_rational)
                     
-from flatsurf.geometry.similarity import SimilarityGroup
-from flatsurf.geometry.polygon import Polygons, wedge_product
-from flatsurf.geometry.surface import Surface, LabelWalker, ExtraLabel
+from .similarity import SimilarityGroup
+from .polygon import Polygons, wedge_product
+from .surface import Surface
+
+ZZ_1 = ZZ.one()
+ZZ_2 = ZZ_1 + ZZ_1
+
 
 class SimilaritySurface(SageObject):
     r"""
@@ -1001,7 +996,7 @@ class SimilaritySurface(SageObject):
             raise ValueError("the method only work for finite surfaces")
         if base_label is None:
             base_label = self.base_label()
-        from fundamental_group import FundamentalGroup
+        from .fundamental_group import FundamentalGroup
         return FundamentalGroup(self, base_label)
 
     def tangent_bundle(self, ring=None):
@@ -1023,7 +1018,7 @@ class SimilaritySurface(SageObject):
         except KeyError:
             pass
 
-        from tangent_bundle import SimilaritySurfaceTangentBundle
+        from .tangent_bundle import SimilaritySurfaceTangentBundle
         self._tangent_bundle_cache[ring] = SimilaritySurfaceTangentBundle(self, ring)
         return self._tangent_bundle_cache[ring]
 

@@ -1,4 +1,6 @@
-from flatsurf.geometry.polygon import *
+from __future__ import absolute_import
+
+from .polygon import wedge_product, is_same_direction, is_opposite_direction
 
 class SimilaritySurfaceTangentVector:
     def __init__(self, tangent_bundle, polygon_label, point, vector):
@@ -248,6 +250,7 @@ class SimilaritySurfaceTangentBundle:
             self._base_ring=self._s.base_ring()
         else:
             self._base_ring=ring
+        from sage.modules.free_module import VectorSpace
         self._V = VectorSpace(self._base_ring, 2)
 
     def __call__(self, polygon_label, point, vector):

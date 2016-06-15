@@ -21,6 +21,8 @@ EXAMPLES::
     Polygon: (0, 0), (1, 0), (sqrt2 + 4, sqrt2 + 1)
 """
 
+from __future__ import absolute_import
+
 import operator
 
 from sage.misc.cachefunc import cached_method
@@ -33,15 +35,11 @@ from sage.categories.sets_cat import Sets
 from sage.categories.fields import Fields
 from sage.categories.action import Action
 
-from sage.rings.integer_ring import ZZ
-from sage.rings.rational_field import QQ
-from sage.rings.real_mpfr import RR
-from sage.rings.qqbar import AA
+from sage.rings.all import ZZ, QQ, AA, RR
 
-from sage.modules.free_module import VectorSpace
 from sage.modules.free_module_element import vector
 
-from flatsurf.geometry.matrix_2x2 import angle
+from .matrix_2x2 import angle
 
 # we implement action of GL(2,K) on polygons
 
@@ -707,7 +705,7 @@ class ConvexPolygon(Element):
             bot_lengths = lengths[lb:] + lengths[:rb]
             bot_labels = range(lb,n) + range(rb)
 
-        from interval_exchange_transformation import FlowPolygonMap
+        from .interval_exchange_transformation import FlowPolygonMap
         return FlowPolygonMap(ring, bot_labels, bot_lengths,
                                                     top_labels, top_lengths)
 
@@ -870,7 +868,7 @@ class ConvexPolygon(Element):
             sage: print polygons(vertices=[(0,0),(1,0),(2,1),(-1,1)]).circumscribing_circle()
             circle with center (1/2, 3/2) and radius squared 5/2
         """
-        from flatsurf.geometry.circle import circle_from_three_points
+        from .circle import circle_from_three_points
         circle = circle_from_three_points(self.vertex(0), self.vertex(1), self.vertex(2), self.base_ring())
         for i in xrange(3,self.num_edges()):
             if not circle.point_position(self.vertex(i))==0:

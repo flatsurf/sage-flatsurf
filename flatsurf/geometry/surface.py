@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+
 from sage.structure.sage_object import SageObject
 
 from sage.sets.family import Family
@@ -382,7 +384,7 @@ class Surface(SageObject):
             tester = options['tester']
         else:
             tester = self._tester(**options)
-        from flatsurf.geometry.polygon import ConvexPolygon
+        from .polygon import ConvexPolygon
         tester.assertTrue(isinstance(self.polygon(self.base_label()), ConvexPolygon), \
             "polygon(base_label) does not return a ConvexPolygon. "+\
             "Here base_label="+str(self.base_label()))
@@ -466,7 +468,7 @@ class Surface(SageObject):
             tester = options['tester']
         else:
             tester = self._tester(**options)
-        from flatsurf.geometry.polygon import ConvexPolygon
+        from .polygon import ConvexPolygon
         if self.is_finite():
             it = self.label_iterator()
         else:
@@ -617,7 +619,7 @@ class Surface_list(Surface):
             # default label is zero.
             Surface.__init__(self, base_ring, 0, finite=True, mutable=True)
         else:
-            from flatsurf.geometry.similarity_surface import SimilaritySurface
+            from .similarity_surface import SimilaritySurface
             if isinstance(surface,SimilaritySurface):
                 surface=surface.underlying_surface()
             if not isinstance(surface,Surface):
@@ -996,7 +998,7 @@ class Surface_dict(Surface):
                 raise ValueError("If no surface is provided, then mutable must be true.")
             Surface.__init__(self, base_ring, None, finite=True, mutable=True)
         else:
-            from flatsurf.geometry.similarity_surface import SimilaritySurface
+            from .similarity_surface import SimilaritySurface
             if isinstance(surface,SimilaritySurface):
                 surface=surface.underlying_surface()
             if not isinstance(surface,Surface):

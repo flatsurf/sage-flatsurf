@@ -1,13 +1,14 @@
 r"""
 Translation Surfaces.
 """
-from sage.misc.cachefunc import cached_method
 
-from flatsurf.geometry.surface import Surface
-from flatsurf.geometry.half_translation_surface import HalfTranslationSurface 
-from flatsurf.geometry.dilation_surface import DilationSurface
+from __future__ import absolute_import
 
-from sage.matrix.constructor import matrix, identity_matrix
+from sage.matrix.constructor import identity_matrix
+
+from .surface import Surface
+from .half_translation_surface import HalfTranslationSurface
+from .dilation_surface import DilationSurface
 
 class TranslationSurface(HalfTranslationSurface, DilationSurface):
     r"""
@@ -231,7 +232,6 @@ class MinimalTranslationCover(Surface):
                 print("Warning: Could be indicating infinite surface falsely.")
                 finite=False
         
-        from sage.matrix.constructor import identity_matrix
         I = identity_matrix(self._ss.base_ring(),2)
         I.set_immutable()
         base_label=(self._ss.base_label(), I)

@@ -1,11 +1,13 @@
+from __future__ import absolute_import
+
 from sage.rings.integer_ring import ZZ
 from sage.misc.cachefunc import cached_method
 
 ZZ_1 = ZZ(1)
 ZZ_2 = ZZ(2)
 
-from flatsurf.geometry.surface import Surface, Surface_list
-from flatsurf.geometry.translation_surface import TranslationSurface
+from .surface import Surface, Surface_list
+from .translation_surface import TranslationSurface
 
 def flipper_nf_to_sage(K, name='a'):
     r"""
@@ -352,7 +354,7 @@ class TFractalSurface(Surface):
 
     @cached_method
     def _base_polygon(self, i):
-        from flatsurf.geometry.polygon import Polygons
+        from .polygon import Polygons
         if i == 0:
             w = self._w
             h = self._h1
@@ -384,9 +386,9 @@ class SimilaritySurfaceGenerators:
             SimilaritySurface built from 2 polygons
             sage: TestSuite(ex).run()
         """
-        from flatsurf.geometry.similarity_surface import SimilaritySurface
-        from flatsurf.geometry.surface import Surface_list
-        from flatsurf.geometry.polygon import polygons
+        from .similarity_surface import SimilaritySurface
+        from .surface import Surface_list
+        from .polygon import polygons
         from sage.rings.rational_field import QQ
         s=Surface_list(base_ring=QQ)
         s.add_polygon(polygons(vertices=[(0,0), (2,-2), (2,0)],ring=QQ)) # gets label 0
@@ -407,8 +409,8 @@ class SimilaritySurfaceGenerators:
             sage: s = similarity_surfaces.self_glued_polygon(p)
             sage: TestSuite(s).run()
         """
-        from flatsurf.geometry.surface import Surface_list
-        from flatsurf.geometry.half_translation_surface import HalfTranslationSurface
+        from .surface import Surface_list
+        from .half_translation_surface import HalfTranslationSurface
         s = Surface_list(base_ring=P.base_ring(), mutable=True)
         s.add_polygon(P,[(0,i) for i in xrange(P.num_edges())])
         s.make_immutable()
@@ -434,9 +436,9 @@ class SimilaritySurfaceGenerators:
             TranslationSurface built from 8 polygons
             sage: TestSuite(M).run()
         """
-        from flatsurf.geometry.polygon import polygons
-        from flatsurf.geometry.surface import Surface_list
-        from flatsurf.geometry.cone_surface import ConeSurface
+        from .polygon import polygons
+        from .surface import Surface_list
+        from .cone_surface import ConeSurface
         from sage.matrix.constructor import matrix
 
         n = P.num_edges()
@@ -461,8 +463,8 @@ class SimilaritySurfaceGenerators:
         Differs from billiard(P) only in the graphical display. Here, we display
         the polygons separately.
         """
-        from flatsurf.geometry.polygon import polygons
-        from flatsurf.geometry.cone_surface import ConeSurface
+        from .polygon import polygons
+        from .cone_surface import ConeSurface
         from sage.matrix.constructor import matrix
 
         n = P.num_edges()
@@ -488,10 +490,10 @@ class SimilaritySurfaceGenerators:
             sage: TestSuite(R).run()
         """
         from sage.structure.sequence import Sequence
-        from flatsurf.geometry.polygon import Polygons
+        from .polygon import Polygons
         from sage.modules.free_module import VectorSpace
         from sage.modules.free_module_element import vector
-        from flatsurf.geometry.cone_surface import ConeSurface
+        from .cone_surface import ConeSurface
 
         F = Sequence([w,h]).universe()
         
@@ -545,8 +547,8 @@ class TranslationSurfaceGenerators:
 
             sage: TestSuite(T).run()
         """
-        from flatsurf.geometry.polygon import polygons
-        from flatsurf.geometry.translation_surface import TranslationSurface
+        from .polygon import polygons
+        from .translation_surface import TranslationSurface
         from sage.rings.rational_field import QQ
         s=Surface_list(base_ring=QQ)
         s.add_polygon(polygons.square(),[(0,2),(0,3),(0,0),(0,1)])
@@ -566,9 +568,9 @@ class TranslationSurfaceGenerators:
             Polygon: (0, 0), (1, 0), (-1/2*a^2 + 5/2, 1/2*a), (-a^2 + 7/2, -1/2*a^3 + 2*a), (-1/2*a^2 + 5/2, -a^3 + 7/2*a), (1, -a^3 + 4*a), (0, -a^3 + 4*a), (1/2*a^2 - 3/2, -a^3 + 7/2*a), (a^2 - 5/2, -1/2*a^3 + 2*a), (1/2*a^2 - 3/2, 1/2*a)
             sage: TestSuite(s).run()
         """
-        from flatsurf.geometry.polygon import polygons
-        from flatsurf.geometry.surface import Surface_list
-        from flatsurf.geometry.translation_surface import TranslationSurface
+        from .polygon import polygons
+        from .surface import Surface_list
+        from .translation_surface import TranslationSurface
         p = polygons.regular_ngon(2*n)
         s = Surface_list(base_ring=p.base_ring())
         s.add_polygon(p,[ ( 0, (i+n)%(2*n) ) for i in xrange(2*n)] )
@@ -586,9 +588,9 @@ class TranslationSurfaceGenerators:
             sage: s=translation_surfaces.veech_double_n_gon(5)
             sage: TestSuite(s).run()
         """
-        from flatsurf.geometry.polygon import polygons
-        from flatsurf.geometry.surface import Surface_list
-        from flatsurf.geometry.translation_surface import TranslationSurface
+        from .polygon import polygons
+        from .surface import Surface_list
+        from .translation_surface import TranslationSurface
         from sage.matrix.constructor import Matrix
         p = polygons.regular_ngon(n)
         s = Surface_list(base_ring=p.base_ring())
@@ -645,9 +647,9 @@ class TranslationSurfaceGenerators:
             sage: s = translation_surfaces.mcmullen_L(1,1,1,1)
             sage: TestSuite(s).run()
         """
-        from flatsurf.geometry.polygon import polygons
-        from flatsurf.geometry.surface import Surface_list
-        from flatsurf.geometry.translation_surface import TranslationSurface
+        from .polygon import polygons
+        from .surface import Surface_list
+        from .translation_surface import TranslationSurface
         from sage.structure.sequence import Sequence
         
         field = Sequence([l1,l2,l3,l4]).universe()
@@ -680,9 +682,9 @@ class TranslationSurfaceGenerators:
             sage: TestSuite(s).run()
         """
         assert n>=3
-        from flatsurf.geometry.polygon import polygons
-        from flatsurf.geometry.surface import Surface_list
-        from flatsurf.geometry.translation_surface import TranslationSurface
+        from .polygon import polygons
+        from .surface import Surface_list
+        from .translation_surface import TranslationSurface
         o = ZZ_2*polygons.regular_ngon(2*n)
         p1 = polygons(*[o.edge((2*i+n)%(2*n)) for i in xrange(n)])
         p2 = polygons(*[o.edge((2*i+n+1)%(2*n)) for i in xrange(n)])
@@ -706,9 +708,9 @@ class TranslationSurfaceGenerators:
             TranslationSurface built from 3 polygons
             sage: TestSuite(os).run()
         """
-        from flatsurf.geometry.polygon import polygons
+        from .polygon import polygons
         from sage.matrix.matrix_space import MatrixSpace
-        from flatsurf.geometry.translation_surface import TranslationSurface
+        from .translation_surface import TranslationSurface
         return translation_surfaces.ward(4)
 
     @staticmethod
@@ -749,9 +751,9 @@ class TranslationSurfaceGenerators:
             sage: a = flipper_nf_element_to_sage(h.dilatation())  # optional - flipper
         """
         from sage.modules.free_module import VectorSpace
-        from flatsurf.geometry.polygon import ConvexPolygons
-        from flatsurf.geometry.surface import surface_list_from_polygons_and_gluings
-        from flatsurf.geometry.half_translation_surface import HalfTranslationSurface
+        from .polygon import ConvexPolygons
+        from .geometry.surface import surface_list_from_polygons_and_gluings
+        from .half_translation_surface import HalfTranslationSurface
 
         f = h.flat_structure()
 
@@ -798,7 +800,7 @@ class TranslationSurfaceGenerators:
             H(2)
             sage: TestSuite(o).run()
         """
-        from flatsurf.geometry.translation_surface import Origami
+        from .translation_surface import Origami
         return TranslationSurface(Origami(r,u,rr,uu,domain))
 
     @staticmethod
@@ -815,7 +817,7 @@ class TranslationSurfaceGenerators:
             The infinite staircase
             sage: TestSuite(S).run(skip='_test_pickling')
         """
-        from flatsurf.geometry.translation_surface import Origami, TranslationSurface
+        from .translation_surface import Origami, TranslationSurface
         o = Origami(
                 lambda x: x+1 if x%2 else x-1,  # r  (edge 1)
                 lambda x: x-1 if x%2 else x+1,  # u  (edge 2)
@@ -880,7 +882,7 @@ class TranslationSurfaceGenerators:
             TranslationSurface built from infinitely many polygons
             sage: TestSuite(C).run(skip='_test_pickling')
         """
-        from flatsurf.geometry.chamanara import chamanara_surface
+        from .chamanara import chamanara_surface
         return chamanara_surface(alpha)
 
 translation_surfaces = TranslationSurfaceGenerators()

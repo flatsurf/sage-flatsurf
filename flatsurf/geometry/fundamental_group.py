@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+
 from sage.misc.cachefunc import cached_method
 
 from sage.structure.element import parent

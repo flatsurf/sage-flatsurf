@@ -5,6 +5,8 @@ This will be used to build a LazyDelaunayTriangulation class which will compute 
 Delaunay decomposition for infinite surfaces.
 """
 
+from __future__ import absolute_import
+
 from sage.modules.free_module import VectorSpace
 from sage.modules.free_module_element import vector
 

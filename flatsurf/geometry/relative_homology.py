@@ -10,11 +10,13 @@ modulo equivalences of two types:
 2) The sum of edges around a polygon is zero.
 """
 
+from __future__ import absolute_import
+
 from sage.structure.element import ModuleElement
 from sage.modules.module import Module
 from sage.rings.integer_ring import ZZ
 
-from flatsurf.geometry.similarity_surface import SimilaritySurface
+from .similarity_surface import SimilaritySurface
 
 
 class RelativeHomologyClass(ModuleElement):
