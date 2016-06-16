@@ -129,11 +129,13 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
         """
         if not self.is_finite() or not s2.is_finite():
             raise NotImplementedError("Only implemented for finite surfaces.")
+        #print("comparing number of polygons")
         sign = self.num_polygons()-s2.num_polygons()
         if sign>0:
             return 1
         if sign<0:
             return -1
+        #print("comparing polygons")
         lw1=self.walker()
         lw2=self.walker()
         from itertools import izip
@@ -143,6 +145,7 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
             if ret != 0:
                 return ret
         # Polygons are identical. Compare edge gluings.
+        #print("comparing edge gluings")
         for pair1,pair2 in izip(lw1.edge_iterator(), lw2.edge_iterator()):
             l1,e1 = self.opposite_edge(pair1)
             l2,e2 = s2.opposite_edge(pair2)
@@ -177,7 +180,13 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
             TranslationSurface built from 3 polygons
             sage: a = s.base_ring().gen()
             sage: mat=Matrix([[1,2+a],[0,1]])
-            sage: s.canonicalize().cmp_translation_surface((mat*s).canonicalize())==0
+            sage: s1=s.canonicalize()
+            sage: s1.underlying_surface().make_immutable()
+            sage: s2=(mat*s).canonicalize()
+            sage: s2.underlying_surface().make_immutable()
+            sage: s1.cmp_translation_surface(s2)==0
+            True
+            sage: hash(s1)==hash(s2)
             True
         """
         # Old version
@@ -209,6 +218,25 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
 class MinimalTranslationCover(Surface):
     r"""
     We label copy by cartesian product (polygon from bot, matrix).
+
+    EXAMPLES::
+
+        sage: from flatsurf import *
+        sage: from flatsurf.geometry.polygon import Polygons
+        sage: s=Surface_list(QQ)
+        sage: P=Polygons(QQ)
+        sage: s.add_polygon(P(vertices=[(0,0),(5,0),(0,5)]))
+        0
+        sage: s.add_polygon(P(vertices=[(0,0),(3,4),(-4,3)]))
+        1
+        sage: s.change_polygon_gluings(0,[(1,2),(1,1),(1,0)])
+        sage: s.make_immutable()
+        sage: s=SimilaritySurface(s)
+        sage: ss=s.minimal_translation_cover()
+        sage: ss.is_finite()
+        True
+        sage: ss.num_polygons()
+        8
     """
     def __init__(self, similarity_surface):
         if similarity_surface.underlying_surface().is_mutable():
@@ -225,11 +253,12 @@ class MinimalTranslationCover(Surface):
         else:
             try:
                 from flatsurf.geometry.rational_cone_surface import RationalConeSurface
-                rcs = RationalConeSurface(self._ss)
+                ss_copy = self._ss.reposition_polygons(relabel=True)
+                rcs = RationalConeSurface(ss_copy)
                 rcs._test_edge_matrix()
                 finite=True
             except AssertionError:
-                print("Warning: Could be indicating infinite surface falsely.")
+                # print("Warning: Could be indicating infinite surface falsely.")
                 finite=False
         
         I = identity_matrix(self._ss.base_ring(),2)
