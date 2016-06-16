@@ -557,7 +557,6 @@ class Surface_list(Surface):
             sage: p = polygons(vertices=[(0,0),(4,0),(0,3)])
             sage: s = similarity_surfaces.billiard(p)
             sage: ts=s.minimal_translation_cover().copy(relabel=True, mutable=True)
-            Warning: Could be indicating infinite surface falsely.
             sage: # Explore the surface a bit
             sage: ts.polygon(0)
             Polygon: (0, 0), (4, 0), (0, 3)
