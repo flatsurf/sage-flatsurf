@@ -26,7 +26,8 @@ class HalfTranslationSurface(HalfDilationSurface, RationalConeSurface):
                 # Warning: check the matrices computed from the edges,
                 # rather the ones overriden by TranslationSurface.
                 tester.assertTrue(SimilaritySurface.edge_matrix(self,lab,e).is_one() or \
-                    (-SimilaritySurface.edge_matrix(self,lab,e)).is_one() )
+                    (-SimilaritySurface.edge_matrix(self,lab,e)).is_one(), \
+                    "edge_matrix of edge "+str((lab,e))+" is not a translation or rotation by pi.")
 
     
 # This was all implemented in HalfDilationSurface now.
