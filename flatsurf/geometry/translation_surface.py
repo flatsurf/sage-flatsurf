@@ -39,6 +39,7 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
                 m=SimilaritySurface.edge_matrix(self,lab,e)
                 tester.assertTrue(m.is_one(), \
                     "edge_matrix of edge "+str((lab,e))+" is not a translation.")
+
     def edge_matrix(self, p, e=None):
         if e is None:
             p,e = p
@@ -137,11 +138,11 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
             return -1
         #print("comparing polygons")
         lw1=self.walker()
-        lw2=self.walker()
+        lw2=s2.walker()
         from itertools import izip
         for p1,p2 in izip(lw1.polygon_iterator(), lw2.polygon_iterator()):
             # Uses Polygon.__cmp__:
-            ret = cmp(p1,p2)
+            ret = p1.__cmp__(p2)
             if ret != 0:
                 return ret
         # Polygons are identical. Compare edge gluings.
