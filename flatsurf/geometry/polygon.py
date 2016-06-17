@@ -320,7 +320,7 @@ class ConvexPolygon(Element):
     def __cmp__(self, other):
         if not isinstance(other,ConvexPolygon):
             raise ValueError("__cmp__ only implemented for ConvexPolygons")
-        if not self.parent().base_ring()==other.parent.base_ring():
+        if not self.parent().base_ring()==other.parent().base_ring():
             raise ValueError("__cmp__ only implemented for ConvexPolygons defined over the same base_ring")
         sign = self.num_edges() - other.num_edges()
         if sign>0:
@@ -328,22 +328,22 @@ class ConvexPolygon(Element):
         if sign<0:
             return -1
         sign = self.area() - other.area()
-        if sign>self.base_ring.zero():
+        if sign>self.base_ring().zero():
             return 1
-        if sign<self.base_ring.zero():
+        if sign<self.base_ring().zero():
             return -1
         for v in xrange(1,self.num_edges()):
             p=self.vertex(v)
             q=other.vertex(v)
             sign = p[0]-q[0]
-            if sign>self.base_ring.zero():
+            if sign>self.base_ring().zero():
                 return 1
-            if sign<self.base_ring.zero():
+            if sign<self.base_ring().zero():
                 return -1
             sign = p[1]-q[1]
-            if sign>self.base_ring.zero():
+            if sign>self.base_ring().zero():
                 return 1
-            if sign<self.base_ring.zero():
+            if sign<self.base_ring().zero():
                 return -1
         return 0
 
