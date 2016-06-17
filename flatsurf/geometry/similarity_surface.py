@@ -1324,18 +1324,43 @@ class SimilaritySurface(SageObject):
             direction = self.vector_space()( (base_ring.zero(), base_ring.one()) )
         else:
             assert not direction.is_zero()
-        count=0
-        while loop:
-            loop=False
-            for (l1,e1),(l2,e2) in s.edge_iterator(gluings=True):
-                if (l1<l2 or (l1==l2 and e1<=e2)) and s._edge_needs_flip(l1,e1):
-                    s.triangle_flip(l1, e1, in_place=True, direction=direction)
-                    count += 1
-                    if not limit is None and count>=limit:
-                        return s
-                    loop=True
-                    break
-        return s
+        if s.is_finite() and limit is None:
+            from collections import deque
+            unchecked_labels=deque(label for label in s.label_iterator())
+            checked_labels = set()
+            while len(unchecked_labels)>0:
+                label = unchecked_labels.pop()
+                flipped=False
+                for edge in xrange(3):
+                    label2,edge2=s.opposite_edge(label,edge)
+                    if s._edge_needs_flip(label,edge):
+                        s.triangle_flip(label, edge, in_place=True, direction=direction)
+                        try:
+                            checked_labels.remove(label2)
+                            unchecked_labels.append(label2)
+                        except KeyError:
+                            # Occurs if label2 is not in checked_labels
+                            pass
+                        unchecked_labels.append(label)
+                        flipped=True
+                        break
+                if not flipped:
+                    checked_labels.add(label)
+            return s
+        else:
+            # Old method for infinite surfaces, or limits.
+            count=0
+            while loop:
+                loop=False
+                for (l1,e1),(l2,e2) in s.edge_iterator(gluings=True):
+                    if (l1<l2 or (l1==l2 and e1<=e2)) and s._edge_needs_flip(l1,e1):
+                        s.triangle_flip(l1, e1, in_place=True, direction=direction)
+                        count += 1
+                        if not limit is None and count>=limit:
+                            return s
+                        loop=True
+                        break
+            return s
 
     def delaunay_single_join(self):
         if not self.is_finite():
