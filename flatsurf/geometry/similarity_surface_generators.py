@@ -752,7 +752,7 @@ class TranslationSurfaceGenerators:
         """
         from sage.modules.free_module import VectorSpace
         from .polygon import ConvexPolygons
-        from .geometry.surface import surface_list_from_polygons_and_gluings
+        from .surface import surface_list_from_polygons_and_gluings
         from .half_translation_surface import HalfTranslationSurface
 
         f = h.flat_structure()
