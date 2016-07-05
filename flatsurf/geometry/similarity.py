@@ -341,6 +341,9 @@ class SimilarityGroup(UniqueRepresentation, Group):
             sage: V = QQ^2
             sage: S(V((1,-1)))
             (x, y) |-> (x + 1, y - 1)
+
+            sage: S(vector((1,1)))
+            (x, y) |-> (x + 1, y + 1)
         """
         if len(args) == 1:
             x = args[0]
@@ -380,7 +383,10 @@ class SimilarityGroup(UniqueRepresentation, Group):
                 raise ValueError("invalid dimension for matrix input")
         elif isinstance(x, FreeModuleElement):
             if len(x) == 2:
-                s,t = x
+                if x.base_ring() is self._field:
+                    s,t = x
+                else:
+                    s,t = map(self._field, x)
             else:
                 raise ValueError("invalid dimension for vector input")
         else:
