@@ -149,14 +149,16 @@ class SimilaritySurface(SageObject):
         """
         return self._s.base_label()
 
-    def opposite_edge(self, p, e=None):
+    def opposite_edge(self, l, e=None):
         r"""
-        Given the label ``p`` of a polygon and an edge ``e`` in that polygon
-        returns the pair (``pp``, ``ee``) to which this edge is glued.
+        Given the label ``l`` of a polygon and an edge ``e`` in that polygon
+        returns the pair (``ll``, ``ee``) to which this edge is glued.
+        If e is not provided, then it expects the only parameter to be 
+        the pair (``l``,``e``) and will again return a the pair (``ll``,``ee``).
         """
         if e is None:
-            return self._s.opposite_edge(p[0],p[1])
-        return self._s.opposite_edge(p,e)
+            return self._s.opposite_edge(l[0],l[1])
+        return self._s.opposite_edge(l,e)
 
     def is_finite(self):
         r"""
@@ -1252,6 +1254,59 @@ class SimilaritySurface(SageObject):
                 return True
         return False
 
+    def is_delaunay_triangulated(self, limit=None):
+        r"""
+        Return if the surface is triangulated and the triangulation is Delaunay. 
+        If limit is set, then it checks this only limit many edges. 
+        Limit must be set for infinite surfaces.
+        """
+        if limit is None:
+            if not self.is_finite():
+                raise NotImplementedError("A limit must be set for infinite surfaces.")
+            limit = self.num_edges()
+        count = 0
+        for (l1,e1),(l2,e2) in self.edge_iterator(gluings=True):
+            if count >= limit:
+                break
+            count =  count+1
+            if self.polygon(l1).num_edges()!=3:
+                print("Polygon with label "+str(l1)+" is not a triangle.")
+                return False
+            if self.polygon(l2).num_edges()!=3:
+                print("Polygon with label "+str(l2)+" is not a triangle.")
+                return False
+            if self._edge_needs_flip(l1,e1):
+                print("Edge "+str((l1,e1))+" needs to be flipped.")
+                print("This edge is glued to "+str((l2,e2))+".")
+                return False
+        return True
+
+    def is_delaunay_decomposed(self, limit=None):
+        r"""
+        Return if the decomposition of the surface into polygons is Delaunay. 
+        If limit is set, then it checks this only limit many polygons. 
+        Limit must be set for infinite surfaces.
+        """
+        if limit is None:
+            if not self.is_finite():
+                raise NotImplementedError("A limit must be set for infinite surfaces.")
+            limit = self.num_polygons()
+        count = 0
+        for (l1,p1) in self.label_iterator(polygons=True):
+            try:
+                c1=p1.circumscribing_circle()
+            except ValueError:
+                # p1 is not circumscribed
+                return False
+            for e1 in xrange(p1.num_edges()):
+                c2=self.edge_transformation(l1,e1)*c1
+                l2,e2=self.opposite_edge(l1,e1)
+                if c2.point_position(self.polygon(l2).vertex(e2+2))!=-1:
+                    # The circumscribed circle developed into the adjacent polygon
+                    # contains a vertex in its interior or boundary.
+                    return False
+            return True
+
     def delaunay_triangulation(self, triangulated=False, in_place=False, limit=None, direction=None, relabel=False):
         r"""
         Returns a Delaunay triangulation of a surface, or make some
@@ -1269,6 +1324,8 @@ class SimilaritySurface(SageObject):
             sage: ss.polygon(0)
             Polygon: (0, 0), (0, -1), (1, 0)
             sage: TestSuite(ss).run(skip="_test_pickling")
+            sage: ss.is_delaunay_triangulated(limit=10)
+            True
 
         Parameters
         ----------
@@ -1329,22 +1386,27 @@ class SimilaritySurface(SageObject):
             unchecked_labels=deque(label for label in s.label_iterator())
             checked_labels = set()
             while len(unchecked_labels)>0:
-                label = unchecked_labels.pop()
+                label = unchecked_labels.popleft()
                 flipped=False
                 for edge in xrange(3):
-                    label2,edge2=s.opposite_edge(label,edge)
                     if s._edge_needs_flip(label,edge):
+                        # Record the current opposite edge:
+                        label2,edge2=s.opposite_edge(label,edge)
+                        # Perform the flip.
                         s.triangle_flip(label, edge, in_place=True, direction=direction)
-                        try:
-                            checked_labels.remove(label2)
-                            unchecked_labels.append(label2)
-                        except KeyError:
-                            # Occurs if label2 is not in checked_labels
-                            pass
-                        unchecked_labels.append(label)
+                        # Move the opposite polygon to the list of labels we need to check.
+                        if label2 != label:
+                            try:
+                                checked_labels.remove(label2)
+                                unchecked_labels.append(label2)
+                            except KeyError:
+                                # Occurs if label2 is not in checked_labels
+                                pass
                         flipped=True
                         break
-                if not flipped:
+                if flipped:
+                    unchecked_labels.append(label)
+                else:
                     checked_labels.add(label)
             return s
         else:
@@ -1370,7 +1432,8 @@ class SimilaritySurface(SageObject):
                 self.join_polygons(l1, e1, in_place=True)
                 return True
         return False
-        
+    
+    
     def delaunay_decomposition(self, triangulated=False, \
             delaunay_triangulated=False, in_place=False, direction=None,\
             relabel=False):
@@ -1389,6 +1452,8 @@ class SimilaritySurface(SageObject):
             sage: ss.polygon(0)
             Polygon: (0, 0), (0, -1), (1, -1), (1, 0)
             sage: TestSuite(ss).run(skip="_test_pickling")
+            sage: ss.is_delaunay_decomposed(limit=10)
+            True
 
         Parameters
         ----------
