@@ -184,10 +184,32 @@ class MatrixActionOnPolygons(Action):
         Action.__init__(self, MatrixSpace(K,2), polygons, True, operator.mul)
 
     def _call_(self, g, x):
-        if g.det() <= 0:
-            # Maybe we can allow an action, which also reverses the edge ordering? -Pat
-            raise ValueError("can not act with matrix with negative determinant")
-        return x.parent()(vertices=[g*v for v in x.vertices()])
+        r"""
+        Apply the 2x2 matrix g to the polygon. 
+        The matrix must have non-zero determinant. If the determinant is negative, then the vertices and edges
+        are relabeled according to the involutions $v \mapsto (n-v)%n$ and  $e \mapsto n-1-e$ respectively. 
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.polygon import Polygons, ConvexPolygon
+            sage: P=Polygons(QQ)
+            sage: p=ConvexPolygon(P,[(1,0),(0,1),(-1,-1)])
+            sage: print(p)
+            Polygon: (1, 0), (0, 1), (-1, -1)
+            sage: r=matrix(ZZ,[[0,1],[1,0]])
+            sage: print(r*p)
+            Polygon: (0, 1), (-1, -1), (1, 0)
+        """
+        det = g.det()
+        if det > 0:
+            return x.parent()(vertices=[g*v for v in x.vertices()])
+        if det < 0:
+            # Note that in this case we reverse the order
+            vertices=[g*x.vertex(0)]
+            for i in xrange(x.num_edges()-1,0,-1):
+                vertices.append(g*x.vertex(i))
+            return x.parent()(vertices=vertices)
+        raise ValueError("Can not act on a polygon with matrix with zero determinant")
 
 
 class PolygonPosition:
