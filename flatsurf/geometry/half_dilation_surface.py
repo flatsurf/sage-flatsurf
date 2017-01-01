@@ -33,7 +33,7 @@ class HalfDilationSurface(SimilaritySurface):
             raise NotImplementedError("Only implemented for matrices.")
         if not matrix.dimensions!=(2,2):
             raise NotImplementedError("Only implemented for 2x2 matrices.")
-        return self.GL2R_mapping(matrix).codomain()
+        return self.__class__(GL2RImageSurface(self,matrix)).copy()
 
     def _edge_needs_flip_Linfinity(self, p1, e1):
         r"""
@@ -129,6 +129,21 @@ class HalfDilationSurface(SimilaritySurface):
         return s
 
 class GL2RImageSurface(Surface):
+    r"""
+    This is a lazy implementation of the SL(2,R) image of a translation surface.
+
+    EXAMPLE::
+
+        sage: import flatsurf
+        sage: s=flatsurf.translation_surfaces.octagon_and_squares()
+        sage: r=matrix(ZZ,[[0,1],[1,0]])
+        sage: ss=r*s
+        sage: TestSuite(ss).run()
+        sage: s.canonicalize()==ss.canonicalize()
+        True
+
+    """
+
     def __init__(self, surface, m, ring=None):
 
         if surface.is_mutable():
@@ -139,8 +154,15 @@ class GL2RImageSurface(Surface):
         else:
             self._s=surface
 
-        if m.determinant()<=0:
-            raise ValueError("Currently only works with matrices of positive determinant.")
+        det = m.determinant()
+
+        if det>0:
+            self._det_sign=1
+        elif det<0:
+            self._det_sign=-1
+        else:
+            raise ValueError("Can not apply matrix with zero determinant to surface.")
+
         self._m=m
 
         if ring is None:
@@ -158,17 +180,32 @@ class GL2RImageSurface(Surface):
         Surface.__init__(self, base_ring, self._s.base_label(), finite=self._s.is_finite())
 
     def polygon(self, lab):
-        p = self._s.polygon(lab)
-        edges = [ self._m * p.edge(e) for e in xrange(p.num_edges())]
-        return self._P(edges)
+        if self._det_sign==1:
+            p = self._s.polygon(lab)
+            edges = [ self._m * p.edge(e) for e in xrange(p.num_edges())]
+            return self._P(edges)
+        else:
+            p = self._s.polygon(lab)
+            edges = [ self._m * p.edge(e) for e in xrange(p.num_edges()-1,-1,-1)]
+            return self._P(edges)
 
     def opposite_edge(self, p, e):
-        return self._s.opposite_edge(p,e)
+        if self._det_sign==1:
+            return self._s.opposite_edge(p,e)
+        else:
+            polygon = self._s.polygon(p)
+            pp,ee = self._s.opposite_edge(p,polygon.num_edges()-1-e)
+            polygon2 = self._s.polygon(pp)
+            return pp,polygon2.num_edges()-1-ee
 
 class GL2RMapping(SurfaceMapping):
     r"""
     This class pushes a surface forward under a matrix.
     
+    Note that for matrices of negative determinant we need to relabel edges (because
+    edges must have a counterclockwise cyclic order). For each n-gon in the surface,
+    we relabel edges according to the involution e mapsto n-1-e.
+
     EXAMPLE::
 
         sage: from flatsurf import *
