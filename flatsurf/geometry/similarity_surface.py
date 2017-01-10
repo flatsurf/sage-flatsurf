@@ -1553,6 +1553,9 @@ class SimilaritySurface(SageObject):
 
             - ``'gluings and numbers'`` -- full information
 
+        - ``default_position_function'' -- a function mapping polygon labels to 
+          similarities describing the position of the corresponding polygon.
+
         EXAMPLES::
 
             sage: # Test the difference between the cached graphical_surface and the uncached version.
@@ -1600,6 +1603,9 @@ class SimilaritySurface(SageObject):
 
         - ``adjacencies`` -- a list of pairs ``(p,e)`` to be used to set
           adjacencies of polygons. 
+
+        - ``default_position_function'' -- a function mapping polygon labels to 
+          similarities describing the position of the corresponding polygon.
         """
         return self.graphical_surface(*args, **kwds).plot()
 
