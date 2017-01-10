@@ -3,6 +3,9 @@ from __future__ import absolute_import
 from flatsurf.geometry.similarity_surface import SimilaritySurface
 from .polygon import *
 
+from sage.rings.integer_ring import ZZ
+from sage.rings.rational_field import QQ
+
 class GraphicalSurface:
     r"""
     EXAMPLES::
@@ -16,7 +19,8 @@ class GraphicalSurface:
         sage: gs.graphical_polygon(0).plot()
         Graphics object consisting of 5 graphics primitives
     """
-    def __init__(self, similarity_surface, adjacencies=None, polygon_labels=True, edge_labels=True):
+    def __init__(self, similarity_surface, adjacencies=None, polygon_labels=True, edge_labels=True, 
+        default_position_function = None):
         r"""
         Construct a GraphicalSurface from a similarity surface.
 
@@ -43,11 +47,15 @@ class GraphicalSurface:
         - ``adjacencies`` -- a list of pairs ``(p,e)`` to be used to set
           adjacencies of polygons. 
           
+        - ``default_position_function'' -- a function mapping polygon labels to 
+          similarities describing the position of the corresponding polygon.
+          
         If adjacencies is not defined and the surface is finite, make_all_visible()
         is called to make all polygons visible.
         """
         assert isinstance(similarity_surface, SimilaritySurface)
         self._ss = similarity_surface
+        self._default_position_function = default_position_function
 
         self._polygons = {}
         self._visible = set([self._ss.base_label()])
@@ -60,7 +68,7 @@ class GraphicalSurface:
         self.process_options(adjacencies=adjacencies,
                 polygon_labels=polygon_labels, edge_labels=edge_labels)
 
-    def process_options(self, adjacencies=None, polygon_labels=None, edge_labels=None):
+    def process_options(self, adjacencies=None, polygon_labels=None, edge_labels=None, default_position_function = None):
         r"""
         Process the options listed as if the graphical_surface was first
         created.
@@ -86,6 +94,9 @@ class GraphicalSurface:
         - ``adjacencies`` -- a list of pairs ``(p,e)`` to be used to set
           adjacencies of polygons. 
 
+        - ``default_position_function'' -- a function mapping polygon labels to 
+          similarities describing the position of the corresponding polygon.
+
         TESTS::
 
             sage: from flatsurf import *
@@ -110,15 +121,17 @@ class GraphicalSurface:
             if edge_labels not in [None,'gluings', 'number', 'gluings and number']:
                 raise ValueError("invalid value for edge_labels (={!r})".format(edge_labels))
             self._edge_labels = edge_labels
+        if default_position_function is not None:
+            self._default_position_function = default_position_function
 
     def __repr__(self):
         return "Graphical version of Similarity Surface {!r}".format(self._ss)
 
     def visible(self):
         r"""
-        Return the set of visible labels.
+        Return a copy of the set of visible labels.
         """
-        return self._visible
+        return set(self._visible)
 
     def is_visible(self,label):
         r"""
@@ -132,14 +145,16 @@ class GraphicalSurface:
         """
         self._visible.add(label)
 
-    def make_all_visible(self, adjacent=True, limit=None):
+    def make_all_visible(self, adjacent=None, limit=None):
         r"""
         Attempt to show all invisible polygons by walking over the surface.
 
         INPUT:
 
-        - ``adjacent`` -- (default ``True``) whether the newly added polygon are
-          set to be adjacent or not
+        - ``adjacent`` -- (default ``None``) whether the newly added polygon are 
+          set to be adjacent or not. Defaults to true unless a default_position_function was
+          provided.
+          
         - ``limit`` -- (default ``None``) maximal number of additional polygons to make visible
         EXAMPLES::
 
@@ -157,6 +172,8 @@ class GraphicalSurface:
             sage: g.plot()
             Graphics object consisting of 16 graphics primitives
         """
+        if adjacent is None:
+            adjacent = (self._default_position_function is None)
         if limit is None:
             assert self._ss.is_finite()
             if adjacent:
@@ -170,13 +187,15 @@ class GraphicalSurface:
                 T = SimilarityGroup(self._ss.base_ring())
                 for l in self._ss.label_iterator():
                     if not self.is_visible(l):
-                        poly = self._ss.polygon(l)
-                        sxmax = self.xmax()
-                        g = self.graphical_polygon(l)
-                        pxmin = g.xmin()
-                        t = T((self.xmax() - g.xmin() + 1,
-                            -(g.ymin()+g.ymax())/2))
-                        g.set_transformation(t)
+                        if self._default_position_function is None:
+                            # No reasonable way to display the polygon, so we do this hack:
+                            g = self.graphical_polygon(l)
+                            poly = self._ss.polygon(l)
+                            sxmax = self.xmax()
+                            pxmin = g.xmin()
+                            t = T((QQ(self.xmax() - g.xmin() + 1),
+                                QQ(-(g.ymin()+g.ymax()) / ZZ(2) )))
+                            g.set_transformation(t)
                         self.make_visible(l)
         else:
             assert limit>0
@@ -191,18 +210,20 @@ class GraphicalSurface:
                             if i>=limit:
                                 return
             else:
-                from flatsurf.geometry.translation import SimilarityGroup
+                from flatsurf.geometry.similarity import SimilarityGroup
                 T = SimilarityGroup(self._ss.base_ring())
                 i = 0
                 for l in self._ss.label_iterator():
                     if not self.is_visible(l):
-                        poly = self._ss.polygon(l)
-                        sxmax = self.xmax()
-                        g = self.graphical_polygon(l)
-                        pxmin = g.xmin()
-                        t = T((self.xmax() - g.xmin() + 1,
-                            -(g.ymin()+g.ymax())/2))
-                        g.set_transformation(t)
+                        if self._default_position_function is None:
+                            # No reasonable way to display the polygon, so we do this hack:
+                            g = self.graphical_polygon(l)
+                            poly = self._ss.polygon(l)
+                            sxmax = self.xmax()
+                            pxmin = g.xmin()
+                            t = T((QQ(self.xmax() - g.xmin() + 1),
+                                QQ(-(g.ymin()+g.ymax()) / ZZ(2) )))
+                            g.set_transformation(t)
                         self.make_visible(l)
                         i=i+1
                         if i>=limit:
@@ -258,7 +279,10 @@ class GraphicalSurface:
         if label in self._polygons:
             return self._polygons[label]
         else:
-            p = GraphicalPolygon(self._ss.polygon(label), label=label)
+            t = None
+            if not self._default_position_function is None:
+                t=self._default_position_function(label)
+            p = GraphicalPolygon(self._ss.polygon(label), label=label, transformation=t)
             self._polygons[label] = p
             return p
 
