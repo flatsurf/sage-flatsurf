@@ -40,15 +40,18 @@ class Singularity(SageObject):
         """
         self._ss=similarity_surface
         self._s=set()
-        if self._ss.is_finite():
-            start=(l,v)
-            self._s.add(start)
-            edge=self._ss.opposite_edge(l,v)
+        if not self._ss.is_finite() and limit is None:
+            raise ValueError("Need a limit when working with an infinite surface.")
+        start=(l,v)
+        self._s.add(start)
+        edge=self._ss.opposite_edge(l,v)
+        next = (edge[0], (edge[1]+1)%self._ss.polygon(edge[0]).num_edges() )
+        while start!=next:
+            self._s.add(next)
+            if not limit is None and len(self._s)>limit:
+                raise ValueError("Number of vertices in singularities exceeds limit.")
+            edge=self._ss.opposite_edge(next)
             next = (edge[0], (edge[1]+1)%self._ss.polygon(edge[0]).num_edges() )
-            while start!=next:
-                self._s.add(next)
-                edge=self._ss.opposite_edge(next)
-                next = (edge[0], (edge[1]+1)%self._ss.polygon(edge[0]).num_edges() )
         self._s=frozenset(self._s)
 
     def one_vertex(self):
