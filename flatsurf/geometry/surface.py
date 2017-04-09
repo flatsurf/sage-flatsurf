@@ -1216,6 +1216,27 @@ class Surface_dict(Surface):
                 # Assume on faith we are removing a polygon in the base_surface.
                 self._p[label] = None
 
+#####
+#####  
+#####
+
+class BaseRingChangedSurface(Surface):
+    r"""
+    A surface with a different base_ring.
+    """
+    def __init__(self, surface, ring):
+        self._s=surface
+        self._base_ring=ring
+        from flatsurf.geometry.polygon import Polygons
+        self._P=Polygons(self._base_ring)
+        Surface.__init__(self, ring, self._s.base_label(), mutable=False, finite=self._s.is_finite())
+
+    def polygon(self, lab):
+        return self._P( self._s.polygon(lab) )
+
+    def opposite_edge(self, p, e):
+        return self._s.opposite_edge(p,e)
+
 
 #####
 ##### LABEL WALKER
