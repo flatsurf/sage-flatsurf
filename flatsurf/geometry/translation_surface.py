@@ -216,6 +216,167 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
         s.relabel(w.label_dictionary(), in_place=True)
         return s
 
+    def rel_deformation(self, deformation, local=False, limit=100):
+        r"""
+        Perform a rel deformation of the surface and return the result.
+        
+        This algorithm currently assumes that all polygons affected by this deformation are
+        triangles. That should be fixable in the future.
+        
+        Parameters
+        ----------
+        deformation : dict
+            A dictionary mapping singularities of the surface to deformation vectors 
+            (in some 2-dimensional vector space). The rel deformation being done will
+            move the singularities (relative to each other) linearly to the provided
+            vector for each vertex. If a singularity is not included in the dictionary
+            then the vector will be treated as zero.
+        local : boolean
+            If true, the algorithm attempts to deform all the triangles making up the surface
+            without destroying any of them. So, the area of the triangle must be positive along
+            the full interval of time of the deformation. 
+            If false, then the deformation must have a particular form: all vectors for the 
+            deformation must be paralell. In this case we achieve the deformation with the help
+            of the SL(2,R) action and Delaunay triangulations.
+        limit : integer
+            Restricts the length of the size of SL(2,R) deformations considered. The algorithm should
+            be roughly worst time linear in limit.        
+
+
+        To do
+        -----
+        * Support arbitrary rel deformations.
+        * Remove the requirement that triangles be used.
+
+        EXAMPLES:
+
+            sage: from flatsurf import *
+            sage: s=translation_surfaces.arnoux_yoccoz(4)
+            sage: field=s.base_ring()
+            sage: a=field.gen()
+            sage: V=VectorSpace(field,2)
+            sage: deformation1={s.singularity(0,0):V((1,0))}
+            sage: s1=s.rel_deformation(deformation1).canonicalize()
+            sage: deformation2={s.singularity(0,0):V((a,0))}
+            sage: s2=s.rel_deformation(deformation2).canonicalize()
+            sage: m=Matrix([[a,0],[0,~a]])
+            sage: s2.cmp_translation_surface((m*s1).canonicalize())
+            0
+        """
+        s=self
+        # Find a common field
+        field=s.base_ring()
+        for singularity, v in deformation.iteritems():
+            if v.parent().base_field() != field:
+                from sage.structure.element import get_coercion_model
+                cm = get_coercion_model()
+                field = cm.common_parent(field, v.parent().base_field())
+        from sage.modules.free_module import VectorSpace
+        vector_space = VectorSpace(field,2)
+            
+        from collections import defaultdict
+        vertex_deformation=defaultdict(vector_space.zero) # dictionary associating the vertices.
+        deformed_labels=set() # list of polygon labels being deformed.
+
+        for singularity, vect in deformation.iteritems():
+            # assert s==singularity.surface()
+            for label,v in singularity.vertex_set():
+                vertex_deformation[(label,v)]=vect
+                deformed_labels.add(label)
+                assert s.polygon(label).num_edges()==3
+        
+        from flatsurf.geometry.polygon import wedge_product, Polygons
+
+        if local:
+
+            ss=s.copy(mutable=True, new_field=field)
+            us=ss.underlying_surface()
+
+            P=Polygons(field)
+            for label in deformed_labels:
+                polygon=s.polygon(label)
+                a0=vector_space(polygon.vertex(1))
+                b0=vector_space(polygon.vertex(2))
+                v0=vector_space(vertex_deformation[(label,0)])
+                v1=vector_space(vertex_deformation[(label,1)])
+                v2=vector_space(vertex_deformation[(label,2)])
+                a1=v1-v0
+                b1=v2-v0
+                # We deform by changing the triangle so that its vertices 1 and 2 have the form
+                # a0+t*a1 and b0+t*b1
+                # respectively. We are deforming from t=0 to t=1. 
+                # We worry that the triangle degenerates along the way. 
+                # The area of the deforming triangle has the form
+                # A0 + A1*t + A2*t^2.
+                A0 = wedge_product(a0,b0)
+                A1 = wedge_product(a0,b1)+wedge_product(a1,b0)
+                A2 = wedge_product(a1,b1)
+                if A2 != field.zero():
+                    # Critical point of area function
+                    c = A1/(-2*A2)
+                    if field.zero()<c and c<field.one():
+                        assert A0+A1*c+A2*c**2 > field.zero(), "Triangle with label %r degenerates at critical point before endpoint" % label
+                assert A0+A1+A2 > field.zero(), "Triangle with label %r degenerates at or before endpoint" % label
+                # Triangle does not degenerate.
+                us.change_polygon(label,P(vertices=[vector_space.zero(),a0+a1,b0+b1]))
+            return ss
+        
+        else: # Non local deformation
+            # We can only do this deformation if all the rel vector are parallel.
+            # Check for this.
+            nonzero=None
+            for singularity, vect in deformation.iteritems():
+                vvect=vector_space(vect)
+                if vvect!=vector_space.zero():
+                    if nonzero is None:
+                        nonzero=vvect
+                    else:
+                        assert wedge_product(nonzero,vvect)==0, \
+                            "In non-local deformation all deformation vectos must be parallel"
+            assert nonzero is not None, "Deformation appears to be trivial."
+            from sage.matrix.constructor import Matrix
+            m=Matrix([[nonzero[0],-nonzero[1]],[nonzero[1],nonzero[0]]])
+            mi=~m
+            g=Matrix([[1,0],[0,2]],ring=field)
+            prod=m*g*mi        
+            ss=None
+            k=0
+            while True:
+                if ss is None:
+                    ss=s.copy(mutable=True, new_field=field)
+                else:
+                    # In place matrix deformation
+                    ss.apply_matrix(prod)
+                ss.delaunay_triangulation(direction=nonzero,in_place=True)
+                deformation2={}
+                for singularity, vect in deformation.iteritems():
+                    found_start=None
+                    for label,v in singularity.vertex_set():
+                        if wedge_product(s.polygon(label).edge(v),nonzero) >= 0 and \
+                        wedge_product(nonzero,-s.polygon(label).edge((v+2)%3)) > 0:
+                            found_start=(label,v)
+                            found=None
+                            for vv in xrange(3):
+                                if wedge_product(ss.polygon(label).edge(vv),nonzero) >= 0 and \
+                                wedge_product(nonzero,-ss.polygon(label).edge((vv+2)%3)) > 0:
+                                    found=vv
+                                    deformation2[ss.singularity(label,vv)]=vect
+                                    break
+                            assert found is not None
+                            break
+                    assert found_start is not None
+                try:
+                    sss=ss.rel_deformation(deformation2,local=True)
+                    #print "Took "+str(k+1)+" passes."
+                    sss.apply_matrix(mi*g**(-k)*m)
+                    sss.delaunay_triangulation(direction=nonzero,in_place=True)
+                    return sss
+                except AssertionError as e:
+                    pass
+                k=k+1
+                if limit is not None and k>=limit:
+                    assert False, "Exeeded limit iterations"
+
 class MinimalTranslationCover(Surface):
     r"""
     We label copy by cartesian product (polygon from bot, matrix).
