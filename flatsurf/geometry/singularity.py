@@ -54,12 +54,24 @@ class Singularity(SageObject):
             next = (edge[0], (edge[1]+1)%self._ss.polygon(edge[0]).num_edges() )
         self._s=frozenset(self._s)
 
+    def surface(self):
+        r"""
+        Return the SimilaritySurface where the singularity appears.
+        """
+        return self._ss
+
     def one_vertex(self):
         r"""
         Return a pair (l,v) from the equivalence class of this singularity.
         """
         return next(iter(self._s))
-        
+    
+    def vertex_set(self):
+        r"""
+        Return the set of pairs (l,v) in the equivalence class of this singularity.
+        """
+        return self._s
+    
     def contains_vertex(self, l, v=None):
         r"""
         Checks if the pair (l,v) is in the equivalence class returning true or false.
@@ -82,5 +94,11 @@ class Singularity(SageObject):
         if not self._ss==other._ss:
             return False
         return self._s == other._s
-     
+
+    def __ne__(self, other):
+        return not self == other
+
+    def __hash__(self):
+        # Hash only using the set of vertices (rather than including the surface)
+        return hash(self._s)
 
