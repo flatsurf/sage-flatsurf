@@ -714,6 +714,99 @@ class TranslationSurfaceGenerators:
         return translation_surfaces.ward(4)
 
     @staticmethod
+    def arnoux_yoccoz(genus):
+        r"""
+        Construct the Arnoux-Yoccoz surface of genus 3 or greater.
+        
+        This presentation of the surface follows Section 2.3 of 
+        Joshua P. Bowman's paper "The Complete Family of Arnoux-Yoccoz 
+        Surfaces."
+        
+        EXAMPLES:
+
+        sage: from flatsurf import *
+        sage: s=translation_surfaces.arnoux_yoccoz(4)
+        sage: TestSuite(s).run()
+        sage: s.is_delaunay_decomposed()
+        True
+        sage: s=s.canonicalize()
+        sage: field=s.base_ring()
+        sage: a=field.gen()
+        sage: from sage.matrix.constructor import Matrix
+        sage: m=Matrix([[a,0],[0,~a]])
+        sage: ss=m*s
+        sage: ss=ss.canonicalize()
+        sage: s.cmp_translation_surface(ss)==0
+        True
+        """
+        g=ZZ(genus)
+        assert g>=3
+        from sage.rings.qqbar import AA
+        from sage.rings.polynomial.polynomial_ring import polygen
+        x = polygen(AA)
+        p=sum([x**i for i in xrange(1,g+1)])-1
+        cp = AA.common_polynomial(p)
+        from sage.rings.real_mpfi import RIF
+        alpha_AA = AA.polynomial_root(cp, RIF(1/2, 1))
+        from sage.rings.number_field.number_field import NumberField
+        field=NumberField(alpha_AA.minpoly(),'alpha',embedding=alpha_AA)
+        a=field.gen()
+        from sage.modules.free_module import VectorSpace
+        V=VectorSpace(field,2)
+        p=[None for i in xrange(g+1)]
+        q=[None for i in xrange(g+1)]
+        p[0]=V(( (1-a**g)/2, a**2/(1-a) ))
+        q[0]=V(( -a**g/2, a ))
+        p[1]=V(( -(a**(g-1)+a**g)/2, (a-a**2+a**3)/(1-a) ))
+        p[g]=V(( 1+(a-a**g)/2, (3*a-1-a**2)/(1-a) ))
+        for i in xrange(2,g):
+            p[i]=V(( (a-a**i)/(1-a) , a/(1-a) ))
+        for i in xrange(1,g+1):
+            q[i]=V(( (2*a-a**i-a**(i+1))/(2*(1-a)), (a-a**(g-i+2))/(1-a) ))
+        from flatsurf.geometry.polygon import Polygons
+        P=Polygons(field)
+        from flatsurf.geometry.surface import Surface_list
+        s=Surface_list(field)
+        T=[None for i in xrange(2*g+1)]
+        Tp=[None for i in xrange(2*g+1)]
+        from sage.matrix.constructor import Matrix
+        m=Matrix([[1,0],[0,-1]])
+        for i in xrange(1,g+1):
+            # T_i is (P_0,Q_i,Q_{i-1})
+            T[i]=s.add_polygon(P(edges=[ q[i]-p[0], q[i-1]-q[i], p[0]-q[i-1] ]))
+            # T_{g+i} is (P_i,Q_{i-1},Q_{i})
+            T[g+i]=s.add_polygon(P(edges=[ q[i-1]-p[i], q[i]-q[i-1], p[i]-q[i] ]))
+            # T'_i is (P'_0,Q'_{i-1},Q'_i)
+            Tp[i]=s.add_polygon(m*s.polygon(T[i]))
+            # T'_{g+i} is (P'_i,Q'_i, Q'_{i-1})
+            Tp[g+i]=s.add_polygon(m*s.polygon(T[g+i]))
+        for i in xrange(1,g):
+            s.change_edge_gluing(T[i],0,T[i+1],2)
+            s.change_edge_gluing(Tp[i],2,Tp[i+1],0)
+        for i in xrange(1,g+1):
+            s.change_edge_gluing(T[i],1,T[g+i],1)
+            s.change_edge_gluing(Tp[i],1,Tp[g+i],1)
+        #P 0 Q 0 is paired with P' 0 Q' 0, ...
+        s.change_edge_gluing(T[1],2,Tp[g],2)
+        s.change_edge_gluing(Tp[1],0,T[g],0)
+        # P1Q1 is paired with P'_g Q_{g-1}
+        s.change_edge_gluing(T[g+1],2,Tp[2*g],2)
+        s.change_edge_gluing(Tp[g+1],0,T[2*g],0)
+        # P1Q0 is paired with P_{g-1} Q_{g-1}
+        s.change_edge_gluing(T[g+1],0,T[2*g-1],2)
+        s.change_edge_gluing(Tp[g+1],2,Tp[2*g-1],0)
+        # PgQg is paired with Q1P2
+        s.change_edge_gluing(T[2*g],2,T[g+2],0)
+        s.change_edge_gluing(Tp[2*g],0,Tp[g+2],2)
+        for i in xrange(2,g-1):
+            # PiQi is paired with Q'_i P'_{i+1}
+            s.change_edge_gluing(T[g+i],2,Tp[g+i+1],2)
+            s.change_edge_gluing(Tp[g+i],0,T[g+i+1],0)
+        s.make_immutable()
+        from flatsurf.geometry.translation_surface import TranslationSurface
+        return TranslationSurface(s)
+
+    @staticmethod
     def from_flipper(h):
         r"""
         Build a translation or half-translation surface from a flipper
