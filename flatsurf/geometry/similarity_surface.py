@@ -25,6 +25,7 @@ from .matrix_2x2 import (is_similarity,
 from .similarity import SimilarityGroup
 from .polygon import Polygons, wedge_product
 from .surface import Surface
+from .singularity import Singularity
 
 ZZ_1 = ZZ.one()
 ZZ_2 = ZZ_1 + ZZ_1
@@ -545,7 +546,7 @@ class SimilaritySurface(SageObject):
         else:
             return self.copy(mutable=True).relabel(relabeling_map, in_place=True)
 
-    def copy(self, relabel=False, mutable=False, lazy=None):
+    def copy(self, relabel=False, mutable=False, lazy=None, new_field=None):
         r"""
         Returns a copy of this surface. The method takes several flags to modify how the copy is taken.
         
@@ -559,6 +560,9 @@ class SimilaritySurface(SageObject):
         If lazy is True, then the surface is copied by reference. This is the only type of copy
         possible for infinite surfaces. The parameter defaults to False for finite surfaces, and
         defaults to True for infinite surfaces.
+        
+        The new_field parameter can be used to place the vertices in a larger field than the basefield
+        for the original surface.
 
         EXAMPLES::
 
@@ -572,14 +576,27 @@ class SimilaritySurface(SageObject):
             sage: TestSuite(s).run()
             sage: print(s==ss)
             True
+
+            sage: # Changing the base field
+            sage: from flatsurf import *
+            sage: s=translation_surfaces.veech_double_n_gon(5)
+            sage: ss=s.copy(mutable=False,new_field=AA)
+            sage: TestSuite(ss).run()
+            sage: ss.base_ring()
+            Algebraic Real Field
         """
-        if self.is_finite():
+        if new_field is not None:
+            from flatsurf.geometry.surface import BaseRingChangedSurface
+            s=BaseRingChangedSurface(self,new_field)
+        else:
+            s=self
+        if s.is_finite():
             if relabel:
                 from flatsurf.geometry.surface import Surface_list
-                return self.__class__(Surface_list(surface=self, copy=not lazy, mutable=mutable))
+                return self.__class__(Surface_list(surface=s, copy=not lazy, mutable=mutable))
             else:
                 from flatsurf.geometry.surface import Surface_dict
-                return self.__class__(Surface_dict(surface=self, copy=not lazy, mutable=mutable))
+                return self.__class__(Surface_dict(surface=s, copy=not lazy, mutable=mutable))
         else:
             if lazy==False:
                 raise ValueError("Only lazy copying available for infinite surfaces.")
@@ -587,10 +604,10 @@ class SimilaritySurface(SageObject):
                 raise ValueError("An infinite surface can only be copied if it is immutable.")
             if relabel:
                 from flatsurf.geometry.surface import Surface_list
-                return self.__class__(Surface_list(surface=self, copy=False, mutable=mutable))
+                return self.__class__(Surface_list(surface=s, copy=False, mutable=mutable))
             else:
                 from flatsurf.geometry.surface import Surface_dict
-                return self.__class__(Surface_dict(surface=self, copy=False, mutable=mutable))
+                return self.__class__(Surface_dict(surface=s, copy=False, mutable=mutable))
 
     def triangle_flip(self, l1, e1, in_place=False, test=False, direction=None):
         r"""
@@ -959,6 +976,17 @@ class SimilaritySurface(SageObject):
                 pair = old_to_new_labels[pair]
                 #print "new: "+str(e)+" -> "+str(pair)
             self.underlying_surface().change_edge_gluing(new_label, e, pair[0], pair[1])
+
+    def singularity(self, l, v, limit=None):
+        r"""
+        Represents the Singularity associated to the v-th vertex of the polygon with 
+        label l.
+        
+        If the surface is infinite, the limit needs to be set. In this case the construction
+        of the singularity is successful if the sequence of vertices hit by passing through
+        edges closes up in limit or less steps.
+        """
+        return Singularity(self,l,v,limit)
 
     def minimal_translation_cover(self):
         r"""
@@ -1366,8 +1394,7 @@ class SimilaritySurface(SageObject):
             if in_place:
                 s=self
             else:
-                from flatsurf.geometry.surface import Surface_dict
-                s=self.copy(mutable=True)
+                s=self.copy(mutable=True, relabel=False)
         else:
             if in_place:
                 s=self
