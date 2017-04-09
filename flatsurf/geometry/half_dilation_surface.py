@@ -9,9 +9,12 @@ class HalfDilationSurface(SimilaritySurface):
     """
     def GL2R_mapping(self, matrix):
         r"""
+        Deprecated. Use apply_matrix instead.
+        
         Apply a 2x2 matrix to the polygons making up this surface. 
         Returns the flatsurf.geometry.SurfaceMapping from this surface to its image.
         """
+        deprecation(-1, "GL2R_mapping is deprecated. Use apply_matrix(mapping=True) instead.")
         return GL2RMapping(self, matrix)
         
     def __rmul__(self,matrix):
@@ -35,6 +38,63 @@ class HalfDilationSurface(SimilaritySurface):
             raise NotImplementedError("Only implemented for 2x2 matrices.")
         return self.__class__(GL2RImageSurface(self,matrix)).copy()
 
+    def apply_matrix(self,m,in_place=True, mapping=False):
+        r"""
+        Carry out the GL(2,R) action of m on this surface and return the result.
+        
+        If in_place=True, then this is done in place and changes the surface. 
+        This can only be carried out if the surface is finite and mutable.
+        
+        If mapping=True, then we return a GL2RMapping between this surface and its image. 
+        In this case in_place must be False.
+        
+        If in_place=False, then a copy is made before the deformation.
+        """
+        if mapping==True:
+            assert in_place==False, "Can not modify in place and return a mapping."
+            return GL2RMapping(self, matrix)
+        if not in_place:
+            if self.is_finite():
+                from sage.structure.element import get_coercion_model
+                cm = get_coercion_model()
+                field = cm.common_parent(self.base_ring(), m.base_ring())
+                s=self.copy(mutable=True, new_field=field)
+                return s.apply_matrix(m)
+            else:
+                return m*self
+        else:
+            # Make sure m is in the right state
+            from sage.matrix.constructor import Matrix
+            m=Matrix(self.base_ring(), 2, 2, m)
+            assert m.det()!=self.base_ring().zero(), "Can not deform by degenerate matrix."
+            assert self.is_finite(), "In place GL(2,R) action only works for finite surfaces."
+            us=self.underlying_surface()
+            assert us.is_mutable(), "In place changes only work for mutable surfaces."
+            for label in self.label_iterator():
+                us.change_polygon(label,m*self.polygon(label))
+            if m.det()<self.base_ring().zero():
+                # Polygons were all reversed orientation. Need to redo gluings.
+                
+                # First pass record new gluings in a dictionary.
+                new_glue={}
+                seen_labels=set()
+                for p1 in self.label_iterator():
+                    n1=self.polygon(p1).num_edges()
+                    for e1 in xrange(n1):
+                        p2,e2=self.opposite_edge(p1,e1)
+                        n2=self.polygon(p2).num_edges()
+                        if p2 in seen_labels:
+                            pass
+                        elif p1==p2 and e1>e2:
+                            pass
+                        else:
+                            new_glue[(p1, n1-1-e1)]=(p2, n2-1-e2)
+                    seen_labels.add(p1)
+                # Second pass: reassign gluings
+                for (p1,e1),(p2,e2) in new_glue.iteritems():
+                    us.change_edge_gluing(p1,e1,p2,e2)
+            return self
+                
     def _edge_needs_flip_Linfinity(self, p1, e1):
         r"""
         Check whether the provided edge which bouds two triangles should be flipped
