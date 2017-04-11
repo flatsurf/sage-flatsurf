@@ -563,7 +563,7 @@ def triangulation_mapping(s):
     r"""Return a  SurfaceMapping triangulating the provided surface.
     
     EXAMPLES::
-        
+
         sage: from flatsurf import *
         sage: s=translation_surfaces.veech_2n_gon(4)
         sage: from flatsurf.geometry.mappings import *
@@ -590,7 +590,7 @@ def triangulation_mapping(s):
             return m
         s1=m2.codomain()
         m=SurfaceMappingComposition(m,m2)
-    
+    return m
 
 def flip_edge_mapping(s,p1,e1):
     r"""
