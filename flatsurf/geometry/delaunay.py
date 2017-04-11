@@ -313,7 +313,7 @@ class LazyDelaunaySurface(LazyDelaunayTriangulatedSurface):
         sage: m=matrix([[2,1],[1,1]])
         sage: ss=TranslationSurface(LazyDelaunaySurface(m*s,relabel=False))
         sage: ss.polygon(ss.base_label())
-        Polygon: (0, 0), (0, -1), (1, -1), (1, 0)
+        Polygon: (0, 0), (1, 0), (1, 1), (0, 1)
         sage: ss.is_delaunay_decomposed(limit=100)
         True
         sage: TestSuite(ss).run(skip="_test_pickling")
