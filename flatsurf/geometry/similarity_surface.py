@@ -25,7 +25,7 @@ from .matrix_2x2 import (is_similarity,
 from .similarity import SimilarityGroup
 from .polygon import Polygons, wedge_product
 from .surface import Surface
-from .singularity import Singularity
+from .surface_objects import Singularity
 
 ZZ_1 = ZZ.one()
 ZZ_2 = ZZ_1 + ZZ_1
