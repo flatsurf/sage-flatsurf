@@ -8,7 +8,6 @@ from __future__ import absolute_import
 
 from sage.structure.sage_object import SageObject
 
-from flatsurf import * 
 from .polygon import wedge_product, dot_product
 
 
@@ -44,6 +43,7 @@ class Singularity(SageObject):
         of the singularity is successful if the sequence of vertices hit by passing through
         edges closes up in limit or less steps.
         """
+        from .similarity_surface import SimilaritySurface
         self._ss=similarity_surface
         self._s=set()
         if not self._ss.is_finite() and limit is None:
@@ -109,6 +109,8 @@ class Singularity(SageObject):
         return hash(self._s)
 
 
+
+
 class SaddleConnection(SageObject):
     r"""
     Represents a saddle connection on a SimilaritySurface.
@@ -169,6 +171,7 @@ class SaddleConnection(SageObject):
             The combinatorial limit (in terms of number of polygons crossed) to flow forward 
             to check the saddle connection geometry.
         """
+        from .similarity_surface import SimilaritySurface
         assert isinstance(surface,SimilaritySurface)
         self._s=surface
         
@@ -184,14 +187,16 @@ class SaddleConnection(SageObject):
             self._direction=self._direction/xabs
         else:
             self._direction=self._direction/yabs
-    
+        
         self._start_data=tuple(start_data)
         
         if end_direction is None:
+            from .half_dilation_surface import HalfDilationSurface
+            from .dilation_surface import DilationSurface
             # Attempt to infer the end_direction.
-            if isinstance(s,DilationSurface):
+            if isinstance(self._s,DilationSurface):
                 end_direction=-self._direction
-            elif isinstance(s,HalfDilationSurface) and end_data is not None:
+            elif isinstance(self._s,HalfDilationSurface) and end_data is not None:
                 p=self._s.polygon(end_data[0])
                 if wedge_product(p.edge(end_data[1]), self._direction)>=0 and \
                    wedge_product(p.edge( (p.num_edges()+end_data[1]-1)%p.num_edges() ), self._direction)>0:
@@ -201,9 +206,11 @@ class SaddleConnection(SageObject):
 
         if end_holonomy is None and holonomy is not None:
             # Attempt to infer the end_holonomy:
-            if isinstance(s,TranslationSurface):
+            from .half_translation_surface import HalfTranslationSurface
+            from .translation_surface import TranslationSurface
+            if isinstance(self._s,TranslationSurface):
                 end_holonomy=-holonomy
-            if isinstance(s,HalfTranslationSurface):
+            if isinstance(self._s,HalfTranslationSurface):
                 if direction==end_direction:
                     end_holonomy=holonomy
                 else:
@@ -232,19 +239,31 @@ class SaddleConnection(SageObject):
                 if end_direction!=self._end_direction:
                     raise ValueError("Provided or inferred end_direction="+str(end_direction)+" does not match actual end_direction="+str(self._end_direction))
 
-            from flatsurf.geometry.similarity import SimilarityGroup
-            sim=SimilarityGroup(self._s.base_ring()).one()
-            itersegs = iter(traj.segments())
-            next(itersegs)
-            for seg in itersegs:
-                sim = sim * self._s.edge_transformation(seg.start().polygon_label(),
-                                                        seg.start().position().get_edge())
-            self._holonomy = sim(seg.end().point())-traj.segments()[0].start().point()
+            if traj.segments()[0].is_edge():
+                # Special case (The below method causes error if the trajectory is just an edge.)
+                self._holonomy = self._s.polygon(start_data[0]).edge(start_data[1])
+                self._end_holonomy = self._s.polygon(self._end_data[0]).edge(self._end_data[1])
+            else:
+                from .similarity import SimilarityGroup
+                sim=SimilarityGroup(self._s.base_ring()).one()
+                itersegs = iter(traj.segments())
+                next(itersegs)
+                for seg in itersegs:
+                    sim = sim * self._s.edge_transformation(seg.start().polygon_label(),
+                                                            seg.start().position().get_edge())
+                self._holonomy = sim(traj.segments()[-1].end().point())- \
+                    traj.initial_tangent_vector().point()
+                self._end_holonomy = -( (~sim.derivative())*self._holonomy )
+
             if holonomy is not None:
                 if holonomy!=self._holonomy:
+                    print "Combinatorial length: "+str(traj.combinatorial_length())
+                    print "Start: "+str(traj.initial_tangent_vector().point())
+                    print "End: "+str(traj.terminal_tangent_vector().point())
+                    print "Start data:"+str(start_data)
+                    print "End data:"+str(end_data)
                     raise ValueError("Provided holonomy "+str(holonomy)+
                                      " does not match computed holonomy of "+str(self._holonomy))
-            self._end_holonomy = -( (~sim.derivative())*self._holonomy )
             if end_holonomy is not None:
                 if end_holonomy!=self._end_holonomy:
                     raise ValueError("Provided or inferred end_holonomy "+str(end_holonomy)+
@@ -254,17 +273,31 @@ class SaddleConnection(SageObject):
             self._end_direction=end_direction
             self._holonomy=holonomy
             self._end_holonomy=end_holonomy
-        
+
+        # Make vectors immutable
+        self._direction.set_immutable()
+        self._end_direction.set_immutable()
+        self._holonomy.set_immutable()
+        self._end_holonomy.set_immutable()
+
     def surface(self):
         return self._s
             
     def direction(self):
         r"""
-        Returns a vector paralell to the saddle connection. 
+        Returns a vector parallel to the saddle connection pointing from the start point.
         
         The will be normalized so that its l_\infty norm is 1.
         """
         return self._direction
+
+    def end_direction(self):
+        r"""
+        Returns a vector parallel to the saddle connection pointing from the end point.
+        
+        The will be normalized so that its l_\infty norm is 1.
+        """
+        return self._end_direction
 
     def start_data(self):
         r"""
@@ -343,7 +376,7 @@ class SaddleConnection(SageObject):
         return not self == other
 
     def __hash__(self):
-        return 41*hash(self._direction)-97*hash(start_data)
+        return 41*hash(self._direction)-97*hash(self._start_data)
     
     def _test_geometry(self, **options):
         # Test that this saddle connection actually exists on the surface.
@@ -356,6 +389,10 @@ class SaddleConnection(SageObject):
                            self._holonomy, self._end_holonomy,
                            check=True)
     
+    def __repr__(self):
+        return "Saddle connection in direction {} with start data {} and end data {}".format(
+            self._direction, self._start_data, self._end_data)
+    
     def _test_inverse(self, **options):
         # Test that inverting works properly.
         if 'tester' in options:
@@ -366,3 +403,157 @@ class SaddleConnection(SageObject):
            self._start_data, self._direction,
            self._end_holonomy, self._holonomy,
            check=True)
+
+class Cylinder(SageObject):
+    r"""
+    Represents a cylinder in a SimilaritySurface. A cylinder for these purposes is a 
+    topological annulus in a surface bounded by a finite collection of saddle connections
+    meeting at 180 degree angles.
+
+    To Do
+    -----
+    * Currently no verification of input data is done.
+    * It would also be nice to allow minimal data to be inputed to produce the cylinder.
+    * Improve support of other surface types.
+
+    EXAMPLES::
+
+        sage: from flatsurf import *
+        sage: s=translation_surfaces.regular_octagon()
+        sage: from flatsurf.geometry.surface_objects import *
+        sage: boundary=[SaddleConnection(s,(0,7),(1,0)),SaddleConnection(s,(0,3),(-1,0))]
+        sage: boundary
+        [Saddle connection in direction (1, 0) with start data (0, 7) and end data (0, 2), Saddle connection in direction (-1, 0) with start data (0, 3) and end data (0, 6)]
+        sage: cyl=Cylinder(boundary, across=SaddleConnection(s,(0,2),(0,1)) )
+        sage: cyl.boundary_components()
+        frozenset({frozenset({Saddle connection in direction (-1, 0) with start data (0, 3) and end data (0, 6)}),
+           frozenset({Saddle connection in direction (1, 0) with start data (0, 7) and end data (0, 2)})})
+        sage: print cyl.next(boundary[0])==boundary[0]
+        True
+        sage: print cyl.previous(boundary[1])==boundary[1]
+        True
+        sage: hol=cyl.holonomy()
+        sage: print hol if hol[0]>0 else -hol
+        (a + 1, 0)
+        sage: w=cyl.width_vector()
+        sage: print w if w[1]>0 else -w
+        (0, 1)
+    """
+    def __init__(self, boundary=None, across=None):
+        r"""
+        
+        Parameters
+        ----------
+        boundary : A collection of saddle connections
+            that bound the cylinder. The cylinder must be on the left as you move along the 
+            saddle connections.
+        across : Saddle connection
+            A single saddle connection lying in the cylinder whose endpoints lie on opposite 
+            boundary components.
+        """
+        self._s=None
+        assert len(boundary)>=2, "There must be at least two boundary saddle connections."
+        for sc in boundary:
+            assert isinstance(sc,SaddleConnection), "Boundary must be collection of saddle connections."
+            if self._s is None:
+                self._s=sc.surface()
+            else:
+                assert self._s is sc.surface(), \
+                    "All saddle connections must be on the same surface."        
+        self._boundary = frozenset(boundary)
+        it=iter(boundary)
+        sc=it.next()
+        boundary1={sc}
+        sc2=self.next(sc)
+        while sc2!=sc:
+            boundary1.add(sc2)
+            sc2=self.next(sc2)
+        it=iter(self._boundary-boundary1)
+        sc=it.next()
+        boundary2={sc}
+        sc2=self.next(sc)
+        while sc2!=sc:
+            boundary2.add(sc2)
+            sc2=self.next(sc2)
+        assert len(self._boundary - boundary1.union(boundary2))==0,\
+            "Extra saddle connections in boundary."
+        self._boundary1=frozenset(boundary1)
+        self._boundary2=frozenset(boundary2)
+    
+        assert isinstance(across,SaddleConnection), "Parameter across must be a saddle connection."
+        assert across.surface()==self._s, "Saddle connection across must lie on the same surface as the boundary."
+        self._across=across
+        
+    def surface(self):
+        return self._s
+    
+    def boundary(self):
+        return self._boundary
+    
+    def boundary_components(self):
+        return frozenset([self._boundary1,self._boundary2])
+        
+    def next(self, sc):
+        r"""
+        Return the next saddle connection as you move around the cylinder boundary
+        moving from sc in the direction of its orientation.
+        """
+        assert sc in self._boundary
+        v=sc.end_tangent_vector()
+        v=v.clockwise_to(-v.vector())
+        from flatsurf.geometry.polygon import is_same_direction
+        for sc2 in self._boundary:
+            if sc2.start_data()==(v.polygon_label(),v.singularity()) and \
+                    is_same_direction(sc2.direction(), v.vector()):
+                return sc2
+        raise ValuError("Failed to find next saddle connection in boundary set.")
+
+    def previous(self,sc):
+        r"""
+        Return the previous saddle connection as you move around the cylinder boundary
+        moving from sc in the direction opposite its orientation.
+        """
+        assert sc in self._boundary
+        v=sc.start_tangent_vector()
+        v=v.counterclockwise_to(-v.vector())
+        from flatsurf.geometry.polygon import is_same_direction
+        for sc2 in self._boundary:
+            if sc2.end_data()==(v.polygon_label(),v.singularity()) and \
+                    is_same_direction(sc2.end_direction(), v.vector()):
+                return sc2
+        raise ValuError("Failed to find previous saddle connection in boundary set.")
+
+    def holonomy(self):
+        r"""
+        In a translation surface, return one of the two holonomy vectors of the cylinder,
+        which differ by a sign.
+        """
+        from flatsurf.geometry.translation_surface import TranslationSurface
+        assert isinstance(self._s,TranslationSurface), \
+            "Holonomy currently only computable for translation surfaces."
+        V=self._s.vector_space()
+        total=V.zero()
+        for sc in self._boundary1:
+            total += sc.holonomy()
+
+        # Debugging:
+        total2=V.zero()
+        for sc in self._boundary2:
+            total2 += sc.holonomy()            
+        assert total+total2==V.zero(), "Holonomy of the two boundary components should sum to zero."
+        
+        return total
+    
+    def width_vector(self):
+        r"""
+        In a translation surface, return a vector orthogonal to the holonomy vector which cuts 
+        across the cylinder.
+        """
+        from flatsurf.geometry.translation_surface import TranslationSurface
+        assert isinstance(self._s,TranslationSurface), \
+            "width_vector currently only computable for translation surfaces."
+        w=self._across.holonomy()
+        h=iter(self._boundary1).next().holonomy()
+        from flatsurf.geometry.polygon import dot_product
+        return w-(dot_product(w,h)/dot_product(h,h))*h
+
