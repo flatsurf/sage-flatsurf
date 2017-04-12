@@ -2,6 +2,11 @@ from __future__ import absolute_import
 
 from .polygon import wedge_product, is_same_direction, is_opposite_direction
 
+rotate_limit=100
+r"""
+Limit for clockwise_to and counter_clockwise_to in SimilaritySurfaceTangentVector.
+"""
+
 class SimilaritySurfaceTangentVector:
     def __init__(self, tangent_bundle, polygon_label, point, vector):
         self._bundle = tangent_bundle
@@ -237,6 +242,113 @@ class SimilaritySurfaceTangentVector:
         """
         from flatsurf.geometry.straight_line_trajectory import StraightLineTrajectory
         return StraightLineTrajectory(self)
+
+    def clockwise_to(self, w):
+        r"""
+        Return the new tangent vector obtained by rotating this one in the clockwise
+        direction until the vector is parallel to w, and scaling so that the length matches
+        that of w. 
+        
+        Note that we always do some rotation so that if w is parallel to this vector, then a 
+        -360 degree rotation is performed.
+        
+        The vector w must be nonzero.
+        
+        On an infinite surface, this is potentially an infinite calculation
+        so we impose a limit (representing the maximal number of polygons
+        that must be rotated through.) This is the variable rotate_limit
+        in this package.
+
+        EXAMPLES::
+
+            sage: from flatsurf import *
+            sage: s=translation_surfaces.regular_octagon()
+            sage: v=s.tangent_vector(0,(0,0),(1,1))
+            sage: v.clockwise_to((-1,-1))
+            SimilaritySurfaceTangentVector in polygon 0 based at (0, a + 1) with vector (-1, -1)
+            sage: v.clockwise_to((1,1))
+            SimilaritySurfaceTangentVector in polygon 0 based at (-1/2*a, 1/2*a) with vector (1, 1)
+        """
+        assert w!=self.surface().vector_space().zero(), "Vector w must be non-zero."
+        if self.is_based_at_singularity():
+            s=self.surface()
+            v1=self.vector()
+            label=self.polygon_label()
+            vertex=self.singularity()
+            v2=s.polygon(label).edge(vertex)
+            from sage.matrix.constructor import Matrix
+            der = Matrix(s.base_ring(), [[1,0],[0,1]])
+            for count in xrange(rotate_limit):
+                if wedge_product(v2,w)>=0 and wedge_product(w,v1)>0:
+                    # We've found it!
+                    break
+                label2,edge2=s.opposite_edge(label,vertex)
+                der=der*s.edge_matrix(label2,edge2)
+                v1=der*(-s.polygon(label2).edge(edge2))
+                label=label2
+                vertex=(edge2+1) % s.polygon(label2).num_edges()
+                v2=der*(s.polygon(label2).edge(vertex))
+            assert count<rotate_limit, "Reached limit!"
+                
+            return self.surface().tangent_vector(label,s.polygon(label).vertex(vertex),w)
+        else:
+            return self.surface().tangent_vector(v.polygon_label(),v.point(),w)
+
+    def counterclockwise_to(self, w):
+        r"""
+        Return the new tangent vector obtained by rotating this one in the counterclockwise
+        direction until the vector is parallel to w, and scaling so that the length matches
+        that of w. 
+        
+        Note that we always do some rotation so that if w is parallel to this vector, then a 
+        360 degree rotation is performed.
+        
+        The vector w must be nonzero.
+        
+        On an infinite surface, this is potentially an infinite calculation
+        so we impose a limit (representing the maximal number of polygons
+        that must be rotated through.) This is the variable rotate_limit
+        in this package.
+
+        EXAMPLES::
+
+            sage: from flatsurf import *
+            sage: s=translation_surfaces.regular_octagon()
+            sage: v=s.tangent_vector(0,(0,0),(1,1))
+            sage: v.counterclockwise_to((-1,-1))
+            SimilaritySurfaceTangentVector in polygon 0 based at (1/2*a + 1, 1/2*a + 1) with vector (-1, -1)
+            sage: v.counterclockwise_to((1,1))
+            SimilaritySurfaceTangentVector in polygon 0 based at (1, 0) with vector (1, 1)
+        """
+        assert w!=self.surface().vector_space().zero(), "Vector w must be non-zero."
+        if self.is_based_at_singularity():
+            s=self.surface()
+            v1=self.vector()
+            label=self.polygon_label()
+            vertex=self.singularity()
+            previous_vertex = (vertex-1+s.polygon(label).num_edges()) % \
+                s.polygon(label).num_edges()
+            v2=-s.polygon(label).edge(previous_vertex)
+            from sage.matrix.constructor import Matrix
+            der = Matrix(s.base_ring(), [[1,0],[0,1]])
+            if not (wedge_product(v1,w)>0 and wedge_product(w,v2)>0):
+                for count in xrange(rotate_limit):
+                    label2,edge2=s.opposite_edge(label,previous_vertex)
+                    der=der*s.edge_matrix(label2,edge2)
+                    label=label2
+                    vertex=edge2
+                    previous_vertex = (vertex-1+s.polygon(label).num_edges()) % \
+                        s.polygon(label).num_edges()
+                    v1=der*(s.polygon(label).edge(vertex))
+                    v2=der*(-s.polygon(label).edge(previous_vertex))
+                    if wedge_product(v1,w)>=0 and wedge_product(w,v2)>0:
+                        # We've found it!
+                        break
+                assert count<rotate_limit, "Reached limit!"
+            return self.surface().tangent_vector(label,s.polygon(label).vertex(vertex),w)
+        else:
+            return self.surface().tangent_vector(v.polygon_label(),v.point(),w)
+
 
 class SimilaritySurfaceTangentBundle:
     r"""
