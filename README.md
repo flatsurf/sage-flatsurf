@@ -30,7 +30,11 @@ Installing the module
 
 Get the file in this git repository. Then run
 
-    $ sage -python setup.py install
+    $ sage -pip install git+https://github.com/videlec/sage-flatsurf [--user] [--upgrade]
+
+The options `--user` and `--upgrade` are optional. The option `--user` make
+the installation in your home directory instead of the Sage sources. The
+option `--upgrade` allows you to upgrade if the package is already installed.
 
 Then you should be able to use the following within sage
 
@@ -40,6 +44,8 @@ Then you should be able to use the following within sage
 	Translation surface built from 1 polygon
 	sage: T.stratum()
 	H(2)
+
+To uninstall the package, you can do `$ sage -pip uninstall flatsurf`.
 
 Run the tests
 -------------
