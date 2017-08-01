@@ -78,16 +78,7 @@ class SimilaritySurface(SageObject):
 
             sage: from flatsurf import *
             sage: s = translation_surfaces.veech_2n_gon(6)
-            sage: TestSuite(s).run(verbose=True)
-            running ._test_base_label() . . . pass
-            running ._test_base_ring() . . . pass
-            running ._test_category() . . . pass
-            running ._test_edge_matrix() . . . pass
-            running ._test_gluings() . . . pass
-            running ._test_not_implemented_methods() . . . pass
-            running ._test_override() . . . pass
-            running ._test_pickling() . . . pass
-            running ._test_polygons() . . . pass
+            sage: TestSuite(s).run()
         """
         from sage.misc.superseded import deprecation
         deprecation(33, "Just use TestSuite!...")
