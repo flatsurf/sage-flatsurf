@@ -87,6 +87,6 @@ class GraphicalStraightLineTrajectory:
         from sage.plot.graphics import Graphics
         p = Graphics()
         for seg in self._segments:
-            p += seg.plot(color=(self._color if color is None else self._color))
+            p += seg.plot(color=(self._color if color is None else color))
         return p
 
