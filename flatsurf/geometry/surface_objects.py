@@ -28,10 +28,7 @@ class Singularity(SageObject):
         sage: sing=Singularity(s,0,1)
         sage: print(sing)
         singularity with vertex equivalence class frozenset([(0, 1), (0, 9), (0, 3), (0, 5), (0, 7)])
-        sage: TestSuite(sing).run(verbose=True)
-        running ._test_category() . . . pass
-        running ._test_not_implemented_methods() . . . pass
-        running ._test_pickling() . . . pass
+        sage: TestSuite(sing).run()
     """
     
     def __init__(self, similarity_surface, l, v, limit=None):
