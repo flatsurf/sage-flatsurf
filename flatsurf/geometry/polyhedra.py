@@ -1,9 +1,12 @@
 from sage.rings.integer_ring import ZZ
+from sage.rings.rational_field import QQ
 from sage.rings.number_field.number_field import NumberField
 from sage.rings.qqbar import AA, number_field_elements_from_algebraics
 from sage.structure.sage_object import SageObject
 from sage.matrix.constructor import matrix
 from sage.modules.free_module_element import vector
+from sage.geometry.polyhedron.constructor import Polyhedron
+from sage.functions.other import sqrt
 
 from flatsurf.geometry.polygon import Polygons
 from flatsurf.geometry.surface import surface_list_from_polygons_and_gluings
@@ -140,20 +143,22 @@ def polyhedron_to_cone_surface(polyhedron, use_AA=False, scaling_factor=ZZ(1)):
                 edge_temp.add(v)
             face_edges_temp.add(frozenset(edge_temp))
 
+            
         last_edge = next(iter(face_edges_temp))
         v = next(iter(last_edge))
         face_vertices_temp=[v]
         for j in xrange(len(face_edges_temp)-1):
             for edge in face_edges_temp:
-                if edge!=last_edge:
-                    if v in edge:
-                        # bingo
-                        last_edge=edge
-                        for vv in edge:
-                            if vv!=v:
-                                face_vertices_temp.append(vv)
-                                break
-                        break
+                if v in edge and edge!=last_edge:
+                    # bingo
+                    last_edge=edge
+                    for vv in edge:
+                        if vv!=v:
+                            v=vv
+                            face_vertices_temp.append(vv)
+                            break
+                    break
+
 
         v0=face_vertices_temp[0]
         v1=face_vertices_temp[1]
@@ -193,7 +198,7 @@ def polyhedron_to_cone_surface(polyhedron, use_AA=False, scaling_factor=ZZ(1)):
         edge=frozenset([v_last,v])
         face_edge_dict[edge]=j
         face_edges.append(face_edge_dict)
-
+        
     gluings={}
     for p1,face_edge_dict1 in enumerate(face_edges):
         for edge, e1 in face_edge_dict1.items():
@@ -233,26 +238,160 @@ def polyhedron_to_cone_surface(polyhedron, use_AA=False, scaling_factor=ZZ(1)):
                 
         # Find the best number field:
         field,elts2,hom = number_field_elements_from_algebraics(elts,minimal=True)
-        # Unfortunately field doesn't come with an real embedding (which is given by hom!)
-        # So, we make a copy of the field, and add the embedding.
-        field2=NumberField(field.polynomial(),name="a",embedding=hom(field.gen()))
-        # The following converts from field to field2:
-        hom2=field.hom(im_gens=[field2.gen()])
-        
-        polygon_vertices_field2=[]
-        j=0
-        for vs in polygon_vertices_AA:
-            vs2=[]
-            for v in vs:
-                vs2.append(vector(field2,[hom2(elts2[j]),hom2(elts2[j+1])]))
-                j=j+2
-            polygon_vertices_field2.append(vs2)
-        Polys=Polygons(field2)
-        polygons=[]
-        for vs in polygon_vertices_field2:
-            polygons.append(Polys(vertices=vs))
-        S=ConeSurface(surface_list_from_polygons_and_gluings(polygons,gluings))
-        return S, \
-            ConeSurfaceToPolyhedronMap(S,polyhedron,face_map_data)
-        
+        if field==QQ:
+            # Defined over the rationals!
+            polygon_vertices_field2=[]
+            j=0
+            for vs in polygon_vertices_AA:
+                vs2=[]
+                for v in vs:
+                    vs2.append(vector(field,[elts2[j],elts2[j+1]]))
+                    j=j+2
+                polygon_vertices_field2.append(vs2)
+            Polys=Polygons(field)
+            polygons=[]
+            for vs in polygon_vertices_field2:
+                polygons.append(Polys(vertices=vs))
+            S=ConeSurface(surface_list_from_polygons_and_gluings(polygons,gluings))
+            return S, \
+                ConeSurfaceToPolyhedronMap(S,polyhedron,face_map_data)
+
+        else:        
+            # Unfortunately field doesn't come with an real embedding (which is given by hom!)
+            # So, we make a copy of the field, and add the embedding.
+            field2=NumberField(field.polynomial(),name="a",embedding=hom(field.gen()))
+            # The following converts from field to field2:
+            hom2=field.hom(im_gens=[field2.gen()])
+
+            polygon_vertices_field2=[]
+            j=0
+            for vs in polygon_vertices_AA:
+                vs2=[]
+                for v in vs:
+                    vs2.append(vector(field2,[hom2(elts2[j]),hom2(elts2[j+1])]))
+                    j=j+2
+                polygon_vertices_field2.append(vs2)
+            Polys=Polygons(field2)
+            polygons=[]
+            for vs in polygon_vertices_field2:
+                polygons.append(Polys(vertices=vs))
+            S=ConeSurface(surface_list_from_polygons_and_gluings(polygons,gluings))
+            return S, \
+                ConeSurfaceToPolyhedronMap(S,polyhedron,face_map_data)
+
+def platonic_tetrahedron():
+    r"""Produce a triple consisting of a polyhedral version of the platonic tetrahedron,
+    the associated cone surface, and a ConeSurfaceToPolyhedronMap from the surface
+    to the polyhedron.
+
+    EXAMPLES::
+
+    sage: from flatsurf.geometry.polyhedra import platonic_tetrahedron
+    sage: polyhedron,surface,surface_to_polyhedron = platonic_tetrahedron()
+    sage: TestSuite(surface).run()
+    r"""
+    vertices=[]
+    for x in xrange(-1,3,2):
+        for y in xrange(-1,3,2):
+                vertices.append(vector(QQ,(x,y,x*y)))
+    p=Polyhedron(vertices=vertices)
+    s,m = polyhedron_to_cone_surface(p,scaling_factor=AA(1/sqrt(2)))
+    return p,s,m
+
+def platonic_cube():
+    r"""Produce a triple consisting of a polyhedral version of the platonic cube,
+    the associated cone surface, and a ConeSurfaceToPolyhedronMap from the surface
+    to the polyhedron.
+
+    EXAMPLES::
+
+    sage: from flatsurf.geometry.polyhedra import platonic_cube
+    sage: polyhedron,surface,surface_to_polyhedron = platonic_cube()
+    sage: TestSuite(surface).run()
+    r"""
+    vertices=[]
+    for x in xrange(-1,3,2):
+        for y in xrange(-1,3,2):
+            for z in xrange(-1,3,2):
+                vertices.append(vector(QQ,(x,y,z)))
+    p=Polyhedron(vertices=vertices)
+    s,m = polyhedron_to_cone_surface(p,scaling_factor=QQ(1)/2)
+    return p,s,m
+
+def platonic_octahedron():
+    r"""Produce a triple consisting of a polyhedral version of the platonic octahedron,
+    the associated cone surface, and a ConeSurfaceToPolyhedronMap from the surface
+    to the polyhedron.
+
+    EXAMPLES::
+
+    sage: from flatsurf.geometry.polyhedra import platonic_octahedron
+    sage: polyhedron,surface,surface_to_polyhedron = platonic_octahedron()
+    sage: TestSuite(surface).run()
+    r"""
+    vertices=[]
+    for i in xrange(3):
+        temp=vector(QQ,[1 if k==i else 0 for k in xrange(3)])
+        for j in xrange(-1,3,2):
+            vertices.append(j*temp)
+    octahedron=Polyhedron(vertices=vertices)
+    surface,surface_to_octahedron = \
+        polyhedron_to_cone_surface(octahedron,scaling_factor=AA(sqrt(2)))
+    return octahedron,surface,surface_to_octahedron
+
+def platonic_dodecahedron():
+    r"""Produce a triple consisting of a polyhedral version of the platonic dodecahedron,
+    the associated cone surface, and a ConeSurfaceToPolyhedronMap from the surface
+    to the polyhedron.
+
+    EXAMPLES::
+
+    sage: from flatsurf.geometry.polyhedra import platonic_dodecahedron
+    sage: polyhedron,surface,surface_to_polyhedron = platonic_dodecahedron()
+    sage: TestSuite(surface).run()
+    r"""
+    vertices=[]
+    phi=AA(1+sqrt(5))/2
+    F=NumberField(phi.minpoly(),"phi",embedding=phi)
+    phi=F.gen()
+    for x in xrange(-1,3,2):
+        for y in xrange(-1,3,2):
+            for z in xrange(-1,3,2):
+                vertices.append(vector(F,(x,y,z)))
+    for x in xrange(-1,3,2):
+        for y in xrange(-1,3,2):
+            vertices.append(vector(F,(0,x*phi,y/phi)))
+            vertices.append(vector(F,(y/phi,0,x*phi)))
+            vertices.append(vector(F,(x*phi,y/phi,0)))
+    scale=AA(2/sqrt(1+(phi-1)**2+(1/phi-1)**2))
+    p=Polyhedron(vertices=vertices)
+    s,m = polyhedron_to_cone_surface(p,scaling_factor=scale)
+    return p,s,m
+
+def platonic_icosahedron():
+    r"""Produce a triple consisting of a polyhedral version of the platonic icosahedron,
+    the associated cone surface, and a ConeSurfaceToPolyhedronMap from the surface
+    to the polyhedron.
+
+    EXAMPLES::
+
+    sage: from flatsurf.geometry.polyhedra import platonic_icosahedron
+    sage: polyhedron,surface,surface_to_polyhedron = platonic_icosahedron()
+    sage: TestSuite(surface).run()
+    r"""
+    vertices=[]
+    phi=AA(1+sqrt(5))/2
+    F=NumberField(phi.minpoly(),"phi",embedding=phi)
+    phi=F.gen()
+    for i in xrange(3):
+        for s1 in xrange(-1,3,2):
+            for s2 in xrange(-1,3,2):
+                p=3*[None]
+                p[i]=s1*phi
+                p[(i+1)%3]=s2
+                p[(i+2)%3]=0
+                vertices.append(vector(F,p))
+    p=Polyhedron(vertices=vertices)
     
+    s,m = polyhedron_to_cone_surface(p)
+    return p,s,m
