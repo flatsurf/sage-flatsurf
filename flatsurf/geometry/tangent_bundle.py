@@ -94,8 +94,15 @@ class SimilaritySurfaceTangentVector:
         """
         return self._position.is_vertex()
 
+    def vertex(self):
+        r"""Return the index of the vertex."""
+        return self._position.get_vertex()
+
     def singularity(self):
         r"""Return the index of the vertex."""
+        from sage.misc.superseded import deprecation
+        deprecation(42, "Do not use .singularity(). Use .vertex() instead.")
+        # Note: I want to change this to returning the singularity of the surface instead.
         return self._position.get_vertex()
 
     def is_in_boundary_of_polygon(self):
@@ -167,7 +174,7 @@ class SimilaritySurfaceTangentVector:
         along an edge. Here pointing along means that the vector is based at
         a vertex and represents the vector joining this edge to the next vertex."""
         if self.is_based_at_singularity():
-            e=self.singularity()
+            e=self.vertex()
             if self.vector()==self.polygon().edge(e):
                 return (self.polygon_label(),e)
         return None
@@ -274,7 +281,7 @@ class SimilaritySurfaceTangentVector:
             s=self.surface()
             v1=self.vector()
             label=self.polygon_label()
-            vertex=self.singularity()
+            vertex=self.vertex()
             v2=s.polygon(label).edge(vertex)
             from sage.matrix.constructor import Matrix
             der = Matrix(s.base_ring(), [[1,0],[0,1]])
@@ -325,7 +332,7 @@ class SimilaritySurfaceTangentVector:
             s=self.surface()
             v1=self.vector()
             label=self.polygon_label()
-            vertex=self.singularity()
+            vertex=self.vertex()
             previous_vertex = (vertex-1+s.polygon(label).num_edges()) % \
                 s.polygon(label).num_edges()
             v2=-s.polygon(label).edge(previous_vertex)
