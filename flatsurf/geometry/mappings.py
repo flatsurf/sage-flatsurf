@@ -747,30 +747,6 @@ class CanonicalizePolygonsMapping(SurfaceMapping):
             tangent_vector.vector(), \
             ring = ring)
 
-class ReindexedSurface(Surface):
-    def __init__(self, s, reindexmapping, new_base_label=None):
-        r"""
-        Represents a reindexed similarity surface.
-        """
-        if not s.is_finite():
-            raise ValueError("Only works for finite surfaces.")
-        if s.is_mutable():
-            raise ValueError("Only works for immutable surfaces.")
-        self._s=s
-        self._r=reindexmapping
-        if new_base_label is None:
-            new_base_label=self._r._f[self._s.base_label()]
-        Surface.__init__(self, self._s.base_ring(), new_base_label, finite=True)
-    
-    def polygon(self, lab):
-        return self._s.polygon(self._r._b[lab])
-    
-    def opposite_edge(self, p, e):
-        p_back = self._r._b[p]
-        pp_back,ee = self._s.opposite_edge(p_back,e)
-        pp = self._r._f[pp_back]
-        return (pp,ee)
-
 class ReindexMapping(SurfaceMapping):
     r"""
     Apply a dictionary to relabel the polygons.
@@ -800,9 +776,16 @@ class ReindexMapping(SurfaceMapping):
         self._f=f
         self._b=b
         
+        if new_base_label==None:
+            if s.base_label() in f:                
+                new_base_label = f[s.base_label()]
+            else:
+                new_base_label = s.base_label()
+        s2=s.copy(mutable=True,lazy=True)
+        s2.relabel(relabler, in_place=True)
         
-        SurfaceMapping.__init__(self, s, s.__class__(ReindexedSurface(s,self,new_base_label)))
-    
+        SurfaceMapping.__init__(self, s, s2)
+            
     def push_vector_forward(self,tangent_vector):
         r"""Applies the mapping to the provided vector."""
         # There is no change- we just move it to the new surface.
@@ -930,21 +913,22 @@ def canonicalize_translation_surface_mapping(s):
     else:
         m=SurfaceMappingComposition(m1,m2)
     s2=m.codomain()
-    it = s2.label_iterator()
-    min_label = it.next()
-    smin=s2.copy(lazy=True,mutable=True)
-    smin.underlying_surface().change_base_label(min_label)
-    smin.underlying_surface().make_immutable()
-    for test_label in it:
-        stest=s2.copy(lazy=True,mutable=True)
-        stest.underlying_surface().change_base_label(test_label)
-        stest.underlying_surface().make_immutable()
-        c = translation_surface_cmp(smin,stest)
-        if c>0:
-            min_label = test_label
-            smin = stest
-    lw=smin.walker()
-    lw.find_all_labels()
-    m3=ReindexMapping(s2,lw.label_dictionary(),0)
+    #print "s2 labels: "+str([lab for lab in s2.label_iterator()])
+
+    s2copy=s2.copy(mutable=True)
+    #print "s2 copy labels: "+str([lab for lab in s2copy.label_iterator()])
+    ss=s2.copy(mutable=True)
+    labels={label for label in s2.label_iterator()}
+    labels.remove(s2.base_label())
+    for label in labels:
+        ss.underlying_surface().change_base_label(label)
+        if ss.cmp_translation_surface(s2copy)>0:
+            s2copy.underlying_surface().change_base_label(label)
+    # We now have the base_label correct.
+    # We will use the label walker to generate the canonical labeling of polygons.
+    w=s2copy.walker()
+    w.find_all_labels()
+
+    m3=ReindexMapping(s2,w.label_dictionary(),0)
     return SurfaceMappingComposition(m,m3)
     
