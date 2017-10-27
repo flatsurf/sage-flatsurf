@@ -52,7 +52,7 @@ class HalfDilationSurface(SimilaritySurface):
         """
         if mapping==True:
             assert in_place==False, "Can not modify in place and return a mapping."
-            return GL2RMapping(self, matrix)
+            return GL2RMapping(self, m)
         if not in_place:
             if self.is_finite():
                 from sage.structure.element import get_coercion_model
