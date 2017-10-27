@@ -119,7 +119,7 @@ class SegmentInPolygon:
         if not self.start_is_singular() or not self.end_is_singular():
             return False
         vv=self.start().vector()
-        vertex=self.start().singularity()
+        vertex=self.start().vertex()
         ww=self.start().polygon().edge(vertex)
         from flatsurf.geometry.polygon import is_same_direction
         return is_same_direction(vv,ww)
@@ -127,7 +127,7 @@ class SegmentInPolygon:
     def edge(self):
         if not self.is_edge():
             raise ValueError("Segment asked for edge when not an edge")
-        return self.start().singularity()
+        return self.start().vertex()
 
     def polygon_label(self):
         return self._start.polygon_label()

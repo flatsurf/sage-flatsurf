@@ -220,7 +220,7 @@ class SaddleConnection(SageObject):
             if not traj.is_saddle_connection():
                 raise ValueError("Did not obtain saddle connection by flowing forward. Limit="+str(limit))
             tv=traj.terminal_tangent_vector()
-            self._end_data=(tv.polygon_label(), tv.singularity())
+            self._end_data=(tv.polygon_label(), tv.vertex())
             if end_data is not None:
                 if end_data!=self._end_data:
                     raise ValueError("Provided or inferred end_data="+str(end_data)+" does not match actual end_data="+str(self._end_data))
@@ -500,7 +500,7 @@ class Cylinder(SageObject):
         v=v.clockwise_to(-v.vector())
         from flatsurf.geometry.polygon import is_same_direction
         for sc2 in self._boundary:
-            if sc2.start_data()==(v.polygon_label(),v.singularity()) and \
+            if sc2.start_data()==(v.polygon_label(),v.vertex()) and \
                     is_same_direction(sc2.direction(), v.vector()):
                 return sc2
         raise ValuError("Failed to find next saddle connection in boundary set.")
@@ -515,7 +515,7 @@ class Cylinder(SageObject):
         v=v.counterclockwise_to(-v.vector())
         from flatsurf.geometry.polygon import is_same_direction
         for sc2 in self._boundary:
-            if sc2.end_data()==(v.polygon_label(),v.singularity()) and \
+            if sc2.end_data()==(v.polygon_label(),v.vertex()) and \
                     is_same_direction(sc2.end_direction(), v.vector()):
                 return sc2
         raise ValuError("Failed to find previous saddle connection in boundary set.")
