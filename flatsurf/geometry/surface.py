@@ -332,6 +332,7 @@ class Surface(SageObject):
         - their base labels are equal,
         - their polygons are equal and labeled and glued in the same way.
         For infinite surfaces we use reference equality.
+        Raises a value error if the surfaces are defined over different rings.
         """
         if self is other:
             return True
@@ -340,15 +341,15 @@ class Surface(SageObject):
         if not self.is_finite():
             if other.is_finite():
                 return False
-            if not other.is_finite():
+            else:
                 raise ValueError("Can not compare infinite surfaces.")
+        if self.base_ring() != other.base_ring():
+            raise ValueError("Refusing to compare surfaces with different base rings.")
         if not self.is_mutable() and not other.is_mutable():
             hash1 = hash(self)
             hash2 = hash(other)
             if hash1 != hash2:
                 return False
-        if self.base_ring() != other.base_ring():
-            return False
         if self.base_label() != other.base_label():
             return False
         if self.num_polygons() != other.num_polygons():
