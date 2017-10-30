@@ -1789,10 +1789,10 @@ class SimilaritySurface(SageObject):
     def __eq__(self, other):
         r"""
         Implements a naive notion of equality where two finite surfaces are equal if:
-        - their base rings are equal,
         - their base labels are equal,
         - their polygons are equal and labeled and glued in the same way.
         For infinite surfaces we use reference equality.
+        Raises a value error if the surfaces are defined over different rings.
         """
         if not self.is_finite():
             return self is other
@@ -1802,13 +1802,13 @@ class SimilaritySurface(SageObject):
             raise TypeError
         if not other.is_finite():
             raise ValueError("Can not compare infinite surfaces.")
+        if self.base_ring() != other.base_ring():
+            raise ValueError("Refusing to compare surfaces with different base rings.")
         if not self.is_mutable() and not other.is_mutable():
             hash1 = hash(self)
             hash2 = hash(other)
             if hash1 != hash2:
                 return False
-        if self.base_ring() != other.base_ring():
-            return False
         if self.base_label() != other.base_label():
             return False
         if self.num_polygons() != other.num_polygons():
