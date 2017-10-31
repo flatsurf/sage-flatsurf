@@ -322,15 +322,18 @@ class Surface(SageObject):
         r"""
         Hash compatible with equals.
         """
+        if hasattr(self,"_hash"):
+            return self._hash        
         if self.is_mutable():
             raise ValueError("Attempting to hash mutable surface.")
         if not self.is_finite():
-            raise ValueError("Attempting to hash infinite surface.")
+            raise ValueError("Attempting to hash infinite surface.")       
         h = 73+17*hash(self.base_ring())+23*hash(self.base_label())
         for pair in self.label_polygon_iterator():
             h = h + 7*hash(pair)
         for edgepair in self.edge_gluing_iterator():
             h = h + 3*hash(edgepair)
+        self._hash=h
         return h
 
 
