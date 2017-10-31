@@ -168,7 +168,7 @@ class SimilaritySurface(SageObject):
         r"""
         Mark the surface as immutable.
         """
-        self._s.set_mutable()
+        self._s.set_immutable()
 
     # 
     # generic methods
