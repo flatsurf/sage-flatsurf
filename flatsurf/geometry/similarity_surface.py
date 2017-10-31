@@ -160,9 +160,15 @@ class SimilaritySurface(SageObject):
 
     def is_mutable(self):
         r"""
-        Return if the underlying surface is mutable.
+        Return if the surface is mutable.
         """
         return self._s.is_mutable()
+
+    def set_immutable(self):
+        r"""
+        Mark the surface as immutable.
+        """
+        self._s.set_mutable()
 
     # 
     # generic methods
