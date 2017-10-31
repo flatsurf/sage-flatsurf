@@ -305,7 +305,10 @@ class ConvexPolygon(Element):
         self._convexity_check()
 
     def __hash__(self):
-        return hash(self._v)
+        # Apparently tuples do not cache their hash!
+        if not hasattr(self,"_hash"):
+            self._hash = hash(self._v)
+        return self._hash
 
     def __eq__(self, other):
         r"""
