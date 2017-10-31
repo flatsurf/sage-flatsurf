@@ -223,7 +223,7 @@ class Surface(SageObject):
         Mark this surface as immutable. 
         """
         from sage.misc.superseded import deprecation
-        deprecation(0, "Do not use .make_immutable(). Use .set_immutable() instead.")
+        deprecation(13109, "Do not use .make_immutable(). Use .set_immutable() instead.")
         self._mutable = False
 
     def walker(self):

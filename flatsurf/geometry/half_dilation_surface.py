@@ -14,7 +14,7 @@ class HalfDilationSurface(SimilaritySurface):
         Apply a 2x2 matrix to the polygons making up this surface. 
         Returns the flatsurf.geometry.SurfaceMapping from this surface to its image.
         """
-        deprecation(-1, "GL2R_mapping is deprecated. Use apply_matrix(mapping=True) instead.")
+        deprecation(13109, "GL2R_mapping is deprecated. Use apply_matrix(mapping=True) instead.")
         return GL2RMapping(self, matrix)
         
     def __rmul__(self,matrix):
