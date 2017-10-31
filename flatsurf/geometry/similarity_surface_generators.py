@@ -394,7 +394,7 @@ class SimilaritySurfaceGenerators:
         s.add_polygon(polygons(vertices=[(0,0), (2,-2), (2,0)],ring=QQ)) # gets label 0
         s.add_polygon(polygons(vertices=[(0,0), (2,0), (1,3)],ring=QQ)) # gets label 1
         s.change_polygon_gluings(0, [(1,1), (1,2), (1,0)])
-        s.make_immutable()
+        s.set_immutable()
         return SimilaritySurface(s)
 
     @staticmethod
@@ -413,7 +413,7 @@ class SimilaritySurfaceGenerators:
         from .half_translation_surface import HalfTranslationSurface
         s = Surface_list(base_ring=P.base_ring(), mutable=True)
         s.add_polygon(P,[(0,i) for i in xrange(P.num_edges())])
-        s.make_immutable()
+        s.set_immutable()
         return HalfTranslationSurface(s)
 
     @staticmethod
@@ -450,7 +450,7 @@ class SimilaritySurfaceGenerators:
         surface.add_polygon(Q) # gets label 1
         surface.change_polygon_gluings(0,[(1,n-i-1) for i in xrange(n)])
         
-        surface.make_immutable()
+        surface.set_immutable()
         s=ConeSurface(surface)
         gs = s.graphical_surface(edge_labels=False, polygon_labels=False)
         gs.make_adjacent(0,0,reverse=True)
@@ -475,7 +475,7 @@ class SimilaritySurfaceGenerators:
         surface.add_polygon(P) # gets label 0)
         surface.add_polygon(Q) # gets label 1
         surface.change_polygon_gluings(0,[(1,n-i-1) for i in xrange(n)])
-        surface.make_immutable()
+        surface.set_immutable()
         return ConeSurface(surface)
 
     @staticmethod
@@ -505,7 +505,7 @@ class SimilaritySurfaceGenerators:
         s.add_polygon(P([V((w,0)),V((-w,h)),V((0,-h))])) # gets label 0
         s.add_polygon(P([V((0,h)),V((-w,-h)),V((w,0))])) # gets label 1
         s.change_polygon_gluings(0,[(1,2),(1,1),(1,0)])
-        s.make_immutable()
+        s.set_immutable()
         return ConeSurface(s)
 
     # Removed because Surface_polygons_and_gluings is gone.
@@ -552,7 +552,7 @@ class TranslationSurfaceGenerators:
         from sage.rings.rational_field import QQ
         s=Surface_list(base_ring=QQ)
         s.add_polygon(polygons.square(),[(0,2),(0,3),(0,0),(0,1)])
-        s.make_immutable()
+        s.set_immutable()
         return TranslationSurface(s)
 
     @staticmethod
@@ -574,7 +574,7 @@ class TranslationSurfaceGenerators:
         p = polygons.regular_ngon(2*n)
         s = Surface_list(base_ring=p.base_ring())
         s.add_polygon(p,[ ( 0, (i+n)%(2*n) ) for i in xrange(2*n)] )
-        s.make_immutable()
+        s.set_immutable()
         return TranslationSurface(s)
 
     @staticmethod
@@ -597,7 +597,7 @@ class TranslationSurfaceGenerators:
         m = Matrix([[-1,0],[0,-1]])
         s.add_polygon(p) # label=0
         s.add_polygon(m*p, [(0,i) for i in xrange(n)])
-        s.make_immutable()
+        s.set_immutable()
         return TranslationSurface(s)
 
 
@@ -664,7 +664,7 @@ class TranslationSurfaceGenerators:
         s.change_edge_gluing(0,2,0,5)
         s.change_edge_gluing(0,4,1,0)
         s.change_edge_gluing(1,1,1,3)
-        s.make_immutable()
+        s.set_immutable()
         return TranslationSurface(s)
 
     @staticmethod
@@ -694,7 +694,7 @@ class TranslationSurfaceGenerators:
         s.add_polygon(p2)
         s.change_polygon_gluings(1, [(0,2*i) for i in xrange(n)])
         s.change_polygon_gluings(2, [(0,2*i+1) for i in xrange(n)])
-        s.make_immutable()
+        s.set_immutable()
         return TranslationSurface(s)
 
     @staticmethod
@@ -802,7 +802,7 @@ class TranslationSurfaceGenerators:
             # PiQi is paired with Q'_i P'_{i+1}
             s.change_edge_gluing(T[g+i],2,Tp[g+i+1],2)
             s.change_edge_gluing(Tp[g+i],0,T[g+i+1],0)
-        s.make_immutable()
+        s.set_immutable()
         from flatsurf.geometry.translation_surface import TranslationSurface
         return TranslationSurface(s)
 

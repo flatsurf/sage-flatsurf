@@ -182,9 +182,9 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
             sage: a = s.base_ring().gen()
             sage: mat=Matrix([[1,2+a],[0,1]])
             sage: s1=s.canonicalize()
-            sage: s1.underlying_surface().make_immutable()
+            sage: s1.underlying_surface().set_immutable()
             sage: s2=(mat*s).canonicalize()
-            sage: s2.underlying_surface().make_immutable()
+            sage: s2.underlying_surface().set_immutable()
             sage: s1.cmp_translation_surface(s2)==0
             True
             sage: hash(s1)==hash(s2)
@@ -392,7 +392,7 @@ class MinimalTranslationCover(Surface):
         sage: s.add_polygon(P(vertices=[(0,0),(3,4),(-4,3)]))
         1
         sage: s.change_polygon_gluings(0,[(1,2),(1,1),(1,0)])
-        sage: s.make_immutable()
+        sage: s.set_immutable()
         sage: s=SimilaritySurface(s)
         sage: ss=s.minimal_translation_cover()
         sage: ss.is_finite()

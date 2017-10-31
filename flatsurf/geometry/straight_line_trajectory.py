@@ -417,7 +417,7 @@ class StraightLineTrajectory(AbstractStraightLineTrajectory):
             sage: s = Surface_list(base_ring=p.base_ring())
             sage: s.add_polygon(p,[(0,3),(0,2),(0,1),(0,0)])
             0
-            sage: s.make_immutable()
+            sage: s.set_immutable()
             sage: t = RationalConeSurface(s)
 
             sage: v = t.tangent_vector(0, (1/2,0), (1/3,7/5))
