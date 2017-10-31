@@ -221,7 +221,7 @@ class SimilarityJoinPolygonsMapping(SurfaceMapping):
         sage: s0.add_polygon(P([(-1,0),(0,-1),(1,1)])) # gets label=1
         1
         sage: s0.change_polygon_gluings(0,[(1,0),(1,1),(1,2)])
-        sage: s0.make_immutable()
+        sage: s0.set_immutable()
         sage: s=TranslationSurface(s0)
         sage: from flatsurf.geometry.mappings import *
         sage: m=SimilarityJoinPolygonsMapping(s,0,2)
@@ -284,7 +284,7 @@ class SimilarityJoinPolygonsMapping(SurfaceMapping):
             else:
                 s2.change_edge_gluing(p1,i,p4,e4)
 
-        s2.make_immutable()
+        s2.set_immutable()
         
         self._saved_label=p1
         self._removed_label=p2
@@ -456,7 +456,7 @@ class SplitPolygonsMapping(SurfaceMapping):
             else:
                 s2.change_edge_gluing(ll,ee,lll,eee)
         
-        s2.make_immutable()
+        s2.set_immutable()
         
         self._p=p
         self._v1=v1
@@ -721,7 +721,7 @@ class CanonicalizePolygonsMapping(SurfaceMapping):
                 # newgluing.append( ( (l1,ee1),(l2,ee2) ) )
                 s2.change_edge_gluing(l1,ee1,l2,ee2)
         s2.change_base_label(s.base_label())
-        s2.make_immutable()
+        s2.set_immutable()
         ss2=s.__class__(s2)
         
         self._cv=cv
