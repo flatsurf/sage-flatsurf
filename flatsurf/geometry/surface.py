@@ -211,10 +211,19 @@ class Surface(SageObject):
         """
         return self._mutable
 
+    def set_immutable(self):
+        r"""
+        Mark this surface as immutable. 
+        """
+        self._mutable = False
+
+
     def make_immutable(self):
         r"""
         Mark this surface as immutable. 
         """
+        from sage.misc.superseded import deprecation
+        deprecation(0, "Do not use .make_immutable(). Use .set_immutable() instead.")
         self._mutable = False
 
     def walker(self):
@@ -433,8 +442,8 @@ class Surface(SageObject):
             "Method is_finite of Surface should not be overridden. The Surface is of type "+str(type(self))+".")
         tester.assertEqual(self.is_mutable.im_func, s.is_mutable.im_func, \
             "Method is_mutable of Surface should not be overridden. The Surface is of type "+str(type(self))+".")
-        tester.assertEqual(self.make_immutable.im_func, s.make_immutable.im_func, \
-            "Method make_immutable of Surface should not be overridden. The Surface is of type "+str(type(self))+".")
+        tester.assertEqual(self.set_immutable.im_func, s.set_immutable.im_func, \
+            "Method set_immutable of Surface should not be overridden. The Surface is of type "+str(type(self))+".")
         tester.assertEqual(self.walker.im_func, s.walker.im_func, \
             "Method walker of Surface should not be overridden. The Surface is of type "+str(type(self))+".")
         tester.assertEqual(self.change_polygon.im_func, s.change_polygon.im_func, \
@@ -499,7 +508,7 @@ class Surface_list(Surface):
         1
         sage: s.change_polygon_gluings(0,[(1,e) for e in xrange(5)])
         sage: # base label defaults to zero.
-        sage: s.make_immutable()
+        sage: s.set_immutable()
         sage: TestSuite(s).run()
     """
     ###
@@ -648,7 +657,7 @@ class Surface_list(Surface):
                     self._p[ll1][1][e1]=(ll2,e2)
                 self.change_base_label(label_dict[surface.base_label()])
                 if mutable is None or not mutable:
-                    self.make_immutable()
+                    self.set_immutable()
             else:
                 if surface.is_mutable():
                     raise ValueError("Surface_list will not store reference to a mutable surface.")
@@ -917,7 +926,7 @@ def surface_list_from_polygons_and_gluings(polygons, gluings, mutable=False):
     for (l1,e1),(l2,e2) in it:
         s.change_edge_gluing(l1,e1,l2,e2)
     if not mutable:
-        s.make_immutable()
+        s.set_immutable()
     return s
 
 ####
@@ -940,7 +949,7 @@ class Surface_dict(Surface):
         'A'
         sage: s.change_polygon_gluings("A",[("A",(e+5)%10) for e in xrange(10)])
         sage: s.change_base_label("A")
-        sage: s.make_immutable()
+        sage: s.set_immutable()
         sage: TestSuite(s).run()
     """
     ###
