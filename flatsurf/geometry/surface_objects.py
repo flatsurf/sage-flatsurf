@@ -4,7 +4,7 @@ Geometric objects on surfaces.
 This includes singularities, saddle connections and cylinders.
 """
 
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function
 
 from sage.structure.sage_object import SageObject
 
@@ -254,11 +254,11 @@ class SaddleConnection(SageObject):
 
             if holonomy is not None:
                 if holonomy!=self._holonomy:
-                    print "Combinatorial length: "+str(traj.combinatorial_length())
-                    print "Start: "+str(traj.initial_tangent_vector().point())
-                    print "End: "+str(traj.terminal_tangent_vector().point())
-                    print "Start data:"+str(start_data)
-                    print "End data:"+str(end_data)
+                    print("Combinatorial length: "+str(traj.combinatorial_length()))
+                    print("Start: "+str(traj.initial_tangent_vector().point()))
+                    print("End: "+str(traj.terminal_tangent_vector().point()))
+                    print("Start data:"+str(start_data))
+                    print("End data:"+str(end_data))
                     raise ValueError("Provided holonomy "+str(holonomy)+
                                      " does not match computed holonomy of "+str(self._holonomy))
             if end_holonomy is not None:
@@ -425,15 +425,15 @@ class Cylinder(SageObject):
         sage: cyl.boundary_components()
         frozenset({frozenset({Saddle connection in direction (-1, 0) with start data (0, 3) and end data (0, 6)}),
            frozenset({Saddle connection in direction (1, 0) with start data (0, 7) and end data (0, 2)})})
-        sage: print cyl.next(boundary[0])==boundary[0]
+        sage: print(cyl.next(boundary[0])==boundary[0])
         True
-        sage: print cyl.previous(boundary[1])==boundary[1]
+        sage: print(cyl.previous(boundary[1])==boundary[1])
         True
         sage: hol=cyl.holonomy()
-        sage: print hol if hol[0]>0 else -hol
+        sage: print(hol if hol[0]>0 else -hol)
         (a + 1, 0)
-        sage: w=cyl.width_vector()
-        sage: print w if w[1]>0 else -w
+        sage: w = cyl.width_vector()
+        sage: print(w if w[1]>0 else -w)
         (0, 1)
     """
     def __init__(self, boundary=None, across=None):

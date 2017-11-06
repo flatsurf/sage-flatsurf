@@ -1,4 +1,4 @@
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function
 
 from sage.rings.real_double import RDF
 from sage.modules.free_module import VectorSpace

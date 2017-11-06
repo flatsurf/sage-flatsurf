@@ -210,9 +210,9 @@ def polyhedron_to_cone_surface(polyhedron, use_AA=False, scaling_factor=ZZ(1)):
                     found=True
                     break
             if not found:
-                print p1
-                print e1
-                print edge
+                print(p1)
+                print(e1)
+                print(edge)
                 raise RuntimeError("Failed to find glued edge")
     polygon_vertices_AA=[]
     for p,vs in enumerate(face_vertices):

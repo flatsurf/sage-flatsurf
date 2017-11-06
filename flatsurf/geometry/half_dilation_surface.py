@@ -23,12 +23,12 @@ class HalfDilationSurface(SimilaritySurface):
 
             sage: from flatsurf import *
             sage: s=translation_surfaces.infinite_staircase()
-            sage: print s.underlying_surface()
+            sage: s.underlying_surface()
             The infinite staircase
             sage: m=Matrix([[1,2],[0,1]])
             sage: s2=m*s
             sage: TestSuite(s2).run(skip='_test_pickling')
-            sage: print s2.polygon(0)
+            sage: s2.polygon(0)
             Polygon: (0, 0), (1, 0), (3, 1), (2, 1)
         """
         from sage.matrix.matrix import Matrix

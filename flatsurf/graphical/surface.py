@@ -295,16 +295,16 @@ class GraphicalSurface:
             sage: from flatsurf import *
             sage: s = similarity_surfaces.example()
             sage: gs = s.graphical_surface(adjacencies=[])
-            sage: print gs.graphical_polygon(0)
+            sage: gs.graphical_polygon(0)
             Polygon 0: [(0.0, 0.0), (2.0, -2.0), (2.0, 0.0)]
-            sage: print gs.graphical_polygon(1)
+            sage: gs.graphical_polygon(1)
             Polygon 1: [(0.0, 0.0), (2.0, 0.0), (1.0, 3.0)]
             sage: print("Polygon 0, edge 0 is opposite "+str(gs.opposite_edge(0,0)))
             Polygon 0, edge 0 is opposite (1, 1)
             sage: gs.make_adjacent(0,0)
-            sage: print gs.graphical_polygon(0)
+            sage: gs.graphical_polygon(0)
             Polygon 0: [(0.0, 0.0), (2.0, -2.0), (2.0, 0.0)]
-            sage: print gs.graphical_polygon(1)
+            sage: gs.graphical_polygon(1)
             Polygon 1: [(0.4, -2.8), (2.0, -2.0), (0.0, 0.0)]
         """
         pp,ee = self._ss.opposite_edge(p,e)

@@ -177,7 +177,7 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
 
             sage: from flatsurf import *
             sage: s=translation_surfaces.octagon_and_squares()
-            sage: print s
+            sage: s
             TranslationSurface built from 3 polygons
             sage: a = s.base_ring().gen()
             sage: mat=Matrix([[1,2+a],[0,1]])

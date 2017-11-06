@@ -274,13 +274,13 @@ class TFractalSurface(Surface):
             sage: T = sfg.tfractal_surface()
             sage: W = T.underlying_surface()._words
             sage: w = W('LLRLRL')
-            sage: print T.opposite_edge((w,0),0)
+            sage: T.opposite_edge((w,0),0)
             ((word: LLRLR, 1), 2)
-            sage: print T.opposite_edge((w,0),1)
+            sage: T.opposite_edge((w,0),1)
             ((word: LLRLRL, 0), 3)
-            sage: print T.opposite_edge((w,0),2)
+            sage: T.opposite_edge((w,0),2)
             ((word: LLRLRL, 2), 0)
-            sage: print T.opposite_edge((w,0),3)
+            sage: T.opposite_edge((w,0),3)
             ((word: LLRLRL, 0), 1)
         """
         w,i = p

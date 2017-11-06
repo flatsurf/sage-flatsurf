@@ -1,4 +1,4 @@
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function
 
 from collections import deque, defaultdict
 
@@ -256,13 +256,13 @@ class AbstractStraightLineTrajectory:
             sage: l.flow(10); l.flow(-10)
             sage: l.coding()
             [(0, 2), (0, 1), (0, 2), (0, 1), (0, 2), (0, 1), (0, 2), (0, 1), (0, 2)]
-            sage: print ''.join(l.coding(alphabet))
+            sage: print(''.join(l.coding(alphabet)))
             ababababa
 
             sage: v = t.tangent_vector(0, (1/2,0), (7,13))
             sage: l = v.straight_line_trajectory()
             sage: l.flow(10); l.flow(-10)
-            sage: print ''.join(l.coding(alphabet))
+            sage: print(''.join(l.coding(alphabet)))
             aabaabaababaabaabaab
 
         For a closed trajectory, the last label (corresponding also to the

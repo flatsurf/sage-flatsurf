@@ -241,7 +241,7 @@ class SimilaritySurface(SageObject):
             sage: from flatsurf.geometry.translation_surface import TranslationSurface
             sage: s=TranslationSurface(surface_list_from_polygons_and_gluings([tri0,tri1], gluings))
             sage: for edge in s.edge_iterator():
-            ...       print edge
+            ...       print(edge)
             (0, 0)
             (0, 1)
             (0, 2)
@@ -657,11 +657,11 @@ class SimilaritySurface(SageObject):
             sage: s=similarity_surfaces.right_angle_triangle(ZZ(1),ZZ(1))
             sage: print(s.polygon(0))
             Polygon: (0, 0), (1, 0), (0, 1)
-            sage: print s.triangle_flip(0, 0, test=True)
+            sage: s.triangle_flip(0, 0, test=True)
             False
-            sage: print s.triangle_flip(0, 1, test=True)
+            sage: s.triangle_flip(0, 1, test=True)
             True
-            sage: print s.triangle_flip(0, 2, test=True)
+            sage: s.triangle_flip(0, 2, test=True)
             False
 
             sage: from flatsurf import *
@@ -671,16 +671,16 @@ class SimilaritySurface(SageObject):
             sage: try:
             ....:     s.triangle_flip(0,0,in_place=True)
             ....: except ValueError as e:
-            ....:     print e
+            ....:     print(e)
             Gluing triangles along this edge yields a non-convex quadrilateral.
-            sage: print s.triangle_flip(0,1,in_place=True)
+            sage: s.triangle_flip(0,1,in_place=True)
             ConeSurface built from 2 polygons
-            sage: print s.polygon(0)
+            sage: s.polygon(0)
             Polygon: (0, 0), (1, 1), (0, 1)
-            sage: print s.polygon(1)
+            sage: s.polygon(1)
             Polygon: (0, 0), (-1, -1), (0, -1)
             sage: for p in s.edge_iterator(gluings=True):
-            ....:     print p
+            ....:     print(p)
             ((0, 0), (1, 0))
             ((0, 1), (0, 2))
             ((0, 2), (0, 1))
@@ -690,7 +690,7 @@ class SimilaritySurface(SageObject):
             sage: try:
             ....:     s.triangle_flip(0,2,in_place=True)
             ....: except ValueError as e:
-            ....:     print e
+            ....:     print(e)
             ....: 
             Gluing triangles along this edge yields a non-convex quadrilateral.
 
@@ -702,10 +702,10 @@ class SimilaritySurface(SageObject):
             sage: s.triangle_flip(0,1,in_place=True)
             HalfTranslationSurface built from 1 polygon
             sage: for x in s.label_iterator(polygons=True):
-            ....:     print x
+            ....:     print(x)
             (0, Polygon: (0, 0), (-3, -3), (-1, -3))
             sage: for x in s.edge_iterator(gluings=True):
-            ....:     print x
+            ....:     print(x)
             ((0, 0), (0, 0))
             ((0, 1), (0, 1))
             ((0, 2), (0, 2))
