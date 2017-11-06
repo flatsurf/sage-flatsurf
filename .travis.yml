@@ -1,0 +1,25 @@
+dist: trusty
+sudo: required
+language: c
+cache:
+  ccache: true
+  timeout: 1000
+env:
+  - SAGE_VERSION="7.5.1"
+  - SAGE_VERSION="7.6"
+  - SAGE_VERSION="8.0"
+before_install:
+  - sudo apt-get -qq update
+  - sudo apt-get install gcc g++ gfortran
+install: 
+  - export SAGE_MIRROR="http://mirrors.mit.edu/sage/linux/64bit"
+  - export SAGE_BINARY="sage-${SAGE_VERSION}-Ubuntu_14.04-x86_64.tar.bz2"
+  - export SAGE="${HOME}/SageMath/sage"
+  - ./.travis_sage_install.sh
+  - ${SAGE} --version
+  - which gcc
+  - ${SAGE} -sh -c "which gcc"
+  - ccache -s
+  - ${SAGE} -pip install --verbose --no-index --user .
+script:
+  - ${SAGE} -t --force-lib --long flatsurf
