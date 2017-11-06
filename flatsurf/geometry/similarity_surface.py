@@ -1667,10 +1667,10 @@ class SimilaritySurface(SageObject):
 
             sage: # Test the difference between the cached graphical_surface and the uncached version.
             sage: from flatsurf import *
-            sage: s=translation_surfaces.octagon_and_squares()
-            sage: print(s.plot())
+            sage: s = translation_surfaces.octagon_and_squares()
+            sage: s.plot()     # not tested (problem with matplotlib font caches on Travis)
             Graphics object consisting of 32 graphics primitives
-            sage: print(s.graphical_surface(cached=False,adjacencies=[]).plot())
+            sage: s.graphical_surface(cached=False,adjacencies=[]).plot()   # not tested (problem with matplotlib font caches on Travis)
             Graphics object consisting of 18 graphics primitives
         """
         from flatsurf.graphical.surface import GraphicalSurface

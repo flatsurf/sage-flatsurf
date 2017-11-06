@@ -214,9 +214,9 @@ class AbstractStraightLineTrajectory:
             sage: T = translation_surfaces.square_torus()
             sage: v = T.tangent_vector(0, (0,0), (5,7))
             sage: L = v.straight_line_trajectory()
-            sage: L.plot()
+            sage: L.plot()               # not tested (problem with matplotlib font caches on Travis)
             Graphics object consisting of 1 graphics primitive
-            sage: L.plot(color='red')
+            sage: L.plot(color='red')    # not tested (problem with matplotlib font caches on Travis)
             Graphics object consisting of 1 graphics primitive
         """
         return self.graphical_trajectory(**options).plot()

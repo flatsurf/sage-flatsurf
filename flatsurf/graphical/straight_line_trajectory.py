@@ -41,9 +41,9 @@ class GraphicalSegmentInPolygon:
             sage: seg = SegmentInPolygon(v)
             sage: from flatsurf.graphical.straight_line_trajectory import *
             sage: gseg = GraphicalSegmentInPolygon(s.graphical_surface(), seg)
-            sage: gseg.plot()
+            sage: gseg.plot()                # not tested (problem with matplotlib font caches on Travis)
             Graphics object consisting of 1 graphics primitive
-            sage: gseg.plot(color='red')
+            sage: gseg.plot(color='red')     # not tested (problem with matplotlib font caches on Travis)
             Graphics object consisting of 1 graphics primitive
         """
         if self._gs.is_visible(self.polygon_label()):
@@ -81,7 +81,7 @@ class GraphicalStraightLineTrajectory:
             sage: traj.flow(100)
             sage: traj.flow(-5)
             sage: gtraj = traj.graphical_trajectory(gs)
-            sage: gs.plot() + gtraj.plot()
+            sage: gs.plot() + gtraj.plot()      # not tested (problem with matplotlib font caches on Travis)
             Graphics object consisting of 119 graphics primitives
         """
         from sage.plot.graphics import Graphics

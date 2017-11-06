@@ -181,7 +181,7 @@ class GraphicalPolygon:
             sage: from flatsurf.graphical.surface import GraphicalSurface
             sage: gs = GraphicalSurface(s)
             sage: gs.graphical_polygon(0).set_fill_color("red")
-            sage: gs.graphical_polygon(0).plot()
+            sage: gs.graphical_polygon(0).plot()      # not tested (problem with matplotlib font caches on Travis)
             Graphics object consisting of 5 graphics primitives
         """
         from sage.plot.point import point2d

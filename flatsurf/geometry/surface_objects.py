@@ -24,7 +24,7 @@ class Singularity(SageObject):
 
         sage: from flatsurf.geometry.similarity_surface_generators import TranslationSurfaceGenerators
         sage: s=TranslationSurfaceGenerators.veech_2n_gon(5)
-        sage: from flatsurf.geometry.singularity import Singularity
+        sage: from flatsurf.geometry.surface_objects import Singularity
         sage: sing=Singularity(s,0,1)
         sage: print(sing)
         singularity with vertex equivalence class frozenset([(0, 1), (0, 9), (0, 3), (0, 5), (0, 7)])

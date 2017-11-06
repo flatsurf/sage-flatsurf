@@ -7,7 +7,7 @@ EXAMPLES::
 
     sage: from flatsurf import translation_surfaces
     sage: s = translation_surfaces.chamanara(1/2)
-    sage: s.plot()
+    sage: s.plot()     # not tested (problem with matplotlib font caches on Travis)
     Graphics object consisting of 129 graphics primitives
 """
 
