@@ -49,13 +49,15 @@ To uninstall the package, you can do `$ sage -pip uninstall flatsurf`.
 
 Run the tests
 -------------
-
+:
     $ sage -t --force-lib ARG
 
 where `ARG` is either a directory or file. In particular, to test all the
 files in the module just do
 
     $ sage -t --force-lib flatsurf
+
+Tests on the master branch are automatically run through [Travis-CI](https://travis-ci.org/videlec/sage-flatsurf?branch=master).
 
 Primary Contributors
 --------------------
