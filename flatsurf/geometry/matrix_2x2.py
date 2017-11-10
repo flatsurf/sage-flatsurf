@@ -273,7 +273,7 @@ def angle(u, v, assume_rational=False):
 
     And we test up to 50 when setting ``assume_rational`` to ``True``::
 
-        sage: for n in xsrange(1,50):       # long time  (25 sec)
+        sage: for n in xsrange(1,20):       # long time
         ....:     for k in xsrange(1,n):
         ....:         v = vector((AA(cos(2*k*pi/n)), AA(sin(2*k*pi/n))))
         ....:         assert angle(u,v,assume_rational=True) == k/n
