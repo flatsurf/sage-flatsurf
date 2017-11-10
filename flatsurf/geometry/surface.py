@@ -1,7 +1,6 @@
 from __future__ import absolute_import
 
 from sage.structure.sage_object import SageObject
-
 from sage.sets.family import Family
 
 class Surface(SageObject):
