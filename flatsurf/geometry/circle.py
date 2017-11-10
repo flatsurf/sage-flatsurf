@@ -184,18 +184,18 @@ class Circle:
 
             sage: from flatsurf import *
             sage: from flatsurf.geometry.circle import *
-            sage: s=translation_surfaces.square_torus()
-            sage: c=s.polygon(0).circumscribing_circle()
+            sage: s = translation_surfaces.square_torus()
+            sage: c = s.polygon(0).circumscribing_circle()
             sage: c
             Circle((1/2, 1/2), 1/2)
             sage: s.edge_transformation(0,2)
             (x, y) |-> (x, y - 1)
-            sage: s.edge_transformation(0,2)*c
+            sage: s.edge_transformation(0,2) * c
             Circle((1/2, -1/2), 1/2)
         """
-        from flatsurf.geometry.similarity import SimilarityGroup
-        SG=SimilarityGroup(self._base_ring)
-        s=SG(similarity)
+        from .similarity import SimilarityGroup
+        SG = SimilarityGroup(self._base_ring)
+        s = SG(similarity)
         return Circle(s(self._center), \
             s.det()*self._radius_squared, \
             base_ring=self._base_ring)
