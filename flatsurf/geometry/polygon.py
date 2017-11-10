@@ -890,8 +890,9 @@ class ConvexPolygon(Element):
         EXAMPLES::
 
             sage: from flatsurf import *
-            sage: polygons(vertices=[(0,0),(1,0),(2,1),(-1,1)]).circumscribing_circle()
-            circle with center (1/2, 3/2) and radius squared 5/2
+            sage: P = polygons(vertices=[(0,0),(1,0),(2,1),(-1,1)])
+            sage: P.circumscribing_circle()
+            Circle((1/2, 3/2), 5/2)
         """
         from .circle import circle_from_three_points
         circle = circle_from_three_points(self.vertex(0), self.vertex(1), self.vertex(2), self.base_ring())
