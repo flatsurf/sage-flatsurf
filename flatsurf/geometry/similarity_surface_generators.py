@@ -1,13 +1,17 @@
 from __future__ import absolute_import
 
-from sage.rings.integer_ring import ZZ
+from sage.rings.all import ZZ, QQ, RIF, AA, NumberField
 from sage.misc.cachefunc import cached_method
 
 ZZ_1 = ZZ(1)
 ZZ_2 = ZZ(2)
 
+from .polygon import polygons
 from .surface import Surface, Surface_list
 from .translation_surface import TranslationSurface
+from .similarity_surface import SimilaritySurface
+from .half_translation_surface import HalfTranslationSurface
+from .cone_surface import ConeSurface
 
 def flipper_nf_to_sage(K, name='a'):
     r"""
@@ -30,9 +34,6 @@ def flipper_nf_to_sage(K, name='a'):
         sage: AA(K_sage.gen())                                     # optional - flipper
         -1.122462048309373?
     """
-    from sage.rings.number_field.number_field import NumberField
-    from sage.rings.all import QQ,RIF,AA
-
     r = K.lmbda.interval_approximation()
     l = r.lower * ZZ(10)**(-r.precision)
     u = r.upper * ZZ(10)**(-r.precision)
@@ -76,11 +77,9 @@ class EInfinitySurface(Surface):
     """
     def __init__(self,lambda_squared=None, field=None):
         if lambda_squared==None:
-            from sage.rings.number_field.number_field import NumberField
             from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
             R=PolynomialRing(ZZ,'x')
             x = R.gen()
-            from sage.rings.qqbar import AA
             field=NumberField(x**3-ZZ(5)*x**2+ZZ(4)*x-ZZ(1), 'r', embedding=AA(ZZ(4)))
             self._l=field.gen()
         else:
@@ -133,7 +132,6 @@ class EInfinitySurface(Surface):
         """
         if lab not in self.polygon_labels():
             raise ValueError("lab (=%s) not a valid label"%lab)
-        from flatsurf import polygons
         return polygons.rectangle(2*self.get_black(lab),self.get_white(lab))
 
     def polygon_labels(self):
@@ -386,11 +384,7 @@ class SimilaritySurfaceGenerators:
             SimilaritySurface built from 2 polygons
             sage: TestSuite(ex).run()
         """
-        from .similarity_surface import SimilaritySurface
-        from .surface import Surface_list
-        from .polygon import polygons
-        from sage.rings.rational_field import QQ
-        s=Surface_list(base_ring=QQ)
+        s = Surface_list(base_ring=QQ)
         s.add_polygon(polygons(vertices=[(0,0), (2,-2), (2,0)],ring=QQ)) # gets label 0
         s.add_polygon(polygons(vertices=[(0,0), (2,0), (1,3)],ring=QQ)) # gets label 1
         s.change_polygon_gluings(0, [(1,1), (1,2), (1,0)])
@@ -409,8 +403,6 @@ class SimilaritySurfaceGenerators:
             sage: s = similarity_surfaces.self_glued_polygon(p)
             sage: TestSuite(s).run()
         """
-        from .surface import Surface_list
-        from .half_translation_surface import HalfTranslationSurface
         s = Surface_list(base_ring=P.base_ring(), mutable=True)
         s.add_polygon(P,[(0,i) for i in xrange(P.num_edges())])
         s.set_immutable()
@@ -436,9 +428,6 @@ class SimilaritySurfaceGenerators:
             TranslationSurface built from 8 polygons
             sage: TestSuite(M).run()
         """
-        from .polygon import polygons
-        from .surface import Surface_list
-        from .cone_surface import ConeSurface
         from sage.matrix.constructor import matrix
 
         n = P.num_edges()
@@ -451,7 +440,7 @@ class SimilaritySurfaceGenerators:
         surface.change_polygon_gluings(0,[(1,n-i-1) for i in xrange(n)])
         
         surface.set_immutable()
-        s=ConeSurface(surface)
+        s = ConeSurface(surface)
         gs = s.graphical_surface(edge_labels=False, polygon_labels=False)
         gs.make_adjacent(0,0,reverse=True)
         return s
@@ -463,8 +452,6 @@ class SimilaritySurfaceGenerators:
         Differs from billiard(P) only in the graphical display. Here, we display
         the polygons separately.
         """
-        from .polygon import polygons
-        from .cone_surface import ConeSurface
         from sage.matrix.constructor import matrix
 
         n = P.num_edges()
@@ -493,7 +480,6 @@ class SimilaritySurfaceGenerators:
         from .polygon import Polygons
         from sage.modules.free_module import VectorSpace
         from sage.modules.free_module_element import vector
-        from .cone_surface import ConeSurface
 
         F = Sequence([w,h]).universe()
         
@@ -501,7 +487,7 @@ class SimilaritySurfaceGenerators:
             F = F.fraction_field()
         V = VectorSpace(F,2)
         P = Polygons(F)
-        s=Surface_list(base_ring=F)
+        s = Surface_list(base_ring=F)
         s.add_polygon(P([V((w,0)),V((-w,h)),V((0,-h))])) # gets label 0
         s.add_polygon(P([V((0,h)),V((-w,-h)),V((w,0))])) # gets label 1
         s.change_polygon_gluings(0,[(1,2),(1,1),(1,0)])
@@ -547,10 +533,7 @@ class TranslationSurfaceGenerators:
 
             sage: TestSuite(T).run()
         """
-        from .polygon import polygons
-        from .translation_surface import TranslationSurface
-        from sage.rings.rational_field import QQ
-        s=Surface_list(base_ring=QQ)
+        s = Surface_list(base_ring=QQ)
         s.add_polygon(polygons.square(),[(0,2),(0,3),(0,0),(0,1)])
         s.set_immutable()
         return TranslationSurface(s)
@@ -568,9 +551,6 @@ class TranslationSurfaceGenerators:
             Polygon: (0, 0), (1, 0), (-1/2*a^2 + 5/2, 1/2*a), (-a^2 + 7/2, -1/2*a^3 + 2*a), (-1/2*a^2 + 5/2, -a^3 + 7/2*a), (1, -a^3 + 4*a), (0, -a^3 + 4*a), (1/2*a^2 - 3/2, -a^3 + 7/2*a), (a^2 - 5/2, -1/2*a^3 + 2*a), (1/2*a^2 - 3/2, 1/2*a)
             sage: TestSuite(s).run()
         """
-        from .polygon import polygons
-        from .surface import Surface_list
-        from .translation_surface import TranslationSurface
         p = polygons.regular_ngon(2*n)
         s = Surface_list(base_ring=p.base_ring())
         s.add_polygon(p,[ ( 0, (i+n)%(2*n) ) for i in xrange(2*n)] )
@@ -588,9 +568,6 @@ class TranslationSurfaceGenerators:
             sage: s=translation_surfaces.veech_double_n_gon(5)
             sage: TestSuite(s).run()
         """
-        from .polygon import polygons
-        from .surface import Surface_list
-        from .translation_surface import TranslationSurface
         from sage.matrix.constructor import Matrix
         p = polygons.regular_ngon(n)
         s = Surface_list(base_ring=p.base_ring())
@@ -647,16 +624,13 @@ class TranslationSurfaceGenerators:
             sage: s = translation_surfaces.mcmullen_L(1,1,1,1)
             sage: TestSuite(s).run()
         """
-        from .polygon import polygons
-        from .surface import Surface_list
-        from .translation_surface import TranslationSurface
         from sage.structure.sequence import Sequence
         
         field = Sequence([l1,l2,l3,l4]).universe()
         if not field.is_field():
             field = field.fraction_field()
 
-        s=Surface_list(base_ring=field)
+        s = Surface_list(base_ring=field)
         s.add_polygon(polygons((l3,0),(l4,0),(0,l2),(-l4,0),(-l3,0),(0,-l2), ring=field))
         s.add_polygon(polygons((l3,0),(0,l1),(-l3,0),(0,-l1), ring=field))
         s.change_edge_gluing(0,0,1,2)
@@ -682,9 +656,6 @@ class TranslationSurfaceGenerators:
             sage: TestSuite(s).run()
         """
         assert n>=3
-        from .polygon import polygons
-        from .surface import Surface_list
-        from .translation_surface import TranslationSurface
         o = ZZ_2*polygons.regular_ngon(2*n)
         p1 = polygons(*[o.edge((2*i+n)%(2*n)) for i in xrange(n)])
         p2 = polygons(*[o.edge((2*i+n+1)%(2*n)) for i in xrange(n)])
@@ -708,9 +679,7 @@ class TranslationSurfaceGenerators:
             TranslationSurface built from 3 polygons
             sage: TestSuite(os).run()
         """
-        from .polygon import polygons
         from sage.matrix.matrix_space import MatrixSpace
-        from .translation_surface import TranslationSurface
         return translation_surfaces.ward(4)
 
     @staticmethod
@@ -741,14 +710,11 @@ class TranslationSurfaceGenerators:
         """
         g=ZZ(genus)
         assert g>=3
-        from sage.rings.qqbar import AA
         from sage.rings.polynomial.polynomial_ring import polygen
         x = polygen(AA)
         p=sum([x**i for i in xrange(1,g+1)])-1
         cp = AA.common_polynomial(p)
-        from sage.rings.real_mpfi import RIF
         alpha_AA = AA.polynomial_root(cp, RIF(1/2, 1))
-        from sage.rings.number_field.number_field import NumberField
         field=NumberField(alpha_AA.minpoly(),'alpha',embedding=alpha_AA)
         a=field.gen()
         from sage.modules.free_module import VectorSpace
@@ -765,10 +731,9 @@ class TranslationSurfaceGenerators:
             q[i]=V(( (2*a-a**i-a**(i+1))/(2*(1-a)), (a-a**(g-i+2))/(1-a) ))
         from flatsurf.geometry.polygon import Polygons
         P=Polygons(field)
-        from flatsurf.geometry.surface import Surface_list
-        s=Surface_list(field)
-        T=[None for i in xrange(2*g+1)]
-        Tp=[None for i in xrange(2*g+1)]
+        s = Surface_list(field)
+        T = [None] * (2*g+1)
+        Tp = [None] * (2*g+1)
         from sage.matrix.constructor import Matrix
         m=Matrix([[1,0],[0,-1]])
         for i in xrange(1,g+1):
@@ -803,7 +768,6 @@ class TranslationSurfaceGenerators:
             s.change_edge_gluing(T[g+i],2,Tp[g+i+1],2)
             s.change_edge_gluing(Tp[g+i],0,T[g+i+1],0)
         s.set_immutable()
-        from flatsurf.geometry.translation_surface import TranslationSurface
         return TranslationSurface(s)
 
     @staticmethod
@@ -846,7 +810,6 @@ class TranslationSurfaceGenerators:
         from sage.modules.free_module import VectorSpace
         from .polygon import ConvexPolygons
         from .surface import surface_list_from_polygons_and_gluings
-        from .half_translation_surface import HalfTranslationSurface
 
         f = h.flat_structure()
 
@@ -910,7 +873,7 @@ class TranslationSurfaceGenerators:
             The infinite staircase
             sage: TestSuite(S).run(skip='_test_pickling')
         """
-        from .translation_surface import Origami, TranslationSurface
+        from .translation_surface import Origami
         o = Origami(
                 lambda x: x+1 if x%2 else x-1,  # r  (edge 1)
                 lambda x: x-1 if x%2 else x+1,  # u  (edge 2)
