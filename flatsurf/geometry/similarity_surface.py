@@ -543,7 +543,7 @@ class SimilaritySurface(SageObject):
         else:
             return self.copy(mutable=True).relabel(relabeling_map, in_place=True)
 
-    def copy(self, relabel=False, mutable=False, lazy=None, new_field=None):
+    def copy(self, relabel=False, mutable=False, lazy=None, new_field=None, optimal_number_field=False):
         r"""
         Returns a copy of this surface. The method takes several flags to modify how the copy is taken.
         
@@ -560,6 +560,9 @@ class SimilaritySurface(SageObject):
         
         The new_field parameter can be used to place the vertices in a larger field than the basefield
         for the original surface.
+        
+        The optimal_number_field option can be used to find a best NumberField containing the 
+        (necessarily finite) surface.
 
         EXAMPLES::
 
@@ -581,12 +584,65 @@ class SimilaritySurface(SageObject):
             sage: TestSuite(ss).run()
             sage: ss.base_ring()
             Algebraic Real Field
+            
+            sage: # Optimization of number field
+            sage: from flatsurf import *
+            sage: s = translation_surfaces.arnoux_yoccoz(3)
+            sage: ss = s.copy(new_field=AA).copy(optimal_number_field=True)
+            sage: TestSuite(ss).run()
+            sage: ss.base_ring()
+            Number Field in a with defining polynomial y^3 + y^2 + y - 1
         """
+        s=None  # This will be the surface we copy. (Likely we will set s=self below.)
+        if new_field is not None and optimal_number_field:
+            raise ValueError("You can not set a new_field and also set optimal_number_field=True.")
+        if optimal_number_field==True:
+            assert self.is_finite(), "Can only optimize_number_field for a finite surface."
+            assert not lazy, "Lazy copying is unavailable when optimize_number_field=True."
+            coordinates_AA=[]
+            for l,p in self.label_iterator(polygons=True):
+                for e in p.edges():
+                    coordinates_AA.append(AA(e[0]))
+                    coordinates_AA.append(AA(e[1]))
+            from sage.rings.qqbar import number_field_elements_from_algebraics
+            field,coordinates_NF,hom = number_field_elements_from_algebraics(coordinates_AA,minimal=True)
+            if field is QQ:
+                new_field = QQ
+                # We pretend new_field=QQ was passed as a parameter...
+            else:
+                # Unfortunately field doesn't come with an real embedding (which is given by hom!)
+                # So, we make a copy of the field, and add the embedding.
+                from sage.rings.number_field.number_field import NumberField
+                field2 = NumberField(field.polynomial(),name="a",embedding=hom(field.gen()))
+                # The following converts from field to field2:
+                hom2 = field.hom(im_gens=[field2.gen()])
+                
+                from flatsurf.geometry.surface import Surface_dict
+                ss = Surface_dict(base_ring=field2)
+                index = 0
+                from flatsurf.geometry.polygon import Polygons
+                P = Polygons(field2)
+                for l,p in self.label_iterator(polygons=True):
+                    new_edges = []
+                    for i in xrange(p.num_edges()):
+                        new_edges.append((hom2(coordinates_NF[index]),hom2(coordinates_NF[index+1])))
+                        index+=2
+                    pp = P(edges=new_edges)
+                    ss.add_polygon(pp, label=l)
+                ss.change_base_label(self.base_label())
+                for (l1,e1),(l2,e2) in self.edge_iterator(gluings=True):
+                    ss.change_edge_gluing(l1,e1,l2,e2)
+                s=self.__class__(ss)
+                if not relabel:
+                    if not mutable:
+                        s.set_immutable()
+                    return s
+                # Otherwise we are supposed to relabel. We will make a relabeled copy of s below.
         if new_field is not None:
             from flatsurf.geometry.surface import BaseRingChangedSurface
-            s=BaseRingChangedSurface(self,new_field)
-        else:
-            s=self
+            s = BaseRingChangedSurface(self,new_field)
+        if s is None:
+            s = self
         if s.is_finite():
             if relabel:
                 from flatsurf.geometry.surface import Surface_list
