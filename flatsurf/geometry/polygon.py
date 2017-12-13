@@ -1086,9 +1086,13 @@ class PolygonsConstructor:
         return self((width,0),(0,height),(-width,0),(0,-height), **kwds)
 
     @staticmethod
-    def regular_ngon(n):
+    def regular_ngon(n, field=None):
         r"""
-        Return a regular n-gon.
+        Return a regular n-gon with unit length edges, first edge horizontal, and other vertices lying above this edge.
+        
+        Assuming field is None (by default) the polygon is defined over a NumberField (the minimal number field determined by n). 
+        Otherwise you can set field equal to AA to define the polygon over the Algebraic Reals. Other values for the field
+        parameter will result in a ValueError.
 
         EXAMPLES::
 
@@ -1097,18 +1101,25 @@ class PolygonsConstructor:
             sage: p = polygons.regular_ngon(17)
             sage: p
             Polygon: (0, 0), (1, 0), ..., (-1/2*a^14 + 15/2*a^12 - 45*a^10 + 275/2*a^8 - 225*a^6 + 189*a^4 - 70*a^2 + 15/2, 1/2*a)
+
+            sage: polygons.regular_ngon(3,field=AA)
+            Polygon: (0, 0), (1, 0), (1/2, 0.866025403784439?)
         """
         # The code below crashes for n=4!
         if n==4:
-            return polygons.square(QQ(1))
+            return polygons.square(QQ(1), field=field)
         
         from sage.rings.qqbar import QQbar
 
         c = QQbar.zeta(n).real()
         s = QQbar.zeta(n).imag()
 
-        field, (c,s) = number_field_elements_from_algebraics((c,s))
-
+        if field is None:
+            field, (c,s) = number_field_elements_from_algebraics((c,s))
+        elif field is AA:
+            pass
+        else:
+            raise ValueError("field parameter needs to be either None or AA.")
         cn = field.one()
         sn = field.zero()
         edges = [(cn,sn)]
