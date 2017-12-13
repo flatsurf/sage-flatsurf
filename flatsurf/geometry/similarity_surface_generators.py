@@ -873,7 +873,7 @@ class TranslationSurfaceGenerators:
             The infinite staircase
             sage: TestSuite(S).run(skip='_test_pickling')
         """
-        from .translation_surface import Origami
+        from .translation_surface import Origami, TranslationSurface
         o = Origami(
                 lambda x: x+1 if x%2 else x-1,  # r  (edge 1)
                 lambda x: x-1 if x%2 else x+1,  # u  (edge 2)
@@ -882,7 +882,17 @@ class TranslationSurfaceGenerators:
                 domain = ZZ,
                 base_label=ZZ(0))
         o.rename("The infinite staircase")
-        return TranslationSurface(o)
+        s = TranslationSurface(o)
+        from flatsurf.geometry.similarity import SimilarityGroup
+        SG = SimilarityGroup(QQ)
+        def pos(n):
+            if n%2 == 0:
+                return SG((n/2,n/2))
+            else:
+                return SG((n//2,n//2+1))
+        gs=s.graphical_surface(default_position_function = pos)
+        gs.make_all_visible(limit = 10)
+        return s
 
     @staticmethod
     def t_fractal(w=ZZ_1, r=ZZ_2, h1=ZZ_1, h2=ZZ_1):
