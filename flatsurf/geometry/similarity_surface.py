@@ -590,8 +590,8 @@ class SimilaritySurface(SageObject):
             sage: s = translation_surfaces.arnoux_yoccoz(3)
             sage: ss = s.copy(new_field=AA).copy(optimal_number_field=True)
             sage: TestSuite(ss).run()
-            sage: ss.base_ring()
-            Number Field in a with defining polynomial y^3 + y^2 + y - 1
+            sage: ss.base_ring().discriminant()
+            -44
         """
         s = None  # This will be the surface we copy. (Likely we will set s=self below.)
         if new_field is not None and optimal_number_field:
