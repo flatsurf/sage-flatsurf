@@ -873,7 +873,7 @@ class TranslationSurfaceGenerators:
             The infinite staircase
             sage: TestSuite(S).run(skip='_test_pickling')
         """
-        from .translation_surface import Origami, TranslationSurface
+        from .translation_surface import Origami
         o = Origami(
                 lambda x: x+1 if x%2 else x-1,  # r  (edge 1)
                 lambda x: x-1 if x%2 else x+1,  # u  (edge 2)

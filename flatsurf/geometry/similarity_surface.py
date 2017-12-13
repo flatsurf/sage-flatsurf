@@ -10,7 +10,7 @@ from sage.structure.sage_object import SageObject
 
 from sage.rings.infinity import Infinity
 
-from sage.rings.all import ZZ, QQ, AA, RIF, RR
+from sage.rings.all import ZZ, QQ, AA, RIF, RR, NumberField
 
 from sage.modules.free_module_element import vector
 
@@ -24,7 +24,7 @@ from .matrix_2x2 import (is_similarity,
                     
 from .similarity import SimilarityGroup
 from .polygon import Polygons, wedge_product
-from .surface import Surface
+from .surface import Surface, Surface_dict, Surface_list
 from .surface_objects import Singularity
 
 ZZ_1 = ZZ.one()
@@ -593,46 +593,44 @@ class SimilaritySurface(SageObject):
             sage: ss.base_ring()
             Number Field in a with defining polynomial y^3 + y^2 + y - 1
         """
-        s=None  # This will be the surface we copy. (Likely we will set s=self below.)
+        s = None  # This will be the surface we copy. (Likely we will set s=self below.)
         if new_field is not None and optimal_number_field:
             raise ValueError("You can not set a new_field and also set optimal_number_field=True.")
-        if optimal_number_field==True:
+        if optimal_number_field == True:
             assert self.is_finite(), "Can only optimize_number_field for a finite surface."
             assert not lazy, "Lazy copying is unavailable when optimize_number_field=True."
-            coordinates_AA=[]
-            for l,p in self.label_iterator(polygons=True):
+            coordinates_AA = []
+            for l,p in self.label_iterator(polygons = True):
                 for e in p.edges():
                     coordinates_AA.append(AA(e[0]))
                     coordinates_AA.append(AA(e[1]))
             from sage.rings.qqbar import number_field_elements_from_algebraics
-            field,coordinates_NF,hom = number_field_elements_from_algebraics(coordinates_AA,minimal=True)
+            field,coordinates_NF,hom = number_field_elements_from_algebraics(coordinates_AA, minimal = True)
             if field is QQ:
                 new_field = QQ
-                # We pretend new_field=QQ was passed as a parameter...
+                # We pretend new_field = QQ was passed as a parameter.
+                # It will now get picked up by the "if new_field is not None:" line below.
             else:
                 # Unfortunately field doesn't come with an real embedding (which is given by hom!)
                 # So, we make a copy of the field, and add the embedding.
-                from sage.rings.number_field.number_field import NumberField
-                field2 = NumberField(field.polynomial(),name="a",embedding=hom(field.gen()))
+                field2 = NumberField(field.polynomial(), name = "a", embedding = hom(field.gen()))
                 # The following converts from field to field2:
-                hom2 = field.hom(im_gens=[field2.gen()])
+                hom2 = field.hom(im_gens = [field2.gen()])
                 
-                from flatsurf.geometry.surface import Surface_dict
-                ss = Surface_dict(base_ring=field2)
+                ss = Surface_dict(base_ring = field2)
                 index = 0
-                from flatsurf.geometry.polygon import Polygons
                 P = Polygons(field2)
-                for l,p in self.label_iterator(polygons=True):
+                for l,p in self.label_iterator(polygons = True):
                     new_edges = []
                     for i in xrange(p.num_edges()):
-                        new_edges.append((hom2(coordinates_NF[index]),hom2(coordinates_NF[index+1])))
-                        index+=2
-                    pp = P(edges=new_edges)
-                    ss.add_polygon(pp, label=l)
+                        new_edges.append( (hom2(coordinates_NF[index]), hom2(coordinates_NF[index+1]) ) )
+                        index += 2
+                    pp = P(edges = new_edges)
+                    ss.add_polygon(pp, label = l)
                 ss.change_base_label(self.base_label())
-                for (l1,e1),(l2,e2) in self.edge_iterator(gluings=True):
-                    ss.change_edge_gluing(l1,e1,l2,e2)
-                s=self.__class__(ss)
+                for (l1,e1),(l2,e2) in self.edge_iterator(gluings = True):
+                    ss.change_edge_gluing(l1, e1, l2, e2)
+                s = self.__class__(ss)
                 if not relabel:
                     if not mutable:
                         s.set_immutable()
@@ -645,10 +643,8 @@ class SimilaritySurface(SageObject):
             s = self
         if s.is_finite():
             if relabel:
-                from flatsurf.geometry.surface import Surface_list
                 return self.__class__(Surface_list(surface=s, copy=not lazy, mutable=mutable))
             else:
-                from flatsurf.geometry.surface import Surface_dict
                 return self.__class__(Surface_dict(surface=s, copy=not lazy, mutable=mutable))
         else:
             if lazy==False:
@@ -656,10 +652,8 @@ class SimilaritySurface(SageObject):
             if self.underlying_surface().is_mutable():
                 raise ValueError("An infinite surface can only be copied if it is immutable.")
             if relabel:
-                from flatsurf.geometry.surface import Surface_list
                 return self.__class__(Surface_list(surface=s, copy=False, mutable=mutable))
             else:
-                from flatsurf.geometry.surface import Surface_dict
                 return self.__class__(Surface_dict(surface=s, copy=False, mutable=mutable))
 
     def triangle_flip(self, l1, e1, in_place=False, test=False, direction=None):
