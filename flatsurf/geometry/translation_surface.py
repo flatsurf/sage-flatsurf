@@ -377,6 +377,33 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
                 if limit is not None and k>=limit:
                     assert False, "Exeeded limit iterations"
 
+    def j_invariant(self):
+        r"""
+        Return the Kenyon-Smillie J-invariant of this translation surface.
+
+        It is assumed that the coordinates are defined over a number field.
+
+        EXAMPLES::
+
+            sage: from flatsurf import *
+            sage: O = translation_surfaces.regular_octagon()
+            sage: O.j_invariant()
+            (
+                      [2 2]
+            (0), (0), [2 1]
+            )
+        """
+        it = self.label_iterator()
+        lab = next(it)
+        P = self.polygon(lab)
+        Jxx, Jyy, Jxy = P.j_invariant()
+        for lab in it:
+            xx,yy,xy = self.polygon(lab).j_invariant()
+            Jxx += xx
+            Jyy += yy
+            Jxy += xy
+        return (Jxx, Jyy, Jxy)
+
 class MinimalTranslationCover(Surface):
     r"""
     We label copy by cartesian product (polygon from bot, matrix).

@@ -38,6 +38,8 @@ from sage.categories.action import Action
 from sage.rings.all import ZZ, QQ, AA, RR
 
 from sage.modules.free_module_element import vector
+from sage.modules.free_module_element import free_module_element
+from sage.matrix.constructor import matrix
 
 from .matrix_2x2 import angle
 
@@ -51,6 +53,24 @@ def dot_product(v,w):
 
 def wedge_product(v,w):
     return v[0]*w[1]-v[1]*w[0]
+
+def wedge(u, v):
+    r"""
+    General wedge product of two vectors.
+    """
+    d = len(u)
+    R = u.base_ring()
+    assert len(u) == len(v) and v.base_ring() == R
+    return free_module_element(R, d*(d-1)//2, [(u[i]*v[j] - u[j]*v[i]) for i in range(d-1) for j in range(i+1,d)])
+
+def tensor(u, v):
+    r"""
+    General tensor product of two vectors.
+    """
+    d = len(u)
+    R = u.base_ring()
+    assert len(u) == len(v) and v.base_ring() == R
+    return matrix(R, d, [u[i]*v[j] for j in range(d) for i in range(d)])
 
 def is_same_direction(v,w,zero=None):
     r"""
@@ -901,6 +921,79 @@ class ConvexPolygon(Element):
                 raise ValueError("Vertex "+str(i)+" is not on the circle.")
         return circle
 
+    def j_invariant(self):
+        r"""
+        Return the Kenyon-Smille J-invariant of this polygon.
+
+        The base ring of the polygon must be a number field.
+
+        The output is a triple ``(Jxx, Jyy, Jxy)`` that corresponds
+        respectively to the Sah-Arnoux-Fathi invariant of the vertical flow,
+        the Sah-Arnoux-Fathi invariant of the horizontal flow and the `xy`-matrix.
+
+        EXAMPLES::
+
+            sage: from flatsurf import *
+
+            sage: polygons.right_triangle(1/3,1).j_invariant()
+            (
+                      [0 0]
+            (0), (0), [1 0]
+            )
+
+        The regular 8-gon::
+
+            sage: polygons.regular_ngon(8).j_invariant()
+            (
+                      [2 2]
+            (0), (0), [2 1]
+            )
+
+            (
+                           [  0 3/2]
+            (1/2), (-1/2), [3/2   0]
+            )
+
+        Some extra debugging::
+
+            sage: from flatsurf.geometry.polygon import wedge
+            sage: K.<a> = NumberField(x^3 - 2, embedding=AA(2)**(1/3))
+            sage: ux = 1 + a + a**2
+            sage: uy = -2/3 + a
+            sage: vx = 1/5 - a**2
+            sage: vy = a + 7/13*a**2
+            sage: p = polygons((ux, uy), (vx,vy), (-ux-vx,-uy-vy), ring=K)
+            sage: Jxx, Jyy, Jxy = p.j_invariant()
+            sage: wedge(ux.vector(), vx.vector()) == Jxx
+            True
+            sage: wedge(uy.vector(), vy.vector()) == Jyy
+            True
+        """
+        if self.base_ring() is QQ:
+            raise NotImplementedError
+
+        K = self.base_ring()
+        try:
+            V, from_V, to_V = K.vector_space()
+        except (AttributeError, ValueError):
+            raise ValueError("the surface needs to be define over a number field")
+
+        dim = K.degree()
+        Jxx = Jyy = free_module_element(K, dim*(dim-1)//2)
+        Jxy = matrix(K, dim)
+        vertices = list(self.vertices())
+        vertices.append(vertices[0])
+        for i in range(len(vertices) - 1):
+            a = to_V(vertices[i][0])
+            b = to_V(vertices[i][1])
+            c = to_V(vertices[i+1][0])
+            d = to_V(vertices[i+1][1])
+            Jxx += wedge(a, c)
+            Jyy += wedge(b, d)
+            Jxy += tensor(a, d)
+            Jxy -= tensor(c, b)
+
+        return (Jxx, Jyy, Jxy)
 
 class ConvexPolygons(UniqueRepresentation, Parent):
     r"""
@@ -1043,6 +1136,11 @@ def number_field_elements_from_algebraics(elts, name='a'):
         (Number Field in a with defining polynomial y^4 - 5*y^2 + 5,
          [1/2*a^2 - 3/2, 1/2*a])
     """
+    # case when all elements are rationals
+    if all(x in QQ for x in elts):
+        return QQ, [QQ(x) for x in elts]
+
+    # general case
     from sage.rings.qqbar import number_field_elements_from_algebraics
     from sage.rings.number_field.number_field import NumberField
     field,elts,phi = number_field_elements_from_algebraics(elts, minimal=True)
@@ -1130,24 +1228,52 @@ class PolygonsConstructor:
         return Polygons(field)(edges=edges)
 
     @staticmethod
-    def right_triangle(angle,leg0=None, leg1=None, hypotenuse=None):
+    def right_triangle(angle, leg0=None, leg1=None, hypotenuse=None):
         r"""
-        Return a right triangle in a numberfield with an angle of pi*m/n.
-        You can specify the length of the first leg (leg0), the second leg (leg1),
-        or the hypotenuse.
+        Return a right triangle in a number field with an angle of pi*angle.
+
+        You can specify the length of the first leg (``leg0``), the second leg (``leg1``),
+        or the ``hypotenuse``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import *
+
+            sage: P = polygons.right_triangle(1/3, 1)
+            sage: P
+            Polygon: (0, 0), (1, 0), (1, a)
+            sage: P.base_ring()
+            Number Field in a with defining polynomial y^2 - 3
+
+            sage: polygons.right_triangle(1/4,1)
+            Polygon: (0, 0), (1, 0), (1, 1)
+            sage: polygons.right_triangle(1/4,1).field()
+            Rational Field
         """
         from sage.rings.qqbar import QQbar
-        z=QQbar.zeta(2*angle.denom())**angle.numer()
+
+        angle = QQ(angle)
+        if angle <= 0 or angle > QQ((1,2)):
+            raise ValueError('angle must be in ]0,1/2]')
+
+        z = QQbar.zeta(2*angle.denom())**angle.numer()
         c = z.real()
         s = z.imag()
 
-        if not leg0 is None:
-            c,s = leg0*c/c,leg0*s/c
-        elif not leg1 is None:
-            c,s = leg1*c/s,leg1*s/s
-        elif not hypotenuse is None:
+        nargs = (leg0 is not None) + (leg1 is not None) + (hypotenuse is not None)
+
+        if nargs == 0:
+            leg0 = 1
+        elif nargs > 1:
+            raise ValueError('only one length can be specified')
+
+        if leg0 is not None:
+            c,s = leg0*c/c, leg0*s/c
+        elif leg1 is not None:
+            c,s = leg1*c/s, leg1*s/s
+        elif hypotenuse is not None:
             c,s = hypotenuse*c, hypotenuse*s
-        
+
         field, (c,s) = number_field_elements_from_algebraics((c,s))
         return Polygons(field)(edges=[(c,field.zero()),(field.zero(),s),(-c,-s)])
         
