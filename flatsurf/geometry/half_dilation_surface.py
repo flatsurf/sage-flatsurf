@@ -3,6 +3,12 @@ from flatsurf.geometry.similarity_surface import SimilaritySurface
 from flatsurf.geometry.mappings import SurfaceMapping, IdentityMapping, SurfaceMappingComposition
 from flatsurf.geometry.polygon import Polygons
 
+from sage.env import SAGE_VERSION
+if SAGE_VERSION >= '8.2.beta0':
+    from sage.structure.element import is_Matrix
+else:
+    from sage.matrix.matrix import is_Matrix
+
 class HalfDilationSurface(SimilaritySurface):
     r"""
     A generic half translation surface
@@ -31,7 +37,6 @@ class HalfDilationSurface(SimilaritySurface):
             sage: s2.polygon(0)
             Polygon: (0, 0), (1, 0), (3, 1), (2, 1)
         """
-        from sage.matrix.matrix import is_Matrix
         if not is_Matrix(matrix):
             raise NotImplementedError("Only implemented for matrices.")
         if not matrix.dimensions!=(2,2):

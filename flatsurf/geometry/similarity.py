@@ -8,12 +8,16 @@ from sage.structure.unique_representation import UniqueRepresentation
 from sage.categories.groups import Groups
 
 from sage.modules.free_module_element import vector
-from sage.matrix.matrix import is_Matrix
 from sage.groups.group import Group
 from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ
 from sage.modules.free_module_element import FreeModuleElement
 
+from sage.env import SAGE_VERSION
+if SAGE_VERSION >= '8.2.beta0':
+    from sage.structure.element import is_Matrix
+else:
+    from sage.matrix.matrix import is_Matrix
 
 ZZ_0 = Integer(0)
 ZZ_1 = Integer(1)
