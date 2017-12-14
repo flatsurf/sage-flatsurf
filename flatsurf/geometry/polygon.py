@@ -72,6 +72,18 @@ def tensor(u, v):
     assert len(u) == len(v) and v.base_ring() == R
     return matrix(R, d, [u[i]*v[j] for j in range(d) for i in range(d)])
 
+def line_intersection(p1,p2,q1,q2):
+    r"""
+    Return the point of intersection between the line joining p1 to p2
+    and the line joining q1 to q2. If the lines are parallel we return 
+    None. Here p1, p2, q1 and q2 should be vectors in the plane.
+    """
+    if wedge_product(p2-p1,q2-q1) == 0:
+        return None
+    # Since the wedge product is non-zero, the following is invertible:
+    m=matrix([[p2[0]-p1[0], q1[0]-q2[0]],[p2[1]-p1[1], q1[1]-q2[1]]])
+    return p1+(m.inverse()*(q1-p1))[0] * (p2-p1)
+
 def is_same_direction(v,w,zero=None):
     r"""
     EXAMPLES::
@@ -625,7 +637,6 @@ class ConvexPolygon(Element):
             raise ValueError("Zero vector provided as direction.")
         v0=self.vertex(0)
         w=direction
-        from sage.matrix.constructor import matrix
         for i in range(self.num_edges()):
             e=self.edge(i)
             #print "i="+str(i)+" e="+str(e)+" direction="+str(direction)
@@ -791,7 +802,6 @@ class ConvexPolygon(Element):
         if holonomy == V.zero():
             # not flowing at all!
             return point, V.zero(), self.get_point_position(point,translation=translation)
-        from sage.matrix.constructor import matrix
         if translation is None:
             v0=self.vertex(0)
         else:
