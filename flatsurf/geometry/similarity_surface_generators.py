@@ -691,22 +691,44 @@ class TranslationSurfaceGenerators:
         Joshua P. Bowman's paper "The Complete Family of Arnoux-Yoccoz 
         Surfaces."
         
-        EXAMPLES:
+        EXAMPLES::
 
-        sage: from flatsurf import *
-        sage: s=translation_surfaces.arnoux_yoccoz(4)
-        sage: TestSuite(s).run()
-        sage: s.is_delaunay_decomposed()
-        True
-        sage: s=s.canonicalize()
-        sage: field=s.base_ring()
-        sage: a=field.gen()
-        sage: from sage.matrix.constructor import Matrix
-        sage: m=Matrix([[a,0],[0,~a]])
-        sage: ss=m*s
-        sage: ss=ss.canonicalize()
-        sage: s.cmp_translation_surface(ss)==0
-        True
+            sage: from flatsurf import *
+            sage: s = translation_surfaces.arnoux_yoccoz(4)
+            sage: TestSuite(s).run()
+            sage: s.is_delaunay_decomposed()
+            True
+            sage: s = s.canonicalize()
+            sage: field=s.base_ring()
+            sage: a = field.gen()
+            sage: from sage.matrix.constructor import Matrix
+            sage: m = Matrix([[a,0],[0,~a]])
+            sage: ss = m*s
+            sage: ss = ss.canonicalize()
+            sage: s.cmp_translation_surface(ss)==0
+            True
+
+        The Arnoux-Yoccoz pseudo-Anosov are known to have (minimal) invariant
+        foliations with SAF=0::
+
+            sage: S3 = translation_surfaces.arnoux_yoccoz(3)
+            sage: Jxx, Jyy, Jxy = S3.j_invariant()
+            sage: Jxx.is_zero() and Jyy.is_zero()
+            True
+            sage: Jxy
+            [ 0  2  0]
+            [ 2 -2  0]
+            [ 0  0  2]
+
+            sage: S4 = translation_surfaces.arnoux_yoccoz(4)
+            sage: Jxx, Jyy, Jxy = S4.j_invariant()
+            sage: Jxx.is_zero() and Jyy.is_zero()
+            True
+            sage: Jxy
+            [ 0  2  0  0]
+            [ 2 -2  0  0]
+            [ 0  0  2  2]
+            [ 0  0  2  0]
         """
         g=ZZ(genus)
         assert g>=3
@@ -773,8 +795,7 @@ class TranslationSurfaceGenerators:
     @staticmethod
     def from_flipper(h):
         r"""
-        Build a translation or half-translation surface from a flipper
-        pseudo-Anosov
+        Build a (half-)translation surface from a flipper pseudo-Anosov.
 
         EXAMPLES::
 
@@ -838,7 +859,7 @@ class TranslationSurfaceGenerators:
         return HalfTranslationSurface(surface_list_from_polygons_and_gluings(polys, adjacencies))
 
     @staticmethod
-    def origami(r,u,rr=None,uu=None,domain=None):
+    def origami(r, u, rr=None, uu=None, domain=None):
         r"""
         Return the origami defined by the permutations ``r`` and ``u``.
 
@@ -862,7 +883,7 @@ class TranslationSurfaceGenerators:
     @staticmethod
     def infinite_staircase():
         r"""
-        Return the infinite staircase built as an origami
+        Return the infinite staircase built as an origami.
 
         EXAMPLES::
 
