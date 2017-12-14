@@ -8,6 +8,51 @@ Limit for clockwise_to and counter_clockwise_to in SimilaritySurfaceTangentVecto
 """
 
 class SimilaritySurfaceTangentVector:
+    r"""
+    Tangent vector to a similarity surface.
+
+    EXAMPLES::
+
+        sage: from flatsurf import *
+
+    Examples on edges in direction of edges::
+
+        sage: s = translation_surfaces.square_torus()
+        sage: for y in [0,1]:
+        ....:     for d in [1,-1]:
+        ....:         print(s.tangent_vector(0, (1/2, y), (d, 0)))
+        SimilaritySurfaceTangentVector in polygon 0 based at (1/2, 0) with vector (1, 0)
+        SimilaritySurfaceTangentVector in polygon 0 based at (1/2, 1) with vector (-1, 0)
+        SimilaritySurfaceTangentVector in polygon 0 based at (1/2, 0) with vector (1, 0)
+        SimilaritySurfaceTangentVector in polygon 0 based at (1/2, 1) with vector (-1, 0)
+
+        sage: for x in [0,1]:
+        ....:     for d in [1,-1]:
+        ....:         print(s.tangent_vector(0, (x, 1/2), (0, d)))
+        SimilaritySurfaceTangentVector in polygon 0 based at (1, 1/2) with vector (0, 1)
+        SimilaritySurfaceTangentVector in polygon 0 based at (0, 1/2) with vector (0, -1)
+        SimilaritySurfaceTangentVector in polygon 0 based at (1, 1/2) with vector (0, 1)
+        SimilaritySurfaceTangentVector in polygon 0 based at (0, 1/2) with vector (0, -1)
+
+    Examples on vertices in direction of edges::
+
+        sage: s = translation_surfaces.square_torus()
+        sage: for y in [0,1]:
+        ....:     print(s.tangent_vector(0, (0, y), (1, 0)))
+        ....:     print(s.tangent_vector(0, (1, y), (-1, 0)))
+        SimilaritySurfaceTangentVector in polygon 0 based at (0, 0) with vector (1, 0)
+        SimilaritySurfaceTangentVector in polygon 0 based at (1, 1) with vector (-1, 0)
+        SimilaritySurfaceTangentVector in polygon 0 based at (0, 0) with vector (1, 0)
+        SimilaritySurfaceTangentVector in polygon 0 based at (1, 1) with vector (-1, 0)
+
+        sage: for x in [0,1]:
+        ....:     print(s.tangent_vector(0, (x, 0), (0, 1)))
+        ....:     print(s.tangent_vector(0, (x, 1), (0, -1)))
+        SimilaritySurfaceTangentVector in polygon 0 based at (1, 0) with vector (0, 1)
+        SimilaritySurfaceTangentVector in polygon 0 based at (0, 1) with vector (0, -1)
+        SimilaritySurfaceTangentVector in polygon 0 based at (1, 0) with vector (0, 1)
+        SimilaritySurfaceTangentVector in polygon 0 based at (0, 1) with vector (0, -1)
+    """
     def __init__(self, tangent_bundle, polygon_label, point, vector):
         self._bundle = tangent_bundle
         p = self.surface().polygon(polygon_label)
