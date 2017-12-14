@@ -31,8 +31,8 @@ class HalfDilationSurface(SimilaritySurface):
             sage: s2.polygon(0)
             Polygon: (0, 0), (1, 0), (3, 1), (2, 1)
         """
-        from sage.matrix.matrix import Matrix
-        if not isinstance(matrix,Matrix):
+        from sage.matrix.matrix import is_Matrix
+        if not is_Matrix(matrix):
             raise NotImplementedError("Only implemented for matrices.")
         if not matrix.dimensions!=(2,2):
             raise NotImplementedError("Only implemented for 2x2 matrices.")

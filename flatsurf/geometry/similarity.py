@@ -8,7 +8,7 @@ from sage.structure.unique_representation import UniqueRepresentation
 from sage.categories.groups import Groups
 
 from sage.modules.free_module_element import vector
-from sage.matrix.matrix import Matrix
+from sage.matrix.matrix import is_Matrix
 from sage.groups.group import Group
 from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ
@@ -366,7 +366,7 @@ class SimilarityGroup(UniqueRepresentation, Group):
                 sign = ZZ(x[4])
             else:
                 raise ValueError("can not construct a similarity from a list of length {}".format(len(x)))
-        elif isinstance(x, Matrix):
+        elif is_Matrix(x):
             #   a -sb
             #   b sa
             if x.nrows() == x.ncols() == 2:
