@@ -185,6 +185,15 @@ class SaddleConnection(SageObject):
         else:
             self._direction=self._direction/yabs
         
+        # Fix end_direction if not standard.
+        if end_direction is not None:
+            xabs=end_direction[0].abs()
+            yabs=end_direction[1].abs()
+            if xabs>yabs:
+                end_direction=end_direction/xabs
+            else:
+                end_direction=end_direction/yabs
+
         self._start_data=tuple(start_data)
         
         if end_direction is None:
@@ -336,6 +345,23 @@ class SaddleConnection(SageObject):
         return self._s.tangent_vector(self._start_data[0],
                                       self._s.polygon(self._start_data[0]).vertex(self._start_data[1]),
                                       self._direction)
+        
+    def trajectory(self, limit = 1000, cache = True):
+        r"""
+        Return a straight line trajectory representing this saddle connection. Fails if the trajectory
+        passes through more than limit polygons.
+        """
+        v=self.start_tangent_vector()
+        traj=v.straight_line_trajectory()
+        traj.flow(limit)
+        if not traj.is_saddle_connection():
+            raise ValueError("Did not obtain saddle connection by flowing forward. Limit="+str(limit))
+        return traj
+        
+    def plot(self, **options):
+        r""" Equivalant to .trajectory().plot(...) 
+        """
+        return self.trajectory().plot(**options)
         
     def end_tangent_vector(self):
         r"""
