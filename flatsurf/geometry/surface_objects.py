@@ -345,7 +345,7 @@ class SaddleConnection(SageObject):
         return self._s.tangent_vector(self._start_data[0],
                                       self._s.polygon(self._start_data[0]).vertex(self._start_data[1]),
                                       self._direction)
-        
+
     def trajectory(self, limit = 1000, cache = True):
         r"""
         Return a straight line trajectory representing this saddle connection. Fails if the trajectory
@@ -357,12 +357,12 @@ class SaddleConnection(SageObject):
         if not traj.is_saddle_connection():
             raise ValueError("Did not obtain saddle connection by flowing forward. Limit="+str(limit))
         return traj
-        
+
     def plot(self, **options):
         r""" Equivalant to .trajectory().plot(...) 
         """
         return self.trajectory().plot(**options)
-        
+
     def end_tangent_vector(self):
         r"""
         Return a tangent vector to the saddle connection based at its start.
@@ -370,7 +370,6 @@ class SaddleConnection(SageObject):
         return self._s.tangent_vector(self._end_data[0],
                                       self._s.polygon(self._end_data[0]).vertex(self._end_data[1]),
                                       self._end_direction)
-        
 
     def invert(self):
         r"""
