@@ -10,6 +10,11 @@ from .polygon import is_same_direction
 #  my_line[i]
 # we should always access to the same element
 
+# I wanted to be able to flow backward thus inserting at the beginning of a list.
+# Perhaps it would be better to model this on a deque-like class that is indexed by
+# all integers rather than just the non-negative ones? Do you know of such
+# a class? Alternately, we could store an offset.
+
 def get_linearity_coeff(u, v):
     r"""
     Given the two 2-dimensional vectors ``u`` and ``v``, return ``a`` so that
@@ -327,6 +332,24 @@ class AbstractStraightLineTrajectory:
 class StraightLineTrajectory(AbstractStraightLineTrajectory):
     r"""
     Straight-line trajectory in a similarity surface.
+
+    EXAMPLES::
+
+        # Demonstrate the handling of edges
+        sage: from flatsurf import *
+        sage: from flatsurf.geometry.straight_line_trajectory import StraightLineTrajectory
+        sage: p = SymmetricGroup(2)('(1,2)')
+        sage: s = translation_surfaces.origami(p,p)
+        sage: traj = StraightLineTrajectory(s.tangent_vector(1,(0,0),(1,0)))
+        sage: traj
+        Straight line trajectory made of 1 segments from (0, 0) in polygon 1 to (1, 1) in polygon 2
+        sage: traj.is_saddle_connection()
+        True
+        sage: traj2 = StraightLineTrajectory(s.tangent_vector(1,(1,0),(-1,0)))
+        sage: traj2
+        Straight line trajectory made of 1 segments from (1, 1) in polygon 2 to (0, 0) in polygon 1
+        sage: traj2.is_saddle_connection()
+        True
     """
     def __init__(self, tangent_vector):
         self._segments = deque()
