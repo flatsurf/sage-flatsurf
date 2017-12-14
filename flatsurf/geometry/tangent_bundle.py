@@ -39,18 +39,19 @@ class SimilaritySurfaceTangentVector:
                 self._position=pos
         elif pos.is_vertex():
             v=pos.get_vertex()
+            p=self.surface().polygon(polygon_label)
             # subsequent edge:
-            edge1 = self.surface().polygon(polygon_label).edge(v)
+            edge1 = p.edge(v)
             # prior edge:
-            edge0 = self.surface().polygon(polygon_label).edge(v-1)
+            edge0 = p.edge( (v-1)%p.num_edges() )
             wp1 = wedge_product(edge1,vector)
             wp0 = wedge_product(edge0,vector)
             if wp1<0 or wp0<0:
                 raise ValueError("Singular point with vector pointing away from polygon")
             if wp0 == 0:
                 # vector points backward along edge 0
-                label2,e2 = self.surface().opposite_edge(polygon_label,v-1)
-                similarity = self.surface().edge_transformation(polygon_label,v-1)
+                label2,e2 = self.surface().opposite_edge(polygon_label, (v-1)%p.num_edges())
+                similarity = self.surface().edge_transformation(polygon_label, (v-1)%p.num_edges())
                 point2=similarity(point)
                 vector2=similarity.derivative()*vector
                 self._polygon_label=label2
