@@ -345,9 +345,9 @@ class StraightLineTrajectory(AbstractStraightLineTrajectory):
         Straight line trajectory made of 1 segments from (0, 0) in polygon 1 to (1, 1) in polygon 2
         sage: traj.is_saddle_connection()
         True
-        sage: traj2 = StraightLineTrajectory(s.tangent_vector(1,(1,0),(-1,0)))
+        sage: traj2 = StraightLineTrajectory(s.tangent_vector(1,(0,0),(0,1)))
         sage: traj2
-        Straight line trajectory made of 1 segments from (1, 1) in polygon 2 to (0, 0) in polygon 1
+        Straight line trajectory made of 1 segments from (1, 0) in polygon 2 to (0, 1) in polygon 1
         sage: traj2.is_saddle_connection()
         True
     """
