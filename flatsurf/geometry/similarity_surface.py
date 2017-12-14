@@ -25,7 +25,8 @@ from .matrix_2x2 import (is_similarity,
 from .similarity import SimilarityGroup
 from .polygon import Polygons, wedge_product
 from .surface import Surface, Surface_dict, Surface_list
-from .surface_objects import Singularity
+from .surface_objects import Singularity, SaddleConnection
+from .circle import Circle
 
 ZZ_1 = ZZ.one()
 ZZ_2 = ZZ_1 + ZZ_1
@@ -1681,6 +1682,105 @@ class SimilaritySurface(SageObject):
                     loop=True
                     break
         return s
+        
+    def saddle_connections(self, squared_length_bound, initial_label=None, initial_vertex=None, sc_list=None, check=False):
+        r"""
+        Returns a list of saddle connections on the surface whose length squared is less than or equal to squared_length_bound.
+        The length of a saddle connection is measured using holonomy from polygon in which the trajectory starts. 
+        
+        If initial_label and initial_vertex are not provided, we return all saddle connections satisfying the bound condition.
+        
+        If initial_label and initial_vertex are provided, it only provides saddle connections emanating from the corresponding 
+        vertex of a polygon. If only initial_label is provided, the added saddle connections will only emanate from the 
+        corresponding polygon.
+        
+        If sc_list is provided the found saddle connections are appended to this list and the resulting list is returned.
+        
+        If check==True it uses the checks in the SaddleConnection class to sanity check our results.
+        
+        EXAMPLES::
+            sage: from flatsurf import *
+            sage: s = translation_surfaces.square_torus()
+            sage: sc_list = s.saddle_connections(13, check=True)
+            sage: len(sc_list)
+            32
+        """
+        assert squared_length_bound > 0
+        if sc_list is None:
+            sc_list = []
+        if initial_label is None:
+            assert self.is_finite()
+            assert initial_vertex is None, "If initial_label is not provided, then initial_vertex must not be provided either."
+            for label in self.label_iterator():
+                self.saddle_connections(squared_length_bound, initial_label=label, sc_list=sc_list)
+            return sc_list
+        if initial_vertex is None:
+            for vertex in xrange( self.polygon(initial_label).num_edges() ):
+                self.saddle_connections(squared_length_bound, initial_label=initial_label, initial_vertex=vertex, sc_list=sc_list)
+            return sc_list
+        
+        # Now we have a specified initial_label and initial_vertex
+        SG = SimilarityGroup(self.base_ring())
+        start_data = (initial_label, initial_vertex)
+        circle = Circle(self.vector_space().zero(), squared_length_bound, base_ring =   self.base_ring())
+        p = self.polygon(initial_label)
+        v = p.vertex(initial_vertex)
+        last_sim = SG(-v[0],-v[1])
+        p = self.polygon(initial_label)
+        
+        # First check the edge eminating rightward from the start_vertex.
+        e = p.edge(initial_vertex)
+        if e[0]**2 + e[1]**2 <= squared_length_bound:
+            sc_list.append( SaddleConnection(self, start_data, e) )
+
+        # Represents the bounds of the beam of trajectories we are sending out.
+        wedge = ( last_sim( p.vertex((initial_vertex+1)%p.num_edges()) ), 
+                  last_sim( p.vertex((initial_vertex+p.num_edges()-1)%p.num_edges()) ))
+
+        # This will collect the data we need for a depth first search.
+        chain = [(last_sim, initial_label, wedge, [(initial_vertex+p.num_edges()-i)%p.num_edges() for i in xrange(2,p.num_edges())])]
+
+        while len(chain)>0:
+            #print("Chain length is"+str(len(chain)))
+            sim, label, wedge, verts = chain[-1]
+            if len(verts) == 0:
+                chain.pop()
+                continue
+            vert = verts.pop()
+            #print("Inspecting "+str(vert))
+            p = self.polygon(label)    
+            # First check the vertex
+            vert_position = sim(p.vertex(vert))
+            if wedge_product(wedge[0], vert_position) > 0 and \
+            wedge_product(vert_position, wedge[1]) > 0 and \
+            vert_position[0]**2 + vert_position[1]**2 <= squared_length_bound:
+                        sc_list.append( SaddleConnection(self, start_data, vert_position, 
+                                                       end_data = (label,vert), 
+                                                       end_direction = ~sim.derivative()*-vert_position,
+                                                       holonomy = vert_position,
+                                                       end_holonomy = ~sim.derivative()*-vert_position,
+                                                       check = check) )
+            # Now check if we should develop across the edge
+            vert_position2 = sim(p.vertex( (vert+1)%p.num_edges() ))
+            if wedge_product(vert_position,vert_position2)>0 and \
+            ( wedge_product(wedge[0],vert_position2)>0 or wedge_product(vert_position,wedge[1])>0 ) and \
+            circle.line_segment_position(vert_position, vert_position2)==1:
+                if wedge_product(wedge[0], vert_position) > 0:
+                    # First in new_wedge should be vert_position
+                    if wedge_product(vert_position2, wedge[1]) > 0:
+                        new_wedge = (vert_position, vert_position2)
+                    else:
+                        new_wedge = (vert_position, wedge[1])
+                else:
+                    if wedge_product(vert_position2, wedge[1]) > 0:
+                        new_wedge = (wedge[0], vert_position2)
+                    else:
+                        new_wedge=wedge
+                new_label, new_edge = self.opposite_edge(label, vert)
+                new_sim = sim*~self.edge_transformation(label,vert)
+                p = self.polygon(new_label)
+                chain.append( (new_sim, new_label, new_wedge, [(new_edge+p.num_edges()-i)%p.num_edges() for i in xrange(1,p.num_edges())]) )        
+        return sc_list
     
     def graphical_surface(self, *args, **kwds):
         r"""
