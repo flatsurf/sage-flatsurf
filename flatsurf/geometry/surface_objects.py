@@ -105,7 +105,122 @@ class Singularity(SageObject):
         # Hash only using the set of vertices (rather than including the surface)
         return hash(self._s)
 
+class SurfacePoint(SageObject):
+    r"""
+    Represents a point on a SimilaritySurface.
+    
+    EXAMPLES::
 
+        sage: from flatsurf import *
+        sage: from flatsurf.geometry.surface_objects import SurfacePoint
+        sage: p = SymmetricGroup(2)('(1,2)')
+        sage: s = translation_surfaces.origami(p,p)
+        sage: SurfacePoint(s, 1, (1/2,1/2))
+        Surface point located at (1/2, 1/2) in polygon 1
+        sage: sp1 = SurfacePoint(s, 1, (1/2,0))
+        sage: sp1
+        Surface point with 2 coordinate representations
+        sage: sp2 = SurfacePoint(s, 2, (1/2,1))
+        sage: sp1 == sp2
+        True
+        sage: hash(sp1) == hash(sp2)
+        True
+        sage: sp1.coordinates(2)
+        frozenset({(1/2, 1)})
+        sage: sp = SurfacePoint(s, 1, (0,0))
+        sage: sp
+        Surface point with 4 coordinate representations
+    """
+    def __init__(self, surface, label, point, limit=None):
+        self._s = surface
+        p = surface.polygon(label)
+        point = surface.vector_space()(point)
+        point.set_immutable()
+        pos = p.get_point_position(point)
+        assert pos.is_inside(), \
+            "Point must be positioned within the polygon with the given label."
+        # This is the correct thing if point lies in the interior of the polygon with the given label.
+        self._coordinate_dict = {label: {point}}
+        if pos.is_in_edge_interior():
+            label2,e2 = surface.opposite_edge(label, pos.get_edge())
+            point2 = surface.edge_transformation(label, pos.get_edge())(point)
+            point2.set_immutable()
+            if label2 in self._coordinate_dict:
+                self._coordinate_dict[label2].add(point2)
+            else:
+                self._coordinate_dict[label2]={point2}
+        if pos.is_vertex():
+            self._coordinate_dict = {}
+            sing = surface.singularity(label, pos.get_vertex(), limit=limit)
+            for l,v in sing.vertex_set():
+                new_point = surface.polygon(l).vertex(v)
+                new_point.set_immutable()
+                if l in self._coordinate_dict:
+                    self._coordinate_dict[l].add(new_point)
+                else:
+                    self._coordinate_dict[l] = {new_point}
+        # Freeze the sets.
+        for label,point_set in self._coordinate_dict.iteritems():
+            self._coordinate_dict[label] = frozenset(point_set)
+
+    def num_coordinates(self):
+        try:
+            return self._num_coordinates
+        except AttributeError:
+            count=0
+            for label,point_set in self._coordinate_dict.iteritems():
+                count += len(point_set)
+            self._num_coordinates = count
+            return count
+        else:
+            raise ValueError("Unable to return num_coordinates()")
+
+    def labels(self):
+        r"""
+        Return the list of labels of polygons containing the point in its closure.
+        
+        This will be a list of one label if the point is the the interior of a polygon,
+        at most two labels if it is on the interior of an edge, and can be lots of labels
+        if the point is a singularity.
+        """
+        return self._coordinate_dict.keys()
+        
+    def coordinates(self, label):
+        r"""
+        Return a frozenset of coordinates for the closure of the point in the polygon
+        with the provided label.
+        
+        The set will consist of one point if the point lies in the interior of a polygon,
+        will be two points if the point lies in the interior of two edges of the polygon 
+        simultaneously and can be lots of points if the point is a singularity.
+        """
+        return self._coordinate_dict[label]
+
+    def __repr__(self):
+        if self.num_coordinates()==1:
+            return "Surface point located at {} in polygon {}".format(
+                iter(self.coordinates(self.labels()[0])).next(),self.labels()[0])
+        else:
+            return "Surface point with {} coordinate representations".format(
+                self.num_coordinates())
+
+    def __eq__(self,other):
+        if self is other:
+            return True
+        if not isinstance(other, SurfacePoint):
+            raise TypeError("Comparing SurfacePoint to an object of different type")
+        if not self._s == other._s:
+            raise ValueError("Comparing SurfacePoints on different surfaces")
+        return self._coordinate_dict == other._coordinate_dict
+
+    def __hash__(self):
+        h=0
+        for label,point_set in self._coordinate_dict.iteritems():
+            h += 677*hash(label)+hash(point_set)
+        return h
+
+    def __ne__(self, other):
+        return not self == other
 
 
 class SaddleConnection(SageObject):
