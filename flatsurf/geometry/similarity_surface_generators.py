@@ -813,8 +813,10 @@ class TranslationSurfaceGenerators:
             sage: h2 = L2.encode_twist()                     # optional - flipper
             sage: h = h1*h2^(-1r)                            # optional - flipper
             sage: f = h.flat_structure()                     # optional - flipper
-            sage: translation_surfaces.from_flipper(h)       # optional - flipper
+            sage: ts = translation_surfaces.from_flipper(h)  # optional - flipper
+            sage: ts                                         # optional - flipper
             HalfTranslationSurface built from 2 polygons
+            sage: TestSuite(ts).run()                        # optional - flipper
 
         A non-orientable example::
 
@@ -823,6 +825,7 @@ class TranslationSurfaceGenerators:
             sage: h.is_pseudo_anosov()                       # optional - flipper
             True
             sage: S = translation_surfaces.from_flipper(h)   # optional - flipper
+            sage: TestSuite(S).run()                         # optional - flipper
             sage: S.num_polygons()                           # optional - flipper
             4
             sage: from flatsurf.geometry.similarity_surface_generators import flipper_nf_element_to_sage
@@ -840,7 +843,7 @@ class TranslationSurfaceGenerators:
         edge_vectors = {i: V((K(e.x.linear_combination), K(e.y.linear_combination)))
                 for i,e in f.edge_vectors.iteritems()}
 
-        to_polygon_number = {k:(i,2-j) for i,t in enumerate(f.triangulation) for j,k in enumerate(t)}
+        to_polygon_number = {k:(i,j) for i,t in enumerate(f.triangulation) for j,k in enumerate(t)}
 
         C = ConvexPolygons(K)
 
@@ -848,7 +851,7 @@ class TranslationSurfaceGenerators:
         adjacencies = {}
         for i,t in enumerate(f.triangulation):
             for j,k in enumerate(t):
-                adjacencies[(i,2-j)] = to_polygon_number[~k]
+                adjacencies[(i,j)] = to_polygon_number[~k]
             try:
                 poly = C([edge_vectors[i] for i in tuple(t)])
             except ValueError:
