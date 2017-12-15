@@ -25,7 +25,7 @@ from .matrix_2x2 import (is_similarity,
 from .similarity import SimilarityGroup
 from .polygon import Polygons, wedge_product
 from .surface import Surface, Surface_dict, Surface_list
-from .surface_objects import Singularity, SaddleConnection
+from .surface_objects import Singularity, SaddleConnection, SurfacePoint
 from .circle import Circle
 
 ZZ_1 = ZZ.one()
@@ -1121,6 +1121,14 @@ class SimilaritySurface(SageObject):
         """
         return Singularity(self,l,v,limit)
 
+    def surface_point(self, label, point, limit=None):
+        r"""
+        Return a SurfacePoint representing the provided point in the polygon with the
+        provided label. Limit is only necessary if representing a singularity in
+        an infinite surface.
+        """
+        return SurfacePoint(self, label, point, limit=limit)
+
     def minimal_translation_cover(self):
         r"""
         Return the minimal translation cover.
@@ -1751,20 +1759,22 @@ class SimilaritySurface(SageObject):
             p = self.polygon(label)    
             # First check the vertex
             vert_position = sim(p.vertex(vert))
+            #print(wedge[1].n())
             if wedge_product(wedge[0], vert_position) > 0 and \
-            wedge_product(vert_position, wedge[1]) > 0 and \
-            vert_position[0]**2 + vert_position[1]**2 <= squared_length_bound:
-                        sc_list.append( SaddleConnection(self, start_data, vert_position, 
-                                                       end_data = (label,vert), 
-                                                       end_direction = ~sim.derivative()*-vert_position,
-                                                       holonomy = vert_position,
-                                                       end_holonomy = ~sim.derivative()*-vert_position,
-                                                       check = check) )
+               wedge_product(vert_position, wedge[1]) > 0 and \
+               vert_position[0]**2 + vert_position[1]**2 <= squared_length_bound:
+                    sc_list.append( SaddleConnection(self, start_data, vert_position,
+                                                   end_data = (label,vert),
+                                                   end_direction = ~sim.derivative()*-vert_position,
+                                                   holonomy = vert_position,
+                                                   end_holonomy = ~sim.derivative()*-vert_position,
+                                                   check = check) )
             # Now check if we should develop across the edge
             vert_position2 = sim(p.vertex( (vert+1)%p.num_edges() ))
             if wedge_product(vert_position,vert_position2)>0 and \
-            ( wedge_product(wedge[0],vert_position2)>0 or wedge_product(vert_position,wedge[1])>0 ) and \
-            circle.line_segment_position(vert_position, vert_position2)==1:
+               wedge_product(wedge[0],vert_position2)>0 and \
+               wedge_product(vert_position,wedge[1])>0 and \
+               circle.line_segment_position(vert_position, vert_position2)==1:
                 if wedge_product(wedge[0], vert_position) > 0:
                     # First in new_wedge should be vert_position
                     if wedge_product(vert_position2, wedge[1]) > 0:
