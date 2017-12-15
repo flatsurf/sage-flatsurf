@@ -850,7 +850,7 @@ class TranslationSurfaceGenerators:
             for j,k in enumerate(t):
                 adjacencies[(i,2-j)] = to_polygon_number[~k]
             try:
-                poly = C([edge_vectors[i] for i in reversed(tuple(t))])
+                poly = C([edge_vectors[i] for i in tuple(t)])
             except ValueError:
                 raise ValueError("t = {}, edges = {}".format(
                     t, [edge_vectors[i].n(digits=6) for i in t]))
