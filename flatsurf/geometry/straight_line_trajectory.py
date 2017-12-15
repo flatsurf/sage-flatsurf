@@ -2,7 +2,7 @@ from __future__ import absolute_import, print_function
 
 from collections import deque, defaultdict
 
-from .polygon import is_same_direction
+from .polygon import is_same_direction, line_intersection
 
 # Vincent question:
 # using deque has the disadvantage of losing the initial points
@@ -328,6 +328,88 @@ class AbstractStraightLineTrajectory:
                 ans.append(lab)
 
         return ans
+
+
+    def intersects(self, traj, count_singularities = False):
+        r"""
+        Return true if this trajectory intersects the other trajectory.
+        """
+        try:
+            self.intersections(traj, count_singularities = count_singularities).next()
+        except StopIteration:
+            return False
+        return True
+
+    def intersections(self, traj, count_singularities = False, include_segments = False):
+        r"""
+        Return the set of SurfacePoints representing the intersections
+        of this trajectory with the provided trajectory.
+
+        Singularities will be included only if count_singularities is
+        set to True.
+
+        If include_segments is True, it iterates over triples consisting of the SurfacePoint,
+        and two sets. The first set consists of segments of this trajectory that contain the point
+        and the second set consists of segments of traj that contain the point.
+
+        EXAMPLES::
+
+            sage: from flatsurf import *
+            sage: s=translation_surfaces.square_torus()
+            sage: traj1 = s.tangent_vector(0,(1/2,0),(1,1)).straight_line_trajectory()
+            sage: traj1.flow(3)
+            sage: traj1.is_closed()
+            True
+            sage: traj2 = s.tangent_vector(0,(1/2,0),(-1,1)).straight_line_trajectory()
+            sage: traj2.flow(3)
+            sage: traj2.is_closed()
+            True
+            sage: sum(1 for _ in traj1.intersections(traj2))
+            2
+        """
+        # Partition the segments making up the trajectories by label.
+        lab_to_seg1 = {}
+        for seg1 in self.segments():
+            label = seg1.polygon_label()
+            if label in lab_to_seg1:
+                lab_to_seg1[label].append(seg1)
+            else:
+                lab_to_seg1[label] = [seg1]
+        lab_to_seg2 = {}
+        for seg2 in traj.segments():
+            label = seg2.polygon_label()
+            if label in lab_to_seg2:
+                lab_to_seg2[label].append(seg2)
+            else:
+                lab_to_seg2[label] = [seg2]
+        intersection_points = set()
+        if include_segments:
+            segments={}
+        for label,seg_list_1 in lab_to_seg1.iteritems():
+            if label in lab_to_seg2:
+                seg_list_2 = lab_to_seg2[label]
+                for seg1 in seg_list_1:
+                    for seg2 in seg_list_2:
+                        x = line_intersection(seg1.start().point(),
+                                              seg1.start().point()+seg1.start().vector(),
+                                              seg2.start().point(),
+                                              seg2.start().point()+seg2.start().vector())
+                        if x is not None:
+                            pos = self._s.polygon(seg1.polygon_label()).get_point_position(x)
+                            if pos.is_inside() and (count_singularities or not pos.is_vertex()):
+                                new_point = self._s.surface_point(seg1.polygon_label(),x)
+                                if new_point not in intersection_points:
+                                    intersection_points.add(new_point)
+                                    if include_segments:
+                                        segments[new_point]=({seg1},{seg2})
+                                    else:
+                                        yield new_point
+                                elif include_segments:
+                                    segments[new_point][0].append(seg1)
+                                    segments[new_point][1].append(seg2)
+        if include_segments:
+            for x in segments.iteritems():
+                yield x
 
 class StraightLineTrajectory(AbstractStraightLineTrajectory):
     r"""
