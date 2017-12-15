@@ -163,7 +163,16 @@ class SurfacePoint(SageObject):
         for label,point_set in self._coordinate_dict.iteritems():
             self._coordinate_dict[label] = frozenset(point_set)
 
+    def surface(self):
+        r"""
+        Return the surface containing this point.
+        """
+        return self._s
+
     def num_coordinates(self):
+        r"""
+        Return the number of different coordinate representations of the point.
+        """
         try:
             return self._num_coordinates
         except AttributeError:
