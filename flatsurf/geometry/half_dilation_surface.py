@@ -100,31 +100,76 @@ class HalfDilationSurface(SimilaritySurface):
                     us.change_edge_gluing(p1,e1,p2,e2)
             return self
                 
-    def _edge_needs_flip_Linfinity(self, p1, e1):
+    def _edge_needs_flip_Linfinity(self, p1, e1, p2, e2):
         r"""
-        Check whether the provided edge which bouds two triangles should be flipped
+        Check whether the provided edge which bounds two triangles should be flipped
         to get closer to the L-infinity Delaunay decomposition.
+
+        TESTS::
+
+            sage: from flatsurf import *
+            sage: s = Surface_list(base_ring=QQ)
+            sage: t1 = polygons((1,0),(-1,1),(0,-1))
+            sage: t2 = polygons((0,1),(-1,0),(1,-1))
+            sage: s.add_polygon(polygons(vertices=[(0,0), (1,0), (0,1)]))
+            0
+            sage: s.add_polygon(polygons(vertices=[(1,1), (0,1), (1,0)]))
+            1
+            sage: s.change_polygon_gluings(0, [(1,0), (1,1), (1,2)])
+            sage: s = TranslationSurface(s)
+            sage: [s._edge_needs_flip_Linfinity(0, i, 1, i) for i in range(3)]
+            [False, False, False]
+
+            sage: ss = matrix(2, [1,1,0,1]) * s
+            sage: [ss._edge_needs_flip_Linfinity(0, i, 1, i) for i in range(3)]
+            [False, False, False]
+            sage: ss = matrix(2, [1,0,1,1]) * s
+            sage: [ss._edge_needs_flip_Linfinity(0, i, 1, i) for i in range(3)]
+            [False, False, False]
+
+            sage: ss = matrix(2, [1,2,0,1]) * s
+            sage: [ss._edge_needs_flip_Linfinity(0, i, 1, i) for i in range(3)]
+            [False, False, True]
+
+            sage: ss = matrix(2, [1,0,2,1]) * s
+            sage: [ss._edge_needs_flip_Linfinity(0, i, 1, i) for i in range(3)]
+            [True, False, False]
         """
-        p2,e2 = self.opposite_edge(p1,e1)
+        # safety check for now
+        assert self.opposite_edge(p1, e1) == (p2, e2), "not opposite edges"
+
+        # triangles
         poly1 = self.polygon(p1)
         poly2 = self.polygon(p2)
-        if poly1.num_edges()!=3 or poly2.num_edges()!=3:
-            raise ValueError("Edge must be adjacent to two triangles.")
+        if poly1.num_edges() != 3 or poly2.num_edges() != 3:
+            raise ValueError("edge must be adjacent to two triangles")
 
-        sim = self.edge_transformation(l2,e2)
-        m = sim.derivative()
-        # m is the matrix carrying polygon l2 to polygon l1 along the edge.
-        
+        edge1 = poly1.edge(e1)
+        edge1L = poly1.edge(e1 - 1)
+        edge1R = poly1.edge(e1 + 1)
+        edge2 = poly2.edge(e2)
+        edge2L = poly2.edge(e2 - 1)
+        edge2R = poly2.edge(e2 + 1)
+
+        sim = self.edge_transformation(p2, e2)
+        m = sim.derivative()   # matrix carrying p2 to p1
+
+        if not m.is_one():
+            assert (-m).is_one(), "should have been -identity"
+            edge2 *= -1
+            edge2L *= -1
+            edge2R *= -1
+
         # convexity check of the quadrilateral
-        if wedge_product(m*poly2.edge(e2-1), poly1.edge(e1+1)) <= 0 or \
-           wedge_product(poly1.edge(e1-1), m*poly2.edge(e2+1)) <=0:
+        from flatsurf.geometry.polygon import wedge_product
+        if wedge_product(edge2L, edge1R) <= 0 or \
+           wedge_product(edge1L, edge2R) <=0:
             return False
 
         # compare the norms
-        edge1 = poly1.edge(e1)
-        edge = m*poly2.edge(e2-1) + poly1.edge(e1+1)
+        new_edge = edge2L + edge1R
         n1 = max(abs(edge1[0]), abs(edge1[1]))
-        n = max(abs(edge[0]), abs(edge[1]))
+        n = max(abs(new_edge[0]), abs(new_edge[1]))
         return n < n1
 
     def l_infinity_delaunay_triangulation(self, triangulated=False, in_place=False, limit=None, direction=None):
@@ -154,43 +199,50 @@ class HalfDilationSurface(SimilaritySurface):
         EXAMPLES::
 
             sage: from flatsurf import *
-            sage: s0=translation_surfaces.veech_double_n_gon(3)
-            sage: field=s0.base_ring()
-            sage: a=field.gen()
-            sage: from sage.matrix.constructor import Matrix
-            sage: m=Matrix([[1,2/a],[0,1]])
-            sage: s=(m**5)*s0
-            sage: s=s.l_infinity_delaunay_triangulation()
+            sage: s0 = translation_surfaces.veech_double_n_gon(5)
+            sage: field = s0.base_ring()
+            sage: a = field.gen()
+            sage: m = matrix(field, 2, [2,a,1,1])
+
+            sage: s = m*s0
+            sage: s = s.l_infinity_delaunay_triangulation()
+            sage: TestSuite(s).run()
+
+            sage: s = (m**2)*s0
+            sage: s = s.l_infinity_delaunay_triangulation()
+            sage: TestSuite(s).run()
+
+            sage: s = (m**3)*s0
+            sage: s = s.l_infinity_delaunay_triangulation()
             sage: TestSuite(s).run()
         """
-        if not self.is_finite() and limit is None:
-            raise NotImplementedError("Not implemented for infinite surfaces unless limit is set")
+        if not self.is_finite():
+            raise NotImplementedError("no L-infinity Delaunay implemented for infinite surfaces")
         if triangulated:
             if in_place:
-                s=self
+                s = self
             else:
                 from flatsurf.geometry.surface import Surface_dict
-                s=self.__class__(Surface_dict(surface=self,mutable=True))
+                s = self.__class__(Surface_dict(surface=self,mutable=True))
         else:
             from flatsurf.geometry.surface import Surface_list
-            s=self.__class__(Surface_list(surface=self.triangulate(in_place=in_place),mutable=True))
-        loop=True
+            s = self.__class__(Surface_list(surface=self.triangulate(in_place=in_place),mutable=True))
+
         if direction is None:
             base_ring = self.base_ring()
             direction = self.vector_space()( (base_ring.zero(), base_ring.one()) )
         else:
             assert not direction.is_zero()
-        count=0
-        while loop:
-            loop=False
-            for (l1,e1),(l2,e2) in s.edge_iterator(gluings=True):
-                if (l1<l2 or (l1==l2 and e1<=e2)) and s._edge_needs_flip(l1,e1):
-                    s.triangle_flip(l1, e1, in_place=True, direction=direction)
-                    count += 1
-                    if not limit is None and count>=limit:
-                        return s
-                    loop=True
-                    break
+
+        triangles = set(s.label_iterator())
+        while triangles:
+            p1 = triangles.pop()
+            for e1 in xrange(3):
+                p2, e2 = s.opposite_edge(p1, e1)
+                if s._edge_needs_flip_Linfinity(p1, e1, p2, e2):
+                    s.triangle_flip(p1, e1, in_place=True, direction=direction)
+                    triangles.add(p1)
+                    triangles.add(p2)
         return s
 
 class GL2RImageSurface(Surface):
