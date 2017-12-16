@@ -5,12 +5,18 @@ from flatsurf.geometry.surface_objects import SurfacePoint
 from sage.plot.point import point2d
 
 class GraphicalSurfacePoint:
-    def __init__(self, graphical_surface, surface_point):
+    def __init__(self, surface_point, graphical_surface=None):
         r"""
-        Create a graphical segment from a graphical surface and a SegmentInPolygon.
+        Create a graphical segment from SurfacePoint. 
+        
+        If a graphical_surface is provided the point is created on the graphical surface.
+        Otherwise, we create it on the default graphical surface.
         """
-        assert surface_point.surface() == graphical_surface.get_surface()
-        self._gs = graphical_surface
+        if graphical_surface is None:
+            self._gs = surface_point.surface().graphical_surface()
+        else:
+            assert surface_point.surface() == graphical_surface.get_surface()
+            self._gs = graphical_surface
         self._sp = surface_point
 
     def surface_point(self):
