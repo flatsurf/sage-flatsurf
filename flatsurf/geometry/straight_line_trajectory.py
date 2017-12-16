@@ -3,6 +3,7 @@ from __future__ import absolute_import, print_function
 from collections import deque, defaultdict
 
 from .polygon import is_same_direction, line_intersection
+from .surface_objects import SaddleConnection
 
 # Vincent question:
 # using deque has the disadvantage of losing the initial points
@@ -224,7 +225,12 @@ class AbstractStraightLineTrajectory:
             sage: L.plot(color='red')    # not tested (problem with matplotlib font caches on Travis)
             Graphics object consisting of 1 graphics primitive
         """
-        return self.graphical_trajectory(**options).plot()
+        if "graphical_surface" in options:
+            gs = options["graphical_surface"]
+            del options["graphical_surface"]
+        else:
+            gs = None
+        return self.graphical_trajectory(graphical_surface=gs).plot(**options)
 
     def graphical_trajectory(self, graphical_surface=None, **options):
         r"""
@@ -234,7 +240,7 @@ class AbstractStraightLineTrajectory:
         from flatsurf.graphical.straight_line_trajectory import GraphicalStraightLineTrajectory
         if graphical_surface is None:
             graphical_surface = self.surface().graphical_surface()
-        return GraphicalStraightLineTrajectory(graphical_surface, self, **options)
+        return GraphicalStraightLineTrajectory(self, graphical_surface, **options)
 
     def coding(self, alphabet=None):
         r"""
@@ -343,7 +349,7 @@ class AbstractStraightLineTrajectory:
     def intersections(self, traj, count_singularities = False, include_segments = False):
         r"""
         Return the set of SurfacePoints representing the intersections
-        of this trajectory with the provided trajectory.
+        of this trajectory with the provided trajectory or SaddleConnection.
 
         Singularities will be included only if count_singularities is
         set to True.
@@ -368,6 +374,8 @@ class AbstractStraightLineTrajectory:
             2
         """
         # Partition the segments making up the trajectories by label.
+        if isinstance(traj,SaddleConnection):
+            traj = traj.trajectory()
         lab_to_seg1 = {}
         for seg1 in self.segments():
             label = seg1.polygon_label()
