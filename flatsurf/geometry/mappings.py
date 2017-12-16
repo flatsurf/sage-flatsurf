@@ -99,17 +99,17 @@ class SurfaceMapping:
 
 class SurfaceMappingComposition(SurfaceMapping):
     r"""
-    Compose two mappings.
+    Composition of two mappings between surfaces.
     """
     
     def __init__(self, mapping1, mapping2):
         r"""
         Represent the mapping of mapping1 followed by mapping2.
         """
-        if mapping1.codomain()!=mapping2.domain():
+        if mapping1.codomain() != mapping2.domain():
             raise ValueError("Codomain of mapping1 must be equal to the domain of mapping2")
-        self._m1=mapping1
-        self._m2=mapping2
+        self._m1 = mapping1
+        self._m2 = mapping2
         SurfaceMapping.__init__(self, self._m1.domain(), self._m2.codomain())
 
     def push_vector_forward(self,tangent_vector):
@@ -124,7 +124,7 @@ class IdentityMapping(SurfaceMapping):
     r"""
     Construct an identity map between two `equal' surfaces.
     """
-    def __init__(self,domain,codomain):
+    def __init__(self, domain, codomain):
         SurfaceMapping.__init__(self, domain, codomain)
 
     def push_vector_forward(self,tangent_vector):
@@ -135,7 +135,6 @@ class IdentityMapping(SurfaceMapping):
             tangent_vector.point(), \
             tangent_vector.vector(), \
             ring = ring)
-
 
     def pull_vector_back(self,tangent_vector):
         r"""Applies the pullback mapping to the provided vector."""
