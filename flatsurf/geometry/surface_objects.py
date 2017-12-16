@@ -205,6 +205,25 @@ class SurfacePoint(SageObject):
         """
         return self._coordinate_dict[label]
 
+    def graphical_surface_point(self, graphical_surface = None):
+        r"""
+        Return the GraphicalSurfacePoint built from this SurfacePoint. 
+        """
+        from flatsurf.graphical.surface_point import GraphicalSurfacePoint
+        return GraphicalSurfacePoint(self, graphical_surface = graphical_surface)
+
+    def plot(self, **options):
+        r"""
+        Plot this point. Options can include graphical_surface. Other options will
+        be passed along to
+        """
+        if "graphical_surface" in options:
+            gs = options["graphical_surface"]
+            del options["graphical_surface"]
+        else:
+            gs = None
+        return self.graphical_surface_point(graphical_surface=gs).plot(**options)
+
     def __repr__(self):
         if self.num_coordinates()==1:
             return "Surface point located at {} in polygon {}".format(
@@ -472,14 +491,20 @@ class SaddleConnection(SageObject):
 
     def trajectory(self, limit = 1000, cache = True):
         r"""
-        Return a straight line trajectory representing this saddle connection. Fails if the trajectory
-        passes through more than limit polygons.
+        Return a straight line trajectory representing this saddle connection. 
+        Fails if the trajectory passes through more than limit polygons.
         """
+        try:
+            return self._traj
+        except AttributeError:
+            pass
         v=self.start_tangent_vector()
         traj=v.straight_line_trajectory()
         traj.flow(limit)
         if not traj.is_saddle_connection():
             raise ValueError("Did not obtain saddle connection by flowing forward. Limit="+str(limit))
+        if cache:
+            self._traj = traj
         return traj
 
     def plot(self, **options):
@@ -503,6 +528,18 @@ class SaddleConnection(SageObject):
            self._start_data, self._direction,
            self._end_holonomy, self._holonomy,
            check=False)
+
+    def intersections(self, traj, count_singularities = False, include_segments = False):
+        r"""
+        See documentation of :func:`~straight_line_trajectory.AbstractStraightLineTrajectory.intersections`
+        """
+        return self.trajectory().intersections(traj, count_singularities, include_segments)
+
+    def intersects(self, traj, count_singularities = False):
+        r"""
+        See documentation of :func:`~straight_line_trajectory.AbstractStraightLineTrajectory.intersects`
+        """
+        return self.trajectory().intersects(traj, count_singularities=count_singularities)
 
     def __eq__(self,other):
         if self is other:
