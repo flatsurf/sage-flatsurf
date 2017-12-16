@@ -5,13 +5,12 @@ from flatsurf.graphical.polygon import V
 from flatsurf.geometry.straight_line_trajectory import SegmentInPolygon, StraightLineTrajectory
 
 class GraphicalSegmentInPolygon:
-    def __init__(self, graphical_surface, segment, color=None):
+    def __init__(self, segment, graphical_surface):
         r"""
         Create a graphical segment from a graphical surface and a SegmentInPolygon.
         """
         self._gs = graphical_surface
         self._seg = segment
-        self._color = color
         label=self.polygon_label()
         self._start=self._gs.graphical_polygon(label).transform(segment.start().point())
         if self._seg.is_edge():
@@ -30,7 +29,7 @@ class GraphicalSegmentInPolygon:
         r"""Return the end point as a RDF Vector."""
         return self._end
 
-    def plot(self, color=None):
+    def plot(self, **options):
         r"""
         EXAMPLES::
 
@@ -40,20 +39,17 @@ class GraphicalSegmentInPolygon:
             sage: from flatsurf.geometry.straight_line_trajectory import SegmentInPolygon
             sage: seg = SegmentInPolygon(v)
             sage: from flatsurf.graphical.straight_line_trajectory import *
-            sage: gseg = GraphicalSegmentInPolygon(s.graphical_surface(), seg)
+            sage: gseg = GraphicalSegmentInPolygon(seg, s.graphical_surface())
             sage: gseg.plot()                # not tested (problem with matplotlib font caches on Travis)
             Graphics object consisting of 1 graphics primitive
             sage: gseg.plot(color='red')     # not tested (problem with matplotlib font caches on Travis)
             Graphics object consisting of 1 graphics primitive
         """
         if self._gs.is_visible(self.polygon_label()):
-            if color is None:
-                if self._color is None:
-                    color = "black"
-                else:
-                    color = self._color
+            if not "color" in options:
+                options["color"] = "black"
             from sage.plot.line import line2d
-            return line2d([self.start(), self.end()],color=color)
+            return line2d([self.start(), self.end()],**options)
         else:
             from sage.plot.graphics import Graphics
             return Graphics()
@@ -62,13 +58,16 @@ class GraphicalStraightLineTrajectory:
     r"""
     Allows for the rendering of a straight-line trajectory through a graphical surface.
     """
-    def __init__(self, graphical_surface, trajectory, color=None):
-        self._gs = graphical_surface
+    def __init__(self, trajectory, graphical_surface = None):
+        if graphical_surface is None:
+            self._gs = trajectory.surface().graphical_surface()
+        else:
+            assert trajectory.surface() == graphical_surface.get_surface()
+            self._gs = graphical_surface
         self._traj = trajectory
-        self._segments = [GraphicalSegmentInPolygon(self._gs, s) for s in self._traj.segments()]
-        self._color = color
+        self._segments = [GraphicalSegmentInPolygon(s, self._gs) for s in self._traj.segments()]
 
-    def plot(self, color=None):
+    def plot(self, **options):
         r"""
         EXAMPLES::
 
@@ -87,6 +86,6 @@ class GraphicalStraightLineTrajectory:
         from sage.plot.graphics import Graphics
         p = Graphics()
         for seg in self._segments:
-            p += seg.plot(color=(self._color if color is None else color))
+            p += seg.plot(**options)
         return p
 
