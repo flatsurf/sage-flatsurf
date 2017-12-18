@@ -1792,6 +1792,17 @@ class SimilaritySurface(SageObject):
                 chain.append( (new_sim, new_label, new_wedge, [(new_edge+p.num_edges()-i)%p.num_edges() for i in xrange(1,p.num_edges())]) )        
         return sc_list
     
+    def set_default_graphical_surface(self, graphical_surface):
+        r"""
+        Replace the default graphical surface with the provided GraphicalSurface.
+        """
+        from flatsurf.graphical.surface import GraphicalSurface
+        if not isinstance(graphical_surface, GraphicalSurface):
+            raise ValueError("graphical_surface must be a GraphicalSurface")
+        if self != graphical_surface.get_surface():
+            raise ValueError("The provided graphical_surface renders a different surface!")
+        self._gs =  graphical_surface
+
     def graphical_surface(self, *args, **kwds):
         r"""
         Return a GraphicalSurface representing this surface.
@@ -1848,7 +1859,8 @@ class SimilaritySurface(SageObject):
 
     def plot(self, *args, **kwds):
         r"""
-        Returns a plot of the GraphicalSurface. Takes a number options listed below.
+        Returns a plot of the surface. There may be zero or one argument in `args`. If provided the
+        single argument should be a GraphicalSurface whick will be used in the plot.
 
         INPUT:
 
@@ -1874,7 +1886,17 @@ class SimilaritySurface(SageObject):
         - ``default_position_function'' -- a function mapping polygon labels to 
           similarities describing the position of the corresponding polygon.
         """
-        return self.graphical_surface(*args, **kwds).plot()
+        if len(args) > 1:
+            raise ValueError("SimilaritySurface.plot() can take at most one non-keyword argument.")
+        if len(args)==1:
+            from flatsurf.graphical.surface import GraphicalSurface
+            if not isinstance(args[0], GraphicalSurface):
+                raise ValueError("If an argument is provided, it must be a GraphicalSurface.")
+            gs = args[0]
+            gs.process_options(**kwds)
+        else:
+            gs = self.graphical_surface(**kwds)
+        return gs.plot()
 
 # I'm not sure we want to support this...
 #
