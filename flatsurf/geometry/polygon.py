@@ -75,7 +75,7 @@ def tensor(u, v):
 def line_intersection(p1,p2,q1,q2):
     r"""
     Return the point of intersection between the line joining p1 to p2
-    and the line joining q1 to q2. If the lines are parallel we return 
+    and the line joining q1 to q2. If the lines are parallel we return
     None. Here p1, p2, q1 and q2 should be vectors in the plane.
     """
     if wedge_product(p2-p1,q2-q1) == 0:
@@ -217,9 +217,9 @@ class MatrixActionOnPolygons(Action):
 
     def _call_(self, g, x):
         r"""
-        Apply the 2x2 matrix g to the polygon. 
+        Apply the 2x2 matrix g to the polygon.
         The matrix must have non-zero determinant. If the determinant is negative, then the vertices and edges
-        are relabeled according to the involutions $v \mapsto (n-v)%n$ and  $e \mapsto n-1-e$ respectively. 
+        are relabeled according to the involutions $v \mapsto (n-v)%n$ and  $e \mapsto n-1-e$ respectively.
 
         EXAMPLES::
 
@@ -454,23 +454,23 @@ class ConvexPolygon(Element):
     def find_separatrix(self, direction=None, start_vertex=0):
         r"""
         Returns a pair (v,same) where v is a vertex and dir is a boolean.
-        The provided parameter "direction" should be a non-zero vector with 
+        The provided parameter "direction" should be a non-zero vector with
         two entries, or by default direction=(0,1).
-        
+
         A separatrix is a ray leaving a vertex and entering the polygon.
-        
-        The vertex v will have a separatrix leaving it which is parallel to 
+
+        The vertex v will have a separatrix leaving it which is parallel to
         direction. The returned value "same" answers the question if this separatrix
         points in the same direction as "direction". There is a boundary case:
         we allow the separatrix to be an edge if and only if traveling along
         the sepatrix from the vertex would travel in a counter-clockwise
         direction about the polygon.
-        
+
         The vertex returned is uniquely defined from the above if the polygon
         is a triangle. Otherwise, we return the first vertex with this property
         obtained by inspecting starting at start_vertex (defaults to 0) and
         then moving in the counter-clockwise direction.
-        
+
         EXAMPLES::
 
         sage: from flatsurf import polygons
@@ -911,7 +911,7 @@ class ConvexPolygon(Element):
         for i in range(self.num_edges()):
             total += (self.vertex(i)[0]+self.vertex(i+1)[0])*self.edge(i)[1]
         return total/ZZ_2
-    
+
     def circumscribing_circle(self):
         r"""
         Returns the circle which circumscribes this polygon.
@@ -1197,8 +1197,8 @@ class PolygonsConstructor:
     def regular_ngon(n, field=None):
         r"""
         Return a regular n-gon with unit length edges, first edge horizontal, and other vertices lying above this edge.
-        
-        Assuming field is None (by default) the polygon is defined over a NumberField (the minimal number field determined by n). 
+
+        Assuming field is None (by default) the polygon is defined over a NumberField (the minimal number field determined by n).
         Otherwise you can set field equal to AA to define the polygon over the Algebraic Reals. Other values for the field
         parameter will result in a ValueError.
 
@@ -1216,7 +1216,7 @@ class PolygonsConstructor:
         # The code below crashes for n=4!
         if n==4:
             return polygons.square(QQ(1), field=field)
-        
+
         from sage.rings.qqbar import QQbar
 
         c = QQbar.zeta(n).real()
@@ -1286,7 +1286,7 @@ class PolygonsConstructor:
 
         field, (c,s) = number_field_elements_from_algebraics((c,s))
         return Polygons(field)(edges=[(c,field.zero()),(field.zero(),s),(-c,-s)])
-        
+
     def __call__(self, *args, **kwds):
         r"""
         EXAMPLES::
