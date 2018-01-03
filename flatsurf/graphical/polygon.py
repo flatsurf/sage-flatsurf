@@ -6,6 +6,7 @@ from sage.plot.polygon import polygon2d
 from sage.plot.graphics import Graphics
 from sage.plot.text import text
 from sage.plot.line import line2d
+from sage.plot.point import point2d
 
 from flatsurf.geometry.similarity import SimilarityGroup
 
@@ -314,4 +315,27 @@ class GraphicalPolygon:
 
         return line2d([self._v[0], self._v[0] + t*(sum(self._v) / len(self._v) - self._v[0])],
             **options)
+
+    def plot_points(self, points, **options):
+        r"""
+        Plot the points in the given collection of points.
+
+        The options are passed to point2d.
+
+        If no "zorder" option is provided then we set "zorder" to 50.
+
+        By default coordinates are taken in the underlying surface. Call with coordinates="graphical"
+        to use graphical coordinates instead.
+        """
+        if "zorder" not in options:
+            options["zorder"]=50
+        if "coordinates" not in options:
+            points2 = [self.transform(point) for point in points]
+        elif options["coordinates"]=="graphical":
+            points2=[V(point) for point in points]
+            del options["coordinates"]
+        else:
+            raise ValueError("Invalid value of 'coordinates' option")
+        return point2d(points=points2, **options)
+   
 
