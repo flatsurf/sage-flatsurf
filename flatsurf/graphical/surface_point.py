@@ -36,7 +36,7 @@ class GraphicalSurfacePoint:
 
     def plot(self, **options):
         r"""
-        Plot the point (which might involve drawing several dots.
+        Plot the point (which might involve drawing several dots).
 
         The options are passed to point2d.
 
