@@ -115,6 +115,8 @@ class GraphicalSurface:
 
             - ``'gluings and number'`` -- full information
 
+            - ``'letter'`` -- add matching letters to glued edges in an arbitrary way
+
         - ``adjacencies`` -- a list of pairs ``(p,e)`` to be used to set
           adjacencies of polygons.
 
@@ -238,6 +240,8 @@ class GraphicalSurface:
 
             - ``'gluings and number'`` -- full information
 
+            - ``'letter'`` -- add matching letters to glued edges in an arbitrary way
+
         - ``default_position_function'' -- a function mapping polygon labels to
           similarities describing the position of the corresponding polygon.
           Note that this will not affect polygons which have already been
@@ -268,7 +272,7 @@ class GraphicalSurface:
             elif edge_labels is False:
                 self.will_plot_edge_labels = False
                 edge_labels = None
-            elif edge_labels in ['gluings', 'number', 'gluings and number']:
+            elif edge_labels in ['gluings', 'number', 'gluings and number', 'letter']:
                 self._edge_labels = edge_labels
                 self.will_plot_edge_labels = True
             else:
@@ -602,6 +606,42 @@ class GraphicalSurface:
         """
         return self._ss.opposite_edge(p,e)
 
+    def reset_letters(self,p,e):
+        r"""
+        Resets the letter dictionary for storing letters used in
+        edge labeling if edge_labels="letter" is used.
+        """
+        try:
+            del self._letters
+            del self._next_letter
+        except:
+            pass
+
+    def _get_letter_for_edge(self, p, e):
+        if not hasattr(self,"_letters"):
+            self._letters={}
+            self._next_letter=1
+        try:
+            return self._letters[(p,e)]
+        except KeyError:
+            # convert number to string
+            nl = self._next_letter
+            self._next_letter = nl + 1
+            letter = ""
+            while nl!=0:
+                val = nl % 52
+                if val==0:
+                    val=52
+                    letter = "Z" + letter
+                elif val<27:
+                    letter = chr(97+val-1) + letter
+                else:
+                    letter = chr(65+val-27) + letter
+                nl = (nl-val)/52
+            self._letters[(p,e)] = letter
+            self._letters[self._ss.opposite_edge(p,e)] = letter
+            return letter
+
     def edge_labels(self, lab):
         r"""
         Return the list of edge labels to be used for the polygon with label ``lab``.
@@ -659,8 +699,16 @@ class GraphicalSurface:
                     ans.append(str(e))
                 else:
                     ans.append("{} -> {}".format(e, s.opposite_edge(lab,e)))
+        elif self._edge_labels == "letter":
+            ans = []
+            for e in range(p.num_edges()):
+                llab,ee = s.opposite_edge(lab,e)
+                if not self.is_visible(llab) or self.is_adjacent(lab, e):
+                    ans.append(None)
+                else:
+                    ans.append(self._get_letter_for_edge(lab,e))
         else:
-            raise RuntimeError("invalid option")
+            raise RuntimeError("invalid option for edge_labels")
 
         return ans
 
