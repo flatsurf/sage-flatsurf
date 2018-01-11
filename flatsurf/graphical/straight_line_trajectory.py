@@ -46,8 +46,6 @@ class GraphicalSegmentInPolygon:
             Graphics object consisting of 1 graphics primitive
         """
         if self._gs.is_visible(self.polygon_label()):
-            if not "color" in options:
-                options["color"] = "black"
             from sage.plot.line import line2d
             return line2d([self.start(), self.end()],**options)
         else:
