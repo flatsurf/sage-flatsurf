@@ -789,6 +789,7 @@ class ReindexMapping(SurfaceMapping):
                 new_base_label = s.base_label()
         s2=s.copy(mutable=True,lazy=True)
         s2.relabel(relabler, in_place=True)
+        s2.underlying_surface().change_base_label(new_base_label)
         
         SurfaceMapping.__init__(self, s, s2)
             
