@@ -445,4 +445,4 @@ class SimilarityGroup(UniqueRepresentation, Group):
         return False
 
     def base_field(self):
-        return self._f
+        return self._field
