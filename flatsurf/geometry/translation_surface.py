@@ -14,7 +14,7 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
     r"""
     A surface with a flat metric and conical singularities whose cone angles are a multiple of pi.
     """
-    
+
     def minimal_translation_cover(self):
         return self
 
@@ -81,10 +81,10 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
         Replaces each polygon with a combinatorially rotated polygons (i.e., with
         reindexed vertices) so that all vertices of the polygon lie in the upper half plane,
         or in the x-axis with non-negative x-coordinate.
-        
+
         This is done to the current surface if in_place=True. A mutable copy is created and returned
         if in_place=False (as default).
-        
+
         EXAMPLES::
 
             sage: from flatsurf import *
@@ -100,65 +100,112 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
             [(1, 2), (1, 3), (1, 0), (1, 1)]
             sage: TestSuite(ss).run()
         """
-        if in_place:
-            if not self.is_mutable():
-                raise ValueError("An in_place call for standardize_polygons can only be done for a mutable surface.")
-            s=self
+        if self.is_finite():
+            if in_place:
+                if not self.is_mutable():
+                    raise ValueError("An in_place call for standardize_polygons can only be done for a mutable surface.")
+                s=self
+            else:
+                s=self.copy(mutable=True)
+            cv = {} # dictionary for non-zero canonical vertices
+            translations={} # translations bringing the canonical vertex to the origin.
+            for l,polygon in s.label_iterator(polygons=True):
+                best=0
+                best_pt=polygon.vertex(best)
+                for v in range(1,polygon.num_edges()):
+                    pt=polygon.vertex(v)
+                    if (pt[1]<best_pt[1]) or (pt[1]==best_pt[1] and pt[0]<best_pt[0]):
+                        best=v
+                        best_pt=pt
+                if best!=0:
+                    cv[l]=best
+            for l,v in cv.iteritems():
+                s.set_vertex_zero(l,v,in_place=True)
+            return s
         else:
-            s=self.copy(mutable=True)
-        cv = {} # dictionary for non-zero canonical vertices
-        translations={} # translations bringing the canonical vertex to the origin.
-        for l,polygon in s.label_iterator(polygons=True):
-            best=0
-            best_pt=polygon.vertex(best)
-            for v in range(1,polygon.num_edges()):
-                pt=polygon.vertex(v)
-                if (pt[1]<best_pt[1]) or (pt[1]==best_pt[1] and pt[0]<best_pt[0]):
-                    best=v
-                    best_pt=pt
-            if best!=0:
-                cv[l]=best
-        for l,v in cv.iteritems():
-            s.set_vertex_zero(l,v,in_place=True)
-        return s
+            assert in_place == False, "In place standardization only available for finite surfaces."
+            return TranslationSurface(LazyStandardizedPolygonSurface(self))
 
-    def cmp_translation_surface(self,s2):
+    def cmp_translation_surface(self, s2, limit=None):
         r"""
-        Compare two finite surfaces. 
+        Compare two surfaces. This is an ordering returning -1, 0, or 1.
+
         The surfaces will be considered equal if and only if there is a translation automorphism
         respecting the polygons and the base_labels.
+
+        If the two surfaces are infinite, we just examine the first limit polygons.
         """
-        if not self.is_finite() or not s2.is_finite():
-            raise NotImplementedError("Only implemented for finite surfaces.")
-        #print("comparing number of polygons")
-        sign = self.num_polygons()-s2.num_polygons()
-        if sign>0:
-            return 1
-        if sign<0:
-            return -1
-        #print("comparing polygons")
-        lw1=self.walker()
-        lw2=s2.walker()
-        from itertools import izip
-        for p1,p2 in izip(lw1.polygon_iterator(), lw2.polygon_iterator()):
-            # Uses Polygon.__cmp__:
-            ret = p1.__cmp__(p2)
-            if ret != 0:
-                return ret
-        # Polygons are identical. Compare edge gluings.
-        #print("comparing edge gluings")
-        for pair1,pair2 in izip(lw1.edge_iterator(), lw2.edge_iterator()):
-            l1,e1 = self.opposite_edge(pair1)
-            l2,e2 = s2.opposite_edge(pair2)
-            num1 = lw1.label_to_number(l1)
-            num2 = lw2.label_to_number(l2)
-            ret = cmp(num1,num2)
-            if ret!=0:
-                return ret
-            ret = cmp(e1,e2)
-            if ret!=0:
-                return ret
-        return 0
+        if self.is_finite():
+            if s2.is_finite():
+                assert limit is None, "Limit only enabled for finite surfaces."
+
+                #print("comparing number of polygons")
+                sign = self.num_polygons()-s2.num_polygons()
+                if sign>0:
+                    return 1
+                if sign<0:
+                    return -1
+                #print("comparing polygons")
+                lw1=self.walker()
+                lw2=s2.walker()
+                from itertools import izip
+                for p1,p2 in izip(lw1.polygon_iterator(), lw2.polygon_iterator()):
+                    # Uses Polygon.__cmp__:
+                    ret = p1.__cmp__(p2)
+                    if ret != 0:
+                        return ret
+                # Polygons are identical. Compare edge gluings.
+                #print("comparing edge gluings")
+                for pair1,pair2 in izip(lw1.edge_iterator(), lw2.edge_iterator()):
+                    l1,e1 = self.opposite_edge(pair1)
+                    l2,e2 = s2.opposite_edge(pair2)
+                    num1 = lw1.label_to_number(l1)
+                    num2 = lw2.label_to_number(l2)
+                    ret = cmp(num1,num2)
+                    if ret!=0:
+                        return ret
+                    ret = cmp(e1,e2)
+                    if ret!=0:
+                        return ret
+                return 0
+            else:
+                # s1 is finite but s2 is infinite.
+                return -1
+        else:
+            if s2.is_finite():
+                # s1 is infinite but s2 is finite.
+                return 1
+            else:
+                # both surfaces are infinite.
+                lw1=self.walker()
+                lw2=s2.walker()
+                from itertools import izip
+                count = 0
+                for (l1,p1),(l2,p2) in izip(lw1.label_polygon_iterator(), lw2.label_polygon_iterator()):
+                    #print "Comparing labels: "+str((l1, l2))
+                    # Uses Polygon.__cmp__:
+                    ret = p1.__cmp__(p2)
+                    if ret != 0:
+                        print "Polygons differ"
+                        return ret
+                    # If here the number of edges should be equal.
+                    for e in xrange(p1.num_edges()):
+                        ll1,ee1 = self.opposite_edge(l1,e)
+                        ll2,ee2 = s2.opposite_edge(l2,e)
+                        num1 = lw1.label_to_number(ll1, search=True, limit=limit)
+                        num2 = lw2.label_to_number(ll2, search=True, limit=limit)
+                        ret = cmp(num1,num2)
+                        if ret!=0:
+                            #print "Polygon indices across edge "+str(e)+" differ"
+                            return ret
+                        ret = cmp(ee1,ee2)
+                        if ret!=0:
+                            #print "Opposite edges across edge "+str(e)+" differ."
+                            return ret
+                    if count >= limit:
+                        break
+                    count += 1
+                return 0
 
     def canonicalize_mapping(self):
         r"""
@@ -166,11 +213,11 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
         """
         from flatsurf.geometry.mappings import canonicalize_translation_surface_mapping, IdentityMapping
         return canonicalize_translation_surface_mapping(self)
-        
+
     def canonicalize(self, in_place=False):
         r"""
         Return a canonical version of this translation surface.
-        
+
         EXAMPLES::
 
         We will check if an element lies in the Veech group::
@@ -219,14 +266,14 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
     def rel_deformation(self, deformation, local=False, limit=100):
         r"""
         Perform a rel deformation of the surface and return the result.
-        
+
         This algorithm currently assumes that all polygons affected by this deformation are
         triangles. That should be fixable in the future.
-        
+
         Parameters
         ----------
         deformation : dict
-            A dictionary mapping singularities of the surface to deformation vectors 
+            A dictionary mapping singularities of the surface to deformation vectors
             (in some 2-dimensional vector space). The rel deformation being done will
             move the singularities (relative to each other) linearly to the provided
             vector for each vertex. If a singularity is not included in the dictionary
@@ -234,13 +281,13 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
         local : boolean
             If true, the algorithm attempts to deform all the triangles making up the surface
             without destroying any of them. So, the area of the triangle must be positive along
-            the full interval of time of the deformation. 
-            If false, then the deformation must have a particular form: all vectors for the 
+            the full interval of time of the deformation.
+            If false, then the deformation must have a particular form: all vectors for the
             deformation must be paralell. In this case we achieve the deformation with the help
             of the SL(2,R) action and Delaunay triangulations.
         limit : integer
             Restricts the length of the size of SL(2,R) deformations considered. The algorithm should
-            be roughly worst time linear in limit.        
+            be roughly worst time linear in limit.
 
 
         To do
@@ -273,7 +320,7 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
                 field = cm.common_parent(field, v.parent().base_field())
         from sage.modules.free_module import VectorSpace
         vector_space = VectorSpace(field,2)
-            
+
         from collections import defaultdict
         vertex_deformation=defaultdict(vector_space.zero) # dictionary associating the vertices.
         deformed_labels=set() # list of polygon labels being deformed.
@@ -284,7 +331,7 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
                 vertex_deformation[(label,v)]=vect
                 deformed_labels.add(label)
                 assert s.polygon(label).num_edges()==3
-        
+
         from flatsurf.geometry.polygon import wedge_product, Polygons
 
         if local:
@@ -304,8 +351,8 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
                 b1=v2-v0
                 # We deform by changing the triangle so that its vertices 1 and 2 have the form
                 # a0+t*a1 and b0+t*b1
-                # respectively. We are deforming from t=0 to t=1. 
-                # We worry that the triangle degenerates along the way. 
+                # respectively. We are deforming from t=0 to t=1.
+                # We worry that the triangle degenerates along the way.
                 # The area of the deforming triangle has the form
                 # A0 + A1*t + A2*t^2.
                 A0 = wedge_product(a0,b0)
@@ -320,7 +367,7 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
                 # Triangle does not degenerate.
                 us.change_polygon(label,P(vertices=[vector_space.zero(),a0+a1,b0+b1]))
             return ss
-        
+
         else: # Non local deformation
             # We can only do this deformation if all the rel vector are parallel.
             # Check for this.
@@ -338,7 +385,7 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
             m=Matrix([[nonzero[0],-nonzero[1]],[nonzero[1],nonzero[0]]])
             mi=~m
             g=Matrix([[1,0],[0,2]],ring=field)
-            prod=m*g*mi        
+            prod=m*g*mi
             ss=None
             k=0
             while True:
@@ -449,11 +496,11 @@ class MinimalTranslationCover(Surface):
             except AssertionError:
                 # print("Warning: Could be indicating infinite surface falsely.")
                 finite=False
-        
+
         I = identity_matrix(self._ss.base_ring(),2)
         I.set_immutable()
         base_label=(self._ss.base_label(), I)
-        
+
         Surface.__init__(self, self._ss.base_ring(), base_label, finite=finite, mutable=False)
 
     def polygon(self, lab):
@@ -534,8 +581,6 @@ class AbstractOrigami(Surface):
         if e==3:
             return self.left(p),1
         raise ValueError
-        
-        return self._perms[e](p), (e+2)%4
 
 
 class Origami(AbstractOrigami):
@@ -587,4 +632,57 @@ class Origami(AbstractOrigami):
     def _repr_(self):
         return "Origami defined by r=%s and u=%s"%(self._r,self._u)
 
+class LazyStandardizedPolygonSurface(Surface):
+    r"""
+    This class handles standardizing polygons for infinite translation surfaces.
+    See the TranslationSurface.standardize_polygons method.
 
+    This class should not be instantiated directly.
+    Instead use TranslationSurface.standardize_polygons.
+    """
+
+    def __init__(self, surface, relabel=False):
+        self._s = surface.copy(mutable=True, relabel=relabel)
+        self._labels = set()
+        Surface.__init__(self, self._s.base_ring(), self._s.base_label(), finite=self._s.is_finite(), mutable=False)
+
+    def standardize(self, label):
+        best=0
+        polygon = self._s.polygon(label)
+        best_pt=polygon.vertex(best)
+        for v in range(1,polygon.num_edges()):
+            pt=polygon.vertex(v)
+            if (pt[1]<best_pt[1]) or (pt[1]==best_pt[1] and pt[0]<best_pt[0]):
+                best=v
+                best_pt=pt
+        if best!=0:
+            self._s.set_vertex_zero(label,best,in_place=True)
+        self._labels.add(label)
+
+    def polygon(self, label):
+        r"""
+        Return the polygon with the provided label.
+
+        This method must be overriden in subclasses.
+        """
+        if label in self._labels:
+            return self._s.polygon(label)
+        else:
+            self.standardize(label)
+            return self._s.polygon(label)
+
+    def opposite_edge(self, l, e):
+        r"""
+        Given the label ``l`` of a polygon and an edge ``e`` in that polygon
+        returns the pair (``ll``, ``ee``) to which this edge is glued.
+
+        This method must be overriden in subclasses.
+        """
+        if l not in self._labels:
+            self.standardize(l)
+        ll,ee = self._s.opposite_edge(l,e)
+        if ll in self._labels:
+            return (ll,ee)
+        else:
+            self.standardize(ll)
+            return self._s.opposite_edge(l,e)
