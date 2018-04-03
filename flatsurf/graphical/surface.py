@@ -359,7 +359,7 @@ class GraphicalSurface:
         r"""
         Mark the polygon with the given label as invisible.
         """
-        self._visibile.remove(label)
+        self._visible.remove(label)
 
     def make_all_visible(self, adjacent=None, limit=None):
         r"""
