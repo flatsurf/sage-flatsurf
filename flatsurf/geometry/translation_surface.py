@@ -261,6 +261,8 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
         w=s.walker()
         w.find_all_labels()
         s.relabel(w.label_dictionary(), in_place=True)
+        # Set immutable
+        s.underlying_surface().set_immutable()
         return s
 
     def rel_deformation(self, deformation, local=False, limit=100):
