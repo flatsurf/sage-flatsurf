@@ -1898,6 +1898,98 @@ class SimilaritySurface(SageObject):
             gs = self.graphical_surface(**kwds)
         return gs.plot()
 
+    def plot_polygon(self, label, graphical_surface = None, 
+                     plot_polygon = True, plot_edges = True, plot_edge_labels = True,
+                     edge_labels = None,
+                     polygon_options = {"axes":True}, edge_options = None, edge_label_options = None):
+        r"""
+        Returns a plot of the polygon with the provided label. 
+
+        Note that this method plots the polygon in its coordinates as opposed to
+        graphical coordinates that the :func:``plot`` method uses. This makes it useful
+        for visualizing the natural coordinates of the polygon.
+
+        INPUT:
+
+            - ``graphical_surface`` -- (default ``None``) If provided this function pulls graphical options 
+              from the graphical surface. If not provided, we use the default graphical surface.
+
+            - ``plot_polygon`` -- (default ``True``) If True, we plot the solid polygon.
+
+            - ``polygon_options`` -- (default ``{"axes":True}``) Options for the rendering of the polygon. 
+              These options will be passed to :func:`~flatsurf.graphical.polygon.GraphicalPolygon.plot_polygon`. 
+              This should be either None or a dictionary.
+
+            - ``plot_edges`` -- (default ``True``) If True, we plot the edges of the polygon as segments.
+
+            - ``edge_options`` -- (default ``None``) Options for the rendering of the polygon edges. 
+              These options will be passed to :func:`~flatsurf.graphical.polygon.GraphicalPolygon.plot_edge`. 
+              This should be either None or a dictionary.
+
+            - ``plot_edge_labels`` -- (default ``True``) If True, we plot labels on the edges.
+
+            - ``edge_label_options`` -- (default ``None``) Options for the rendering of the edge labels. 
+              These options will be passed to :func:`~flatsurf.graphical.polygon.GraphicalPolygon.plot_edge_label`. 
+              This should be either None or a dictionary.
+
+            - ``edge_labels`` -- (default ``None``) If None and plot_edge_labels is True, we write the edge
+              number on each edge. Otherwise edge_labels should be a list of strings of length equal to the 
+              number of edges of the polygon. The strings will be printed on each edge.
+
+        EXAMPLES::
+
+            sage: from flatsurf import *
+            sage: s = similarity_surfaces.example()
+            sage: s.plot() # not tested (problem with matplotlib font caches on Travis)
+            Graphics object consisting of 13 graphics primitives
+            s.plot_polygon(1) # not tested (problem with matplotlib font caches on Travis)
+            Graphics object consisting of 7 graphics primitives
+
+            sage: labels = []
+            sage: p = s.polygon(1)
+            sage: for e in xrange(p.num_edges()): \
+                labels.append(str(p.edge(e)))
+            sage: s.plot_polygon(1, polygon_options=None, plot_edges=False, \
+                edge_labels=labels, edge_label_options={"color":"red"}) # not tested (problem with matplotlib font caches on Travis)
+            Graphics object consisting of 4 graphics primitives
+        """
+        if graphical_surface is None:
+            graphical_surface = self.graphical_surface()
+        p = self.polygon(label)
+        from flatsurf.graphical.polygon import GraphicalPolygon
+        gp = GraphicalPolygon(p)
+
+        if plot_polygon:
+            if polygon_options is None:
+                o = graphical_surface.polygon_options
+            else:
+                o = graphical_surface.polygon_options.copy()
+                o.update(polygon_options)
+            plt = gp.plot_polygon(**o)
+
+        if plot_edges:
+            if edge_options is None:
+                o = graphical_surface.non_adjacent_edge_options
+            else:
+                o = graphical_surface.non_adjacent_edge_options.copy()
+                o.update(edge_options)
+            for e in xrange(p.num_edges()):
+                plt += gp.plot_edge(e, **o)
+
+        if plot_edge_labels:
+            if edge_label_options is None:
+                o = graphical_surface.edge_label_options
+            else:
+                o = graphical_surface.edge_label_options.copy()
+                o.update(edge_label_options)
+            for e in xrange(p.num_edges()):
+                if edge_labels is None:
+                    el = str(e)
+                else:
+                    el = edge_labels[e]
+                plt += gp.plot_edge_label(e, el, **o)
+        return plt
+
 # I'm not sure we want to support this...
 #
 #    def minimize_monodromy_mapping(self):
