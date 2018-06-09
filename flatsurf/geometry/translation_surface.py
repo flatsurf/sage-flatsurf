@@ -55,7 +55,11 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
             sage: sfg.translation_surfaces.octagon_and_squares().stratum()
             H(4)
         """
-        from sage.dynamics.flat_surfaces.all import AbelianStratum
+        try:
+            from surface_dynamics import AbelianStratum
+        except ImportError:
+            from sage.dynamics.flat_surfaces.all import AbelianStratum
+
         from sage.rings.integer_ring import ZZ
         return AbelianStratum([ZZ(a-1) for a in self.angles()])
 
