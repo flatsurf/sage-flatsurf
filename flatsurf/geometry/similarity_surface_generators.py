@@ -589,7 +589,7 @@ class TranslationSurfaceGenerators:
             sage: T
             TranslationSurface built from 1 polygon
             sage: T.stratum()
-            H(2)
+            H_2(2)
             sage: TestSuite(T).run()
         """
         return translation_surfaces.veech_2n_gon(4)
@@ -875,7 +875,7 @@ class TranslationSurfaceGenerators:
             sage: o.underlying_surface()
             Origami defined by r=(1,2) and u=(1,3)
             sage: o.stratum()
-            H(2)
+            H_2(2)
             sage: TestSuite(o).run()
         """
         from .translation_surface import Origami

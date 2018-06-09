@@ -53,7 +53,7 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
 
             sage: import flatsurf.geometry.similarity_surface_generators as sfg
             sage: sfg.translation_surfaces.octagon_and_squares().stratum()
-            H(4)
+            H_3(4)
         """
         try:
             from surface_dynamics import AbelianStratum
