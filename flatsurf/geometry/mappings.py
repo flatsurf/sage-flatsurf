@@ -120,6 +120,13 @@ class SurfaceMappingComposition(SurfaceMapping):
         r"""Applies the inverse of the mapping to the provided vector."""
         return self._m1.pull_vector_back(self._m2.pull_vector_back(tangent_vector))
 
+    def factors(self):
+        r"""
+        Return the two factors of this surface mapping as a pair (f,g),
+        where the original map is f o g.
+        """
+        return self._m2, self._m1
+
 class IdentityMapping(SurfaceMapping):
     r"""
     Construct an identity map between two `equal' surfaces.
@@ -782,6 +789,7 @@ class ReindexMapping(SurfaceMapping):
                 new_base_label = s.base_label()
         s2=s.copy(mutable=True,lazy=True)
         s2.relabel(relabler, in_place=True)
+        s2.underlying_surface().change_base_label(new_base_label)
         
         SurfaceMapping.__init__(self, s, s2)
             
@@ -790,7 +798,7 @@ class ReindexMapping(SurfaceMapping):
         # There is no change- we just move it to the new surface.
         ring = tangent_vector.bundle().base_ring()
         return self.codomain().tangent_vector( \
-            tangent_vector.polygon_label(), \
+            self._f[tangent_vector.polygon_label()], \
             tangent_vector.point(), \
             tangent_vector.vector(), \
             ring = ring)
@@ -799,7 +807,7 @@ class ReindexMapping(SurfaceMapping):
         r"""Applies the pullback mapping to the provided vector."""
         ring = tangent_vector.bundle().base_ring()
         return self.domain().tangent_vector( \
-            tangent_vector.polygon_label(), \
+            self._b[tangent_vector.polygon_label()], \
             tangent_vector.point(), \
             tangent_vector.vector(), \
             ring = ring)

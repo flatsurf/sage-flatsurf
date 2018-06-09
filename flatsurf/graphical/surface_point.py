@@ -7,8 +7,8 @@ from sage.plot.point import point2d
 class GraphicalSurfacePoint:
     def __init__(self, surface_point, graphical_surface=None):
         r"""
-        Create a graphical segment from SurfacePoint. 
-        
+        Create a graphical segment from SurfacePoint.
+
         If a graphical_surface is provided the point is created on the graphical surface.
         Otherwise, we create it on the default graphical surface.
         """
@@ -36,9 +36,13 @@ class GraphicalSurfacePoint:
 
     def plot(self, **options):
         r"""
-        Plot the point (which might involve drawing several dots.
-        
+        Plot the point (which might involve drawing several dots).
+
         The options are passed to point2d.
+
+        If no "zorder" option is provided then we set "zorder" to 50.
         """
+        if "zorder" not in options:
+            options["zorder"]=50
         return point2d(points=self.points(), **options)
 

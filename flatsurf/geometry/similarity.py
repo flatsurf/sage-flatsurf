@@ -14,10 +14,12 @@ from sage.rings.integer_ring import ZZ
 from sage.modules.free_module_element import FreeModuleElement
 
 from sage.env import SAGE_VERSION
-if SAGE_VERSION >= '8.2.beta0':
+if SAGE_VERSION >= '8.2':
     from sage.structure.element import is_Matrix
 else:
     from sage.matrix.matrix import is_Matrix
+
+from flatsurf.geometry.polygon import ConvexPolygon, Polygons
 
 ZZ_0 = Integer(0)
 ZZ_1 = Integer(1)
@@ -178,8 +180,12 @@ class Similarity(MultiplicativeGroupElement):
     def __hash__(self):
         return 73*hash(self._a)-19*hash(self._b)+13*hash(self._s)+53*hash(self._t)+67*hash(self._sign)
 
-    def __call__(self,w):
+    def __call__(self,w, field = None):
         r"""
+        Return the image of ``w`` under the similarity. Here ``w`` may be a ConvexPolygon or a vector
+        (or something that can be indexed in the same way as a vector). If a field is provided,
+        the objects returned will be defined over this field.
+
         TESTS::
 
             sage: from flatsurf.geometry.similarity import SimilarityGroup
@@ -189,11 +195,45 @@ class Similarity(MultiplicativeGroupElement):
             (4.414213562373095?, 1)
             sage: a.matrix()*vector((1,2,1))
             (4.414213562373095?, 1, 1)
+
+            sage: from flatsurf.geometry.similarity import SimilarityGroup
+            sage: SG = SimilarityGroup(QQ)
+            sage: from flatsurf.geometry.polygon import Polygons
+            sage: P = Polygons(QQ)
+            sage: p = P.an_element()
+            sage: p
+            Polygon: (0, 0), (1, 0), (1, 1), (0, 1)
+            sage: g = SG.an_element()**2
+            sage: g
+            (x, y) |-> (25*x + 4, 25*y + 10)
+            sage: g(p)
+            Polygon: (4, 10), (29, 10), (29, 35), (4, 35)
+            sage: g(p, field=AA).parent()
+            polygons with coordinates in Algebraic Real Field
         """
-        if self._sign.is_one():
-            return vector([self._a*w[0]-self._b*w[1]+self._s, self._b*w[0]+self._a*w[1]+self._t])
+        if isinstance(w,ConvexPolygon):
+            if field is None:
+                P = Polygons(field=self.parent().base_field())
+            else:
+                P = Polygons(field=field)
+            try:
+                return P(vertices=[self(v) for v in w.vertices()])
+            except ValueError as e:
+                if not self._sign.is_one():
+                    raise ValueError("Similarity must be orientation preserving.")
+                else:
+                    # Not sure why this would happen:
+                    raise e
+        if field is None:
+            if self._sign.is_one():
+                return vector([self._a*w[0]-self._b*w[1]+self._s, self._b*w[0]+self._a*w[1]+self._t])
+            else:
+                return vector([self._a*w[0]+self._b*w[1]+self._s, self._b*w[0]-self._a*w[1]+self._t])
         else:
-            return vector([self._a*w[0]+self._b*w[1]+self._s, self._b*w[0]-self._a*w[1]+self._t])
+            if self._sign.is_one():
+                return vector(field, [self._a*w[0]-self._b*w[1]+self._s, self._b*w[0]+self._a*w[1]+self._t])
+            else:
+                return vector(field, [self._a*w[0]+self._b*w[1]+self._s, self._b*w[0]-self._a*w[1]+self._t])
 
     def _repr_(self):
         r"""
@@ -445,4 +485,4 @@ class SimilarityGroup(UniqueRepresentation, Group):
         return False
 
     def base_field(self):
-        return self._f
+        return self._field

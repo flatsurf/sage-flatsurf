@@ -212,8 +212,13 @@ class AbstractStraightLineTrajectory:
                 start.point(), start.polygon_label(),
                 end.point(), end.polygon_label())
 
-    def plot(self, **options):
+    def plot(self, *args, **options):
         r"""
+        Plot this trajectory by converting to a graphical trajectory.
+
+        If any arguments are provided in `*args` it must be only one argument containing a GraphicalSurface.
+        The keyword arguments in `**options` are passed on to :func:`GraphicalStraightLineTrajectory.plot`.
+
         EXAMPLES::
 
             sage: from flatsurf import *
@@ -225,12 +230,14 @@ class AbstractStraightLineTrajectory:
             sage: L.plot(color='red')    # not tested (problem with matplotlib font caches on Travis)
             Graphics object consisting of 1 graphics primitive
         """
-        if "graphical_surface" in options:
-            gs = options["graphical_surface"]
-            del options["graphical_surface"]
-        else:
-            gs = None
-        return self.graphical_trajectory(graphical_surface=gs).plot(**options)
+        if len(args) > 1:
+            raise ValueError("SimilaritySurface.plot() can take at most one non-keyword argument.")
+        if len(args)==1:
+            from flatsurf.graphical.surface import GraphicalSurface
+            if not isinstance(args[0], GraphicalSurface):
+                raise ValueError("If an argument is provided, it must be a GraphicalSurface.")
+            return self.graphical_trajectory(graphical_surface = args[0]).plot(**options)
+        return self.graphical_trajectory().plot(**options)
 
     def graphical_trajectory(self, graphical_surface=None, **options):
         r"""
@@ -614,9 +621,9 @@ class StraightLineTrajectoryTranslation(AbstractStraightLineTrajectory):
     Though, there is one big difference, this class can model an edge!
 
     This class only stores a list of triples ``(p, e, x)`` where:
-    
+
     - ``p`` is a label of a polygon
-    
+
     - ``e`` is the number of some edge in ``p``
 
     - ``x`` is the position of the point in ``e`` (be careful that it is not
@@ -767,7 +774,7 @@ class StraightLineTrajectoryTranslation(AbstractStraightLineTrajectory):
             sage: S.is_saddle_connection()
             True
         """
-        return self.is_forward_separatrix() and self.is_backward_separatrix() 
+        return self.is_forward_separatrix() and self.is_backward_separatrix()
 
     def flow(self, steps):
         if steps > 0:

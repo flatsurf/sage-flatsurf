@@ -2,6 +2,11 @@ from __future__ import absolute_import, print_function
 
 from sage.rings.real_double import RDF
 from sage.modules.free_module import VectorSpace
+from sage.plot.polygon import polygon2d
+from sage.plot.graphics import Graphics
+from sage.plot.text import text
+from sage.plot.line import line2d
+from sage.plot.point import point2d
 
 from flatsurf.geometry.similarity import SimilarityGroup
 
@@ -10,10 +15,12 @@ V = VectorSpace(RDF, 2)
 class GraphicalPolygon:
     r"""
     Stores data necessary to draw one of the polygons from a surface.
+
+    Note that this involves converting between geometric coordinates, defined for the SimilaritySurface,
+    and graphical coordinates. We do this with a similarity (called transformation below).
     """
 
-    def __init__(self, polygon, transformation=None, outline_color=None,
-            fill_color="#ccc", label=None, edge_labels=True):
+    def __init__(self, polygon, transformation=None):
         r"""
         INPUT:
 
@@ -30,15 +37,15 @@ class GraphicalPolygon:
         - ``edge_labels`` -- one of ``False``, ``True`` or a list of labels
         """
         self._p = polygon
-        self._edge_labels = edge_labels
 
         # the following stores _transformation and _v
         self.set_transformation(transformation)
 
-        # store colors
-        self.set_outline_color(outline_color)
-        self.set_fill_color(fill_color)
-        self.set_label(label)
+    def copy(self):
+        r"""
+        Return a copy of this GraphicalPolygon.
+        """
+        return GraphicalPolygon(self._p, self.transformation())
 
     def __repr__(self):
         r"""
@@ -50,14 +57,20 @@ class GraphicalPolygon:
             sage: s = similarity_surfaces.example()
             sage: gs = s.graphical_surface()
             sage: gs.graphical_polygon(0)
-            Polygon 0: [(0.0, 0.0), (2.0, -2.0), (2.0, 0.0)]
+            GraphicalPolygon with vertices [(0.0, 0.0), (2.0, -2.0), (2.0, 0.0)]
         """
-        return "Polygon {}: {}".format(self._label, self._v)
+        return "GraphicalPolygon with vertices {}".format(self._v)
 
     def base_polygon(self):
+        r"""
+        Return the polygon of the surface in geometric coordinates.
+        """
         return self._p
 
     def transformed_vertex(self, e):
+        r"""
+        Return the graphical coordinates of the vertex in double precision.
+        """
         return self._transformation(self._p.vertex(e))
 
     def xmin(self):
@@ -107,14 +120,40 @@ class GraphicalPolygon:
         """
         return self.xmin(), self.ymin(), self.xmax(), self.ymax()
 
-    def transform(self, point, field=None):
+    def transform(self, point, double_precision = True):
         r"""
         Return the transformation of point into graphical coordinates.
+
+        By default returned point is in double precision. This can be changed
+        to an exact representation by setting `double_precision` to False.
         """
         if self._transformation is None:
-            return V(point)
+            if double_precision:
+                return V(point)
+            else:
+                return point
         else:
-            return V(self._transformation(point))
+            if double_precision:
+                return V(self._transformation(point))
+            else:
+                return self._transformation(point)
+
+    def transform_back(self, point):
+        r"""
+        Return the transformation of point from graphical coordinates to the geometric coordinates
+        of the underlying SimilaritySurface.
+        """
+        if self._transformation is None:
+            return point
+        else:
+            return (~self._transformation)(point)
+
+    def contains(self, point):
+        r"""
+        Return the transformation of point from graphical coordinates to the geometric coordinates
+        of the underlying SimilaritySurface.
+        """
+        return self._p.contains_point(self.transform_back(point))
 
     def transformation(self):
         r"""
@@ -123,7 +162,7 @@ class GraphicalPolygon:
         """
         return self._transformation
 
-    def set_transformation(self, transformation):
+    def set_transformation(self, transformation = None):
         r"""Set the transformation to be applied to the polygon."""
         if transformation is None:
             self._transformation = SimilarityGroup(self._p.base_ring()).one()
@@ -132,117 +171,171 @@ class GraphicalPolygon:
         # recompute the location of vertices:
         self._v = [V(self._transformation(v)) for v in self._p.vertices()]
 
-    def set_fill_color(self, fill_color):
+    def plot_polygon(self, **options):
         r"""
-        Set the fill color.
-        """
-        self._fill_color=fill_color
+        Returns only the filled polygon.
 
-    def set_outline_color(self, outline_color):
+        Options are processed as in sage.plot.polygon.polygon2d except
+        that by default axes=False.
+        """
+        if not "axes" in options:
+            options["axes"] = False
+        return polygon2d(self._v, **options)
+
+    def plot_label(self, label, **options):
         r"""
-        Set the outline color.
+        Write the label of the polygon as text.
+
+        Set ``position'' to a pair (x,y) to determine where
+        the label is drawn (in graphical coordinates). If this parameter
+        is not provided, the label is positioned in the baricenter
+        of the polygon.
+
+        Other options are processed as in sage.plot.text.text.
         """
-        self._outline_color=outline_color
-
-    def set_label(self, label):
-        self._label = label
-
-    def set_edge_labels(self, edge_labels):
-        self._edge_labels = edge_labels
-
-    def polygon_options(self):
-        d = {'axes': False}
-        if self._fill_color is not None:
-            d['color'] = self._fill_color
-            if self._outline_color is not None:
-                d['edgecolor'] = self._outline_color
-        elif self._outline_color is not None:
-            d['color'] = self._outline_color,
-            d['fill'] = False
-
-        return d
-
-    def polygon_label_options(self):
-        return {'color': 'black'}
-
-    def edge_label_options(self):
-        if self._outline_color is not None:
-            return {'color': self._outline_color}
-        return {}
-
-    def plot(self, polygon_label=True):
-        r"""
-        Returns a plot of the GraphicalPolygon.
-
-        EXAMPLES::
-
-            sage: from flatsurf import *
-            sage: s = similarity_surfaces.example()
-            sage: from flatsurf.graphical.surface import GraphicalSurface
-            sage: gs = GraphicalSurface(s)
-            sage: gs.graphical_polygon(0).set_fill_color("red")
-            sage: gs.graphical_polygon(0).plot()      # not tested (problem with matplotlib font caches on Travis)
-            Graphics object consisting of 5 graphics primitives
-        """
-        from sage.plot.point import point2d
-        from sage.plot.polygon import polygon2d
-        from sage.plot.graphics import Graphics
-        from sage.plot.text import text
-
-        p = polygon2d(self._v, **self.polygon_options())
-
-        if self._label is not None and polygon_label:
-            p += text(str(self._label), sum(self._v) / len(self._v),
-                    **self.polygon_label_options())
-
-        if self._edge_labels:
-            opt = self.edge_label_options()
-            n = self.base_polygon().num_edges()
-            for i in range(n):
-                lab = str(i) if self._edge_labels is True else self._edge_labels[i]
-                if lab:
-                    e = self._v[(i+1)%n] - self._v[i]
-                    no = V((-e[1], e[0]))
-                    p += text(lab, self._v[i] + 0.3 * e + 0.05  * no, **self.edge_label_options())
-
-        return p
-
-    def plot_edge(self, e, color=None, dotted=False):
-        ne = self.base_polygon().num_edges()
-        if color is None:
-            color = self._outline_color
-        if color is None:
-            from sage.plot.graphics import Graphics
-            return Graphics()
-
-        from sage.plot.line import line2d
-        v = self._v[e]
-        w = self._v[(e+1)%ne]
-        if dotted:
-            return line2d([v, w], color=color, linestyle=":")
+        if "position" in options:
+            return text(str(label), options.pop("position"), **options)
         else:
-            return line2d([v, w], color=color)
+            return text(str(label), sum(self._v) / len(self._v), **options)
 
-    # DEPRECATED METHODS THAT WILL BE REMOVED
-
-    def vertices(self):
+    def plot_edge(self, e, **options):
         r"""
-        Return the vertices of the polygon as a list of floating point vectors.
+        Plot the edge e, with e a number 0,...,n-1 with n being the number
+        of edges of the polygon.
+
+        Options are processed as in sage.plot.line.line2d.
         """
-        from sage.misc.superseded import deprecation
-        deprecation(1, "do not use vertices")
-        return self._v
+        return line2d([self._v[e], self._v[(e+1)%self.base_polygon().num_edges()]], \
+            **options)
 
-    def num_edges(self):
-        from sage.misc.superseded import deprecation
-        deprecation(1,"do not use num_edges but .base_polygon().num_edges()")
-        return self._p.num_edges()
+    def plot_edge_label(self, i, label, **options):
+        r"""
+        Write label on the i-th edge.
 
-    def base_ring(self):
-        from sage.misc.superseded import deprecation
-        deprecation(1,"do not use .base_ring() but .base_polygon().base_ring()")
-        return self._p.base_ring()
+        A parameter ``t'' in the interval [0,1] can be provided to position the label along the
+        edge. A value of t=0 will position it at the starting vertex and t=1 will position it
+        at the terminating vertex. Defaults to 0.3.
 
-    field = base_ring
+        If the parameter ``position'' can take the values "outside", "inside" or "edge" to
+        indicate if the label should be drawn outside the polygon, inside the polygon or
+        on the edge. Defaults to "inside"
 
+        is set to True then labels are drawn outside the polygon
+        instead of the default (inside the polygon).
+
+        A ``push_off'' perturbation parameter controls how far off the edge the label is pushed.
+        Depending on the ``outside'' parameter
+
+        option containing a double can be passed to the function to control how far
+        into or out of the polygon the
+
+        Other options are processed as in sage.plot.text.text.
+        """
+        e = self._v[(i+1)%self.base_polygon().num_edges()] - self._v[i]
+
+        if "position" in options:
+            if options["position"] not in ["inside", "outside", "edge"]:
+                raise ValueError("The 'position' parameter must take the value 'inside', 'outside', or 'edge'.")
+            pos = options.pop("position")
+        else:
+            pos = "inside"
+
+        if pos == "outside":
+            # position outside polygon.
+            if "horizontal_alignment" in options:
+                pass
+            elif e[1] >= 0:
+                options["horizontal_alignment"]="left"
+
+            else:
+                options["horizontal_alignment"]="right"
+
+            if "vertical_alignment" in options:
+                pass
+            elif e[0] >= 0:
+                options["vertical_alignment"]="top"
+            else:
+                options["vertical_alignment"]="bottom"
+        elif pos == "inside":
+            # position inside polygon.
+            if "horizontal_alignment" in options:
+                pass
+            elif e[1] < 0:
+                options["horizontal_alignment"]="left"
+
+            else:
+                options["horizontal_alignment"]="right"
+
+            if "vertical_alignment" in options:
+                pass
+            elif e[0] < 0:
+                options["vertical_alignment"]="top"
+            else:
+                options["vertical_alignment"]="bottom"
+        else:
+            # centered on edge.
+            if "horizontal_alignment" in options:
+                pass
+            else:
+                options["horizontal_alignment"]="center"
+            if "vertical_alignment" in options:
+                pass
+            else:
+                options["vertical_alignment"]="center"
+
+        if "t" in options:
+            t = RDF(options.pop("t"))
+        else:
+            t = 0.3
+
+        if "push_off" in options:
+            push_off = RDF(options.pop("push_off"))
+        else:
+            push_off = 0.03
+        if pos == "outside":
+            push_off = -push_off
+        # Now push_off stores the amount it should be pushed into the polygon
+
+        no = V((-e[1], e[0]))
+        return text(label, self._v[i] + t * e + push_off * no, **options)
+
+    def plot_zero_flag(self, **options):
+        r"""
+        Draw a line segment from the zero vertex toward the baricenter.
+
+        A real parameter ``t'' can be provided. If t=1, then the segment will go all the way to the baricenter.
+        The value of ``t'' is linear in the length of the segment. Defaults to t=0.5.
+
+        Other options are processed as in sage.plot.line.line2d.
+        """
+        if "t" in options:
+            t = RDF(options.pop("t"))
+        else:
+            t = 0.5
+
+        return line2d([self._v[0], self._v[0] + t*(sum(self._v) / len(self._v) - self._v[0])],
+            **options)
+
+    def plot_points(self, points, **options):
+        r"""
+        Plot the points in the given collection of points.
+
+        The options are passed to point2d.
+
+        If no "zorder" option is provided then we set "zorder" to 50.
+
+        By default coordinates are taken in the underlying surface. Call with coordinates="graphical"
+        to use graphical coordinates instead.
+        """
+        if "zorder" not in options:
+            options["zorder"]=50
+        if "coordinates" not in options:
+            points2 = [self.transform(point) for point in points]
+        elif options["coordinates"]=="graphical":
+            points2=[V(point) for point in points]
+            del options["coordinates"]
+        else:
+            raise ValueError("Invalid value of 'coordinates' option")
+        return point2d(points=points2, **options)
+   
 

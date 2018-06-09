@@ -16,8 +16,8 @@ class Singularity(SageObject):
     r"""
     Represents a combinatorial singularity on a surface.
 
-    Such a combinatorial singularity is an equivalence class of vertices of the polygons 
-    making up the surface. This is the coarsest equivalence relation where two vertices 
+    Such a combinatorial singularity is an equivalence class of vertices of the polygons
+    making up the surface. This is the coarsest equivalence relation where two vertices
     are equivalent if they are glued along an edge.
 
     EXAMPLES::
@@ -30,12 +30,12 @@ class Singularity(SageObject):
         singularity with vertex equivalence class frozenset([(0, 1), (0, 9), (0, 3), (0, 5), (0, 7)])
         sage: TestSuite(sing).run()
     """
-    
+
     def __init__(self, similarity_surface, l, v, limit=None):
         r"""
-        Represents the singularity associated to the v-th vertex of the polygon with 
+        Represents the singularity associated to the v-th vertex of the polygon with
         label l.
-        
+
         If the surface is infinite, the limit needs to be set. In this case the construction
         of the singularity is successful if the sequence of vertices hit by passing through
         edges closes up in limit or less steps.
@@ -68,27 +68,27 @@ class Singularity(SageObject):
         Return a pair (l,v) from the equivalence class of this singularity.
         """
         return next(iter(self._s))
-    
+
     def vertex_set(self):
         r"""
         Return the set of pairs (l,v) in the equivalence class of this singularity.
         """
         return self._s
-    
+
     def contains_vertex(self, l, v=None):
         r"""
         Checks if the pair (l,v) is in the equivalence class returning true or false.
-        
+
         If v is None, then check if the pair l is in the equivalence class.
         """
         if v is None:
             return l in self._s
         else:
             return (l,v) in self._s
-        
+
     def _repr_(self):
         return "singularity with vertex equivalence class "+repr(self._s)
-    
+
     def __eq__(self,other):
         if self is other:
             return True
@@ -108,7 +108,7 @@ class Singularity(SageObject):
 class SurfacePoint(SageObject):
     r"""
     Represents a point on a SimilaritySurface.
-    
+
     EXAMPLES::
 
         sage: from flatsurf import *
@@ -187,42 +187,42 @@ class SurfacePoint(SageObject):
     def labels(self):
         r"""
         Return the list of labels of polygons containing the point in its closure.
-        
+
         This will be a list of one label if the point is the the interior of a polygon,
         at most two labels if it is on the interior of an edge, and can be lots of labels
         if the point is a singularity.
         """
         return self._coordinate_dict.keys()
-        
+
     def coordinates(self, label):
         r"""
         Return a frozenset of coordinates for the closure of the point in the polygon
         with the provided label.
-        
+
         The set will consist of one point if the point lies in the interior of a polygon,
-        will be two points if the point lies in the interior of two edges of the polygon 
+        will be two points if the point lies in the interior of two edges of the polygon
         simultaneously and can be lots of points if the point is a singularity.
         """
         return self._coordinate_dict[label]
 
     def graphical_surface_point(self, graphical_surface = None):
         r"""
-        Return the GraphicalSurfacePoint built from this SurfacePoint. 
+        Return the GraphicalSurfacePoint built from this SurfacePoint.
         """
         from flatsurf.graphical.surface_point import GraphicalSurfacePoint
         return GraphicalSurfacePoint(self, graphical_surface = graphical_surface)
 
-    def plot(self, **options):
+    def plot(self, *args, **options):
         r"""
-        Plot this point. Options can include graphical_surface. Other options will
-        be passed along to
+        Plot this point. There may be one argument which provides a graphical surface.
+        All options are passed two the ploting method of GraphicalSurfacePoint.
         """
-        if "graphical_surface" in options:
-            gs = options["graphical_surface"]
-            del options["graphical_surface"]
+        if len(args) > 1:
+            raise ValueError("SurfacePoint.plot() can take at most one argument.")
+        if len(args) == 1:
+            return self.graphical_surface_point(graphical_surface=args[0]).plot(**options)
         else:
-            gs = None
-        return self.graphical_surface_point(graphical_surface=gs).plot(**options)
+            return self.graphical_surface_point().plot(**options)
 
     def __repr__(self):
         if self.num_coordinates()==1:
@@ -255,51 +255,51 @@ class SaddleConnection(SageObject):
     r"""
     Represents a saddle connection on a SimilaritySurface.
     """
-    
+
     def __init__(self, surface, start_data, direction,
-            end_data=None, end_direction=None, 
-            holonomy=None, end_holonomy=None, 
+            end_data=None, end_direction=None,
+            holonomy=None, end_holonomy=None,
             check=True, limit=1000):
         r"""
         Construct a saddle connecton on a SimilaritySurface.
-        
+
         The only necessary parameters are the surface, start_data, and direction
         (to start). If there is missing data that can not be inferred from the surface
         type, then a straight-line trajectory will be computed to confirm that this is
         indeed a saddle connection. The trajectory will pass through at most limit
         polygons before we give up.
-        
+
         Details of the parameters are provided below.
-                
+
         Parameters
         ----------
         surface : a SimilaritySurface
             which will contain the saddle connection being constructed.
-        start_data : a pair 
+        start_data : a pair
             consisting of the label of the polygon where the saddle connection starts
             and the starting vertex.
         direction : 2-dimensional vector with entries in the base_ring of the surface
-            representing the direction the saddle connection is moving in (in the 
+            representing the direction the saddle connection is moving in (in the
             coordinates of the initial polygon).
         end_data : a pair
             consisting of the label of the polygon where the saddle connection terminates
             and the terminating vertex.
         end_direction : 2-dimensional vector with entries in the base_ring of the surface
-            representing the direction to move backward from the end point (in the 
+            representing the direction to move backward from the end point (in the
             coordinates of the terminal polygon). If the surface is a DilationSurface
             or better this will be the negation of the direction vector. If the surface
             is a HalfDilation surface or better, then this will be either the direction
-            vector or its negation. In either case the value can be inferred from the 
+            vector or its negation. In either case the value can be inferred from the
             end_data.
         holonomy : 2-dimensional vector with entries in the base_ring of the surface
-            the holonomy of the saddle connection measured from the start. To compute this 
-            you develop the saddle connection into the plane starting from the starting 
+            the holonomy of the saddle connection measured from the start. To compute this
+            you develop the saddle connection into the plane starting from the starting
             polygon.
         end_holonomy : 2-dimensional vector with entries in the base_ring of the surface
-            the holonomy of the saddle connection measured from the end (with the opposite 
-            orientation). To compute this you develop the saddle connection into the plane 
-            starting from the terminating polygon. For a translation surface, this will be 
-            the negation of holonomy, and for a HalfTranslation surface it will be either 
+            the holonomy of the saddle connection measured from the end (with the opposite
+            orientation). To compute this you develop the saddle connection into the plane
+            starting from the terminating polygon. For a translation surface, this will be
+            the negation of holonomy, and for a HalfTranslation surface it will be either
             equal to holonomy or equal to its negation. In both these cases the end_holonomy
             can be inferred and does not need to be passed to the constructor.
         check : boolean
@@ -307,14 +307,14 @@ class SaddleConnection(SageObject):
             geometric data is not verified. With check=True the data is always verified
             by straight-line flow. Erroroneous data will result in a ValueError being thrown.
             Defaults to true.
-        limit : 
-            The combinatorial limit (in terms of number of polygons crossed) to flow forward 
+        limit :
+            The combinatorial limit (in terms of number of polygons crossed) to flow forward
             to check the saddle connection geometry.
         """
         from .similarity_surface import SimilaritySurface
         assert isinstance(surface,SimilaritySurface)
         self._s=surface
-        
+
         # Sanitize the direction vector:
         V=self._s.vector_space()
         self._direction=V(direction)
@@ -327,7 +327,7 @@ class SaddleConnection(SageObject):
             self._direction=self._direction/xabs
         else:
             self._direction=self._direction/yabs
-        
+
         # Fix end_direction if not standard.
         if end_direction is not None:
             xabs=end_direction[0].abs()
@@ -338,7 +338,7 @@ class SaddleConnection(SageObject):
                 end_direction=end_direction/yabs
 
         self._start_data=tuple(start_data)
-        
+
         if end_direction is None:
             from .half_dilation_surface import HalfDilationSurface
             from .dilation_surface import DilationSurface
@@ -364,7 +364,7 @@ class SaddleConnection(SageObject):
                     end_holonomy=holonomy
                 else:
                     end_holonomy=-holonomy
-                    
+
         if  end_data is None or end_direction is None or holonomy is None or end_holonomy is None or check:
             v=self.start_tangent_vector()
             traj=v.straight_line_trajectory()
@@ -431,11 +431,11 @@ class SaddleConnection(SageObject):
 
     def surface(self):
         return self._s
-            
+
     def direction(self):
         r"""
         Returns a vector parallel to the saddle connection pointing from the start point.
-        
+
         The will be normalized so that its l_\infty norm is 1.
         """
         return self._direction
@@ -443,7 +443,7 @@ class SaddleConnection(SageObject):
     def end_direction(self):
         r"""
         Returns a vector parallel to the saddle connection pointing from the end point.
-        
+
         The will be normalized so that its l_\infty norm is 1.
         """
         return self._end_direction
@@ -465,7 +465,7 @@ class SaddleConnection(SageObject):
     def holonomy(self):
         r"""
         Return the holonomy vector of the saddle connection (measured from the start).
-        
+
         In a SimilaritySurface this notion corresponds to developing the saddle connection into the plane
         using the initial chart coming from the initial polygon.
         """
@@ -474,13 +474,13 @@ class SaddleConnection(SageObject):
     def end_holonomy(self):
         r"""
         Return the holonomy vector of the saddle connection (measured from the end).
-        
+
         In a SimilaritySurface this notion corresponds to developing the saddle connection into the plane
         using the initial chart coming from the initial polygon.
         """
         return self._end_holonomy
 
-    
+
     def start_tangent_vector(self):
         r"""
         Return a tangent vector to the saddle connection based at its start.
@@ -491,7 +491,7 @@ class SaddleConnection(SageObject):
 
     def trajectory(self, limit = 1000, cache = True):
         r"""
-        Return a straight line trajectory representing this saddle connection. 
+        Return a straight line trajectory representing this saddle connection.
         Fails if the trajectory passes through more than limit polygons.
         """
         try:
@@ -507,10 +507,10 @@ class SaddleConnection(SageObject):
             self._traj = traj
         return traj
 
-    def plot(self, **options):
-        r""" Equivalant to .trajectory().plot(...) 
+    def plot(self, *args, **options):
+        r""" Equivalant to .trajectory().plot(*args, **options)
         """
-        return self.trajectory().plot(**options)
+        return self.trajectory().plot(*args, **options)
 
     def end_tangent_vector(self):
         r"""
@@ -560,7 +560,7 @@ class SaddleConnection(SageObject):
 
     def __hash__(self):
         return 41*hash(self._direction)-97*hash(self._start_data)
-    
+
     def _test_geometry(self, **options):
         # Test that this saddle connection actually exists on the surface.
         if 'tester' in options:
@@ -571,11 +571,11 @@ class SaddleConnection(SageObject):
                            self._end_data, self._end_direction,
                            self._holonomy, self._end_holonomy,
                            check=True)
-    
+
     def __repr__(self):
         return "Saddle connection in direction {} with start data {} and end data {}".format(
             self._direction, self._start_data, self._end_data)
-    
+
     def _test_inverse(self, **options):
         # Test that inverting works properly.
         if 'tester' in options:
@@ -589,7 +589,7 @@ class SaddleConnection(SageObject):
 
 class Cylinder(SageObject):
     r"""
-    Represents a cylinder in a SimilaritySurface. A cylinder for these purposes is a 
+    Represents a cylinder in a SimilaritySurface. A cylinder for these purposes is a
     topological annulus in a surface bounded by a finite collection of saddle connections
     meeting at 180 degree angles.
 
@@ -624,14 +624,14 @@ class Cylinder(SageObject):
     """
     def __init__(self, boundary=None, across=None):
         r"""
-        
+
         Parameters
         ----------
         boundary : A collection of saddle connections
-            that bound the cylinder. The cylinder must be on the left as you move along the 
+            that bound the cylinder. The cylinder must be on the left as you move along the
             saddle connections.
         across : Saddle connection
-            A single saddle connection lying in the cylinder whose endpoints lie on opposite 
+            A single saddle connection lying in the cylinder whose endpoints lie on opposite
             boundary components.
         """
         self._s=None
@@ -642,7 +642,7 @@ class Cylinder(SageObject):
                 self._s=sc.surface()
             else:
                 assert self._s is sc.surface(), \
-                    "All saddle connections must be on the same surface."        
+                    "All saddle connections must be on the same surface."
         self._boundary = frozenset(boundary)
         it=iter(boundary)
         sc=it.next()
@@ -662,20 +662,20 @@ class Cylinder(SageObject):
             "Extra saddle connections in boundary."
         self._boundary1=frozenset(boundary1)
         self._boundary2=frozenset(boundary2)
-    
+
         assert isinstance(across,SaddleConnection), "Parameter across must be a saddle connection."
         assert across.surface()==self._s, "Saddle connection across must lie on the same surface as the boundary."
         self._across=across
-        
+
     def surface(self):
         return self._s
-    
+
     def boundary(self):
         return self._boundary
-    
+
     def boundary_components(self):
         return frozenset([self._boundary1,self._boundary2])
-        
+
     def next(self, sc):
         r"""
         Return the next saddle connection as you move around the cylinder boundary
@@ -722,14 +722,14 @@ class Cylinder(SageObject):
         # Debugging:
         total2=V.zero()
         for sc in self._boundary2:
-            total2 += sc.holonomy()            
+            total2 += sc.holonomy()
         assert total+total2==V.zero(), "Holonomy of the two boundary components should sum to zero."
-        
+
         return total
-    
+
     def width_vector(self):
         r"""
-        In a translation surface, return a vector orthogonal to the holonomy vector which cuts 
+        In a translation surface, return a vector orthogonal to the holonomy vector which cuts
         across the cylinder.
         """
         from flatsurf.geometry.translation_surface import TranslationSurface
