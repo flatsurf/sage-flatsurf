@@ -24,4 +24,4 @@ install:
   - ${SAGE} -pip install surface_dynamics
   - ${SAGE} -pip install --verbose --no-index --user .
 script:
-  - ${SAGE} -t --force-lib --long --optional=sage,flipper
+  - ${SAGE} -t --force-lib --long --optional=sage,flipper flatsurf
