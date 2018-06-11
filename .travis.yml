@@ -21,6 +21,7 @@ install:
   - ${SAGE} -sh -c "which gcc"
   - ccache -s
   - ${SAGE} -pip install flipper
+  - ${SAGE} -pip install surface_dynamics
   - ${SAGE} -pip install --verbose --no-index --user .
 script:
-  - ${SAGE} -t --force-lib --long --optional=sage,flipper flatsurf
+  - ${SAGE} -t --force-lib --long --optional=sage,flipper

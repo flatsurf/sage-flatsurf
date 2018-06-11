@@ -49,6 +49,11 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
 
     def stratum(self):
         r"""
+        Return the stratum this surface belongs to.
+
+        This uses the package ``surface_dynamics``
+        (see http://www.labri.fr/perso/vdelecro/flatsurf_sage.html)
+
         EXAMPLES::
 
             sage: import flatsurf.geometry.similarity_surface_generators as sfg
