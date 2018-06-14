@@ -5,7 +5,6 @@ cache:
   ccache: true
   timeout: 1000
 env:
-  - SAGE_VERSION="8.0"
   - SAGE_VERSION="8.1"
   - SAGE_VERSION="8.2"
 before_install:
