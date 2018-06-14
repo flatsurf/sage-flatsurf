@@ -5,6 +5,7 @@ from .polygon import *
 
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
+from sage.modules.free_module_element import vector
 
 class GraphicalSurface:
     r"""
@@ -598,6 +599,100 @@ class GraphicalSurface:
         gg = self.graphical_polygon(pp)
         return g.transformed_vertex(e) == gg.transformed_vertex(ee+1) and \
                g.transformed_vertex(e+1) == gg.transformed_vertex(ee)
+
+    def to_surface(self, point, v=None, label=None, return_all=False, \
+                   singularity_limit=None, search_all = False, search_limit=None):
+        r""" Converts from graphical coordinates to similarity surface coordinates.
+
+        A point always must be provided. If a vector v is provided then a
+        SimilaritySurfaceTangentVector will be returned. If v is not provided, then a
+        SurfacePoint is returned.
+
+        INPUT:
+
+        - ``point`` -- Coordinates of a point in graphical coordinates to be
+            converted to graphical coordinates.
+
+        - ``v`` -- (default ``None``) If provided a tangent vector in graphical
+            coordinates based at the provided point.
+
+        - ``label`` -- (default ``None``) If provided, then we only convert
+            points and tangent vectors in the corresponding graphical polygon.
+
+        - ``return_all`` -- (default ``False``) By default we return the first
+            point or vector we find. However if the graphical polygons overlap,
+            then a point or vector might correspond to more than one point or
+            vector on the surface. If ``return_all`` is set to ``True`` then we
+            return a set of all points we find instead.
+
+        - ``singularity_limit`` -- (default ``None``) This only has an effect
+            if returning a singular point (i.e., ``v`` is ``None``) and the
+            surface is infinite. In this case, the singularity should be
+            returned but it could be infinite. Then singularity_limit controls
+            how far we look for the singularity to close. This value is passed
+            to ``SimilaritySurface.surface_point``.
+
+        - ``search_all`` -- (default ``False``) By default we look just in
+            polygons with visible label. If set to `True``, then we instead
+            look in all labels.
+
+        - ``search_limit`` -- (default ``None``) If ``search_all`` is ``True``,
+            then we look at the first ``search_limit`` polygons instead of all
+            polygons. This must be set to an positive integer if ``search_all``
+            is and the surface is infinite.
+
+        EXAMPLES::
+
+            sage: from flatsurf import *
+            sage: s = similarity_surfaces.example()
+            sage: gs = s.graphical_surface()
+            sage: gs.to_surface((1,-2))
+            Surface point located at (1, 1/2) in polygon 1
+            sage: gs.to_surface((1,-2),v=(1,0))
+            SimilaritySurfaceTangentVector in polygon 1 based at (1, 1/2) with vector (1, -1/2)
+
+            sage: s = translation_surfaces.infinite_staircase()
+            sage: gs = s.graphical_surface()
+            sage: gs.to_surface((4,4),(1,1),search_all=True, search_limit=20)
+            SimilaritySurfaceTangentVector in polygon 8 based at (0, 0) with vector (1, 1)
+        """
+        if label is None:
+            if return_all:
+                ret = set()
+            s = self.get_surface()
+            if search_all:
+                if search_limit is None:
+                    if s.is_finite():
+                        it = s.label_iterator()
+                    else:
+                        raise ValueError("If search_all=True and the surface is infinite, then a search_limit must be provided.")
+                else:
+                    from itertools import islice
+                    it = islice(s.label_iterator(), search_limit)
+            else:
+                it = self.visible()
+            for label in it:
+                try:
+                    val = self.to_surface(point, v=v, label=label, singularity_limit=singularity_limit)
+                    if return_all:
+                        ret.add(val)
+                    else:
+                        return val
+                except (AssertionError, ValueError):
+                    # Not in the polygon
+                    pass
+            if return_all:
+                return ret
+            else:
+                raise ValueError("Point or vector is not in a visible graphical_polygon.")
+        else:
+            gp = self.graphical_polygon(label)
+            coords = gp.transform_back(point)
+            s = self.get_surface()
+            if v is None:
+                return s.surface_point(label, coords, limit=singularity_limit)
+            else:
+                return s.tangent_vector(label, coords, (~(gp.transformation().derivative()))*vector(v))
 
     def opposite_edge(self, p, e):
         r"""
