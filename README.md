@@ -2,7 +2,8 @@ sage-flatsurf
 =============
 
 This is a software package (Sage module) for working with flat surfaces in 
-[Sage](http://sagemath.org). 
+[Sage](http://sagemath.org). The flatsurf documentation 
+is available http://www.labri.fr/perso/vdelecro/flatsurf/latest/
 
 We aim for this module to support the investigation of geometric, algebraic and 
 dynamical questions related to flat surfaces. By flat surface we mean a surface
@@ -52,10 +53,10 @@ Then you should be able to use the following within sage
 
     sage: import flatsurf.geometry.similarity_surface_generators as sfg
     sage: T = sfg.translation_surfaces.regular_octagon()
-	sage: T
-	Translation surface built from 1 polygon
-	sage: T.stratum()
-	H_2(2)
+    sage: T
+    Translation surface built from 1 polygon
+    sage: T.stratum()
+    H_2(2)
 
 To uninstall the package, you can do `$ sage -pip uninstall flatsurf`.
 
