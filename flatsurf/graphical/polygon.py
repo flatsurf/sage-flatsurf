@@ -186,7 +186,7 @@ class GraphicalPolygon:
         r"""
         Write the label of the polygon as text.
 
-        Set ``position'' to a pair (x,y) to determine where
+        Set ``position`` to a pair (x,y) to determine where
         the label is drawn (in graphical coordinates). If this parameter
         is not provided, the label is positioned in the baricenter
         of the polygon.
@@ -212,19 +212,20 @@ class GraphicalPolygon:
         r"""
         Write label on the i-th edge.
 
-        A parameter ``t'' in the interval [0,1] can be provided to position the label along the
-        edge. A value of t=0 will position it at the starting vertex and t=1 will position it
-        at the terminating vertex. Defaults to 0.3.
+        A parameter ``t`` in the interval [0,1] can be provided to position the
+        label along the edge. A value of t=0 will position it at the starting
+        vertex and t=1 will position it at the terminating vertex. Defaults to
+        0.3.
 
-        If the parameter ``position'' can take the values "outside", "inside" or "edge" to
-        indicate if the label should be drawn outside the polygon, inside the polygon or
-        on the edge. Defaults to "inside"
+        If the parameter ``position`` can take the values "outside", "inside"
+        or "edge" to indicate if the label should be drawn outside the polygon,
+        inside the polygon or on the edge. Defaults to "inside"
 
         is set to True then labels are drawn outside the polygon
         instead of the default (inside the polygon).
 
-        A ``push_off'' perturbation parameter controls how far off the edge the label is pushed.
-        Depending on the ``outside'' parameter
+        A ``push_off`` perturbation parameter controls how far off the edge the label is pushed.
+        Depending on the ``outside`` parameter
 
         option containing a double can be passed to the function to control how far
         into or out of the polygon the
@@ -303,8 +304,9 @@ class GraphicalPolygon:
         r"""
         Draw a line segment from the zero vertex toward the baricenter.
 
-        A real parameter ``t'' can be provided. If t=1, then the segment will go all the way to the baricenter.
-        The value of ``t'' is linear in the length of the segment. Defaults to t=0.5.
+        A real parameter ``t`` can be provided. If t=1, then the segment will
+        go all the way to the baricenter.  The value of ``t`` is linear in the
+        length of the segment. Defaults to t=0.5.
 
         Other options are processed as in sage.plot.line.line2d.
         """

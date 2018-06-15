@@ -243,7 +243,7 @@ class GraphicalSurface:
 
             - ``'letter'`` -- add matching letters to glued edges in an arbitrary way
 
-        - ``default_position_function'' -- a function mapping polygon labels to
+        - ``default_position_function`` -- a function mapping polygon labels to
           similarities describing the position of the corresponding polygon.
           Note that this will not affect polygons which have already been
           positioned.
@@ -373,6 +373,7 @@ class GraphicalSurface:
           provided.
 
         - ``limit`` -- (default ``None``) maximal number of additional polygons to make visible
+
         EXAMPLES::
 
             sage: from flatsurf import *
