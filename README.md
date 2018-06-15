@@ -25,10 +25,22 @@ There is also a related [surface_dynamics package](http://www.labri.fr/perso/vde
 The code in this repository is currently independent of the package but
 the aim is to get them merged.
 
+Installing the dependency
+-------------------------
+
+Our software depends on the [surface_dynamics package](https://pypi.org/project/surface_dynamics/).
+The module is distributed on PyPI. To install it, you just need to run the
+following command:
+
+    $ sage -pip install surface_dynamics [--user]
+
+The --user option is optional and allows to install the module in your user
+space (and does not require administrator rights).
+
 Installing the module
 ---------------------
 
-Get the file in this git repository. Then run
+To install sage-flatsurf, run the following command:
 
     $ sage -pip install git+https://github.com/videlec/sage-flatsurf [--user] [--upgrade]
 
@@ -43,7 +55,7 @@ Then you should be able to use the following within sage
 	sage: T
 	Translation surface built from 1 polygon
 	sage: T.stratum()
-	H(2)
+	H_2(2)
 
 To uninstall the package, you can do `$ sage -pip uninstall flatsurf`.
 
