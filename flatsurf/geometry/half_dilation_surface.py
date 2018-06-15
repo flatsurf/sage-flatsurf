@@ -158,12 +158,10 @@ class HalfDilationSurface(SimilaritySurface):
 
         sim = self.edge_transformation(p2, e2)
         m = sim.derivative()   # matrix carrying p2 to p1
-
         if not m.is_one():
-            assert (-m).is_one(), "should have been -identity"
-            edge2 *= -1
-            edge2L *= -1
-            edge2R *= -1
+            edge2 = m * edge2
+            edge2L = m * edge2L
+            edge2R = m * edge2R
 
         # convexity check of the quadrilateral
         from flatsurf.geometry.polygon import wedge_product
@@ -181,25 +179,26 @@ class HalfDilationSurface(SimilaritySurface):
         r"""
         Returns a L-infinity Delaunay triangulation of a surface, or make some
         triangle flips to get closer to the Delaunay decomposition.
-        
-        Parameters
-        ----------
-        triangulated : boolean
-            If true, the algorithm assumes the surface is already triangulated. It
-            does this without verification.
-        in_place : boolean
-            If true, the triangulating and the triangle flips are done in place.
-            Otherwise, a mutable copy of the surface is made.
-        limit : None or Integer
-            If None, this will return a Delaunay triangulation. If limit
-            is an integer 1 or larger, then at most limit many diagonal flips 
-            will be done.
-        direction : None or Vector with two entries in the base field
-            Used to determine labels when a pair of triangles is flipped. Each triangle
-            has a unique separatrix which points in the provided direction or its 
-            negation. As such a vector determines a sign for each triangle.
-            A pair of adjacent triangles have opposite signs. Labels are chosen
-            so that this sign is preserved (as a function of labels).
+
+        INPUT:
+
+        - ``triangulated`` -- optional (boolean, default ``False``) If true, the
+          algorithm assumes the surface is already triangulated. It does this
+          without verification.
+
+        - ``in_place`` -- optional (boolean, default ``False``) If true, the
+          triangulating and the triangle flips are done in place. Otherwise, a
+          mutable copy of the surface is made.
+
+        - ``limit`` -- optional (positive integer) If provided, then at most ``limit``
+            many diagonal flips will be done.
+
+        - ``direction`` -- optional (vector). Used to determine labels when a
+          pair of triangles is flipped. Each triangle has a unique separatrix
+          which points in the provided direction or its negation. As such a
+          vector determines a sign for each triangle.  A pair of adjacent
+          triangles have opposite signs. Labels are chosen so that this sign is
+          preserved (as a function of labels).
 
         EXAMPLES::
 
@@ -240,7 +239,11 @@ class HalfDilationSurface(SimilaritySurface):
             assert not direction.is_zero()
 
         triangles = set(s.label_iterator())
-        while triangles:
+        if limit is None:
+            limit = -1
+        else:
+            limit = int(limit)
+        while triangles and limit:
             p1 = triangles.pop()
             for e1 in xrange(3):
                 p2, e2 = s.opposite_edge(p1, e1)
@@ -248,6 +251,7 @@ class HalfDilationSurface(SimilaritySurface):
                     s.triangle_flip(p1, e1, in_place=True, direction=direction)
                     triangles.add(p1)
                     triangles.add(p2)
+                    limit -= 1
         return s
 
 class GL2RImageSurface(Surface):

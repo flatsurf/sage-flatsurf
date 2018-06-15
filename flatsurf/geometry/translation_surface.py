@@ -227,23 +227,23 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
         r"""
         Return a canonical version of this translation surface.
 
-        EXAMPLES::
+        EXAMPLES:
 
         We will check if an element lies in the Veech group::
 
             sage: from flatsurf import *
-            sage: s=translation_surfaces.octagon_and_squares()
+            sage: s = translation_surfaces.octagon_and_squares()
             sage: s
             TranslationSurface built from 3 polygons
             sage: a = s.base_ring().gen()
-            sage: mat=Matrix([[1,2+a],[0,1]])
-            sage: s1=s.canonicalize()
+            sage: mat = Matrix([[1,2+a],[0,1]])
+            sage: s1 = s.canonicalize()
             sage: s1.underlying_surface().set_immutable()
-            sage: s2=(mat*s).canonicalize()
+            sage: s2 = (mat*s).canonicalize()
             sage: s2.underlying_surface().set_immutable()
-            sage: s1.cmp_translation_surface(s2)==0
+            sage: s1.cmp_translation_surface(s2) == 0
             True
-            sage: hash(s1)==hash(s2)
+            sage: hash(s1) == hash(s2)
             True
         """
         # Old version
@@ -281,43 +281,44 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
         This algorithm currently assumes that all polygons affected by this deformation are
         triangles. That should be fixable in the future.
 
-        Parameters
-        ----------
-        deformation : dict
-            A dictionary mapping singularities of the surface to deformation vectors
-            (in some 2-dimensional vector space). The rel deformation being done will
-            move the singularities (relative to each other) linearly to the provided
-            vector for each vertex. If a singularity is not included in the dictionary
-            then the vector will be treated as zero.
-        local : boolean
-            If true, the algorithm attempts to deform all the triangles making up the surface
-            without destroying any of them. So, the area of the triangle must be positive along
-            the full interval of time of the deformation.
-            If false, then the deformation must have a particular form: all vectors for the
-            deformation must be paralell. In this case we achieve the deformation with the help
-            of the SL(2,R) action and Delaunay triangulations.
-        limit : integer
-            Restricts the length of the size of SL(2,R) deformations considered. The algorithm should
-            be roughly worst time linear in limit.
+        INPUT:
 
+        - ``deformation`` (dictionary) - A dictionary mapping singularities of
+          the surface to deformation vectors (in some 2-dimensional vector
+          space). The rel deformation being done will move the singularities
+          (relative to each other) linearly to the provided vector for each
+          vertex. If a singularity is not included in the dictionary then the
+          vector will be treated as zero.
 
-        To do
-        -----
-        * Support arbitrary rel deformations.
-        * Remove the requirement that triangles be used.
+        - ``local`` - (boolean) - If true, the algorithm attempts to deform all
+          the triangles making up the surface without destroying any of them.
+          So, the area of the triangle must be positive along the full interval
+          of time of the deformation.  If false, then the deformation must have
+          a particular form: all vectors for the deformation must be paralell.
+          In this case we achieve the deformation with the help of the SL(2,R)
+          action and Delaunay triangulations.
 
-        EXAMPLES:
+        - ``limit`` (integer) - Restricts the length of the size of SL(2,R)
+          deformations considered. The algorithm should be roughly worst time
+          linear in limit.
+
+        TODO:
+
+        - Support arbitrary rel deformations.
+        - Remove the requirement that triangles be used.
+
+        EXAMPLES::
 
             sage: from flatsurf import *
-            sage: s=translation_surfaces.arnoux_yoccoz(4)
-            sage: field=s.base_ring()
-            sage: a=field.gen()
-            sage: V=VectorSpace(field,2)
-            sage: deformation1={s.singularity(0,0):V((1,0))}
-            sage: s1=s.rel_deformation(deformation1).canonicalize()
-            sage: deformation2={s.singularity(0,0):V((a,0))}
-            sage: s2=s.rel_deformation(deformation2).canonicalize()
-            sage: m=Matrix([[a,0],[0,~a]])
+            sage: s = translation_surfaces.arnoux_yoccoz(4)
+            sage: field = s.base_ring()
+            sage: a = field.gen()
+            sage: V = VectorSpace(field,2)
+            sage: deformation1 = {s.singularity(0,0):V((1,0))}
+            sage: s1 = s.rel_deformation(deformation1).canonicalize()
+            sage: deformation2 = {s.singularity(0,0):V((a,0))}
+            sage: s2 = s.rel_deformation(deformation2).canonicalize()
+            sage: m = Matrix([[a,0],[0,~a]])
             sage: s2.cmp_translation_surface((m*s1).canonicalize())
             0
         """

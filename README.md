@@ -21,7 +21,7 @@ abilities.
 The package is currently in active development. If you would like assistance
 in using the package, please contact the authors.
 
-There is also a related [flatsurf package](http://www.labri.fr/perso/vdelecro/programming.html).
+There is also a related [surface_dynamics package](http://www.labri.fr/perso/vdelecro/flatsurf_sage.html).
 The code in this repository is currently independent of the package but
 the aim is to get them merged.
 
@@ -61,6 +61,7 @@ Tests on the master branch are automatically run through [Travis-CI](https://tra
 
 Primary Contributors
 --------------------
+
 * Vincent Delecroix (Bordeaux)
 * Pat Hooper (City College of New York and CUNY Graduate Center)
 
@@ -68,10 +69,11 @@ We welcome others to contribute.
 
 Acknowledgements
 ----------------
+
 * This software project was created during a thematic semester at [ICERM](https://icerm.brown.edu).
 * Hooper's contribution to the project has been supported by the National 
-Science Foundation under Grant Number DMS-1500965. Any opinions, findings, 
-and conclusions or recommendations expressed in this material are those of 
-the authors and do not necessarily reflect the views of the National 
-Science Foundation.
+  Science Foundation under Grant Number DMS-1500965. Any opinions, findings, 
+  and conclusions or recommendations expressed in this material are those of 
+  the authors and do not necessarily reflect the views of the National 
+  Science Foundation.
 

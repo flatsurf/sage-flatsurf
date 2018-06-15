@@ -292,6 +292,26 @@ class SimilaritySurfaceTangentVector:
     def straight_line_trajectory(self):
         r"""
         Return the straight line trajectory associated to this vector.
+
+        EXAMPLES::
+
+            sage: from flatsurf import *
+
+            sage: s = translation_surfaces.square_torus()
+            sage: v = s.tangent_vector(0, (0,0), (1,1))
+            sage: v.straight_line_trajectory()
+            Straight line trajectory made of 1 segments from (0, 0) in polygon 0 to (1, 1) in polygon 0
+            sage: l = v.straight_line_trajectory()
+            sage: l
+            Straight line trajectory made of 1 segments from (0, 0) in polygon 0 to (1, 1) in polygon 0
+            sage: l.is_saddle_connection()
+            True
+
+            sage: v = s.tangent_vector(0, (0,0), (1,1+AA(5).sqrt()))
+            sage: l = v.straight_line_trajectory()
+            sage: l.flow(20)
+            sage: l.segment(20)
+            Segment in polygon 0 starting at (0.9442719099991588?, 0) and ending at (1, 0.1803398874989485?)
         """
         from flatsurf.geometry.straight_line_trajectory import StraightLineTrajectory
         return StraightLineTrajectory(self)

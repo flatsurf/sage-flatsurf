@@ -43,9 +43,6 @@ Similarities and Translations
 .. automodule:: flatsurf.geometry.similarity
    :members:
    :undoc-members:
-.. automodule:: flatsurf.geometry.translation
-   :members:
-   :undoc-members:
 
 Tangent Bundle
 ==============

@@ -312,7 +312,9 @@ class AbstractStraightLineTrajectory:
         """
         ans = []
 
-        s = self._segments[0]
+        segments = self.segments()
+
+        s = segments[0]
         start = s.start()
         if start._position._position_type == start._position.EDGE_INTERIOR:
             p = s.polygon_label()
@@ -321,8 +323,8 @@ class AbstractStraightLineTrajectory:
             if lab is not None:
                 ans.append(lab)
 
-        for i in range(len(self._segments)-1):
-            s = self._segments[i]
+        for i in range(len(segments)-1):
+            s = segments[i]
             end = s.end()
             p = s.polygon_label()
             e = end._position.get_edge()
@@ -330,7 +332,7 @@ class AbstractStraightLineTrajectory:
             if lab is not None:
                 ans.append(lab)
 
-        s = self._segments[-1]
+        s = segments[-1]
         end = s.end()
         if end._position._position_type == end._position.EDGE_INTERIOR and \
            end.invert() != start:
@@ -342,6 +344,11 @@ class AbstractStraightLineTrajectory:
 
         return ans
 
+    def initial_tangent_vector(self):
+        return self.segment(0).start()
+
+    def terminal_tangent_vector(self):
+        return self.segment(-1).end()
 
     def intersects(self, traj, count_singularities = False):
         r"""
@@ -426,6 +433,8 @@ class AbstractStraightLineTrajectory:
             for x in segments.iteritems():
                 yield x
 
+
+
 class StraightLineTrajectory(AbstractStraightLineTrajectory):
     r"""
     Straight-line trajectory in a similarity surface.
@@ -501,12 +510,6 @@ class StraightLineTrajectory(AbstractStraightLineTrajectory):
             self._backward = None
         else:
             self._backward = v.invert()
-
-    def initial_tangent_vector(self):
-        return self._segments[0].start()
-
-    def terminal_tangent_vector(self):
-        return self._segments[-1].end()
 
     def is_forward_separatrix(self):
         return self._forward is None
@@ -598,17 +601,6 @@ class StraightLineTrajectory(AbstractStraightLineTrajectory):
                 self._setup_backward()
                 steps += 1
 
-    # DEPRECATED STUFF
-
-    def initial_segment(self):
-        from sage.misc.superseded import deprecation
-        deprecation(-1, "initial_segment is deprecated... use self.segments()[0]")
-        return self._segments[0]
-
-    def terminal_segment(self):
-        from sage.misc.superseded import deprecation
-        deprecation(-1, "terminal_segment is deprecated... use self.segments()[0]")
-        return self._segments[-1]
 
 class StraightLineTrajectoryTranslation(AbstractStraightLineTrajectory):
     r"""
@@ -617,8 +609,6 @@ class StraightLineTrajectoryTranslation(AbstractStraightLineTrajectory):
     This is similar to :class:`StraightLineTrajectory` but implemented using
     interval exchange maps. It should be faster than the implementation via
     segments and flowing in polygons.
-
-    Though, there is one big difference, this class can model an edge!
 
     This class only stores a list of triples ``(p, e, x)`` where:
 
@@ -637,7 +627,13 @@ class StraightLineTrajectoryTranslation(AbstractStraightLineTrajectory):
         self._vector = tangent_vector.vector()
         self._s = tangent_vector.surface()
 
-        start = SegmentInPolygon(tangent_vector).start()
+        seg = SegmentInPolygon(tangent_vector)
+        if seg.is_edge():
+            self._points = None
+            self._edge = seg
+            return
+
+        start = seg.start()
         pos = start._position
         if pos._position_type == pos.EDGE_INTERIOR:
             i = pos.get_edge()
@@ -692,6 +688,8 @@ class StraightLineTrajectoryTranslation(AbstractStraightLineTrajectory):
         return (p, e, x)
 
     def combinatorial_length(self):
+        if self._points is None:
+            return 1
         return len(self._points)
 
     def _get_iet(self, label):
@@ -726,6 +724,8 @@ class StraightLineTrajectoryTranslation(AbstractStraightLineTrajectory):
             Segment in polygon 0 starting at (-1/13*a, 1/13*a) and ending at
             (9/26*a + 11/13, 17/26*a + 15/13)
         """
+        if self._points is None:
+            return self._edge
         lab, e0, x0 = self._points[i]
         iet = self._get_iet(lab)
         e1, x1 = iet.forward_image(e0, x0)
@@ -741,17 +741,37 @@ class StraightLineTrajectoryTranslation(AbstractStraightLineTrajectory):
         return SegmentInPolygon(v0,v1)
 
     def segments(self):
-        return [self.segment(i) for i in self.combinatorial_length()]
+        r"""
+        EXAMPLES::
+
+            sage: from flatsurf import *
+            sage: from flatsurf.geometry.straight_line_trajectory import StraightLineTrajectoryTranslation
+
+            sage: s = translation_surfaces.square_torus()
+            sage: v = s.tangent_vector(0, (0,0), (1,1+AA(5).sqrt()))
+            sage: L = StraightLineTrajectoryTranslation(v)
+            sage: L = v.straight_line_trajectory()
+            sage: L.flow(2)
+            sage: L.segments()
+            [Segment in polygon 0 starting at (0, 0) and ending at (0.3090169943749474?, 1),
+             Segment in polygon 0 starting at (0.3090169943749474?, 0) and ending at (0.618033988749895?, 1),
+             Segment in polygon 0 starting at (0.618033988749895?, 0) and ending at (0.9270509831248423?, 1)]
+        """
+        return [self.segment(i) for i in range(self.combinatorial_length())]
 
     def is_closed(self):
+        if self._points is None:
+            raise NotImplementedError
         return self._points[0] == self._next(*self._points[-1])
 
     def is_forward_separatrix(self):
+        if self._points is None:
+            return True
         p1,e1,x1 = self._next(*self._points[-1])
         return x1.is_zero()
 
     def is_backward_separatrix(self):
-        return self._points[0][2].is_zero()
+        return self._points is None or self._points[0][2].is_zero()
 
     def is_saddle_connection(self):
         r"""
@@ -774,9 +794,11 @@ class StraightLineTrajectoryTranslation(AbstractStraightLineTrajectory):
             sage: S.is_saddle_connection()
             True
         """
-        return self.is_forward_separatrix() and self.is_backward_separatrix()
+        return self._points is None or (self.is_forward_separatrix() and self.is_backward_separatrix())
 
     def flow(self, steps):
+        if self._points is None:
+            return
         if steps > 0:
             t = self._points[-1]
             for i in range(steps):

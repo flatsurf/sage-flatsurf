@@ -375,42 +375,42 @@ class SimilaritySurface(SageObject):
 
     def set_vertex_zero(self, label, v, in_place=False):
         r"""
-            Applies a combinatorial rotation to the polygon with the provided label. 
-            This makes what is currently vertex v of this polygon vertex 0. In other words,
-            what is currently vertex (or edge) e will now become vertex (e-v)%n where
-            n is the number of sides of the polygon.
+        Applies a combinatorial rotation to the polygon with the provided label. 
 
-            EXAMPLES::
+        This makes what is currently vertex v of this polygon vertex 0. In other words,
+        what is currently vertex (or edge) e will now become vertex (e-v)%n where
+        n is the number of sides of the polygon.
 
-            Example with polygon glued to another polygon::
+        EXAMPLES:
 
-                sage: from flatsurf import *
-                sage: s=translation_surfaces.veech_double_n_gon(4)
-                sage: s.polygon(0)
-                Polygon: (0, 0), (1, 0), (1, 1), (0, 1)
-                sage: [s.opposite_edge(0,i) for i in range(4)]
-                [(1, 0), (1, 1), (1, 2), (1, 3)]
-                sage: ss=s.set_vertex_zero(0,1)
-                sage: ss.polygon(0)
-                Polygon: (0, 0), (0, 1), (-1, 1), (-1, 0)
-                sage: [ss.opposite_edge(0,i) for i in range(4)]
-                [(1, 1), (1, 2), (1, 3), (1, 0)]
-                sage: TestSuite(ss).run()
+        Example with polygon glued to another polygon::
 
-            Example with polygon glued to self::
+            sage: from flatsurf import *
+            sage: s = translation_surfaces.veech_double_n_gon(4)
+            sage: s.polygon(0)
+            Polygon: (0, 0), (1, 0), (1, 1), (0, 1)
+            sage: [s.opposite_edge(0,i) for i in range(4)]
+            [(1, 0), (1, 1), (1, 2), (1, 3)]
+            sage: ss = s.set_vertex_zero(0,1)
+            sage: ss.polygon(0)
+            Polygon: (0, 0), (0, 1), (-1, 1), (-1, 0)
+            sage: [ss.opposite_edge(0,i) for i in range(4)]
+            [(1, 1), (1, 2), (1, 3), (1, 0)]
+            sage: TestSuite(ss).run()
 
-                sage: from flatsurf import *
-                sage: s=translation_surfaces.veech_2n_gon(2)
-                sage: s.polygon(0)
-                Polygon: (0, 0), (1, 0), (1, 1), (0, 1)
-                sage: [s.opposite_edge(0,i) for i in range(4)]
-                [(0, 2), (0, 3), (0, 0), (0, 1)]
-                sage: ss=s.set_vertex_zero(0,3)
-                sage: ss.polygon(0)
-                Polygon: (0, 0), (0, -1), (1, -1), (1, 0)
-                sage: [ss.opposite_edge(0,i) for i in range(4)]
-                [(0, 2), (0, 3), (0, 0), (0, 1)]
-                sage: TestSuite(ss).run()
+        Example with polygon glued to self::
+
+            sage: s = translation_surfaces.veech_2n_gon(2)
+            sage: s.polygon(0)
+            Polygon: (0, 0), (1, 0), (1, 1), (0, 1)
+            sage: [s.opposite_edge(0,i) for i in range(4)]
+            [(0, 2), (0, 3), (0, 0), (0, 1)]
+            sage: ss = s.set_vertex_zero(0,3)
+            sage: ss.polygon(0)
+            Polygon: (0, 0), (0, -1), (1, -1), (1, 0)
+            sage: [ss.opposite_edge(0,i) for i in range(4)]
+            [(0, 2), (0, 3), (0, 0), (0, 1)]
+            sage: TestSuite(ss).run()
         """
         if in_place:
             us = self.underlying_surface()
@@ -685,27 +685,29 @@ class SimilaritySurface(SageObject):
         We apply the label l1 to t1 and the label l2 to t2. This precisely 
         determines how t1 and t2 should be used to replace p1 and p2.
         
-        Parameters
-        ----------
-        l1
-            label of polygon
-        e1 : integer
-            edge of the polygon
-        in_place : boolean
-            If True do the flip to the current surface which must be mutable. 
-            In this case the updated surface will be returned.
-            Otherwise a mutable copy is made and then an edge is flipped, which is then returned.
-        test : boolean
-            If True we don't actually flip, and we return True or False depending
-            on whether or not the flip would be successful.
-        direction : 2-dimensional vector
-            Defaults to (0,1). The choice of this vector determines how the newly
-            added triangles are labeled.
+        INPUT:
+
+        - ``l1`` - label of polygon
+
+        - ``e1`` - (integer) edge of the polygon
+
+        - ``in_place`` (boolean) - If True do the flip to the current surface
+          which must be mutable. In this case the updated surface will be
+          returned.  Otherwise a mutable copy is made and then an edge is
+          flipped, which is then returned.
+
+        - ``test`` (boolean) - If True we don't actually flip, and we return
+          True or False depending on whether or not the flip would be
+          successful.
+
+        - ``direction`` (2-dimensional vector) - Defaults to (0,1). The choice
+          of this vector determines how the newly added triangles are labeled.
 
         EXAMPLES::
 
             sage: from flatsurf import *
-            sage: s=similarity_surfaces.right_angle_triangle(ZZ(1),ZZ(1))
+
+            sage: s = similarity_surfaces.right_angle_triangle(ZZ(1),ZZ(1))
             sage: print(s.polygon(0))
             Polygon: (0, 0), (1, 0), (0, 1)
             sage: s.triangle_flip(0, 0, test=True)
@@ -715,10 +717,9 @@ class SimilaritySurface(SageObject):
             sage: s.triangle_flip(0, 2, test=True)
             False
 
-            sage: from flatsurf import *
-            sage: s=similarity_surfaces.right_angle_triangle(ZZ(1),ZZ(1))
+            sage: s = similarity_surfaces.right_angle_triangle(ZZ(1),ZZ(1))
             sage: from flatsurf.geometry.surface import Surface_list
-            sage: s=s.__class__(Surface_list(surface=s, mutable=True))
+            sage: s = s.__class__(Surface_list(surface=s, mutable=True))
             sage: try:
             ....:     s.triangle_flip(0,0,in_place=True)
             ....: except ValueError as e:
@@ -745,11 +746,10 @@ class SimilaritySurface(SageObject):
             ....: 
             Gluing triangles along this edge yields a non-convex quadrilateral.
 
-            sage: from flatsurf import *
-            sage: p=polygons((2,0),(-1,3),(-1,-3))
-            sage: s=similarity_surfaces.self_glued_polygon(p)
+            sage: p = polygons((2,0),(-1,3),(-1,-3))
+            sage: s = similarity_surfaces.self_glued_polygon(p)
             sage: from flatsurf.geometry.surface import Surface_list
-            sage: s=s.__class__(Surface_list(surface=s,mutable=True))
+            sage: s = s.__class__(Surface_list(surface=s,mutable=True))
             sage: s.triangle_flip(0,1,in_place=True)
             HalfTranslationSurface built from 1 polygon
             sage: for x in s.label_iterator(polygons=True):
@@ -1481,13 +1481,39 @@ class SimilaritySurface(SageObject):
         Returns a Delaunay triangulation of a surface, or make some
         triangle flips to get closer to the Delaunay decomposition.
         
+        INPUT:
+
+        - ``triangulated`` (boolean) - If true, the algorithm assumes the
+          surface is already triangulated. It does this without verification.
+
+        - ``in_place`` (boolean) - If true, the triangulating and the
+          triangle flips are done in place.  Otherwise, a mutable copy of the
+          surface is made.
+
+        - ``limit`` (None or Integer) - If None, this will return a
+          Delaunay triangulation. If limit is an integer 1 or larger, then at
+          most limit many diagonal flips will be done.
+
+        - ``direction`` (None or Vector) - with two entries in the base field
+            Used to determine labels when a pair of triangles is flipped. Each triangle
+            has a unique separatrix which points in the provided direction or its 
+            negation. As such a vector determines a sign for each triangle.
+            A pair of adjacent triangles have opposite signs. Labels are chosen
+            so that this sign is preserved (as a function of labels).
+
+        - ``relabel`` (boolean) - If in_place is False, then a copy must be
+          made. By default relabel is False and labels will be respected by
+          this copy. If relabel is True then polygons will be reindexed in an
+          arbitrary way by the non-negative integers.
+
         EXAMPLES::
 
             sage: from flatsurf import *
             sage: from flatsurf.geometry.delaunay import *
-            sage: m=matrix([[2,1],[1,1]])
-            sage: s=m*translation_surfaces.infinite_staircase()
-            sage: ss=s.delaunay_triangulation(relabel=True)
+
+            sage: m = matrix([[2,1],[1,1]])
+            sage: s = m*translation_surfaces.infinite_staircase()
+            sage: ss = s.delaunay_triangulation(relabel=True)
             sage: ss.base_label()
             0
             sage: ss.polygon(0)
@@ -1495,30 +1521,6 @@ class SimilaritySurface(SageObject):
             sage: TestSuite(ss).run(skip="_test_pickling")
             sage: ss.is_delaunay_triangulated(limit=10)
             True
-
-        Parameters
-        ----------
-        triangulated : boolean
-            If true, the algorithm assumes the surface is already triangulated. It
-            does this without verification.
-        in_place : boolean
-            If true, the triangulating and the triangle flips are done in place.
-            Otherwise, a mutable copy of the surface is made.
-        limit : None or Integer
-            If None, this will return a Delaunay triangulation. If limit
-            is an integer 1 or larger, then at most limit many diagonal flips 
-            will be done.
-        direction : None or Vector with two entries in the base field
-            Used to determine labels when a pair of triangles is flipped. Each triangle
-            has a unique separatrix which points in the provided direction or its 
-            negation. As such a vector determines a sign for each triangle.
-            A pair of adjacent triangles have opposite signs. Labels are chosen
-            so that this sign is preserved (as a function of labels).
-        relabel : boolean
-            If in_place is False, then a copy must be made. By default relabel
-            is False and labels will be respected by this copy. If relabel is 
-            True then polygons will be reindexed in an arbitrary way by the 
-            non-negative integers.
         """
         if not self.is_finite() and limit is None:
             if in_place:
@@ -1553,7 +1555,7 @@ class SimilaritySurface(SageObject):
             from collections import deque
             unchecked_labels=deque(label for label in s.label_iterator())
             checked_labels = set()
-            while len(unchecked_labels)>0:
+            while unchecked_labels:
                 label = unchecked_labels.popleft()
                 flipped=False
                 for edge in xrange(3):
@@ -1608,54 +1610,53 @@ class SimilaritySurface(SageObject):
         r"""
         Return the Delaunay Decomposition of this surface.
 
-        Parameters
-        ----------
-        triangulated : boolean
-            If true, the algorithm assumes the surface is already triangulated. It
-            does this without verification.
-        delaunay_triangulated : boolean
-            If true, the algorithm assumes the surface is already 
-            delaunay_triangulated. It does this without verification.
-        in_place : boolean
-            If true, the triangulating and the triangle flips are done in place.
-            Otherwise, a mutable copy of the surface is made.
-        relabel : None or Integer
-            If in_place is False, then a copy must be made of the surface.
-            If relabel is False (as default), the copy has the same labels
-            as the original surface. Note that in this case, labels will be 
-            added if it is necessary to subdivide polygons into triangles. 
-            If relabel is True, the new surface will have polygons labeled by 
-            the non-negative integers in an arbitrary way.
-        direction : None or Vector with two entries in the base field
-            Used to determine labels when a pair of triangles is flipped. Each triangle
-            has a unique separatrix which points in the provided direction or its 
-            negation. As such a vector determines a sign for each triangle.
-            A pair of adjacent triangles have opposite signs. Labels are chosen
-            so that this sign is preserved (as a function of labels).
+        INPUT:
+
+        - ``triangulated`` (boolean) - If true, the algorithm assumes the
+          surface is already triangulated. It does this without verification.
+
+        - ``delaunay_triangulated`` (boolean) - If true, the algorithm assumes
+          the surface is already delaunay_triangulated. It does this without
+          verification.
+
+        - ``in_place`` (boolean) - If true, the triangulating and the triangle
+          flips are done in place. Otherwise, a mutable copy of the surface is
+          made.
+
+        - ``relabel`` (None or Integer) - If in_place is False, then a copy
+          must be made of the surface.  If relabel is False (as default), the
+          copy has the same labels as the original surface. Note that in this
+          case, labels will be added if it is necessary to subdivide polygons
+          into triangles.  If relabel is True, the new surface will have
+          polygons labeled by the non-negative integers in an arbitrary way.
+        
+        - ``direction`` - (None or Vector with two entries in the base field) -
+          Used to determine labels when a pair of triangles is flipped. Each triangle
+          has a unique separatrix which points in the provided direction or its 
+          negation. As such a vector determines a sign for each triangle.
+          A pair of adjacent triangles have opposite signs. Labels are chosen
+          so that this sign is preserved (as a function of labels).
 
         EXAMPLES::
 
             sage: from flatsurf import *
-            sage: s0=translation_surfaces.octagon_and_squares()
-            sage: a=s0.base_ring().gens()[0]
-            sage: m=Matrix([[1,2+a],[0,1]])
-            sage: s=m*s0
-            sage: s=s.triangulate()
-            sage: ss=s.delaunay_decomposition(triangulated=True)
+            sage: s0 = translation_surfaces.octagon_and_squares()
+            sage: a = s0.base_ring().gens()[0]
+            sage: m = Matrix([[1,2+a],[0,1]])
+            sage: s = m*s0
+            sage: s = s.triangulate()
+            sage: ss = s.delaunay_decomposition(triangulated=True)
             sage: ss.num_polygons()
             3
 
-            sage: from flatsurf import *
-            sage: p=polygons((4,0),(-2,1),(-2,-1))
-            sage: s0=similarity_surfaces.self_glued_polygon(p)
-            sage: s=s0.delaunay_decomposition()
+            sage: p = polygons((4,0),(-2,1),(-2,-1))
+            sage: s0 = similarity_surfaces.self_glued_polygon(p)
+            sage: s = s0.delaunay_decomposition()
             sage: TestSuite(s).run()
 
-            sage: from flatsurf import *
-            sage: from flatsurf.geometry.delaunay import *
-            sage: m=matrix([[2,1],[1,1]])
-            sage: s=m*translation_surfaces.infinite_staircase()
-            sage: ss=s.delaunay_decomposition()
+            sage: m = matrix([[2,1],[1,1]])
+            sage: s = m*translation_surfaces.infinite_staircase()
+            sage: ss = s.delaunay_decomposition()
             sage: ss.base_label()
             0
             sage: ss.polygon(0)
@@ -1808,10 +1809,11 @@ class SimilaritySurface(SageObject):
         Return a GraphicalSurface representing this surface.
         
         By default this returns a cached version of the GraphicalSurface. If
-        ``cached=False'' is provided as a keyword option then a new 
+        ``cached=False`` is provided as a keyword option then a new 
         GraphicalSurface is returned. Other keyword options:
 
         INPUT:
+
         - ``cached`` -- a boolean (default ``True``). If true return a cached
           GraphicalSurface. Otherwise we make a new one.
 
@@ -1831,12 +1833,13 @@ class SimilaritySurface(SageObject):
 
             - ``'gluings and numbers'`` -- full information
 
-        - ``default_position_function'' -- a function mapping polygon labels to 
+        - ``default_position_function`` -- a function mapping polygon labels to 
           similarities describing the position of the corresponding polygon.
 
-        EXAMPLES::
+        EXAMPLES:
 
-            sage: # Test the difference between the cached graphical_surface and the uncached version.
+        Test the difference between the cached graphical_surface and the uncached version::
+
             sage: from flatsurf import *
             sage: s = translation_surfaces.octagon_and_squares()
             sage: s.plot()     # not tested (problem with matplotlib font caches on Travis)
@@ -1859,8 +1862,10 @@ class SimilaritySurface(SageObject):
 
     def plot(self, *args, **kwds):
         r"""
-        Returns a plot of the surface. There may be zero or one argument in `args`. If provided the
-        single argument should be a GraphicalSurface whick will be used in the plot.
+        Returns a plot of the surface.
+        
+        There may be zero or one argument. If provided the single argument
+        should be a GraphicalSurface whick will be used in the plot.
 
         INPUT:
 
@@ -1883,7 +1888,7 @@ class SimilaritySurface(SageObject):
         - ``adjacencies`` -- a list of pairs ``(p,e)`` to be used to set
           adjacencies of polygons. 
 
-        - ``default_position_function'' -- a function mapping polygon labels to 
+        - ``default_position_function`` -- a function mapping polygon labels to 
           similarities describing the position of the corresponding polygon.
         """
         if len(args) > 1:

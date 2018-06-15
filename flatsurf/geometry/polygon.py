@@ -473,12 +473,12 @@ class ConvexPolygon(Element):
 
         EXAMPLES::
 
-        sage: from flatsurf import polygons
-        sage: p=polygons.square()
-        sage: print(p.find_separatrix())
-        (1, True)
-        sage: print(p.find_separatrix(start_vertex=2))
-        (3, False)
+            sage: from flatsurf import polygons
+            sage: p=polygons.square()
+            sage: print(p.find_separatrix())
+            (1, True)
+            sage: print(p.find_separatrix(start_vertex=2))
+            (3, False)
         """
         if direction is None:
             direction = self.vector_space()((self.base_ring().zero(), self.base_ring().one()))

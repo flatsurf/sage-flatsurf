@@ -1302,7 +1302,7 @@ class LabelWalker:
 
     def edge_back(self, label, limit=None):
         r"""
-        Return the `canonical' edge to walk through to get closer to the base_label,
+        Return the "canonical" edge to walk through to get closer to the base_label,
         or None if label already is the base_label.
 
         Remark: This could be slow on infinite surfaces!

@@ -129,7 +129,7 @@ class SurfaceMappingComposition(SurfaceMapping):
 
 class IdentityMapping(SurfaceMapping):
     r"""
-    Construct an identity map between two `equal' surfaces.
+    Construct an identity map between two "equal" surfaces.
     """
     def __init__(self, domain, codomain):
         SurfaceMapping.__init__(self, domain, codomain)
