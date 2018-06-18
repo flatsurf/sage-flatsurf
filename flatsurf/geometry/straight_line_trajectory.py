@@ -750,7 +750,6 @@ class StraightLineTrajectoryTranslation(AbstractStraightLineTrajectory):
             sage: s = translation_surfaces.square_torus()
             sage: v = s.tangent_vector(0, (0,0), (1,1+AA(5).sqrt()))
             sage: L = StraightLineTrajectoryTranslation(v)
-            sage: L = v.straight_line_trajectory()
             sage: L.flow(2)
             sage: L.segments()
             [Segment in polygon 0 starting at (0, 0) and ending at (0.3090169943749474?, 1),
