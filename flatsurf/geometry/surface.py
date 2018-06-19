@@ -567,7 +567,7 @@ class Surface_list(Surface):
             We will surgically add a square into an infinite billiard surface
             sage: p = polygons(vertices=[(0,0),(4,0),(0,3)])
             sage: s = similarity_surfaces.billiard(p)
-            sage: ts=s.minimal_translation_cover().copy(relabel=True, mutable=True)
+            sage: ts=s.minimal_cover(cover_type="translation").copy(relabel=True, mutable=True)
             sage: # Explore the surface a bit
             sage: ts.polygon(0)
             Polygon: (0, 0), (4, 0), (0, 3)

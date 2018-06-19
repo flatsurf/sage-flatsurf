@@ -421,7 +421,7 @@ class SimilaritySurfaceGenerators:
             sage: Q = RationalConeSurface(similarity_surfaces.billiard(P))
             sage: Q
             RationalConeSurface built from 2 polygons
-            sage: M = Q.minimal_translation_cover()
+            sage: M = Q.minimal_cover(cover_type="translation")
             sage: M
             TranslationSurface built from 8 polygons
             sage: TestSuite(M).run()
