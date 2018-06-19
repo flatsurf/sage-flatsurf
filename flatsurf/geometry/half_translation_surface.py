@@ -1,7 +1,8 @@
-from flatsurf.geometry.surface import Surface
-from flatsurf.geometry.half_dilation_surface import HalfDilationSurface
-from flatsurf.geometry.rational_cone_surface import RationalConeSurface
+from __future__ import absolute_import
 
+from .surface import Surface
+from .half_dilation_surface import HalfDilationSurface
+from .rational_cone_surface import RationalConeSurface
 
 class HalfTranslationSurface(HalfDilationSurface, RationalConeSurface):
     r"""
