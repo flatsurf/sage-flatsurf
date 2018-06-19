@@ -465,26 +465,9 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
 
 class MinimalTranslationCover(Surface):
     r"""
-    We label copy by cartesian product (polygon from bot, matrix).
-
-    EXAMPLES::
-
-        sage: from flatsurf import *
-        sage: from flatsurf.geometry.polygon import Polygons
-        sage: s=Surface_list(QQ)
-        sage: P=Polygons(QQ)
-        sage: s.add_polygon(P(vertices=[(0,0),(5,0),(0,5)]))
-        0
-        sage: s.add_polygon(P(vertices=[(0,0),(3,4),(-4,3)]))
-        1
-        sage: s.change_polygon_gluings(0,[(1,2),(1,1),(1,0)])
-        sage: s.set_immutable()
-        sage: s=SimilaritySurface(s)
-        sage: ss=s.minimal_translation_cover()
-        sage: ss.is_finite()
-        True
-        sage: ss.num_polygons()
-        8
+    Do not use translation_surface.MinimalTranslationCover. Use 
+    minimal_cover.MinimalTranslationCover instead. This class is being
+    deprecated.
     """
     def __init__(self, similarity_surface):
         if similarity_surface.underlying_surface().is_mutable():
