@@ -118,7 +118,7 @@ def chamanara_surface(alpha,n=8):
         sage: s = chamanara_surface(1/2)
         sage: TestSuite(s).run(skip='_test_pickling')
     """
-    s = chamanara_half_dilation_surface(alpha).minimal_translation_cover()
+    s = chamanara_half_dilation_surface(alpha).minimal_cover(cover_type="translation")
     l = s.base_label()
     adjacencies = [(l,1)]
     for i in range(n):
