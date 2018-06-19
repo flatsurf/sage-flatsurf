@@ -1129,25 +1129,74 @@ class SimilaritySurface(SageObject):
         """
         return SurfacePoint(self, label, point, limit=limit)
 
+    def minimal_cover(self, cover_type = "translation"):
+        r"""
+        Return the minimal translation or half-translation cover of the surface.
+
+        Cover type may be either "translation", "half-translation" or "planar". 
+        
+        The minimal planar cover of a surface S is the smallest cover C so that 
+        the developing map from the universal cover U to the plane induces a 
+        well defined map from C to the plane. This is an infinite translation 
+        surface that is naturally a branched cover of the plane.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.surface import Surface_list
+            sage: s = Surface_list(QQ)
+            sage: from flatsurf.geometry.polygon import polygons
+            sage: square = polygons.square(field=QQ)
+            sage: s.add_polygon(square)
+            0
+            sage: s.change_edge_gluing(0,0,0,1)
+            sage: s.change_edge_gluing(0,2,0,3)
+            sage: from flatsurf.geometry.cone_surface import ConeSurface
+            sage: cs = ConeSurface(s)
+            sage: ts = cs.minimal_cover(cover_type="translation")
+            sage: ts
+            TranslationSurface built from 4 polygons
+            sage: hts = cs.minimal_cover(cover_type="half-translation")
+            sage: hts
+            HalfTranslationSurface built from 2 polygons
+            sage: TestSuite(hts).run()
+            sage: ps = cs.minimal_cover(cover_type="planar")
+            sage: ps
+            TranslationSurface built from infinitely many polygons
+            sage: TestSuite(ps).run(skip="_test_pickling")
+
+            sage: from flatsurf import *
+            sage: S = similarity_surfaces.example()
+            sage: T = S.minimal_cover(cover_type="translation")
+            sage: T
+            TranslationSurface built from infinitely many polygons
+            sage: T.polygon(T.base_label())
+            Polygon: (0, 0), (2, -2), (2, 0)
+        """
+        if cover_type == "translation":
+            from flatsurf.geometry.translation_surface import TranslationSurface
+            from flatsurf.geometry.minimal_cover import MinimalTranslationCover
+            return TranslationSurface(MinimalTranslationCover(self))
+        if cover_type == "half-translation":
+            from flatsurf.geometry.half_translation_surface import HalfTranslationSurface
+            from flatsurf.geometry.minimal_cover import MinimalHalfTranslationCover
+            return HalfTranslationSurface(MinimalHalfTranslationCover(self))
+        if cover_type == "planar":
+            from flatsurf.geometry.translation_surface import TranslationSurface
+            from flatsurf.geometry.minimal_cover import MinimalPlanarCover
+            return TranslationSurface(MinimalPlanarCover(self))
+        raise ValueError("Provided cover_type is not supported.")
+
     def minimal_translation_cover(self):
         r"""
         Return the minimal translation cover.
 
         "Be careful that if the surface is not built from one polygon, this is
         not the smallest translation cover of the surface." - Vincent 
-        
+
         "I disagree with the prior statement. Can you provide an example?" -Pat
-
-        EXAMPLES::
-
-            sage: from flatsurf import *
-            sage: S = similarity_surfaces.example()
-            sage: T = S.minimal_translation_cover()
-            sage: T
-            TranslationSurface built from infinitely many polygons
-            sage: T.polygon(T.base_label())
-            Polygon: (0, 0), (2, -2), (2, 0)
         """
+        from sage.misc.superseded import deprecation
+        deprecation(13109, "minimal_translation_cover is deprecated. Use minimal_cover(cover_type = \"translation\") instead.")
         from flatsurf.geometry.translation_surface import MinimalTranslationCover, TranslationSurface
         return TranslationSurface(MinimalTranslationCover(self))
 
@@ -1209,12 +1258,10 @@ class SimilaritySurface(SageObject):
             sage: from flatsurf.geometry.chamanara import chamanara_surface
             sage: S = chamanara_surface(1/2)
             sage: S.tangent_vector(S.base_label(), (1/2,1/2), (1,1))
-            SimilaritySurfaceTangentVector in polygon (1, [-1  0]
-            [ 0 -1]) based at (1/2, -3/2) with vector (1, 1)
+            SimilaritySurfaceTangentVector in polygon (1, -1, 0) based at (1/2, -3/2) with vector (1, 1)
             sage: K.<sqrt2> = QuadraticField(2)
             sage: S.tangent_vector(S.base_label(), (1/2,1/2), (1,sqrt2))
-            SimilaritySurfaceTangentVector in polygon (1, [-1  0]
-            [ 0 -1]) based at (1/2, -3/2) with vector (1, sqrt2)
+            SimilaritySurfaceTangentVector in polygon (1, -1, 0) based at (1/2, -3/2) with vector (1, sqrt2)
         """
         p = vector(p)
         v = vector(v)
