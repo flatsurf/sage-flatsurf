@@ -601,7 +601,7 @@ class GraphicalSurface:
         return g.transformed_vertex(e) == gg.transformed_vertex(ee+1) and \
                g.transformed_vertex(e+1) == gg.transformed_vertex(ee)
 
-    def to_surface(self, point, v=None, label=None, return_all=False, \
+    def to_surface(self, point, v=None, label=None, ring=None, return_all=False, \
                    singularity_limit=None, search_all = False, search_limit=None):
         r""" Converts from graphical coordinates to similarity surface coordinates.
 
@@ -619,6 +619,10 @@ class GraphicalSurface:
 
         - ``label`` -- (default ``None``) If provided, then we only convert
             points and tangent vectors in the corresponding graphical polygon.
+
+        - ``ring`` -- (default ``None``) If provided, then objects returned
+            will be defined over the given ring, otherwise we use the base_ring
+            of the surface.
 
         - ``return_all`` -- (default ``False``) By default we return the first
             point or vector we find. However if the graphical polygons overlap,
@@ -649,13 +653,31 @@ class GraphicalSurface:
             sage: gs = s.graphical_surface()
             sage: gs.to_surface((1,-2))
             Surface point located at (1, 1/2) in polygon 1
-            sage: gs.to_surface((1,-2),v=(1,0))
+            sage: gs.to_surface((1,-2), v=(1,0))
             SimilaritySurfaceTangentVector in polygon 1 based at (1, 1/2) with vector (1, -1/2)
 
             sage: s = translation_surfaces.infinite_staircase()
             sage: gs = s.graphical_surface()
-            sage: gs.to_surface((4,4),(1,1),search_all=True, search_limit=20)
+            sage: gs.to_surface((4,4), (1,1), search_all=True, search_limit=20)
             SimilaritySurfaceTangentVector in polygon 8 based at (0, 0) with vector (1, 1)
+
+            sage: s = translation_surfaces.square_torus()
+            sage: pc = s.minimal_cover(cover_type="planar")
+            sage: gs = pc.graphical_surface()
+            sage: try:
+            ....:     gs.to_surface((3,2), search_all=True, search_limit=20)
+            ....: except ValueError as e:
+            ....:     pass
+            sage: e
+            ValueError('To obtain a singularity on an infinite surface, singularity_limit must be set.',)
+            sage: gs.to_surface((3,2), search_all=True, search_limit=20, singularity_limit=4)
+            Surface point with 4 coordinate representations
+            sage: p = gs.to_surface((sqrt(3),sqrt(2)), ring=AA, search_all=True, search_limit=20)
+            sage: iter(p.coordinates(p.labels()[0])).next().parent()
+            Vector space of dimension 2 over Algebraic Real Field
+            sage: v = gs.to_surface((3/2,3/2),(sqrt(3),sqrt(2)),ring=AA,search_all=True, search_limit=20)
+            sage: v.bundle()
+            Tangent bundle of TranslationSurface built from infinitely many polygons defined over Algebraic Real Field
         """
         if label is None:
             if return_all:
@@ -674,14 +696,19 @@ class GraphicalSurface:
                 it = self.visible()
             for label in it:
                 try:
-                    val = self.to_surface(point, v=v, label=label, singularity_limit=singularity_limit)
+                    val = self.to_surface(point, v=v, label=label, ring=ring, singularity_limit=singularity_limit)
                     if return_all:
                         ret.add(val)
                     else:
                         return val
-                except (AssertionError, ValueError):
+                except AssertionError:
                     # Not in the polygon
                     pass
+                except ValueError as e:
+                    if e.args[0] == 'Need a limit when working with an infinite surface.':
+                        raise ValueError("To obtain a singularity on an infinite surface, " + \
+                            "singularity_limit must be set.")
+                    # Otherwise it is not in the polygon.
             if return_all:
                 return ret
             else:
@@ -691,9 +718,9 @@ class GraphicalSurface:
             coords = gp.transform_back(point)
             s = self.get_surface()
             if v is None:
-                return s.surface_point(label, coords, limit=singularity_limit)
+                return s.surface_point(label, coords, ring=ring, limit=singularity_limit)
             else:
-                return s.tangent_vector(label, coords, (~(gp.transformation().derivative()))*vector(v))
+                return s.tangent_vector(label, coords, (~(gp.transformation().derivative()))*vector(v), ring=ring)
 
     def opposite_edge(self, p, e):
         r"""

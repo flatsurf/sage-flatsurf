@@ -7,6 +7,7 @@ This includes singularities, saddle connections and cylinders.
 from __future__ import absolute_import, print_function
 
 from sage.structure.sage_object import SageObject
+from sage.modules.free_module import VectorSpace
 
 from .polygon import wedge_product, dot_product
 
@@ -131,10 +132,14 @@ class SurfacePoint(SageObject):
         sage: sp
         Surface point with 4 coordinate representations
     """
-    def __init__(self, surface, label, point, limit=None):
+    def __init__(self, surface, label, point, ring = None, limit=None):
         self._s = surface
+        if ring is None:
+            self._ring = surface.base_ring()
+        else:
+            self._ring = ring
         p = surface.polygon(label)
-        point = surface.vector_space()(point)
+        point = VectorSpace(self._ring,2)(point)
         point.set_immutable()
         pos = p.get_point_position(point)
         assert pos.is_inside(), \
