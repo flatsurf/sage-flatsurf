@@ -736,8 +736,8 @@ class StraightLineTrajectoryTranslation(AbstractStraightLineTrajectory):
 
         point0 = poly.vertex(e0) + poly.edge(e0) * x0/l0
         point1 = poly.vertex(e1) + poly.edge(e1) * (l1-x1)/l1
-        v0 = self._s.tangent_vector(lab, point0, self._vector)
-        v1 = self._s.tangent_vector(lab, point1, -self._vector)
+        v0 = self._s.tangent_vector(lab, point0, self._vector, ring=self._vector.base_ring())
+        v1 = self._s.tangent_vector(lab, point1, -self._vector, ring=self._vector.base_ring())
         return SegmentInPolygon(v0,v1)
 
     def segments(self):
@@ -748,7 +748,7 @@ class StraightLineTrajectoryTranslation(AbstractStraightLineTrajectory):
             sage: from flatsurf.geometry.straight_line_trajectory import StraightLineTrajectoryTranslation
 
             sage: s = translation_surfaces.square_torus()
-            sage: v = s.tangent_vector(0, (0,0), (1,1+AA(5).sqrt()))
+            sage: v = s.tangent_vector(0, (0,0), (1,1+AA(5).sqrt()), ring=AA)
             sage: L = StraightLineTrajectoryTranslation(v)
             sage: L.flow(2)
             sage: L.segments()

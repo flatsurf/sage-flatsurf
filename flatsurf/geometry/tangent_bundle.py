@@ -307,7 +307,7 @@ class SimilaritySurfaceTangentVector:
             sage: l.is_saddle_connection()
             True
 
-            sage: v = s.tangent_vector(0, (0,0), (1,1+AA(5).sqrt()))
+            sage: v = s.tangent_vector(0, (0,0), (1,1+AA(5).sqrt()), ring=AA)
             sage: l = v.straight_line_trajectory()
             sage: l.flow(20)
             sage: l.segment(20)

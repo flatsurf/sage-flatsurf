@@ -1290,7 +1290,7 @@ class SimilaritySurface(SageObject):
             sage: S.tangent_vector(S.base_label(), (1/2,1/2), (1,1))
             SimilaritySurfaceTangentVector in polygon (1, -1, 0) based at (1/2, -3/2) with vector (1, 1)
             sage: K.<sqrt2> = QuadraticField(2)
-            sage: S.tangent_vector(S.base_label(), (1/2,1/2), (1,sqrt2))
+            sage: S.tangent_vector(S.base_label(), (1/2,1/2), (1,sqrt2), ring=K)
             SimilaritySurfaceTangentVector in polygon (1, -1, 0) based at (1/2, -3/2) with vector (1, sqrt2)
         """
         p = vector(p)
@@ -1300,23 +1300,29 @@ class SimilaritySurface(SageObject):
             raise ValueError("p (={!r}) and v (={!v}) should have two coordinates")
 
         if ring is None:
-            R = p.base_ring()
-            if R != v.base_ring():
-                from sage.structure.element import get_coercion_model
-                cm = get_coercion_model()
-                R = cm.common_parent(R, v.base_ring())
-                p = p.change_ring(R)
-                v = v.change_ring(R)
-    
-            R2 = self.base_ring()
-            if R != R2:
-                if R2.has_coerce_map_from(R):
-                    p = p.change_ring(R2)
-                    v = v.change_ring(R2)
-                    R = R2
-                elif not R.has_coerce_map_from(R2):
-                    raise ValueError("not able to find a common ring for arguments")
-            return self.tangent_bundle(R)(lab, p, v)
+            ring = self.base_ring()
+            try:
+                return self.tangent_bundle(ring)(lab, p, v)
+            except TypeError:
+                raise TypeError("Use the ring=??? option to construct tangent vectors in other field different from the base_ring().")
+            # Old version seemed to be to accepting of inputs (eg, from Symbolic Ring)
+            #R = p.base_ring()
+            #if R != v.base_ring():
+            #    from sage.structure.element import get_coercion_model
+            #    cm = get_coercion_model()
+            #    R = cm.common_parent(R, v.base_ring())
+            #    p = p.change_ring(R)
+            #    v = v.change_ring(R)
+ 
+            #R2 = self.base_ring()
+            #if R != R2:
+            #    if R2.has_coerce_map_from(R):
+            #        p = p.change_ring(R2)
+            #        v = v.change_ring(R2)
+            #        R = R2
+            #    elif not R.has_coerce_map_from(R2):
+            #        raise ValueError("not able to find a common ring for arguments")
+            #return self.tangent_bundle(R)(lab, p, v)            
         else:
             return self.tangent_bundle(ring)(lab, p, v)
     
