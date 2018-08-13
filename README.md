@@ -49,6 +49,17 @@ The options `--user` and `--upgrade` are optional. The option `--user` make
 the installation in your home directory instead of the Sage sources. The
 option `--upgrade` allows you to upgrade if the package is already installed.
 
+This might fail because [git](https://git-scm.com/) is not installed on your computer
+(this is for example if you run Sage in Windows). In this situation you have two options.
+Either you install git. Or you download this project from the "Clone or download" drop
+menu above (you should get a zip file). Then you need to run the command:
+
+    $ sage -pip install TARBALL_NAME [--user] [--upgrade]
+
+where `TARBALL_NAME` has to be replaced with the full path to your tarball. If you
+run windows, it should be a cygwin path and will looks something like
+`/cygdrive/c/Users/You/Downloads/sage-flatsurf-master.zip`.
+
 Then you should be able to use the following within sage
 
     sage: import flatsurf.geometry.similarity_surface_generators as sfg
