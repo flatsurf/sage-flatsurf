@@ -1224,10 +1224,6 @@ class PolygonsConstructor:
 
         if field is None:
             field, (c,s) = number_field_elements_from_algebraics((c,s))
-        elif field is AA:
-            pass
-        else:
-            raise ValueError("field parameter needs to be either None or AA.")
         cn = field.one()
         sn = field.zero()
         edges = [(cn,sn)]
