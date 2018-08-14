@@ -20,7 +20,7 @@ class GraphicalSurface:
 
     The basic tasks of the class are to render the polygons, edges and labels.
     To customize a rendering, it is useful to know something about how this
-    class works. (Appologies!)
+    class works. (Apologies!)
 
     There are attributes which control whether or not certain objects are
     rendered, namely:
@@ -121,7 +121,7 @@ class GraphicalSurface:
         - ``adjacencies`` -- a list of pairs ``(p,e)`` to be used to set
           adjacencies of polygons.
 
-        - ``default_position_function'' -- a function mapping polygon labels to
+        - ``default_position_function`` -- a function mapping polygon labels to
           similarities describing the position of the corresponding polygon.
 
         If adjacencies is not defined and the surface is finite, make_all_visible()

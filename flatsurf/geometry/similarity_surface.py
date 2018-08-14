@@ -1916,6 +1916,8 @@ class SimilaritySurface(SageObject):
 
             - ``'gluings and numbers'`` -- full information
 
+            - ``'letter'`` -- add matching letters to glued edges in an arbitrary way
+
         - ``default_position_function`` -- a function mapping polygon labels to 
           similarities describing the position of the corresponding polygon.
 
