@@ -1818,8 +1818,7 @@ class SimilaritySurface(SageObject):
         p = self.polygon(initial_label)
         v = p.vertex(initial_vertex)
         last_sim = SG(-v[0],-v[1])
-        p = self.polygon(initial_label)
-        
+
         # First check the edge eminating rightward from the start_vertex.
         e = p.edge(initial_vertex)
         if e[0]**2 + e[1]**2 <= squared_length_bound:
@@ -1833,7 +1832,7 @@ class SimilaritySurface(SageObject):
         chain = [(last_sim, initial_label, wedge, [(initial_vertex+p.num_edges()-i)%p.num_edges() for i in xrange(2,p.num_edges())])]
 
         while len(chain)>0:
-            #print("Chain length is"+str(len(chain)))
+            # Should verts really be edges?
             sim, label, wedge, verts = chain[-1]
             if len(verts) == 0:
                 chain.pop()
