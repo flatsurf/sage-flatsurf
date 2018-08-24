@@ -599,22 +599,19 @@ class TranslationSurfaceGenerators:
         r"""
         Return McMullen's L shaped surface with parameters l1, l2, l3, l4.
 
-        Polygon labels and lengths are marked below.
-        
-        +-----+
-        |     |
-        |  1  |l1
-        |     |
-        |     |    l4
-        +-----+---------+
-        |               |
-        |       0       |l2
-        |               |
-        +-----+---------+
-          l3        
+        Polygon labels and lengths are marked below::
 
-        Note that this surface may not work correctly yet due to a non-strictly 
-        convex polygon in the representation.
+            +-----+
+            |     |
+            |  1  |l1
+            |     |
+            |     |    l4
+            +-----+---------+
+            |     |         |
+            |  0  |    2    |l2
+            |     |         |
+            +-----+---------+
+              l3        
 
         EXAMPLES::
 
@@ -629,13 +626,15 @@ class TranslationSurfaceGenerators:
             field = field.fraction_field()
 
         s = Surface_list(base_ring=field)
-        s.add_polygon(polygons((l3,0),(l4,0),(0,l2),(-l4,0),(-l3,0),(0,-l2), ring=field))
+        s.add_polygon(polygons((l3,0),(0,l2),(-l3,0),(0,-l2), ring=field))
         s.add_polygon(polygons((l3,0),(0,l1),(-l3,0),(0,-l1), ring=field))
+        s.add_polygon(polygons((l4,0),(0,l2),(-l4,0),(0,-l2), ring=field))
         s.change_edge_gluing(0,0,1,2)
-        s.change_edge_gluing(0,1,0,3)
-        s.change_edge_gluing(0,2,0,5)
-        s.change_edge_gluing(0,4,1,0)
+        s.change_edge_gluing(0,1,2,3)
+        s.change_edge_gluing(0,2,1,0)
+        s.change_edge_gluing(0,3,2,1)
         s.change_edge_gluing(1,1,1,3)
+        s.change_edge_gluing(2,0,2,2)
         s.set_immutable()
         return TranslationSurface(s)
 
