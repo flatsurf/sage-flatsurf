@@ -219,16 +219,9 @@ class GraphicalPolygon:
 
         If the parameter ``position`` can take the values "outside", "inside"
         or "edge" to indicate if the label should be drawn outside the polygon,
-        inside the polygon or on the edge. Defaults to "inside"
-
-        is set to True then labels are drawn outside the polygon
-        instead of the default (inside the polygon).
+        inside the polygon or on the edge. Defaults to "inside".
 
         A ``push_off`` perturbation parameter controls how far off the edge the label is pushed.
-        Depending on the ``outside`` parameter
-
-        option containing a double can be passed to the function to control how far
-        into or out of the polygon the
 
         Other options are processed as in sage.plot.text.text.
         """
@@ -245,34 +238,42 @@ class GraphicalPolygon:
             # position outside polygon.
             if "horizontal_alignment" in options:
                 pass
-            elif e[1] >= 0:
+            elif e[1] > 0:
                 options["horizontal_alignment"]="left"
-
-            else:
+            elif e[1] < 0:
                 options["horizontal_alignment"]="right"
+            else:
+                options["horizontal_alignment"]="center"
 
             if "vertical_alignment" in options:
                 pass
-            elif e[0] >= 0:
+            elif e[0] > 0:
                 options["vertical_alignment"]="top"
-            else:
+            elif e[0] < 0:
                 options["vertical_alignment"]="bottom"
+            else:
+                options["vertical_alignment"]="center"
+
         elif pos == "inside":
             # position inside polygon.
             if "horizontal_alignment" in options:
                 pass
             elif e[1] < 0:
                 options["horizontal_alignment"]="left"
-
-            else:
+            elif e[1] > 0:
                 options["horizontal_alignment"]="right"
+            else:
+                options["horizontal_alignment"]="center"
 
             if "vertical_alignment" in options:
                 pass
             elif e[0] < 0:
                 options["vertical_alignment"]="top"
-            else:
+            elif e[0] > 0:
                 options["vertical_alignment"]="bottom"
+            else:
+                options["vertical_alignment"]="center"
+
         else:
             # centered on edge.
             if "horizontal_alignment" in options:
