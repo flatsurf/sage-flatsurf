@@ -195,7 +195,7 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
                     # Uses Polygon.__cmp__:
                     ret = p1.__cmp__(p2)
                     if ret != 0:
-                        print "Polygons differ"
+                        print("Polygons differ")
                         return ret
                     # If here the number of edges should be equal.
                     for e in xrange(p1.num_edges()):
