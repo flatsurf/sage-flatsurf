@@ -21,7 +21,7 @@ from .matrix_2x2 import (is_similarity,
                     similarity_from_vectors,
                     rotation_matrix_angle,
                     is_cosine_sine_of_rational)
-                    
+
 from .similarity import SimilarityGroup
 from .polygon import Polygons, wedge_product
 from .surface import Surface, Surface_dict, Surface_list
@@ -55,7 +55,7 @@ class SimilaritySurface(SageObject):
         - opposite_edge(self, lab, edge): a couple (``other_label``, ``other_edge``) representing the edge being glued
         - is_finite(self): return true if the surface is built from finitely many labeled polygons
     """
-    
+
     def __init__(self, surface):
         if isinstance(surface,SimilaritySurface):
             self._s=surface.underlying_surface()
@@ -146,7 +146,7 @@ class SimilaritySurface(SageObject):
         r"""
         Given the label ``l`` of a polygon and an edge ``e`` in that polygon
         returns the pair (``ll``, ``ee``) to which this edge is glued.
-        If e is not provided, then it expects the only parameter to be 
+        If e is not provided, then it expects the only parameter to be
         the pair (``l``,``e``) and will again return a the pair (``ll``,``ee``).
         """
         if e is None:
@@ -171,13 +171,13 @@ class SimilaritySurface(SageObject):
         """
         self._s.set_immutable()
 
-    # 
+    #
     # generic methods
     #
-    
+
     #def compute_surface_type_from_gluings(self,limit=None):
     #    r"""
-    #    Compute the surface type by looking at the edge gluings. 
+    #    Compute the surface type by looking at the edge gluings.
     #    If limit is defined, we try to guess the type by looking at limit many edges.
     #    """
     #    if limit is None:
@@ -215,7 +215,7 @@ class SimilaritySurface(SageObject):
     def label_iterator(self, polygons=False):
         r"""
         Iterator over all polygon labels.
-        
+
         If the keyword polygons is True then we return pairs (label, polygon)
         instead of just labels.
         """
@@ -227,10 +227,10 @@ class SimilaritySurface(SageObject):
     def edge_iterator(self, gluings=False):
         r"""
         Iterate over the edges of polygons, which are pairs (l,e) where l is a polygon label, 0 <= e < N and N is the number of edges of the polygon with label l.
-        
-        If the keyword gluings is set to true, then we iterate over ordered 
+
+        If the keyword gluings is set to true, then we iterate over ordered
         pairs of edges ((l,e),(ll,ee)) where edge (l,e) is glued to (ll,ee).
-        
+
         EXAMPLES::
 
             sage: from flatsurf.geometry.polygon import Polygons
@@ -242,7 +242,7 @@ class SimilaritySurface(SageObject):
             sage: from flatsurf.geometry.translation_surface import TranslationSurface
             sage: s=TranslationSurface(surface_list_from_polygons_and_gluings([tri0,tri1], gluings))
             sage: for edge in s.edge_iterator():
-            ...       print(edge)
+            ....:     print(edge)
             (0, 0)
             (0, 1)
             (0, 2)
@@ -266,7 +266,7 @@ class SimilaritySurface(SageObject):
         Return the total number of edges of all polygons used.
         """
         return self._s.num_edges()
-        
+
     def num_singularities(self):
         r"""
         EXAMPLES::
@@ -340,7 +340,7 @@ class SimilaritySurface(SageObject):
         Return the similarity bringing the provided edge to the opposite edge.
 
         EXAMPLES::
-        
+
             sage: from flatsurf.geometry.similarity_surface_generators import SimilaritySurfaceGenerators
             sage: s = SimilaritySurfaceGenerators.example()
             sage: print(s.polygon(0))
@@ -375,7 +375,7 @@ class SimilaritySurface(SageObject):
 
     def set_vertex_zero(self, label, v, in_place=False):
         r"""
-        Applies a combinatorial rotation to the polygon with the provided label. 
+        Applies a combinatorial rotation to the polygon with the provided label.
 
         This makes what is currently vertex v of this polygon vertex 0. In other words,
         what is currently vertex (or edge) e will now become vertex (e-v)%n where
@@ -423,14 +423,14 @@ class SimilaritySurface(SageObject):
             from flatsurf.geometry.polygon import Polygons
             P=Polygons(us.base_ring())
             pp = P(edges=[p.edge((i+v)%n) for i in xrange(n)])
-            
+
             for i in xrange(n):
                 e=(v+i)%n
                 ll,ee = us.opposite_edge(label,e)
                 if ll==label:
                     ee = (ee+n-v)%n
                 glue.append((ll,ee))
-            
+
             us.change_polygon(label,pp,gluing_list=glue)
             return self
         else:
@@ -453,8 +453,8 @@ class SimilaritySurface(SageObject):
         mutable copy is made before relabeling.
 
         ToDo:
-          - Allow relabeling_map to be a function rather than just a dictionary. This will allow it 
-            to work for infinite surfaces.
+          - Allow relabeling_map to be a function rather than just a dictionary.
+            This will allow it to work for infinite surfaces.
 
         EXAMPLES::
 
@@ -547,22 +547,22 @@ class SimilaritySurface(SageObject):
     def copy(self, relabel=False, mutable=False, lazy=None, new_field=None, optimal_number_field=False):
         r"""
         Returns a copy of this surface. The method takes several flags to modify how the copy is taken.
-        
-        If relabel is True, then instead of returning an exact copy, it returns a copy indexed by the 
+
+        If relabel is True, then instead of returning an exact copy, it returns a copy indexed by the
         non-negative integers. This uses the Surface_list implementation. If relabel is False (default),
         then we return an exact copy. The returned surface uses the Surface_dict implementation.
-        
-        The mutability flag returns if the resulting surface should be mutable or not. By default, the 
+
+        The mutability flag returns if the resulting surface should be mutable or not. By default, the
         resulting surface will not be mutable.
-        
+
         If lazy is True, then the surface is copied by reference. This is the only type of copy
         possible for infinite surfaces. The parameter defaults to False for finite surfaces, and
         defaults to True for infinite surfaces.
-        
+
         The new_field parameter can be used to place the vertices in a larger field than the basefield
         for the original surface.
-        
-        The optimal_number_field option can be used to find a best NumberField containing the 
+
+        The optimal_number_field option can be used to find a best NumberField containing the
         (necessarily finite) surface.
 
         EXAMPLES::
@@ -585,7 +585,7 @@ class SimilaritySurface(SageObject):
             sage: TestSuite(ss).run()
             sage: ss.base_ring()
             Algebraic Real Field
-            
+
             sage: # Optimization of number field
             sage: from flatsurf import *
             sage: s = translation_surfaces.arnoux_yoccoz(3)
@@ -617,7 +617,7 @@ class SimilaritySurface(SageObject):
                 field2 = NumberField(field.polynomial(), name = "a", embedding = hom(field.gen()))
                 # The following converts from field to field2:
                 hom2 = field.hom(im_gens = [field2.gen()])
-                
+
                 ss = Surface_dict(base_ring = field2)
                 index = 0
                 P = Polygons(field2)
@@ -660,31 +660,31 @@ class SimilaritySurface(SageObject):
     def triangle_flip(self, l1, e1, in_place=False, test=False, direction=None):
         r"""
         Flips the diagonal of the quadrilateral formed by two triangles
-        glued together along the provided edge (l1,e1). This can be broken 
+        glued together along the provided edge (l1,e1). This can be broken
         into two steps: join along the edge to form a convex quadilateral,
-        then cut along the other diagonal. Raises a ValueError if this 
-        quadrilateral would be non-convex. In this case no changes to the 
+        then cut along the other diagonal. Raises a ValueError if this
+        quadrilateral would be non-convex. In this case no changes to the
         surface are made.
-        
-        The direction parameter defaults to (0,1). This is used to decide how 
+
+        The direction parameter defaults to (0,1). This is used to decide how
         the triangles being glued in are labeled. Let p1 be the triangle
         associated to label l1, and p2 be the triangle associated to l2
         but moved by a similarity to share the edge (l1,e1). Each triangle
-        has a exactly one separatrix leaving a vertex which travels in the 
+        has a exactly one separatrix leaving a vertex which travels in the
         provided direction or its opposite. (For edges we only count as sepatrices
         traveling counter-clockwise around the triangle.) This holds for p1
-        and p2 and the separatrices must point in opposite directions. 
-        
+        and p2 and the separatrices must point in opposite directions.
+
         The above description gives two new triangles t1 and t2 which must be
-        glued in (obtained by flipping the diagonal of the quadrilateral). 
-        Up to swapping t1 and t2 we can assume the separatrix in t1 in the 
-        provided direction (or its opposite) points in the same direction as 
-        that of p1. Further up to cyclic permutation of vertex labels we can 
-        assume that the separatrices in p1 and t1 start at the vertex with the 
+        glued in (obtained by flipping the diagonal of the quadrilateral).
+        Up to swapping t1 and t2 we can assume the separatrix in t1 in the
+        provided direction (or its opposite) points in the same direction as
+        that of p1. Further up to cyclic permutation of vertex labels we can
+        assume that the separatrices in p1 and t1 start at the vertex with the
         same index (an element of {0,1,2}). The same can be done for p2 and t2.
-        We apply the label l1 to t1 and the label l2 to t2. This precisely 
+        We apply the label l1 to t1 and the label l2 to t2. This precisely
         determines how t1 and t2 should be used to replace p1 and p2.
-        
+
         INPUT:
 
         - ``l1`` - label of polygon
@@ -743,7 +743,7 @@ class SimilaritySurface(SageObject):
             ....:     s.triangle_flip(0,2,in_place=True)
             ....: except ValueError as e:
             ....:     print(e)
-            ....: 
+            ....:
             Gluing triangles along this edge yields a non-convex quadrilateral.
 
             sage: p = polygons((2,0),(-1,3),(-1,-3))
@@ -787,7 +787,7 @@ class SimilaritySurface(SageObject):
         if not p1.num_edges()==3:
             raise ValueError("The polygon with the provided label is not a triangle.")
         l2,e2 = s.opposite_edge(l1,e1)
-            
+
         sim = s.edge_transformation(l2,e2)
         m = sim.derivative()
         p2=s.polygon(l2)
@@ -801,7 +801,7 @@ class SimilaritySurface(SageObject):
         # Get vertices corresponding to separatices in the provided direction.
         v1=p1.find_separatrix(direction=direction)[0]
         v2=p2.find_separatrix(direction=direction)[0]
-        # Our quadrilateral has vertices labeled: 
+        # Our quadrilateral has vertices labeled:
         # * 0=p1.vertex(e1+1)=p2.vertex(e2)
         # * 1=p1.vertex(e1+2)
         # * 2=p1.vertex(e1)=p2.vertex(e2+1)
@@ -809,7 +809,7 @@ class SimilaritySurface(SageObject):
         # Record the corresponding vertices of this quadrilateral.
         q1 = (3+v1-e1-1)%3
         q2 = (2+(3+v2-e2-1)%3)%4
-        
+
         new_diagonal=p2.vertex((e2+2)%3)-p1.vertex((e1+2)%3)
         # This list will store the new triangles which are being glued in.
         # (Unfortunately, they may not be cyclically labeled in the correct way.)
@@ -943,16 +943,16 @@ class SimilaritySurface(SageObject):
     def join_polygons(self, p1, e1, test=False, in_place=False):
         r"""
         Join polygons across the provided edge (p1,e1). By default,
-        it returns the surface obtained by joining the two polygons 
+        it returns the surface obtained by joining the two polygons
         together. It raises a ValueError if gluing the two polygons
-        together results in a non-convex polygon. This is done to the 
-        current surface if in_place is True, and otherwise a mutable 
-        copy is made and then modified. 
-        
+        together results in a non-convex polygon. This is done to the
+        current surface if in_place is True, and otherwise a mutable
+        copy is made and then modified.
+
         If test is True then instead of changing the surface, it just
         checks to see if the change would be successful and returns
         True if successful or False if not.
-        
+
         EXAMPLES::
 
             sage: from flatsurf import *
@@ -999,11 +999,11 @@ class SimilaritySurface(SageObject):
                 return False
             else:
                 raise ValueError("Joining polygons along this edge results in a non-convex polygon.")
-        
+
         if test:
             # Gluing would be successful
             return True
-        
+
         # Now no longer testing. Do the gluing.
         if in_place:
             ss=self
@@ -1014,23 +1014,23 @@ class SimilaritySurface(SageObject):
         inv_edge_map={}
         for key, value in edge_map.iteritems():
             inv_edge_map[value]=(p1,key)
-        
+
         glue_list=[]
         for i in range(len(vs)):
             p3,e3 = edge_map[i]
             p4,e4 = self.opposite_edge(p3,e3)
-            if p4 == p1 or p4 == p2: 
+            if p4 == p1 or p4 == p2:
                 glue_list.append(inv_edge_map[(p4,e4)])
             else:
                 glue_list.append((p4,e4))
 
         if s.base_label()==p2:
              s.change_base_label(p1)
-        
+
         s.remove_polygon(p2)
-        
+
         s.change_polygon(p1, new_polygon, glue_list)
-        
+
         return ss
 
     def subdivide_polygon(self, p, v1, v2, test=False, new_label=None):
@@ -1041,11 +1041,11 @@ class SimilaritySurface(SageObject):
         via new_label. Otherwise a default new label will be provided.
         If test=False, then the surface will be changed (in place). If
         test=True, then it just checks to see if the change would be successful
-        
+
         The convention is that the resulting subdivided polygon which has an oriented
         edge going from the original vertex v1 to vertex v2 will keep the label p.
         The other polygon will get a new label.
-        
+
         The change will be done in place.
         """
         poly=self.polygon(p)
@@ -1063,12 +1063,12 @@ class SimilaritySurface(SageObject):
 
         if v2<v1:
             v2=v2+ne
-        
+
         newedges1=[poly.vertex(v2)-poly.vertex(v1)]
         for i in range(v2, v1+ne):
             newedges1.append(poly.edge(i))
         newpoly1 = Polygons(self.base_ring())(newedges1)
-        
+
         newedges2=[poly.vertex(v1)-poly.vertex(v2)]
         for i in range(v1,v2):
             newedges2.append(poly.edge(i))
@@ -1094,7 +1094,7 @@ class SimilaritySurface(SageObject):
         for i in range(v2, ne+v1):
             old_to_new_labels[(p,i%ne)]=(p,i-v2+1)
         #print "old_to_new "+ str(old_to_new_labels)
-        
+
         for e in xrange(1, newpoly1.num_edges()):
             pair = old_gluings[(p,(v2+e-1)%ne)]
             if pair in old_to_new_labels:
@@ -1112,9 +1112,9 @@ class SimilaritySurface(SageObject):
 
     def singularity(self, l, v, limit=None):
         r"""
-        Represents the Singularity associated to the v-th vertex of the polygon with 
+        Represents the Singularity associated to the v-th vertex of the polygon with
         label l.
-        
+
         If the surface is infinite, the limit needs to be set. In this case the construction
         of the singularity is successful if the sequence of vertices hit by passing through
         edges closes up in limit or less steps.
@@ -1163,11 +1163,11 @@ class SimilaritySurface(SageObject):
         r"""
         Return the minimal translation or half-translation cover of the surface.
 
-        Cover type may be either "translation", "half-translation" or "planar". 
-        
-        The minimal planar cover of a surface S is the smallest cover C so that 
-        the developing map from the universal cover U to the plane induces a 
-        well defined map from C to the plane. This is an infinite translation 
+        Cover type may be either "translation", "half-translation" or "planar".
+
+        The minimal planar cover of a surface S is the smallest cover C so that
+        the developing map from the universal cover U to the plane induces a
+        well defined map from C to the plane. This is an infinite translation
         surface that is naturally a branched cover of the plane.
 
         EXAMPLES::
@@ -1221,7 +1221,7 @@ class SimilaritySurface(SageObject):
         Return the minimal translation cover.
 
         "Be careful that if the surface is not built from one polygon, this is
-        not the smallest translation cover of the surface." - Vincent 
+        not the smallest translation cover of the surface." - Vincent
 
         "I disagree with the prior statement. Can you provide an example?" -Pat
         """
@@ -1282,7 +1282,7 @@ class SimilaritySurface(SageObject):
         - ``p`` -- coordinates of a point in the polygon
 
         - ``v`` -- coordinates of a vector in R^2
-        
+
         EXAMPLES::
 
             sage: from flatsurf.geometry.chamanara import chamanara_surface
@@ -1313,7 +1313,7 @@ class SimilaritySurface(SageObject):
             #    R = cm.common_parent(R, v.base_ring())
             #    p = p.change_ring(R)
             #    v = v.change_ring(R)
- 
+
             #R2 = self.base_ring()
             #if R != R2:
             #    if R2.has_coerce_map_from(R):
@@ -1322,20 +1322,20 @@ class SimilaritySurface(SageObject):
             #        R = R2
             #    elif not R.has_coerce_map_from(R2):
             #        raise ValueError("not able to find a common ring for arguments")
-            #return self.tangent_bundle(R)(lab, p, v)            
+            #return self.tangent_bundle(R)(lab, p, v)
         else:
             return self.tangent_bundle(ring)(lab, p, v)
-    
+
     def reposition_polygons(self, in_place=False, relabel=False):
         r"""
-        We choose a maximal tree in the dual graph of the decomposition into 
+        We choose a maximal tree in the dual graph of the decomposition into
         polygons, and ensure that the gluings between two polygons joined by
-        an edge in this tree is by translation. 
-        
-        This guarantees that the group generated by the edge identifications is 
+        an edge in this tree is by translation.
+
+        This guarantees that the group generated by the edge identifications is
         minimal among representions of the surface. In particular, if for instance
         you have a translation surface which is anot representable as a translation
-        surface (because polygons are presented with rotations) then after this 
+        surface (because polygons are presented with rotations) then after this
         change it will be representable as a translation surface.
         """
         if not self.is_finite():
@@ -1366,25 +1366,25 @@ class SimilaritySurface(SageObject):
             p = changes[label].derivative()*p
             s.underlying_surface().change_polygon(label,p)
         return s
-    
+
     def triangulation_mapping(self):
         r"""
         Return a SurfaceMapping triangulating the suface or None if the surface is already triangulated.
         """
         from flatsurf.geometry.mappings import triangulation_mapping
         return triangulation_mapping(self)
-    
+
     def triangulate(self, in_place=False, label = None, relabel=False):
         r"""
         Return a triangulated version of this surface. (This may be mutable
         or not depending on the input.)
-        
+
         If label=None (as default) all polygons are triangulated. Otherwise,
         label should be a polygon label. In this case, just this polygon
         is split into triangles.
 
         This is done in place if in_place is True (defaults to False).
-        
+
         If we are not doing triangulation in_place, then we must make a copy.
         This can be a relabeled copy (indexed by the non-negative ints)
         or a label preserving copy. The copy is relabeled if relabel=True
@@ -1435,7 +1435,7 @@ class SimilaritySurface(SageObject):
                 else:
                     s=self.copy(mutable=True)
             else:
-                # This polygon is already a triangle. 
+                # This polygon is already a triangle.
                 return self
             from flatsurf.geometry.polygon import wedge_product
             for i in xrange(n-3):
@@ -1452,14 +1452,14 @@ class SimilaritySurface(SageObject):
                             break
             return s
         raise RuntimeError("Failed to return anything!")
-    
+
     def _edge_needs_flip(self,p1,e1):
         r"""
-        Returns -1 if the the provided edge incident to two triangles which 
-        should be flipped to get closer to the Delaunay decomposition. 
-        Returns 0 if the quadrilateral formed by the triangles is inscribed 
+        Returns -1 if the the provided edge incident to two triangles which
+        should be flipped to get closer to the Delaunay decomposition.
+        Returns 0 if the quadrilateral formed by the triangles is inscribed
         in a circle, and returns 1 otherwise.
-        
+
         A ValueError is raised if the edge is not indident to two triangles.
         """
         p2,e2=self.opposite_edge(p1,e1)
@@ -1475,11 +1475,11 @@ class SimilaritySurface(SageObject):
 
     def _edge_needs_join(self,p1,e1):
         r"""
-        Returns -1 if the the provided edge incident to two triangles which 
-        should be flipped to get closer to the Delaunay decomposition. 
-        Returns 0 if the quadrilateral formed by the triangles is inscribed 
+        Returns -1 if the the provided edge incident to two triangles which
+        should be flipped to get closer to the Delaunay decomposition.
+        Returns 0 if the quadrilateral formed by the triangles is inscribed
         in a circle, and returns 1 otherwise.
-        
+
         A ValueError is raised if the edge is not indident to two triangles.
         """
         p2,e2=self.opposite_edge(p1,e1)
@@ -1508,8 +1508,8 @@ class SimilaritySurface(SageObject):
 
     def is_delaunay_triangulated(self, limit=None):
         r"""
-        Return if the surface is triangulated and the triangulation is Delaunay. 
-        If limit is set, then it checks this only limit many edges. 
+        Return if the surface is triangulated and the triangulation is Delaunay.
+        If limit is set, then it checks this only limit many edges.
         Limit must be set for infinite surfaces.
         """
         if limit is None:
@@ -1535,8 +1535,8 @@ class SimilaritySurface(SageObject):
 
     def is_delaunay_decomposed(self, limit=None):
         r"""
-        Return if the decomposition of the surface into polygons is Delaunay. 
-        If limit is set, then it checks this only limit many polygons. 
+        Return if the decomposition of the surface into polygons is Delaunay.
+        If limit is set, then it checks this only limit many polygons.
         Limit must be set for infinite surfaces.
         """
         if limit is None:
@@ -1563,7 +1563,7 @@ class SimilaritySurface(SageObject):
         r"""
         Returns a Delaunay triangulation of a surface, or make some
         triangle flips to get closer to the Delaunay decomposition.
-        
+
         INPUT:
 
         - ``triangulated`` (boolean) - If true, the algorithm assumes the
@@ -1579,7 +1579,7 @@ class SimilaritySurface(SageObject):
 
         - ``direction`` (None or Vector) - with two entries in the base field
             Used to determine labels when a pair of triangles is flipped. Each triangle
-            has a unique separatrix which points in the provided direction or its 
+            has a unique separatrix which points in the provided direction or its
             negation. As such a vector determines a sign for each triangle.
             A pair of adjacent triangles have opposite signs. Labels are chosen
             so that this sign is preserved (as a function of labels).
@@ -1685,8 +1685,8 @@ class SimilaritySurface(SageObject):
                 self.join_polygons(l1, e1, in_place=True)
                 return True
         return False
-    
-    
+
+
     def delaunay_decomposition(self, triangulated=False, \
             delaunay_triangulated=False, in_place=False, direction=None,\
             relabel=False):
@@ -1712,10 +1712,10 @@ class SimilaritySurface(SageObject):
           case, labels will be added if it is necessary to subdivide polygons
           into triangles.  If relabel is True, the new surface will have
           polygons labeled by the non-negative integers in an arbitrary way.
-        
+
         - ``direction`` - (None or Vector with two entries in the base field) -
           Used to determine labels when a pair of triangles is flipped. Each triangle
-          has a unique separatrix which points in the provided direction or its 
+          has a unique separatrix which points in the provided direction or its
           negation. As such a vector determines a sign for each triangle.
           A pair of adjacent triangles have opposite signs. Labels are chosen
           so that this sign is preserved (as a function of labels).
@@ -1774,22 +1774,22 @@ class SimilaritySurface(SageObject):
                     loop=True
                     break
         return s
-        
+
     def saddle_connections(self, squared_length_bound, initial_label=None, initial_vertex=None, sc_list=None, check=False):
         r"""
         Returns a list of saddle connections on the surface whose length squared is less than or equal to squared_length_bound.
-        The length of a saddle connection is measured using holonomy from polygon in which the trajectory starts. 
-        
+        The length of a saddle connection is measured using holonomy from polygon in which the trajectory starts.
+
         If initial_label and initial_vertex are not provided, we return all saddle connections satisfying the bound condition.
-        
-        If initial_label and initial_vertex are provided, it only provides saddle connections emanating from the corresponding 
-        vertex of a polygon. If only initial_label is provided, the added saddle connections will only emanate from the 
+
+        If initial_label and initial_vertex are provided, it only provides saddle connections emanating from the corresponding
+        vertex of a polygon. If only initial_label is provided, the added saddle connections will only emanate from the
         corresponding polygon.
-        
+
         If sc_list is provided the found saddle connections are appended to this list and the resulting list is returned.
-        
+
         If check==True it uses the checks in the SaddleConnection class to sanity check our results.
-        
+
         EXAMPLES::
             sage: from flatsurf import *
             sage: s = translation_surfaces.square_torus()
@@ -1810,7 +1810,7 @@ class SimilaritySurface(SageObject):
             for vertex in xrange( self.polygon(initial_label).num_edges() ):
                 self.saddle_connections(squared_length_bound, initial_label=initial_label, initial_vertex=vertex, sc_list=sc_list)
             return sc_list
-        
+
         # Now we have a specified initial_label and initial_vertex
         SG = SimilarityGroup(self.base_ring())
         start_data = (initial_label, initial_vertex)
@@ -1825,7 +1825,7 @@ class SimilaritySurface(SageObject):
             sc_list.append( SaddleConnection(self, start_data, e) )
 
         # Represents the bounds of the beam of trajectories we are sending out.
-        wedge = ( last_sim( p.vertex((initial_vertex+1)%p.num_edges()) ), 
+        wedge = ( last_sim( p.vertex((initial_vertex+1)%p.num_edges()) ),
                   last_sim( p.vertex((initial_vertex+p.num_edges()-1)%p.num_edges()) ))
 
         # This will collect the data we need for a depth first search.
@@ -1839,7 +1839,7 @@ class SimilaritySurface(SageObject):
                 continue
             vert = verts.pop()
             #print("Inspecting "+str(vert))
-            p = self.polygon(label)    
+            p = self.polygon(label)
             # First check the vertex
             vert_position = sim(p.vertex(vert))
             #print(wedge[1].n())
@@ -1872,9 +1872,9 @@ class SimilaritySurface(SageObject):
                 new_label, new_edge = self.opposite_edge(label, vert)
                 new_sim = sim*~self.edge_transformation(label,vert)
                 p = self.polygon(new_label)
-                chain.append( (new_sim, new_label, new_wedge, [(new_edge+p.num_edges()-i)%p.num_edges() for i in xrange(1,p.num_edges())]) )        
+                chain.append( (new_sim, new_label, new_wedge, [(new_edge+p.num_edges()-i)%p.num_edges() for i in xrange(1,p.num_edges())]) )
         return sc_list
-    
+
     def set_default_graphical_surface(self, graphical_surface):
         r"""
         Replace the default graphical surface with the provided GraphicalSurface.
@@ -1889,9 +1889,9 @@ class SimilaritySurface(SageObject):
     def graphical_surface(self, *args, **kwds):
         r"""
         Return a GraphicalSurface representing this surface.
-        
+
         By default this returns a cached version of the GraphicalSurface. If
-        ``cached=False`` is provided as a keyword option then a new 
+        ``cached=False`` is provided as a keyword option then a new
         GraphicalSurface is returned. Other keyword options:
 
         INPUT:
@@ -1917,7 +1917,7 @@ class SimilaritySurface(SageObject):
 
             - ``'letter'`` -- add matching letters to glued edges in an arbitrary way
 
-        - ``default_position_function`` -- a function mapping polygon labels to 
+        - ``default_position_function`` -- a function mapping polygon labels to
           similarities describing the position of the corresponding polygon.
 
         EXAMPLES:
@@ -1947,7 +1947,7 @@ class SimilaritySurface(SageObject):
     def plot(self, *args, **kwds):
         r"""
         Returns a plot of the surface.
-        
+
         There may be zero or one argument. If provided the single argument
         should be a GraphicalSurface whick will be used in the plot.
 
@@ -1970,9 +1970,9 @@ class SimilaritySurface(SageObject):
             - ``'gluings and number'`` -- full information
 
         - ``adjacencies`` -- a list of pairs ``(p,e)`` to be used to set
-          adjacencies of polygons. 
+          adjacencies of polygons.
 
-        - ``default_position_function`` -- a function mapping polygon labels to 
+        - ``default_position_function`` -- a function mapping polygon labels to
           similarities describing the position of the corresponding polygon.
         """
         if len(args) > 1:
@@ -1987,12 +1987,12 @@ class SimilaritySurface(SageObject):
             gs = self.graphical_surface(**kwds)
         return gs.plot()
 
-    def plot_polygon(self, label, graphical_surface = None, 
+    def plot_polygon(self, label, graphical_surface = None,
                      plot_polygon = True, plot_edges = True, plot_edge_labels = True,
                      edge_labels = None,
                      polygon_options = {"axes":True}, edge_options = None, edge_label_options = None):
         r"""
-        Returns a plot of the polygon with the provided label. 
+        Returns a plot of the polygon with the provided label.
 
         Note that this method plots the polygon in its coordinates as opposed to
         graphical coordinates that the :func:``plot`` method uses. This makes it useful
@@ -2000,29 +2000,29 @@ class SimilaritySurface(SageObject):
 
         INPUT:
 
-            - ``graphical_surface`` -- (default ``None``) If provided this function pulls graphical options 
+            - ``graphical_surface`` -- (default ``None``) If provided this function pulls graphical options
               from the graphical surface. If not provided, we use the default graphical surface.
 
             - ``plot_polygon`` -- (default ``True``) If True, we plot the solid polygon.
 
-            - ``polygon_options`` -- (default ``{"axes":True}``) Options for the rendering of the polygon. 
-              These options will be passed to :func:`~flatsurf.graphical.polygon.GraphicalPolygon.plot_polygon`. 
+            - ``polygon_options`` -- (default ``{"axes":True}``) Options for the rendering of the polygon.
+              These options will be passed to :func:`~flatsurf.graphical.polygon.GraphicalPolygon.plot_polygon`.
               This should be either None or a dictionary.
 
             - ``plot_edges`` -- (default ``True``) If True, we plot the edges of the polygon as segments.
 
-            - ``edge_options`` -- (default ``None``) Options for the rendering of the polygon edges. 
-              These options will be passed to :func:`~flatsurf.graphical.polygon.GraphicalPolygon.plot_edge`. 
+            - ``edge_options`` -- (default ``None``) Options for the rendering of the polygon edges.
+              These options will be passed to :func:`~flatsurf.graphical.polygon.GraphicalPolygon.plot_edge`.
               This should be either None or a dictionary.
 
             - ``plot_edge_labels`` -- (default ``True``) If True, we plot labels on the edges.
 
-            - ``edge_label_options`` -- (default ``None``) Options for the rendering of the edge labels. 
-              These options will be passed to :func:`~flatsurf.graphical.polygon.GraphicalPolygon.plot_edge_label`. 
+            - ``edge_label_options`` -- (default ``None``) Options for the rendering of the edge labels.
+              These options will be passed to :func:`~flatsurf.graphical.polygon.GraphicalPolygon.plot_edge_label`.
               This should be either None or a dictionary.
 
             - ``edge_labels`` -- (default ``None``) If None and plot_edge_labels is True, we write the edge
-              number on each edge. Otherwise edge_labels should be a list of strings of length equal to the 
+              number on each edge. Otherwise edge_labels should be a list of strings of length equal to the
               number of edges of the polygon. The strings will be printed on each edge.
 
         EXAMPLES::
@@ -2084,9 +2084,9 @@ class SimilaritySurface(SageObject):
 #    def minimize_monodromy_mapping(self):
 #        r"""
 #        Return a mapping from this surface to a similarity surface
-#        with a minimal monodromy group. 
+#        with a minimal monodromy group.
 #        Note that this may be slow for infinite surfaces.
-#        
+#
 #        EXAMPLES::
 #            sage: from flatsurf.geometry.polygon import Polygons
 #            sage: K.<sqrt2> = NumberField(x**2 - 2, embedding=1.414)
@@ -2133,12 +2133,12 @@ class SimilaritySurface(SageObject):
 #        new_codomain = convert_to_type(mapping.codomain(),surface_type)
 #        identity = IdentityMapping(mapping.codomain(), new_codomain)
 #        return identity * mapping
-#    
+#
 #    def minimal_monodromy_surface(self):
 #        r"""
 #        Return an equivalent similarity surface with minimal monodromy.
 #        Note that this may be slow for infinite surfaces.
-#        
+#
 #        EXAMPLES::
 #            sage: from flatsurf.geometry.polygon import Polygons
 #            sage: K.<sqrt2> = NumberField(x**2 - 2, embedding=1.414)
@@ -2154,7 +2154,7 @@ class SimilaritySurface(SageObject):
 #            Translation surface built from 3 polygons
 #        """
 #        return self.minimize_monodromy_mapping().codomain()
-    
+
     def __eq__(self, other):
         r"""
         Implements a naive notion of equality where two finite surfaces are equal if:
@@ -2205,7 +2205,7 @@ class SimilaritySurface(SageObject):
             raise ValueError("Attempting to hash with mutable underlying surface.")
         if hasattr(self, '_hash'):
             # Return the cached hash.
-            return self._hash        
+            return self._hash
         # Compute the hash
         h = 17*hash(self.base_ring())+23*hash(self.base_label())
         for pair in self.label_iterator(polygons=True):
