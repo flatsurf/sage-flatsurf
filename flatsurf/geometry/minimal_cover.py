@@ -167,7 +167,7 @@ class MinimalPlanarCover(Surface):
             if similarity_surface.is_finite():
                 self._ss=similarity_surface.copy()
             else:
-                raise ValueError("Can not construct MinimalTranslationCover of a surface that is mutable and infinite.")
+                raise ValueError("Can not construct MinimalPlanarCover of a surface that is mutable and infinite.")
         else:
             self._ss = similarity_surface
 
@@ -176,11 +176,11 @@ class MinimalPlanarCover(Surface):
 
         # The similarity group containing edge identifications.
         self._sg = self._ss.edge_transformation(self._ss.base_label(),0).parent()
-        
+
         new_base_label=(self._ss.base_label(), self._sg.one())
 
         Surface.__init__(self, self._ss.base_ring(), new_base_label, finite=False, mutable=False)
-        
+
     def polygon(self, lab):
         r"""
         EXAMPLES::
@@ -200,5 +200,5 @@ class MinimalPlanarCover(Surface):
         pp,m = p  # this is the polygon m * ss.polygon(p)
         p2,e2 = self._ss.opposite_edge(pp,e)
         me = self._ss.edge_transformation(pp,e)
-        mm = ~me * m
+        mm = m*~me
         return ((p2,mm),e2)
