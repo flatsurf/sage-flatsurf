@@ -253,7 +253,7 @@ class Similarity(MultiplicativeGroupElement):
         R = self.parent()._field['x','y']
         x,y = R.gens()
         return "(x, y) |-> ({}, {})".format(
-                    self._a*x + self._sign*self._b*y + self._s,
+                    self._a*x - self._sign*self._b*y + self._s,
                     self._b*x + self._sign*self._a*y + self._t)
 
     def _cmp_(self, other):
