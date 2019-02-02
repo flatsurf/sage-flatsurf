@@ -249,6 +249,38 @@ class AbstractStraightLineTrajectory:
             graphical_surface = self.surface().graphical_surface()
         return GraphicalStraightLineTrajectory(self, graphical_surface, **options)
 
+    def cylinder(self):
+        r"""
+        If this is a closed orbit, return the associated maximal cylinder.
+        Raises a ValueError if this trajectory is not closed.
+
+        EXAMPLES::
+
+            sage: from flatsurf import *
+            sage: s = translation_surfaces.regular_octagon()
+            sage: v = s.tangent_vector(0,(1/2,0),(sqrt(2),1))
+            sage: traj = v.straight_line_trajectory()
+            sage: traj.flow(4)
+            sage: traj.is_closed()
+            True
+            sage: cyl = traj.cylinder()
+            sage: cyl.area()                # a = sqrt(2)
+            a + 1
+            sage: cyl.holonomy()
+            (3*a + 4, 2*a + 3)
+            sage: cyl.edges()
+            (2, 3, 3, 2, 4)
+        """
+        # Note may not be defined.
+        if not self.is_closed():
+            raise ValueError("Cylinder is only defined for closed straight-line trajectories.")
+        from .surface_objects import Cylinder
+        coding = self.coding()
+        label = coding[0][0]
+        edges = [ e for l,e in coding[1:] ]
+        edges.append(self.surface().opposite_edge(coding[0][0],coding[0][1])[1])
+        return Cylinder(self.surface(), label, edges)
+
     def coding(self, alphabet=None):
         r"""
         Return the coding of this trajectory with respect to the sides of the
