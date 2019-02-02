@@ -6,12 +6,16 @@ This includes singularities, saddle connections and cylinders.
 
 from __future__ import absolute_import, print_function
 
-from sage.structure.sage_object import SageObject
+from sage.misc.cachefunc import cached_method
 from sage.modules.free_module import VectorSpace
+from sage.modules.free_module_element import vector
+from sage.plot.graphics import Graphics
+from sage.plot.polygon import polygon2d
+from sage.rings.qqbar import AA
+from sage.structure.sage_object import SageObject
 
-from .polygon import wedge_product, dot_product
-
-
+from .polygon import dot_product, Polygons, wedge_product
+from .similarity import SimilarityGroup
 
 class Singularity(SageObject):
     r"""
@@ -476,6 +480,17 @@ class SaddleConnection(SageObject):
         """
         return self._holonomy
 
+    def length(self):
+        r"""
+        In a cone surface, return the length of this saddle connection. Since
+        this may not lie in the field of definition of the surface, it is
+        returned as an element of the Algebraic Real Field.
+        """
+        from .cone_surface import ConeSurface
+        assert isinstance(self._s,ConeSurface), \
+            "Length of a saddle connection only makes sense for cone surfaces."
+        return vector(AA,self._holonomy).norm()
+
     def end_holonomy(self):
         r"""
         Return the holonomy vector of the saddle connection (measured from the end).
@@ -600,85 +615,299 @@ class Cylinder(SageObject):
 
     To Do
     -----
-    * Currently no verification of input data is done.
-    * It would also be nice to allow minimal data to be inputed to produce the cylinder.
-    * Improve support of other surface types.
+    * Support cylinders whose monodromy is a dilation.
 
     EXAMPLES::
 
-        sage: from flatsurf import *
-        sage: s=translation_surfaces.regular_octagon()
-        sage: from flatsurf.geometry.surface_objects import *
-        sage: boundary=[SaddleConnection(s,(0,7),(1,0)),SaddleConnection(s,(0,3),(-1,0))]
-        sage: boundary
-        [Saddle connection in direction (1, 0) with start data (0, 7) and end data (0, 2), Saddle connection in direction (-1, 0) with start data (0, 3) and end data (0, 6)]
-        sage: cyl=Cylinder(boundary, across=SaddleConnection(s,(0,2),(0,1)) )
-        sage: cyl.boundary_components()
-        frozenset({frozenset({Saddle connection in direction (-1, 0) with start data (0, 3) and end data (0, 6)}),
-           frozenset({Saddle connection in direction (1, 0) with start data (0, 7) and end data (0, 2)})})
-        sage: print(cyl.next(boundary[0])==boundary[0])
-        True
-        sage: print(cyl.previous(boundary[1])==boundary[1])
-        True
-        sage: hol=cyl.holonomy()
-        sage: print(hol if hol[0]>0 else -hol)
-        (a + 1, 0)
-        sage: w = cyl.width_vector()
-        sage: print(w if w[1]>0 else -w)
-        (0, 1)
+        sage: from flatsurf.geometry.polyhedra import platonic_cube
+        sage: s = platonic_cube()[1]
+        sage: from flatsurf.geometry.surface_objects import Cylinder
+        sage: cyl = Cylinder(s, 0, [1, 2, 1, 2, 2, 3])
+        sage: cyl.area()
+        3
+        sage: cyl.circumference()
+        4.242640687119285?
+        sage: cyl.polygons()
+        ((0, Polygon: (0, 0), (1, 0), (1, 1)),
+         (3, Polygon: (0, 1), (0, 0), (1, 1)),
+         (4, Polygon: (0, 0), (1, 0), (1, 1)),
+         (5, Polygon: (0, 1), (0, 0), (1, 1)),
+         (2, Polygon: (1, 0), (1, 1), (0, 1)),
+         (1, Polygon: (0, 0), (1, 0), (0, 1)))
+         sage: cyl.initial_label()
+         0
+         sage: cyl.edges()
+         (1, 2, 1, 2, 2, 3)
     """
-    def __init__(self, boundary=None, across=None):
+    def __init__(self, s, label0, edges):
         r"""
+        Construct a cylinder on the surface `s` from an initial label and a
+        sequence of edges crossed.
 
         Parameters
         ----------
-        boundary : A collection of saddle connections
-            that bound the cylinder. The cylinder must be on the left as you move along the
-            saddle connections.
-        across : Saddle connection
-            A single saddle connection lying in the cylinder whose endpoints lie on opposite
-            boundary components.
+        s: A SimilaritySurface
+            the surface conaining the cylinder
+        label0: An initial label
+            representing a polygon the cylinder passes through.
+        edges: a list
+            giving the sequence of edges the cylinder crosses until it closes.
         """
-        self._s=None
-        assert len(boundary)>=2, "There must be at least two boundary saddle connections."
-        for sc in boundary:
-            assert isinstance(sc,SaddleConnection), "Boundary must be collection of saddle connections."
-            if self._s is None:
-                self._s=sc.surface()
-            else:
-                assert self._s is sc.surface(), \
-                    "All saddle connections must be on the same surface."
-        self._boundary = frozenset(boundary)
-        it=iter(boundary)
-        sc=it.next()
-        boundary1={sc}
-        sc2=self.next(sc)
-        while sc2!=sc:
-            boundary1.add(sc2)
-            sc2=self.next(sc2)
-        it=iter(self._boundary-boundary1)
-        sc=it.next()
-        boundary2={sc}
-        sc2=self.next(sc)
-        while sc2!=sc:
-            boundary2.add(sc2)
-            sc2=self.next(sc2)
-        assert len(self._boundary - boundary1.union(boundary2))==0,\
-            "Extra saddle connections in boundary."
-        self._boundary1=frozenset(boundary1)
-        self._boundary2=frozenset(boundary2)
+        self._s = s
+        self._label0 = label0
+        self._edges = tuple(edges)
+        ss = s.minimal_cover(cover_type="planar")
+        SG = SimilarityGroup(s.base_ring())
+        labels = [(label0, SG.one())] # labels of polygons on the cover ss.
+        for e in edges:
+            labels.append(ss.opposite_edge(labels[-1],e)[0])
+        if labels[0][0] != labels[-1][0]:
+            raise ValueError("Combinatorial path does not close.")
+        trans = labels[-1][1]
+        if not trans.is_translation():
+            raise NotImplemented("Only cylinders with translational monodromy are currently supported")
+        m = trans.matrix()
+        v = vector(s.base_ring(),(m[0][2],m[1][2])) # translation vector
+        from flatsurf.geometry.polygon import wedge_product
 
-        assert isinstance(across,SaddleConnection), "Parameter across must be a saddle connection."
-        assert across.surface()==self._s, "Saddle connection across must lie on the same surface as the boundary."
-        self._across=across
+        p = ss.polygon(labels[0])
+        e = edges[0]
+        min_y = wedge_product(v, p.vertex(e))
+        max_y = wedge_product(v, p.vertex((e+1)%p.num_edges()))
+        if min_y >= max_y:
+            raise ValueError("Combinatorial data does not represent a cylinder")
+
+        # Stores the vertices where saddle connections starts:
+        min_list = [0]
+        max_list = [0]
+
+        for i in xrange(1, len(edges)):
+            e = edges[i]
+            p = ss.polygon(labels[i])
+            y = wedge_product(v, p.vertex(e))
+            if y == min_y:
+                min_list.append(i)
+            elif y > min_y:
+                min_list = [i]
+                min_y = y
+                if min_y >= max_y:
+                    raise ValueError("Combinatorial data does not represent a cylinder")
+            y = wedge_product(v, p.vertex((e+1)%p.num_edges()))
+            if y == max_y:
+                max_list.append(i)
+            elif y < max_y:
+                max_list = [i]
+                max_y = y
+                if min_y >= max_y:
+                    raise ValueError("Combinatorial data does not represent a cylinder")
+
+        # Extract the saddle connections on the right side:
+        from flatsurf.geometry.surface_objects import SaddleConnection
+        sc_set_right = set()
+        vertices = []
+        for i in min_list:
+            l = labels[i]
+            p = ss.polygon(l)
+            vertices.append((i,p.vertex(edges[i])))
+        i,vert_i = vertices[-1]
+        vert_i = vert_i - v
+        j,vert_j = vertices[0]
+        if vert_i != vert_j:
+            li = labels[i]
+            li = (li[0], SG(-v)*li[1])
+            lio = ss.opposite_edge(li,edges[i])
+            lj = labels[j]
+            sc = SaddleConnection(s,
+                                  (lio[0][0], (lio[1]+1) % ss.polygon(lio[0]).num_edges()),
+                                  (~lio[0][1])(vert_j)-(~lio[0][1])(vert_i))
+            sc_set_right.add(sc)
+        i = j
+        vert_i = vert_j
+        for j,vert_j in vertices[1:]:
+            if vert_i != vert_j:
+                li = labels[i]
+                li = (li[0], SG(-v)*li[1])
+                lio = ss.opposite_edge(li,edges[i])
+                lj = labels[j]
+                sc = SaddleConnection(s,
+                                      (lio[0][0], (lio[1]+1) % ss.polygon(lio[0]).num_edges()),
+                                      (~lio[0][1])(vert_j)-(~lio[0][1])(vert_i),
+                                      limit = j-i)
+                sc_set_right.add(sc)
+            i = j
+            vert_i =vert_j
+
+        # Extract the saddle connections on the left side:
+        sc_set_left = set()
+        vertices = []
+        for i in max_list:
+            l = labels[i]
+            p = ss.polygon(l)
+            vertices.append((i,p.vertex((edges[i]+1)%p.num_edges())))
+        i,vert_i = vertices[-1]
+        vert_i = vert_i - v
+        j,vert_j = vertices[0]
+        if vert_i != vert_j:
+            li = labels[i]
+            li = (li[0], SG(-v)*li[1])
+            lio = ss.opposite_edge(li,edges[i])
+            lj = labels[j]
+            sc = SaddleConnection(s,
+                                  (lj[0], (edges[j]+1) % ss.polygon(lj).num_edges()),
+                                  (~lj[1])(vert_i)-(~lj[1])(vert_j))
+            sc_set_left.add(sc)
+        i = j
+        vert_i =vert_j
+        for j,vert_j in vertices[1:]:
+            if vert_i != vert_j:
+                li = labels[i]
+                lio = ss.opposite_edge(li,edges[i])
+                lj = labels[j]
+                sc = SaddleConnection(s,
+                                      (lj[0], (edges[j]+1) % ss.polygon(lj).num_edges()),
+                                      (~lj[1])(vert_i)-(~lj[1])(vert_j))
+                sc_set_left.add(sc)
+            i = j
+            vert_i =vert_j
+        self._boundary1 = frozenset(sc_set_right)
+        self._boundary2 = frozenset(sc_set_left)
+        self._boundary = frozenset(self._boundary1.union(self._boundary2))
+
+        edge_intersections = []
+        i = min_list[0]
+        l = labels[i]
+        p = ss.polygon(l)
+        right_point = p.vertex(edges[i]) # point on the right boundary
+        i = max_list[0]
+        l = labels[i]
+        p = ss.polygon(l)
+        left_point = p.vertex((edges[i]+1)%p.num_edges())
+        from flatsurf.geometry.polygon import solve
+        for i in xrange(len(edges)):
+            l = labels[i]
+            p = ss.polygon(l)
+            e = edges[i]
+            v1 = p.vertex(e)
+            v2 = p.vertex((e+1)%p.num_edges())
+            a,b = solve(left_point, v, v1, v2-v1)
+            w1 = (~(l[1]))(v1 + b*(v2-v1))
+            a,b = solve(right_point, v, v1, v2-v1)
+            w2 = (~(l[1]))(v1 + b*(v2-v1))
+            edge_intersections.append((w1,w2))
+
+        polygons = []
+        P = Polygons(s.base_ring())
+        pair1 = edge_intersections[-1]
+        l1 = labels[-2][0]
+        e1 = edges[-1]
+        for i in xrange(len(edges)):
+            l2 = labels[i][0]
+            pair2 = edge_intersections[i]
+            e2 = edges[i]
+            trans = s.edge_transformation(l1,e1)
+            pair1p = (trans(pair1[0]), trans(pair1[1]))
+            polygon_verts = [pair1p[0], pair1p[1]]
+            if pair2[1] != pair1p[1]:
+                polygon_verts.append(pair2[1])
+            if pair2[0] != pair1p[0]:
+                polygon_verts.append(pair2[0])
+            polygons.append((l2,P(vertices=polygon_verts)))
+            l1 = l2
+            pair1 = pair2
+            e1 = e2
+        self._polygons = tuple(polygons)
 
     def surface(self):
         return self._s
 
+    def initial_label(self):
+        r"""
+        Return one label on the surface that the cylinder passes through.
+        """
+        return self._label0
+
+    def edges(self):
+        r"""
+        Return a tuple of edge numbers representing the edges crossed
+        when the cylinder leaves the polygon with `initial_label` until
+        it returns by closing.
+        """
+        return self._edges
+
     def boundary(self):
+        r"""
+        Return the set of saddle connections in the boundary, oriented so that
+        the surface is on the left.
+        """
         return self._boundary
 
+    def polygons(self):
+        r"""
+        Return a list of pairs each consisting of a label and a polygon.
+        Each polygon represents a sub-polygon of the polygon on the surface
+        with the given label. The union of these sub-polygons form the
+        cylinder. The subpolygons are listed in cyclic order.
+        """
+        return self._polygons
+
+    @cached_method
+    def area(self):
+        r"""
+        Return the area of this cylinder if it is contained in a ConeSurface.
+        """
+        from .cone_surface import ConeSurface
+        assert isinstance(self._s,ConeSurface), \
+            "Area only makes sense for cone surfaces."
+        area = 0
+        for l,p in self.polygons():
+            area += p.area()
+        return area
+
+    def plot(self, **options):
+        r"""
+        Plot this cylinder in coordinates used by a graphical surface. This
+        plots this cylinder as a union of subpolygons. Only the intersections
+        with polygons visible in the graphical surface are shown.
+
+        Parameters other than `graphical_surface` are passed to `polygon2d`
+        which is called to render the polygons.
+
+        Parameters
+        ----------
+        graphical_surface : a GraphicalSurface
+            If not provided or `None`, the plot method uses the default graphical
+            surface for the surface.
+        """
+        if "graphical_surface" in options and options["graphical_surface"] is not None:
+            gs = options["graphical_surface"]
+            assert gs.get_surface() == self._s, "Graphical surface for the wrong surface."
+            del options["graphical_surface"]
+        else:
+            gs = self._s.graphical_surface()
+        plt = Graphics()
+        for l,p in self.polygons():
+            if gs.is_visible(l):
+                gp = gs.graphical_polygon(l)
+                t = gp.transformation()
+                pp = t(p)
+                poly = polygon2d(pp.vertices(), **options)
+                plt += poly.plot()
+        return plt
+
+    @cached_method
+    def labels(self):
+        r"""
+        Return the set of labels that this cylinder passes through.
+        """
+        polygons = self.polygons()
+        return frozenset([l for l,p in polygons])
+
     def boundary_components(self):
+        r"""
+        Return a set of two elements: the set of saddle connections on
+        the right and left sides. Saddle connections are oriented so that
+        the surface is on the left.
+        """
         return frozenset([self._boundary1,self._boundary2])
 
     def next(self, sc):
@@ -711,12 +940,13 @@ class Cylinder(SageObject):
                 return sc2
         raise ValuError("Failed to find previous saddle connection in boundary set.")
 
+    @cached_method
     def holonomy(self):
         r"""
         In a translation surface, return one of the two holonomy vectors of the cylinder,
         which differ by a sign.
         """
-        from flatsurf.geometry.translation_surface import TranslationSurface
+        from .translation_surface import TranslationSurface
         assert isinstance(self._s,TranslationSurface), \
             "Holonomy currently only computable for translation surfaces."
         V=self._s.vector_space()
@@ -732,16 +962,31 @@ class Cylinder(SageObject):
 
         return total
 
-    def width_vector(self):
+    @cached_method
+    def circumference(self):
         r"""
-        In a translation surface, return a vector orthogonal to the holonomy vector which cuts
-        across the cylinder.
+        In a cone surface, return the circumference, i.e., the length
+        of a geodesic loop running around the cylinder. Since this may
+        not lie in the field of definition of the surface, it is returned
+        as an element of the Algebraic Real Field.
         """
-        from flatsurf.geometry.translation_surface import TranslationSurface
-        assert isinstance(self._s,TranslationSurface), \
-            "width_vector currently only computable for translation surfaces."
-        w=self._across.holonomy()
-        h=iter(self._boundary1).next().holonomy()
-        from flatsurf.geometry.polygon import dot_product
-        return w-(dot_product(w,h)/dot_product(h,h))*h
+        from .cone_surface import ConeSurface
+        assert isinstance(self._s,ConeSurface), \
+            "Circumference only makes sense for cone surfaces."
+        total = 0
+        for sc in self._boundary1:
+            total += sc.length()
+        return total
 
+    #def width_vector(self):
+    #    r"""
+    #    In a translation surface, return a vector orthogonal to the holonomy vector which cuts
+    #    across the cylinder.
+    #    """
+    #    from flatsurf.geometry.translation_surface import TranslationSurface
+    #    assert isinstance(self._s,TranslationSurface), \
+    #        "width_vector currently only computable for translation surfaces."
+    #    w=self._across.holonomy()
+    #    h=iter(self._boundary1).next().holonomy()
+    #    from flatsurf.geometry.polygon import dot_product
+    #    return w-(dot_product(w,h)/dot_product(h,h))*h
