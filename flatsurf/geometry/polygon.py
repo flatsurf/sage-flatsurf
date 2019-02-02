@@ -215,7 +215,7 @@ class MatrixActionOnPolygons(Action):
         K = polygons.field()
         Action.__init__(self, MatrixSpace(K,2), polygons, True, operator.mul)
 
-    def _call_(self, g, x):
+    def _act_(self, g, x):
         r"""
         Apply the 2x2 matrix g to the polygon.
         The matrix must have non-zero determinant. If the determinant is negative, then the vertices and edges
