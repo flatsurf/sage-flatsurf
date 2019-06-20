@@ -1,4 +1,5 @@
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function, division
+from six.moves import range, zip, filter
 
 from sage.rings.all import ZZ, QQ, RIF, AA, NumberField
 from sage.misc.cachefunc import cached_method
@@ -404,7 +405,7 @@ class SimilaritySurfaceGenerators:
             sage: TestSuite(s).run()
         """
         s = Surface_list(base_ring=P.base_ring(), mutable=True)
-        s.add_polygon(P,[(0,i) for i in xrange(P.num_edges())])
+        s.add_polygon(P,[(0,i) for i in range(P.num_edges())])
         s.set_immutable()
         return HalfTranslationSurface(s)
 
@@ -435,7 +436,7 @@ class SimilaritySurfaceGenerators:
         surface = Surface_list(base_ring = P.base_ring())
         surface.add_polygon(P) # gets label 0)
         surface.add_polygon(Q) # gets label 1
-        surface.change_polygon_gluings(0,[(1,n-i-1) for i in xrange(n)])
+        surface.change_polygon_gluings(0,[(1,n-i-1) for i in range(n)])
         
         surface.set_immutable()
         s = ConeSurface(surface)
@@ -459,7 +460,7 @@ class SimilaritySurfaceGenerators:
         surface = Surface_list(base_ring = P.base_ring())
         surface.add_polygon(P) # gets label 0)
         surface.add_polygon(Q) # gets label 1
-        surface.change_polygon_gluings(0,[(1,n-i-1) for i in xrange(n)])
+        surface.change_polygon_gluings(0,[(1,n-i-1) for i in range(n)])
         surface.set_immutable()
         return ConeSurface(surface)
 
@@ -551,7 +552,7 @@ class TranslationSurfaceGenerators:
         """
         p = polygons.regular_ngon(2*n)
         s = Surface_list(base_ring=p.base_ring())
-        s.add_polygon(p,[ ( 0, (i+n)%(2*n) ) for i in xrange(2*n)] )
+        s.add_polygon(p,[ ( 0, (i+n)%(2*n) ) for i in range(2*n)] )
         s.set_immutable()
         return TranslationSurface(s)
 
@@ -571,7 +572,7 @@ class TranslationSurfaceGenerators:
         s = Surface_list(base_ring=p.base_ring())
         m = Matrix([[-1,0],[0,-1]])
         s.add_polygon(p) # label=0
-        s.add_polygon(m*p, [(0,i) for i in xrange(n)])
+        s.add_polygon(m*p, [(0,i) for i in range(n)])
         s.set_immutable()
         return TranslationSurface(s)
 
@@ -654,14 +655,14 @@ class TranslationSurfaceGenerators:
         """
         assert n>=3
         o = ZZ_2*polygons.regular_ngon(2*n)
-        p1 = polygons(*[o.edge((2*i+n)%(2*n)) for i in xrange(n)])
-        p2 = polygons(*[o.edge((2*i+n+1)%(2*n)) for i in xrange(n)])
+        p1 = polygons(*[o.edge((2*i+n)%(2*n)) for i in range(n)])
+        p2 = polygons(*[o.edge((2*i+n+1)%(2*n)) for i in range(n)])
         s = Surface_list(base_ring=o.parent().field())
         s.add_polygon(o)
         s.add_polygon(p1)
         s.add_polygon(p2)
-        s.change_polygon_gluings(1, [(0,2*i) for i in xrange(n)])
-        s.change_polygon_gluings(2, [(0,2*i+1) for i in xrange(n)])
+        s.change_polygon_gluings(1, [(0,2*i) for i in range(n)])
+        s.change_polygon_gluings(2, [(0,2*i+1) for i in range(n)])
         s.set_immutable()
         return TranslationSurface(s)
 
@@ -731,22 +732,22 @@ class TranslationSurfaceGenerators:
         assert g>=3
         from sage.rings.polynomial.polynomial_ring import polygen
         x = polygen(AA)
-        p=sum([x**i for i in xrange(1,g+1)])-1
+        p=sum([x**i for i in range(1,g+1)])-1
         cp = AA.common_polynomial(p)
         alpha_AA = AA.polynomial_root(cp, RIF(1/2, 1))
         field=NumberField(alpha_AA.minpoly(),'alpha',embedding=alpha_AA)
         a=field.gen()
         from sage.modules.free_module import VectorSpace
         V=VectorSpace(field,2)
-        p=[None for i in xrange(g+1)]
-        q=[None for i in xrange(g+1)]
+        p=[None for i in range(g+1)]
+        q=[None for i in range(g+1)]
         p[0]=V(( (1-a**g)/2, a**2/(1-a) ))
         q[0]=V(( -a**g/2, a ))
         p[1]=V(( -(a**(g-1)+a**g)/2, (a-a**2+a**3)/(1-a) ))
         p[g]=V(( 1+(a-a**g)/2, (3*a-1-a**2)/(1-a) ))
-        for i in xrange(2,g):
+        for i in range(2,g):
             p[i]=V(( (a-a**i)/(1-a) , a/(1-a) ))
-        for i in xrange(1,g+1):
+        for i in range(1,g+1):
             q[i]=V(( (2*a-a**i-a**(i+1))/(2*(1-a)), (a-a**(g-i+2))/(1-a) ))
         from flatsurf.geometry.polygon import Polygons
         P=Polygons(field)
@@ -755,7 +756,7 @@ class TranslationSurfaceGenerators:
         Tp = [None] * (2*g+1)
         from sage.matrix.constructor import Matrix
         m=Matrix([[1,0],[0,-1]])
-        for i in xrange(1,g+1):
+        for i in range(1,g+1):
             # T_i is (P_0,Q_i,Q_{i-1})
             T[i]=s.add_polygon(P(edges=[ q[i]-p[0], q[i-1]-q[i], p[0]-q[i-1] ]))
             # T_{g+i} is (P_i,Q_{i-1},Q_{i})
@@ -764,10 +765,10 @@ class TranslationSurfaceGenerators:
             Tp[i]=s.add_polygon(m*s.polygon(T[i]))
             # T'_{g+i} is (P'_i,Q'_i, Q'_{i-1})
             Tp[g+i]=s.add_polygon(m*s.polygon(T[g+i]))
-        for i in xrange(1,g):
+        for i in range(1,g):
             s.change_edge_gluing(T[i],0,T[i+1],2)
             s.change_edge_gluing(Tp[i],2,Tp[i+1],0)
-        for i in xrange(1,g+1):
+        for i in range(1,g+1):
             s.change_edge_gluing(T[i],1,T[g+i],1)
             s.change_edge_gluing(Tp[i],1,Tp[g+i],1)
         #P 0 Q 0 is paired with P' 0 Q' 0, ...
@@ -782,7 +783,7 @@ class TranslationSurfaceGenerators:
         # PgQg is paired with Q1P2
         s.change_edge_gluing(T[2*g],2,T[g+2],0)
         s.change_edge_gluing(Tp[2*g],0,Tp[g+2],2)
-        for i in xrange(2,g-1):
+        for i in range(2,g-1):
             # PiQi is paired with Q'_i P'_{i+1}
             s.change_edge_gluing(T[g+i],2,Tp[g+i+1],2)
             s.change_edge_gluing(Tp[g+i],0,T[g+i+1],0)

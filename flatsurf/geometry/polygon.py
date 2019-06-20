@@ -21,7 +21,8 @@ EXAMPLES::
     Polygon: (0, 0), (1, 0), (sqrt2 + 4, sqrt2 + 1)
 """
 
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function, division
+from six.moves import zip, filter, range
 
 import operator
 
@@ -238,7 +239,7 @@ class MatrixActionOnPolygons(Action):
         if det < 0:
             # Note that in this case we reverse the order
             vertices=[g*x.vertex(0)]
-            for i in xrange(x.num_edges()-1,0,-1):
+            for i in range(x.num_edges()-1,0,-1):
                 vertices.append(g*x.vertex(i))
             return x.parent()(vertices=vertices)
         raise ValueError("Can not act on a polygon with matrix with zero determinant")
@@ -389,7 +390,7 @@ class ConvexPolygon(Element):
             return 1
         if sign<self.base_ring().zero():
             return -1
-        for v in xrange(1,self.num_edges()):
+        for v in range(1,self.num_edges()):
             p=self.vertex(v)
             q=other.vertex(v)
             sign = p[0]-q[0]
@@ -488,7 +489,7 @@ class ConvexPolygon(Element):
         v=start_vertex
         n=self.num_edges()
         zero=self.base_ring().zero()
-        for i in xrange(self.num_edges()):
+        for i in range(self.num_edges()):
             #print (v, direction, wedge_product(self.edge(v),direction), wedge_product(self.edge(v+n-1),direction))
             if wedge_product(self.edge(v),direction) >= zero and \
                 wedge_product(self.edge(v+n-1),direction) > zero:
@@ -926,7 +927,7 @@ class ConvexPolygon(Element):
         """
         from .circle import circle_from_three_points
         circle = circle_from_three_points(self.vertex(0), self.vertex(1), self.vertex(2), self.base_ring())
-        for i in xrange(3,self.num_edges()):
+        for i in range(3,self.num_edges()):
             if not circle.point_position(self.vertex(i))==0:
                 raise ValueError("Vertex "+str(i)+" is not on the circle.")
         return circle
@@ -1322,11 +1323,11 @@ class PolygonsConstructor:
             raise ValueError
 
         if vertices is not None:
-            vertices = map(vector, vertices)
+            vertices = list(map(vector, vertices))
             if base_ring is None:
                 base_ring = Sequence(vertices).universe().base_ring()
         if edges is not None:
-            edges = map(vector, edges)
+            edges = list(map(vector, edges))
             if base_ring is None:
                 base_ring = Sequence(edges).universe().base_ring()
 
