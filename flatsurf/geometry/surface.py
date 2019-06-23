@@ -1,5 +1,6 @@
 from __future__ import absolute_import, print_function, division
-from six.moves import range, zip, filter
+from six.moves import range, map, filter, zip
+from six import iteritems
 
 from sage.structure.sage_object import SageObject
 from sage.sets.family import Family
@@ -921,7 +922,7 @@ def surface_list_from_polygons_and_gluings(polygons, gluings, mutable=False):
         s.add_polygon(p)
     try:
         # dict case:
-        it = gluings.iteritems()
+        it = iteritems(gluings)
     except AttributeError:
         # list case:
         it = gluings
@@ -1268,7 +1269,7 @@ class LabelWalker:
             self._lw = label_walker
             self._i = 0
 
-        def next(self):
+        def __next__(self):
             if self._i < len(self._lw):
                 label = self._lw.number_to_label(self._i)
                 self._i = self._i +1
@@ -1280,6 +1281,8 @@ class LabelWalker:
                 self._i = self._i+1
                 return label
             raise StopIteration()
+
+        next = __next__ # for Python 2
 
         def __iter__(self):
             return self

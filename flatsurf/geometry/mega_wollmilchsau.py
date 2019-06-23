@@ -1,4 +1,5 @@
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function, division
+from six.moves import range, map, filter, zip
 
 from sage.groups.group import Group
 from sage.categories.groups import Groups

@@ -1,3 +1,6 @@
+from __future__ import absolute_import, print_function, division
+from six.moves import range, map, filter, zip
+
 from sage.structure.sage_object import SageObject
 
 class FlowPolygonMap(SageObject):
@@ -59,8 +62,8 @@ class FlowPolygonMap(SageObject):
         if len(self._top_labels) != len(self._top_labels_to_index):
             raise ValueError("non unique labels in top: {}".format(top_labels))
 
-        self._bot_lengths = map(ring,bot_lengths)
-        self._top_lengths = map(ring,top_lengths)
+        self._bot_lengths = list(map(ring,bot_lengths))
+        self._top_lengths = list(map(ring,top_lengths))
 
 
         # forward image of intervals

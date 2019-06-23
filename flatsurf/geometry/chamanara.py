@@ -11,7 +11,8 @@ EXAMPLES::
     Graphics object consisting of 129 graphics primitives
 """
 
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function, division
+from six.moves import range, map, filter, zip
 
 from .surface import Surface
 from .half_dilation_surface import HalfDilationSurface

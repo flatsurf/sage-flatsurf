@@ -1,7 +1,8 @@
 r"""Mappings between translation surfaces."""
 
-from __future__ import print_function
-from six.moves import range, filter, map
+from __future__ import absolute_import, print_function, division
+from six.moves import range, map, filter, zip
+from six import iteritems
 
 from flatsurf.geometry.polygon import Polygons, wedge_product
 from flatsurf.geometry.surface import Surface, Surface_list, Surface_dict, ExtraLabel
@@ -65,7 +66,7 @@ class SurfaceMapping:
 #            self._pdict=dict(polygon_dictionary)
 #        self._gdict={}
 #        if not glue_dictionary is None:
-#            for edge1,edge2 in glue_dictionary.iteritems():
+#            for edge1,edge2 in iteritems(glue_dictionary):
 #                self._gdict[edge1]=edge2
 #                self._gdict[edge2]=edge1
 #        if base_label is None:
@@ -275,7 +276,7 @@ class SimilarityJoinPolygonsMapping(SurfaceMapping):
             vs.append(poly1.edge(i))
 
         inv_edge_map={}
-        for key, value in edge_map.iteritems():
+        for key, value in iteritems(edge_map):
             inv_edge_map[value]=(p1,key)
 
         if s.base_label()==p2:
@@ -451,7 +452,7 @@ class SplitPolygonsMapping(SurfaceMapping):
             else: # i>=v2
                 old_to_new_labels[i]=(p,i-v2+1)
         new_to_old_labels={}
-        for i,pair in old_to_new_labels.iteritems():
+        for i,pair in iteritems(old_to_new_labels):
             new_to_old_labels[pair]=i
 
         # This glues the split polygons together.

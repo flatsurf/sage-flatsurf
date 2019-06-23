@@ -1,5 +1,13 @@
-from __future__ import absolute_import
-from six.moves import range, filter, map
+r"""
+EXAMPLES::
+
+    sage: import flatsurf
+    sage: flatsurf.translation_surfaces.veech_2n_gon(4).plot()
+    Graphics object consisting of 18 graphics primitives
+"""
+from __future__ import absolute_import, print_function, division
+from six.moves import range, map, filter, zip
+from six import iteritems
 
 from flatsurf.geometry.similarity_surface import SimilaritySurface
 from .polygon import *
@@ -330,7 +338,7 @@ class GraphicalSurface:
         gs.zero_flag_options = dict(self.zero_flag_options)
 
         # Copy polygons and visible set.
-        gs._polygons = {label:gp.copy() for label,gp in self._polygons.iteritems()}
+        gs._polygons = {label:gp.copy() for label,gp in iteritems(self._polygons)}
         gs._visible = set(self._visible)
         gs._edge_labels = self._edge_labels
 

@@ -1,5 +1,5 @@
-from __future__ import absolute_import
-from six.moves import range, filter, map
+from __future__ import absolute_import, print_function, division
+from six.moves import range, map, filter, zip
 
 from .polygon import wedge_product, is_same_direction, is_opposite_direction
 

@@ -1,4 +1,5 @@
-from __future__ import absolute_import, print_function
+from __future__ import absolute_import, print_function, division
+from six.moves import range, map, filter, zip
 
 from sage.rings.real_double import RDF
 from sage.modules.free_module import VectorSpace

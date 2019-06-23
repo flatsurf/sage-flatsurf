@@ -1,3 +1,6 @@
+from __future__ import absolute_import, print_function, division
+from six.moves import range, map, filter, zip
+
 from flatsurf.geometry.similarity_surface import SimilaritySurface
 
 class ConeSurface(SimilaritySurface):

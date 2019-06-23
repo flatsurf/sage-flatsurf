@@ -3,8 +3,8 @@ This file contains classes implementing Surface which are used useful for
 triangulating, Delaunay triangulating, and Delaunay decomposing infinite
 surfaces.
 """
-from __future__ import print_function
-from six.moves import range, filter, map
+from __future__ import absolute_import, print_function, division
+from six.moves import range, map, filter, zip
 
 from flatsurf.geometry.surface import Surface, Surface_list
 

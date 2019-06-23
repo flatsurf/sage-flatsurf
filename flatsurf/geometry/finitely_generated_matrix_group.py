@@ -30,8 +30,8 @@ EXAMPLES::
     sage: G = FinitelyGenerated2x2MatrixGroup([identity_matrix(2)])
 """
 
-from __future__ import print_function
-from six.moves import range, filter, map
+from __future__ import absolute_import, print_function, division
+from six.moves import range, map, filter, zip
 
 from sage.rings.integer import Integer
 from sage.structure.parent import Parent

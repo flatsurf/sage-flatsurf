@@ -4,8 +4,9 @@ Geometric objects on surfaces.
 This includes singularities, saddle connections and cylinders.
 """
 
-from __future__ import absolute_import, print_function
-from six.moves import range, filter, map
+from __future__ import absolute_import, print_function, division
+from six.moves import range, map, filter, zip
+from six import iteritems
 
 from sage.misc.cachefunc import cached_method
 from sage.modules.free_module import VectorSpace
@@ -170,7 +171,7 @@ class SurfacePoint(SageObject):
                 else:
                     self._coordinate_dict[l] = {new_point}
         # Freeze the sets.
-        for label,point_set in self._coordinate_dict.iteritems():
+        for label,point_set in iteritems(self._coordinate_dict):
             self._coordinate_dict[label] = frozenset(point_set)
 
     def surface(self):
@@ -187,7 +188,7 @@ class SurfacePoint(SageObject):
             return self._num_coordinates
         except AttributeError:
             count=0
-            for label,point_set in self._coordinate_dict.iteritems():
+            for label,point_set in iteritems(self._coordinate_dict):
                 count += len(point_set)
             self._num_coordinates = count
             return count
@@ -202,7 +203,7 @@ class SurfacePoint(SageObject):
         at most two labels if it is on the interior of an edge, and can be lots of labels
         if the point is a singularity.
         """
-        return self._coordinate_dict.keys()
+        return list(self._coordinate_dict.keys())
 
     def coordinates(self, label):
         r"""
@@ -253,7 +254,7 @@ class SurfacePoint(SageObject):
 
     def __hash__(self):
         h=0
-        for label,point_set in self._coordinate_dict.iteritems():
+        for label,point_set in iteritems(self._coordinate_dict):
             h += 677*hash(label)+hash(point_set)
         return h
 

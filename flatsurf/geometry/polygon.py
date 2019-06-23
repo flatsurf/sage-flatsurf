@@ -22,7 +22,7 @@ EXAMPLES::
 """
 
 from __future__ import absolute_import, print_function, division
-from six.moves import zip, filter, range
+from six.moves import range, map, filter, zip
 
 import operator
 

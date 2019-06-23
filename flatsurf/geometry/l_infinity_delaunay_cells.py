@@ -6,6 +6,9 @@ marked triangulation. The marking corresponds to the position of the horizontal
 and vertical separatrices. Each triangle hence get one of the following types:
 bottom-left, bottom-right, top-left, top-right.
 """
+from __future__ import absolute_import, print_function, division
+from six.moves import range, map, filter, zip
+
 from sage.misc.cachefunc import cached_method
 
 # the types of edges
@@ -332,7 +335,7 @@ class LInfinityMarkedTriangulation:
         verts = [v.vector() for v in self.polytope().vertices()]
         b = sum(verts) / len(verts)
 
-        from polygon import ConvexPolygons
+        from .polygon import ConvexPolygons
         from sage.rings.rational_field import QQ
         C = ConvexPolygons(QQ)
 
@@ -343,6 +346,6 @@ class LInfinityMarkedTriangulation:
             e3 = (b[6*p+4], b[6*p+5])
             triangles.append(C([e1,e2,e3]))
         
-        from surface import surface_list_from_polygons_and_gluings
-        from translation_surface import TranslationSurface
+        from .surface import surface_list_from_polygons_and_gluings
+        from .translation_surface import TranslationSurface
         return TranslationSurface(surface_list_from_polygons_and_gluings(triangles, self._edge_identifications))

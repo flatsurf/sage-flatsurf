@@ -1,5 +1,5 @@
-from __future__ import print_function, absolute_import
-from six.moves import range, filter, map
+from __future__ import absolute_import, print_function, division
+from six.moves import range, map, filter, zip
 
 from .cone_surface import ConeSurface
 from .matrix_2x2 import is_cosine_sine_of_rational

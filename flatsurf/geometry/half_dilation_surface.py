@@ -1,5 +1,6 @@
-from __future__ import print_function
-from six.moves import range, filter, map
+from __future__ import absolute_import, print_function, division
+from six.moves import range, map, filter, zip
+from six import iteritems
 
 from flatsurf.geometry.surface import Surface
 from flatsurf.geometry.similarity_surface import SimilaritySurface
@@ -104,7 +105,7 @@ class HalfDilationSurface(SimilaritySurface):
                             new_glue[(p1, n1-1-e1)]=(p2, n2-1-e2)
                     seen_labels.add(p1)
                 # Second pass: reassign gluings
-                for (p1,e1),(p2,e2) in new_glue.iteritems():
+                for (p1,e1),(p2,e2) in iteritems(new_glue):
                     us.change_edge_gluing(p1,e1,p2,e2)
             return self
                 

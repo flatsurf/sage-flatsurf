@@ -1,4 +1,5 @@
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function, division
+from six.moves import range, map, filter, zip
 
 from sage.misc.cachefunc import cached_method
 

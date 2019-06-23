@@ -10,7 +10,9 @@ modulo equivalences of two types:
 2) The sum of edges around a polygon is zero.
 """
 
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function, division
+from six.moves import range, map, filter, zip
+from six import iteritems
 
 from sage.structure.element import ModuleElement
 from sage.modules.module import Module
@@ -37,21 +39,21 @@ class RelativeHomologyClass(ModuleElement):
             return self.parent().zero()
         d=dict()
         r=self.parent().base_ring()
-        for k,v in self._d.iteritems():
+        for k,v in iteritems(self._d):
             d[k]=r(c*v)
         return self.parent()._element_from_dict(d)
 
     def _add_(self, other):
         d=dict()
         r=self.parent().base_ring()
-        for k,v in self._d.iteritems():
+        for k,v in iteritems(self._d):
             if k in other._d:
                 total = v + other._d[k]
                 if total != self.parent().base_ring().zero():
                     d[k] = r(total)
             else:
                 d[k]=r(v)
-        for k,v in other._d.iteritems():
+        for k,v in iteritems(other._d):
             if k not in self._d:
                 d[k]=r(v)
         return self.parent()._element_from_dict(d)
@@ -62,9 +64,9 @@ class RelativeHomologyClass(ModuleElement):
     def __cmp__(self, other):
         # Construct a set of keys
         s=set()
-        for k,v in self._d.iteritems():
+        for k,v in iteritems(self._d):
             s.add(k)
-        for k,v in other._d.iteritems():
+        for k,v in iteritems(other._d):
             s.add(k)
         zero = self.parent().base_ring().zero()
         for k in s:
@@ -85,7 +87,7 @@ class RelativeHomologyClass(ModuleElement):
         
     def weighted_edges(self):
         r"""Return the set of pairs (label,e) representing edges with non-zero weights."""
-        return self._d.keys()
+        return list(self._d.keys())
     
     def edges_with_weights(self):
         r"""
@@ -112,7 +114,7 @@ class RelativeHomology(Module):
     def _element_constructor_(self, x):
         if instanceof(x, RelativeHomologyClass):
             d=dict()
-            for k,v in x._d.iteritems():
+            for k,v in iteritems(x._d):
                 v2=self._base_ring(v)
                 if v2!=self._base_ring.zero():
                     d[k]=v2

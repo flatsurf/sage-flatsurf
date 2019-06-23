@@ -14,9 +14,8 @@ EXAMPLES::
     True
 """
 
-from __future__ import print_function, absolute_import
-from six.moves import range, filter, map
-
+from __future__ import absolute_import, print_function, division
+from six.moves import range, map, filter, zip
 
 def surface_to_xml_string(s, complain=True):
     r""" 

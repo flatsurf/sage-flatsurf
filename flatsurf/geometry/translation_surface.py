@@ -2,8 +2,9 @@ r"""
 Translation Surfaces.
 """
 
-from __future__ import print_function, absolute_import
-from six.moves import range, filter, map
+from __future__ import absolute_import, print_function, division
+from six.moves import range, map, filter, zip
+from six import iteritems
 
 from sage.matrix.constructor import identity_matrix
 
@@ -125,7 +126,7 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
                         best_pt=pt
                 if best!=0:
                     cv[l]=best
-            for l,v in cv.iteritems():
+            for l,v in iteritems(cv):
                 s.set_vertex_zero(l,v,in_place=True)
             return s
         else:
@@ -154,15 +155,14 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
                 #print("comparing polygons")
                 lw1=self.walker()
                 lw2=s2.walker()
-                from itertools import izip
-                for p1,p2 in izip(lw1.polygon_iterator(), lw2.polygon_iterator()):
+                for p1,p2 in zip(lw1.polygon_iterator(), lw2.polygon_iterator()):
                     # Uses Polygon.__cmp__:
                     ret = p1.__cmp__(p2)
                     if ret != 0:
                         return ret
                 # Polygons are identical. Compare edge gluings.
                 #print("comparing edge gluings")
-                for pair1,pair2 in izip(lw1.edge_iterator(), lw2.edge_iterator()):
+                for pair1,pair2 in zip(lw1.edge_iterator(), lw2.edge_iterator()):
                     l1,e1 = self.opposite_edge(pair1)
                     l2,e2 = s2.opposite_edge(pair2)
                     num1 = lw1.label_to_number(l1)
@@ -185,9 +185,8 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
                 # both surfaces are infinite.
                 lw1=self.walker()
                 lw2=s2.walker()
-                from itertools import izip
                 count = 0
-                for (l1,p1),(l2,p2) in izip(lw1.label_polygon_iterator(), lw2.label_polygon_iterator()):
+                for (l1,p1),(l2,p2) in zip(lw1.label_polygon_iterator(), lw2.label_polygon_iterator()):
                     #print "Comparing labels: "+str((l1, l2))
                     # Uses Polygon.__cmp__:
                     ret = p1.__cmp__(p2)
@@ -322,7 +321,7 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
         s=self
         # Find a common field
         field=s.base_ring()
-        for singularity, v in deformation.iteritems():
+        for singularity, v in iteritems(deformation):
             if v.parent().base_field() != field:
                 from sage.structure.element import get_coercion_model
                 cm = get_coercion_model()
@@ -334,7 +333,7 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
         vertex_deformation=defaultdict(vector_space.zero) # dictionary associating the vertices.
         deformed_labels=set() # list of polygon labels being deformed.
 
-        for singularity, vect in deformation.iteritems():
+        for singularity, vect in iteritems(deformation):
             # assert s==singularity.surface()
             for label,v in singularity.vertex_set():
                 vertex_deformation[(label,v)]=vect
@@ -381,7 +380,7 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
             # We can only do this deformation if all the rel vector are parallel.
             # Check for this.
             nonzero=None
-            for singularity, vect in deformation.iteritems():
+            for singularity, vect in iteritems(deformation):
                 vvect=vector_space(vect)
                 if vvect!=vector_space.zero():
                     if nonzero is None:
@@ -405,7 +404,7 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
                     ss.apply_matrix(prod)
                 ss.delaunay_triangulation(direction=nonzero,in_place=True)
                 deformation2={}
-                for singularity, vect in deformation.iteritems():
+                for singularity, vect in iteritems(deformation):
                     found_start=None
                     for label,v in singularity.vertex_set():
                         if wedge_product(s.polygon(label).edge(v),nonzero) >= 0 and \

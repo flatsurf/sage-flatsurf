@@ -1,6 +1,9 @@
 r"""
 Some tools for 2x2 matrices and planar geometry.
 """
+from __future__ import absolute_import, print_function, division
+from six.moves import range, map, filter, zip
+
 from sage.misc.cachefunc import cached_function
 
 from sage.rings.all import ZZ, QQ, AA, QQbar, RR, CC, RDF, CDF, RIF, CIF

@@ -1,5 +1,6 @@
 from __future__ import absolute_import, print_function, division
-from six.moves import range, zip, filter
+from six.moves import range, map, filter, zip
+from six import iteritems
 
 from sage.rings.all import ZZ, QQ, RIF, AA, NumberField
 from sage.misc.cachefunc import cached_method
@@ -839,7 +840,7 @@ class TranslationSurfaceGenerators:
         K = flipper_nf_to_sage(x.number_field)
         V = VectorSpace(K, 2)
         edge_vectors = {i: V((K(e.x.linear_combination), K(e.y.linear_combination)))
-                for i,e in f.edge_vectors.iteritems()}
+                for i,e in iteritems(f.edge_vectors)}
 
         to_polygon_number = {k:(i,j) for i,t in enumerate(f.triangulation) for j,k in enumerate(t)}
 
