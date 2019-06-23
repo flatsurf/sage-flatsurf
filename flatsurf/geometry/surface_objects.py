@@ -5,6 +5,7 @@ This includes singularities, saddle connections and cylinders.
 """
 
 from __future__ import absolute_import, print_function
+from six.moves import range, filter, map
 
 from sage.misc.cachefunc import cached_method
 from sage.modules.free_module import VectorSpace
@@ -681,7 +682,7 @@ class Cylinder(SageObject):
         min_list = [0]
         max_list = [0]
 
-        for i in xrange(1, len(edges)):
+        for i in range(1, len(edges)):
             e = edges[i]
             p = ss.polygon(labels[i])
             y = wedge_product(v, p.vertex(e))
@@ -783,7 +784,7 @@ class Cylinder(SageObject):
         p = ss.polygon(l)
         left_point = p.vertex((edges[i]+1)%p.num_edges())
         from flatsurf.geometry.polygon import solve
-        for i in xrange(len(edges)):
+        for i in range(len(edges)):
             l = labels[i]
             p = ss.polygon(l)
             e = edges[i]
@@ -800,7 +801,7 @@ class Cylinder(SageObject):
         pair1 = edge_intersections[-1]
         l1 = labels[-2][0]
         e1 = edges[-1]
-        for i in xrange(len(edges)):
+        for i in range(len(edges)):
             l2 = labels[i][0]
             pair2 = edge_intersections[i]
             e2 = edges[i]

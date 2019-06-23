@@ -1,4 +1,5 @@
 from __future__ import absolute_import
+from six.moves import range, filter, map
 
 from flatsurf.geometry.similarity_surface import SimilaritySurface
 from .polygon import *
@@ -814,7 +815,7 @@ class GraphicalSurface:
                     llab,ee = s.opposite_edge(lab,e)
                     ans.append(str(llab))
         elif self._edge_labels == 'number':
-            ans = map(str, range(p.num_edges()))
+            ans = list(map(str, range(p.num_edges())))
         elif self._edge_labels == 'gluings and number':
             ans = []
             for e in range(p.num_edges()):
@@ -997,7 +998,7 @@ class GraphicalSurface:
 
             # Plot the edges
             if self.will_plot_edges:
-                for i in xrange(self._ss.polygon(label).num_edges()):
+                for i in range(self._ss.polygon(label).num_edges()):
                     if self.is_adjacent(label,i):
                         if self.will_plot_adjacent_edges and (label,i) not in plotted_adjacent_edges:
                             plotted_adjacent_edges.add(self._ss.opposite_edge(label,i))
@@ -1015,7 +1016,7 @@ class GraphicalSurface:
                 # get the edge labels
                 edge_labels = self.edge_labels(label)
                 if edge_labels is not None:
-                    for i in xrange(self._ss.polygon(label).num_edges()):
+                    for i in range(self._ss.polygon(label).num_edges()):
                         if edge_labels[i] is not None:
                             p += self.plot_edge_label(label, i, edge_labels[i], polygon)
         return p

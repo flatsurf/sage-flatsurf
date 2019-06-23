@@ -3,6 +3,7 @@ Similarity surfaces.
 """
 
 from __future__ import absolute_import
+from six.moves import range, filter, map
 
 from sage.misc.cachefunc import cached_method
 
@@ -422,9 +423,9 @@ class SimilaritySurface(SageObject):
             glue=[]
             from flatsurf.geometry.polygon import Polygons
             P=Polygons(us.base_ring())
-            pp = P(edges=[p.edge((i+v)%n) for i in xrange(n)])
+            pp = P(edges=[p.edge((i+v)%n) for i in range(n)])
 
-            for i in xrange(n):
+            for i in range(n):
                 e=(v+i)%n
                 ll,ee = us.opposite_edge(label,e)
                 if ll==label:
@@ -483,7 +484,7 @@ class SimilaritySurface(SageObject):
             for l1,l2 in relabeling_map.iteritems():
                 p=us.polygon(l1)
                 glue = []
-                for e in xrange(p.num_edges()):
+                for e in range(p.num_edges()):
                     ll,ee = us.opposite_edge(l1,e)
                     try:
                         lll=relabeling_map[ll]
@@ -533,7 +534,7 @@ class SimilaritySurface(SageObject):
                 # Use the gluings provided by relabel_errors when necessary
                 for l2 in codomain:
                     p,glue=data[l2]
-                    for e in xrange(p.num_edges()):
+                    for e in range(p.num_edges()):
                         ll,ee=glue[e]
                         try:
                             # First try the error dictionary
@@ -623,7 +624,7 @@ class SimilaritySurface(SageObject):
                 P = Polygons(field2)
                 for l,p in self.label_iterator(polygons = True):
                     new_edges = []
-                    for i in xrange(p.num_edges()):
+                    for i in range(p.num_edges()):
                         new_edges.append( (hom2(coordinates_NF[index]), hom2(coordinates_NF[index+1]) ) )
                         index += 2
                     pp = P(edges = new_edges)
@@ -1075,7 +1076,7 @@ class SimilaritySurface(SageObject):
         newpoly2 = Polygons(self.base_ring())(newedges2)
 
         # Store the old gluings
-        old_gluings = {(p,i): self.opposite_edge(p,i) for i in xrange(ne)}
+        old_gluings = {(p,i): self.opposite_edge(p,i) for i in range(ne)}
         #print "old "+str(old_gluings)
 
         # Update the polygon with label p, add a new polygon.
@@ -1095,13 +1096,13 @@ class SimilaritySurface(SageObject):
             old_to_new_labels[(p,i%ne)]=(p,i-v2+1)
         #print "old_to_new "+ str(old_to_new_labels)
 
-        for e in xrange(1, newpoly1.num_edges()):
+        for e in range(1, newpoly1.num_edges()):
             pair = old_gluings[(p,(v2+e-1)%ne)]
             if pair in old_to_new_labels:
                 pair = old_to_new_labels[pair]
             self.underlying_surface().change_edge_gluing(p, e, pair[0], pair[1])
 
-        for e in xrange(1, newpoly2.num_edges()):
+        for e in range(1, newpoly2.num_edges()):
             #print "gluing: "+str((p,(v1+e-1)%ne))
             pair = old_gluings[(p,(v1+e-1)%ne)]
             #print "old: "+str(e)+" -> "+str(pair)
@@ -1438,10 +1439,10 @@ class SimilaritySurface(SageObject):
                 # This polygon is already a triangle.
                 return self
             from flatsurf.geometry.polygon import wedge_product
-            for i in xrange(n-3):
+            for i in range(n-3):
                 poly = s.polygon(label)
                 n=poly.num_edges()
-                for i in xrange(n):
+                for i in range(n):
                     e1=poly.edge(i)
                     e2=poly.edge((i+1)%n)
                     if wedge_product(e1,e2) != 0:
@@ -1550,7 +1551,7 @@ class SimilaritySurface(SageObject):
             except ValueError:
                 # p1 is not circumscribed
                 return False
-            for e1 in xrange(p1.num_edges()):
+            for e1 in range(p1.num_edges()):
                 c2=self.edge_transformation(l1,e1)*c1
                 l2,e2=self.opposite_edge(l1,e1)
                 if c2.point_position(self.polygon(l2).vertex(e2+2))!=-1:
@@ -1641,7 +1642,7 @@ class SimilaritySurface(SageObject):
             while unchecked_labels:
                 label = unchecked_labels.popleft()
                 flipped=False
-                for edge in xrange(3):
+                for edge in range(3):
                     if s._edge_needs_flip(label,edge):
                         # Record the current opposite edge:
                         label2,edge2=s.opposite_edge(label,edge)
@@ -1807,7 +1808,7 @@ class SimilaritySurface(SageObject):
                 self.saddle_connections(squared_length_bound, initial_label=label, sc_list=sc_list)
             return sc_list
         if initial_vertex is None:
-            for vertex in xrange( self.polygon(initial_label).num_edges() ):
+            for vertex in range( self.polygon(initial_label).num_edges() ):
                 self.saddle_connections(squared_length_bound, initial_label=initial_label, initial_vertex=vertex, sc_list=sc_list)
             return sc_list
 
@@ -1829,7 +1830,7 @@ class SimilaritySurface(SageObject):
                   last_sim( p.vertex((initial_vertex+p.num_edges()-1)%p.num_edges()) ))
 
         # This will collect the data we need for a depth first search.
-        chain = [(last_sim, initial_label, wedge, [(initial_vertex+p.num_edges()-i)%p.num_edges() for i in xrange(2,p.num_edges())])]
+        chain = [(last_sim, initial_label, wedge, [(initial_vertex+p.num_edges()-i)%p.num_edges() for i in range(2,p.num_edges())])]
 
         while len(chain)>0:
             # Should verts really be edges?
@@ -1872,7 +1873,7 @@ class SimilaritySurface(SageObject):
                 new_label, new_edge = self.opposite_edge(label, vert)
                 new_sim = sim*~self.edge_transformation(label,vert)
                 p = self.polygon(new_label)
-                chain.append( (new_sim, new_label, new_wedge, [(new_edge+p.num_edges()-i)%p.num_edges() for i in xrange(1,p.num_edges())]) )
+                chain.append( (new_sim, new_label, new_wedge, [(new_edge+p.num_edges()-i)%p.num_edges() for i in range(1,p.num_edges())]) )
         return sc_list
 
     def set_default_graphical_surface(self, graphical_surface):
@@ -2036,7 +2037,7 @@ class SimilaritySurface(SageObject):
 
             sage: labels = []
             sage: p = s.polygon(1)
-            sage: for e in xrange(p.num_edges()): \
+            sage: for e in range(p.num_edges()): \
                 labels.append(str(p.edge(e)))
             sage: s.plot_polygon(1, polygon_options=None, plot_edges=False, \
                 edge_labels=labels, edge_label_options={"color":"red"}) # not tested (problem with matplotlib font caches on Travis)
@@ -2062,7 +2063,7 @@ class SimilaritySurface(SageObject):
             else:
                 o = graphical_surface.non_adjacent_edge_options.copy()
                 o.update(edge_options)
-            for e in xrange(p.num_edges()):
+            for e in range(p.num_edges()):
                 plt += gp.plot_edge(e, **o)
 
         if plot_edge_labels:
@@ -2071,7 +2072,7 @@ class SimilaritySurface(SageObject):
             else:
                 o = graphical_surface.edge_label_options.copy()
                 o.update(edge_label_options)
-            for e in xrange(p.num_edges()):
+            for e in range(p.num_edges()):
                 if edge_labels is None:
                     el = str(e)
                 else:
@@ -2189,7 +2190,7 @@ class SimilaritySurface(SageObject):
                 return False
             if polygon != polygon2:
                 return False
-            for edge in xrange(polygon.num_edges()):
+            for edge in range(polygon.num_edges()):
                 if self.opposite_edge(label,edge) != other.opposite_edge(label,edge):
                     return False
         return True

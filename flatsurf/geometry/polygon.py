@@ -748,19 +748,19 @@ class ConvexPolygon(Element):
 
         if rt < lt:
             top_lengths = lengths[rt:lt]
-            top_labels = range(rt,lt)
+            top_labels = list(range(rt,lt))
         else:
             top_lengths = lengths[rt:] + lengths[:lt]
-            top_labels = range(rt,n) + range(lt)
+            top_labels = list(range(rt,n)) + list(range(lt))
         top_lengths = [-x for x in reversed(top_lengths)]
         top_labels.reverse()
 
         if lb < rb:
             bot_lengths = lengths[lb:rb]
-            bot_labels = range(lb,rb)
+            bot_labels = list(range(lb,rb))
         else:
             bot_lengths = lengths[lb:] + lengths[:rb]
-            bot_labels = range(lb,n) + range(rb)
+            bot_labels = list(range(lb,n)) + list(range(rb))
 
         from .interval_exchange_transformation import FlowPolygonMap
         return FlowPolygonMap(ring, bot_labels, bot_lengths,

@@ -1,4 +1,5 @@
 from __future__ import absolute_import
+from six.moves import range, filter, map
 
 from .polygon import wedge_product, is_same_direction, is_opposite_direction
 
@@ -351,7 +352,7 @@ class SimilaritySurfaceTangentVector:
             v2=s.polygon(label).edge(vertex)
             from sage.matrix.constructor import Matrix
             der = Matrix(s.base_ring(), [[1,0],[0,1]])
-            for count in xrange(rotate_limit):
+            for count in range(rotate_limit):
                 if wedge_product(v2,w)>=0 and wedge_product(w,v1)>0:
                     # We've found it!
                     break
@@ -405,7 +406,7 @@ class SimilaritySurfaceTangentVector:
             from sage.matrix.constructor import Matrix
             der = Matrix(s.base_ring(), [[1,0],[0,1]])
             if not (wedge_product(v1,w)>0 and wedge_product(w,v2)>0):
-                for count in xrange(rotate_limit):
+                for count in range(rotate_limit):
                     label2,edge2=s.opposite_edge(label,previous_vertex)
                     der=der*s.edge_matrix(label2,edge2)
                     label=label2

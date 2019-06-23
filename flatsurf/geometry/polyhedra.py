@@ -1,3 +1,6 @@
+from __future__ import print_function
+from six.moves import range, filter, map
+
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
 from sage.rings.number_field.number_field import NumberField
@@ -81,9 +84,9 @@ def polyhedron_to_cone_surface(polyhedron, use_AA=False, scaling_factor=ZZ(1)):
 
     sage: from flatsurf.geometry.polyhedra import *
     sage: vertices=[]
-    sage: for i in xrange(3):
-    ....:     temp=vector([1 if k==i else 0 for k in xrange(3)])
-    ....:     for j in xrange(-1,3,2):
+    sage: for i in range(3):
+    ....:     temp=vector([1 if k==i else 0 for k in range(3)])
+    ....:     for j in range(-1,3,2):
     ....:         vertices.append(j*temp)
     sage: octahedron=Polyhedron(vertices=vertices)
     sage: surface,surface_to_octahedron = \
@@ -147,7 +150,7 @@ def polyhedron_to_cone_surface(polyhedron, use_AA=False, scaling_factor=ZZ(1)):
         last_edge = next(iter(face_edges_temp))
         v = next(iter(last_edge))
         face_vertices_temp=[v]
-        for j in xrange(len(face_edges_temp)-1):
+        for j in range(len(face_edges_temp)-1):
             for edge in face_edges_temp:
                 if v in edge and edge!=last_edge:
                     # bingo
@@ -291,8 +294,8 @@ def platonic_tetrahedron():
     sage: TestSuite(surface).run()
     r"""
     vertices=[]
-    for x in xrange(-1,3,2):
-        for y in xrange(-1,3,2):
+    for x in range(-1,3,2):
+        for y in range(-1,3,2):
                 vertices.append(vector(QQ,(x,y,x*y)))
     p=Polyhedron(vertices=vertices)
     s,m = polyhedron_to_cone_surface(p,scaling_factor=AA(1/sqrt(2)))
@@ -310,9 +313,9 @@ def platonic_cube():
     sage: TestSuite(surface).run()
     r"""
     vertices=[]
-    for x in xrange(-1,3,2):
-        for y in xrange(-1,3,2):
-            for z in xrange(-1,3,2):
+    for x in range(-1,3,2):
+        for y in range(-1,3,2):
+            for z in range(-1,3,2):
                 vertices.append(vector(QQ,(x,y,z)))
     p=Polyhedron(vertices=vertices)
     s,m = polyhedron_to_cone_surface(p,scaling_factor=QQ(1)/2)
@@ -330,9 +333,9 @@ def platonic_octahedron():
     sage: TestSuite(surface).run()
     r"""
     vertices=[]
-    for i in xrange(3):
-        temp=vector(QQ,[1 if k==i else 0 for k in xrange(3)])
-        for j in xrange(-1,3,2):
+    for i in range(3):
+        temp=vector(QQ,[1 if k==i else 0 for k in range(3)])
+        for j in range(-1,3,2):
             vertices.append(j*temp)
     octahedron=Polyhedron(vertices=vertices)
     surface,surface_to_octahedron = \
@@ -354,12 +357,12 @@ def platonic_dodecahedron():
     phi=AA(1+sqrt(5))/2
     F=NumberField(phi.minpoly(),"phi",embedding=phi)
     phi=F.gen()
-    for x in xrange(-1,3,2):
-        for y in xrange(-1,3,2):
-            for z in xrange(-1,3,2):
+    for x in range(-1,3,2):
+        for y in range(-1,3,2):
+            for z in range(-1,3,2):
                 vertices.append(vector(F,(x,y,z)))
-    for x in xrange(-1,3,2):
-        for y in xrange(-1,3,2):
+    for x in range(-1,3,2):
+        for y in range(-1,3,2):
             vertices.append(vector(F,(0,x*phi,y/phi)))
             vertices.append(vector(F,(y/phi,0,x*phi)))
             vertices.append(vector(F,(x*phi,y/phi,0)))
@@ -383,9 +386,9 @@ def platonic_icosahedron():
     phi=AA(1+sqrt(5))/2
     F=NumberField(phi.minpoly(),"phi",embedding=phi)
     phi=F.gen()
-    for i in xrange(3):
-        for s1 in xrange(-1,3,2):
-            for s2 in xrange(-1,3,2):
+    for i in range(3):
+        for s1 in range(-1,3,2):
+            for s2 in range(-1,3,2):
                 p=3*[None]
                 p[i]=s1*phi
                 p[(i+1)%3]=s2

@@ -3,6 +3,8 @@ This file contains classes implementing Surface which are used useful for
 triangulating, Delaunay triangulating, and Delaunay decomposing infinite
 surfaces.
 """
+from __future__ import print_function
+from six.moves import range, filter, map
 
 from flatsurf.geometry.surface import Surface, Surface_list
 
@@ -195,7 +197,7 @@ class LazyDelaunayTriangulatedSurface(Surface):
         c=p.circumscribing_circle()
 
         # Develop through each of the 3 edges:
-        for e in xrange(3):
+        for e in range(3):
             edge_certified=False
             # This keeps track of a chain of polygons the disk develops through:
             edge_stack=[]
@@ -367,7 +369,7 @@ class LazyDelaunaySurface(LazyDelaunayTriangulatedSurface):
         while changed:
             changed=False
             p=self._s.polygon(l)
-            for e in xrange(p.num_edges()):
+            for e in range(p.num_edges()):
                 ll,ee = self._s.opposite_edge(l,e)
                 while not self._certify_or_improve(ll):
                     ll,ee = self._s.opposite_edge(l,e)

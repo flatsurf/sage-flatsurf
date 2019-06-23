@@ -1,4 +1,5 @@
-from __future__ import absolute_import
+from __future__ import print_function, absolute_import
+from six.moves import range, filter, map
 
 from sage.misc.cachefunc import cached_method
 
@@ -346,7 +347,7 @@ class FundamentalGroup(UniqueRepresentation, Group):
         tree[p] = (None,None,None)
 
         wait = [] # list of edges of the dual graph, ie p1 -- (e1,e2) --> p2
-        for e in xrange(s.polygon(p).num_edges()):
+        for e in range(s.polygon(p).num_edges()):
             pp,ee = s.opposite_edge(p,e)
             wait.append((pp,ee,p,e))
         while wait:
@@ -384,7 +385,7 @@ class FundamentalGroup(UniqueRepresentation, Group):
 
             else: # new branch
                 tree[p1] = (p2,e1,e2)
-                for e in xrange(s.polygon(p1).num_edges()):
+                for e in range(s.polygon(p1).num_edges()):
                     if e != e1:
                         pp,ee = s.opposite_edge(p1,e)
                         wait.append((pp,ee,p1,e))

@@ -1,5 +1,8 @@
 r"""Mappings between translation surfaces."""
 
+from __future__ import print_function
+from six.moves import range, filter, map
+
 from flatsurf.geometry.polygon import Polygons, wedge_product
 from flatsurf.geometry.surface import Surface, Surface_list, Surface_dict, ExtraLabel
 from flatsurf.geometry.similarity_surface import SimilaritySurface
@@ -175,7 +178,7 @@ class MatrixListDeformedSurface(Surface):
 
     def polygon(self, lab):
         p = self._s.polygon(lab)
-        edges = [ self._m(lab) * p.edge(e) for e in xrange(p.num_edges())]
+        edges = [ self._m(lab) * p.edge(e) for e in range(p.num_edges())]
         return self._P(edges)
 
     def opposite_edge(self, p, e):
@@ -555,7 +558,7 @@ def subdivide_a_polygon(s):
     for l,poly in s.label_iterator(polygons=True):
         n = poly.num_edges() 
         if n>3:
-            for i in xrange(n):
+            for i in range(n):
                 e1=poly.edge(i)
                 e2=poly.edge((i+1)%n)
                 if wedge_product(e1,e2) != 0:

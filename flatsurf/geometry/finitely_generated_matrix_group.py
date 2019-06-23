@@ -21,7 +21,7 @@ EXAMPLES::
     [1 1]  [1 0]
     [0 1], [1 1]
     sage: it = iter(G)
-    sage: [it.next() for _ in xrange(5)]
+    sage: [it.next() for _ in range(5)]
     [
     [1 0]  [1 1]  [1 2]  [2 1]  [ 0  1]
     [0 1], [0 1], [0 1], [1 1], [-1  1]
@@ -29,6 +29,9 @@ EXAMPLES::
 
     sage: G = FinitelyGenerated2x2MatrixGroup([identity_matrix(2)])
 """
+
+from __future__ import print_function
+from six.moves import range, filter, map
 
 from sage.rings.integer import Integer
 from sage.structure.parent import Parent
@@ -198,7 +201,7 @@ class FinitelyGenerated2x2MatrixGroup(Group):
             ring = Sequence(matrices).universe().base_ring()
             matrix_space = MatrixSpace(ring,2)
 
-        self._generators = map(matrix_space,matrices)
+        self._generators = list(map(matrix_space,matrices))
         for m in self._generators:
             m.set_immutable()
         self._matrix_space = matrix_space

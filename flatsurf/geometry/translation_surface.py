@@ -2,7 +2,8 @@ r"""
 Translation Surfaces.
 """
 
-from __future__ import absolute_import
+from __future__ import print_function, absolute_import
+from six.moves import range, filter, map
 
 from sage.matrix.constructor import identity_matrix
 
@@ -33,7 +34,7 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
 
         for lab in it:
             p = self.polygon(lab)
-            for e in xrange(p.num_edges()):
+            for e in range(p.num_edges()):
                 # Warning: check the matrices computed from the edges,
                 # rather the ones overriden by TranslationSurface.
                 m=SimilaritySurface.edge_matrix(self,lab,e)
@@ -60,11 +61,7 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
             sage: sfg.translation_surfaces.octagon_and_squares().stratum()
             H_3(4)
         """
-        try:
-            from surface_dynamics import AbelianStratum
-        except ImportError:
-            from sage.dynamics.flat_surfaces.all import AbelianStratum
-
+        from surface_dynamics import AbelianStratum
         from sage.rings.integer_ring import ZZ
         return AbelianStratum([ZZ(a-1) for a in self.angles()])
 
@@ -198,7 +195,7 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
                         print("Polygons differ")
                         return ret
                     # If here the number of edges should be equal.
-                    for e in xrange(p1.num_edges()):
+                    for e in range(p1.num_edges()):
                         ll1,ee1 = self.opposite_edge(l1,e)
                         ll2,ee2 = s2.opposite_edge(l2,e)
                         num1 = lw1.label_to_number(ll1, search=True, limit=limit)
@@ -415,7 +412,7 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
                         wedge_product(nonzero,-s.polygon(label).edge((v+2)%3)) > 0:
                             found_start=(label,v)
                             found=None
-                            for vv in xrange(3):
+                            for vv in range(3):
                                 if wedge_product(ss.polygon(label).edge(vv),nonzero) >= 0 and \
                                 wedge_product(nonzero,-ss.polygon(label).edge((vv+2)%3)) > 0:
                                     found=vv

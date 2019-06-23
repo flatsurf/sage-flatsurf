@@ -14,7 +14,8 @@ EXAMPLES::
     True
 """
 
-from __future__ import absolute_import
+from __future__ import print_function, absolute_import
+from six.moves import range, filter, map
 
 
 def surface_to_xml_string(s, complain=True):
@@ -80,7 +81,7 @@ def surface_to_xml_string(s, complain=True):
         output.append(escape(repr(label)))
         output.append('</label>')
         p=s.polygon(label)
-        for e in xrange(p.num_edges()):
+        for e in range(p.num_edges()):
             output.append('<edge>')
             v=p.edge(e)
             output.append('<x>')

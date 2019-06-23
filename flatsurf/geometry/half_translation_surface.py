@@ -1,4 +1,5 @@
-from __future__ import absolute_import
+from __future__ import print_function, absolute_import
+from six.moves import range, filter, map
 
 from .surface import Surface
 from .half_dilation_surface import HalfDilationSurface
@@ -23,7 +24,7 @@ class HalfTranslationSurface(HalfDilationSurface, RationalConeSurface):
 
         for lab in it:
             p = self.polygon(lab)
-            for e in xrange(p.num_edges()):
+            for e in range(p.num_edges()):
                 # Warning: check the matrices computed from the edges,
                 # rather the ones overriden by TranslationSurface.
                 tester.assertTrue(SimilaritySurface.edge_matrix(self,lab,e).is_one() or \

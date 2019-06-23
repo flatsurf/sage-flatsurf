@@ -1,4 +1,5 @@
-from __future__ import absolute_import
+from __future__ import print_function, absolute_import
+from six.moves import range, filter, map
 
 from .cone_surface import ConeSurface
 from .matrix_2x2 import is_cosine_sine_of_rational
@@ -22,7 +23,7 @@ class RationalConeSurface(ConeSurface):
 
         for lab in it:
             p = self.polygon(lab)
-            for e in xrange(p.num_edges()):
+            for e in range(p.num_edges()):
                 # Warning: check the matrices computed from the edges,
                 # rather the ones overriden by TranslationSurface.
                 m = SimilaritySurface.edge_matrix(self,lab,e)

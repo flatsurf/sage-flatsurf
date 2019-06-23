@@ -1,3 +1,6 @@
+from __future__ import print_function
+from six.moves import range, filter, map
+
 from flatsurf.geometry.surface import Surface
 from flatsurf.geometry.similarity_surface import SimilaritySurface
 from flatsurf.geometry.mappings import SurfaceMapping, IdentityMapping, SurfaceMappingComposition
@@ -90,7 +93,7 @@ class HalfDilationSurface(SimilaritySurface):
                 seen_labels=set()
                 for p1 in self.label_iterator():
                     n1=self.polygon(p1).num_edges()
-                    for e1 in xrange(n1):
+                    for e1 in range(n1):
                         p2,e2=self.opposite_edge(p1,e1)
                         n2=self.polygon(p2).num_edges()
                         if p2 in seen_labels:
@@ -245,7 +248,7 @@ class HalfDilationSurface(SimilaritySurface):
             limit = int(limit)
         while triangles and limit:
             p1 = triangles.pop()
-            for e1 in xrange(3):
+            for e1 in range(3):
                 p2, e2 = s.opposite_edge(p1, e1)
                 if s._edge_needs_flip_Linfinity(p1, e1, p2, e2):
                     s.triangle_flip(p1, e1, in_place=True, direction=direction)
@@ -308,11 +311,11 @@ class GL2RImageSurface(Surface):
     def polygon(self, lab):
         if self._det_sign==1:
             p = self._s.polygon(lab)
-            edges = [ self._m * p.edge(e) for e in xrange(p.num_edges())]
+            edges = [ self._m * p.edge(e) for e in range(p.num_edges())]
             return self._P(edges)
         else:
             p = self._s.polygon(lab)
-            edges = [ self._m * p.edge(e) for e in xrange(p.num_edges()-1,-1,-1)]
+            edges = [ self._m * p.edge(e) for e in range(p.num_edges()-1,-1,-1)]
             return self._P(edges)
 
     def opposite_edge(self, p, e):
