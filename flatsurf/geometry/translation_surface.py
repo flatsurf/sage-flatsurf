@@ -66,6 +66,18 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
         from sage.rings.integer_ring import ZZ
         return AbelianStratum([ZZ(a-1) for a in self.angles()])
 
+    def genus(self):
+        """
+        Return the genus of the surface.
+        
+        EXAMPLES::
+        
+            sage: import flatsurf.geometry.similarity_surface_generators as sfg
+            sage: sfg.translation_surfaces.octagon_and_squares().stratum()
+            3
+        """
+        return sum(a - 1 for a in angles) // 2 + 1
+    
     def _canonical_first_vertex(polygon):
         r"""
         Return the index of the vertex with smallest y-coordinate.
