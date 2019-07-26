@@ -1145,7 +1145,7 @@ def number_field_elements_from_algebraics(elts, name='a'):
         sage: c = z.real()
         sage: s = z.imag()
         sage: number_field_elements_from_algebraics((c,s))
-        (Number Field in a with defining polynomial y^4 - 5*y^2 + 5,
+        (Number Field in a with defining polynomial y^4 - 5*y^2 + 5 with a = 1.902113032590308?,
          [1/2*a^2 - 3/2, 1/2*a])
     """
     # case when all elements are rationals
@@ -1191,25 +1191,29 @@ class PolygonsConstructor:
             Polygon: (0, 0), (1, 0), (1, sqrt2), (0, sqrt2)
             sage: _.parent()
             polygons with coordinates in Number Field in sqrt2 with defining
-            polynomial x^2 - 2
+            polynomial x^2 - 2 with sqrt2 = 1.414213562373095?
         """
         return self((width,0),(0,height),(-width,0),(0,-height), **kwds)
 
     def triangle(self, a, b, c):
         """
-        Return the surface built from reflected copies of a triangle with angles a*pi/N,b*pi/N,c*pi/N.
+        Return the triangle with angles a*pi/N,b*pi/N,c*pi/N where N=a+b+c.
         
         INPUT:
         
-        - a,b,c -- integers
-        
-        Here N is computed as a + b + c.
+        - ``a``, ``b``, ``c`` -- integers
         
         EXAMPLES::
 
+            sage: from flatsurf.geometry.polygon import polygons
             sage: T = polygons.triangle(3,4,5)
-            ?
+            sage: T
+            Polygon: (0, 0), (1, 0), (1/2*a + 3/2, 1/2*a + 3/2)
+            sage: T.base_ring()
+            Number Field in a with defining polynomial y^2 - 3 with a = -1.732050807568878?
         """
+        from sage.rings.qqbar import QQbar
+        from sage.rings.qqbar import number_field_elements_from_algebraics
         zN = QQbar.zeta(2 * (a + b + c))
         L = polygen(QQbar, 'L')
         z = zN**a
@@ -1278,7 +1282,7 @@ class PolygonsConstructor:
             sage: P
             Polygon: (0, 0), (1, 0), (1, a)
             sage: P.base_ring()
-            Number Field in a with defining polynomial y^2 - 3
+            Number Field in a with defining polynomial y^2 - 3 with a = 1.732050807568878?
 
             sage: polygons.right_triangle(1/4,1)
             Polygon: (0, 0), (1, 0), (1, 1)
