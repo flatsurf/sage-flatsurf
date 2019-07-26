@@ -66,18 +66,6 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
         from sage.rings.integer_ring import ZZ
         return AbelianStratum([ZZ(a-1) for a in self.angles()])
 
-    def genus(self):
-        """
-        Return the genus of the surface.
-        
-        EXAMPLES::
-        
-            sage: import flatsurf.geometry.similarity_surface_generators as sfg
-            sage: sfg.translation_surfaces.octagon_and_squares().stratum()
-            3
-        """
-        return sum(a - 1 for a in angles) // 2 + 1
-    
     def _canonical_first_vertex(polygon):
         r"""
         Return the index of the vertex with smallest y-coordinate.
@@ -179,11 +167,11 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
                     l2,e2 = s2.opposite_edge(pair2)
                     num1 = lw1.label_to_number(l1)
                     num2 = lw2.label_to_number(l2)
-                    ret = cmp(num1,num2)
-                    if ret!=0:
+                    ret = num1 > num2 - num1 < num2
+                    if ret:
                         return ret
-                    ret = cmp(e1,e2)
-                    if ret!=0:
+                    ret = e1 > e2 - e1 < e2
+                    if ret:
                         return ret
                 return 0
             else:
@@ -211,12 +199,12 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
                         ll2,ee2 = s2.opposite_edge(l2,e)
                         num1 = lw1.label_to_number(ll1, search=True, limit=limit)
                         num2 = lw2.label_to_number(ll2, search=True, limit=limit)
-                        ret = cmp(num1,num2)
-                        if ret!=0:
+                        ret = num1 > num2 - num1 < num2
+                        if ret:
                             #print "Polygon indices across edge "+str(e)+" differ"
                             return ret
-                        ret = cmp(ee1,ee2)
-                        if ret!=0:
+                        ret = ee1 > ee2 - ee1 < ee2
+                        if ret:
                             #print "Opposite edges across edge "+str(e)+" differ."
                             return ret
                     if count >= limit:

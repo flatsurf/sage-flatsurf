@@ -35,6 +35,25 @@ class ConeSurface(SimilaritySurface):
             angles.append(angle)
         return angles
 
+    def genus(self):
+        """
+        Return the genus of the surface.
+
+        EXAMPLES::
+
+            sage: import flatsurf.geometry.similarity_surface_generators as sfg
+            sage: sfg.translation_surfaces.octagon_and_squares().genus()
+            3
+
+            sage: from flatsurf import *
+            sage: T = polygons.triangle(3,4,5)
+            sage: B = RationalConeSurface(similarity_surfaces.billiard(T))
+            sage: B.genus()
+            0
+            sage: B.minimal_cover("translation").genus()
+            3
+        """
+        return sum(a - 1 for a in self.angles()) // 2 + 1
 
     def area(self):
         r"""
