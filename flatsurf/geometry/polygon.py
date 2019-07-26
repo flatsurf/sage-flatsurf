@@ -41,6 +41,7 @@ from sage.rings.all import ZZ, QQ, AA, RR
 from sage.modules.free_module_element import vector
 from sage.modules.free_module_element import free_module_element
 from sage.matrix.constructor import matrix
+from sage.rings.polynomial.polynomial_ring import polygen
 
 from .matrix_2x2 import angle
 
@@ -1193,6 +1194,33 @@ class PolygonsConstructor:
             polynomial x^2 - 2
         """
         return self((width,0),(0,height),(-width,0),(0,-height), **kwds)
+
+    def triangle(self, a, b, c):
+        """
+        Return the surface built from reflected copies of a triangle with angles a*pi/N,b*pi/N,c*pi/N.
+        
+        INPUT:
+        
+        - a,b,c -- integers
+        
+        Here N is computed as a + b + c.
+        
+        EXAMPLES::
+
+            sage: T = polygons.triangle(3,4,5)
+            ?
+        """
+        zN = QQbar.zeta(2 * (a + b + c))
+        L = polygen(QQbar, 'L')
+        z = zN**a
+        rotated = (1 - L * z) * zN**b
+        rotated_conjugate = rotated.map_coefficients(lambda z: z.conjugate())
+        real = rotated - rotated_conjugate
+        p = -real[0].imag() / real[1].imag() * z
+        r = p.real()
+        i = p.imag()
+        field, (r, i), phi = number_field_elements_from_algebraics((r, i), embedded=True)
+        return polygons(vertices=[(0, 0), (1, 0), (r, i)], ring=field)
 
     @staticmethod
     def regular_ngon(n, field=None):
