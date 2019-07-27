@@ -183,7 +183,6 @@ class LazyDelaunayTriangulatedSurface(Surface):
         into triangles. If it encounters a pair of triangles which need a diagonal
         flip then it does the flip. 
         """
-        #print "Checking "+str(l)
         if l in self._certified_labels:
             # Already certified.
             return True
@@ -211,7 +210,6 @@ class LazyDelaunayTriangulatedSurface(Surface):
                     # through in the triangle opposite this edge.
                     edge_stack=[(l,e,1,c)]
                 ll,ee,step,cc=edge_stack[len(edge_stack)-1]
-                #print "Pulled "+str((ll,ee,step))
 
                 lll,eee=self._s.opposite_edge(ll,ee)
                 
@@ -225,7 +223,6 @@ class LazyDelaunayTriangulatedSurface(Surface):
                     # now ppp is a triangle
 
                     if self._s._edge_needs_flip(ll,ee):
-                        #print "Flipping "+str((ll,ee))+" joined to "+str((lll,eee))
                         
                         # Should not need to flip certified triangles.
                         #assert ll not in self._certified_labels
@@ -237,16 +234,13 @@ class LazyDelaunayTriangulatedSurface(Surface):
                         
                         # If we touch the original polygon, then we return False.
                         if l==ll or l==lll:
-                            #print "Flipped original triangle: returning false"
                             return False
                         # We might have flipped a polygon from earlier in the chain
                         # In this case we need to trim the stack down so that we recheck
                         # that polygon.
                         for index,tup in enumerate(edge_stack):
                             if tup[0]==ll or tup[0]==lll:
-                                #print "Before slice"+str([(tup2[0],tup2[1]) for tup2 in edge_stack])
                                 edge_stack=edge_stack[:index]
-                                #print "After  slice"+str([(tup2[0],tup2[1]) for tup2 in edge_stack])
                                 break
                         # The following if statement makes sure that we check both subsequent edges of the 
                         # polygon opposite the last edge listed in the stack.
@@ -266,14 +260,10 @@ class LazyDelaunayTriangulatedSurface(Surface):
                     lp = ccc.line_segment_position(ppp.vertex((eee+step)%3),ppp.vertex((eee+step+1)%3))
                     if lp==1:
                         # disk passes through edge and opposite polygon is not certified.
-                        # print "Passes through "+str((lll,(eee+step)%3))
                         edge_stack.append((lll,(eee+step)%3,1,ccc))
                         continue
                 
                     # We reach this point if the disk doesn't pass through the edge eee+step of polygon lll.
-                    # print "Didn't pass through edge "+str((lll,(eee+step)%3))
-                #else:
-                #    print "Already certified "+str(lll)
 
                 # Either lll is already certified or the disk didn't pass
                 # through edge (lll,eee+step)
@@ -291,7 +281,6 @@ class LazyDelaunayTriangulatedSurface(Surface):
                     # prune_count= prune_count+1
                     if step==1:
                         edge_stack.append((ll,ee,2,cc))
-                #print "Pruned "+str(prune_count)
                 if len(edge_stack)==0:
                     # We're done with this edge
                     edge_certified=True

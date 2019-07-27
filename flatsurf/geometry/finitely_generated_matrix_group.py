@@ -21,7 +21,7 @@ EXAMPLES::
     [1 1]  [1 0]
     [0 1], [1 1]
     sage: it = iter(G)
-    sage: [it.next() for _ in range(5)]
+    sage: [next(it) for _ in range(5)]
     [
     [1 0]  [1 1]  [1 2]  [2 1]  [ 0  1]
     [0 1], [0 1], [0 1], [1 1], [-1  1]

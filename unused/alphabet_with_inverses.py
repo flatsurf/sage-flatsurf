@@ -204,8 +204,8 @@ class AlphabetWithInverses(Parent):
         itp = iter(self._pos)
         itn = iter(self._neg)
         while True:
-            yield itp.next()
-            yield itn.next()
+            yield next(itp)
+            yield next(itn)
 
     def an_element(self):
         return self._pos.an_element()

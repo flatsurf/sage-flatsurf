@@ -1078,7 +1078,6 @@ class SimilaritySurface(SageObject):
 
         # Store the old gluings
         old_gluings = {(p,i): self.opposite_edge(p,i) for i in range(ne)}
-        #print "old "+str(old_gluings)
 
         # Update the polygon with label p, add a new polygon.
         self.underlying_surface().change_polygon(p, newpoly1)
@@ -1095,7 +1094,6 @@ class SimilaritySurface(SageObject):
             old_to_new_labels[(p,i%ne)]=(new_label,i-v1+1)
         for i in range(v2, ne+v1):
             old_to_new_labels[(p,i%ne)]=(p,i-v2+1)
-        #print "old_to_new "+ str(old_to_new_labels)
 
         for e in range(1, newpoly1.num_edges()):
             pair = old_gluings[(p,(v2+e-1)%ne)]
@@ -1104,12 +1102,9 @@ class SimilaritySurface(SageObject):
             self.underlying_surface().change_edge_gluing(p, e, pair[0], pair[1])
 
         for e in range(1, newpoly2.num_edges()):
-            #print "gluing: "+str((p,(v1+e-1)%ne))
             pair = old_gluings[(p,(v1+e-1)%ne)]
-            #print "old: "+str(e)+" -> "+str(pair)
             if pair in old_to_new_labels:
                 pair = old_to_new_labels[pair]
-                #print "new: "+str(e)+" -> "+str(pair)
             self.underlying_surface().change_edge_gluing(new_label, e, pair[0], pair[1])
 
     def singularity(self, l, v, limit=None):
@@ -1156,7 +1151,7 @@ class SimilaritySurface(SageObject):
             sage: pc.surface_point(pc.base_label(),(1,0),limit=4)
             Surface point with 4 coordinate representations
             sage: z = pc.surface_point(pc.base_label(),(sqrt(2)-1,sqrt(3)-1),ring=AA)
-            sage: iter(z.coordinates(z.labels()[0])).next().parent()
+            sage: next(iter(z.coordinates(z.labels()[0]))).parent()
             Vector space of dimension 2 over Algebraic Real Field
         """
         return SurfacePoint(self, label, point, ring=ring, limit=limit)
@@ -1354,7 +1349,7 @@ class SimilaritySurface(SageObject):
         S=SimilarityGroup(self.base_ring())
         identity=S.one()
         it = iter(w)
-        label = it.next()
+        label = next(it)
         changes = {label:identity}
         for label in it:
             edge = w.edge_back(label)
@@ -1362,7 +1357,7 @@ class SimilaritySurface(SageObject):
             changes[label] = changes[label2] * s.edge_transformation(label,edge)
         it = iter(w)
         # Skip the base label:
-        label = it.next()
+        label = next(it)
         for label in it:
             p = s.polygon(label)
             p = changes[label].derivative()*p

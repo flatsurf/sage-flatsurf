@@ -45,43 +45,43 @@ class TranslationSurfaceEditor:
     def single_left_click(self, event):
         x = self.canvas.canvasx(event.x)
         y = self.canvas.canvasy(event.y)
-        print "single left click at (%s,%s)"%(x,y)
+        print("single left click at (%s,%s)"%(x,y))
         self.canvas.create_rectangle(x-5,y-5,x+5,y+5, fill="#eeff00")
 
     def single_middle_click(self, event):
         x = self.canvas.canvasx(event.x)
         y = self.canvas.canvasy(event.y)
-        print "single middle click at (%s,%s)"%(x,y)
+        print("single middle click at (%s,%s)"%(x,y))
         self.canvas.create_rectangle(x-5,y-5,x+5,y+5, fill='#00aa0f')
 
     def single_right_click(self, event):
         x = self.canvas.canvasx(event.x)
         y = self.canvas.canvasy(event.y)
-        print "single right click at (%s,%s)"%(x,y)
+        print("single right click at (%s,%s)"%(x,y))
         self.canvas.create_rectangle(x-5,y-5,x+5,y+5, fill='#ff00ff')
 
     def double_click(self, event):
-        print "double click"
+        print("double click")
 
     def shift_click(self, event):
-        print "shift click"
+        print("shift click")
 
     def mouse_moved(self, event):
         x = self.canvas.canvasx(event.x)
         y = self.canvas.canvasy(event.y)
-        print "mouse moved to (%s,%s)"%(x,y)
+        print("mouse moved to (%s,%s)"%(x,y))
 
     def focus_in(self, event):
-        print "focus in"
+        print("focus in")
 
     def focus_out(self, event):
-        print "focus out"
+        print("focus out")
 
     def key_press(self, event):
-        print "key %s press with code %s"%(event.char,event.keycode)
+        print("key %s press with code %s"%(event.char,event.keycode))
 
     def key_release(self, event):
-        print "key %s release with code %s"%(event.char,event.keycode)
+        print("key %s release with code %s"%(event.char,event.keycode))
 
     def done(self, event=None):
         self.surface.data = 'nicer data'

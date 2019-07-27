@@ -187,7 +187,6 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
                 lw2=s2.walker()
                 count = 0
                 for (l1,p1),(l2,p2) in zip(lw1.label_polygon_iterator(), lw2.label_polygon_iterator()):
-                    #print "Comparing labels: "+str((l1, l2))
                     # Uses Polygon.__cmp__:
                     ret = p1.__cmp__(p2)
                     if ret != 0:
@@ -201,11 +200,9 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
                         num2 = lw2.label_to_number(ll2, search=True, limit=limit)
                         ret = num1 > num2 - num1 < num2
                         if ret:
-                            #print "Polygon indices across edge "+str(e)+" differ"
                             return ret
                         ret = ee1 > ee2 - ee1 < ee2
                         if ret:
-                            #print "Opposite edges across edge "+str(e)+" differ."
                             return ret
                     if count >= limit:
                         break
@@ -422,7 +419,6 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
                     assert found_start is not None
                 try:
                     sss=ss.rel_deformation(deformation2,local=True)
-                    #print "Took "+str(k+1)+" passes."
                     sss.apply_matrix(mi*g**(-k)*m)
                     sss.delaunay_triangulation(direction=nonzero,in_place=True)
                     return sss

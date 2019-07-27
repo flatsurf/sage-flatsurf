@@ -100,7 +100,6 @@ class SurfaceBundle:
     def screen_to_math_coordinates(self, x, y):
         x=QQ(x)
         y=QQ(y)
-        #print "stuff="+str((self._s,self._tx,self._ty))
         return self.vector_space()(( (self._field(x)-self._tx)/self._s, (-self._field(y)+self._ty)/self._s ))
 
     def set_name(self, newname):
@@ -152,7 +151,6 @@ class SurfaceBundle:
     def zoom_math_box(self,x1,y1,x2,y2):
         x1p,y2p=self.math_to_screen_coordinates(self.vector_space()((x1,y1)))
         x2p,y1p=self.math_to_screen_coordinates(self.vector_space()((x2,y2)))
-        #print "screen box="+str((x1p,y1p,x2p,y2p))
         self.zoom_screen_box(x1p,y1p,x2p,y2p)
 
     def editor_ready():

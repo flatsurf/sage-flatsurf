@@ -682,7 +682,7 @@ class GraphicalSurface:
             sage: gs.to_surface((3,2), search_all=True, search_limit=20, singularity_limit=4)
             Surface point with 4 coordinate representations
             sage: p = gs.to_surface((sqrt(3),sqrt(2)), ring=AA, search_all=True, search_limit=20)
-            sage: iter(p.coordinates(p.labels()[0])).next().parent()
+            sage: next(iter(p.coordinates(p.labels()[0]))).parent()
             Vector space of dimension 2 over Algebraic Real Field
             sage: v = gs.to_surface((3/2,3/2),(sqrt(3),sqrt(2)),ring=AA,search_all=True, search_limit=20)
             sage: v.bundle()

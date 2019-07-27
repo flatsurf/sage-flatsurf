@@ -50,15 +50,9 @@ class MegaWollmilchsauGroupElement(MultiplicativeGroupElement):
         return "["+str(self._i)+", "+str(self._r)+", "+str(self._q)+"]"
 
     def _cmp_(self, other):
-        x=cmp(self._i,other._i)
-        if x!=0:
-            return x
-        x=cmp(self._r,other._r)
-        if x!=0:
-            return x
-        return cmp(self._q,other._q)
-
-    __cmp__=_cmp_
+        return (self._i > other._i - self._i < other._i) or \
+               (self._r > other._r - self._r < other._r) or \
+               (self._q > other._q - self._q < other._q)
 
     def _mul_(self,m):
         return MegaWollmilchsauGroupElement(self._parent,

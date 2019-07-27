@@ -33,7 +33,7 @@ class InfiniteAlphabet(Parent, UniqueRepresentation):
         'A B C D E F G H I J K L M N O P Q R S T U V W X Y Z'
         sage: ' '.join(it.next() for _ in xrange(26))
         'aa ab ac ad ae af ag ah ai aj ak al am an ao ap aq ar as at au av aw ax ay az'
-        sage: for _ in xrange(2**16): print it.next()
+        sage: for _ in xrange(2**16): print(it.next())
         aA
         aB
         ...

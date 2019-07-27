@@ -41,7 +41,7 @@ class ConeSurfaceToPolyhedronMap(SageObject):
         if isinstance(o, StraightLineTrajectory):
             points=[]
             it = iter(o.segments())
-            s=it.next()
+            s = next(it)
             label = s.polygon_label()
             points.append(self._md[label][0]+self._md[label][1]*s.start().point())
             points.append(self._md[label][0]+self._md[label][1]*s.end().point())
@@ -96,7 +96,7 @@ def polyhedron_to_cone_surface(polyhedron, use_AA=False, scaling_factor=ZZ(1)):
     sage: surface.num_polygons()
     8
     sage: surface.base_ring()
-    Number Field in a with defining polynomial y^2 - 3
+    Number Field in a with defining polynomial y^2 - 3 with a = 1.732050807568878?
     sage: sqrt3=surface.base_ring().gen()
     sage: tangent_bundle=surface.tangent_bundle()
     sage: v=tangent_bundle(0,(0,0),(sqrt3,2))

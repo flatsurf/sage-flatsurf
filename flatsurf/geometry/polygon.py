@@ -484,14 +484,12 @@ class ConvexPolygon(Element):
         """
         if direction is None:
             direction = self.vector_space()((self.base_ring().zero(), self.base_ring().one()))
-            #print direction, "ring=", self.base_ring()
         else:
             assert not direction.is_zero()
         v=start_vertex
         n=self.num_edges()
         zero=self.base_ring().zero()
         for i in range(self.num_edges()):
-            #print (v, direction, wedge_product(self.edge(v),direction), wedge_product(self.edge(v+n-1),direction))
             if wedge_product(self.edge(v),direction) >= zero and \
                 wedge_product(self.edge(v+n-1),direction) > zero:
                 return v,True
@@ -641,13 +639,11 @@ class ConvexPolygon(Element):
         w=direction
         for i in range(self.num_edges()):
             e=self.edge(i)
-            #print "i="+str(i)+" e="+str(e)+" direction="+str(direction)
             m=matrix([[e[0], -direction[0]],[e[1], -direction[1]]])
             try:
                 ret=m.inverse()*(point-v0)
                 s=ret[0]
                 t=ret[1]
-                #print "s="+str(s)+" and t="+str(t)
                 # What if the matrix is non-invertible?
 
                 # Answer: You'll get a ZeroDivisionError which means that the edge is parallel
@@ -811,15 +807,11 @@ class ConvexPolygon(Element):
         w=holonomy
         for i in range(self.num_edges()):
             e=self.edge(i)
-            #print "i="+str(i)+" e="+str(e)
             m=matrix([[e[0], -holonomy[0]],[e[1], -holonomy[1]]])
-            #print "m="+str(m)
-            #print "diff="+str(point-v0)
             try:
                 ret=m.inverse()*(point-v0)
                 s=ret[0]
                 t=ret[1]
-                #print "s="+str(s)+" and t="+str(t)
                 # What if the matrix is non-invertible?
 
                 # s is location it intersects on edge, t is the portion of the holonomy to reach this intersection

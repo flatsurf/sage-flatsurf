@@ -18,7 +18,7 @@ class AffineSurfacePlot:
         V = surface.vector_space()
         def rand_pos(x):
             return 12 * V.random_element()
-        self._pos = Family(indices=surface.polygons().keys(),
+        self._pos = Family(indices=list(surface.polygons().keys()),
                            cached_function(rand_pos))
 
     def plot(self, edge_labels=False, polygon_labels=False):

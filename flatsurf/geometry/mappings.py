@@ -874,10 +874,10 @@ def translation_surface_cmp(s1, s2):
         l2,e2 = s2.opposite_edge(pair2)
         num1 = lw1.label_to_number(l1)
         num2 = lw2.label_to_number(l2)
-        ret = cmp(num1,num2)
+        ret = num1 > num2 - num1 < num2
         if ret!=0:
             return ret
-        ret = cmp(e1,e2)
+        ret = e1 > e2 - e1 < e2
         if ret!=0:
             return ret
     return 0
@@ -924,10 +924,8 @@ def canonicalize_translation_surface_mapping(s):
     else:
         m=SurfaceMappingComposition(m1,m2)
     s2=m.codomain()
-    #print "s2 labels: "+str([lab for lab in s2.label_iterator()])
 
     s2copy=s2.copy(mutable=True)
-    #print "s2 copy labels: "+str([lab for lab in s2copy.label_iterator()])
     ss=s2.copy(mutable=True)
     labels={label for label in s2.label_iterator()}
     labels.remove(s2.base_label())

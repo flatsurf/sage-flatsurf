@@ -104,7 +104,6 @@ class SimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
 
     def zoom_fit(self,boundary=0):
         x1,y1,x2,y2=self.get_math_bbox()
-        #print "fit math box="+str((x1,y1,x2,y2))
         if boundary:
             boundary=QQ(boundary)
             xc=(x1+x2)/2
@@ -119,7 +118,6 @@ class SimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
         #self.remove_all_labels()
         #bbox=self._editor.get_canvas().bbox(ALL)
         #x1,y1,x2,y2=bbox
-        #print "bbox="+str(bbox)
         #xc=(QQ(x1)+x2)/2
         #yc=(QQ(y1)+y2)/2
         #width=QQ(x2)-x1
@@ -176,7 +174,6 @@ class SimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
     def _on_move_show_callback(self, polygon_handle, e1):
         p1 = self._handle_to_polygon[polygon_handle]
         p2,e2 = self._ss.opposite_edge(p1,e1)
-        #print "p1="+str(p1)+" e1="+str(e1)+" p2="+str(p2)+" e2="+str(e2)
         if not (p2 in self._visible):
             m1=self._gl[p1]
             mc=self._ss.edge_matrix(p2,e2)
@@ -197,7 +194,6 @@ class SimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
     def _on_make_adjacent_callback(self, polygon_handle, e1):
         p1 = self._handle_to_polygon[polygon_handle]
         p2,e2 = self._ss.opposite_edge(p1,e1)
-        #print "p1="+str(p1)+" e1="+str(e1)+" p2="+str(p2)+" e2="+str(e2)
         m1 = self._gl[p1]
         mc = self._ss.edge_matrix(p2,e2)
         m2 = m1*mc
@@ -241,9 +237,7 @@ class SimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
 
         def _pick_point_callback(polygon_handle, x,y):
             from geometry.surface_point import SurfacePoint
-            #print "x="+str(x)+" and y="+str(y)
             v=self.screen_to_math_coordinates(x,y)
-            #print "v="+str(v)
             i=self._handle_to_polygon[polygon_handle]
             t=self._t[i]
             gl=self._gl[i]
@@ -274,9 +268,7 @@ class SimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
 
     def _draw_flow_callback(self,polygon_handle, x,y):
         from geometry.surface_point import SurfacePoint
-        #print "x="+str(x)+" and y="+str(y)
         v=self.screen_to_math_coordinates(x,y)
-        #print "v="+str(v)
         i=self._handle_to_polygon[polygon_handle]
         t=self._t[i]
         gl=self._gl[i]
@@ -299,9 +291,7 @@ class SimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
 
     def _draw_flow_with_skip_callback(self,polygon_handle, x,y):
         from geometry.surface_point import SurfacePoint
-        #print "x="+str(x)+" and y="+str(y)
         v=self.screen_to_math_coordinates(x,y)
-        #print "v="+str(v)
         i=self._handle_to_polygon[polygon_handle]
         t=self._t[i]
         gl=self._gl[i]
@@ -331,7 +321,6 @@ class SimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
         r"""
         Reset the cache storing the transformed vertices of polygon i.
         """
-        #print "Updating i="+str(i)
         t=self._t[i]
         gl=self._gl[i]
         imgs=[]
@@ -351,9 +340,7 @@ class SimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
         for i in self._visible:
             vs=self.get_transformed_vertices(i)
             for v in vs:
-                #print "v="+str(v)
                 if first:
-                    #print "running first"
                     xmin=v[0]
                     xmax=v[0]
                     ymin=v[1]
@@ -362,17 +349,12 @@ class SimilaritySurfaceBundle(SurfaceBundle, EditorRenderer):
                 else:
                     if v[0]<xmin:
                         xmin=v[0]
-                    #print "comparing v0="+str(v[0])+" with xmax="+str(xmax)
                     if v[0]>xmax:
-                        #print "v0 is larger"
                         xmax=v[0]
-                    #else:
-                    #    print "v0 is smaller"
                     if v[1]<ymin:
                         ymin=v[1]
                     if v[1]>ymax:
                         ymax=v[1]
-        #print "bbox="+str((xmin,ymin,xmax,ymax))
         return xmin,ymin,xmax,ymax
 
     def _render_polygon_fill(self,i):

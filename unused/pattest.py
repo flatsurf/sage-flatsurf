@@ -30,7 +30,6 @@ def test3():
     sb.set_transform(100,500,400)
     #sb.redraw_all()
     #pt=sb.pick_point()
-    #print str(pt)
     #V=ss.vector_space()
     #hol=V((100,110))
     #segments=pt.flow_segments(hol)

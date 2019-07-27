@@ -257,7 +257,7 @@ class Similarity(MultiplicativeGroupElement):
                     self._a*x - self._sign*self._b*y + self._s,
                     self._b*x + self._sign*self._a*y + self._t)
 
-    def _cmp_(self, other):
+    def __eq__(self, other):
         r"""
         TESTS::
 
@@ -272,11 +272,14 @@ class Similarity(MultiplicativeGroupElement):
             sage: S((1,0,0,0,1)) == S((1,0,0,0,-1))
             False
         """
-        return cmp(self._a,other._a) or \
-               cmp(self._b,other._b) or \
-               cmp(self._s,other._s) or \
-               cmp(self._t,other._t) or \
-               cmp(self._sign,other._sign)
+        return self._a == other._a and \
+               self._b == other._b and \
+               self._s == other._s and \
+               self._t == other._t and \
+               self._sign == other._sign
+
+    def __ne__(self, other):
+        return not (self == other)
 
     def matrix(self):
         r"""
