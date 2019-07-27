@@ -5,8 +5,8 @@ cache:
   ccache: true
   timeout: 1000
 env:
-  - SAGE_VERSION="8.5"
-  - SAGE_VERSION="8.6"
+  - SAGE_VERSION="8.7"
+  - SAGE_VERSION="8.8"
 before_install:
   - sudo apt-get -qq update
   - sudo apt-get install gcc g++ gfortran
