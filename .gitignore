@@ -4,3 +4,5 @@ build/
 *.ps
 doc/_build/*
 *.swp
+dist/
+MANIFEST
