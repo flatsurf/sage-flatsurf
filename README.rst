@@ -2,7 +2,7 @@ sage-flatsurf
 =============
 
 This is a software package for working with flat surfaces in
-`Sage <http://sagemath.org>`_. The flatsurf documentation
+`SageMath`_. The flatsurf documentation
 is available at http://www.labri.fr/perso/vdelecro/flatsurf/latest/
 
 We aim for this module to support the investigation of geometric, algebraic and
@@ -13,7 +13,7 @@ surfaces.
 
 Currently, the program can generate images of flat surfaces, plot straight-line
 trajectories, deform surfaces through the SL(2,R) action, and compute Delaunay
-decompositions. `Sage <http://sagemath.org>`_ is used to perform exact arithmetic.
+decompositions. `SageMath`_ is used to perform exact arithmetic.
 
 This software is open source released under GPL v2 (see the COPYING file). We
 welcome any help to improve the package and especially to broaden the package's
@@ -22,14 +22,14 @@ mathematical abilities.
 The package is currently in active development. If you would like assistance
 in using the package, please contact the authors.
 
-There is also a related `surface_dynamics package <http://www.labri.fr/perso/vdelecro/flatsurf_sage.html>`_.
+There is also a related `surface-dynamics`_.
 The code in this repository is currently independent of the package but
 the aim is to get them merged.
 
 Installing the dependency
 -------------------------
 
-Our software depends on the `surface_dynamics package <https://pypi.org/project/surface_dynamics/>`_.
+Our software depends on the `surface-dynamics`_.
 The module is distributed on PyPI. To install it, you just need to run the
 following command::
 
@@ -107,3 +107,6 @@ Acknowledgements
   Science Foundation.
 * Delecroix' contribution to the project has been supported by OpenDreamKit,
   Horizon 2020 European Research Infrastructures project #676541.
+
+.. _SageMath: http://sagemath.org
+.. _surface-dynamics:
