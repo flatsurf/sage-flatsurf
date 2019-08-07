@@ -41,7 +41,12 @@ space (and does not require administrator rights).
 Installing the module
 ---------------------
 
-To install sage-flatsurf, run the following command::
+sage-flatsurf is available on PyPI at https://pypi.org/project/sage-flatsurf/. To install the
+released version of sage-flatsurf, run the following command::
+
+    $ sage -pip install sage-flatsurf [--user] [--upgrade]
+
+To install the development version of sage-flatsurf, run::
 
     $ sage -pip install git+https://github.com/videlec/sage-flatsurf [--user] [--upgrade]
 
