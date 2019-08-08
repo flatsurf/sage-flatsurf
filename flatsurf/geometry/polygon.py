@@ -26,22 +26,10 @@ from six.moves import range, map, filter, zip
 
 import operator
 
-from sage.misc.cachefunc import cached_method
+from sage.all import cached_method, Parent, UniqueRepresentation, Sets, Fields, ZZ, QQ, AA, RR, matrix, polygen, vector, free_module_element
 
 from sage.structure.element import Element
-from sage.structure.parent import Parent
-from sage.structure.unique_representation import UniqueRepresentation
-
-from sage.categories.sets_cat import Sets
-from sage.categories.fields import Fields
 from sage.categories.action import Action
-
-from sage.rings.all import ZZ, QQ, AA, RR
-
-from sage.modules.free_module_element import vector
-from sage.modules.free_module_element import free_module_element
-from sage.matrix.constructor import matrix
-from sage.rings.polynomial.polynomial_ring import polygen
 
 from .matrix_2x2 import angle
 
