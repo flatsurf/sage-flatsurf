@@ -26,7 +26,9 @@ from six.moves import range, map, filter, zip
 
 import operator
 
-from sage.all import cached_method, Parent, UniqueRepresentation, Sets, Fields, ZZ, QQ, AA, RR, matrix, polygen, vector, free_module_element
+from sage.all import cached_method, Parent, UniqueRepresentation, Sets,\
+                     Fields, ZZ, QQ, AA, RR, matrix, polygen, vector,\
+                     free_module_element
 
 from sage.structure.element import Element
 from sage.categories.action import Action
