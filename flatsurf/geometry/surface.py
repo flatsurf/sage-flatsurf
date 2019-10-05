@@ -3,7 +3,7 @@ from six.moves import range, map, filter, zip
 from six import iteritems
 
 from sage.structure.sage_object import SageObject
-from sage.sets.family import Family
+
 
 class Surface(SageObject):
     r"""
@@ -277,7 +277,7 @@ class Surface(SageObject):
         self.__mutate()
         p=self.polygon(label)
         if p.num_edges() != len(glue_list):
-            raise ValueEror("len(glue_list)="+str(len(glue_list))+\
+            raise ValueError("len(glue_list)="+str(len(glue_list))+\
                 " and number of sides of polygon="+str(p.num_edges())+\
                 " should be the same.")
         for e,(pp,ee) in enumerate(glue_list):
@@ -1049,7 +1049,7 @@ class Surface_dict(Surface):
                     [ self._reference_surface.opposite_edge(lab,e) for e in range(polygon.num_edges()) ] ]
                 self._p[lab] = data
         if data is None:
-            raise ValueError("Label "+str(label)+" was removed from the surface.")
+            raise ValueError("Label "+str(lab)+" was removed from the surface.")
         return data[0]
 
     def opposite_edge(self, p, e):
