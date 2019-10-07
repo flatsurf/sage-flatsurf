@@ -238,7 +238,7 @@ class SurfacePoint(SageObject):
     def __repr__(self):
         if self.num_coordinates()==1:
             return "Surface point located at {} in polygon {}".format(
-                iter(next(self.coordinates(self.labels()[0]))),self.labels()[0])
+                next(iter(self.coordinates(self.labels()[0]))), self.labels()[0])
         else:
             return "Surface point with {} coordinate representations".format(
                 self.num_coordinates())
