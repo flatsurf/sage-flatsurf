@@ -11,9 +11,9 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
+   walk_through
    geometry
    graphical
-
 
 
 Indices and tables
