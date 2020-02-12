@@ -330,7 +330,9 @@ class ConvexPolygon(Element):
 
     def __hash__(self):
         # Apparently tuples do not cache their hash!
-        if not hasattr(self,"_hash"):
+        try:
+            return self._hash
+        except AttributeError:
             self._hash = hash(self._v)
         return self._hash
 
@@ -372,27 +374,27 @@ class ConvexPolygon(Element):
         if not self.parent().base_ring()==other.parent().base_ring():
             raise ValueError("__cmp__ only implemented for ConvexPolygons defined over the same base_ring")
         sign = self.num_edges() - other.num_edges()
-        if sign>0:
+        if sign > 0:
             return 1
-        if sign<0:
+        if sign < 0:
             return -1
         sign = self.area() - other.area()
-        if sign>self.base_ring().zero():
+        if sign > self.base_ring().zero():
             return 1
-        if sign<self.base_ring().zero():
+        if sign < self.base_ring().zero():
             return -1
         for v in range(1,self.num_edges()):
-            p=self.vertex(v)
-            q=other.vertex(v)
+            p = self.vertex(v)
+            q = other.vertex(v)
             sign = p[0]-q[0]
-            if sign>self.base_ring().zero():
+            if sign > self.base_ring().zero():
                 return 1
-            if sign<self.base_ring().zero():
+            if sign < self.base_ring().zero():
                 return -1
             sign = p[1]-q[1]
-            if sign>self.base_ring().zero():
+            if sign > self.base_ring().zero():
                 return 1
-            if sign<self.base_ring().zero():
+            if sign < self.base_ring().zero():
                 return -1
         return 0
 
