@@ -46,7 +46,7 @@ class SimilaritySurface(SageObject):
     label of the polygons is done at startup. If the set is finite then by
     default the labels are the first non-negative integers 0,1,...
 
-    The edges are identified by a pair (polygon label, edge number).
+    The edges are labeled by a pair ``(polygon label, edge number)``.
 
     EXAMPLES:
 
@@ -84,19 +84,19 @@ class SimilaritySurface(SageObject):
 
         sage: TestSuite(S).run()    # important sanity check!
 
-    Finally, you can als implement a similarity surface by inherting from
+    Finally, you can also implement a similarity surface by inheriting from
     :class:`SimilaritySurface` and implement the methods:
 
     - ``base_ring(self)``: the base ring in which coordinates lives
 
     - ``polygon(self, lab)``: the polygon associated to the label ``lab``
 
-    - ``base_label(self)``: return a first label
+    - ``base_label(self)``: which label to use as the base one
 
-    - ``opposite_edge(self, lab, edge)``: a couple (``other_label``,
+    - ``opposite_edge(self, lab, edge)``: a pair (``other_label``,
       ``other_edge``) representing the edge being glued
 
-    - ``is_finite(self)``: return whether the surface is built from finitely many polygons
+    - ``is_finite(self)``: whether the surface is built from finitely many polygons
     """
     def __init__(self, surface):
         r"""
