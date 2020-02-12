@@ -82,7 +82,39 @@ class SimilaritySurface(SageObject):
         sage: S
         SimilaritySurface built from 3 polygons
 
-        sage: TestSuite(S).run()    # important sanity check!
+    To perform a sanity check on the obtained surface, you can run its test
+    suite::
+
+        sage: TestSuite(S).run()
+
+    In the following example, we build two broken surfaces and
+    check that the test suite fails as expected::
+
+        sage: P = polygons(vertices=[(0,0), (1,0), (1,1), (0,1)])
+        sage: Stop = Surface_list(QQ)
+        sage: Stop.add_polygon(P)
+        0
+        sage: S = SimilaritySurface(Stop)
+        sage: TestSuite(S).run()
+        ...
+          AssertionError: edge (0, 0) is not glued
+          ------------------------------------------------------------
+          The following tests failed: _test_gluings
+        Failure in _test_underlying_surface
+        The following tests failed: _test_underlying_surface
+
+        sage: Stop.set_edge_pairing(0, 0, 0, 3)
+        sage: Stop.set_edge_pairing(0, 1, 0, 3)
+        sage: Stop.set_edge_pairing(0, 2, 0, 3)
+        sage: S = SimilaritySurface(Stop)
+        sage: TestSuite(S).run()
+        ...
+          AssertionError: edge gluing is not a pairing:
+          (0, 0) -> (0, 3) -> (0, 2)
+          ------------------------------------------------------------
+          The following tests failed: _test_gluings
+        Failure in _test_underlying_surface
+        The following tests failed: _test_underlying_surface
 
     Finally, you can also implement a similarity surface by inheriting from
     :class:`SimilaritySurface` and implement the methods:
