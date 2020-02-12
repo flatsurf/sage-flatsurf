@@ -11,6 +11,8 @@
 from __future__ import absolute_import, print_function, division
 from six.moves import range, map, filter, zip
 
+import itertools
+
 from .surface import Surface
 from .half_dilation_surface import HalfDilationSurface
 from .rational_cone_surface import RationalConeSurface
@@ -19,7 +21,6 @@ class HalfTranslationSurface(HalfDilationSurface, RationalConeSurface):
     r"""
     A half translation surface has gluings between polygons whose monodromy is +I or -I.
     """
-    
     def _test_edge_matrix(self, **options):
         r"""
         Check the compatibility condition
@@ -29,7 +30,6 @@ class HalfTranslationSurface(HalfDilationSurface, RationalConeSurface):
         if self.is_finite():
             it = self.label_iterator()
         else:
-            from itertools import islice
             it = islice(self.label_iterator(), 30)
 
         for lab in it:
@@ -37,7 +37,7 @@ class HalfTranslationSurface(HalfDilationSurface, RationalConeSurface):
             for e in range(p.num_edges()):
                 # Warning: check the matrices computed from the edges,
                 # rather the ones overriden by TranslationSurface.
-                tester.assertTrue(SimilaritySurface.edge_matrix(self,lab,e).is_one() or \
-                    (-SimilaritySurface.edge_matrix(self,lab,e)).is_one(), \
-                    "edge_matrix of edge "+str((lab,e))+" is not a translation or rotation by pi.")
+                m = SimilaritySurface.edge_matrix(self,lab,e)
+                tester.assertTrue(m.is_one() or (-m).is_one(),
+                    "edge_matrix between edge e={} and e'={} has matrix\n{}\nwhich is neither a translation nor a rotation by pi".format((lab,e), self.opposite_edge((lab,e)), m))
 
