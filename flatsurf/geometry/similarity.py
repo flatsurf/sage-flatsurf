@@ -60,7 +60,7 @@ class Similarity(MultiplicativeGroupElement):
 
     def is_translation(self):
         r"""
-        Test whether this element is a translation
+        Return whether this element is a translation.
 
         EXAMPLES::
 
@@ -74,6 +74,23 @@ class Similarity(MultiplicativeGroupElement):
             False
         """
         return self._sign.is_one() and self._a.is_one() and self._b.is_zero()
+
+    def is_half_translation(self):
+        r"""
+        Return whether this element is a half translation.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.similarity import SimilarityGroup
+            sage: S = SimilarityGroup(QQ)
+            sage: S((1,2)).is_half_translation()
+            True
+            sage: S((-1, 0, 0, 2)).is_half_translation()
+            True
+            sage: S((0,1,0,0)).is_half_translation()
+            False
+        """
+        return self._sign.is_one() and (self._a.is_one() or ((-self._a).is_one())) and self._b.is_zero()
 
     def is_orientable(self):
         return self._sign.is_one()

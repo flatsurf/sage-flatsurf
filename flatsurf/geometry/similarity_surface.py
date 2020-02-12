@@ -1109,11 +1109,20 @@ class SimilaritySurface(SageObject):
         """
         return Singularity(self,l,v,limit)
 
-    def surface_point(self, label, point, ring=None, limit=None):
+    def point(self, label, point, ring=None, limit=None):
         r"""
-        Return a SurfacePoint representing the provided point in the polygon with the
-        provided label. Limit is only necessary if representing a singularity in
-        an infinite surface.
+        Return a point in this surface.
+
+        INPUT:
+
+        - ``label`` - label of the polygon
+
+        - ``point`` - coordinates of the point inside the polygon
+
+        - ``ring`` (optional) - a ring for the coordinates
+
+        - ``limit`` (optional) - undocumented (only necessary if the point corresponds
+          to a singularity in an infinite surface)
 
         EXAMPLES::
 
@@ -1131,6 +1140,9 @@ class SimilaritySurface(SageObject):
             Vector space of dimension 2 over Algebraic Real Field
         """
         return SurfacePoint(self, label, point, ring=ring, limit=limit)
+
+    # TODO: deprecate
+    surface_point = point
 
     def minimal_cover(self, cover_type = "translation"):
         r"""
