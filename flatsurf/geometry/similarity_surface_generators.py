@@ -9,7 +9,8 @@ from sage.structure.sequence import Sequence
 ZZ_1 = ZZ(1)
 ZZ_2 = ZZ(2)
 
-from .polygon import polygons
+from .polygon import polygons, ConvexPolygons
+
 from .surface import Surface, Surface_list
 from .translation_surface import TranslationSurface
 from .similarity_surface import SimilaritySurface
@@ -68,13 +69,13 @@ class EInfinitySurface(Surface):
 
      The biparite graph is shown below, with edges numbered:
 
-      0   1   2  -2   3  -3   4  -4 
+      0   1   2  -2   3  -3   4  -4
     *---o---*---o---*---o---*---o---*...
             |
             |-1
             o
 
-    Here, black vertices are colored *, and white o. 
+    Here, black vertices are colored *, and white o.
     Black nodes represent vertical cylinders and white nodes
     represent horizontal cylinders.
     """
@@ -193,7 +194,7 @@ class EInfinitySurface(Surface):
                 return -p,(e+2)%4
             else:
                 return 1-p,(e+2)%4
-        
+
 class TFractalSurface(Surface):
     r"""
     The TFractal surface.
@@ -234,9 +235,9 @@ class TFractalSurface(Surface):
         self._words = Words('LR', finite=True, infinite=False)
         self._wL = self._words('L')
         self._wR = self._words('R')
-        
+
         base_label=self.polygon_labels()._cartesian_product_of_elements((self._words(''), 0))
-        
+
         Surface.__init__(self, field, base_label, finite=False)
 
     def _repr_(self):
@@ -354,7 +355,6 @@ class TFractalSurface(Surface):
 
     @cached_method
     def _base_polygon(self, i):
-        from .polygon import Polygons
         if i == 0:
             w = self._w
             h = self._h1
@@ -364,7 +364,7 @@ class TFractalSurface(Surface):
         if i == 2:
             w = self._w
             h = self._h2
-        return Polygons(self.base_ring())([(w,0),(0,h),(-w,0),(0,-h)])
+        return ConvexPolygons(self.base_ring())([(w,0),(0,h),(-w,0),(0,-h)])
 
 def tfractal_surface(w=ZZ_1, r=ZZ_2, h1=ZZ_1, h2=ZZ_1):
     return TranslationSurface(TFractalSurface(w,r,h1,h2))
@@ -397,7 +397,7 @@ class SimilaritySurfaceGenerators:
     def self_glued_polygon(P):
         r"""
         Return the HalfTranslationSurface formed by gluing all edges of P to themselves.
-        
+
         EXAMPLES::
 
             sage: from flatsurf import *
@@ -438,7 +438,7 @@ class SimilaritySurfaceGenerators:
         surface.add_polygon(P) # gets label 0)
         surface.add_polygon(Q) # gets label 1
         surface.change_polygon_gluings(0,[(1,n-i-1) for i in range(n)])
-        
+
         surface.set_immutable()
         s = ConeSurface(surface)
         gs = s.graphical_surface(edge_labels=False, polygon_labels=False)
@@ -476,17 +476,15 @@ class SimilaritySurfaceGenerators:
             ConeSurface built from 2 polygons
             sage: TestSuite(R).run()
         """
-        from sage.structure.sequence import Sequence
-        from .polygon import Polygons
         from sage.modules.free_module import VectorSpace
         from sage.modules.free_module_element import vector
 
         F = Sequence([w,h]).universe()
-        
+
         if not F.is_field():
             F = F.fraction_field()
         V = VectorSpace(F,2)
-        P = Polygons(F)
+        P = ConvexPolygons(F)
         s = Surface_list(base_ring=F)
         s.add_polygon(P([V((w,0)),V((-w,h)),V((0,-h))])) # gets label 0
         s.add_polygon(P([V((0,h)),V((-w,-h)),V((w,0))])) # gets label 1
@@ -519,8 +517,6 @@ class HalfTranslationSurfaceGenerators:
             HalfTranslationSurface built from 8 polygons
             sage: TestSuite(S).run()
         """
-        from .polygon import ConvexPolygons
-
         n = len(h)
         assert len(w) == n
         if n < 2:
@@ -549,7 +545,7 @@ class HalfTranslationSurfaceGenerators:
         S.rename("StepBilliard(w=[%s], h=[%s])" % (', '.join(map(str, w)), ', '.join(map(str, h))))
         S.add_polygons(P)    # get labels 0, ..., n-1
         S.add_polygons(Prev) # get labels n, n+1, ..., 2n-1
-    
+
         # reflection gluings
         # (gluings between the polygon and its reflection)
         S.set_edge_pairing(0, 4, n, 4)
@@ -591,7 +587,7 @@ class TranslationSurfaceGenerators:
             sage: T
             TranslationSurface built from 1 polygon
             sage: TestSuite(T).run()
-            
+
         Rational directions are completely periodic::
 
             sage: v = T.tangent_vector(0, (1/33, 1/257), (13,17))
@@ -613,7 +609,7 @@ class TranslationSurfaceGenerators:
     def veech_2n_gon(n):
         r"""
         The regular 2n-gon with opposite sides identified.
-        
+
         EXAMPLES::
 
             sage: from flatsurf import *
@@ -632,7 +628,7 @@ class TranslationSurfaceGenerators:
     def veech_double_n_gon(n):
         r"""
         A pair of regular n-gons with each edge of one identified to an edge of the other to make a translation surface.
-        
+
         EXAMPLES::
 
             sage: from flatsurf import *
@@ -684,7 +680,7 @@ class TranslationSurfaceGenerators:
             |  0  |    2    |l2
             |     |         |
             +-----+---------+
-              l3        
+              l3
 
         EXAMPLES::
 
@@ -692,8 +688,6 @@ class TranslationSurfaceGenerators:
             sage: s = translation_surfaces.mcmullen_L(1,1,1,1)
             sage: TestSuite(s).run()
         """
-        from sage.structure.sequence import Sequence
-        
         field = Sequence([l1,l2,l3,l4]).universe()
         if not field.is_field():
             field = field.fraction_field()
@@ -716,7 +710,7 @@ class TranslationSurfaceGenerators:
         r"""
         Return the surface formed by gluing a regular 2n-gon to two regular n-gons.
         These surfaces have Veech's lattice property due to work of Ward.
-        
+
         EXAMPLES::
 
             sage: from flatsurf import *
@@ -756,11 +750,11 @@ class TranslationSurfaceGenerators:
     def arnoux_yoccoz(genus):
         r"""
         Construct the Arnoux-Yoccoz surface of genus 3 or greater.
-        
-        This presentation of the surface follows Section 2.3 of 
-        Joshua P. Bowman's paper "The Complete Family of Arnoux-Yoccoz 
+
+        This presentation of the surface follows Section 2.3 of
+        Joshua P. Bowman's paper "The Complete Family of Arnoux-Yoccoz
         Surfaces."
-        
+
         EXAMPLES::
 
             sage: from flatsurf import *
@@ -775,7 +769,7 @@ class TranslationSurfaceGenerators:
             sage: m = Matrix([[a,0],[0,~a]])
             sage: ss = m*s
             sage: ss = ss.canonicalize()
-            sage: s.cmp_translation_surface(ss)==0
+            sage: s.cmp_translation_surface(ss) == 0   # known bug
             True
 
         The Arnoux-Yoccoz pseudo-Anosov are known to have (minimal) invariant
@@ -821,8 +815,7 @@ class TranslationSurfaceGenerators:
             p[i]=V(( (a-a**i)/(1-a) , a/(1-a) ))
         for i in range(1,g+1):
             q[i]=V(( (2*a-a**i-a**(i+1))/(2*(1-a)), (a-a**(g-i+2))/(1-a) ))
-        from flatsurf.geometry.polygon import Polygons
-        P=Polygons(field)
+        P = ConvexPolygons(field)
         s = Surface_list(field)
         T = [None] * (2*g+1)
         Tp = [None] * (2*g+1)
@@ -902,7 +895,6 @@ class TranslationSurfaceGenerators:
             sage: a = flipper_nf_element_to_sage(h.dilatation())  # optional - flipper
         """
         from sage.modules.free_module import VectorSpace
-        from .polygon import ConvexPolygons
         from .surface import surface_list_from_polygons_and_gluings
 
         f = h.flat_structure()
@@ -1010,16 +1002,16 @@ class TranslationSurfaceGenerators:
 
         The biparite graph is shown below, with edges numbered:
 
-          0   1   2  -2   3  -3   4  -4 
+          0   1   2  -2   3  -3   4  -4
         *---o---*---o---*---o---*---o---*...
                 |
                 |-1
                 o
 
-        Here, black vertices are colored *, and white o. 
+        Here, black vertices are colored *, and white o.
         Black nodes represent vertical cylinders and white nodes
         represent horizontal cylinders.
-        
+
         EXAMPLES::
 
             sage: from flatsurf import *
