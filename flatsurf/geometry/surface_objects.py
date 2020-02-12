@@ -236,9 +236,17 @@ class SurfacePoint(SageObject):
             return self.graphical_surface_point().plot(**options)
 
     def __repr__(self):
-        if self.num_coordinates()==1:
+        r"""
+        TESTS::
+
+            sage: from flatsurf import half_translation_surfaces
+            sage: S = half_translation_surfaces.step_billiard([1,1,1,1], [1, 1/2, 1/3, 1/4])
+            sage: S.point(0, (1/2,1/2))
+            Surface point located at (1/2, 1/2) in polygon 0
+        """
+        if self.num_coordinates() == 1:
             return "Surface point located at {} in polygon {}".format(
-                iter(next(self.coordinates(self.labels()[0]))),self.labels()[0])
+                next(iter(self.coordinates(self.labels()[0]))),self.labels()[0])
         else:
             return "Surface point with {} coordinate representations".format(
                 self.num_coordinates())
