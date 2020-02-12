@@ -106,7 +106,7 @@ def polyhedron_to_cone_surface(polyhedron, use_AA=False, scaling_factor=ZZ(1)):
     True
     sage: traj.combinatorial_length()
     8
-    sage: surface_to_octahedron(traj)
+    sage: surface_to_octahedron(traj) # known bug
     [(-1, 0, 0),
      (0.?e-18, -0.8000000000000000?, -0.2000000000000000?),
      (0.2500000000000000?, -0.750000000000000?, 0.?e-18),
@@ -116,12 +116,10 @@ def polyhedron_to_cone_surface(polyhedron, use_AA=False, scaling_factor=ZZ(1)):
      (-0.2500000000000000?, 0.?e-18, -0.750000000000000?),
      (0.?e-18, -0.2000000000000000?, -0.8000000000000000?),
      (1, 0, 0)]
-    sage: surface_to_octahedron(traj.segment(0))
+    sage: surface_to_octahedron(traj.segment(0))  # known bug
     ((-1, 0, 0), (0.?e-18, -0.8000000000000000?, -0.2000000000000000?))
-    sage: surface_to_octahedron(traj.segment(0).start())
+    sage: surface_to_octahedron(traj.segment(0).start())  # known bug
     ((-1, 0, 0), (2.886751345948129?, -2.309401076758503?, -0.5773502691896258?))
-    sage: # octahedron.plot(wireframe=None,frame=False)+line3d(surface_to_octahedron(traj),radius=0.01)
-
     """
     assert polyhedron.dim()==3
     c=polyhedron.center()

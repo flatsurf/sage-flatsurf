@@ -1,6 +1,6 @@
 from __future__ import absolute_import, print_function, division
 from six.moves import range, map, filter, zip
-from six import iteritems
+from six import iteritems, itervalues
 
 from sage.rings.all import ZZ, QQ, RIF, AA, NumberField
 from sage.misc.cachefunc import cached_method
@@ -28,25 +28,24 @@ def flipper_nf_to_sage(K, name='a'):
     EXAMPLES::
 
         sage: import flipper  # optional - flipper
+        sage: import realalg  # optional - flipper
         sage: from flatsurf.geometry.similarity_surface_generators import flipper_nf_to_sage
-        sage: p = flipper.kernel.Polynomial([-2r] + [0r]*5 + [1r]) # optional - flipper
-        sage: r1,r2 = p.real_roots()                               # optional - flipper
-        sage: K = flipper.kernel.NumberField(r1)                   # optional - flipper
+        sage: K = realalg.RealNumberField([-2r] + [0r]*5 + [1r])   # optional - flipper
         sage: K_sage = flipper_nf_to_sage(K)                       # optional - flipper
         sage: K_sage                                               # optional - flipper
-        Number Field in a with defining polynomial x^6 - 2
+        Number Field in a with defining polynomial x^6 - 2 with a = 1.122462048309373?
         sage: AA(K_sage.gen())                                     # optional - flipper
-        -1.122462048309373?
+        1.122462048309373?
     """
-    r = K.lmbda.interval_approximation()
+    r = K.lmbda.interval()
     l = r.lower * ZZ(10)**(-r.precision)
     u = r.upper * ZZ(10)**(-r.precision)
 
-    p = QQ['x'](K.polynomial.coefficients)
+    p = QQ['x'](K.coefficients)
     s = AA.polynomial_root(p, RIF(l,u))
     return NumberField(p, name, embedding=s)
 
-def flipper_nf_element_to_sage(x):
+def flipper_nf_element_to_sage(x, K=None):
     r"""
     Convert a flipper number field element into Sage
 
@@ -61,7 +60,11 @@ def flipper_nf_element_to_sage(x):
         sage: AA(_)                                        # optional - flipper
         6.45052513748511?
     """
-    return flipper_nf_to_sage(x.number_field)(x.linear_combination)
+    if K is None:
+        K = flipper_nf_to_sage(x.field)
+    coeffs = list(map(QQ, x.coefficients))
+    coeffs.extend([0] * (K.degree() - len(coeffs)))
+    return K(coeffs)
 
 class EInfinitySurface(Surface):
     r"""
@@ -899,10 +902,11 @@ class TranslationSurfaceGenerators:
 
         f = h.flat_structure()
 
-        x = next(f.edge_vectors.itervalues()).x
-        K = flipper_nf_to_sage(x.number_field)
+        x = next(itervalues(f.edge_vectors)).x
+        K = flipper_nf_to_sage(x.field)
         V = VectorSpace(K, 2)
-        edge_vectors = {i: V((K(e.x.linear_combination), K(e.y.linear_combination)))
+        edge_vectors = {i: V((flipper_nf_element_to_sage(e.x, K),
+                              flipper_nf_element_to_sage(e.y, K)))
                 for i,e in iteritems(f.edge_vectors)}
 
         to_polygon_number = {k:(i,j) for i,t in enumerate(f.triangulation) for j,k in enumerate(t)}

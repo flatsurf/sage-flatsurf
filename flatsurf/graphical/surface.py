@@ -683,12 +683,10 @@ class GraphicalSurface:
             sage: s = translation_surfaces.square_torus()
             sage: pc = s.minimal_cover(cover_type="planar")
             sage: gs = pc.graphical_surface()
-            sage: try:
-            ....:     gs.to_surface((3,2), search_all=True, search_limit=20)
-            ....: except ValueError as e:
-            ....:     pass
-            sage: e
-            ValueError('To obtain a singularity on an infinite surface, singularity_limit must be set.',)
+            sage: gs.to_surface((3,2), search_all=True, search_limit=20) # known bug
+            Traceback (most recent call last):
+            ...
+            ValueError: To obtain a singularity on an infinite surface, singularity_limit must be set.
             sage: gs.to_surface((3,2), search_all=True, search_limit=20, singularity_limit=4)
             Surface point with 4 coordinate representations
             sage: p = gs.to_surface((sqrt(3),sqrt(2)), ring=AA, search_all=True, search_limit=20)

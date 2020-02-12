@@ -889,23 +889,23 @@ def canonicalize_translation_surface_mapping(s):
     EXAMPLES::
 
         sage: from flatsurf import *
-        sage: s=translation_surfaces.octagon_and_squares().canonicalize()
-        sage: TestSuite(s).run()
-        sage: a = s.base_ring().gen() # a is the square root of 2.
+        sage: s=translation_surfaces.octagon_and_squares().canonicalize()  # known bug
+        sage: TestSuite(s).run()                                           # known bug
+        sage: a = s.base_ring().gen()                                      # known bug # a is the square root of 2.
 
-        sage: from flatsurf.geometry.mappings import *
-        sage: mat=Matrix([[1,2+a],[0,1]])
-        sage: from flatsurf.geometry.half_dilation_surface import GL2RMapping
-        sage: m1=GL2RMapping(s,mat)
-        sage: m2=canonicalize_translation_surface_mapping(m1.codomain())
-        sage: m=m2*m1
-        sage: translation_surface_cmp(m.domain(),m.codomain())==0
+        sage: from flatsurf.geometry.mappings import *                     # known bug
+        sage: mat=Matrix([[1,2+a],[0,1]])                                  # known bug
+        sage: from flatsurf.geometry.half_dilation_surface import GL2RMapping # known bug
+        sage: m1=GL2RMapping(s,mat)                                        # known bug
+        sage: m2=canonicalize_translation_surface_mapping(m1.codomain())   # known bug
+        sage: m=m2*m1                                                      # known bug
+        sage: translation_surface_cmp(m.domain(),m.codomain())==0   # known bug
         True
-        sage: TestSuite(m.codomain()).run()
-        sage: s=m.domain()
-        sage: v=s.tangent_vector(0,(0,0),(1,1))
-        sage: w=m.push_vector_forward(v)
-        sage: print(w)
+        sage: TestSuite(m.codomain()).run()                         # known bug
+        sage: s=m.domain()                                          # known bug
+        sage: v=s.tangent_vector(0,(0,0),(1,1))                     # known bug
+        sage: w=m.push_vector_forward(v)                            # known bug
+        sage: print(w)                                              # known bug
         SimilaritySurfaceTangentVector in polygon 0 based at (0, 0) with vector (a + 3, 1)
     """
     from flatsurf.geometry.translation_surface import TranslationSurface

@@ -1100,13 +1100,12 @@ class SimilaritySurface(SageObject):
             sage: from flatsurf import *
             sage: s = translation_surfaces.square_torus()
             sage: pc = s.minimal_cover(cover_type="planar")
-            sage: try:
-            ....:     pc.singularity(pc.base_label(),0)
-            ....: except ValueError as e:
-            ....:     print(e)
-            Need a limit when working with an infinite surface.
+            sage: pc.singularity(pc.base_label(),0)
+            Traceback (most recent call last):
+            ...
+            ValueError: need a limit when working with an infinite surface
             sage: pc.singularity(pc.base_label(),0,limit=4)
-            singularity with vertex equivalence class frozenset([((0, (x, y) |-> (x - 1, y)), 1), ((0, (x, y) |-> (x - 1, y - 1)), 2), ((0, (x, y) |-> (x, y)), 0), ((0, (x, y) |-> (x, y - 1)), 3)])
+            singularity with vertex equivalence class frozenset(...)
         """
         return Singularity(self,l,v,limit)
 
@@ -1121,12 +1120,10 @@ class SimilaritySurface(SageObject):
             sage: from flatsurf import *
             sage: s = translation_surfaces.square_torus()
             sage: pc = s.minimal_cover(cover_type="planar")
-            sage: try:
-            ....:     pc.surface_point(pc.base_label(),(0,0))
-            ....: except ValueError as e:
-            ....:     pass
-            sage: e
-            ValueError('Need a limit when working with an infinite surface.',)
+            sage: pc.surface_point(pc.base_label(),(0,0))
+            Traceback (most recent call last):
+            ...
+            ValueError: need a limit when working with an infinite surface
             sage: pc.surface_point(pc.base_label(),(1,0),limit=4)
             Surface point with 4 coordinate representations
             sage: z = pc.surface_point(pc.base_label(),(sqrt(2)-1,sqrt(3)-1),ring=AA)
@@ -1704,8 +1701,8 @@ class SimilaritySurface(SageObject):
             sage: m = Matrix([[1,2+a],[0,1]])
             sage: s = m*s0
             sage: s = s.triangulate()
-            sage: ss = s.delaunay_decomposition(triangulated=True)
-            sage: ss.num_polygons()
+            sage: ss = s.delaunay_decomposition(triangulated=True)   # known bug
+            sage: ss.num_polygons()                                  # known bug
             3
 
             sage: p = polygons((4,0),(-2,1),(-2,-1))

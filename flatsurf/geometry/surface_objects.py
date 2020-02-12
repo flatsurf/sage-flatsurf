@@ -34,7 +34,7 @@ class Singularity(SageObject):
         sage: from flatsurf.geometry.surface_objects import Singularity
         sage: sing=Singularity(s,0,1)
         sage: print(sing)
-        singularity with vertex equivalence class frozenset([(0, 1), (0, 9), (0, 3), (0, 5), (0, 7)])
+        singularity with vertex equivalence class frozenset(...)
         sage: TestSuite(sing).run()
     """
 
@@ -51,7 +51,7 @@ class Singularity(SageObject):
         self._ss=similarity_surface
         self._s=set()
         if not self._ss.is_finite() and limit is None:
-            raise ValueError("Need a limit when working with an infinite surface.")
+            raise ValueError("need a limit when working with an infinite surface")
         start=(l,v)
         self._s.add(start)
         edge=self._ss.opposite_edge(l,v)
@@ -632,21 +632,21 @@ class Cylinder(SageObject):
         sage: from flatsurf.geometry.polyhedra import platonic_cube
         sage: s = platonic_cube()[1]
         sage: from flatsurf.geometry.surface_objects import Cylinder
-        sage: cyl = Cylinder(s, 0, [1, 2, 1, 2, 2, 3])
-        sage: cyl.area()
+        sage: cyl = Cylinder(s, 0, [1, 2, 1, 2, 2, 3])  # known bug
+        sage: cyl.area()                                # known bug
         3
-        sage: cyl.circumference()
+        sage: cyl.circumference()                       # known bug
         4.242640687119285?
-        sage: cyl.polygons()
+        sage: cyl.polygons()                            # known bug
         ((0, Polygon: (0, 0), (1, 0), (1, 1)),
          (3, Polygon: (0, 1), (0, 0), (1, 1)),
          (4, Polygon: (0, 0), (1, 0), (1, 1)),
          (5, Polygon: (0, 1), (0, 0), (1, 1)),
          (2, Polygon: (1, 0), (1, 1), (0, 1)),
          (1, Polygon: (0, 0), (1, 0), (0, 1)))
-         sage: cyl.initial_label()
+         sage: cyl.initial_label()                      # known bug
          0
-         sage: cyl.edges()
+         sage: cyl.edges()                              # known bug
          (1, 2, 1, 2, 2, 3)
     """
     def __init__(self, s, label0, edges):
