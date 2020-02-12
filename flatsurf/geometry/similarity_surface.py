@@ -6,7 +6,10 @@ from __future__ import absolute_import, print_function, division
 from six.moves import range, map, filter, zip
 from six import iteritems
 
+import itertools
+
 from sage.misc.cachefunc import cached_method
+from sage.misc.sage_unittest import TestSuite
 
 from sage.structure.sage_object import SageObject
 
@@ -57,13 +60,22 @@ class SimilaritySurface(SageObject):
         - opposite_edge(self, lab, edge): a couple (``other_label``, ``other_edge``) representing the edge being glued
         - is_finite(self): return true if the surface is built from finitely many labeled polygons
     """
-
     def __init__(self, surface):
-        if isinstance(surface,SimilaritySurface):
-            self._s=surface.underlying_surface()
+        r"""
+        TESTS::
+
+            sage: from flatsurf.geometry.similarity_surface import SimilaritySurface
+            sage: SimilaritySurface(3)
+            Traceback (most recent call last):
+            ...
+            TypeError: invalid argument surface=3 to build a half-translation surface
+        """
+        if isinstance(surface, SimilaritySurface):
+            self._s = surface.underlying_surface()
+        elif isinstance(surface, Surface):
+            self._s = surface
         else:
-            self._s=surface
-        assert isinstance(self._s,Surface)
+            raise TypeError("invalid argument surface={} to build a half-translation surface".format(surface))
 
     def underlying_surface(self):
         r"""
@@ -71,58 +83,12 @@ class SimilaritySurface(SageObject):
         """
         return self._s
 
-    def _check(self):
-        r"""
-        DEPRECATED
-
-        Just use the standard test suite to implement tests
-
-        EXAMPLES::
-
-            sage: from flatsurf import *
-            sage: s = translation_surfaces.veech_2n_gon(6)
-            sage: TestSuite(s).run()
-        """
-        from sage.misc.superseded import deprecation
-        deprecation(33, "Just use TestSuite!...")
-        from sage.misc.sage_unittest import TestSuite
-        TestSuite(self).run()
-
-    def _test_gluings(self, **options):
-        # This test was moved to Surface. We still want to run it though.
+    def _test_underlying_surface(self, **options):
         tester = self._tester(**options)
-        options2 = options.copy()
-        options2['tester']=tester
-        self.underlying_surface()._test_gluings(**options2)
-
-    def _test_base_label(self, **options):
-        # This test is in Surface.
-        tester = self._tester(**options)
-        options2 = options.copy()
-        options2['tester']=tester
-        self.underlying_surface()._test_base_label(**options2)
-
-    def _test_base_ring(self, **options):
-        # This test is in Surface.
-        tester = self._tester(**options)
-        options2 = options.copy()
-        options2['tester']=tester
-        self.underlying_surface()._test_base_ring(**options2)
-
-    def _test_override(self, **options):
-        # This test is in Surface.
-        tester = self._tester(**options)
-        options2 = options.copy()
-        options2['tester']=tester
-        self.underlying_surface()._test_override(**options2)
-
-    def _test_polygons(self, **options):
-        # This test is in Surface.
-        tester = self._tester(**options)
-        options2 = options.copy()
-        options2['tester']=tester
-        self.underlying_surface()._test_polygons(**options2)
-
+        tester.info("")
+        TestSuite(self._s).run(verbose = tester._verbose,
+                                prefix = tester._prefix + "  ")
+        tester.info(tester._prefix + " ", newline=False)
 
     def base_ring(self):
         r"""
