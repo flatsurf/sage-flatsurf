@@ -84,10 +84,23 @@ class SimilaritySurface(SageObject):
         return self._s
 
     def _test_underlying_surface(self, **options):
+        is_sub_testsuite = 'tester' in options
         tester = self._tester(**options)
         tester.info("")
+
+        # TODO: this nested subsuite is very fragile since we have no
+        #       way of forwarding the doctests to be skipped... Since
+        #       for now, the unique usage of this is for pickling of
+        #       infinite surface we provide that manually
+        if not self._s.is_finite():
+            skip = ['_test_pickling']
+        else:
+            skip = []
+
         TestSuite(self._s).run(verbose = tester._verbose,
-                                prefix = tester._prefix + "  ")
+                                prefix = tester._prefix + "  ",
+                                raise_on_failure=is_sub_testsuite,
+                                skip=skip)
         tester.info(tester._prefix + " ", newline=False)
 
     def base_ring(self):
