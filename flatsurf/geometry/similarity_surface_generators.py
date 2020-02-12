@@ -4,6 +4,7 @@ from six import iteritems
 
 from sage.rings.all import ZZ, QQ, RIF, AA, NumberField
 from sage.misc.cachefunc import cached_method
+from sage.structure.sequence import Sequence
 
 ZZ_1 = ZZ(1)
 ZZ_2 = ZZ(2)
@@ -221,7 +222,6 @@ class TFractalSurface(Surface):
         cartesian product (see Sage trac ticket #19555)
     """
     def __init__(self, w=ZZ_1, r=ZZ_2, h1=ZZ_1, h2=ZZ_1):
-        from sage.structure.sequence import Sequence
         from sage.combinat.words.words import Words
 
         field = Sequence([w,r,h1,h2]).universe()
@@ -502,6 +502,77 @@ class SimilaritySurfaceGenerators:
     #    return SimilaritySurface(Surface_polygons_and_gluings(*args, **kwds))
 
 similarity_surfaces = SimilaritySurfaceGenerators()
+
+class HalfTranslationSurfaceGenerators:
+    # TODO: ideally, we should be able to construct a non-convex polygon and make the construction
+    # below as a special case of billiard unfolding.
+    @staticmethod
+    def step_billiard(w, h):
+        r"""
+        Return a (finite) step billiard associated to the given widths ``w`` and heights ``h``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import half_translation_surfaces
+            sage: S = half_translation_surfaces.step_billiard([1,1,1,1], [1,1/2,1/3,1/5])
+            sage: S
+            HalfTranslationSurface built from 8 polygons
+            sage: TestSuite(S).run()
+        """
+        from .polygon import ConvexPolygons
+
+        n = len(h)
+        assert len(w) == n
+        if n < 2:
+            raise ValueError("w and h must have length at least 2")
+        H = sum(h)
+        W = sum(w)
+
+        R = Sequence(w + h).universe()
+        C = ConvexPolygons(R.fraction_field())
+
+        P = []
+        Prev = []
+        x = 0
+        y = H
+        for i in range(n - 1):
+            P.append(C(vertices=[(x, 0), (x + w[i], 0), (x + w[i], y - h[i]), (x + w[i], y), (x, y)]))
+            x += w[i]
+            y -= h[i]
+        assert x == W - w[-1]
+        assert y == h[-1]
+        P.append(C(vertices=[(x, 0), (x + w[-1], 0), (x + w[-1], y), (x, y)]))
+
+        Prev = [C(vertices=[(x, -y) for x,y in reversed(p.vertices())]) for p in P]
+
+        S = Surface_list(base_ring = C.base_ring())
+        S.rename("StepBilliard(w=[%s], h=[%s])" % (', '.join(map(str, w)), ', '.join(map(str, h))))
+        S.add_polygons(P)    # get labels 0, ..., n-1
+        S.add_polygons(Prev) # get labels n, n+1, ..., 2n-1
+    
+        # reflection gluings
+        # (gluings between the polygon and its reflection)
+        S.set_edge_pairing(0, 4, n, 4)
+        S.set_edge_pairing(n-1, 0, 2*n-1, 2)
+        S.set_edge_pairing(n-1, 1, 2*n-1, 1)
+        S.set_edge_pairing(n-1, 2, 2*n-1, 0)
+        for i in range(n-1):
+            # set_edge_pairing(polygon1, edge1, polygon2, edge2)
+            S.set_edge_pairing(i, 0, n+i, 3)
+            S.set_edge_pairing(i, 2, n+i, 1)
+            S.set_edge_pairing(i, 3, n+i, 0)
+
+        # translation gluings
+        S.set_edge_pairing(n-2, 1, n-1, 3)
+        S.set_edge_pairing(2*n-2, 2, 2*n-1, 3)
+        for i in range(n-2):
+            S.set_edge_pairing(i, 1, i+1, 4)
+            S.set_edge_pairing(n+i, 2, n+i+1, 4)
+
+        S.set_immutable()
+        return HalfTranslationSurface(S)
+
+half_translation_surfaces = HalfTranslationSurfaceGenerators()
 
 class TranslationSurfaceGenerators:
     r"""
