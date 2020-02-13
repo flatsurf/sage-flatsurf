@@ -388,20 +388,14 @@ class Surface(SageObject):
 
     def _test_base_ring(self, **options):
         # Test that the base_label is associated to a polygon
-        if 'tester' in options:
-            tester = options['tester']
-        else:
-            tester = self._tester(**options)
+        tester = self._tester(**options)
         from sage.rings.ring import Field
         tester.assertTrue(isinstance(self.base_ring(), Field), \
             "base_ring="+str(self.base_ring())+" is not a Field.")
 
     def _test_base_label(self, **options):
         # Test that the base_label is associated to a polygon
-        if 'tester' in options:
-            tester = options['tester']
-        else:
-            tester = self._tester(**options)
+        tester = self._tester(**options)
         from .polygon import ConvexPolygon
         tester.assertTrue(isinstance(self.polygon(self.base_label()), ConvexPolygon), \
             "polygon(base_label) does not return a ConvexPolygon. "+\
@@ -409,19 +403,24 @@ class Surface(SageObject):
 
     def _test_gluings(self, **options):
         # iterate over pairs with pair1 glued to pair2
-        if 'tester' in options:
-            tester = options['tester']
-        else:
-            tester = self._tester(**options)
+        tester = self._tester(**options)
+
         if self.is_finite():
-            it = self.edge_gluing_iterator()
+            it = self.label_iterator()
         else:
             from itertools import islice
-            it = islice(self.edge_gluing_iterator(), 30)
+            it = islice(self.label_iterator(), 30)
 
-        for pair1,pair2 in it:
-            tester.assertEqual(self.opposite_edge(pair2[0], pair2[1]), pair1,
-                "edges not glued correctly:\n%s -> %s -> %s"%(pair1,pair2,self.opposite_edge(pair2[0], pair2[1])))
+        for lab in it:
+            p = self.polygon(lab)
+            for k in range(p.num_edges()):
+                e = (lab, k)
+                f = self.opposite_edge(lab, k)
+                tester.assertFalse(f is None,
+                        "edge ({}, {}) is not glued".format(lab, k))
+                g = self.opposite_edge(f[0], f[1])
+                tester.assertEqual(e, g,
+                        "edge gluing is not a pairing:\n{} -> {} -> {}".format(e, f, g))
 
     def _test_override(self, **options):
         # Test that the required methods have been overridden and that some other methods have not been overridden.

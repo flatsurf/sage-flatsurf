@@ -46,19 +46,89 @@ class SimilaritySurface(SageObject):
     label of the polygons is done at startup. If the set is finite then by
     default the labels are the first non-negative integers 0,1,...
 
-    The edge are identified by a couple (polygon label, edge number).
+    The edges are labeled by a pair ``(polygon label, edge number)``.
 
-    .. NOTE::
+    EXAMPLES:
 
-        This class is abstract and should not be called directly. Instead you
-        can either use SimilaritySurface_from_polygons_and_identifications or
-        inherit from SimilaritySurface_generic and implement the methods:
+    The easiest way to construct a similarity surface is to use the pre-built
+    constructions from
+    :class:`flatsurf.geometry.similarity_surface_generators.SimilaritySurfaceGenerators`::
 
-        - base_ring(self): the base ring in which coordinates lives
-        - polygon(self, lab): the polygon associated to the label ``lab``
-        - base_label(self): return a first label
-        - opposite_edge(self, lab, edge): a couple (``other_label``, ``other_edge``) representing the edge being glued
-        - is_finite(self): return true if the surface is built from finitely many labeled polygons
+        sage: from flatsurf import polygons, similarity_surfaces
+        sage: P = polygons(vertices=[(0,0), (2,0), (1,4), (0,5)])
+        sage: similarity_surfaces.self_glued_polygon(P)
+        HalfTranslationSurface built from 1 polygon
+
+    The second way is to build a surface (using e.g. :class:`flatsurf.geometry.surface.Surface_list`)
+    and then use this surface as an argument for class:`SimilaritySurface`)::
+
+        sage: from flatsurf.geometry.similarity_surface import SimilaritySurface
+        sage: from flatsurf.geometry.surface import Surface_list
+        sage: P = polygons(vertices=[(0,0), (1,0), (1,1), (0,1)])
+        sage: Stop = Surface_list(QQ)
+        sage: Stop.add_polygon(P)
+        0
+        sage: Stop.add_polygon(2*P)
+        1
+        sage: Stop.add_polygon(3*P)
+        2
+        sage: Stop.set_edge_pairing(0, 1, 1, 3)
+        sage: Stop.set_edge_pairing(0, 0, 2, 2)
+        sage: Stop.set_edge_pairing(0, 2, 2, 0)
+        sage: Stop.set_edge_pairing(0, 3, 1, 1)
+        sage: Stop.set_edge_pairing(1, 2, 2, 1)
+        sage: Stop.set_edge_pairing(1, 0, 2, 3)
+        sage: S = SimilaritySurface(Stop)
+        sage: S
+        SimilaritySurface built from 3 polygons
+
+    To perform a sanity check on the obtained surface, you can run its test
+    suite::
+
+        sage: TestSuite(S).run()
+
+    In the following example, we build two broken surfaces and
+    check that the test suite fails as expected::
+
+        sage: P = polygons(vertices=[(0,0), (1,0), (1,1), (0,1)])
+        sage: Stop = Surface_list(QQ)
+        sage: Stop.add_polygon(P)
+        0
+        sage: S = SimilaritySurface(Stop)
+        sage: TestSuite(S).run()
+        ...
+          AssertionError: edge (0, 0) is not glued
+          ------------------------------------------------------------
+          The following tests failed: _test_gluings
+        Failure in _test_underlying_surface
+        The following tests failed: _test_underlying_surface
+
+        sage: Stop.set_edge_pairing(0, 0, 0, 3)
+        sage: Stop.set_edge_pairing(0, 1, 0, 3)
+        sage: Stop.set_edge_pairing(0, 2, 0, 3)
+        sage: S = SimilaritySurface(Stop)
+        sage: TestSuite(S).run()
+        ...
+          AssertionError: edge gluing is not a pairing:
+          (0, 0) -> (0, 3) -> (0, 2)
+          ------------------------------------------------------------
+          The following tests failed: _test_gluings
+        Failure in _test_underlying_surface
+        The following tests failed: _test_underlying_surface
+
+    Finally, you can also implement a similarity surface by inheriting from
+    :class:`SimilaritySurface` and implement the methods:
+
+    - ``base_ring(self)``: the base ring in which coordinates lives
+
+    - ``polygon(self, lab)``: the polygon associated to the label ``lab``
+
+    - ``base_label(self)``: which label to use as the base one
+
+    - ``opposite_edge(self, lab, edge)``: a pair (``other_label``,
+      ``other_edge``) representing the edge being glued
+
+    - ``is_finite(self)``: whether the surface is built from finitely many polygons
     """
     def __init__(self, surface):
         r"""
