@@ -3,6 +3,7 @@ from six.moves import range, map, filter, zip
 from six import iteritems, itervalues
 
 from sage.rings.all import ZZ, QQ, RIF, AA, NumberField
+from sage.rings.polynomial.polynomial_ring import polygen
 from sage.misc.cachefunc import cached_method
 from sage.structure.sequence import Sequence
 
@@ -667,6 +668,61 @@ class TranslationSurfaceGenerators:
         return translation_surfaces.veech_2n_gon(4)
 
     @staticmethod
+    def mcmullen_genus2_prototype(w, h, t, e, rel=0):
+        r"""
+        McMullen prototypes in the stratum H(2).
+
+        The associated discriminant is `D = e^2 + 4 wh`.
+
+        If ``rel`` is a positive parameter (less than w-lambda) the surface belongs
+        to the discriminant.
+
+        EXAMPLES::
+
+            sage: T8 = translation_surfaces.mcmullen_genus2_prototype(2,1,0,0)    # discriminant 8
+            sage: T12 = translation_surfaces.mcmullen_genus2_prototype(3,1,0,0)   # discriminant 12
+            sage: T13 = translation_surfaces.mcmullen_genus2_prototype(3,1,0,1)   # discriminant 13
+            sage: T17 = translation_surfaces.mcmullen_genus2_prototype(4,1,0,1)   # discriminant 17
+            sage: T20 = translation_surfaces.mcmullen_genus2_prototype(4,1,0,2)   # discriminant 20
+            sage: T24 = translation_surfaces.mcmullen_genus2_prototype(3,2,0,0)   # discriminant 24
+            sage: T32 = translation_surfaces.mcmullen_genus2_prototype(4,2,1,0)   # discriminant 32
+            sage: T33a = translation_surfaces.mcmullen_genus2_prototype(4,2,0,1)  # discriminant 33
+            sage: T33b = translation_surfaces.mcmullen_genus2_prototype(4,2,1,1)  # discriminant 33
+
+            sage: print(T20.stratum())
+            H_2(2)
+            sage: T20.base_ring().polynomial().discriminant()
+            20
+        """
+        w = ZZ(w)
+        h = ZZ(h)
+        t = ZZ(t)
+        e = ZZ(e)
+        g = w.gcd(h)
+        gg = g.gcd(t).gcd(e)
+        if w <= 0 or h <= 0 or t < 0 or t >= g or not g.gcd(t).gcd(e).is_one() or e+h >= w:
+            raise ValueError("invalid parameters")
+
+        x = polygen(QQ)
+        poly = x**2 - e * x - w*h
+        emb = AA.polynomial_root(poly, RIF(1,w))
+        K = NumberField(poly, 'l', embedding=emb)
+        l = K.gen()
+
+        # (lambda,lambda) square on top
+        # twisted (w,0), (t,h)
+        s = Surface_list(base_ring=K)
+        s.add_polygon(polygons(vertices=[(0,0),(l,0),(l,l),(0,l)], ring=K))
+        s.add_polygon(polygons(vertices=[(0,0),(l,0),(w,0),(w+t,h),(l+t,h),(t,h)], ring=K))
+        s.set_edge_pairing(0, 1, 0, 3)
+        s.set_edge_pairing(0, 0, 1, 4)
+        s.set_edge_pairing(0, 2, 1, 0)
+        s.set_edge_pairing(1, 1, 1, 3)
+        s.set_edge_pairing(1, 2, 1, 5)
+        s.set_immutable()
+        return TranslationSurface(s)
+
+    @staticmethod
     def mcmullen_L(l1,l2,l3,l4):
         r"""
         Return McMullen's L shaped surface with parameters l1, l2, l3, l4.
@@ -799,7 +855,6 @@ class TranslationSurfaceGenerators:
         """
         g=ZZ(genus)
         assert g>=3
-        from sage.rings.polynomial.polynomial_ring import polygen
         x = polygen(AA)
         p=sum([x**i for i in range(1,g+1)])-1
         cp = AA.common_polynomial(p)
