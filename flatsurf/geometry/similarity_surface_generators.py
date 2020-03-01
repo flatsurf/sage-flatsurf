@@ -679,6 +679,8 @@ class TranslationSurfaceGenerators:
 
         EXAMPLES::
 
+            sage: from flatsurf import translation_surfaces
+
             sage: T8 = translation_surfaces.mcmullen_genus2_prototype(2,1,0,0)    # discriminant 8
             sage: T12 = translation_surfaces.mcmullen_genus2_prototype(3,1,0,0)   # discriminant 12
             sage: T13 = translation_surfaces.mcmullen_genus2_prototype(3,1,0,1)   # discriminant 13
@@ -693,6 +695,21 @@ class TranslationSurfaceGenerators:
             H_2(2)
             sage: T20.base_ring().polynomial().discriminant()
             20
+
+        An example with some relative homology::
+
+            sage: U8 = translation_surfaces.mcmullen_genus2_prototype(2,1,0,0,1/4)    # discriminant 8
+            sage: U12 = translation_surfaces.mcmullen_genus2_prototype(3,1,0,0,3/10)   # discriminant 12
+
+            sage: U8.stratum()
+            H_2(1^2)
+            sage: U8.base_ring().polynomial().discriminant()
+            8
+
+            sage: U12.stratum()
+            H_2(1^2)
+            sage: U12.base_ring().polynomial().discriminant()
+            12
         """
         w = ZZ(w)
         h = ZZ(h)
@@ -708,17 +725,29 @@ class TranslationSurfaceGenerators:
         emb = AA.polynomial_root(poly, RIF(1,w))
         K = NumberField(poly, 'l', embedding=emb)
         l = K.gen()
+        rel = K(rel)
 
         # (lambda,lambda) square on top
         # twisted (w,0), (t,h)
         s = Surface_list(base_ring=K)
         s.add_polygon(polygons(vertices=[(0,0),(l,0),(l,l),(0,l)], ring=K))
-        s.add_polygon(polygons(vertices=[(0,0),(l,0),(w,0),(w+t,h),(l+t,h),(t,h)], ring=K))
-        s.set_edge_pairing(0, 1, 0, 3)
-        s.set_edge_pairing(0, 0, 1, 4)
-        s.set_edge_pairing(0, 2, 1, 0)
-        s.set_edge_pairing(1, 1, 1, 3)
-        s.set_edge_pairing(1, 2, 1, 5)
+        if rel:
+            if rel < 0 or rel > w - l:
+                raise ValueError("invalid rel argument")
+            s.add_polygon(polygons(vertices=[(0,0),(l,0),(w-rel,0),(w,0),(w+t,h),(l+t+rel,h),(l+t,h),(t,h)], ring=K))
+            s.set_edge_pairing(0, 1, 0, 3)
+            s.set_edge_pairing(0, 0, 1, 6)
+            s.set_edge_pairing(0, 2, 1, 0)
+            s.set_edge_pairing(1, 1, 1, 4)
+            s.set_edge_pairing(1, 2, 1, 5)
+            s.set_edge_pairing(1, 3, 1, 7)
+        else:
+            s.add_polygon(polygons(vertices=[(0,0),(l,0),(w,0),(w+t,h),(l+t,h),(t,h)], ring=K))
+            s.set_edge_pairing(0, 1, 0, 3)
+            s.set_edge_pairing(0, 0, 1, 4)
+            s.set_edge_pairing(0, 2, 1, 0)
+            s.set_edge_pairing(1, 1, 1, 3)
+            s.set_edge_pairing(1, 2, 1, 5)
         s.set_immutable()
         return TranslationSurface(s)
 
