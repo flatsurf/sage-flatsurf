@@ -321,6 +321,12 @@ def angle(u, v, assume_rational=False):
         v0 = float(v[0]); v1 = float(v[1])
 
         cos_uv = (u0*v0 + u1*v1) / sqrt((u0*u0 + u1*u1)*(v0*v0 + v1*v1))
+        if cos_uv < -1.0:
+            assert cos_uv > -1.0000001
+            cos_uv = -1.0
+        elif cos_uv > 1.0:
+            assert cos_uv < 1.0000001
+            cos_uv = 1.0
         angle = acos(float(cos_uv)) / (2*pi_float)   # rat number between 0 and 1/2
         angle_rat = RR(angle).nearby_rational(0.00000001)
         if angle_rat.denominator() > 100:
