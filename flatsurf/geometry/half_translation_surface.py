@@ -38,6 +38,8 @@ class HalfTranslationSurface(HalfDilationSurface, RationalConeSurface):
             [5]
             sage: sfg.translation_surfaces.veech_double_n_gon(5).angles()
             [3]
+            sage: sfg.translation_surfaces.cathedral(1, 1).angles()
+            [3, 3, 3]
         """
         edges = set(self.edge_iterator())
         angles = []
@@ -49,7 +51,7 @@ class HalfTranslationSurface(HalfDilationSurface, RationalConeSurface):
                 edges.remove(pair)
                 ppair = pp,ee = self.opposite_edge(p,(e-1)%self.polygon(p).num_edges())
                 vee = self.polygon(pp).edge(ee)
-                angle += (ve[0] > 0 and vee[0] <= 0) or (ve[0] < 0 and vee[0] >= 0)
+                angle += (ve[0] > 0 and vee[0] <= 0) or (ve[0] < 0 and vee[0] >= 0) or (ve[0] == vee[0] == 0)
                 pair, p, e, ve = ppair, pp, ee, vee
             angles.append(QQ((angle,2)))
         return angles

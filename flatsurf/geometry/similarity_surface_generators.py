@@ -850,8 +850,77 @@ class TranslationSurfaceGenerators:
             TranslationSurface built from 3 polygons
             sage: TestSuite(os).run()
         """
-        from sage.matrix.matrix_space import MatrixSpace
         return translation_surfaces.ward(4)
+
+    @staticmethod
+    def cathedral(a, b):
+        r"""
+        Return the cathedral surface with parameters ``a`` and ``b``.
+
+                     1
+                   <--->
+
+                    /\           2a
+                   /  \      +------+
+               a  b|   | a  /        \
+             +----+    +---+          +
+             |    |    |   |          |
+            1| P0 |P1  |P2 |  P3      |
+             |    |    |   |          | 
+             +----+    +---+          +
+                 b|    |    \        /
+                   \  /      +------+
+                    \/
+
+        If a and b satisfies
+
+        .. MATH::
+
+            a = x + y \sqrt(d) \qquad b = -3x -3/2 + 3y \sqrt(d)
+
+        for some rational x,y and d >= 0 then it is a Teichmüller curve.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: C = translation_surfaces.cathedral(1,2)
+            sage: C.stratum()
+            H_4(2^3)
+            sage: TestSuite(C).run()
+        """
+        field = Sequence([a,b]).universe()
+        if isinstance(field, type):
+            field = py_scalar_parent(field)
+        if not field.is_field():
+            field = field.fraction_field()
+        a = field(a)
+        b = field(b)
+        P = ConvexPolygons(field)
+        s = Surface_list(base_ring=field)
+        half = QQ((1,2))
+        p0 = P(vertices=[(0,0),(a,0),(a,1),(0,1)])
+        p1 = P(vertices=[(a,0),(a,-b),(a+half,-b-half),(a+1,-b),(a+1,0),(a+1,1),(a+1,b+1),(a+half,b+1+half),(a,b+1),(a,1)])
+        p2 = P(vertices=[(a+1,0),(2*a+1,0),(2*a+1,1),(a+1,1)])
+        p3 = P(vertices=[(2*a+1,0), (2*a+1+half,-half),(4*a+1+half,-half),(4*a+2,0),(4*a+2,1),(4*a+1+half,1+half),(2*a+1+half,1+half),(2*a+1,1)])
+        s.add_polygon(p0)
+        s.add_polygon(p1)
+        s.add_polygon(p2)
+        s.add_polygon(p3)
+        s.set_edge_pairing(0, 0, 0, 2)
+        s.set_edge_pairing(0, 1, 1, 9)
+        s.set_edge_pairing(0, 3, 3, 3)
+        s.set_edge_pairing(1, 0, 1, 3)
+        s.set_edge_pairing(1, 1, 3, 4)
+        s.set_edge_pairing(1, 2, 3, 6)
+        s.set_edge_pairing(1, 4, 2, 3)
+        s.set_edge_pairing(1, 5, 1, 8)
+        s.set_edge_pairing(1, 6, 3, 0)
+        s.set_edge_pairing(1, 7, 3, 2)
+        s.set_edge_pairing(2, 0, 2, 2)
+        s.set_edge_pairing(2, 1, 3, 7)
+        s.set_edge_pairing(3, 1, 3, 5)
+        s.set_immutable()
+        return TranslationSurface(s)
 
     @staticmethod
     def arnoux_yoccoz(genus):
