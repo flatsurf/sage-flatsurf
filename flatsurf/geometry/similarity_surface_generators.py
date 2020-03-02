@@ -857,6 +857,10 @@ class TranslationSurfaceGenerators:
         r"""
         Return the cathedral surface with parameters ``a`` and ``b``.
 
+        For any parameter ``a`` and ``b``, the cathedral surface belongs to the
+        so-called Gothic locus described in McMullen, Mukamel, Wright "Cubic
+        curves and totally geodesic subvarieties of moduli space" (2017).
+
                      1
                    <--->
 
