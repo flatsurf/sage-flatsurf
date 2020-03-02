@@ -2,8 +2,8 @@ from __future__ import absolute_import, print_function, division
 from six.moves import range, map, filter, zip
 from six import iteritems, itervalues
 
-from sage.rings.all import ZZ, QQ, RIF, AA, NumberField
-from sage.rings.polynomial.polynomial_ring import polygen
+from sage.rings.all import ZZ, QQ, RIF, AA, NumberField, polygen
+from sage.structure.coerce import py_scalar_parent
 from sage.misc.cachefunc import cached_method
 from sage.structure.sequence import Sequence
 
@@ -763,7 +763,7 @@ class TranslationSurfaceGenerators:
         return TranslationSurface(s)
 
     @staticmethod
-    def mcmullen_L(l1,l2,l3,l4):
+    def mcmullen_L(l1, l2, l3, l4):
         r"""
         Return McMullen's L shaped surface with parameters l1, l2, l3, l4.
 
@@ -786,8 +786,16 @@ class TranslationSurfaceGenerators:
             sage: from flatsurf import *
             sage: s = translation_surfaces.mcmullen_L(1,1,1,1)
             sage: TestSuite(s).run()
+
+        TESTS::
+
+            sage: from flatsurf import translation_surfaces
+            sage: translation_surfaces.mcmullen_L(1r, 1r, 1r, 1r)
+            TranslationSurface built from 3 polygons
         """
         field = Sequence([l1,l2,l3,l4]).universe()
+        if isinstance(field, type):
+            field = py_scalar_parent(field)
         if not field.is_field():
             field = field.fraction_field()
 
