@@ -705,11 +705,21 @@ class TranslationSurfaceGenerators:
             H_2(1^2)
             sage: U8.base_ring().polynomial().discriminant()
             8
+            sage: U8.j_invariant()
+            (
+                      [4 0]
+            (0), (0), [0 2]
+            )
 
             sage: U12.stratum()
             H_2(1^2)
             sage: U12.base_ring().polynomial().discriminant()
             12
+            sage: U12.j_invariant()
+            (
+                      [6 0]
+            (0), (0), [0 2]
+            )
         """
         w = ZZ(w)
         h = ZZ(h)
@@ -730,18 +740,19 @@ class TranslationSurfaceGenerators:
         # (lambda,lambda) square on top
         # twisted (w,0), (t,h)
         s = Surface_list(base_ring=K)
-        s.add_polygon(polygons(vertices=[(0,0),(l,0),(l,l),(0,l)], ring=K))
         if rel:
             if rel < 0 or rel > w - l:
                 raise ValueError("invalid rel argument")
-            s.add_polygon(polygons(vertices=[(0,0),(l,0),(w-rel,0),(w,0),(w+t,h),(l+t+rel,h),(l+t,h),(t,h)], ring=K))
+            s.add_polygon(polygons(vertices=[(0,0),(l,0),(l+rel,l),(rel,l)], ring=K))
+            s.add_polygon(polygons(vertices=[(0,0),(rel,0),(rel+l,0),(w,0),(w+t,h),(l+rel+t,h),(t+l,h),(t,h)], ring=K))
             s.set_edge_pairing(0, 1, 0, 3)
             s.set_edge_pairing(0, 0, 1, 6)
-            s.set_edge_pairing(0, 2, 1, 0)
-            s.set_edge_pairing(1, 1, 1, 4)
-            s.set_edge_pairing(1, 2, 1, 5)
+            s.set_edge_pairing(0, 2, 1, 1)
+            s.set_edge_pairing(1, 2, 1, 4)
             s.set_edge_pairing(1, 3, 1, 7)
+            s.set_edge_pairing(1, 0, 1, 5)
         else:
+            s.add_polygon(polygons(vertices=[(0,0),(l,0),(l,l),(0,l)], ring=K))
             s.add_polygon(polygons(vertices=[(0,0),(l,0),(w,0),(w+t,h),(l+t,h),(t,h)], ring=K))
             s.set_edge_pairing(0, 1, 0, 3)
             s.set_edge_pairing(0, 0, 1, 4)
