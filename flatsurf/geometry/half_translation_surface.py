@@ -17,10 +17,43 @@ from .surface import Surface
 from .half_dilation_surface import HalfDilationSurface
 from .rational_cone_surface import RationalConeSurface
 
+from sage.rings.all import QQ
+
 class HalfTranslationSurface(HalfDilationSurface, RationalConeSurface):
     r"""
     A half translation surface has gluings between polygons whose monodromy is +I or -I.
     """
+    def angles(self):
+        r"""
+        Return the set of angles around the vertices of the surface.
+
+        EXAMPLES::
+
+            sage: import flatsurf.geometry.similarity_surface_generators as sfg
+            sage: sfg.translation_surfaces.regular_octagon().angles()
+            [3]
+            sage: sfg.translation_surfaces.veech_2n_gon(5).angles()
+            [2, 2]
+            sage: sfg.translation_surfaces.veech_2n_gon(6).angles()
+            [5]
+            sage: sfg.translation_surfaces.veech_double_n_gon(5).angles()
+            [3]
+        """
+        edges = set(self.edge_iterator())
+        angles = []
+        while edges:
+            pair = p,e = next(iter(edges))
+            ve = self.polygon(p).edge(e)
+            angle = 0
+            while pair in edges:
+                edges.remove(pair)
+                ppair = pp,ee = self.opposite_edge(p,(e-1)%self.polygon(p).num_edges())
+                vee = self.polygon(pp).edge(ee)
+                angle += (ve[0] > 0 and vee[0] <= 0) or (ve[0] < 0 and vee[0] >= 0)
+                pair, p, e, ve = ppair, pp, ee, vee
+            angles.append(QQ((angle,2)))
+        return angles
+
     def _test_edge_matrix(self, **options):
         r"""
         Check the compatibility condition

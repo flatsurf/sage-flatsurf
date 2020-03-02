@@ -24,9 +24,11 @@ class ConeSurface(SimilaritySurface):
 
         EXAMPLES::
 
-            sage: import flatsurf.geometry.similarity_surface_generators as sfg
-            sage: sfg.translation_surfaces.regular_octagon().angles()
-            [3]
+            sage: from flatsurf import polygons, similarity_surfaces
+            sage: T = polygons.triangle(3, 4, 5)
+            sage: S = similarity_surfaces.billiard(T)
+            sage: S.angles()
+            [1/3, 1/4, 5/12]
         """
         if not self.is_finite():
             raise NotImplementedError("the set of edges is infinite!")
