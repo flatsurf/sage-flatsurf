@@ -389,7 +389,7 @@ class AbstractStraightLineTrajectory:
         Return true if this trajectory intersects the other trajectory.
         """
         try:
-            self.intersections(traj, count_singularities = count_singularities).next()
+            next(self.intersections(traj, count_singularities = count_singularities))
         except StopIteration:
             return False
         return True
