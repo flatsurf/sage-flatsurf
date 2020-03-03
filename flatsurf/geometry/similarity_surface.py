@@ -29,7 +29,7 @@ from .matrix_2x2 import (is_similarity,
 
 from .similarity import SimilarityGroup
 from .polygon import Polygons, wedge_product
-from .surface import Surface, Surface_dict, Surface_list
+from .surface import Surface, Surface_dict, Surface_list, LabelComparator
 from .surface_objects import Singularity, SaddleConnection, SurfacePoint
 from .circle import Circle
 
@@ -487,6 +487,15 @@ class SimilaritySurface(SageObject):
         else:
             return self.copy(mutable=True).set_vertex_zero(label,v,in_place=True)
 
+    def _label_comparator(self):
+        r"""
+        Return a LabelComparator, which provides a fixed total ordering on the polygon labels.
+        """
+        try:
+            return self._lc
+        except AttributeError:
+            self._lc = LabelComparator()
+            return self._lc
 
     def relabel(self, relabeling_map, in_place=False):
         r"""
@@ -1555,8 +1564,9 @@ class SimilaritySurface(SageObject):
         """
         if not self.is_finite():
             raise NotImplementedError("Not implemented for infinite surfaces.")
+        lc = self._label_comparator()
         for (l1,e1),(l2,e2) in self.edge_iterator(gluings=True):
-            if (l1<l2 or (l1==l2 and e1<=e2)) and self._edge_needs_flip(l1,e1):
+            if (lc.lt(l1,l2) or (l1==l2 and e1<=e2)) and self._edge_needs_flip(l1,e1):
                 self.triangle_flip(l1, e1, in_place=True)
                 return True
         return False
@@ -1720,10 +1730,11 @@ class SimilaritySurface(SageObject):
         else:
             # Old method for infinite surfaces, or limits.
             count=0
+            lc = self._label_comparator()
             while loop:
                 loop=False
                 for (l1,e1),(l2,e2) in s.edge_iterator(gluings=True):
-                    if (l1<l2 or (l1==l2 and e1<=e2)) and s._edge_needs_flip(l1,e1):
+                    if (lc.lt(l1,l2) or (l1==l2 and e1<=e2)) and s._edge_needs_flip(l1,e1):
                         s.triangle_flip(l1, e1, in_place=True, direction=direction)
                         count += 1
                         if not limit is None and count>=limit:
@@ -1735,8 +1746,9 @@ class SimilaritySurface(SageObject):
     def delaunay_single_join(self):
         if not self.is_finite():
             raise NotImplementedError("Not implemented for infinite surfaces.")
+        lc = self._label_comparator()
         for (l1,e1),(l2,e2) in self.edge_iterator(gluings=True):
-            if (l1<l2 or (l1==l2 and e1<=e2)) and self._edge_needs_join(l1,e1):
+            if (lc.lt(l1,l2) or (l1==l2 and e1<=e2)) and self._edge_needs_join(l1,e1):
                 self.join_polygons(l1, e1, in_place=True)
                 return True
         return False
@@ -1821,10 +1833,11 @@ class SimilaritySurface(SageObject):
                 direction=direction)
         # Now s is Delaunay Triangulated
         loop=True
+        lc = self._label_comparator()
         while loop:
             loop=False
             for (l1,e1),(l2,e2) in s.edge_iterator(gluings=True):
-                if (l1<l2 or (l1==l2 and e1<=e2)) and s._edge_needs_join(l1,e1):
+                if (lc.lt(l1,l2) or (l1==l2 and e1<=e2)) and s._edge_needs_join(l1,e1):
                     s.join_polygons(l1, e1, in_place=True)
                     loop=True
                     break
