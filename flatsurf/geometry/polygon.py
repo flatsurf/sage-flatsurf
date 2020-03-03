@@ -35,6 +35,7 @@ cm = get_coercion_model()
 from sage.structure.element import Element
 from sage.categories.action import Action
 
+
 from .matrix_2x2 import angle
 
 # we implement action of GL(2,K) on polygons
@@ -211,18 +212,19 @@ class MatrixActionOnPolygons(Action):
 
     def _act_(self, g, x):
         r"""
-        Apply the 2x2 matrix g to the polygon.
-        The matrix must have non-zero determinant. If the determinant is negative, then the vertices and edges
-        are relabeled according to the involutions $v \mapsto (n-v)%n$ and  $e \mapsto n-1-e$ respectively.
+        Apply the 2x2 matrix `g` to the polygon `x`.
+
+        The matrix must have non-zero determinant. If the determinant is
+        negative, then the vertices and edges are relabeled according to the
+        involutions `v \mapsto (n-v)%n` and  `e \mapsto n-1-e` respectively.
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.polygon import Polygons, ConvexPolygon
-            sage: P=Polygons(QQ)
-            sage: p=ConvexPolygon(P,[(1,0),(0,1),(-1,-1)])
+            sage: from flatsurf import polygons
+            sage: p = polygons(vertices = [(1,0),(0,1),(-1,-1)])
             sage: print(p)
             Polygon: (1, 0), (0, 1), (-1, -1)
-            sage: r=matrix(ZZ,[[0,1],[1,0]])
+            sage: r = matrix(ZZ,[[0,1], [1,0]])
             sage: print(r*p)
             Polygon: (0, 1), (-1, -1), (1, 0)
         """
@@ -231,9 +233,9 @@ class MatrixActionOnPolygons(Action):
             return x.parent()(vertices=[g*v for v in x.vertices()])
         if det < 0:
             # Note that in this case we reverse the order
-            vertices=[g*x.vertex(0)]
-            for i in range(x.num_edges()-1,0,-1):
-                vertices.append(g*x.vertex(i))
+            vertices = [g*x.vertex(0)]
+            for i in range(x.num_edges() - 1, 0, -1):
+                vertices.append(g * x.vertex(i))
             return x.parent()(vertices=vertices)
         raise ValueError("Can not act on a polygon with matrix with zero determinant")
 
@@ -414,7 +416,7 @@ class ConvexPolygon(Element):
     r"""
     A convex polygon in the plane RR^2
     """
-    def __init__(self, parent, vertices):
+    def __init__(self, parent, vertices, check=True):
         r"""
         To construct the polygon you should either use a list of edge vectors
         or a list of vertices. Using both will result in a ValueError. The polygon
@@ -431,7 +433,20 @@ class ConvexPolygon(Element):
         V = parent.vector_space()
         self._v = tuple(map(V, vertices))
         for vv in self._v: vv.set_immutable()
-        self._convexity_check()
+        if True:
+            self._convexity_check()
+
+    def translate(self, u):
+        r"""
+        TESTS::
+
+            sage: from flatsurf import polygons
+            sage: polygons(vertices=[(0,0), (2,0), (1,1)]).translate((3,-2))
+            Polygon: (3, -2), (5, -2), (4, -1)
+        """
+        P = self.parent()
+        u = P.vector_space()(u)
+        return P.element_class(P, [u+v for v in self._v], check=False)
 
     def __hash__(self):
         # Apparently tuples do not cache their hash!
@@ -502,6 +517,24 @@ class ConvexPolygon(Element):
             if sign < self.base_ring().zero():
                 return -1
         return 0
+
+    def change_ring(self, R):
+        r"""
+        Return an equal polygon over the base ring ``R``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import polygons
+            sage: S = polygons.square()
+            sage: K.<sqrt2> = NumberField(x^2 - 2, embedding=AA(2)**(1/2))
+            sage: S.change_ring(K)
+            Polygon: (0, 0), (1, 0), (1, 1), (0, 1)
+            sage: S.change_ring(K).base_ring()
+            Number Field in sqrt2 with defining polynomial x^2 - 2 with sqrt2 = 1.4142...
+        """
+        if R is self.base_ring():
+            return self
+        return ConvexPolygons(R)(vertices=self._v, check=False)
 
     def is_strictly_convex(self):
         r"""
@@ -1094,6 +1127,86 @@ class ConvexPolygon(Element):
 
         return (Jxx, Jyy, Jxy)
 
+    def is_isometric(self, other, certificate=False):
+        r"""
+        Return whether ``self`` and ``other`` are isometric convex polygons via an orientation
+        preserving isometry.
+
+        If ``certificate`` is set to ``True`` return also a pair ``(index, rotation)``
+        of an integer ``index`` and a matrix ``rotation`` such that the given rotation
+        matrix identifies this polygon with the other and the edges 0 in this polygon
+        is mapped to the edge ``index`` in the other.
+
+        .. TODO::
+
+            Implement ``is_linearly_equivalent`` and ``is_similar``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import polygons
+            sage: S = polygons.square()
+            sage: S.is_isometric(S)
+            True
+            sage: U = matrix(2,[0,-1,1,0]) * S
+            sage: U.is_isometric(S)
+            True
+
+            sage: x = polygen(QQ)
+            sage: K.<sqrt2> = NumberField(x^2 - 2, embedding=AA(2)**(1/2))
+            sage: S = S.change_ring(K)
+            sage: U = matrix(2, [sqrt2/2, -sqrt2/2, sqrt2/2, sqrt2/2]) * S
+            sage: U.is_isometric(S)
+            True
+
+            sage: U2 = polygons((1,0), (sqrt2/2, sqrt2/2), (-1,0), (-sqrt2/2, -sqrt2/2))
+            sage: U2.is_isometric(U)
+            False
+            sage: U2.is_isometric(U, certificate=True)
+            (False, None)
+
+            sage: S = polygons((1,0), (sqrt2/2, 3), (-2,3), (-sqrt2/2+1, -6))
+            sage: T = polygons((-2,3), (-sqrt2/2+1, -6), (1,0), (sqrt2/2, 3))
+            sage: ans, certif = S.is_isometric(T, certificate=True)
+            sage: assert ans
+            sage: shift, rot = certif
+            sage: polygons(edges=[rot * S.edge((k + shift) % 4) for k in range(4)], base_point=T.vertex(0)) == T
+            True
+
+
+            sage: T = (matrix(2, [sqrt2/2, -sqrt2/2, sqrt2/2, sqrt2/2]) * S).translate((3,2))
+            sage: ans, certif = S.is_isometric(T, certificate=True)
+            sage: assert ans
+            sage: shift, rot = certif
+            sage: polygons(edges=[rot * S.edge((k + shift) % 4) for k in range(4)], base_point=T.vertex(0)) == T
+            True
+        """
+        if type(self) is not type(other):
+            raise TypeError
+
+        n = self.num_edges()
+        if other.num_edges() != n:
+            return False
+        sedges = self.edges()
+        oedges = other.edges()
+
+        slengths = [x**2 + y**2 for x,y in sedges]
+        olengths = [x**2 + y**2 for x,y in oedges]
+        for i in range(n):
+            if slengths == olengths:
+                # we have a match of lengths after a shift by i
+                xs,ys = sedges[0]
+                xo,yo = oedges[0]
+                ms = matrix(2, [xs, -ys, ys, xs])
+                mo = matrix(2, [xo, -yo, yo, xo])
+                rot = mo * ~ms
+                assert rot.det() == 1 and (rot * rot.transpose()).is_one()
+                assert oedges[0] == rot * sedges[0]
+                if all(oedges[i] == rot * sedges[i] for i in range(1,n)):
+                    return (True, (i, rot)) if certificate else True
+            olengths.append(olengths.pop(0))
+            oedges.append(oedges.pop(0))
+        return (False, None) if certificate else False
+
 class ConvexPolygons(UniqueRepresentation, Parent):
     r"""
     The set of convex polygons with a fixed base field.
@@ -1175,6 +1288,10 @@ class ConvexPolygons(UniqueRepresentation, Parent):
             Polygon: (0, 0), (1, 0), (2, 0), (1, 1)
             sage: C(p) is p
             True
+            sage: C((1,0), (0,1), (-1, 1))
+            Traceback (most recent call last):
+            ...
+            ValueError: the polygon does not close up
 
             sage: D = ConvexPolygons(QQbar)
             sage: D(p)
@@ -1183,10 +1300,12 @@ class ConvexPolygons(UniqueRepresentation, Parent):
             Polygon: (0, 0), (1, 0), (2, 0), (1, 1)
             sage: D(edges=p.edges())
             Polygon: (0, 0), (1, 0), (2, 0), (1, 1)
+
         """
         if len(args) == 1 and isinstance(args[0], ConvexPolygon):
             a = args[0]
             if a.parent() is self:
+                raise RuntimeError("this should not happen")
                 return a
             vertices = map(self.vector_space(), a.vertices())
             args = None
@@ -1194,6 +1313,7 @@ class ConvexPolygons(UniqueRepresentation, Parent):
         else:
             vertices = kwds.get('vertices')
             edges = kwds.get('edges')
+            base_point = kwds.get('base_point', 0)
 
             if vertices is None:
                 if edges is None:
@@ -1204,11 +1324,13 @@ class ConvexPolygons(UniqueRepresentation, Parent):
                     else:
                         edges = args
                 if edges is not None:
-                    v = self.vector_space().zero()
+                    v = self.vector_space()(base_point)
                     vertices = []
                     for e in map(self.vector_space(), edges):
                         vertices.append(v)
                         v += e
+                    if v != vertices[0]:
+                        raise ValueError("the polygon does not close up")
                 else:
                     raise ValueError("either vertices or edges should be provided")
 
@@ -1418,6 +1540,13 @@ class PolygonsConstructor:
 
             sage: polygons(vertices=[(0,0), (1,0), (0,1)])
             Polygon: (0, 0), (1, 0), (0, 1)
+
+            sage: polygons(edges=[(2,0),(-1,1),(-1,-1)], base_point=(3,3))
+            Polygon: (3, 3), (5, 3), (4, 4)
+            sage: polygons(vertices=[(0,0),(2,0),(1,1)], base_point=(3,3))
+            Traceback (most recent call last):
+            ...
+            ValueError: invalid argument 'base_point'
         """
         from sage.modules.free_module_element import vector
         from sage.modules.free_module import VectorSpace
@@ -1432,8 +1561,11 @@ class PolygonsConstructor:
             base_ring = kwds.pop('field')
 
         vertices = edges = None
+        base_point = 0
         if 'edges' in kwds:
             edges = kwds.pop('edges')
+            if 'base_point' in kwds:
+                base_point = kwds.pop('base_point')
         elif 'vertices' in kwds:
             vertices = kwds.pop('vertices')
         elif args:
@@ -1441,10 +1573,14 @@ class PolygonsConstructor:
         else:
             raise ValueError
 
+        if kwds:
+            raise ValueError("invalid argument {!r}".format(next(iter(kwds))))
+
         if vertices is not None:
             vertices = list(map(vector, vertices))
             if base_ring is None:
                 base_ring = Sequence(vertices).universe().base_ring()
+
         if edges is not None:
             edges = list(map(vector, edges))
             if base_ring is None:
@@ -1453,7 +1589,7 @@ class PolygonsConstructor:
         if base_ring not in Fields():
             base_ring = base_ring.fraction_field()
 
-        return ConvexPolygons(base_ring)(vertices=vertices, edges=edges)
+        return ConvexPolygons(base_ring)(vertices=vertices, edges=edges, base_point=base_point)
 
 polygons = PolygonsConstructor()
 
