@@ -10,11 +10,11 @@ from sage.rings.all import ZZ, QQ, AA, QQbar, RR, CC, RDF, CDF, RIF, CIF
 from sage.rings.rational import Rational
 from sage.rings.complex_interval_field import ComplexIntervalField
 
-
 from math import pi as pi_float
 
 from sage.symbolic.constants import pi
 from sage.matrix.constructor import matrix, identity_matrix
+from sage.modules.free_module_element import vector
 
 def number_field_to_AA(a):
     r"""
@@ -248,13 +248,15 @@ def is_cosine_sine_of_rational(c,s):
     """
     return (QQbar(c) + QQbar.gen() * QQbar(s)).minpoly().is_cyclotomic()
 
-def angle(u, v, assume_rational=False):
+def angle(u, v, numerical=False, assume_rational=False):
     r"""
     Return the angle between the vectors ``u`` and ``v`` divided by `2 \pi`.
 
     INPUT:
 
     - ``u``, ``v`` - vectors
+
+    - ``numerical`` - boolean, whether to return floating point numbers
 
     - ``assume_rational`` - whether we assume that the angle is a multiple
       rational of ``pi``. By default it is ``False`` but if it is known in
@@ -274,6 +276,16 @@ def angle(u, v, assume_rational=False):
         ....:         v = vector((AA(cos(2*k*pi/n)), AA(sin(2*k*pi/n))))
         ....:         assert angle(u,v) == k/n
 
+    The numerical version (working over floating point numbers)::
+
+        sage: import math
+        sage: u = (1, 0)
+        sage: for n in xsrange(1,20):
+        ....:     for k in xsrange(1,n):
+        ....:         a = 2 * k * math.pi / n
+        ....:         v = (math.cos(a), math.sin(a))
+        ....:         assert abs(angle(u,v,numerical=True) * 2 * math.pi - a) < 1.e-10
+
     And we test up to 50 when setting ``assume_rational`` to ``True``::
 
         sage: for n in xsrange(1,20):       # long time
@@ -285,78 +297,68 @@ def angle(u, v, assume_rational=False):
     lazy field::
 
         sage: v = vector((AA(sqrt(2)), AA(sqrt(3))))
-        sage: a = angle(u,v)
-        sage: a
-        0.1410235542122437?
-        sage: exp(2*pi.n()*CC(0,1)*a.n())
+        sage: a = angle(u, v)
+        sage: a    # abs tol 1e-14
+        0.14102355421224375
+        sage: exp(2*pi.n()*CC(0,1)*a)
         0.632455532033676 + 0.774596669241483*I
         sage: v / v.norm()
         (0.6324555320336758?, 0.774596669241484?)
     """
-    if not assume_rational:
+    if not assume_rational and not numerical:
         sqnorm_u = u[0] * u[0] + u[1] * u[1]
         sqnorm_v = v[0] * v[0] + v[1] * v[1]
 
         if sqnorm_u != sqnorm_v:
-            uu = u.change_ring(AA)
-            vv = (AA(sqnorm_u) / AA(sqnorm_v)).sqrt() * v.change_ring(AA)
+            uu = vector(AA, u)
+            vv = (AA(sqnorm_u) / AA(sqnorm_v)).sqrt() * vector(AA, v)
         else:
             uu = u
-            vv= v
+            vv = v
 
         cos_uv = (uu[0]*vv[0] + uu[1]*vv[1]) / sqnorm_u
         sin_uv = (uu[0]*vv[1] - uu[1]*vv[0]) / sqnorm_u
 
         is_rational = is_cosine_sine_of_rational(cos_uv, sin_uv)
-
-    else:
+    elif assume_rational:
         is_rational = True
 
-    if is_rational:
+    import math
+
+    u0 = float(u[0]); u1 = float(u[1])
+    v0 = float(v[0]); v1 = float(v[1])
+
+    cos_uv = (u0*v0 + u1*v1) / math.sqrt((u0*u0 + u1*u1)*(v0*v0 + v1*v1))
+    if cos_uv < -1.0:
+        assert cos_uv > -1.0000001
+        cos_uv = -1.0
+    elif cos_uv > 1.0:
+        assert cos_uv < 1.0000001
+        cos_uv = 1.0
+    angle = math.acos(cos_uv) / (2 * math.pi)   # rat number between 0 and 1/2
+
+    if numerical or not is_rational:
+        return 1.0 - angle if u0 * v1 - u1*v0 < 0 else angle
+    else:
         # fast and dirty way using floating point approximation
         # (see below for a slow but exact method)
-        from math import acos,asin,sqrt
-
-        u0 = float(u[0]); u1 = float(u[1])
-        v0 = float(v[0]); v1 = float(v[1])
-
-        cos_uv = (u0*v0 + u1*v1) / sqrt((u0*u0 + u1*u1)*(v0*v0 + v1*v1))
-        if cos_uv < -1.0:
-            assert cos_uv > -1.0000001
-            cos_uv = -1.0
-        elif cos_uv > 1.0:
-            assert cos_uv < 1.0000001
-            cos_uv = 1.0
-        angle = acos(float(cos_uv)) / (2*pi_float)   # rat number between 0 and 1/2
         angle_rat = RR(angle).nearby_rational(0.00000001)
         if angle_rat.denominator() > 100:
             raise NotImplementedError("the numerical method used is not smart enough!")
-        if u0*v1 - u1*v0 < 0:
-            return 1 - angle_rat
-        return angle_rat
+        return 1 - angle_rat if u0*v1 - u1*v0 < 0 else angle_rat
 
-    else:
-        from sage.functions.trig import acos
-        from sage.rings.real_lazy import RLF
-        from sage.symbolic.constants import pi
-
-        if sin_uv > 0:
-            return acos(RLF(cos_uv)) / RLF(2*pi)
-        else:
-            return -acos(RLF(cos_uv)) / RLF(2*pi)
-
-    # a neater way is provided below by working only with number fields
-    # but this method is slower...
-    #sqnorm_u = u[0]*u[0] + u[1]*u[1]
-    #sqnorm_v = v[0]*v[0] + v[1]*v[1]
-    #
-    #if sqnorm_u != sqnorm_v:
-    #    # we need to take a square root in order that u and v have the
-    #    # same norm
-    #    u = (1 / AA(sqnorm_u)).sqrt() * u.change_ring(AA)
-    #    v = (1 / AA(sqnorm_v)).sqrt() * v.change_ring(AA)
-    #    sqnorm_u = AA.one()
-    #    sqnorm_v = AA.one()
-    #
-    #cos_uv = (u[0]*v[0] + u[1]*v[1]) / sqnorm_u
-    #sin_uv = (u[0]*v[1] - u[1]*v[0]) / sqnorm_u
+        # a neater way is provided below by working only with number fields
+        # but this method is slower...
+        #sqnorm_u = u[0]*u[0] + u[1]*u[1]
+        #sqnorm_v = v[0]*v[0] + v[1]*v[1]
+        #
+        #if sqnorm_u != sqnorm_v:
+        #    # we need to take a square root in order that u and v have the
+        #    # same norm
+        #    u = (1 / AA(sqnorm_u)).sqrt() * u.change_ring(AA)
+        #    v = (1 / AA(sqnorm_v)).sqrt() * v.change_ring(AA)
+        #    sqnorm_u = AA.one()
+        #    sqnorm_v = AA.one()
+        #
+        #cos_uv = (u[0]*v[0] + u[1]*v[1]) / sqnorm_u
+        #sin_uv = (u[0]*v[1] - u[1]*v[0]) / sqnorm_u

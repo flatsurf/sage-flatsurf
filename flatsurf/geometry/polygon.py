@@ -27,7 +27,7 @@ from six.moves import range, map, filter, zip
 import operator
 
 from sage.all import cached_method, Parent, UniqueRepresentation, Sets,\
-                     Fields, ZZ, QQ, AA, RR, matrix, polygen, vector,\
+                     Fields, ZZ, QQ, AA, RR, QQbar, matrix, polygen, vector,\
                      free_module_element
 from sage.structure.element import get_coercion_model
 from sage.structure.coerce import py_scalar_parent
@@ -993,7 +993,7 @@ class ConvexPolygon(Element):
         P = self.vertices(translation)
         return point2d(P, color='red') + line2d(P + (P[0],), color='orange') + polygon2d(P, alpha=0.3)
 
-    def angle(self, e):
+    def angle(self, e, numerical=False, assume_rational=False):
         r"""
         Return the angle at the begining of the start point of the edge ``e``.
 
@@ -1004,8 +1004,30 @@ class ConvexPolygon(Element):
             1/4
             sage: polygons.regular_ngon(8).angle(0)
             3/8
+
+            sage: T = polygons(vertices=[(0,0), (3,1), (1,5)])
+            sage: [T.angle(i, numerical=True) for i in range(3)]
+            [0.16737532973071603, 0.22741638234956674, 0.10520828791971722]
+            sage: sum(T.angle(i, numerical=True) for i in range(3))   # abs tol 1e-13
+            0.5
         """
-        return angle(self.edge(e), - self.edge((e-1)%self.num_edges()))
+        return angle(self.edge(e), - self.edge((e-1)%self.num_edges()), numerical=numerical, assume_rational=assume_rational)
+
+    def angles(self, numerical=False, assume_rational=False):
+        r"""
+        Return the list of angles of this polygon (divided by `2 \pi`).
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.polygon import polygons
+
+            sage: T = polygons(angles=[1,2,3])
+            sage: [T.angle(i) for i in range(3)]
+            [1/12, 1/6, 1/4]
+            sage: sum(T.angle(i) for i in range(3))
+            1/2
+        """
+        return [self.angle(i) for i in range(self.num_edges())]
 
     def area(self):
         r"""
@@ -1394,42 +1416,41 @@ class ConvexPolygons(UniqueRepresentation, Parent):
             Polygon: (0, 0), (1, 0), (2, 0), (1, 1)
 
         """
+        check = kwds.pop('check', True)
+
         if len(args) == 1 and isinstance(args[0], ConvexPolygon):
             a = args[0]
             if a.parent() is self:
                 raise RuntimeError("this should not happen")
                 return a
             vertices = map(self.vector_space(), a.vertices())
-            args = None
+            args = ()
 
         else:
-            vertices = kwds.get('vertices')
-            edges = kwds.get('edges')
-            base_point = kwds.get('base_point', 0)
+            vertices = kwds.pop('vertices', None)
+            edges = kwds.pop('edges', None)
+            base_point = kwds.pop('base_point', (0,0))
 
-            if vertices is None:
-                if edges is None:
-                    if not args:
-                        raise ValueError("need something!")
-                    if len(args) == 1:
-                        edges = args[0]
-                    else:
-                        edges = args
-                if edges is not None:
-                    v = self.vector_space()(base_point)
-                    vertices = []
-                    for e in map(self.vector_space(), edges):
-                        vertices.append(v)
-                        v += e
-                    if v != vertices[0]:
-                        raise ValueError("the polygon does not close up")
+            if (vertices is None) and (edges is None):
+                if len(args) == 1:
+                    edges = args[0]
+                elif args:
+                    edges = args
                 else:
-                    raise ValueError("either vertices or edges should be provided")
+                    raise ValueError("exactly one of 'vertices' or 'edges' must be provided")
+            if kwds:
+                raise ValueError("invalid keyword {!r}".format(next(iter(kwds))))
 
-            if vertices is None and edges is None:
-                raise ValueError("exactly one of 'vertices' or 'edges' should be provided")
+            if edges is not None:
+                v = self.vector_space()(base_point)
+                vertices = []
+                for e in map(self.vector_space(), edges):
+                    vertices.append(v)
+                    v += e
+                if v != vertices[0]:
+                    raise ValueError("the polygon does not close up")
 
-        return self.element_class(self, vertices)
+        return self.element_class(self, vertices, check)
 
 Polygons = ConvexPolygons
 
@@ -1512,6 +1533,9 @@ class PolygonsConstructor:
             Polygon: (0, 0), (1, 0), (1/2*a + 3/2, 1/2*a + 3/2)
             sage: T.base_ring()
             Number Field in a with defining polynomial y^2 - 3 with a = -1.732050807568878?
+
+            sage: polygons.triangle(1,2,3).angles()
+            [1/12, 1/6, 1/4]
         """
         from sage.rings.qqbar import QQbar
         from sage.rings.qqbar import number_field_elements_from_algebraics
@@ -1638,7 +1662,37 @@ class PolygonsConstructor:
             sage: polygons(vertices=[(0,0),(2,0),(1,1)], base_point=(3,3))
             Traceback (most recent call last):
             ...
-            ValueError: invalid argument 'base_point'
+            ValueError: invalid keyword 'base_point'
+
+
+            sage: polygons(angles=[1,1,1,2], length=1)
+            Polygon: (0, 0), (1, 0), (-1/2*a^2 + 5/2, 1/2*a), (-1/2*a^2 + 2, 1/2*a^3 - 3/2*a)
+            sage: polygons(angles=[1,1,1,2], length=2)
+            Polygon: (0, 0), (2, 0), (-a^2 + 5, a), (-a^2 + 4, a^3 - 3*a)
+            sage: polygons(angles=[1,1,1,2], length=AA(2)**(1/2))
+            Polygon: (0, 0), (a^5 - 5*a^3 + 5*a, 0), (1/2*a^7 - 5/2*a^5 + 3/2*a^3 + 3*a, -1/2*a^7 + 7/2*a^5 - 15/2*a^3 + 5*a), (1/2*a^7 - 3*a^5 + 4*a^3 + 1/2*a, -1/2*a^7 + 4*a^5 - 9*a^3 + 7/2*a)
+
+            sage: polygons(angles=[1]*5).angles()
+            [3/10, 3/10, 3/10, 3/10, 3/10]
+            sage: polygons(angles=[1]*8).angles()
+            [3/8, 3/8, 3/8, 3/8, 3/8, 3/8, 3/8, 3/8]
+
+            sage: P = polygons(angles=[1,1,3,3], lengths=[3,1])
+            sage: P.angles()
+            [1/8, 1/8, 3/8, 3/8]
+            sage: e0 = P.edge(0); assert e0[0]**2 + e0[1]**2 == 3**2
+            sage: e1 = P.edge(1); assert e1[0]**2 + e1[1]**2 == 1
+
+        TESTS::
+
+            sage: from itertools import product
+            sage: for a,b,c in product(range(1,5), repeat=3):
+            ....:     if gcd([a,b,c]) != 1:
+            ....:         continue
+            ....:     T = polygons(angles=[a,b,c])
+            ....:     D = 2*(a+b+c)
+            ....:     assert T.angles() == [a/D, b/D, c/D]
+            ....:     assert T.edge(0) == T.vector_space()((1,0))
         """
         from sage.modules.free_module_element import vector
         from sage.modules.free_module import VectorSpace
@@ -1647,36 +1701,101 @@ class PolygonsConstructor:
         base_ring = None
         if 'ring' in kwds:
             base_ring = kwds.pop('ring')
-        if 'base_ring' in kwds:
+        elif 'base_ring' in kwds:
             base_ring = kwds.pop('base_ring')
-        if 'field' in kwds:
+        elif 'field' in kwds:
             base_ring = kwds.pop('field')
 
-        vertices = edges = None
-        base_point = 0
+        vertices = edges = angles = base_point = None
         if 'edges' in kwds:
             edges = kwds.pop('edges')
-            if 'base_point' in kwds:
-                base_point = kwds.pop('base_point')
+            base_point = kwds.pop('base_point', (0,0))
         elif 'vertices' in kwds:
             vertices = kwds.pop('vertices')
+        elif 'angles' in kwds:
+            angles = kwds.pop('angles')
+            lengths = kwds.pop('lengths', None)
+            length = kwds.pop('length', None)
+            base_point = kwds.pop('base_point', (0,0))
         elif args:
             edges = args
-        else:
-            raise ValueError
+            args = ()
+            base_point = kwds.pop('base_point', (0,0))
 
+        if (vertices is not None) + (edges is not None) + (angles is not None) != 1:
+            raise ValueError("exactly one of 'vertices', 'edges' or 'angles' should be provided")
+
+        if vertices is None and edges is None and angles is None and lengths is None:
+            raise ValueError("either vertices, edges or angles should be provided")
+        if args:
+            raise ValueError("invalid argument {!r}".format(args))
         if kwds:
-            raise ValueError("invalid argument {!r}".format(next(iter(kwds))))
+            raise ValueError("invalid keyword {!r}".format(next(iter(kwds))))
 
         if vertices is not None:
             vertices = list(map(vector, vertices))
             if base_ring is None:
-                base_ring = Sequence(vertices).universe().base_ring()
+                base_ring = Sequence([x for x,_ in vertices] + [y for _,y in vertices]).universe()
+                if isinstance(base_ring, type):
+                    base_ring = py_scalar_parent(base_ring)
 
-        if edges is not None:
+        elif edges is not None:
             edges = list(map(vector, edges))
             if base_ring is None:
-                base_ring = Sequence(edges).universe().base_ring()
+                base_ring = Sequence([x for x,_ in edges] + [y for _,y in edges] + list(base_point)).universe()
+                if isinstance(base_ring, type):
+                    base_ring = py_scalar_parent(base_ring)
+
+        elif angles is not None:
+            n = len(angles)
+            if n < 3:
+                raise ValueError("'angles' should be a list of at least 3 numbers")
+            angles = [QQ.coerce(a) for a in angles]  # total sum of angle should be
+            if any(angle <= 0 for angle in angles):
+                raise ValueError("'angles' must be positive rational numbers")
+
+            # normalize the sum so that it is (n-2)/2 (ie in multiple of 2pi)
+            s = ZZ(n - 2) / sum(angles) / ZZ(2)
+            if s != 1:
+                angles = [s * a for a in angles]
+
+            if length is None and lengths is None:
+                lengths = [AA(1)] * (n-2)
+            elif lengths is None:
+                lengths = [AA.coerce(length)] * (n-2)
+            elif length is None:
+                if len(lengths) != n-2:
+                    raise ValueError("'lengths' must be a list of n-2 numbers (one less than 'angles')")
+                lengths = [AA.coerce(length) for length in lengths]
+            else:
+                raise ValueError("only one of 'length' or 'lengths' can be set together with 'angles'")
+
+            zetas = [QQbar.zeta(a.denominator()) ** a.numerator() for a in angles]
+            cosines = [z.real() for z in zetas]
+            sines = [z.imag() for z in zetas]
+
+            base_ring, elts = number_field_elements_from_algebraics(cosines + sines + lengths, name='a')
+            cosines = elts[:n]
+            sines = elts[n:2*n]
+            lengths = elts[2*n:]
+            assert len(cosines) == n and len(sines) == n and len(lengths) == n-2
+
+            V = VectorSpace(base_ring, 2)
+            v = V.zero()
+            e0 = e = V((1,0))
+            vertices = []
+            for i in range(n-2):
+                vertices.append(v)
+                v += lengths[i] * e
+                e = V((-cosines[i+1] * e[0] - sines[i+1] * e[1], sines[i+1] * e[0] - cosines[i+1] * e[1]))
+            vertices.append(v)
+
+            f = V((cosines[0], sines[0]))
+            s,t = matrix([-f,e]).solve_left(vertices[0] - vertices[n-2])
+            assert vertices[0] + s*f == vertices[n-2] + t*e
+            if s <= 0 or t <= 0:
+                raise ValueError("non-convex data; you need to provide an appropriate 'lengths' argument")
+            vertices.append(vertices[0] + s*f)
 
         if base_ring not in Fields():
             base_ring = base_ring.fraction_field()
