@@ -949,7 +949,7 @@ class TranslationSurfaceGenerators:
             sage: m = Matrix([[a,0],[0,~a]])
             sage: ss = m*s
             sage: ss = ss.canonicalize()
-            sage: s.cmp_translation_surface(ss) == 0   # known bug
+            sage: s.cmp_translation_surface(ss) == 0
             True
 
         The Arnoux-Yoccoz pseudo-Anosov are known to have (minimal) invariant
