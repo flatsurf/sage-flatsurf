@@ -683,7 +683,7 @@ class GraphicalSurface:
             sage: s = translation_surfaces.square_torus()
             sage: pc = s.minimal_cover(cover_type="planar")
             sage: gs = pc.graphical_surface()
-            sage: gs.to_surface((3,2), search_all=True, search_limit=20) # known bug
+            sage: gs.to_surface((3,2), search_all=True, search_limit=20)
             Traceback (most recent call last):
             ...
             ValueError: To obtain a singularity on an infinite surface, singularity_limit must be set.
@@ -722,7 +722,7 @@ class GraphicalSurface:
                     # Not in the polygon
                     pass
                 except ValueError as e:
-                    if e.args[0] == 'Need a limit when working with an infinite surface.':
+                    if e.args[0] == 'need a limit when working with an infinite surface':
                         raise ValueError("To obtain a singularity on an infinite surface, " + \
                             "singularity_limit must be set.")
                     # Otherwise it is not in the polygon.

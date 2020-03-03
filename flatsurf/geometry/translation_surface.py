@@ -312,7 +312,7 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
             sage: deformation2 = {s.singularity(0,0):V((a,0))}
             sage: s2 = s.rel_deformation(deformation2).canonicalize()
             sage: m = Matrix([[a,0],[0,~a]])
-            sage: s2.cmp_translation_surface((m*s1).canonicalize())  # known bug
+            sage: s2.cmp_translation_surface((m*s1).canonicalize())
             0
         """
         s=self
