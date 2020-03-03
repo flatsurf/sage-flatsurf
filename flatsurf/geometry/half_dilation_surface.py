@@ -279,7 +279,7 @@ class GL2RImageSurface(Surface):
         sage: r=matrix(ZZ,[[0,1],[1,0]])
         sage: ss=r*s
         sage: TestSuite(ss).run()
-        sage: s.canonicalize()==ss.canonicalize()   # known bug
+        sage: s.canonicalize()==ss.canonicalize()
         True
 
     """
