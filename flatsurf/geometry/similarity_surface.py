@@ -1795,8 +1795,8 @@ class SimilaritySurface(SageObject):
             sage: m = Matrix([[1,2+a],[0,1]])
             sage: s = m*s0
             sage: s = s.triangulate()
-            sage: ss = s.delaunay_decomposition(triangulated=True)   # known bug
-            sage: ss.num_polygons()                                  # known bug
+            sage: ss = s.delaunay_decomposition(triangulated=True)
+            sage: ss.num_polygons()
             3
 
             sage: p = polygons((4,0),(-2,1),(-2,-1))

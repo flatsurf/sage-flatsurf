@@ -230,13 +230,13 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
             TranslationSurface built from 3 polygons
             sage: a = s.base_ring().gen()
             sage: mat = Matrix([[1,2+a],[0,1]])
-            sage: s1 = s.canonicalize()                      # known bug
-            sage: s1.underlying_surface().set_immutable()    # known bug
-            sage: s2 = (mat*s).canonicalize()                # known bug
-            sage: s2.underlying_surface().set_immutable()    # known bug
-            sage: s1.cmp_translation_surface(s2) == 0        # known bug
+            sage: s1 = s.canonicalize()
+            sage: s1.underlying_surface().set_immutable()
+            sage: s2 = (mat*s).canonicalize()
+            sage: s2.underlying_surface().set_immutable()
+            sage: s1.cmp_translation_surface(s2) == 0
             True
-            sage: hash(s1) == hash(s2)                       # known bug
+            sage: hash(s1) == hash(s2)
             True
         """
         # Old version

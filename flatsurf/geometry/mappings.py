@@ -657,10 +657,11 @@ def delaunay_decomposition_mapping(s):
     else:
         s1=m.codomain()
     edge_vectors=[]
+    lc = s._label_comparator()
     for p,poly in s1.label_iterator(polygons=True):
         for e in range(poly.num_edges()):
             pp,ee=s1.opposite_edge(p,e)
-            if (p<pp or (p==pp and e<ee)) and s1._edge_needs_join(p,e):
+            if (lc.lt(p,pp) or (p==pp and e<ee)) and s1._edge_needs_join(p,e):
                 edge_vectors.append( s1.tangent_vector(p,poly.vertex(e),poly.edge(e)) )
     if len(edge_vectors)>0:
         ev=edge_vectors.pop()
@@ -857,8 +858,8 @@ def translation_surface_cmp(s1, s2):
         raise NotImplementedError
     lw1=s1.walker()
     lw2=s2.walker()
-    from itertools import izip_longest
-    for p1,p2 in izip_longest(lw1.polygon_iterator(), lw2.polygon_iterator()):
+    from itertools import zip_longest
+    for p1,p2 in zip_longest(lw1.polygon_iterator(), lw2.polygon_iterator()):
         if p1 is None:
             # s2 has more polygons
             return -1
@@ -869,15 +870,15 @@ def translation_surface_cmp(s1, s2):
         if ret != 0:
             return ret
     # Polygons are identical. Compare edge gluings.
-    for pair1,pair2 in izip_longest(lw1.edge_iterator(), lw2.edge_iterator()):
+    for pair1,pair2 in zip_longest(lw1.edge_iterator(), lw2.edge_iterator()):
         l1,e1 = s1.opposite_edge(pair1)
         l2,e2 = s2.opposite_edge(pair2)
         num1 = lw1.label_to_number(l1)
         num2 = lw2.label_to_number(l2)
-        ret = num1 > num2 - num1 < num2
+        ret = (num1 > num2) - (num1 < num2)
         if ret!=0:
             return ret
-        ret = e1 > e2 - e1 < e2
+        ret = (e1 > e2) - (e1 < e2)
         if ret!=0:
             return ret
     return 0
@@ -889,23 +890,23 @@ def canonicalize_translation_surface_mapping(s):
     EXAMPLES::
 
         sage: from flatsurf import *
-        sage: s=translation_surfaces.octagon_and_squares().canonicalize()  # known bug
-        sage: TestSuite(s).run()                                           # known bug
-        sage: a = s.base_ring().gen()                                      # known bug # a is the square root of 2.
+        sage: s=translation_surfaces.octagon_and_squares().canonicalize()
+        sage: TestSuite(s).run()
+        sage: a = s.base_ring().gen()  # a is the square root of 2.
 
-        sage: from flatsurf.geometry.mappings import *                     # known bug
-        sage: mat=Matrix([[1,2+a],[0,1]])                                  # known bug
-        sage: from flatsurf.geometry.half_dilation_surface import GL2RMapping # known bug
-        sage: m1=GL2RMapping(s,mat)                                        # known bug
-        sage: m2=canonicalize_translation_surface_mapping(m1.codomain())   # known bug
-        sage: m=m2*m1                                                      # known bug
-        sage: translation_surface_cmp(m.domain(),m.codomain())==0   # known bug
+        sage: from flatsurf.geometry.mappings import *
+        sage: mat=Matrix([[1,2+a],[0,1]])
+        sage: from flatsurf.geometry.half_dilation_surface import GL2RMapping
+        sage: m1=GL2RMapping(s,mat)
+        sage: m2=canonicalize_translation_surface_mapping(m1.codomain())
+        sage: m=m2*m1
+        sage: translation_surface_cmp(m.domain(),m.codomain())==0
         True
-        sage: TestSuite(m.codomain()).run()                         # known bug
-        sage: s=m.domain()                                          # known bug
-        sage: v=s.tangent_vector(0,(0,0),(1,1))                     # known bug
-        sage: w=m.push_vector_forward(v)                            # known bug
-        sage: print(w)                                              # known bug
+        sage: TestSuite(m.codomain()).run()
+        sage: s=m.domain()
+        sage: v=s.tangent_vector(0,(0,0),(1,1))
+        sage: w=m.push_vector_forward(v)
+        sage: print(w)
         SimilaritySurfaceTangentVector in polygon 0 based at (0, 0) with vector (a + 3, 1)
     """
     from flatsurf.geometry.translation_surface import TranslationSurface
