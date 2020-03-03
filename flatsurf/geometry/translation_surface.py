@@ -167,10 +167,10 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
                     l2,e2 = s2.opposite_edge(pair2)
                     num1 = lw1.label_to_number(l1)
                     num2 = lw2.label_to_number(l2)
-                    ret = num1 > num2 - num1 < num2
+                    ret = (num1 > num2) - (num1 < num2)
                     if ret:
                         return ret
-                    ret = e1 > e2 - e1 < e2
+                    ret = (e1 > e2) - (e1 < e2)
                     if ret:
                         return ret
                 return 0
@@ -198,10 +198,10 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
                         ll2,ee2 = s2.opposite_edge(l2,e)
                         num1 = lw1.label_to_number(ll1, search=True, limit=limit)
                         num2 = lw2.label_to_number(ll2, search=True, limit=limit)
-                        ret = num1 > num2 - num1 < num2
+                        ret = (num1 > num2) - (num1 < num2)
                         if ret:
                             return ret
-                        ret = ee1 > ee2 - ee1 < ee2
+                        ret = (ee1 > ee2) - (ee1 < ee2)
                         if ret:
                             return ret
                     if count >= limit:
