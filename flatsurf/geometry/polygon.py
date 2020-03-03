@@ -1165,7 +1165,7 @@ class ConvexPolygon(Element):
             (False, None)
 
             sage: S = polygons((1,0), (sqrt2/2, 3), (-2,3), (-sqrt2/2+1, -6))
-            sage: T = polygons((-2,3), (-sqrt2/2+1, -6), (1,0), (sqrt2/2, 3))
+            sage: T = polygons((sqrt2/2,3), (-2,3), (-sqrt2/2+1, -6), (1,0))
             sage: ans, certif = S.is_isometric(T, certificate=True)
             sage: assert ans
             sage: shift, rot = certif
@@ -1177,7 +1177,7 @@ class ConvexPolygon(Element):
             sage: ans, certif = S.is_isometric(T, certificate=True)
             sage: assert ans
             sage: shift, rot = certif
-            sage: polygons(edges=[rot * S.edge((k + shift) % 4) for k in range(4)], base_point=T.vertex(0)) == T
+            sage: polygons(edges=[rot * S.edge(k + shift) for k in range(4)], base_point=T.vertex(0)) == T
             True
         """
         if type(self) is not type(other):
@@ -1202,9 +1202,101 @@ class ConvexPolygon(Element):
                 assert rot.det() == 1 and (rot * rot.transpose()).is_one()
                 assert oedges[0] == rot * sedges[0]
                 if all(oedges[i] == rot * sedges[i] for i in range(1,n)):
-                    return (True, (i, rot)) if certificate else True
+                    return (True, (0 if i == 0 else n-i, rot)) if certificate else True
             olengths.append(olengths.pop(0))
             oedges.append(oedges.pop(0))
+        return (False, None) if certificate else False
+
+    def is_translate(self, other, certificate=False):
+        r"""
+        Return whether ``other`` is a translate of ``self``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import polygons
+            sage: S = polygons(vertices=[(0,0), (3,0), (1,1)])
+            sage: T1 = S.translate((2,3))
+            sage: S.is_translate(T1)
+            True
+            sage: T2 = polygons(vertices=[(-1,1), (1,0), (2,1)])
+            sage: S.is_translate(T2)
+            False
+            sage: T3 = polygons(vertices=[(0,0), (3,0), (2,1)])
+            sage: S.is_translate(T3)
+            False
+
+            sage: S.is_translate(T1, certificate=True)
+            (True, (0, 1))
+            sage: S.is_translate(T2, certificate=True)
+            (False, None)
+            sage: S.is_translate(T3, certificate=True)
+            (False, None)
+        """
+        if type(self) is not type(other):
+            raise TypeError
+
+        n = self.num_edges()
+        if other.num_edges() != n:
+            return False
+        sedges = self.edges()
+        oedges = other.edges()
+        for i in range(n):
+            if sedges == oedges:
+                return (True, (i, 1)) if certificate else True
+            oedges.append(oedges.pop(0))
+        return (False, None) if certificate else False
+
+    def is_half_translate(self, other, certificate=False):
+        r"""
+        Return whether ``other`` is a translate or half-translate of ``self``.
+
+        If ``certificate`` is set to ``True`` then return also a pair ``(orientation, index)``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import polygons
+            sage: S = polygons(vertices=[(0,0), (3,0), (1,1)])
+            sage: T1 = S.translate((2,3))
+            sage: S.is_half_translate(T1)
+            True
+            sage: T2 = polygons(vertices=[(-1,1), (1,0), (2,1)])
+            sage: S.is_half_translate(T2)
+            True
+            sage: T3 = polygons(vertices=[(0,0), (3,0), (2,1)])
+            sage: S.is_half_translate(T3)
+            False
+
+            sage: S.is_half_translate(T1, certificate=True)
+            (True, (0, 1))
+            sage: ans, certif = S.is_half_translate(T2, certificate=True)
+            sage: assert ans
+            sage: shift, rot = certif
+            sage: polygons(edges=[rot * S.edge(k + shift) for k in range(3)], base_point=T2.vertex(0)) == T2
+            True
+            sage: S.is_half_translate(T3, certificate=True)
+            (False, None)
+        """
+        if type(self) is not type(other):
+            raise TypeError
+
+        n = self.num_edges()
+        if other.num_edges() != n:
+            return False
+
+        sedges = self.edges()
+        oedges = other.edges()
+        for i in range(n):
+            if sedges == oedges:
+                return (True, (i, 1)) if certificate else True
+            oedges.append(oedges.pop(0))
+
+        assert oedges == other.edges()
+        oedges = [-e for e in oedges]
+        for i in range(n):
+            if sedges == oedges:
+                return (True, (0 if i == 0 else n-i, -1)) if certificate else True
+            oedges.append(oedges.pop(0))
+
         return (False, None) if certificate else False
 
 class ConvexPolygons(UniqueRepresentation, Parent):
