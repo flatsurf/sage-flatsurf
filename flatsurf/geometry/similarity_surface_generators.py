@@ -672,29 +672,39 @@ class TranslationSurfaceGenerators:
         r"""
         McMullen prototypes in the stratum H(2).
 
+        These prototype appear at least in McMullen "Teichmüller curves in genus
+        two: Discriminant and spin" (2004). The notation from that paper are
+        quadruple ``(a, b, c, e)`` which translates in our notation as
+        ``w = b``, ``h = c``, ``t = a`` (and ``e = e``).
+
         The associated discriminant is `D = e^2 + 4 wh`.
 
         If ``rel`` is a positive parameter (less than w-lambda) the surface belongs
-        to the discriminant.
+        to the eigenform locus in H(1,1).
 
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
+            sage: from surface_dynamics import AbelianStratum
 
-            sage: T8 = translation_surfaces.mcmullen_genus2_prototype(2,1,0,0)    # discriminant 8
-            sage: T12 = translation_surfaces.mcmullen_genus2_prototype(3,1,0,0)   # discriminant 12
-            sage: T13 = translation_surfaces.mcmullen_genus2_prototype(3,1,0,1)   # discriminant 13
-            sage: T17 = translation_surfaces.mcmullen_genus2_prototype(4,1,0,1)   # discriminant 17
-            sage: T20 = translation_surfaces.mcmullen_genus2_prototype(4,1,0,2)   # discriminant 20
-            sage: T24 = translation_surfaces.mcmullen_genus2_prototype(3,2,0,0)   # discriminant 24
-            sage: T32 = translation_surfaces.mcmullen_genus2_prototype(4,2,1,0)   # discriminant 32
-            sage: T33a = translation_surfaces.mcmullen_genus2_prototype(4,2,0,1)  # discriminant 33
-            sage: T33b = translation_surfaces.mcmullen_genus2_prototype(4,2,1,1)  # discriminant 33
+            sage: prototypes = {
+            ....:      5: [(1,1,0,-1)],
+            ....:      8: [(1,1,0,-2), (2,1,0,0)],
+            ....:      9: [(2,1,0,-1)],
+            ....:     12: [(1,2,0,-2), (2,1,0,-2), (3,1,0,0)],
+            ....:     13: [(1,1,0,-3), (3,1,0,-1), (3,1,0,1)],
+            ....:     16: [(3,1,0,-2), (4,1,0,0)],
+            ....:     17: [(1,2,0,-3), (2,1,0,-3), (2,2,0,-1), (2,2,1,-1), (4,1,0,-1), (4,1,0,1)],
+            ....:     20: [(1,1,0,-4), (2,2,1,-2), (4,1,0,-2), (4,1,0,2)],
+            ....:     21: [(1,3,0,-3), (3,1,0,-3)],
+            ....:     24: [(1,2,0,-4), (2,1,0,-4), (3,2,0,0)],
+            ....:     25: [(2,2,0,-3), (2,2,1,-3), (3,2,0,-1), (4,1,0,-3)]}
 
-            sage: print(T20.stratum())
-            H_2(2)
-            sage: T20.base_ring().polynomial().discriminant()
-            20
+            sage: for D in sorted(prototypes):
+            ....:     for w,h,t,e in prototypes[D]:
+            ....:          T = translation_surfaces.mcmullen_genus2_prototype(w,h,t,e)
+            ....:          assert T.stratum() == AbelianStratum(2)
+            ....:          assert (D.is_square() and T.base_ring() is QQ) or (T.base_ring().polynomial().discriminant() == D)
 
         An example with some relative homology::
 
@@ -732,9 +742,15 @@ class TranslationSurfaceGenerators:
 
         x = polygen(QQ)
         poly = x**2 - e * x - w*h
-        emb = AA.polynomial_root(poly, RIF(1,w))
-        K = NumberField(poly, 'l', embedding=emb)
-        l = K.gen()
+        if poly.is_irreducible():
+            emb = AA.polynomial_root(poly, RIF(0,w))
+            K = NumberField(poly, 'l', embedding=emb)
+            l = K.gen()
+        else:
+            K = QQ
+            D = e**2 + 4 * w*h
+            d = D.sqrt()
+            l = (e + d) / 2
         rel = K(rel)
 
         # (lambda,lambda) square on top
