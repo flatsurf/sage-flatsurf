@@ -1683,6 +1683,14 @@ class PolygonsConstructor:
             sage: e0 = P.edge(0); assert e0[0]**2 + e0[1]**2 == 3**2
             sage: e1 = P.edge(1); assert e1[0]**2 + e1[1]**2 == 1
 
+            sage: polygons(angles=[1,1,1,2])
+            Polygon: (0, 0), (1, 0), (-1/2*a^2 + 5/2, 1/2*a), (-1/2*a^2 + 2, 1/2*a^3 - 3/2*a)
+
+            sage: polygons(angles=[1,1,1,8])
+            Traceback (most recent call last):
+            ...
+            ValueError: invalid 'angles' for a convex polygon
+
         TESTS::
 
             sage: from itertools import product
@@ -1758,6 +1766,8 @@ class PolygonsConstructor:
             s = ZZ(n - 2) / sum(angles) / ZZ(2)
             if s != 1:
                 angles = [s * a for a in angles]
+            if any(2*angle >= 1 for angle in angles):
+                raise ValueError("invalid 'angles' for a convex polygon")
 
             if length is None and lengths is None:
                 lengths = [AA(1)] * (n-2)
