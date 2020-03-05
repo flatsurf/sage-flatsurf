@@ -20,7 +20,7 @@ if SAGE_VERSION >= '8.2':
 else:
     from sage.matrix.matrix import is_Matrix
 
-from flatsurf.geometry.polygon import ConvexPolygon, Polygons
+from flatsurf.geometry.polygon import ConvexPolygon, ConvexPolygons
 
 ZZ_0 = Integer(0)
 ZZ_1 = Integer(1)
@@ -216,8 +216,8 @@ class Similarity(MultiplicativeGroupElement):
 
             sage: from flatsurf.geometry.similarity import SimilarityGroup
             sage: SG = SimilarityGroup(QQ)
-            sage: from flatsurf.geometry.polygon import Polygons
-            sage: P = Polygons(QQ)
+            sage: from flatsurf import ConvexPolygons
+            sage: P = ConvexPolygons(QQ)
             sage: p = P.an_element()
             sage: p
             Polygon: (0, 0), (1, 0), (1, 1), (0, 1)
@@ -231,9 +231,9 @@ class Similarity(MultiplicativeGroupElement):
         """
         if isinstance(w,ConvexPolygon):
             if field is None:
-                P = Polygons(field=self.parent().base_field())
+                P = ConvexPolygons(field=self.parent().base_field())
             else:
-                P = Polygons(field=field)
+                P = ConvexPolygons(field=field)
             try:
                 return P(vertices=[self(v) for v in w.vertices()])
             except ValueError as e:

@@ -11,7 +11,7 @@ from sage.modules.free_module_element import vector
 from sage.geometry.polyhedron.constructor import Polyhedron
 from sage.functions.other import sqrt
 
-from flatsurf.geometry.polygon import Polygons
+from flatsurf.geometry.polygon import ConvexPolygons
 from flatsurf.geometry.surface import surface_list_from_polygons_and_gluings
 from flatsurf.geometry.cone_surface import ConeSurface
 from flatsurf.geometry.straight_line_trajectory import StraightLineTrajectory, SegmentInPolygon 
@@ -223,7 +223,7 @@ def polyhedron_to_cone_surface(polyhedron, use_AA=False, scaling_factor=ZZ(1)):
         
     
     if use_AA==True:
-        Polys=Polygons(AA)
+        Polys=ConvexPolygons(AA)
         polygons=[]
         for vs in polygon_vertices_AA:
             polygons.append(Polys(vertices=vs))
@@ -249,7 +249,7 @@ def polyhedron_to_cone_surface(polyhedron, use_AA=False, scaling_factor=ZZ(1)):
                     vs2.append(vector(field,[elts2[j],elts2[j+1]]))
                     j=j+2
                 polygon_vertices_field2.append(vs2)
-            Polys=Polygons(field)
+            Polys=ConvexPolygons(field)
             polygons=[]
             for vs in polygon_vertices_field2:
                 polygons.append(Polys(vertices=vs))
@@ -272,7 +272,7 @@ def polyhedron_to_cone_surface(polyhedron, use_AA=False, scaling_factor=ZZ(1)):
                     vs2.append(vector(field2,[hom2(elts2[j]),hom2(elts2[j+1])]))
                     j=j+2
                 polygon_vertices_field2.append(vs2)
-            Polys=Polygons(field2)
+            Polys=ConvexPolygons(field2)
             polygons=[]
             for vs in polygon_vertices_field2:
                 polygons.append(Polys(vertices=vs))

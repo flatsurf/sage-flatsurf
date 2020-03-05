@@ -1365,7 +1365,7 @@ class ConvexPolygons(UniqueRepresentation, Parent):
             sage: C1.has_coerce_map_from(C2)
             False
         """
-        return isinstance(other, Polygons) and self.field().has_coerce_map_from(other.field())
+        return isinstance(other, ConvexPolygons) and self.field().has_coerce_map_from(other.field())
 
     def _an_element_(self):
         return self([(1,0),(0,1),(-1,0),(0,-1)])
@@ -1454,6 +1454,7 @@ class ConvexPolygons(UniqueRepresentation, Parent):
 
         return self.element_class(self, vertices, check)
 
+# TODO: change it so that Polygons stand for all possible kind of polygons...
 Polygons = ConvexPolygons
 
 def number_field_elements_from_algebraics(elts, name='a'):
@@ -1799,7 +1800,7 @@ class PolygonsConstructor:
             cn,sn = c*cn - s*sn, c*sn + s*cn
             edges.append((cn,sn))
 
-        return Polygons(field)(edges=edges)
+        return ConvexPolygons(field)(edges=edges)
 
     @staticmethod
     def right_triangle(angle, leg0=None, leg1=None, hypotenuse=None):
@@ -1849,7 +1850,7 @@ class PolygonsConstructor:
             c,s = hypotenuse*c, hypotenuse*s
 
         field, (c,s) = number_field_elements_from_algebraics((c,s))
-        return Polygons(field)(edges=[(c,field.zero()),(field.zero(),s),(-c,-s)])
+        return ConvexPolygons(field)(edges=[(c,field.zero()),(field.zero(),s),(-c,-s)])
 
     def __call__(self, *args, **kwds):
         r"""
@@ -2045,6 +2046,6 @@ class PolygonCreator():
         """
         if len(self._v)<2:
             raise ValueError("Not enough vertices!")
-        return Polygons(self._field)(self._w)
+        return ConvexPolygons(self._field)(self._w)
 
 

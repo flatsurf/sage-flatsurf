@@ -28,7 +28,7 @@ from .matrix_2x2 import (is_similarity,
                     is_cosine_sine_of_rational)
 
 from .similarity import SimilarityGroup
-from .polygon import Polygons, wedge_product
+from .polygon import ConvexPolygons, wedge_product
 from .surface import Surface, Surface_dict, Surface_list, LabelComparator
 from .surface_objects import Singularity, SaddleConnection, SurfacePoint
 from .circle import Circle
@@ -284,8 +284,8 @@ class SimilaritySurface(SageObject):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.polygon import Polygons
-            sage: P=Polygons(QQ)
+            sage: from flatsurf import ConvexPolygons
+            sage: P = ConvexPolygons(QQ)
             sage: tri0=P([(1,0),(0,1),(-1,-1)])
             sage: tri1=P([(-1,0),(0,-1),(1,1)])
             sage: gluings=[((0,0),(1,0)),((0,1),(1,1)),((0,2),(1,2))]
@@ -471,8 +471,7 @@ class SimilaritySurface(SageObject):
             n=p.num_edges()
             assert 0<=v and v<n
             glue=[]
-            from flatsurf.geometry.polygon import Polygons
-            P=Polygons(us.base_ring())
+            P = ConvexPolygons(us.base_ring())
             pp = P(edges=[p.edge((i+v)%n) for i in range(n)])
 
             for i in range(n):
@@ -680,7 +679,7 @@ class SimilaritySurface(SageObject):
 
                 ss = Surface_dict(base_ring = field2)
                 index = 0
-                P = Polygons(field2)
+                P = ConvexPolygons(field2)
                 for l,p in self.label_iterator(polygons = True):
                     new_edges = []
                     for i in range(p.num_edges()):
@@ -1051,9 +1050,8 @@ class SimilaritySurface(SageObject):
             edge_map[len(vs)]=(p1,i)
             vs.append(poly1.edge(i))
 
-        from flatsurf.geometry.polygon import Polygons
         try:
-            new_polygon = Polygons(self.base_ring())(vs)
+            new_polygon = ConvexPolygons(self.base_ring())(vs)
         except (ValueError, TypeError):
             if test:
                 return False
@@ -1127,12 +1125,12 @@ class SimilaritySurface(SageObject):
         newedges1=[poly.vertex(v2)-poly.vertex(v1)]
         for i in range(v2, v1+ne):
             newedges1.append(poly.edge(i))
-        newpoly1 = Polygons(self.base_ring())(newedges1)
+        newpoly1 = ConvexPolygons(self.base_ring())(newedges1)
 
         newedges2=[poly.vertex(v1)-poly.vertex(v2)]
         for i in range(v1,v2):
             newedges2.append(poly.edge(i))
-        newpoly2 = Polygons(self.base_ring())(newedges2)
+        newpoly2 = ConvexPolygons(self.base_ring())(newedges2)
 
         # Store the old gluings
         old_gluings = {(p,i): self.opposite_edge(p,i) for i in range(ne)}
@@ -2156,10 +2154,10 @@ class SimilaritySurface(SageObject):
 #        Note that this may be slow for infinite surfaces.
 #
 #        EXAMPLES::
-#            sage: from flatsurf.geometry.polygon import Polygons
+#            sage: from flatsurf.geometry.polygon import ConvexPolygons
 #            sage: K.<sqrt2> = NumberField(x**2 - 2, embedding=1.414)
-#            sage: octagon = Polygons(K)([(1,0),(sqrt2/2, sqrt2/2),(0, 1),(-sqrt2/2, sqrt2/2),(-1,0),(-sqrt2/2, -sqrt2/2),(0, -1),(sqrt2/2, -sqrt2/2)])
-#            sage: square = Polygons(K)([(1,0),(0,1),(-1,0),(0,-1)])
+#            sage: octagon = ConvexPolygons(K)([(1,0),(sqrt2/2, sqrt2/2),(0, 1),(-sqrt2/2, sqrt2/2),(-1,0),(-sqrt2/2, -sqrt2/2),(0, -1),(sqrt2/2, -sqrt2/2)])
+#            sage: square = ConvexPolygons(K)([(1,0),(0,1),(-1,0),(0,-1)])
 #            sage: gluings = [((0,i),(1+(i%2),i//2)) for i in range(8)]
 #            sage: from flatsurf.geometry.surface import surface_from_polygons_and_gluings
 #            sage: s=surface_from_polygons_and_gluings([octagon,square,square],gluings)
@@ -2208,10 +2206,10 @@ class SimilaritySurface(SageObject):
 #        Note that this may be slow for infinite surfaces.
 #
 #        EXAMPLES::
-#            sage: from flatsurf.geometry.polygon import Polygons
+#            sage: from flatsurf.geometry.polygon import ConvexPolygons
 #            sage: K.<sqrt2> = NumberField(x**2 - 2, embedding=1.414)
-#            sage: octagon = Polygons(K)([(1,0),(sqrt2/2, sqrt2/2),(0, 1),(-sqrt2/2, sqrt2/2),(-1,0),(-sqrt2/2, -sqrt2/2),(0, -1),(sqrt2/2, -sqrt2/2)])
-#            sage: square = Polygons(K)([(1,0),(0,1),(-1,0),(0,-1)])
+#            sage: octagon = ConvexPolygons(K)([(1,0),(sqrt2/2, sqrt2/2),(0, 1),(-sqrt2/2, sqrt2/2),(-1,0),(-sqrt2/2, -sqrt2/2),(0, -1),(sqrt2/2, -sqrt2/2)])
+#            sage: square = ConvexPolygons(K)([(1,0),(0,1),(-1,0),(0,-1)])
 #            sage: gluings = [((0,i),(1+(i%2),i//2)) for i in range(8)]
 #            sage: from flatsurf.geometry.surface import surface_from_polygons_and_gluings
 #            sage: s=surface_from_polygons_and_gluings([octagon,square,square],gluings)

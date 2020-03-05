@@ -1239,8 +1239,8 @@ class BaseRingChangedSurface(Surface):
     def __init__(self, surface, ring):
         self._s=surface
         self._base_ring=ring
-        from flatsurf.geometry.polygon import Polygons
-        self._P=Polygons(self._base_ring)
+        from flatsurf.geometry.polygon import ConvexPolygons
+        self._P=ConvexPolygons(self._base_ring)
         Surface.__init__(self, ring, self._s.base_label(), mutable=False, finite=self._s.is_finite())
 
     def polygon(self, lab):

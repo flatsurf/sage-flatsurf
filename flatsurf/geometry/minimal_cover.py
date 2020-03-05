@@ -15,9 +15,8 @@ class MinimalTranslationCover(Surface):
 
         sage: from flatsurf import *
         sage: from flatsurf.geometry.minimal_cover import MinimalTranslationCover
-        sage: from flatsurf.geometry.polygon import Polygons
-        sage: s=Surface_list(QQ)
-        sage: P=Polygons(QQ)
+        sage: s = Surface_list(QQ)
+        sage: P = ConvexPolygons(QQ)
         sage: s.add_polygon(P(vertices=[(0,0),(5,0),(0,5)]))
         0
         sage: s.add_polygon(P(vertices=[(0,0),(3,4),(-4,3)]))
@@ -82,9 +81,8 @@ class MinimalHalfTranslationCover(Surface):
 
         sage: from flatsurf import *
         sage: from flatsurf.geometry.minimal_cover import MinimalHalfTranslationCover
-        sage: from flatsurf.geometry.polygon import Polygons
-        sage: s=Surface_list(QQ)
-        sage: P=Polygons(QQ)
+        sage: s = Surface_list(QQ)
+        sage: P = ConvexPolygons(QQ)
         sage: s.add_polygon(P(vertices=[(0,0),(5,0),(0,5)]))
         0
         sage: s.add_polygon(P(vertices=[(0,0),(3,4),(-4,3)]))

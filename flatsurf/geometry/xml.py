@@ -177,8 +177,8 @@ def _surface_from_ElementTree(tree):
     polygons=tree.find("polygons")
     if polygons is None:
         raise ValueError('Failed to find tag named "polygons"')
-    from flatsurf.geometry.polygon import Polygons
-    P=Polygons(base_ring)
+    from flatsurf.geometry.polygon import ConvexPolygons
+    P = ConvexPolygons(base_ring)
     for polygon in polygons.findall("polygon"):
         node=polygon.find("label")
         if node is None:

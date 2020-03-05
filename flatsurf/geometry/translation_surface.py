@@ -337,14 +337,14 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
                 deformed_labels.add(label)
                 assert s.polygon(label).num_edges()==3
 
-        from flatsurf.geometry.polygon import wedge_product, Polygons
+        from flatsurf.geometry.polygon import wedge_product, ConvexPolygons
 
         if local:
 
             ss=s.copy(mutable=True, new_field=field)
             us=ss.underlying_surface()
 
-            P=Polygons(field)
+            P = ConvexPolygons(field)
             for label in deformed_labels:
                 polygon=s.polygon(label)
                 a0=vector_space(polygon.vertex(1))

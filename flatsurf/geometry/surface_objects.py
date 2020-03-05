@@ -16,7 +16,7 @@ from sage.plot.polygon import polygon2d
 from sage.rings.qqbar import AA
 from sage.structure.sage_object import SageObject
 
-from .polygon import dot_product, Polygons, wedge_product
+from .polygon import dot_product, ConvexPolygons, wedge_product
 from .similarity import SimilarityGroup
 
 class Singularity(SageObject):
@@ -806,7 +806,7 @@ class Cylinder(SageObject):
             edge_intersections.append((w1,w2))
 
         polygons = []
-        P = Polygons(s.base_ring())
+        P = ConvexPolygons(s.base_ring())
         pair1 = edge_intersections[-1]
         l1 = labels[-2][0]
         e1 = edges[-1]

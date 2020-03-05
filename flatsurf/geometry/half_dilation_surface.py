@@ -15,7 +15,7 @@ from six import iteritems
 from flatsurf.geometry.surface import Surface
 from flatsurf.geometry.similarity_surface import SimilaritySurface
 from flatsurf.geometry.mappings import SurfaceMapping, IdentityMapping, SurfaceMappingComposition
-from flatsurf.geometry.polygon import Polygons
+from flatsurf.geometry.polygon import ConvexPolygons
 
 from sage.env import SAGE_VERSION
 if SAGE_VERSION >= '8.2':
@@ -315,7 +315,7 @@ class GL2RImageSurface(Surface):
         else:
             base_ring=ring
 
-        self._P=Polygons(base_ring)
+        self._P = ConvexPolygons(base_ring)
 
         Surface.__init__(self, base_ring, self._s.base_label(), finite=self._s.is_finite())
 

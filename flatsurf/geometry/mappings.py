@@ -4,7 +4,7 @@ from __future__ import absolute_import, print_function, division
 from six.moves import range, map, filter, zip
 from six import iteritems
 
-from flatsurf.geometry.polygon import Polygons, wedge_product
+from flatsurf.geometry.polygon import ConvexPolygons, wedge_product
 from flatsurf.geometry.surface import Surface, Surface_list, Surface_dict, ExtraLabel
 from flatsurf.geometry.similarity_surface import SimilaritySurface
 
@@ -168,7 +168,7 @@ class MatrixListDeformedSurface(Surface):
             self._base_ring = self._s.base_ring()
         else:
             self._base_ring=ring
-        self._P=Polygons(self._base_ring)
+        self._P = ConvexPolygons(self._base_ring)
         Surface.__init__(self)
 
     def base_ring(self):
@@ -223,8 +223,8 @@ class SimilarityJoinPolygonsMapping(SurfaceMapping):
 
         sage: from flatsurf.geometry.surface import Surface_list
         sage: from flatsurf.geometry.translation_surface import TranslationSurface
-        sage: from flatsurf.geometry.polygon import Polygons
-        sage: P=Polygons(QQ)
+        sage: from flatsurf.geometry.polygon import ConvexPolygons
+        sage: P = ConvexPolygons(QQ)
         sage: s0=Surface_list(base_ring=QQ)
         sage: s0.add_polygon(P([(1,0),(0,1),(-1,-1)])) # gets label=0
         0
@@ -283,7 +283,7 @@ class SimilarityJoinPolygonsMapping(SurfaceMapping):
             # The polygon with the base label is being removed.
             s2.change_base_label(p1)
         
-        s2.change_polygon(p1, Polygons(s.base_ring())(vs))
+        s2.change_polygon(p1, ConvexPolygons(s.base_ring())(vs))
         
         for i in range(len(vs)):
             p3,e3 = edge_map[i]
@@ -431,12 +431,12 @@ class SplitPolygonsMapping(SurfaceMapping):
         newvertices1=[poly.vertex(v2)-poly.vertex(v1)]
         for i in range(v2, v1+ne):
             newvertices1.append(poly.edge(i))
-        newpoly1 = Polygons(s.base_ring())(newvertices1)
+        newpoly1 = ConvexPolygons(s.base_ring())(newvertices1)
         
         newvertices2=[poly.vertex(v1)-poly.vertex(v2)]
         for i in range(v1,v2):
             newvertices2.append(poly.edge(i))
-        newpoly2 = Polygons(s.base_ring())(newvertices2)
+        newpoly2 = ConvexPolygons(s.base_ring())(newvertices2)
 
         ss2 = s.copy(mutable=True,lazy=True)
         s2 = ss2.underlying_surface()
@@ -712,7 +712,7 @@ class CanonicalizePolygonsMapping(SurfaceMapping):
         ring=s.base_ring()
         from flatsurf.geometry.similarity import SimilarityGroup
         T = SimilarityGroup(ring)
-        P=Polygons(ring)
+        P = ConvexPolygons(ring)
         cv = {} # dictionary for canonical vertices
         translations={} # translations bringing the canonical vertex to the origin.
         s2 = Surface_dict(base_ring=ring)
