@@ -858,7 +858,10 @@ def translation_surface_cmp(s1, s2):
         raise NotImplementedError
     lw1=s1.walker()
     lw2=s2.walker()
-    from itertools import zip_longest
+    try:
+        from itertools import zip_longest
+    except ImportError:
+        from itertools import izip_longest as zip_longest
     for p1,p2 in zip_longest(lw1.polygon_iterator(), lw2.polygon_iterator()):
         if p1 is None:
             # s2 has more polygons
