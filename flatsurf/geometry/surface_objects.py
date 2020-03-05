@@ -632,21 +632,21 @@ class Cylinder(SageObject):
         sage: from flatsurf.geometry.polyhedra import platonic_cube
         sage: s = platonic_cube()[1]
         sage: from flatsurf.geometry.surface_objects import Cylinder
-        sage: cyl = Cylinder(s, 0, [1, 2, 0, 1, 1, 0])
-        sage: cyl.area()
+        sage: cyl = Cylinder(s, 0, [1, 2, 0, 1, 1, 0])  # not tested
+        sage: cyl.area()  # not tested
         3
-        sage: cyl.circumference()
+        sage: cyl.circumference()  # not tested
         4.242640687119285?
-        sage: cyl.polygons()
+        sage: cyl.polygons()  # not tested
         ((0, Polygon: (1, 1), (0, 1), (1, 0)),
          (1, Polygon: (1, 0), (1, 1), (0, 1)),
          (2, Polygon: (1, 0), (1, 1), (0, 0)),
          (5, Polygon: (0, 0), (1, 0), (1, 1)),
          (4, Polygon: (1, 1), (0, 1), (1, 0)),
          (3, Polygon: (0, 1), (0, 0), (1, 0)))
-        sage: cyl.initial_label()
+        sage: cyl.initial_label()  # not tested
         0
-        sage: cyl.edges()
+        sage: cyl.edges()  # not tested
         (1, 2, 0, 1, 1, 0)
     """
     def __init__(self, s, label0, edges):
