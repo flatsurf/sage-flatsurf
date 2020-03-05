@@ -106,20 +106,17 @@ def polyhedron_to_cone_surface(polyhedron, use_AA=False, scaling_factor=ZZ(1)):
     True
     sage: traj.combinatorial_length()
     8
-    sage: surface_to_octahedron(traj) # not tested
-    [(0, -1, 0),
-     (-0.2000000000000000?, 0.?e-18, -0.8000000000000000?),
-     (0.?e-19, 0.2500000000000000?, -0.750000000000000?),
-     (0.6000000000000000?, 0.4000000000000000?, 0.?e-18),
-     (0.500000000000000?, 0.?e-19, 0.500000000000000?),
-     (0, -2/5, 3/5),
-     (-0.750000000000000?, -0.2500000000000000?, 0.?e-18),
-     (-0.8000000000000000?, 0.?e-18, -0.2000000000000000?),
-     (0.?e-18, 1.000000000000000?, 0.?e-18)]
-    sage: surface_to_octahedron(traj.segment(0)) # not tested
-    ((0, -1, 0), (-0.2000000000000000?, 0.?e-18, -0.8000000000000000?))
-    sage: surface_to_octahedron(traj.segment(0).start()) # not tested
-    ((0, -1, 0), (-0.5773502691896258?, 2.886751345948129?, -2.309401076758503?))
+    sage: path3d = surface_to_octahedron(traj)
+    sage: len(path3d)
+    9
+    sage: # We will show that the length of the path is sqrt(42):
+    sage: total_length = 0
+    sage: for i in range(8):
+    ....:     start = path3d[i]
+    ....:     end = path3d[i+1]
+    ....:     total_length += (vector(end)-vector(start)).norm()
+    sage: ZZ(total_length**2)
+    42
     """
     assert polyhedron.dim()==3
     c=polyhedron.center()
