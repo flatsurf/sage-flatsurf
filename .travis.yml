@@ -25,3 +25,4 @@ install:
   - ${SAGE} -pip install --verbose --no-index --user .
 script:
   - ${SAGE} -t --force-lib --long --optional=sage,flipper flatsurf
+  - ${SAGE} -t --force-lib --long --optional=sage,flipper doc
