@@ -629,25 +629,21 @@ class Cylinder(SageObject):
 
     EXAMPLES::
 
-        sage: from flatsurf.geometry.polyhedra import platonic_cube
-        sage: s = platonic_cube()[1]
+        sage: from flatsurf import *
+        sage: s = translation_surfaces.octagon_and_squares()
         sage: from flatsurf.geometry.surface_objects import Cylinder
-        sage: cyl = Cylinder(s, 0, [1, 2, 0, 1, 1, 0])  # not tested
-        sage: cyl.area()  # not tested
-        3
-        sage: cyl.circumference()  # not tested
-        4.242640687119285?
-        sage: cyl.polygons()  # not tested
-        ((0, Polygon: (1, 1), (0, 1), (1, 0)),
-         (1, Polygon: (1, 0), (1, 1), (0, 1)),
-         (2, Polygon: (1, 0), (1, 1), (0, 0)),
-         (5, Polygon: (0, 0), (1, 0), (1, 1)),
-         (4, Polygon: (1, 1), (0, 1), (1, 0)),
-         (3, Polygon: (0, 1), (0, 0), (1, 0)))
-        sage: cyl.initial_label()  # not tested
+        sage: cyl = Cylinder(s, 0, [2, 3, 3, 3, 2, 0, 1, 3, 2, 0])
+        sage: cyl.initial_label()
         0
-        sage: cyl.edges()  # not tested
-        (1, 2, 0, 1, 1, 0)
+        sage: cyl.edges()
+        (2, 3, 3, 3, 2, 0, 1, 3, 2, 0)
+        sage: # a = sqrt(2) below.
+        sage: cyl.area()
+        2*a + 4
+        sage: cyl.circumference().minpoly()
+        x^4 - 680*x^2 + 400
+        sage: cyl.holonomy()
+        (8*a + 12, 4*a + 6)
     """
     def __init__(self, s, label0, edges):
         r"""
