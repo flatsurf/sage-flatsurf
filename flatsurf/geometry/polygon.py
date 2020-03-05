@@ -1532,7 +1532,10 @@ class EquiangularConvexPolygons:
         sage: p.angles()
         [2/9, 4/9, 2/9, 4/9, 4/9, 2/9]
     """
-    def __init__(self, *angles, number_field=False):
+    def __init__(self, *angles, **kwds):
+        number_field = kwds.pop('number_field', False)
+        if kwds:
+            raise ValueError("invalid keyword {!r}".format(next(iter(kwds))))
         if len(angles) == 1 and isinstance(angles[0], (tuple, list)):
             angles = angles[0]
 
@@ -1636,7 +1639,7 @@ class EquiangularConvexPolygons:
         from sage.geometry.polyhedron.constructor import Polyhedron
         return Polyhedron(eqns=eqns, ieqs=ieqs, base_ring=self._base_ring)
 
-    def __call__(self, *lengths, number_field=False):
+    def __call__(self, *lengths, **kwds):
         r"""
         TESTS::
 
@@ -1650,6 +1653,9 @@ class EquiangularConvexPolygons:
             sage: P(*lengths[:-2])
             Polygon: (0, 0), (1, 0), (3/2, 0.866025403784439?), (1/2, 0.866025403784439?)
         """
+        number_field = kwds.pop('number_field', False)
+        if kwds:
+            raise ValueError("invalid keyword {!r}".format(next(iter(kwds))))
         if len(lengths) == 1 and isinstance(lengths[0], (tuple, list)):
             lengths = lengths[0]
 
