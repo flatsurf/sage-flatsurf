@@ -34,6 +34,10 @@ from sage.structure.coerce import py_scalar_parent
 cm = get_coercion_model()
 from sage.structure.element import Element
 from sage.categories.action import Action
+from sage.arith.functions import lcm
+from sage.modules.free_module_element import vector
+from sage.modules.free_module import VectorSpace
+from sage.structure.sequence import Sequence
 
 
 from .matrix_2x2 import angle
@@ -988,7 +992,6 @@ class ConvexPolygon(Element):
         from sage.plot.point import point2d
         from sage.plot.line import line2d
         from sage.plot.polygon import polygon2d
-        from sage.modules.free_module import VectorSpace
         V = VectorSpace(RR,2)
         P = self.vertices(translation)
         return point2d(P, color='red') + line2d(P + (P[0],), color='orange') + polygon2d(P, alpha=0.3)
@@ -1327,7 +1330,7 @@ class ConvexPolygons(UniqueRepresentation, Parent):
 
     EXAMPLES::
 
-        sage: from flatsurf.geometry.polygon import ConvexPolygons
+        sage: from flatsurf import ConvexPolygons
         sage: C = ConvexPolygons(QQ)
         sage: C(vertices=[(0,0), (2,0), (1,1)])
         Polygon: (0, 0), (2, 0), (1, 1)
@@ -1354,7 +1357,7 @@ class ConvexPolygons(UniqueRepresentation, Parent):
         r"""
         TESTS::
 
-            sage: from flatsurf.geometry.polygon import ConvexPolygons
+            sage: from flatsurf import ConvexPolygons
             sage: C1 = ConvexPolygons(QQ)
             sage: C2 = ConvexPolygons(AA)
             sage: C2.has_coerce_map_from(C1)
@@ -1382,19 +1385,18 @@ class ConvexPolygons(UniqueRepresentation, Parent):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.polygon import ConvexPolygons
+            sage: from flatsurf import ConvexPolygons
             sage: C = ConvexPolygons(QQ)
             sage: C.vector_space()
             Vector space of dimension 2 over Rational Field
         """
-        from sage.modules.free_module import VectorSpace
         return VectorSpace(self.base_ring(), 2)
 
     def _element_constructor_(self, *args, **kwds):
         r"""
         TESTS::
 
-            sage: from flatsurf.geometry.polygon import ConvexPolygons
+            sage: from flatsurf import ConvexPolygons
 
             sage: C = ConvexPolygons(QQ)
             sage: p = C(vertices=[(0,0),(1,0),(2,0),(1,1)])
@@ -1484,6 +1486,214 @@ def number_field_elements_from_algebraics(elts, name='a'):
     gen = K.gen()
 
     return K, [x.polynomial()(gen) for x in elts]
+
+class EquiangularConvexPolygons:
+    r"""
+    Convex polygons with fixed (rational) angles.
+
+    EXAMPLES::
+
+        sage: from flatsurf import EquiangularConvexPolygons
+
+        sage: P = EquiangularConvexPolygons(1,2,5)
+        sage: P
+        EquiangularConvexPolygons(1, 2, 5) over Algebraic Real Field
+        sage: L = P.lengths_polytope()    # polytope of admissible lengths for edges
+        sage: L
+        A 1-dimensional polyhedron in AA^3 defined as the convex hull of 1 vertex and 1 ray
+        sage: lengths = L.rays()[0].vector()
+        sage: lengths
+        (1, 0.4142135623730951?, 0.7653668647301795?)
+        sage: p = P(*lengths)    # build one polygon with the given lengths
+        sage: p
+        Polygon: (0, 0), (1, 0), (0.7071067811865475?, 0.2928932188134525?)
+        sage: p.angles()
+        [1/16, 1/8, 5/16]
+        sage: P.angles(integral=False)
+        [1/16, 1/8, 5/16]
+
+        sage: P = EquiangularConvexPolygons(1, 2, 1, 2, 2, 1)
+        sage: L = P.lengths_polytope()
+        sage: L
+        A 4-dimensional polyhedron in AA^6 defined as the convex hull of 1 vertex and 6 rays
+        sage: rays = [r.vector() for r in L.rays()]
+        sage: rays
+        [(1, 0, 0, 0, 1, 0.3472963553338607?),
+         (0, 1, 0, 0, 0.8793852415718168?, 0.6527036446661393?),
+         (0.6527036446661393?, 0, 1, 0, 0, 0.8793852415718168?),
+         (0.8793852415718168?, 0, 0, 1, 0, 0.6527036446661393?),
+         (0, 0.6527036446661393?, 0.8793852415718168?, 0, 0, 1),
+         (0, 0.8793852415718168?, 0, 0.8793852415718168?, 0, 0.8793852415718168?)]
+        sage: lengths = 3*rays[0] + rays[2] + 2*rays[3] + rays[4]
+        sage: p = P(*lengths)
+        sage: p
+        Polygon: (0, 0), (5.411474127809773?, 0), (6.024814926262611?, 0.2232377940978994?), (5.085122305476703?, 1.850833156796647?), (3.553033419238747?, 3.136408376169726?), (0.7339555568810219?, 4.162468806146732?)
+        sage: p.angles()
+        [2/9, 4/9, 2/9, 4/9, 4/9, 2/9]
+    """
+    def __init__(self, *angles, number_field=False):
+        if len(angles) == 1 and isinstance(angles[0], (tuple, list)):
+            angles = angles[0]
+
+        n = len(angles)
+        if n < 3:
+            raise ValueError("'angles' should be a list of at least 3 numbers")
+        angles = [QQ.coerce(a) for a in angles]  # total sum of angle should be
+        if any(angle <= 0 for angle in angles):
+            raise ValueError("'angles' must be positive rational numbers")
+
+        # normalize the sum so that it is (n-2)/2 (ie in multiple of 2pi)
+        s = ZZ(n - 2) / sum(angles) / ZZ(2)
+        if s != 1:
+            angles = [s * a for a in angles]
+        if any(2*angle >= 1 for angle in angles):
+            raise ValueError("invalid 'angles' for a convex polygon")
+        self._angles = angles
+
+        zetas = [QQbar.zeta(a.denominator()) ** a.numerator() for a in angles]
+        cosines = [z.real() for z in zetas]
+        sines = [z.imag() for z in zetas]
+        if number_field:
+            base_ring, elts = number_field_elements_from_algebraics(cosines + sines, name='a')
+            cosines = elts[:n]
+            sines = elts[n:]
+        else:
+            base_ring = AA
+        self._cosines = cosines
+        self._sines = sines
+        self._base_ring = base_ring
+        assert len(cosines) == n and len(sines) == n
+
+    def angles(self, integral=False):
+        angles = self._angles
+        if integral:
+            D = lcm([a.denominator() for a in self._angles])
+            angles = [D * a for a in self._angles]
+        return angles
+
+    def __repr__(self):
+        r"""
+        TESTS::
+
+            sage: from flatsurf import EquiangularConvexPolygons
+            sage: EquiangularConvexPolygons(1, 2, 3)
+            EquiangularConvexPolygons(1, 2, 3) over Algebraic Real Field
+            sage: EquiangularConvexPolygons(1, 2, 3, number_field=True)
+            EquiangularConvexPolygons(1, 2, 3) over Number Field in a with defining polynomial y^2 - 3 with a = 1.732050807568878?
+        """
+        return "EquiangularConvexPolygons({}) over {}".format(", ".join(map(str,self.angles(True))), self._base_ring)
+
+    def vector_space(self):
+        return VectorSpace(self._base_ring, 2)
+
+    def slopes(self, e0=(1,0), cosines=None, sines=None):
+        r"""
+        List of slopes of the edges as a list of unit vectors.
+
+        EXAMPLES::
+
+            sage: from flatsurf import EquiangularConvexPolygons
+            sage: EquiangularConvexPolygons(1, 2, 1, 2).slopes()
+            [(1, 0),
+             (0.500000000000000?, 0.866025403784439?),
+             (-1.000000000000000?, 0.?e-18),
+             (-0.500000000000000?, -0.866025403784439?)]
+        """
+        V = self.vector_space()
+        if cosines is None:
+            cosines = self._cosines
+        if sines is None:
+            sines = self._sines
+        n = len(cosines)
+        v = V.zero()
+        e = V(e0)
+        edges = [e]
+        for i in range(n-1):
+            e = V((-cosines[i+1] * e[0] - sines[i+1] * e[1], sines[i+1] * e[0] - cosines[i+1] * e[1]))
+            edges.append(e)
+        return edges
+
+    def lengths_polytope(self):
+        r"""
+        Return the polytope parametrizing the admissible length data.
+
+        EXAMPLES::
+
+            sage: from flatsurf import EquiangularConvexPolygons
+            sage: EquiangularConvexPolygons(1, 2, 1, 2).lengths_polytope()
+            A 2-dimensional polyhedron in AA^4 defined as the convex hull of 1 vertex and 2 rays
+        """
+        n = len(self._angles)
+        slopes = self.slopes()
+        eqns = [[0] + [s[0] for s in slopes], [0] + [s[1] for s in slopes]]
+        ieqs = []
+        for i in range(n):
+            ieq = [0] * (n + 1)
+            ieq[i+1] = 1
+            ieqs.append(ieq)
+
+        from sage.geometry.polyhedron.constructor import Polyhedron
+        return Polyhedron(eqns=eqns, ieqs=ieqs, base_ring=self._base_ring)
+
+    def __call__(self, *lengths, number_field=False):
+        r"""
+        TESTS::
+
+            sage: from flatsurf import EquiangularConvexPolygons
+            sage: P = EquiangularConvexPolygons(1, 2, 1, 2)
+            sage: L = P.lengths_polytope()
+            sage: r0, r1 = [r.vector() for r in L.rays()]
+            sage: lengths = r0 + r1
+            sage: P(*lengths)
+            Polygon: (0, 0), (1, 0), (3/2, 0.866025403784439?), (1/2, 0.866025403784439?)
+            sage: P(*lengths[:-2])
+            Polygon: (0, 0), (1, 0), (3/2, 0.866025403784439?), (1/2, 0.866025403784439?)
+        """
+        if len(lengths) == 1 and isinstance(lengths[0], (tuple, list)):
+            lengths = lengths[0]
+
+        n = len(self._angles)
+        if len(lengths) != n-2 and len(lengths) != n:
+            raise ValueError("invalid 'lengths' argument")
+
+        cosines = self._cosines
+        sines = self._sines
+        base_ring = self._base_ring
+        if number_field:
+            if base_ring is AA:
+                base_ring, elts = number_field_elements_from_algebraics(cosines + sines + list(lengths), name='a')
+                cosines = elts[:n]
+                sines = elts[n:2*n]
+                lengths = elts[2*n:]
+            elif any(l not in self._base_ring for l in lengths):
+                raise NotImplementedError
+
+        C = ConvexPolygons(base_ring)
+
+        V = self.vector_space()
+        slopes = self.slopes(cosines=cosines, sines=sines)
+        v = V((0,0))
+        vertices = [v]
+
+        if len(lengths) == n - 2:
+            for i in range(n-2):
+                v += lengths[i] * slopes[i]
+                vertices.append(v)
+            s,t = matrix([slopes[-1],slopes[n-2]]).solve_left(vertices[0] - vertices[n-2])
+            assert vertices[0] - s*slopes[-1] == vertices[n-2] + t*slopes[n-2]
+            if s <= 0 or t <= 0:
+                raise ValueError("the provided lengths do not give rise to a convex polygon")
+            vertices.append(vertices[0] - s*slopes[-1])
+
+        elif len(lengths) == n:
+            for i in range(n):
+                v += lengths[i] * slopes[i]
+                vertices.append(v)
+            if not vertices[-1].is_zero():
+                raise ValueError("the provided lengths do not give rise to a convex polygon")
+            vertices.pop(-1)
+
+        return C(vertices=vertices)
 
 class PolygonsConstructor:
     def square(self, side=1, **kwds):
@@ -1702,10 +1912,6 @@ class PolygonsConstructor:
             ....:     assert T.angles() == [a/D, b/D, c/D]
             ....:     assert T.edge(0) == T.vector_space()((1,0))
         """
-        from sage.modules.free_module_element import vector
-        from sage.modules.free_module import VectorSpace
-        from sage.structure.sequence import Sequence
-
         base_ring = None
         if 'ring' in kwds:
             base_ring = kwds.pop('ring')
@@ -1725,6 +1931,7 @@ class PolygonsConstructor:
             lengths = kwds.pop('lengths', None)
             length = kwds.pop('length', None)
             base_point = kwds.pop('base_point', (0,0))
+            number_field = kwds.pop('number_field', True)
         elif args:
             edges = args
             args = ()
@@ -1756,19 +1963,6 @@ class PolygonsConstructor:
 
         elif angles is not None:
             n = len(angles)
-            if n < 3:
-                raise ValueError("'angles' should be a list of at least 3 numbers")
-            angles = [QQ.coerce(a) for a in angles]  # total sum of angle should be
-            if any(angle <= 0 for angle in angles):
-                raise ValueError("'angles' must be positive rational numbers")
-
-            # normalize the sum so that it is (n-2)/2 (ie in multiple of 2pi)
-            s = ZZ(n - 2) / sum(angles) / ZZ(2)
-            if s != 1:
-                angles = [s * a for a in angles]
-            if any(2*angle >= 1 for angle in angles):
-                raise ValueError("invalid 'angles' for a convex polygon")
-
             if length is None and lengths is None:
                 lengths = [AA(1)] * (n-2)
             elif lengths is None:
@@ -1780,32 +1974,7 @@ class PolygonsConstructor:
             else:
                 raise ValueError("only one of 'length' or 'lengths' can be set together with 'angles'")
 
-            zetas = [QQbar.zeta(a.denominator()) ** a.numerator() for a in angles]
-            cosines = [z.real() for z in zetas]
-            sines = [z.imag() for z in zetas]
-
-            base_ring, elts = number_field_elements_from_algebraics(cosines + sines + lengths, name='a')
-            cosines = elts[:n]
-            sines = elts[n:2*n]
-            lengths = elts[2*n:]
-            assert len(cosines) == n and len(sines) == n and len(lengths) == n-2
-
-            V = VectorSpace(base_ring, 2)
-            v = V.zero()
-            e0 = e = V((1,0))
-            vertices = []
-            for i in range(n-2):
-                vertices.append(v)
-                v += lengths[i] * e
-                e = V((-cosines[i+1] * e[0] - sines[i+1] * e[1], sines[i+1] * e[0] - cosines[i+1] * e[1]))
-            vertices.append(v)
-
-            f = V((cosines[0], sines[0]))
-            s,t = matrix([-f,e]).solve_left(vertices[0] - vertices[n-2])
-            assert vertices[0] + s*f == vertices[n-2] + t*e
-            if s <= 0 or t <= 0:
-                raise ValueError("non-convex data; you need to provide an appropriate 'lengths' argument")
-            vertices.append(vertices[0] + s*f)
+            return EquiangularConvexPolygons(*angles, number_field=False)(lengths, number_field=True)
 
         if base_ring not in Fields():
             base_ring = base_ring.fraction_field()
@@ -1833,7 +2002,6 @@ class PolygonCreator():
         r"""
         Return the vector space in which self naturally embeds.
         """
-        from sage.modules.free_module import VectorSpace
         return VectorSpace(self._field, 2)
 
     def add_vertex(self, new_vertex):

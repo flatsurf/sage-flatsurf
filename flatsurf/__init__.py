@@ -1,6 +1,6 @@
 from __future__ import absolute_import, print_function, division
 
-from .geometry.polygon import polygons
+from .geometry.polygon import polygons, EquiangularConvexPolygons, ConvexPolygons
 
 from .geometry.similarity_surface_generators import (similarity_surfaces,
         half_translation_surfaces, translation_surfaces)
