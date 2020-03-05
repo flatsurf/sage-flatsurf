@@ -1221,6 +1221,42 @@ class SimilaritySurface(SageObject):
     # TODO: deprecate
     surface_point = point
 
+    def ramified_cover(self, degree, data):
+        r"""
+        Build a ramified cover of this surface with given ``degree`` and ramification ``data``.
+
+        INPUT:
+
+        - ``degree`` (integer) -- the degree of the cover
+
+        - ``data`` -- dictionary that associates a pair ``(polygon_label, edge_number)`` a permutation
+          of ``{1, 2, ..., d}``
+
+        EXAMPLES:
+
+        The L-shape origami::
+
+            sage: import flatsurf
+            sage: T = flatsurf.translation_surfaces.square_torus()
+            sage: T.ramified_cover(3, {(0,0): '(1,2)', (0,1): '(1,3)'})
+            TranslationSurface built from 3 polygons
+            sage: O = T.ramified_cover(3, {(0,0): '(1,2)', (0,1): '(1,3)'})
+            sage: O.stratum()
+            H_2(2)
+
+        TESTS::
+
+            sage: import flatsurf
+            sage: T = flatsurf.translation_surfaces.square_torus()
+            sage: T.ramified_cover(3, {(0,0): '(1,2)', (0,2): '(1,3)'})
+            Traceback (most recent call last):
+            ...
+            ValueError: inconsistent covering data
+        """
+        if not self.is_finite():
+            raise ValueError("this method is only available for finite surfaces")
+        return type(self)(self._s.ramified_cover(degree, data))
+
     def minimal_cover(self, cover_type = "translation"):
         r"""
         Return the minimal translation or half-translation cover of the surface.

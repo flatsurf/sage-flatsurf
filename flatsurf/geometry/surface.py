@@ -915,6 +915,48 @@ class Surface_list(Surface):
                     del self._ref_to_int[ref_label]
         self._num_polygons -= 1
 
+    def ramified_cover(self, d, data):
+        r"""
+        Make a ramified cover of this surface.
+
+        INPUT:
+
+        - ``d`` - integer (the degree of the cover)
+
+        - ``data`` - a dictionary which to a pair ``(label, edge_num)`` associates a permutation
+          of {1,...,d}
+        """
+        from sage.groups.perm_gps.permgroup_named import SymmetricGroup
+        G = SymmetricGroup(d)
+        for k in data:
+            data[k] = G(data[k])
+        cover = Surface_list(base_ring=self.base_ring())
+        labels = list(self.label_iterator())
+        edges = set(self.edge_iterator())
+        cover_labels = {}
+        for i in range(1,d+1):
+            for lab in self.label_iterator():
+                cover_labels[(lab, i)] = cover.add_polygon(self.polygon(lab))
+        while edges:
+            lab, e = elab = edges.pop()
+            llab, ee = eelab = self.opposite_edge(lab, e)
+            edges.remove(eelab)
+            if elab in data:
+                if eelab in data:
+                    if not (data[elab] * data[eelab]).is_one():
+                        raise ValueError("inconsistent covering data")
+                s = data[elab]
+            elif eelab in data:
+                s = ~data[eelab]
+            else:
+                s = G.one()
+
+            for i in range(1, d+1):
+                p0 = cover_labels[(lab, i)]
+                p1 = cover_labels[(lab, s(i))]
+                cover.set_edge_pairing(p0, e, p1, ee)
+        return cover
+
 def surface_list_from_polygons_and_gluings(polygons, gluings, mutable=False):
     r"""
     Take a list of polygons and gluings (given either as a list of pairs of edges, or as a dictionary),
