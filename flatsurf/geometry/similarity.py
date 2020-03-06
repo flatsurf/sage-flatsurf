@@ -289,6 +289,12 @@ class Similarity(MultiplicativeGroupElement):
             sage: S((1,0,0,0,1)) == S((1,0,0,0,-1))
             False
         """
+        if other is None:
+            return False
+        if type(other)==int:
+            return False
+        if self.parent() != other.parent():
+            return False
         return self._a == other._a and \
                self._b == other._b and \
                self._s == other._s and \
@@ -372,8 +378,8 @@ class SimilarityGroup(UniqueRepresentation, Group):
         TESTS::
 
             sage: from flatsurf.geometry.similarity import SimilarityGroup
-            sage: TestSuite(SimilarityGroup(QQ)).run()  # not tested
-            sage: TestSuite(SimilarityGroup(AA)).run()  # not tested
+            sage: TestSuite(SimilarityGroup(QQ)).run()
+            sage: TestSuite(SimilarityGroup(AA)).run()
         """
         self._field = base_field
         # The vector space of vectors
