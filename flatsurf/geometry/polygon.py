@@ -319,9 +319,9 @@ def segment_intersect(e1, e2, K=None):
 
     Return value:
 
-    - 0: do not intersect
-    - 1: one endpoint in common
-    - 2: non-trivial intersection
+    - ``0`` - do not intersect
+    - ``1`` - one endpoint in common
+    - ``2`` - non-trivial intersection
 
     EXAMPLES::
 
@@ -415,42 +415,177 @@ def segment_intersect(e1, e2, K=None):
 
     return 2 # middle intersection
 
-
-class ConvexPolygon(Element):
+def is_between(e0, e1, f):
     r"""
-    A convex polygon in the plane RR^2
+    Check whether f is strictly in the sector formed by e0 and e1 counter-clockwise
+
+    TESTS::
+
+        sage: from flatsurf.geometry.polygon import is_between
+        sage: V = ZZ^2
+        sage: vecs = [V((1,0)), V((2,1)), V((1,1)), V((1,2)),
+        ....:  V((0,1)), V((-1,2)), V((-1,1)), V((-2,1)),
+        ....:  V((-1,0)), V((-2,-1)), V((-1,-1)), V((-1,-2)),
+        ....:  V((0,-1)), V((1,-2)), V((1,-1)), V((2,-1))]
+        sage: for i in range(len(vecs)):
+        ....:     for j in range(len(vecs)):
+        ....:         if i == j: continue
+        ....:         for k in range(len(vecs)):
+        ....:             if k == i or k == j: continue
+        ....:             ans = is_between(vecs[i], vecs[j], vecs[k])
+        ....:             expected = i < k < j or k < j < i or j < i < k
+        ....:             if ans != expected:
+        ....:                 print((i,j,k),expected,ans)
     """
+    if e0[0] * e1[1] > e1[0] * e0[1]:
+        # positive determinant
+        # [ e0[0] e1[0] ]^-1 = [ e1[1] -e1[0] ]
+        # [ e0[1] e1[1] ]      [-e0[1]  e0[0] ]
+        # f[0] * e1[1] - e1[0] * f[1] > 0
+        # - f[0] * e0[1] + e0[0] * f[1] > 0
+        return e1[1] * f[0] > e1[0] * f[1] and e0[0] * f[1] > e0[1] * f[0]
+    elif e0[0] * e1[1] == e1[0] * e0[1]:
+        # aligned vector
+        return e0[0] * f[1] > e0[1] * f[0]
+    else:
+        # negative determinant
+        # [ e1[0] e0[0] ]^-1 = [ e0[1] -e0[0] ]
+        # [ e1[1] e0[1] ]      [-e1[1]  e1[0] ]
+        # f[0] * e0[1] - e0[0] * f[1] > 0
+        # - f[0] * e1[1] + e1[0] * f[1] > 0
+        return e0[1] * f[0] <= e0[0] * f[1] or e1[0] * f[1] <= e1[1] * f[0]
+
+def triangulate(vertices):
+    r"""
+    Return a triangulation of the list of vectors ``vertices``.
+
+    This function assumes that ``vertices`` form the vertices of a polygon
+    enumerated in counter-clockwise order.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.polygon import triangulate
+        sage: V = ZZ**2
+        sage: verts = list(map(V, [(0,0), (1,0), (1,1), (0,1)]))
+        sage: triangulate(verts)
+        [(0, 2)]
+
+        sage: quad = [(0,0), (1,-1), (0,1), (-1,-1)]
+        sage: quad = list(map(V, quad))
+        sage: for i in range(4):
+        ....:     print(triangulate(quad[i:] + quad[:i]))
+        [(0, 2)]
+        [(1, 3)]
+        [(0, 2)]
+        [(1, 3)]
+
+        sage: poly = [(0,0),(1,1),(2,0),(3,1),(4,0),(4,2),
+        ....:     (-4,2),(-4,0),(-3,1),(-2,0),(-1,1)]
+        sage: poly = list(map(V, poly))
+        sage: triangulate(poly)
+        [(1, 3), (3, 5), (5, 8), (6, 8), (8, 10), (10, 1), (1, 5), (5, 10)]
+
+        sage: poly = [(0,0), (1,0), (2,0), (2,1), (2,2), (1,2), (0,2), (0,1)]
+        sage: poly = list(map(V, poly))
+        sage: edges = triangulate(poly)
+        sage: edges
+        [(0, 3), (1, 3), (3, 5), (5, 7), (7, 3)]
+    """
+    n = len(vertices)
+    if n < 3:
+        raise ValueError
+    if n == 3:
+        return []
+    for i in range(n - 1):
+        eiright = vertices[(i+1)%n] - vertices[i]
+        eileft = vertices[(i-1)%n] - vertices[i]
+        for j in range(i + 2, (n if i else n-1)):
+            ejright = vertices[(j+1)%n] - vertices[j]
+            ejleft = vertices[(j-1)%n] - vertices[j]
+            chord = vertices[j] - vertices[i]
+
+            # check angles with neighbouring edges
+            if not (is_between(eiright, eileft, chord) and \
+                    is_between(ejright, ejleft, -chord)):
+                continue
+
+            # check intersection with other edges
+            e = (vertices[i], vertices[j])
+            good = True
+            for k in range(n):
+                f = (vertices[k], vertices[(k+1)%n])
+                if k == (i - 1) % n or k == i or \
+                   k == (j - 1) % n or k == j:
+                       assert segment_intersect(e, f) == 1
+                       continue
+                res = segment_intersect(e, f)
+                if res:
+                    assert res == 2
+                    good = False
+                    break
+            if good:
+                part0 = [(s+i, t+i) for s,t in triangulate(vertices[i:j+1])]
+                part1 = []
+                for (s,t) in triangulate(vertices[j:] + vertices[:i+1]):
+                    if s < n-j:
+                        s += j
+                    else:
+                        s -= n - j
+                    if t < n-j:
+                        t += j
+                    else:
+                        t -= n - j
+                    part1.append((s, t))
+                return [(i, j)] + part0 + part1
+    raise RuntimeError("input {} must be wrong".format(vertices))
+
+class Polygon(Element):
     def __init__(self, parent, vertices, check=True):
-        r"""
-        To construct the polygon you should either use a list of edge vectors
-        or a list of vertices. Using both will result in a ValueError. The polygon
-        needs to be convex with postively oriented boundary.
-
-        INPUT:
-
-        - ``parent`` -- a parent
-
-        - ``vertices`` -- a list of vertices of the polygon
-        """
         Element.__init__(self, parent)
-
         V = parent.vector_space()
         self._v = tuple(map(V, vertices))
         for vv in self._v: vv.set_immutable()
-        if True:
-            self._convexity_check()
+        if check:
+            self._inside_outside_check()
+            self._non_intersection_check()
 
-    def translate(self, u):
+    def _inside_outside_check(self):
         r"""
         TESTS::
 
-            sage: from flatsurf import polygons
-            sage: polygons(vertices=[(0,0), (2,0), (1,1)]).translate((3,-2))
-            Polygon: (3, -2), (5, -2), (4, -1)
+            sage: from flatsurf import Polygons
+            sage: P = Polygons(QQ)
+            sage: P(vertices=[(0,0),(-1,-1),(0,1),(1,-1)])
+            Traceback (most recent call last):
+            ...
+            ValueError: the vertices are in clockwise order
         """
-        P = self.parent()
-        u = P.vector_space()(u)
-        return P.element_class(P, [u+v for v in self._v], check=False)
+        # NOTE: should we do something more efficient?
+        if self.area() < 0:
+            raise ValueError("the vertices are in clockwise order")
+
+    def _non_intersection_check(self):
+        r"""
+        TESTS::
+
+            sage: from flatsurf import Polygons
+            sage: P = Polygons(QQ)
+            sage: P(vertices=[(0,0),(2,0),(1,1),(1,-1)])
+            Traceback (most recent call last):
+            ...
+            ValueError: edge 0 (= ((0, 0), (2, 0))) and edge 2 (= ((1, 1), (1, -1))) intersects
+        """
+        n = len(self._v)
+        for i in range(n-1):
+            ei = (self._v[i], self._v[i+1])
+            for j in range(i + 1, n):
+                ej = (self._v[j], self._v[(j+1)%n])
+                res = segment_intersect(ei, ej)
+                if j == i+1 or (i == 0 and j == n-1):
+                    if res > 1:
+                        raise ValueError("edge %d (= %s) and edge %d (= %s) backtrack" % (i, ei, j, ej))
+                elif res > 0:
+                    raise ValueError("edge %d (= %s) and edge %d (= %s) intersects" % (i, ei, j, ej))
 
     def __hash__(self):
         # Apparently tuples do not cache their hash!
@@ -474,7 +609,9 @@ class ConvexPolygon(Element):
             sage: p1 == p3
             False
         """
-        return isinstance(other, ConvexPolygon) and self._v == other._v
+        if not isinstance(self, Polygon) or not isinstance(other, Polygon):
+            return NotImplemented
+        return self._v == other._v
 
     def __ne__(self, other):
         r"""
@@ -490,7 +627,470 @@ class ConvexPolygon(Element):
             sage: p1 != p3
             True
         """
-        return not isinstance(other, ConvexPolygon) or self._v != other._v
+        if not isinstance(self, Polygon) or not isinstance(other, Polygon):
+            return NotImplemented
+        return self._v != other._v
+
+    def triangulation(self):
+        r"""
+        Return a list of pairs of indices of vertices that together with the boundary
+        form a triangulation.
+
+        EXAMPLES::
+
+            sage: from flatsurf import polygons
+            sage: P = polygons(vertices=[(0,0), (1,0), (1,1), (0,1), (0,2), (-1,2), (-1,1), (-2,1),
+            ....:                    (-2,0), (-1,0), (-1,-1), (0,-1)], convex=False)
+            sage: P.triangulation()
+            [(0, 2), (2, 8), (3, 5), (6, 8), (8, 3), (3, 6), (9, 11), (0, 9), (2, 9)]
+        """
+        if len(self._v) == 3:
+            return []
+        return triangulate(self._v)
+
+    def translate(self, u):
+        r"""
+        TESTS::
+
+            sage: from flatsurf import polygons
+            sage: polygons(vertices=[(0,0), (2,0), (1,1)]).translate((3,-2))
+            Polygon: (3, -2), (5, -2), (4, -1)
+        """
+        P = self.parent()
+        u = P.vector_space()(u)
+        return P.element_class(P, [u+v for v in self._v], check=False)
+
+    def change_ring(self, R):
+        r"""
+        Return an equal polygon over the base ring ``R``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import polygons
+            sage: S = polygons.square()
+            sage: K.<sqrt2> = NumberField(x^2 - 2, embedding=AA(2)**(1/2))
+            sage: S.change_ring(K)
+            Polygon: (0, 0), (1, 0), (1, 1), (0, 1)
+            sage: S.change_ring(K).base_ring()
+            Number Field in sqrt2 with defining polynomial x^2 - 2 with sqrt2 = 1.4142...
+        """
+        if R is self.base_ring():
+            return self
+        return ConvexPolygons(R)(vertices=self._v, check=False)
+
+    def is_convex(self):
+        for i in range(self.num_edges()):
+            if wedge_product(self.edge(i), self.edge(i+1)) < 0:
+                return False
+        return True
+
+    def is_strictly_convex(self):
+        r"""
+        Check whether the polygon is strictly convex
+
+        EXAMPLES::
+
+            sage: from flatsurf import *
+            sage: polygons(vertices=[(0,0), (1,0), (1,1)]).is_strictly_convex()
+            True
+            sage: polygons(vertices=[(0,0), (1,0), (2,0), (1,1)]).is_strictly_convex()
+            False
+        """
+        for i in range(self.num_edges()):
+            if wedge_product(self.edge(i), self.edge(i+1)).is_zero():
+                return False
+        return True
+
+    def base_ring(self):
+        return self.parent().base_ring()
+
+    field=base_ring
+
+    def num_edges(self):
+        return len(self._v)
+
+    def _repr_(self):
+        r"""
+        String representation.
+        """
+        return "Polygon: " + ", ".join(map(str,self.vertices()))
+
+    def vector_space(self):
+        r"""
+        Return the vector space containing the vertices.
+        """
+        return self.parent().vector_space()
+
+    def vertices(self, translation=None):
+        r"""
+        Return the set of vertices as vectors.
+        """
+        if translation is None:
+            return self._v
+
+        translation = self.parent().vector_space()(translation)
+        return [t+v for v in self.vertices()]
+
+    def vertex(self, i):
+        r"""
+        Return the ``i``-th vertex as a vector
+        """
+        return self._v[i % len(self._v)]
+
+    def __iter__(self):
+        return iter(self.vertices())
+
+    def edges(self):
+        r"""
+        Return an iterator overt the edges
+        """
+        return [self.edge(i) for i in range(self.num_edges())]
+
+    def edge(self, i):
+        r"""
+        Return a vector representing the ``i``-th edge of the polygon.
+        """
+        return self.vertex(i+1) - self.vertex(i)
+
+    def plot(self, translation=None):
+        r"""
+        Plot the polygon with the origin at ``translation``.
+        """
+        from sage.plot.point import point2d
+        from sage.plot.line import line2d
+        from sage.plot.polygon import polygon2d
+        V = VectorSpace(RR,2)
+        P = self.vertices(translation)
+        return point2d(P, color='red') + line2d(P + (P[0],), color='orange') + polygon2d(P, alpha=0.3)
+
+    def angle(self, e, numerical=False, assume_rational=False):
+        r"""
+        Return the angle at the begining of the start point of the edge ``e``.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.polygon import polygons
+            sage: polygons.square().angle(0)
+            1/4
+            sage: polygons.regular_ngon(8).angle(0)
+            3/8
+
+            sage: T = polygons(vertices=[(0,0), (3,1), (1,5)])
+            sage: [T.angle(i, numerical=True) for i in range(3)]
+            [0.16737532973071603, 0.22741638234956674, 0.10520828791971722]
+            sage: sum(T.angle(i, numerical=True) for i in range(3))   # abs tol 1e-13
+            0.5
+        """
+        return angle(self.edge(e), - self.edge((e-1)%self.num_edges()), numerical=numerical, assume_rational=assume_rational)
+
+    def angles(self, numerical=False, assume_rational=False):
+        r"""
+        Return the list of angles of this polygon (divided by `2 \pi`).
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.polygon import polygons
+
+            sage: T = polygons(angles=[1,2,3])
+            sage: [T.angle(i) for i in range(3)]
+            [1/12, 1/6, 1/4]
+            sage: sum(T.angle(i) for i in range(3))
+            1/2
+        """
+        return [self.angle(i) for i in range(self.num_edges())]
+
+    def area(self):
+        r"""
+        Return the area of this polygon.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.polygon import polygons
+            sage: polygons.regular_ngon(8).area()
+            2*a + 2
+            sage: _ == 2*AA(2).sqrt() + 2
+            True
+
+            sage: AA(polygons.regular_ngon(11).area())
+            9.36563990694544?
+
+            sage: polygons.square().area()
+            1
+            sage: (2*polygons.square()).area()
+            4
+        """
+        # Will use an area formula obtainable from Green's theorem. See for instance:
+        # http://math.blogoverflow.com/2014/06/04/greens-theorem-and-area-of-polygons/
+        total = self.field().zero()
+        for i in range(self.num_edges()):
+            total += (self.vertex(i)[0]+self.vertex(i+1)[0])*self.edge(i)[1]
+        return total/ZZ_2
+
+    def j_invariant(self):
+        r"""
+        Return the Kenyon-Smille J-invariant of this polygon.
+
+        The base ring of the polygon must be a number field.
+
+        The output is a triple ``(Jxx, Jyy, Jxy)`` that corresponds
+        respectively to the Sah-Arnoux-Fathi invariant of the vertical flow,
+        the Sah-Arnoux-Fathi invariant of the horizontal flow and the `xy`-matrix.
+
+        EXAMPLES::
+
+            sage: from flatsurf import *
+
+            sage: polygons.right_triangle(1/3,1).j_invariant()
+            (
+                      [0 0]
+            (0), (0), [1 0]
+            )
+
+        The regular 8-gon::
+
+            sage: polygons.regular_ngon(8).j_invariant()
+            (
+                      [2 2]
+            (0), (0), [2 1]
+            )
+
+            (
+                           [  0 3/2]
+            (1/2), (-1/2), [3/2   0]
+            )
+
+        Some extra debugging::
+
+            sage: from flatsurf.geometry.polygon import wedge
+            sage: K.<a> = NumberField(x^3 - 2, embedding=AA(2)**(1/3))
+            sage: ux = 1 + a + a**2
+            sage: uy = -2/3 + a
+            sage: vx = 1/5 - a**2
+            sage: vy = a + 7/13*a**2
+            sage: p = polygons((ux, uy), (vx,vy), (-ux-vx,-uy-vy), ring=K)
+            sage: Jxx, Jyy, Jxy = p.j_invariant()
+            sage: wedge(ux.vector(), vx.vector()) == Jxx
+            True
+            sage: wedge(uy.vector(), vy.vector()) == Jyy
+            True
+        """
+        if self.base_ring() is QQ:
+            raise NotImplementedError
+
+        K = self.base_ring()
+        try:
+            V, from_V, to_V = K.vector_space()
+        except (AttributeError, ValueError):
+            raise ValueError("the surface needs to be define over a number field")
+
+        dim = K.degree()
+        Jxx = Jyy = free_module_element(K, dim*(dim-1)//2)
+        Jxy = matrix(K, dim)
+        vertices = list(self.vertices())
+        vertices.append(vertices[0])
+        for i in range(len(vertices) - 1):
+            a = to_V(vertices[i][0])
+            b = to_V(vertices[i][1])
+            c = to_V(vertices[i+1][0])
+            d = to_V(vertices[i+1][1])
+            Jxx += wedge(a, c)
+            Jyy += wedge(b, d)
+            Jxy += tensor(a, d)
+            Jxy -= tensor(c, b)
+
+        return (Jxx, Jyy, Jxy)
+
+    def is_isometric(self, other, certificate=False):
+        r"""
+        Return whether ``self`` and ``other`` are isometric convex polygons via an orientation
+        preserving isometry.
+
+        If ``certificate`` is set to ``True`` return also a pair ``(index, rotation)``
+        of an integer ``index`` and a matrix ``rotation`` such that the given rotation
+        matrix identifies this polygon with the other and the edges 0 in this polygon
+        is mapped to the edge ``index`` in the other.
+
+        .. TODO::
+
+            Implement ``is_linearly_equivalent`` and ``is_similar``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import polygons
+            sage: S = polygons.square()
+            sage: S.is_isometric(S)
+            True
+            sage: U = matrix(2,[0,-1,1,0]) * S
+            sage: U.is_isometric(S)
+            True
+
+            sage: x = polygen(QQ)
+            sage: K.<sqrt2> = NumberField(x^2 - 2, embedding=AA(2)**(1/2))
+            sage: S = S.change_ring(K)
+            sage: U = matrix(2, [sqrt2/2, -sqrt2/2, sqrt2/2, sqrt2/2]) * S
+            sage: U.is_isometric(S)
+            True
+
+            sage: U2 = polygons((1,0), (sqrt2/2, sqrt2/2), (-1,0), (-sqrt2/2, -sqrt2/2))
+            sage: U2.is_isometric(U)
+            False
+            sage: U2.is_isometric(U, certificate=True)
+            (False, None)
+
+            sage: S = polygons((1,0), (sqrt2/2, 3), (-2,3), (-sqrt2/2+1, -6))
+            sage: T = polygons((sqrt2/2,3), (-2,3), (-sqrt2/2+1, -6), (1,0))
+            sage: ans, certif = S.is_isometric(T, certificate=True)
+            sage: assert ans
+            sage: shift, rot = certif
+            sage: polygons(edges=[rot * S.edge((k + shift) % 4) for k in range(4)], base_point=T.vertex(0)) == T
+            True
+
+
+            sage: T = (matrix(2, [sqrt2/2, -sqrt2/2, sqrt2/2, sqrt2/2]) * S).translate((3,2))
+            sage: ans, certif = S.is_isometric(T, certificate=True)
+            sage: assert ans
+            sage: shift, rot = certif
+            sage: polygons(edges=[rot * S.edge(k + shift) for k in range(4)], base_point=T.vertex(0)) == T
+            True
+        """
+        if type(self) is not type(other):
+            raise TypeError
+
+        n = self.num_edges()
+        if other.num_edges() != n:
+            return False
+        sedges = self.edges()
+        oedges = other.edges()
+
+        slengths = [x**2 + y**2 for x,y in sedges]
+        olengths = [x**2 + y**2 for x,y in oedges]
+        for i in range(n):
+            if slengths == olengths:
+                # we have a match of lengths after a shift by i
+                xs,ys = sedges[0]
+                xo,yo = oedges[0]
+                ms = matrix(2, [xs, -ys, ys, xs])
+                mo = matrix(2, [xo, -yo, yo, xo])
+                rot = mo * ~ms
+                assert rot.det() == 1 and (rot * rot.transpose()).is_one()
+                assert oedges[0] == rot * sedges[0]
+                if all(oedges[i] == rot * sedges[i] for i in range(1,n)):
+                    return (True, (0 if i == 0 else n-i, rot)) if certificate else True
+            olengths.append(olengths.pop(0))
+            oedges.append(oedges.pop(0))
+        return (False, None) if certificate else False
+
+    def is_translate(self, other, certificate=False):
+        r"""
+        Return whether ``other`` is a translate of ``self``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import polygons
+            sage: S = polygons(vertices=[(0,0), (3,0), (1,1)])
+            sage: T1 = S.translate((2,3))
+            sage: S.is_translate(T1)
+            True
+            sage: T2 = polygons(vertices=[(-1,1), (1,0), (2,1)])
+            sage: S.is_translate(T2)
+            False
+            sage: T3 = polygons(vertices=[(0,0), (3,0), (2,1)])
+            sage: S.is_translate(T3)
+            False
+
+            sage: S.is_translate(T1, certificate=True)
+            (True, (0, 1))
+            sage: S.is_translate(T2, certificate=True)
+            (False, None)
+            sage: S.is_translate(T3, certificate=True)
+            (False, None)
+        """
+        if type(self) is not type(other):
+            raise TypeError
+
+        n = self.num_edges()
+        if other.num_edges() != n:
+            return False
+        sedges = self.edges()
+        oedges = other.edges()
+        for i in range(n):
+            if sedges == oedges:
+                return (True, (i, 1)) if certificate else True
+            oedges.append(oedges.pop(0))
+        return (False, None) if certificate else False
+
+    def is_half_translate(self, other, certificate=False):
+        r"""
+        Return whether ``other`` is a translate or half-translate of ``self``.
+
+        If ``certificate`` is set to ``True`` then return also a pair ``(orientation, index)``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import polygons
+            sage: S = polygons(vertices=[(0,0), (3,0), (1,1)])
+            sage: T1 = S.translate((2,3))
+            sage: S.is_half_translate(T1)
+            True
+            sage: T2 = polygons(vertices=[(-1,1), (1,0), (2,1)])
+            sage: S.is_half_translate(T2)
+            True
+            sage: T3 = polygons(vertices=[(0,0), (3,0), (2,1)])
+            sage: S.is_half_translate(T3)
+            False
+
+            sage: S.is_half_translate(T1, certificate=True)
+            (True, (0, 1))
+            sage: ans, certif = S.is_half_translate(T2, certificate=True)
+            sage: assert ans
+            sage: shift, rot = certif
+            sage: polygons(edges=[rot * S.edge(k + shift) for k in range(3)], base_point=T2.vertex(0)) == T2
+            True
+            sage: S.is_half_translate(T3, certificate=True)
+            (False, None)
+        """
+        if type(self) is not type(other):
+            raise TypeError
+
+        n = self.num_edges()
+        if other.num_edges() != n:
+            return False
+
+        sedges = self.edges()
+        oedges = other.edges()
+        for i in range(n):
+            if sedges == oedges:
+                return (True, (i, 1)) if certificate else True
+            oedges.append(oedges.pop(0))
+
+        assert oedges == other.edges()
+        oedges = [-e for e in oedges]
+        for i in range(n):
+            if sedges == oedges:
+                return (True, (0 if i == 0 else n-i, -1)) if certificate else True
+            oedges.append(oedges.pop(0))
+
+        return (False, None) if certificate else False
+
+class ConvexPolygon(Polygon):
+    r"""
+    A convex polygon in the plane RR^2
+    """
+    def __init__(self, parent, vertices, check=True):
+        r"""
+        To construct the polygon you should either use a list of edge vectors
+        or a list of vertices. Using both will result in a ValueError. The polygon
+        needs to be convex with postively oriented boundary.
+
+        INPUT:
+
+        - ``parent`` -- a parent
+
+        - ``vertices`` -- a list of vertices of the polygon
+        """
+        Polygon.__init__(self, parent, vertices, check=False)
+        if check:
+            self._convexity_check()
 
     def __cmp__(self, other):
         if not isinstance(other,ConvexPolygon):
@@ -522,39 +1122,7 @@ class ConvexPolygon(Element):
                 return -1
         return 0
 
-    def change_ring(self, R):
-        r"""
-        Return an equal polygon over the base ring ``R``.
-
-        EXAMPLES::
-
-            sage: from flatsurf import polygons
-            sage: S = polygons.square()
-            sage: K.<sqrt2> = NumberField(x^2 - 2, embedding=AA(2)**(1/2))
-            sage: S.change_ring(K)
-            Polygon: (0, 0), (1, 0), (1, 1), (0, 1)
-            sage: S.change_ring(K).base_ring()
-            Number Field in sqrt2 with defining polynomial x^2 - 2 with sqrt2 = 1.4142...
-        """
-        if R is self.base_ring():
-            return self
-        return ConvexPolygons(R)(vertices=self._v, check=False)
-
-    def is_strictly_convex(self):
-        r"""
-        Check whether the polygon is strictly convex
-
-        EXAMPLES::
-
-            sage: from flatsurf import *
-            sage: polygons(vertices=[(0,0), (1,0), (1,1)]).is_strictly_convex()
-            True
-            sage: polygons(vertices=[(0,0), (1,0), (2,0), (1,1)]).is_strictly_convex()
-            False
-        """
-        for i in range(self.num_edges()):
-            if wedge_product(self.edge(i), self.edge(i+1)).is_zero():
-                return False
+    def is_convex(self):
         return True
 
     def _convexity_check(self):
@@ -632,45 +1200,6 @@ class ConvexPolygon(Element):
                 return v,False
             v=v+1%n
         raise RuntimeError("Failed to find a separatrix")
-
-    def base_ring(self):
-        return self.parent().base_ring()
-
-    field=base_ring
-
-    def num_edges(self):
-        return len(self._v)
-
-    def _repr_(self):
-        r"""
-        String representation.
-        """
-        return "Polygon: " + ", ".join(map(str,self.vertices()))
-
-    def vector_space(self):
-        r"""
-        Return the vector space containing the vertices.
-        """
-        return self.parent().vector_space()
-
-    def vertices(self, translation=None):
-        r"""
-        Return the set of vertices as vectors.
-        """
-        if translation is None:
-            return self._v
-
-        translation = self.parent().vector_space()(translation)
-        return [t+v for v in self.vertices()]
-
-    def vertex(self, i):
-        r"""
-        Return the ``i``-th vertex as a vector
-        """
-        return self._v[i % len(self._v)]
-
-    def __iter__(self):
-        return iter(self.vertices())
 
     def contains_point(self, point, translation=None):
         r"""
@@ -973,92 +1502,6 @@ class ConvexPolygon(Element):
             raise ValueError("Started with point outside polygon")
         raise ValueError("Point on boundary of polygon and holonomy not pointed into the polygon.")
 
-    def edges(self):
-        r"""
-        Return an iterator overt the edges
-        """
-        return [self.edge(i) for i in range(self.num_edges())]
-
-    def edge(self, i):
-        r"""
-        Return a vector representing the ``i``-th edge of the polygon.
-        """
-        return self.vertex(i+1) - self.vertex(i)
-
-    def plot(self, translation=None):
-        r"""
-        Plot the polygon with the origin at ``translation``.
-        """
-        from sage.plot.point import point2d
-        from sage.plot.line import line2d
-        from sage.plot.polygon import polygon2d
-        V = VectorSpace(RR,2)
-        P = self.vertices(translation)
-        return point2d(P, color='red') + line2d(P + (P[0],), color='orange') + polygon2d(P, alpha=0.3)
-
-    def angle(self, e, numerical=False, assume_rational=False):
-        r"""
-        Return the angle at the begining of the start point of the edge ``e``.
-
-        EXAMPLES::
-
-            sage: from flatsurf.geometry.polygon import polygons
-            sage: polygons.square().angle(0)
-            1/4
-            sage: polygons.regular_ngon(8).angle(0)
-            3/8
-
-            sage: T = polygons(vertices=[(0,0), (3,1), (1,5)])
-            sage: [T.angle(i, numerical=True) for i in range(3)]
-            [0.16737532973071603, 0.22741638234956674, 0.10520828791971722]
-            sage: sum(T.angle(i, numerical=True) for i in range(3))   # abs tol 1e-13
-            0.5
-        """
-        return angle(self.edge(e), - self.edge((e-1)%self.num_edges()), numerical=numerical, assume_rational=assume_rational)
-
-    def angles(self, numerical=False, assume_rational=False):
-        r"""
-        Return the list of angles of this polygon (divided by `2 \pi`).
-
-        EXAMPLES::
-
-            sage: from flatsurf.geometry.polygon import polygons
-
-            sage: T = polygons(angles=[1,2,3])
-            sage: [T.angle(i) for i in range(3)]
-            [1/12, 1/6, 1/4]
-            sage: sum(T.angle(i) for i in range(3))
-            1/2
-        """
-        return [self.angle(i) for i in range(self.num_edges())]
-
-    def area(self):
-        r"""
-        Return the area of this polygon.
-
-        EXAMPLES::
-
-            sage: from flatsurf.geometry.polygon import polygons
-            sage: polygons.regular_ngon(8).area()
-            2*a + 2
-            sage: _ == 2*AA(2).sqrt() + 2
-            True
-
-            sage: AA(polygons.regular_ngon(11).area())
-            9.36563990694544?
-
-            sage: polygons.square().area()
-            1
-            sage: (2*polygons.square()).area()
-            4
-        """
-        # Will use an area formula obtainable from Green's theorem. See for instance:
-        # http://math.blogoverflow.com/2014/06/04/greens-theorem-and-area-of-polygons/
-        total = self.field().zero()
-        for i in range(self.num_edges()):
-            total += (self.vertex(i)[0]+self.vertex(i+1)[0])*self.edge(i)[1]
-        return total/ZZ_2
-
     def circumscribing_circle(self):
         r"""
         Returns the circle which circumscribes this polygon.
@@ -1078,253 +1521,99 @@ class ConvexPolygon(Element):
                 raise ValueError("Vertex "+str(i)+" is not on the circle.")
         return circle
 
-    def j_invariant(self):
+class Polygons(UniqueRepresentation, Parent):
+    Element = Polygon
+
+    def __init__(self, field):
+        Parent.__init__(self, category=Sets())
+        if not field in Fields():
+            raise ValueError("'field' must be a field")
+        self._field = field
+        self.register_action(MatrixActionOnPolygons(self))
+
+    def base_ring(self):
+        return self._field
+
+    field = base_ring
+
+    @cached_method
+    def vector_space(self):
         r"""
-        Return the Kenyon-Smille J-invariant of this polygon.
-
-        The base ring of the polygon must be a number field.
-
-        The output is a triple ``(Jxx, Jyy, Jxy)`` that corresponds
-        respectively to the Sah-Arnoux-Fathi invariant of the vertical flow,
-        the Sah-Arnoux-Fathi invariant of the horizontal flow and the `xy`-matrix.
+        Return the vector space in which this polygon embeds.
 
         EXAMPLES::
 
-            sage: from flatsurf import *
-
-            sage: polygons.right_triangle(1/3,1).j_invariant()
-            (
-                      [0 0]
-            (0), (0), [1 0]
-            )
-
-        The regular 8-gon::
-
-            sage: polygons.regular_ngon(8).j_invariant()
-            (
-                      [2 2]
-            (0), (0), [2 1]
-            )
-
-            (
-                           [  0 3/2]
-            (1/2), (-1/2), [3/2   0]
-            )
-
-        Some extra debugging::
-
-            sage: from flatsurf.geometry.polygon import wedge
-            sage: K.<a> = NumberField(x^3 - 2, embedding=AA(2)**(1/3))
-            sage: ux = 1 + a + a**2
-            sage: uy = -2/3 + a
-            sage: vx = 1/5 - a**2
-            sage: vy = a + 7/13*a**2
-            sage: p = polygons((ux, uy), (vx,vy), (-ux-vx,-uy-vy), ring=K)
-            sage: Jxx, Jyy, Jxy = p.j_invariant()
-            sage: wedge(ux.vector(), vx.vector()) == Jxx
-            True
-            sage: wedge(uy.vector(), vy.vector()) == Jyy
-            True
+            sage: from flatsurf import Polygons, ConvexPolygons
+            sage: P = Polygons(QQ)
+            sage: P.vector_space()
+            Vector space of dimension 2 over Rational Field
+            sage: C = ConvexPolygons(QQ)
+            sage: C.vector_space()
+            Vector space of dimension 2 over Rational Field
         """
-        if self.base_ring() is QQ:
-            raise NotImplementedError
+        return VectorSpace(self.base_ring(), 2)
 
-        K = self.base_ring()
-        try:
-            V, from_V, to_V = K.vector_space()
-        except (AttributeError, ValueError):
-            raise ValueError("the surface needs to be define over a number field")
+    def _repr_(self):
+        return "Polygons(%s)"%self.base_ring()
 
-        dim = K.degree()
-        Jxx = Jyy = free_module_element(K, dim*(dim-1)//2)
-        Jxy = matrix(K, dim)
-        vertices = list(self.vertices())
-        vertices.append(vertices[0])
-        for i in range(len(vertices) - 1):
-            a = to_V(vertices[i][0])
-            b = to_V(vertices[i][1])
-            c = to_V(vertices[i+1][0])
-            d = to_V(vertices[i+1][1])
-            Jxx += wedge(a, c)
-            Jyy += wedge(b, d)
-            Jxy += tensor(a, d)
-            Jxy -= tensor(c, b)
-
-        return (Jxx, Jyy, Jxy)
-
-    def is_isometric(self, other, certificate=False):
+    def _element_constructor_(self, *args, **kwds):
         r"""
-        Return whether ``self`` and ``other`` are isometric convex polygons via an orientation
-        preserving isometry.
+        TESTS::
 
-        If ``certificate`` is set to ``True`` return also a pair ``(index, rotation)``
-        of an integer ``index`` and a matrix ``rotation`` such that the given rotation
-        matrix identifies this polygon with the other and the edges 0 in this polygon
-        is mapped to the edge ``index`` in the other.
+            sage: from flatsurf import Polygons, ConvexPolygons
 
-        .. TODO::
-
-            Implement ``is_linearly_equivalent`` and ``is_similar``.
-
-        EXAMPLES::
-
-            sage: from flatsurf import polygons
-            sage: S = polygons.square()
-            sage: S.is_isometric(S)
+            sage: C = Polygons(QQ)
+            sage: p = C(vertices=[(0,0),(1,0),(2,0),(1,1)])
+            sage: p
+            Polygon: (0, 0), (1, 0), (2, 0), (1, 1)
+            sage: C(p) is p
             True
-            sage: U = matrix(2,[0,-1,1,0]) * S
-            sage: U.is_isometric(S)
-            True
+            sage: C((1,0), (0,1), (-1, 1))
+            Traceback (most recent call last):
+            ...
+            ValueError: the polygon does not close up
 
-            sage: x = polygen(QQ)
-            sage: K.<sqrt2> = NumberField(x^2 - 2, embedding=AA(2)**(1/2))
-            sage: S = S.change_ring(K)
-            sage: U = matrix(2, [sqrt2/2, -sqrt2/2, sqrt2/2, sqrt2/2]) * S
-            sage: U.is_isometric(S)
-            True
-
-            sage: U2 = polygons((1,0), (sqrt2/2, sqrt2/2), (-1,0), (-sqrt2/2, -sqrt2/2))
-            sage: U2.is_isometric(U)
-            False
-            sage: U2.is_isometric(U, certificate=True)
-            (False, None)
-
-            sage: S = polygons((1,0), (sqrt2/2, 3), (-2,3), (-sqrt2/2+1, -6))
-            sage: T = polygons((sqrt2/2,3), (-2,3), (-sqrt2/2+1, -6), (1,0))
-            sage: ans, certif = S.is_isometric(T, certificate=True)
-            sage: assert ans
-            sage: shift, rot = certif
-            sage: polygons(edges=[rot * S.edge((k + shift) % 4) for k in range(4)], base_point=T.vertex(0)) == T
-            True
-
-
-            sage: T = (matrix(2, [sqrt2/2, -sqrt2/2, sqrt2/2, sqrt2/2]) * S).translate((3,2))
-            sage: ans, certif = S.is_isometric(T, certificate=True)
-            sage: assert ans
-            sage: shift, rot = certif
-            sage: polygons(edges=[rot * S.edge(k + shift) for k in range(4)], base_point=T.vertex(0)) == T
-            True
+            sage: D = ConvexPolygons(QQbar)
+            sage: D(p)
+            Polygon: (0, 0), (1, 0), (2, 0), (1, 1)
+            sage: D(vertices=p.vertices())
+            Polygon: (0, 0), (1, 0), (2, 0), (1, 1)
+            sage: D(edges=p.edges())
+            Polygon: (0, 0), (1, 0), (2, 0), (1, 1)
         """
-        if type(self) is not type(other):
-            raise TypeError
+        check = kwds.pop('check', True)
 
-        n = self.num_edges()
-        if other.num_edges() != n:
-            return False
-        sedges = self.edges()
-        oedges = other.edges()
+        if len(args) == 1 and isinstance(args[0], Polygon):
+            vertices = map(self.vector_space(), args[0].vertices())
+            args = ()
 
-        slengths = [x**2 + y**2 for x,y in sedges]
-        olengths = [x**2 + y**2 for x,y in oedges]
-        for i in range(n):
-            if slengths == olengths:
-                # we have a match of lengths after a shift by i
-                xs,ys = sedges[0]
-                xo,yo = oedges[0]
-                ms = matrix(2, [xs, -ys, ys, xs])
-                mo = matrix(2, [xo, -yo, yo, xo])
-                rot = mo * ~ms
-                assert rot.det() == 1 and (rot * rot.transpose()).is_one()
-                assert oedges[0] == rot * sedges[0]
-                if all(oedges[i] == rot * sedges[i] for i in range(1,n)):
-                    return (True, (0 if i == 0 else n-i, rot)) if certificate else True
-            olengths.append(olengths.pop(0))
-            oedges.append(oedges.pop(0))
-        return (False, None) if certificate else False
+        else:
+            vertices = kwds.pop('vertices', None)
+            edges = kwds.pop('edges', None)
+            base_point = kwds.pop('base_point', (0,0))
 
-    def is_translate(self, other, certificate=False):
-        r"""
-        Return whether ``other`` is a translate of ``self``.
+            if (vertices is None) and (edges is None):
+                if len(args) == 1:
+                    edges = args[0]
+                elif args:
+                    edges = args
+                else:
+                    raise ValueError("exactly one of 'vertices' or 'edges' must be provided")
+            if kwds:
+                raise ValueError("invalid keyword {!r}".format(next(iter(kwds))))
 
-        EXAMPLES::
+            if edges is not None:
+                v = self.vector_space()(base_point)
+                vertices = []
+                for e in map(self.vector_space(), edges):
+                    vertices.append(v)
+                    v += e
+                if v != vertices[0]:
+                    raise ValueError("the polygon does not close up")
 
-            sage: from flatsurf import polygons
-            sage: S = polygons(vertices=[(0,0), (3,0), (1,1)])
-            sage: T1 = S.translate((2,3))
-            sage: S.is_translate(T1)
-            True
-            sage: T2 = polygons(vertices=[(-1,1), (1,0), (2,1)])
-            sage: S.is_translate(T2)
-            False
-            sage: T3 = polygons(vertices=[(0,0), (3,0), (2,1)])
-            sage: S.is_translate(T3)
-            False
+        return self.element_class(self, vertices, check)
 
-            sage: S.is_translate(T1, certificate=True)
-            (True, (0, 1))
-            sage: S.is_translate(T2, certificate=True)
-            (False, None)
-            sage: S.is_translate(T3, certificate=True)
-            (False, None)
-        """
-        if type(self) is not type(other):
-            raise TypeError
-
-        n = self.num_edges()
-        if other.num_edges() != n:
-            return False
-        sedges = self.edges()
-        oedges = other.edges()
-        for i in range(n):
-            if sedges == oedges:
-                return (True, (i, 1)) if certificate else True
-            oedges.append(oedges.pop(0))
-        return (False, None) if certificate else False
-
-    def is_half_translate(self, other, certificate=False):
-        r"""
-        Return whether ``other`` is a translate or half-translate of ``self``.
-
-        If ``certificate`` is set to ``True`` then return also a pair ``(orientation, index)``.
-
-        EXAMPLES::
-
-            sage: from flatsurf import polygons
-            sage: S = polygons(vertices=[(0,0), (3,0), (1,1)])
-            sage: T1 = S.translate((2,3))
-            sage: S.is_half_translate(T1)
-            True
-            sage: T2 = polygons(vertices=[(-1,1), (1,0), (2,1)])
-            sage: S.is_half_translate(T2)
-            True
-            sage: T3 = polygons(vertices=[(0,0), (3,0), (2,1)])
-            sage: S.is_half_translate(T3)
-            False
-
-            sage: S.is_half_translate(T1, certificate=True)
-            (True, (0, 1))
-            sage: ans, certif = S.is_half_translate(T2, certificate=True)
-            sage: assert ans
-            sage: shift, rot = certif
-            sage: polygons(edges=[rot * S.edge(k + shift) for k in range(3)], base_point=T2.vertex(0)) == T2
-            True
-            sage: S.is_half_translate(T3, certificate=True)
-            (False, None)
-        """
-        if type(self) is not type(other):
-            raise TypeError
-
-        n = self.num_edges()
-        if other.num_edges() != n:
-            return False
-
-        sedges = self.edges()
-        oedges = other.edges()
-        for i in range(n):
-            if sedges == oedges:
-                return (True, (i, 1)) if certificate else True
-            oedges.append(oedges.pop(0))
-
-        assert oedges == other.edges()
-        oedges = [-e for e in oedges]
-        for i in range(n):
-            if sedges == oedges:
-                return (True, (0 if i == 0 else n-i, -1)) if certificate else True
-            oedges.append(oedges.pop(0))
-
-        return (False, None) if certificate else False
-
-class ConvexPolygons(UniqueRepresentation, Parent):
+class ConvexPolygons(Polygons):
     r"""
     The set of convex polygons with a fixed base field.
 
@@ -1370,27 +1659,8 @@ class ConvexPolygons(UniqueRepresentation, Parent):
     def _an_element_(self):
         return self([(1,0),(0,1),(-1,0),(0,-1)])
 
-    def base_ring(self):
-        return self._field
-
-    field = base_ring
-
     def _repr_(self):
-        return "polygons with coordinates in %s"%self.base_ring()
-
-    @cached_method
-    def vector_space(self):
-        r"""
-        Return the vector space in which this polygon embeds.
-
-        EXAMPLES::
-
-            sage: from flatsurf import ConvexPolygons
-            sage: C = ConvexPolygons(QQ)
-            sage: C.vector_space()
-            Vector space of dimension 2 over Rational Field
-        """
-        return VectorSpace(self.base_ring(), 2)
+        return "ConvexPolygons(%s)"%self.base_ring()
 
     def _element_constructor_(self, *args, **kwds):
         r"""
@@ -1420,12 +1690,8 @@ class ConvexPolygons(UniqueRepresentation, Parent):
         """
         check = kwds.pop('check', True)
 
-        if len(args) == 1 and isinstance(args[0], ConvexPolygon):
-            a = args[0]
-            if a.parent() is self:
-                raise RuntimeError("this should not happen")
-                return a
-            vertices = map(self.vector_space(), a.vertices())
+        if len(args) == 1 and isinstance(args[0], Polygon):
+            vertices = map(self.vector_space(), args[0].vertices())
             args = ()
 
         else:
@@ -1453,9 +1719,6 @@ class ConvexPolygons(UniqueRepresentation, Parent):
                     raise ValueError("the polygon does not close up")
 
         return self.element_class(self, vertices, check)
-
-# TODO: change it so that Polygons stand for all possible kind of polygons...
-Polygons = ConvexPolygons
 
 def number_field_elements_from_algebraics(elts, name='a'):
     r"""
@@ -1712,7 +1975,7 @@ class PolygonsConstructor:
             sage: polygons.square()
             Polygon: (0, 0), (1, 0), (1, 1), (0, 1)
             sage: polygons.square(field=QQbar).parent()
-            polygons with coordinates in Algebraic Field
+            ConvexPolygons(Algebraic Field)
         """
         return self.rectangle(side,side,**kwds)
 
@@ -1729,8 +1992,7 @@ class PolygonsConstructor:
             sage: polygons.rectangle(1,sqrt2)
             Polygon: (0, 0), (1, 0), (1, sqrt2), (0, sqrt2)
             sage: _.parent()
-            polygons with coordinates in Number Field in sqrt2 with defining
-            polynomial x^2 - 2 with sqrt2 = 1.414213562373095?
+            ConvexPolygons(Number Field in sqrt2 with defining polynomial x^2 - 2 with sqrt2 = 1.414213562373095?)
         """
         return self((width,0),(0,height),(-width,0),(0,-height), **kwds)
 
@@ -1869,7 +2131,7 @@ class PolygonsConstructor:
             sage: polygons((1,0),(0,1),(-1,0),(0,-1), ring=QQbar)
             Polygon: (0, 0), (1, 0), (1, 1), (0, 1)
             sage: _.parent()
-            polygons with coordinates in Algebraic Field
+            ConvexPolygons(Algebraic Field)
 
             sage: polygons(vertices=[(0,0), (1,0), (0,1)])
             Polygon: (0, 0), (1, 0), (0, 1)
@@ -1927,6 +2189,8 @@ class PolygonsConstructor:
         elif 'field' in kwds:
             base_ring = kwds.pop('field')
 
+        convex = kwds.pop('convex', True)
+
         vertices = edges = angles = base_point = None
         if 'edges' in kwds:
             edges = kwds.pop('edges')
@@ -1969,6 +2233,8 @@ class PolygonsConstructor:
                     base_ring = py_scalar_parent(base_ring)
 
         elif angles is not None:
+            if not convex:
+                raise NotImplementedError("non-convex polygon can not be specified by angles")
             n = len(angles)
             if length is None and lengths is None:
                 lengths = [AA(1)] * (n-2)
@@ -1986,7 +2252,10 @@ class PolygonsConstructor:
         if base_ring not in Fields():
             base_ring = base_ring.fraction_field()
 
-        return ConvexPolygons(base_ring)(vertices=vertices, edges=edges, base_point=base_point)
+        if convex:
+            return ConvexPolygons(base_ring)(vertices=vertices, edges=edges, base_point=base_point)
+        else:
+            return Polygons(base_ring)(vertices=vertices, edges=edges, base_point=base_point)
 
 polygons = PolygonsConstructor()
 
