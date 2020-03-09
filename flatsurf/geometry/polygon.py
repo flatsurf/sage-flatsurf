@@ -383,12 +383,43 @@ def triangulate(vertices):
         sage: poly = list(map(V, poly))
         sage: triangulate(poly)
         [(1, 3), (3, 5), (5, 8), (6, 8), (8, 10), (10, 1), (1, 5), (5, 10)]
+        sage: for i in range(len(poly)):
+        ....:     _ = triangulate(poly[i:] + poly[:i])
 
         sage: poly = [(0,0), (1,0), (2,0), (2,1), (2,2), (1,2), (0,2), (0,1)]
         sage: poly = list(map(V, poly))
         sage: edges = triangulate(poly)
         sage: edges
         [(0, 3), (1, 3), (3, 5), (5, 7), (7, 3)]
+        sage: for i in range(len(poly)):
+        ....:     _ = triangulate(poly[i:] + poly[:i])
+
+        sage: poly = [(0,0), (1,2), (3,3), (1,4), (0,6), (-1,4), (-3,-3), (-1,2)]
+        sage: poly = list(map(V, poly))
+        sage: triangulate(poly)
+        [(0, 3), (1, 3), (3, 5), (5, 7), (7, 3)]
+        sage: for i in range(len(poly)):
+        ....:     _ = triangulate(poly[i:] + poly[:i])
+
+
+        sage: x = polygen(QQ)
+        sage: p = x^4 - 5*x^2 + 5
+        sage: r = AA.polynomial_root(p, RIF(1.17,1.18))
+        sage: K.<a> = NumberField(p, embedding=r)
+        sage: V = K**2
+        sage: poly = [(1/2*a^2 - 3/2, 1/2*a),
+        ....:  (-a^3 + 2*a^2 + 2*a - 4, 0),
+        ....:  (1/2*a^2 - 3/2, -1/2*a),
+        ....:   (1/2*a^3 - a^2 - 1/2*a + 1, 1/2*a^2 - a),
+        ....:   (-1/2*a^2 + 1, 1/2*a^3 - 3/2*a),
+        ....:   (-1/2*a + 1, a^3 - 3/2*a^2 - 2*a + 5/2),
+        ....:   (1, 0),
+        ....:   (-1/2*a + 1, -a^3 + 3/2*a^2 + 2*a - 5/2),
+        ....:   (-1/2*a^2 + 1, -1/2*a^3 + 3/2*a),
+        ....:   (1/2*a^3 - a^2 - 1/2*a + 1, -1/2*a^2 + a)]
+        sage: poly = list(map(V, poly))
+        sage: triangulate(poly)
+        [(0, 3), (1, 3), (3, 5), (5, 7), (7, 9), (9, 3), (3, 7)]
     """
     n = len(vertices)
     if n < 3:
@@ -437,6 +468,47 @@ def triangulate(vertices):
                     part1.append((s, t))
                 return [(i, j)] + part0 + part1
     raise RuntimeError("input {} must be wrong".format(vertices))
+
+def build_faces(n, edges):
+    r"""
+    Given a combinatorial list of pairs ``edges`` forming a cell-decomposition
+    of a polygon (with vertices labeled from ``0`` to ``n-1``) return the list
+    of cells.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.polygon import build_faces
+        sage: build_faces(4, [(0,2)])
+        [[0, 1, 2], [2, 3, 0]]
+        sage: build_faces(4, [(1,3)])
+        [[1, 2, 3], [3, 0, 1]]
+        sage: build_faces(5, [(0,2), (0,3)])
+        [[0, 1, 2], [3, 4, 0], [0, 2, 3]]
+        sage: build_faces(5, [(0,2)])
+        [[0, 1, 2], [2, 3, 4, 0]]
+        sage: build_faces(5, [(1,4)])
+        [[1, 2, 3, 4], [4, 0, 1]]
+        sage: build_faces(5, [(1,3),(3,0)])
+        [[1, 2, 3], [3, 4, 0], [0, 1, 3]]
+    """
+    polygons = [list(range(n))]
+    for u,v in edges:
+        j = None
+        for i,p in enumerate(polygons):
+            if u in p and v in p:
+                if j is not None:
+                    raise RuntimeError
+                j = i
+        if j is None:
+            raise RuntimeError
+        p = polygons[j]
+        i0 = p.index(u)
+        i1 = p.index(v)
+        if i0 > i1:
+            i0, i1 = i1, i0
+        polygons[j] = p[i0:i1+1]
+        polygons.append(p[i1:] + p[:i0+1])
+    return polygons
 
 class MatrixActionOnPolygons(Action):
     def __init__(self, polygons):

@@ -11,14 +11,13 @@
 from __future__ import absolute_import, print_function, division
 from six.moves import range, map, filter, zip
 
-from flatsurf.geometry.similarity_surface import SimilaritySurface
+from .similarity_surface import SimilaritySurface
 
 class ConeSurface(SimilaritySurface):
     r"""
     A Euclidean cone surface.
     """
-
-    def angles(self, numerical=False):
+    def angles(self, numerical=False, return_adjacent_edges=False):
         r"""
         Return the set of angles around the vertices of the surface.
 
@@ -31,6 +30,9 @@ class ConeSurface(SimilaritySurface):
             [1/3, 1/4, 5/12]
             sage: S.angles(numerical=True)   # abs tol 1e-14
             [0.333333333333333, 0.250000000000000, 0.416666666666667]
+
+            sage: S.angles(return_adjacent_edges=True)
+            [(1/3, [(0, 1), (1, 2)]), (1/4, [(0, 0), (1, 0)]), (5/12, [(1, 1), (0, 2)])]
         """
         if not self.is_finite():
             raise NotImplementedError("the set of edges is infinite!")
@@ -38,15 +40,30 @@ class ConeSurface(SimilaritySurface):
         edges = [pair for pair in self.edge_iterator()]
         edges = set(edges)
         angles = []
-        while edges:
-            p,e = edges.pop()
-            angle = self.polygon(p).angle(e, numerical=numerical)
-            pp,ee = self.opposite_edge(p,(e-1)%self.polygon(p).num_edges())
-            while pp != p or ee != e:
-                edges.remove((pp,ee))
-                angle += self.polygon(pp).angle(ee, numerical=numerical)
-                pp,ee = self.opposite_edge(pp,(ee-1)%self.polygon(pp).num_edges())
-            angles.append(angle)
+
+        if return_adjacent_edges:
+            while edges:
+                p,e = edges.pop()
+                adjacent_edges = [(p,e)]
+                angle = self.polygon(p).angle(e, numerical=numerical)
+                pp,ee = self.opposite_edge(p,(e-1)%self.polygon(p).num_edges())
+                while pp != p or ee != e:
+                    edges.remove((pp,ee))
+                    adjacent_edges.append((pp,ee))
+                    angle += self.polygon(pp).angle(ee, numerical=numerical)
+                    pp,ee = self.opposite_edge(pp,(ee-1)%self.polygon(pp).num_edges())
+                angles.append((angle, adjacent_edges))
+        else:
+            while edges:
+                p,e = edges.pop()
+                angle = self.polygon(p).angle(e, numerical=numerical)
+                pp,ee = self.opposite_edge(p,(e-1)%self.polygon(p).num_edges())
+                while pp != p or ee != e:
+                    edges.remove((pp,ee))
+                    angle += self.polygon(pp).angle(ee, numerical=numerical)
+                    pp,ee = self.opposite_edge(pp,(ee-1)%self.polygon(pp).num_edges())
+                angles.append(angle)
+
         return angles
 
     def genus(self):
@@ -74,4 +91,3 @@ class ConeSurface(SimilaritySurface):
         Return the area of this surface.
         """
         return self._s.area()
-
