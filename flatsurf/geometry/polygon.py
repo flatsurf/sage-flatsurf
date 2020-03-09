@@ -631,6 +631,44 @@ class Polygon(Element):
             return NotImplemented
         return self._v != other._v
 
+    def __lt__(self, other): raise TypeError
+    __le__ = __lt__
+    __gt__ = __lt__
+    __ge__ = __lt__
+
+    def cmp(self, other):
+        r"""
+        Implement a total order on polygons
+        """
+        if not isinstance(other, Polygon):
+            raise TypeError("__cmp__ only implemented for ConvexPolygons")
+        if not self.parent().base_ring() == other.parent().base_ring():
+            raise ValueError("__cmp__ only implemented for ConvexPolygons defined over the same base_ring")
+        sign = self.num_edges() - other.num_edges()
+        if sign > 0:
+            return 1
+        if sign < 0:
+            return -1
+        sign = self.area() - other.area()
+        if sign > self.base_ring().zero():
+            return 1
+        if sign < self.base_ring().zero():
+            return -1
+        for v in range(1,self.num_edges()):
+            p = self.vertex(v)
+            q = other.vertex(v)
+            sign = p[0]-q[0]
+            if sign > self.base_ring().zero():
+                return 1
+            if sign < self.base_ring().zero():
+                return -1
+            sign = p[1]-q[1]
+            if sign > self.base_ring().zero():
+                return 1
+            if sign < self.base_ring().zero():
+                return -1
+        return 0
+
     def triangulation(self):
         r"""
         Return a list of pairs of indices of vertices that together with the boundary
@@ -1091,36 +1129,6 @@ class ConvexPolygon(Polygon):
         Polygon.__init__(self, parent, vertices, check=False)
         if check:
             self._convexity_check()
-
-    def __cmp__(self, other):
-        if not isinstance(other,ConvexPolygon):
-            raise ValueError("__cmp__ only implemented for ConvexPolygons")
-        if not self.parent().base_ring()==other.parent().base_ring():
-            raise ValueError("__cmp__ only implemented for ConvexPolygons defined over the same base_ring")
-        sign = self.num_edges() - other.num_edges()
-        if sign > 0:
-            return 1
-        if sign < 0:
-            return -1
-        sign = self.area() - other.area()
-        if sign > self.base_ring().zero():
-            return 1
-        if sign < self.base_ring().zero():
-            return -1
-        for v in range(1,self.num_edges()):
-            p = self.vertex(v)
-            q = other.vertex(v)
-            sign = p[0]-q[0]
-            if sign > self.base_ring().zero():
-                return 1
-            if sign < self.base_ring().zero():
-                return -1
-            sign = p[1]-q[1]
-            if sign > self.base_ring().zero():
-                return 1
-            if sign < self.base_ring().zero():
-                return -1
-        return 0
 
     def is_convex(self):
         return True
