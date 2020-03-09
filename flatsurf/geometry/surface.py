@@ -57,6 +57,30 @@ class Surface(SageObject):
         self._mutable = mutable
         self._cache = {}
 
+    def is_triangulated(self, limit=None):
+        r"""
+        EXAMPLES::
+
+            sage: import flatsurf
+            sage: G = SymmetricGroup(4)
+            sage: S = flatsurf.translation_surfaces.origami(G('(1,2,3,4)'), G('(1,4,2,3)'))
+            sage: S.is_triangulated()
+            False
+            sage: S.triangulate().is_triangulated()
+            True
+        """
+        it = self.label_iterator()
+        if not self.is_finite():
+            if limit is None:
+                raise ValueError("for infinite polygon, 'limit' must be set to a positive integer")
+            else:
+                from itertools import islice
+                it = islice(it, limit)
+        for p in it:
+            if self.polygon(p).num_edges() != 3:
+                return False
+        return True
+
     def polygon(self, label):
         r"""
         Return the polygon with the provided label.
@@ -624,7 +648,7 @@ class Surface_list(Surface):
             1 -> Polygon: (0, 0), (0, -3), (4, 0)
             5 -> Polygon: (0, 0), (-28/25, 96/25), (-72/25, -21/25)
         """
-        self._p = []
+        self._p = [] # list of pairs (polygon, gluings)
         self._reference_surface = None # Whether or not we store a reference surface
         self._removed_labels = []
         if surface is None:
@@ -717,11 +741,9 @@ class Surface_list(Surface):
             raise ValueError("No known polygon with provided label "+str(lab)+". "+\
                 "This can be caused by failing to explore your surface. "+\
                 "See the documentation in flatsurf.geometry.surface.Surface_list.")
-        try:
-            return data[0]
-        except TypeError:
-            # Here data is probably None...
+        if data is None:
             raise ValueError("Provided label was removed.")
+        return data[0]
 
     def opposite_edge(self, p, e):
         r"""
@@ -732,11 +754,9 @@ class Surface_list(Surface):
             data = self._p[p]
         except KeyError:
              raise ValueError("No known polygon with provided label")
-        try:
-            glue = data[1]
-        except TypeError:
-            # Here data=None
+        if data is None:
             raise ValueError("Provided label was removed.")
+        glue = data[1]
         try:
             oe = glue[e]
         except KeyError:

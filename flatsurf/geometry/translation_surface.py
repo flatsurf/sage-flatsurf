@@ -133,7 +133,7 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
             assert in_place == False, "In place standardization only available for finite surfaces."
             return TranslationSurface(LazyStandardizedPolygonSurface(self))
 
-    def cmp_translation_surface(self, s2, limit=None):
+    def cmp(self, s2, limit=None):
         r"""
         Compare two surfaces. This is an ordering returning -1, 0, or 1.
 
@@ -156,8 +156,8 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
                 lw1=self.walker()
                 lw2=s2.walker()
                 for p1,p2 in zip(lw1.polygon_iterator(), lw2.polygon_iterator()):
-                    # Uses Polygon.__cmp__:
-                    ret = p1.__cmp__(p2)
+                    # Uses Polygon.cmp:
+                    ret = p1.cmp(p2)
                     if ret != 0:
                         return ret
                 # Polygons are identical. Compare edge gluings.
@@ -187,8 +187,8 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
                 lw2=s2.walker()
                 count = 0
                 for (l1,p1),(l2,p2) in zip(lw1.label_polygon_iterator(), lw2.label_polygon_iterator()):
-                    # Uses Polygon.__cmp__:
-                    ret = p1.__cmp__(p2)
+                    # Uses Polygon.cmp:
+                    ret = p1.cmp(p2)
                     if ret != 0:
                         print("Polygons differ")
                         return ret
@@ -208,6 +208,9 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
                         break
                     count += 1
                 return 0
+
+    # TODO: deprecation
+    cmp_translation_surface = cmp
 
     def canonicalize_mapping(self):
         r"""
@@ -234,7 +237,7 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
             sage: s1.underlying_surface().set_immutable()
             sage: s2 = (mat*s).canonicalize()
             sage: s2.underlying_surface().set_immutable()
-            sage: s1.cmp_translation_surface(s2) == 0
+            sage: s1.cmp(s2) == 0
             True
             sage: hash(s1) == hash(s2)
             True
@@ -256,7 +259,7 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
         labels.remove(s.base_label())
         for label in labels:
             ss.underlying_surface().change_base_label(label)
-            if ss.cmp_translation_surface(s)>0:
+            if ss.cmp(s)>0:
                 s.underlying_surface().change_base_label(label)
         # We now have the base_label correct.
         # We will use the label walker to generate the canonical labeling of polygons.
@@ -312,7 +315,7 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
             sage: deformation2 = {s.singularity(0,0):V((a,0))}
             sage: s2 = s.rel_deformation(deformation2).canonicalize()
             sage: m = Matrix([[a,0],[0,~a]])
-            sage: s2.cmp_translation_surface((m*s1).canonicalize())
+            sage: s2.cmp((m*s1).canonicalize())
             0
         """
         s=self

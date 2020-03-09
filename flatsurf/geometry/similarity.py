@@ -227,7 +227,7 @@ class Similarity(MultiplicativeGroupElement):
             sage: g(p)
             Polygon: (4, 10), (29, 10), (29, 35), (4, 35)
             sage: g(p, field=AA).parent()
-            polygons with coordinates in Algebraic Real Field
+            ConvexPolygons(Algebraic Real Field)
         """
         if isinstance(w,ConvexPolygon):
             if field is None:

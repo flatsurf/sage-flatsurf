@@ -935,7 +935,7 @@ def canonicalize_translation_surface_mapping(s):
     labels.remove(s2.base_label())
     for label in labels:
         ss.underlying_surface().change_base_label(label)
-        if ss.cmp_translation_surface(s2copy)>0:
+        if ss.cmp(s2copy)>0:
             s2copy.underlying_surface().change_base_label(label)
     # We now have the base_label correct.
     # We will use the label walker to generate the canonical labeling of polygons.
