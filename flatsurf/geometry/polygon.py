@@ -1,10 +1,13 @@
 r"""
-Convex polygons in the plane (R^2)
+Polygons embedded in the plane R^2.
 
-This file implements convex polygons with
+This file implements polygons with
 
  - action of matrices in GL^+(2,R)
  - conversion between ground fields
+
+The emphasis is mostly on convex polygons but there is some limited support
+for non-convex polygons.
 
 EXAMPLES::
 
@@ -208,116 +211,11 @@ def solve(x,u,y,v):
     b = u[1] * (x[0]-y[0]) + u[0] * (y[1] - x[1])
     return (a/d, b/d)
 
-class MatrixActionOnPolygons(Action):
-    def __init__(self, polygons):
-        from sage.matrix.matrix_space import MatrixSpace
-        K = polygons.field()
-        Action.__init__(self, MatrixSpace(K,2), polygons, True, operator.mul)
-
-    def _act_(self, g, x):
-        r"""
-        Apply the 2x2 matrix `g` to the polygon `x`.
-
-        The matrix must have non-zero determinant. If the determinant is
-        negative, then the vertices and edges are relabeled according to the
-        involutions `v \mapsto (n-v)%n` and  `e \mapsto n-1-e` respectively.
-
-        EXAMPLES::
-
-            sage: from flatsurf import polygons
-            sage: p = polygons(vertices = [(1,0),(0,1),(-1,-1)])
-            sage: print(p)
-            Polygon: (1, 0), (0, 1), (-1, -1)
-            sage: r = matrix(ZZ,[[0,1], [1,0]])
-            sage: print(r*p)
-            Polygon: (0, 1), (-1, -1), (1, 0)
-        """
-        det = g.det()
-        if det > 0:
-            return x.parent()(vertices=[g*v for v in x.vertices()])
-        if det < 0:
-            # Note that in this case we reverse the order
-            vertices = [g*x.vertex(0)]
-            for i in range(x.num_edges() - 1, 0, -1):
-                vertices.append(g * x.vertex(i))
-            return x.parent()(vertices=vertices)
-        raise ValueError("Can not act on a polygon with matrix with zero determinant")
-
-
-class PolygonPosition:
+def segment_intersect(e1, e2, base_ring=None):
     r"""
-    Class for describing the position of a point within or outside of a polygon.
-    """
-    # Position Types:
-    OUTSIDE = 0
-    INTERIOR = 1
-    EDGE_INTERIOR = 2
-    VERTEX = 3
+    Return whether the segments ``e1`` and ``e2`` intersect.
 
-    def __init__(self, position_type, edge = None, vertex = None):
-        self._position_type=position_type
-        if self.is_vertex():
-            if vertex is None:
-                raise ValueError("Constructed vertex position with no specified vertex.")
-            self._vertex=vertex
-        if self.is_in_edge_interior():
-            if edge is None:
-                raise ValueError("Constructed edge position with no specified edge.")
-            self._edge=edge
-
-    def __repr__(self):
-        if self.is_outside():
-            return "point positioned outside polygon"
-        if self.is_in_interior():
-            return "point positioned in interior of polygon"
-        if self.is_in_edge_interior():
-            return "point positioned on interior of edge "+str(self._edge)+" of polygon"
-        return "point positioned on vertex "+str(self._vertex)+" of polygon"
-
-    def is_outside(self):
-        return self._position_type == PolygonPosition.OUTSIDE
-
-    def is_inside(self):
-        r"""
-        Return true if the position is not outside the closure of the polygon
-        """
-        return bool(self._position_type)
-
-    def is_in_interior(self):
-        return self._position_type == PolygonPosition.INTERIOR
-
-    def is_in_boundary(self):
-        r"""
-        Return true if the position is in the boundary of the polygon
-        (either the interior of an edge or a vertex).
-        """
-        return self._position_type == PolygonPosition.EDGE_INTERIOR or \
-            self._position_type == PolygonPosition.VERTEX
-
-    def is_in_edge_interior(self):
-        return self._position_type == PolygonPosition.EDGE_INTERIOR
-
-    def is_vertex(self):
-        return self._position_type == PolygonPosition.VERTEX
-
-    def get_position_type(self):
-        return self._position_type
-
-    def get_edge(self):
-        if not self.is_in_edge_interior():
-            raise ValueError("Asked for edge when not in edge interior.")
-        return self._edge
-
-    def get_vertex(self):
-        if not self.is_vertex():
-            raise ValueError("Asked for vertex when not a vertex.")
-        return self._vertex
-
-def segment_intersect(e1, e2, K=None):
-    r"""
-    Return whether the segment e1 and e2 intersects
-
-    Return value:
+    OUTPUT:
 
     - ``0`` - do not intersect
     - ``1`` - one endpoint in common
@@ -351,16 +249,16 @@ def segment_intersect(e1, e2, K=None):
     if e1[0] == e1[1] or e2[0] == e2[1]:
         raise ValueError("degenerate segments")
 
-    if K is None:
+    if base_ring is None:
         elts = [e[i][j] for e in (e1,e2) for i in (0,1) for j in (0,1)]
-        K = cm.common_parent(*elts)
-        if isinstance(K, type):
-            K = py_scalar_parent(K)
-    m = matrix(K, 3)
-    xs1, ys1 = map(K, e1[0])
-    xt1, yt1 = map(K, e1[1])
-    xs2, ys2 = map(K, e2[0])
-    xt2, yt2 = map(K, e2[1])
+        base_ring = cm.common_parent(*elts)
+        if isinstance(base_ring, type):
+            base_ring = py_scalar_parent(base_ring)
+    m = matrix(base_ring, 3)
+    xs1, ys1 = map(base_ring, e1[0])
+    xt1, yt1 = map(base_ring, e1[1])
+    xs2, ys2 = map(base_ring, e2[0])
+    xt2, yt2 = map(base_ring, e2[1])
 
     m[0] = [xs1, ys1, 1]
     m[1] = [xt1, yt1, 1]
@@ -417,7 +315,8 @@ def segment_intersect(e1, e2, K=None):
 
 def is_between(e0, e1, f):
     r"""
-    Check whether f is strictly in the sector formed by e0 and e1 counter-clockwise
+    Check whether the vector ``f`` is strictly in the sector formed by the vectors
+    ``e0`` and ``e1`` (in counter-clockwise order).
 
     TESTS::
 
@@ -538,6 +437,111 @@ def triangulate(vertices):
                     part1.append((s, t))
                 return [(i, j)] + part0 + part1
     raise RuntimeError("input {} must be wrong".format(vertices))
+
+class MatrixActionOnPolygons(Action):
+    def __init__(self, polygons):
+        from sage.matrix.matrix_space import MatrixSpace
+        K = polygons.field()
+        Action.__init__(self, MatrixSpace(K,2), polygons, True, operator.mul)
+
+    def _act_(self, g, x):
+        r"""
+        Apply the 2x2 matrix `g` to the polygon `x`.
+
+        The matrix must have non-zero determinant. If the determinant is
+        negative, then the vertices and edges are relabeled according to the
+        involutions `v \mapsto (n-v)%n` and  `e \mapsto n-1-e` respectively.
+
+        EXAMPLES::
+
+            sage: from flatsurf import polygons
+            sage: p = polygons(vertices = [(1,0),(0,1),(-1,-1)])
+            sage: print(p)
+            Polygon: (1, 0), (0, 1), (-1, -1)
+            sage: r = matrix(ZZ,[[0,1], [1,0]])
+            sage: print(r*p)
+            Polygon: (0, 1), (-1, -1), (1, 0)
+        """
+        det = g.det()
+        if det > 0:
+            return x.parent()(vertices=[g*v for v in x.vertices()])
+        if det < 0:
+            # Note that in this case we reverse the order
+            vertices = [g*x.vertex(0)]
+            for i in range(x.num_edges() - 1, 0, -1):
+                vertices.append(g * x.vertex(i))
+            return x.parent()(vertices=vertices)
+        raise ValueError("Can not act on a polygon with matrix with zero determinant")
+
+class PolygonPosition:
+    r"""
+    Class for describing the position of a point within or outside of a polygon.
+    """
+    # Position Types:
+    OUTSIDE = 0
+    INTERIOR = 1
+    EDGE_INTERIOR = 2
+    VERTEX = 3
+
+    def __init__(self, position_type, edge = None, vertex = None):
+        self._position_type=position_type
+        if self.is_vertex():
+            if vertex is None:
+                raise ValueError("Constructed vertex position with no specified vertex.")
+            self._vertex=vertex
+        if self.is_in_edge_interior():
+            if edge is None:
+                raise ValueError("Constructed edge position with no specified edge.")
+            self._edge=edge
+
+    def __repr__(self):
+        if self.is_outside():
+            return "point positioned outside polygon"
+        if self.is_in_interior():
+            return "point positioned in interior of polygon"
+        if self.is_in_edge_interior():
+            return "point positioned on interior of edge "+str(self._edge)+" of polygon"
+        return "point positioned on vertex "+str(self._vertex)+" of polygon"
+
+    def is_outside(self):
+        return self._position_type == PolygonPosition.OUTSIDE
+
+    def is_inside(self):
+        r"""
+        Return true if the position is not outside the closure of the polygon
+        """
+        return bool(self._position_type)
+
+    def is_in_interior(self):
+        return self._position_type == PolygonPosition.INTERIOR
+
+    def is_in_boundary(self):
+        r"""
+        Return true if the position is in the boundary of the polygon
+        (either the interior of an edge or a vertex).
+        """
+        return self._position_type == PolygonPosition.EDGE_INTERIOR or \
+            self._position_type == PolygonPosition.VERTEX
+
+    def is_in_edge_interior(self):
+        return self._position_type == PolygonPosition.EDGE_INTERIOR
+
+    def is_vertex(self):
+        return self._position_type == PolygonPosition.VERTEX
+
+    def get_position_type(self):
+        return self._position_type
+
+    def get_edge(self):
+        if not self.is_in_edge_interior():
+            raise ValueError("Asked for edge when not in edge interior.")
+        return self._edge
+
+    def get_vertex(self):
+        if not self.is_vertex():
+            raise ValueError("Asked for vertex when not a vertex.")
+        return self._vertex
+
 
 class Polygon(Element):
     def __init__(self, parent, vertices, check=True):
