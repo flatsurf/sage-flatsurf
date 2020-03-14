@@ -6,12 +6,42 @@ This is likely to be merge in later Sage versions, see
 
     https://trac.sagemath.org/ticket/29331
 """
-from sage.rings.rational_field import QQ
+from sage.rings.all import QQ, AA, NumberField
 from sage.modules.free_module import VectorSpace
 from sage.matrix.constructor import matrix
 from sage.categories.homset import Hom
 from sage.categories.fields import Fields
 from sage.rings.qqbar import do_polred
+
+def number_field_elements_from_algebraics(elts, name='a'):
+    r"""
+    The native Sage function ``number_field_elements_from_algebraics`` currently
+    returns number field *without* embedding. This function return field with
+    embedding!
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.subfield import number_field_elements_from_algebraics
+        sage: z = QQbar.zeta(5)
+        sage: c = z.real()
+        sage: s = z.imag()
+        sage: number_field_elements_from_algebraics((c,s))
+        (Number Field in a with defining polynomial y^4 - 5*y^2 + 5 with a = 1.902113032590308?,
+         [1/2*a^2 - 3/2, 1/2*a])
+    """
+    # case when all elements are rationals
+    if all(x in QQ for x in elts):
+        return QQ, [QQ(x) for x in elts]
+
+    # general case
+    from sage.rings.qqbar import number_field_elements_from_algebraics
+    field,elts,phi = number_field_elements_from_algebraics(elts, minimal=True)
+
+    polys = [x.polynomial() for x in elts]
+    K = NumberField(field.polynomial(), name, embedding=AA(phi(field.gen())))
+    gen = K.gen()
+
+    return K, [x.polynomial()(gen) for x in elts]
 
 def subfield_from_elements(self, alpha, name=None, polred=True, threshold=None):
     r"""
