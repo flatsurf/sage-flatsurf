@@ -17,7 +17,9 @@ from .surface import Surface
 from .half_dilation_surface import HalfDilationSurface
 from .rational_cone_surface import RationalConeSurface
 
-from sage.rings.all import QQ
+from sage.rings.all import QQ, AA
+from sage.matrix.constructor import matrix
+
 
 class HalfTranslationSurface(HalfDilationSurface, RationalConeSurface):
     r"""
@@ -112,3 +114,52 @@ class HalfTranslationSurface(HalfDilationSurface, RationalConeSurface):
                 tester.assertTrue(m.is_one() or (-m).is_one(),
                     "edge_matrix between edge e={} and e'={} has matrix\n{}\nwhich is neither a translation nor a rotation by pi".format((lab,e), self.opposite_edge((lab,e)), m))
 
+    def holonomy_field(self):
+        r"""
+        Return the relative holonomy field of this translation or half-translation surface.
+
+        EXAMPLES::
+
+            sage: from flatsurf import *
+
+            sage: S = translation_surfaces.veech_2n_gon(5)
+            sage: S.holonomy_field()
+            Number Field in a0 with defining polynomial x^2 - x - 1 with a0 = 1.618033988749895?
+            sage: S.base_ring()
+            Number Field in a with defining polynomial y^4 - 5*y^2 + 5 with a = 1.175570504584947?
+
+            sage: T = translation_surfaces.torus((1, AA(2).sqrt()), (AA(3).sqrt(), 3))
+            sage: T.holonomy_field()
+            Rational Field
+
+            sage: T = polygons.triangle(1,6,11)
+            sage: S = similarity_surfaces.billiard(T)
+            sage: S = S.minimal_cover("translation")
+            sage: S.base_ring()
+            Number Field in a with defining polynomial y^6 - 6*y^4 + 9*y^2 - 3 with a = -0.6840402866513375?
+            sage: S.holonomy_field()
+            Number Field in a0 with defining polynomial x^3 - 3*x - 1 with a0 = -1.532088886237957?
+        """
+        if not self.is_finite():
+            raise ValueError
+        if self.base_ring() is QQ:
+            return QQ
+
+        lab = next(self.label_iterator())
+        p = self.polygon(lab)
+        u = p.edge(1)
+        v = -p.edge(0)
+        m = matrix(2, [u,v]).transpose().inverse()
+        hols = []
+        for lab in self.label_iterator():
+            p = self.polygon(lab)
+            for e in range(p.num_edges()):
+                w = m * p.edge(e)
+                hols.append(w[0])
+                hols.append(w[1])
+        if self.base_ring() is AA:
+            from .subfield import number_field_elements_from_algebraics
+            return number_field_elements_from_algebraics(hols)[0]
+        else:
+            from .subfield import subfield_from_elements
+            return subfield_from_elements(self.base_ring(), hols)[0]
