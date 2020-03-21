@@ -432,6 +432,7 @@ class SimilaritySurfaceGenerators:
         EXAMPLES::
 
             sage: from flatsurf import *
+
             sage: P = polygons(vertices=[(0,0), (1,0), (0,1)])
             sage: from flatsurf.geometry.rational_cone_surface import RationalConeSurface
             sage: Q = similarity_surfaces.billiard(P, rational=True)
@@ -451,6 +452,19 @@ class SimilaritySurfaceGenerators:
             sage: TestSuite(M).run()
             sage: M.stratum()
             H_2(2, 0^5)
+
+        A quadrilateral from Eskin-McMullen-Mukamel-Wright::
+
+            sage: E = EquiangularPolygons(1, 1, 1, 7)
+            sage: P = E([2, AA(3).sqrt()])
+            sage: S = similarity_surfaces.billiard(P)
+            sage: TestSuite(S).run()
+            sage: S = S.minimal_cover(cover_type="translation")
+            sage: TestSuite(S).run()
+            sage: S = S.erase_marked_points()
+            sage: TestSuite(S).run()
+            sage: S, _ = S.normalized_coordinates()
+            sage: TestSuite(S).run()
         """
         if not isinstance(P, Polygon):
             raise TypeError("invalid input")
