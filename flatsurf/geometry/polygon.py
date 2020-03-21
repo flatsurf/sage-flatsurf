@@ -2035,7 +2035,7 @@ class EquiangularPolygons:
             s,t = matrix([slopes[-1],slopes[n-2]]).solve_left(vertices[0] - vertices[n-2])
             assert vertices[0] - s*slopes[-1] == vertices[n-2] + t*slopes[n-2]
             if s <= 0 or t <= 0:
-                raise ValueError("the provided lengths do not give rise to a convex polygon")
+                raise ValueError("the provided lengths do not give rise to a polygon")
             vertices.append(vertices[0] - s*slopes[-1])
 
         elif len(lengths) == n:
@@ -2043,7 +2043,7 @@ class EquiangularPolygons:
                 v += lengths[i] * slopes[i]
                 vertices.append(v)
             if not vertices[-1].is_zero():
-                raise ValueError("the provided lengths do not give rise to a convex polygon")
+                raise ValueError("the provided lengths do not give rise to a polygon")
             vertices.pop(-1)
 
         if self.convexity():
