@@ -1805,17 +1805,17 @@ class ConvexPolygons(Polygons):
 
         return self.element_class(self, vertices, check)
 
-class EquiangularConvexPolygons:
+class EquiangularPolygons:
     r"""
-    Convex polygons with fixed (rational) angles.
+    Polygons with fixed (rational) angles.
 
     EXAMPLES::
 
-        sage: from flatsurf import EquiangularConvexPolygons
+        sage: from flatsurf import EquiangularPolygons
 
-        sage: P = EquiangularConvexPolygons(1,2,5)
+        sage: P = EquiangularPolygons(1,2,5)
         sage: P
-        EquiangularConvexPolygons(1, 2, 5) over Algebraic Real Field
+        EquiangularPolygons(1, 2, 5) over Algebraic Real Field
         sage: L = P.lengths_polytope()    # polytope of admissible lengths for edges
         sage: L
         A 1-dimensional polyhedron in AA^3 defined as the convex hull of 1 vertex and 1 ray
@@ -1830,7 +1830,7 @@ class EquiangularConvexPolygons:
         sage: P.angles(integral=False)
         [1/16, 1/8, 5/16]
 
-        sage: P = EquiangularConvexPolygons(1, 2, 1, 2, 2, 1)
+        sage: P = EquiangularPolygons(1, 2, 1, 2, 2, 1)
         sage: L = P.lengths_polytope()
         sage: L
         A 4-dimensional polyhedron in AA^6 defined as the convex hull of 1 vertex and 6 rays
@@ -1867,8 +1867,8 @@ class EquiangularConvexPolygons:
         s = ZZ(n - 2) / sum(angles) / ZZ(2)
         if s != 1:
             angles = [s * a for a in angles]
-        if any(2*angle >= 1 for angle in angles):
-            raise ValueError("invalid 'angles' for a convex polygon")
+        if any(angle <= 0 or angle >= 1 for angle in angles):
+            raise ValueError("each angle must be > 0 and < 2 pi")
         self._angles = angles
 
         zetas = [QQbar.zeta(a.denominator()) ** a.numerator() for a in angles]
@@ -1885,6 +1885,33 @@ class EquiangularConvexPolygons:
         self._base_ring = base_ring
         assert len(cosines) == n and len(sines) == n
 
+    def convexity(self):
+        r"""
+        EXAMPLES::
+
+            sage: from flatsurf import EquiangularPolygons
+            sage: EquiangularPolygons(1, 2, 5).convexity()
+            True
+            sage: EquiangularPolygons(2, 2, 3, 13).convexity()
+            False
+        """
+        return all(2 * a <= 1 for a in self._angles)
+
+    def strict_convexity(self):
+        r"""
+        EXAMPLES::
+
+            sage: from flatsurf import EquiangularPolygons
+            sage: E = EquiangularPolygons([1, 1, 1, 1, 2])
+            sage: E.angles()
+            [1/4, 1/4, 1/4, 1/4, 1/2]
+            sage: E.convexity()
+            True
+            sage: E.strict_convexity()
+            False
+        """
+        return all(2 * a < 1 for a in self._angles)
+
     def angles(self, integral=False):
         angles = self._angles
         if integral:
@@ -1896,13 +1923,13 @@ class EquiangularConvexPolygons:
         r"""
         TESTS::
 
-            sage: from flatsurf import EquiangularConvexPolygons
-            sage: EquiangularConvexPolygons(1, 2, 3)
-            EquiangularConvexPolygons(1, 2, 3) over Algebraic Real Field
-            sage: EquiangularConvexPolygons(1, 2, 3, number_field=True)
-            EquiangularConvexPolygons(1, 2, 3) over Number Field in a with defining polynomial y^2 - 3 with a = 1.732050807568878?
+            sage: from flatsurf import EquiangularPolygons
+            sage: EquiangularPolygons(1, 2, 3)
+            EquiangularPolygons(1, 2, 3) over Algebraic Real Field
+            sage: EquiangularPolygons(1, 2, 3, number_field=True)
+            EquiangularPolygons(1, 2, 3) over Number Field in a with defining polynomial y^2 - 3 with a = 1.732050807568878?
         """
-        return "EquiangularConvexPolygons({}) over {}".format(", ".join(map(str,self.angles(True))), self._base_ring)
+        return "EquiangularPolygons({}) over {}".format(", ".join(map(str,self.angles(True))), self._base_ring)
 
     def vector_space(self):
         return VectorSpace(self._base_ring, 2)
@@ -1913,8 +1940,8 @@ class EquiangularConvexPolygons:
 
         EXAMPLES::
 
-            sage: from flatsurf import EquiangularConvexPolygons
-            sage: EquiangularConvexPolygons(1, 2, 1, 2).slopes()
+            sage: from flatsurf import EquiangularPolygons
+            sage: EquiangularPolygons(1, 2, 1, 2).slopes()
             [(1, 0),
              (0.500000000000000?, 0.866025403784439?),
              (-1.000000000000000?, 0.?e-18),
@@ -1940,8 +1967,8 @@ class EquiangularConvexPolygons:
 
         EXAMPLES::
 
-            sage: from flatsurf import EquiangularConvexPolygons
-            sage: EquiangularConvexPolygons(1, 2, 1, 2).lengths_polytope()
+            sage: from flatsurf import EquiangularPolygons
+            sage: EquiangularPolygons(1, 2, 1, 2).lengths_polytope()
             A 2-dimensional polyhedron in AA^4 defined as the convex hull of 1 vertex and 2 rays
         """
         n = len(self._angles)
@@ -1960,8 +1987,8 @@ class EquiangularConvexPolygons:
         r"""
         TESTS::
 
-            sage: from flatsurf import EquiangularConvexPolygons
-            sage: P = EquiangularConvexPolygons(1, 2, 1, 2)
+            sage: from flatsurf import EquiangularPolygons
+            sage: P = EquiangularPolygons(1, 2, 1, 2)
             sage: L = P.lengths_polytope()
             sage: r0, r1 = [r.vector() for r in L.rays()]
             sage: lengths = r0 + r1
@@ -1969,6 +1996,10 @@ class EquiangularConvexPolygons:
             Polygon: (0, 0), (1, 0), (3/2, 0.866025403784439?), (1/2, 0.866025403784439?)
             sage: P(*lengths[:-2])
             Polygon: (0, 0), (1, 0), (3/2, 0.866025403784439?), (1/2, 0.866025403784439?)
+
+            sage: P = EquiangularPolygons(2, 2, 3, 13)
+            sage: P([1, 1])
+            Polygon: (0, 0), (1, 0), (0.1909830056250526?, 0.5877852522924731?), (0.1909830056250526?, 0.1387572757128878?)
         """
         number_field = kwds.pop('number_field', False)
         if kwds:
@@ -1992,8 +2023,6 @@ class EquiangularConvexPolygons:
             elif any(l not in self._base_ring for l in lengths):
                 raise NotImplementedError
 
-        C = ConvexPolygons(base_ring)
-
         V = self.vector_space()
         slopes = self.slopes(cosines=cosines, sines=sines)
         v = V((0,0))
@@ -2006,7 +2035,7 @@ class EquiangularConvexPolygons:
             s,t = matrix([slopes[-1],slopes[n-2]]).solve_left(vertices[0] - vertices[n-2])
             assert vertices[0] - s*slopes[-1] == vertices[n-2] + t*slopes[n-2]
             if s <= 0 or t <= 0:
-                raise ValueError("the provided lengths do not give rise to a convex polygon")
+                raise ValueError("the provided lengths do not give rise to a polygon")
             vertices.append(vertices[0] - s*slopes[-1])
 
         elif len(lengths) == n:
@@ -2014,10 +2043,13 @@ class EquiangularConvexPolygons:
                 v += lengths[i] * slopes[i]
                 vertices.append(v)
             if not vertices[-1].is_zero():
-                raise ValueError("the provided lengths do not give rise to a convex polygon")
+                raise ValueError("the provided lengths do not give rise to a polygon")
             vertices.pop(-1)
 
-        return C(vertices=vertices)
+        if self.convexity():
+            return ConvexPolygons(base_ring)(vertices=vertices)
+        else:
+            return Polygons(base_ring)(vertices=vertices)
 
 class PolygonsConstructor:
     def square(self, side=1, **kwds):
@@ -2222,7 +2254,13 @@ class PolygonsConstructor:
             sage: polygons(angles=[1,1,1,8])
             Traceback (most recent call last):
             ...
-            ValueError: invalid 'angles' for a convex polygon
+            ValueError: 'angles' do not determine convex polygon; you might want to set the option 'convex=False'
+            sage: polygons(angles=[1,1,1,8], convex=False)
+            Traceback (most recent call last):
+            ...
+            ValueError: non-convex equiangular polygon; lengths must be provided
+            sage: polygons(angles=[1,1,1,8], lengths=[1,1], convex=False)
+            Polygon: (0, 0), (1, 0), (1/2*a^8 - 9/2*a^6 + 27/2*a^4 - 15*a^2 + 11/2, 1/2*a), (1/2*a^8 - 9/2*a^6 + 13*a^4 - 13*a^2 + 4, -1/2*a^9 + 9/2*a^7 - 13*a^5 + 13*a^3 - 7/2*a)
 
         TESTS::
 
@@ -2287,12 +2325,17 @@ class PolygonsConstructor:
                     base_ring = py_scalar_parent(base_ring)
 
         elif angles is not None:
-            if not convex:
-                raise NotImplementedError("non-convex polygon can not be specified by angles")
+            E = EquiangularPolygons(*angles, number_field=False)
+            if convex and not E.convexity():
+                raise ValueError("'angles' do not determine convex polygon; you might want to set the option 'convex=False'")
             n = len(angles)
             if length is None and lengths is None:
+                if not E.convexity():
+                    raise ValueError("non-convex equiangular polygon; lengths must be provided")
                 lengths = [AA(1)] * (n-2)
             elif lengths is None:
+                if not E.convexity():
+                    raise ValueError("non-convex equiangular polygon; lengths must be provided")
                 lengths = [AA.coerce(length)] * (n-2)
             elif length is None:
                 if len(lengths) != n-2:
@@ -2301,7 +2344,7 @@ class PolygonsConstructor:
             else:
                 raise ValueError("only one of 'length' or 'lengths' can be set together with 'angles'")
 
-            return EquiangularConvexPolygons(*angles, number_field=False)(lengths, number_field=True)
+            return E(lengths, number_field=True)
 
         if base_ring not in Fields():
             base_ring = base_ring.fraction_field()

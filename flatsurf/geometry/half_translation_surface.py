@@ -164,9 +164,12 @@ class HalfTranslationSurface(HalfDilationSurface, RationalConeSurface):
             sage: U, mat = T.normalized_coordinates()
             sage: U.base_ring()
             Rational Field
+            sage: U.holonomy_field()
+            Rational Field
             sage: mat
             [-2.568914100752347?  1.816496580927726?]
             [-5.449489742783178?  3.146264369941973?]
+            sage: TestSuite(U).run()
 
             sage: T = polygons.triangle(1,6,11)
             sage: S = similarity_surfaces.billiard(T)
@@ -174,19 +177,23 @@ class HalfTranslationSurface(HalfDilationSurface, RationalConeSurface):
             sage: U, _ = S.normalized_coordinates()
             sage: U.base_ring()
             Number Field in a0 with defining polynomial x^3 - 3*x - 1 with a0 = -1.532088886237957?
+            sage: U.holonomy_field() == U.base_ring()
+            True
             sage: S.base_ring()
             Number Field in a with defining polynomial y^6 - 6*y^4 + 9*y^2 - 3 with a = -0.6840402866513375?
+            sage: TestSuite(U).run()
         """
         if not self.is_finite():
             raise ValueError
         if self.base_ring() is QQ:
-            return QQ
+            return (self, matrix(QQ, 2, 2, 1))
 
         lab = next(self.label_iterator())
         p = self.polygon(lab)
         u = p.edge(1)
         v = -p.edge(0)
         M = matrix(2, [u,v]).transpose().inverse()
+        assert M.det() > 0
         hols = []
         for lab in self.label_iterator():
             p = self.polygon(lab)
@@ -209,7 +216,7 @@ class HalfTranslationSurface(HalfDilationSurface, RationalConeSurface):
         k = 0
         for lab in self.label_iterator():
             m = self.polygon(lab).num_edges()
-            relabelling[lab] = S.add_polygon(C(vertices=[(new_hols[k + 2*i], new_hols[k + 2*i+1]) for i in range(m)]))
+            relabelling[lab] = S.add_polygon(C(edges=[(new_hols[k + 2*i], new_hols[k + 2*i+1]) for i in range(m)]))
             k += 2 * m
 
         for (p1,e1),(p2,e2) in self.edge_iterator(gluings=True):
