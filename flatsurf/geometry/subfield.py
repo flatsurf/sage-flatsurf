@@ -28,6 +28,9 @@ def number_field_elements_from_algebraics(elts, name='a'):
         sage: number_field_elements_from_algebraics((c,s))
         (Number Field in a with defining polynomial y^4 - 5*y^2 + 5 with a = 1.902113032590308?,
          [1/2*a^2 - 3/2, 1/2*a])
+
+         sage: number_field_elements_from_algebraics([AA(1), AA(2/3)])
+         (Rational Field, [1, 2/3])
     """
     # case when all elements are rationals
     if all(x in QQ for x in elts):

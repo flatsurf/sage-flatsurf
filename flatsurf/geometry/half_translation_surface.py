@@ -140,6 +140,43 @@ class HalfTranslationSurface(HalfDilationSurface, RationalConeSurface):
             sage: S.holonomy_field()
             Number Field in a0 with defining polynomial x^3 - 3*x - 1 with a0 = -1.532088886237957?
         """
+        return self.normalized_coordinates()[0].base_ring()
+
+    def normalized_coordinates(self):
+        r"""
+        Return a pair ``(new_surface, matrix)`` where ``new_surface`` is defined over the
+        holonomy field and ``matrix`` is the transition matrix that maps this surface to
+        ``new_surface``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import *
+
+            sage: S = translation_surfaces.veech_2n_gon(5)
+            sage: U, mat = S.normalized_coordinates()
+            sage: U.base_ring()
+            Number Field in a0 with defining polynomial x^2 - x - 1 with a0 = 1.618033988749895?
+            sage: mat
+            [             0 -2/5*a^3 + 2*a]
+            [            -1 -3/5*a^3 + 2*a]
+
+            sage: T = translation_surfaces.torus((1, AA(2).sqrt()), (AA(3).sqrt(), 3))
+            sage: U, mat = T.normalized_coordinates()
+            sage: U.base_ring()
+            Rational Field
+            sage: mat
+            [-2.568914100752347?  1.816496580927726?]
+            [-5.449489742783178?  3.146264369941973?]
+
+            sage: T = polygons.triangle(1,6,11)
+            sage: S = similarity_surfaces.billiard(T)
+            sage: S = S.minimal_cover("translation")
+            sage: U, _ = S.normalized_coordinates()
+            sage: U.base_ring()
+            Number Field in a0 with defining polynomial x^3 - 3*x - 1 with a0 = -1.532088886237957?
+            sage: S.base_ring()
+            Number Field in a with defining polynomial y^6 - 6*y^4 + 9*y^2 - 3 with a = -0.6840402866513375?
+        """
         if not self.is_finite():
             raise ValueError
         if self.base_ring() is QQ:
@@ -149,17 +186,33 @@ class HalfTranslationSurface(HalfDilationSurface, RationalConeSurface):
         p = self.polygon(lab)
         u = p.edge(1)
         v = -p.edge(0)
-        m = matrix(2, [u,v]).transpose().inverse()
+        M = matrix(2, [u,v]).transpose().inverse()
         hols = []
         for lab in self.label_iterator():
             p = self.polygon(lab)
             for e in range(p.num_edges()):
-                w = m * p.edge(e)
+                w = M * p.edge(e)
                 hols.append(w[0])
                 hols.append(w[1])
         if self.base_ring() is AA:
             from .subfield import number_field_elements_from_algebraics
-            return number_field_elements_from_algebraics(hols)[0]
+            K, new_hols = number_field_elements_from_algebraics(hols)
         else:
             from .subfield import subfield_from_elements
-            return subfield_from_elements(self.base_ring(), hols)[0]
+            K, new_hols, _ = subfield_from_elements(self.base_ring(), hols)
+
+        from .polygon import ConvexPolygons
+        from .surface import Surface_list
+        S = Surface_list(K)
+        C = ConvexPolygons(K)
+        relabelling = {}
+        k = 0
+        for lab in self.label_iterator():
+            m = self.polygon(lab).num_edges()
+            relabelling[lab] = S.add_polygon(C(vertices=[(new_hols[k + 2*i], new_hols[k + 2*i+1]) for i in range(m)]))
+            k += 2 * m
+
+        for (p1,e1),(p2,e2) in self.edge_iterator(gluings=True):
+            S.set_edge_pairing(relabelling[p1], e1, relabelling[p2], e2)
+
+        return (type(self)(S), M)
