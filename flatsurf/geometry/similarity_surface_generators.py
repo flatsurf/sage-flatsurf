@@ -11,13 +11,15 @@ from sage.structure.sequence import Sequence
 ZZ_1 = ZZ(1)
 ZZ_2 = ZZ(2)
 
-from .polygon import polygons, ConvexPolygons
+from .polygon import polygons, ConvexPolygons, Polygon, ConvexPolygon, build_faces
 
 from .surface import Surface, Surface_list
 from .translation_surface import TranslationSurface
 from .similarity_surface import SimilaritySurface
 from .half_translation_surface import HalfTranslationSurface
 from .cone_surface import ConeSurface
+from .rational_cone_surface import RationalConeSurface
+
 
 def flipper_nf_to_sage(K, name='a'):
     r"""
@@ -416,38 +418,109 @@ class SimilaritySurfaceGenerators:
         return HalfTranslationSurface(s)
 
     @staticmethod
-    def billiard(P):
+    def billiard(P, rational=False):
         r"""
         Return the ConeSurface associated to the billiard in the polygon ``P``.
+
+        INPUT:
+
+        - ``P`` - a polygon
+
+        - ``rational`` (boolean, default ``False``) - whether to assume that the polygon
+          has all its angle rational multiple of pi.
 
         EXAMPLES::
 
             sage: from flatsurf import *
             sage: P = polygons(vertices=[(0,0), (1,0), (0,1)])
             sage: from flatsurf.geometry.rational_cone_surface import RationalConeSurface
-            sage: Q = RationalConeSurface(similarity_surfaces.billiard(P))
+            sage: Q = similarity_surfaces.billiard(P, rational=True)
             sage: Q
             RationalConeSurface built from 2 polygons
             sage: M = Q.minimal_cover(cover_type="translation")
             sage: M
             TranslationSurface built from 8 polygons
             sage: TestSuite(M).run()
+
+        A non-convex examples (L-shape polygon)::
+
+            sage: P = polygons(vertices=[(0,0), (2,0), (2,1), (1,1), (1,2), (0,2)], convex=False)
+            sage: Q = similarity_surfaces.billiard(P, rational=True)
+            sage: TestSuite(Q).run()
+            sage: M = Q.minimal_cover(cover_type="translation")
+            sage: TestSuite(M).run()
+            sage: M.stratum()
+            H_2(2, 0^5)
         """
-        from sage.matrix.constructor import matrix
+        if not isinstance(P, Polygon):
+            raise TypeError("invalid input")
 
-        n = P.num_edges()
-        r = matrix(2, [-1,0,0,1])
-        Q = polygons(edges=[r*v for v in reversed(P.edges())])
+        V = P.vector_space()
 
-        surface = Surface_list(base_ring = P.base_ring())
-        surface.add_polygon(P) # gets label 0)
-        surface.add_polygon(Q) # gets label 1
-        surface.change_polygon_gluings(0,[(1,n-i-1) for i in range(n)])
+        if not isinstance(P, ConvexPolygon):
+            # triangulate non-convex ones
+            base_ring = P.base_ring()
+            C = ConvexPolygons(base_ring)
+            comb_edges = P.triangulation()
+            vertices = P.vertices()
+            comb_triangles = build_faces(len(vertices), comb_edges)
+            triangles = []
+            internal_edges = []  # list (p1, e1, p2, e2)
+            external_edges = []  # list (p1, e1)
+            edge_to_lab = {}
+            for num,(i,j,k) in enumerate(comb_triangles):
+                triangles.append(C(vertices=[vertices[i], vertices[j], vertices[k]]))
+                edge_to_lab[(i,j)] = (num, 0)
+                edge_to_lab[(j,k)] = (num, 1)
+                edge_to_lab[(k,i)] = (num, 2)
+            for num,(i,j,k) in enumerate(comb_triangles):
+                if (j, i) in edge_to_lab:
+                    num2, e2 = edge_to_lab[j, i]
+                    internal_edges.append((num, 0, num2, e2))
+                else:
+                    external_edges.append((num, 0))
+                if (k, j) in edge_to_lab:
+                    num2, e2 = edge_to_lab[k, j]
+                    internal_edges.append((num, 1, num2, e2))
+                else:
+                    external_edges.append((num, 1))
+                if (i, k) in edge_to_lab:
+                    num2, e2 = edge_to_lab[i, k]
+                    internal_edges.append((num, 2, num2, e2))
+                else:
+                    external_edges.append((num, 1))
+            P = triangles
+        else:
+            internal_edges = []
+            external_edges = [(0, i) for i in range(P.num_edges())]
+            base_ring = P.base_ring()
+            P = [P]
+
+        m = len(P)
+        Q = []
+        surface = Surface_list(base_ring=base_ring)
+        for p in P:
+            surface.add_polygon(p)
+        for p in P:
+            surface.add_polygon(polygons(edges=[V((-x,y)) for x,y in reversed(p.edges())]))
+        for (p1,e1,p2,e2) in internal_edges:
+            surface.set_edge_pairing(p1, e1, p2, e2)
+            ne1 = surface.polygon(p1).num_edges()
+            ne2 = surface.polygon(p2).num_edges()
+            surface.set_edge_pairing(m + p1, ne1-e1-1, m + p2, ne2-e2-1)
+        for p, e in external_edges:
+            ne = surface.polygon(p).num_edges()
+            surface.set_edge_pairing(p, e, m+p, ne-e-1)
 
         surface.set_immutable()
-        s = ConeSurface(surface)
-        gs = s.graphical_surface(edge_labels=False, polygon_labels=False)
-        gs.make_adjacent(0,0,reverse=True)
+        if rational:
+            s = RationalConeSurface(surface)
+        else:
+            s = ConeSurface(surface)
+        if len(P) == 1:
+            # TODO: this is very add-hoc and must be removed
+            gs = s.graphical_surface(edge_labels=False, polygon_labels=False)
+            gs.make_adjacent(0,0,reverse=True)
         return s
 
     @staticmethod
