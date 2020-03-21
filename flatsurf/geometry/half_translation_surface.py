@@ -164,6 +164,8 @@ class HalfTranslationSurface(HalfDilationSurface, RationalConeSurface):
             sage: U, mat = T.normalized_coordinates()
             sage: U.base_ring()
             Rational Field
+            sage: U.holonomy_field()
+            Rational Field
             sage: mat
             [-2.568914100752347?  1.816496580927726?]
             [-5.449489742783178?  3.146264369941973?]
@@ -174,13 +176,15 @@ class HalfTranslationSurface(HalfDilationSurface, RationalConeSurface):
             sage: U, _ = S.normalized_coordinates()
             sage: U.base_ring()
             Number Field in a0 with defining polynomial x^3 - 3*x - 1 with a0 = -1.532088886237957?
+            sage: U.holonomy_field() == U.base_ring()
+            True
             sage: S.base_ring()
             Number Field in a with defining polynomial y^6 - 6*y^4 + 9*y^2 - 3 with a = -0.6840402866513375?
         """
         if not self.is_finite():
             raise ValueError
         if self.base_ring() is QQ:
-            return QQ
+            return (self, matrix(QQ, 2, 2, 1))
 
         lab = next(self.label_iterator())
         p = self.polygon(lab)
