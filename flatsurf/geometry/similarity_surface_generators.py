@@ -3,6 +3,7 @@ from six.moves import range, map, filter, zip
 from six import iteritems, itervalues
 
 from sage.rings.all import ZZ, QQ, RIF, AA, NumberField, polygen
+from sage.modules.all import VectorSpace, vector
 from sage.structure.coerce import py_scalar_parent
 from sage.misc.cachefunc import cached_method
 from sage.structure.sequence import Sequence
@@ -480,7 +481,6 @@ class SimilaritySurfaceGenerators:
             ConeSurface built from 2 polygons
             sage: TestSuite(R).run()
         """
-        from sage.modules.free_module import VectorSpace
         from sage.modules.free_module_element import vector
 
         F = Sequence([w,h]).universe()
@@ -579,7 +579,7 @@ class TranslationSurfaceGenerators:
     Common and less common translation surfaces.
     """
     @staticmethod
-    def square_torus():
+    def square_torus(a=1):
         r"""
         Return flat torus obtained by identification of the opposite sides of a
         square.
@@ -604,8 +604,33 @@ class TranslationSurfaceGenerators:
 
             sage: TestSuite(T).run()
         """
-        s = Surface_list(base_ring=QQ)
-        s.add_polygon(polygons.square(),[(0,2),(0,3),(0,0),(0,1)])
+        return TranslationSurfaceGenerators.torus((a,0), (0,a))
+
+    @staticmethod
+    def torus(u, v):
+        r"""
+        Return the flat torus obtained as the quotient of the plane by the pair
+        of vectors ``u`` and ``v``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: T = translation_surfaces.torus((1, AA(2).sqrt()), (AA(3).sqrt(), 3))
+            sage: T
+            TranslationSurface built from 1 polygon
+            sage: T.polygon(0)
+            Polygon: (0, 0), (1, 1.414213562373095?), (2.732050807568878?, 4.414213562373095?), (1.732050807568878?, 3)
+        """
+        u = vector(u)
+        v = vector(v)
+        field = Sequence([u,v]).universe().base_ring()
+        if isinstance(field, type):
+            field = py_scalar_parent(field)
+        if not field.is_field():
+            field = field.fraction_field()
+        s = Surface_list(base_ring=field)
+        p = polygons(vertices=[(0,0), u, u+v, v], base_ring=field)
+        s.add_polygon(p, [(0,2),(0,3),(0,0),(0,1)])
         s.set_immutable()
         return TranslationSurface(s)
 
@@ -998,8 +1023,7 @@ class TranslationSurfaceGenerators:
         alpha_AA = AA.polynomial_root(cp, RIF(1/2, 1))
         field=NumberField(alpha_AA.minpoly(),'alpha',embedding=alpha_AA)
         a=field.gen()
-        from sage.modules.free_module import VectorSpace
-        V=VectorSpace(field,2)
+        V = VectorSpace(field,2)
         p=[None for i in range(g+1)]
         q=[None for i in range(g+1)]
         p[0]=V(( (1-a**g)/2, a**2/(1-a) ))
@@ -1089,7 +1113,6 @@ class TranslationSurfaceGenerators:
             sage: from flatsurf.geometry.similarity_surface_generators import flipper_nf_element_to_sage
             sage: a = flipper_nf_element_to_sage(h.dilatation())  # optional - flipper
         """
-        from sage.modules.free_module import VectorSpace
         from .surface import surface_list_from_polygons_and_gluings
 
         f = h.flat_structure()
