@@ -29,6 +29,8 @@ class HalfTranslationSurface(HalfDilationSurface, RationalConeSurface):
         r"""
         Return the set of angles around the vertices of the surface.
 
+        These are given as multiple of `2 \pi`.
+
         EXAMPLES::
 
             sage: import flatsurf.geometry.similarity_surface_generators as sfg
@@ -52,6 +54,20 @@ class HalfTranslationSurface(HalfDilationSurface, RationalConeSurface):
             [3]
             sage: sfg.translation_surfaces.cathedral(1, 1).angles()
             [3, 3, 3]
+
+            sage: from flatsurf import polygons, similarity_surfaces
+            sage: B = similarity_surfaces.billiard(polygons.triangle(1, 2, 5))
+            sage: H = B.minimal_cover(cover_type="half-translation")
+            sage: S = B.minimal_cover(cover_type="translation")
+            sage: H.angles()
+            [1/2, 5/2, 1/2, 1/2]
+            sage: S.angles()
+            [1, 5, 1, 1]
+
+            sage: H.angles(return_adjacent_edges=True)
+             [(1/2, [...]), (5/2, [...]), (1/2, [...]), (1/2, [...])]
+            sage: S.angles(return_adjacent_edges=True)
+             [(1, [...]), (5, [...]), (1, [...]), (1, [...])]
         """
         if not self.is_finite():
             raise NotImplementedError("the set of edges is infinite!")
@@ -68,10 +84,12 @@ class HalfTranslationSurface(HalfDilationSurface, RationalConeSurface):
                 while pair in edges:
                     adjacent_edges.append(pair)
                     edges.remove(pair)
-                    ppair = pp,ee = self.opposite_edge(p,(e-1)%self.polygon(p).num_edges())
-                    vee = self.polygon(pp).edge(ee)
-                    angle += (ve[0] > 0 and vee[0] <= 0) or (ve[0] < 0 and vee[0] >= 0) or (ve[0] == vee[0] == 0)
-                    pair, p, e, ve = ppair, pp, ee, vee
+                    f = (e-1) % self.polygon(p).num_edges()
+                    ve = self.polygon(p).edge(e)
+                    vf = -self.polygon(p).edge(f)
+                    ppair = pp,ff = self.opposite_edge(p, f)
+                    angle += (ve[0] > 0 and vf[0] <= 0) or (ve[0] < 0 and vf[0] >= 0) or (ve[0] == vf[0] == 0)
+                    pair, p, e = ppair, pp, ff
                 if numerical:
                     angles.append((float(angle) / 2, adjacent_edges))
                 else:
@@ -79,14 +97,15 @@ class HalfTranslationSurface(HalfDilationSurface, RationalConeSurface):
         else:
             while edges:
                 pair = p,e = next(iter(edges))
-                ve = self.polygon(p).edge(e)
                 angle = 0
                 while pair in edges:
                     edges.remove(pair)
-                    ppair = pp,ee = self.opposite_edge(p,(e-1)%self.polygon(p).num_edges())
-                    vee = self.polygon(pp).edge(ee)
-                    angle += (ve[0] > 0 and vee[0] <= 0) or (ve[0] < 0 and vee[0] >= 0) or (ve[0] == vee[0] == 0)
-                    pair, p, e, ve = ppair, pp, ee, vee
+                    f = (e-1) % self.polygon(p).num_edges()
+                    ve = self.polygon(p).edge(e)
+                    vf = -self.polygon(p).edge(f)
+                    ppair = pp,ff = self.opposite_edge(p, f)
+                    angle += (ve[0] > 0 and vf[0] <= 0) or (ve[0] < 0 and vf[0] >= 0) or (ve[0] == vf[0] == 0)
+                    pair, p, e = ppair, pp, ff
                 if numerical:
                     angles.append(float(angle) / 2)
                 else:
