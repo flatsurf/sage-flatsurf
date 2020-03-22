@@ -113,6 +113,22 @@ class HalfTranslationSurface(HalfDilationSurface, RationalConeSurface):
 
         return angles
 
+    def stratum(self):
+        r"""
+        EXAMPLES::
+
+            sage: from flatsurf import polygons, similarity_surfaces
+            sage: B = similarity_surfaces.billiard(polygons.triangle(1, 2, 5))
+            sage: H = B.minimal_cover(cover_type="half-translation")
+            sage: H.stratum()
+            Q_1(3, -1^3)
+        """
+        angles = self.angles()
+        if all(x.denominator() == 1 for x in angles):
+            raise NotImplementedError
+        from surface_dynamics import QuadraticStratum
+        return QuadraticStratum(*[2*a-2 for a in angles])
+
     def _test_edge_matrix(self, **options):
         r"""
         Check the compatibility condition
