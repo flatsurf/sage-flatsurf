@@ -32,7 +32,7 @@ import operator
 from sage.all import cached_method, Parent, UniqueRepresentation, Sets,\
                      Fields, ZZ, QQ, AA, RR, QQbar, matrix, polygen, vector,\
                      free_module_element
-from sage.structure.element import get_coercion_model
+from sage.structure.element import get_coercion_model, Vector
 from sage.structure.coerce import py_scalar_parent
 cm = get_coercion_model()
 from sage.structure.element import Element
@@ -1916,7 +1916,7 @@ class EquiangularPolygons:
         angles = self._angles
         if integral:
             D = lcm([a.denominator() for a in self._angles])
-            angles = [D * a for a in self._angles]
+            angles = [(D * a).numerator() for a in self._angles]
         return angles
 
     def __repr__(self):
@@ -1965,6 +1965,9 @@ class EquiangularPolygons:
         r"""
         Return the polytope parametrizing the admissible length data.
 
+        Be careful that even though the lengths are admissible, they may not
+        define a polygon without intersection.
+
         EXAMPLES::
 
             sage: from flatsurf import EquiangularPolygons
@@ -1982,6 +1985,16 @@ class EquiangularPolygons:
 
         from sage.geometry.polyhedron.constructor import Polyhedron
         return Polyhedron(eqns=eqns, ieqs=ieqs, base_ring=self._base_ring)
+
+    def an_element(self):
+        r"""
+        EXAMPLES::
+
+            sage: from flatsurf import EquiangularPolygons
+            sage: EquiangularPolygons(4, 3, 4, 4, 3, 4).an_element()
+            Polygon: (0, 0), (2, 0), (2.284629676546571?, 1.979642883761866?), (0.7720837808745704?, 3.725213899997057?), (-1.227916219125430?, 3.725213899997057?), (-1.512545895672000?, 1.745571016235191?)
+        """
+        return self(sum(r.vector() for r in self.lengths_polytope().rays()))
 
     def __call__(self, *lengths, **kwds):
         r"""
@@ -2004,7 +2017,7 @@ class EquiangularPolygons:
         number_field = kwds.pop('number_field', False)
         if kwds:
             raise ValueError("invalid keyword {!r}".format(next(iter(kwds))))
-        if len(lengths) == 1 and isinstance(lengths[0], (tuple, list)):
+        if len(lengths) == 1 and isinstance(lengths[0], (tuple, list, Vector)):
             lengths = lengths[0]
 
         n = len(self._angles)
@@ -2050,6 +2063,120 @@ class EquiangularPolygons:
             return ConvexPolygons(base_ring)(vertices=vertices)
         else:
             return Polygons(base_ring)(vertices=vertices)
+
+    def billiard_unfolding_stratum(self, marked_points=False):
+        r"""
+        Return the stratum of quadratic or Abelian differential obtained by
+        unfolding a billiard in a polygon of this equiangular family.
+
+        EXAMPLES::
+
+            sage: from flatsurf import EquiangularPolygons, similarity_surfaces
+
+            sage: EquiangularPolygons(1, 2, 5).billiard_unfolding_stratum()
+            Q_1(3, -1^3)
+
+            sage: E = EquiangularPolygons(1, 3, 1, 7)
+            sage: E.billiard_unfolding_stratum()
+            Q_1(5, -1^5)
+            sage: P = E.an_element()
+            sage: similarity_surfaces.billiard(P).minimal_cover("half-translation").stratum()
+            Q_1(5, -1^5)
+
+            sage: E = EquiangularPolygons(1, 3, 5, 7)
+            sage: E.billiard_unfolding_stratum()
+            Q_3(5, 3, 1, -1)
+            sage: P = E.an_element()
+            sage: similarity_surfaces.billiard(P).minimal_cover("half-translation").stratum()
+            Q_3(5, 3, 1, -1)
+
+            sage: EquiangularPolygons(1, 2, 8).billiard_unfolding_stratum()
+            H_5(7, 1)
+            sage: EquiangularPolygons(1, 2, 8).billiard_unfolding_stratum(marked_points=True)
+            H_5(7, 1, 0)
+        """
+        angles = [2*a for a in self.angles()]
+        N = lcm([x.denominator() for x in angles])
+        if N % 2:
+            N *= 2
+
+        quad = False  # whether the covering is a quadratic differential
+        cov_angles = {}
+        for x in angles:
+            y = x.numerator()
+            d = x.denominator()
+            if d%2:
+                y *= 2
+                d *= 2
+            assert N % d == 0
+            quad = quad or (y % 2 == 1)
+            if y != 2 or marked_points:
+                mult = N // d
+                if y in cov_angles:
+                    cov_angles[y] += mult
+                else:
+                    cov_angles[y] = mult
+
+        if quad:
+            from surface_dynamics import QuadraticStratum
+            return QuadraticStratum({y-2: mult for y,mult in cov_angles.items()})
+        else:
+            from surface_dynamics import AbelianStratum
+            if not cov_angles:
+                return AbelianStratum([0])
+            else:
+                return AbelianStratum({(y-2)//2: mult for y,mult in cov_angles.items()})
+
+    def billiard_unfolding_stratum_dimension(self, marked_points=False):
+        r"""
+        Return the dimension of the stratum of quadratic or Abelian differential
+        obtained by unfolding a billiard in a polygon of this equiangular family.
+
+        EXAMPLES::
+
+            sage: from flatsurf import EquiangularPolygons
+
+            sage: EquiangularPolygons(1, 2, 5).billiard_unfolding_stratum_dimension()
+            4
+            sage: EquiangularPolygons(1, 3, 5).billiard_unfolding_stratum_dimension()
+            6
+            sage: EquiangularPolygons(1, 3, 1, 7).billiard_unfolding_stratum_dimension()
+            6
+            sage: EquiangularPolygons(1, 3, 5, 7).billiard_unfolding_stratum_dimension()
+            8
+
+            sage: E = EquiangularPolygons(1, 2, 8)
+            sage: E.billiard_unfolding_stratum_dimension()
+            11
+            sage: E.billiard_unfolding_stratum().dimension()
+            11
+            sage: E.billiard_unfolding_stratum_dimension(marked_points=True)
+            12
+            sage: E.billiard_unfolding_stratum(marked_points=True).dimension()
+            12
+        """
+        angles = [2*a for a in self.angles()]
+        N = lcm([x.denominator() for x in angles])
+        if N % 2:
+            N *= 2
+
+        quad = False  # whether the covering is a quadratic differential
+        chi = 0       # 4g-4
+        s = 0         # number of vertices
+        for x in angles:
+            d = x.denominator()
+            y = x.numerator()
+            if d%2:
+                y *= 2
+                d *= 2
+            quad = quad or (y % 2 == 1)
+            if y != 2 or marked_points:
+                mult = N // d
+                s += mult
+                chi += mult * (y - 2)
+
+        g = chi//4 + 1
+        return (2*g + s - 2 if quad else 2*g + s - 1)
 
 class PolygonsConstructor:
     def square(self, side=1, **kwds):
