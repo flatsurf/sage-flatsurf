@@ -1986,7 +1986,7 @@ class EquiangularPolygons:
         from sage.geometry.polyhedron.constructor import Polyhedron
         return Polyhedron(eqns=eqns, ieqs=ieqs, base_ring=self._base_ring)
 
-    def an_element(self):
+    def an_element(self, *args, **kwds):
         r"""
         EXAMPLES::
 
@@ -1994,7 +1994,7 @@ class EquiangularPolygons:
             sage: EquiangularPolygons(4, 3, 4, 4, 3, 4).an_element()
             Polygon: (0, 0), (2, 0), (2.284629676546571?, 1.979642883761866?), (0.7720837808745704?, 3.725213899997057?), (-1.227916219125430?, 3.725213899997057?), (-1.512545895672000?, 1.745571016235191?)
         """
-        return self(sum(r.vector() for r in self.lengths_polytope().rays()))
+        return self(sum(r.vector() for r in self.lengths_polytope().rays()), *args, **kwds)
 
     def __call__(self, *lengths, **kwds):
         r"""
@@ -2064,85 +2064,218 @@ class EquiangularPolygons:
         else:
             return Polygons(base_ring)(vertices=vertices)
 
-    def billiard_unfolding_stratum(self, marked_points=False):
+    def billiard_unfolding_angles(self, cover_type="translation"):
         r"""
-        Return the stratum of quadratic or Abelian differential obtained by
-        unfolding a billiard in a polygon of this equiangular family.
+        Return the angles of the unfolding rational, half-translation or translation surface.
 
-        EXAMPLES::
+        INPUT:
 
-            sage: from flatsurf import EquiangularPolygons, similarity_surfaces
-
-            sage: EquiangularPolygons(1, 2, 5).billiard_unfolding_stratum()
-            Q_1(3, -1^3)
-
-            sage: E = EquiangularPolygons(1, 3, 1, 7)
-            sage: E.billiard_unfolding_stratum()
-            Q_1(5, -1^5)
-            sage: P = E.an_element()
-            sage: similarity_surfaces.billiard(P).minimal_cover("half-translation").stratum()
-            Q_1(5, -1^5)
-
-            sage: E = EquiangularPolygons(1, 3, 5, 7)
-            sage: E.billiard_unfolding_stratum()
-            Q_3(5, 3, 1, -1)
-            sage: P = E.an_element()
-            sage: similarity_surfaces.billiard(P).minimal_cover("half-translation").stratum()
-            Q_3(5, 3, 1, -1)
-
-            sage: EquiangularPolygons(1, 2, 8).billiard_unfolding_stratum()
-            H_5(7, 1)
-            sage: EquiangularPolygons(1, 2, 8).billiard_unfolding_stratum(marked_points=True)
-            H_5(7, 1, 0)
-        """
-        angles = [2*a for a in self.angles()]
-        N = lcm([x.denominator() for x in angles])
-        if N % 2:
-            N *= 2
-
-        quad = False  # whether the covering is a quadratic differential
-        cov_angles = {}
-        for x in angles:
-            y = x.numerator()
-            d = x.denominator()
-            if d%2:
-                y *= 2
-                d *= 2
-            assert N % d == 0
-            quad = quad or (y % 2 == 1)
-            if y != 2 or marked_points:
-                mult = N // d
-                if y in cov_angles:
-                    cov_angles[y] += mult
-                else:
-                    cov_angles[y] = mult
-
-        if quad:
-            from surface_dynamics import QuadraticStratum
-            return QuadraticStratum({y-2: mult for y,mult in cov_angles.items()})
-        else:
-            from surface_dynamics import AbelianStratum
-            if not cov_angles:
-                return AbelianStratum([0])
-            else:
-                return AbelianStratum({(y-2)//2: mult for y,mult in cov_angles.items()})
-
-    def billiard_unfolding_stratum_dimension(self, marked_points=False):
-        r"""
-        Return the dimension of the stratum of quadratic or Abelian differential
-        obtained by unfolding a billiard in a polygon of this equiangular family.
+        - ``cover_type`` (optional, default ``"translation"``) - either ``"rational"``,
+          ``"half-translation"`` or ``"translation"``
 
         EXAMPLES::
 
             sage: from flatsurf import EquiangularPolygons
 
-            sage: EquiangularPolygons(1, 2, 5).billiard_unfolding_stratum_dimension()
+            sage: E = EquiangularPolygons(1, 2, 5)
+            sage: E.billiard_unfolding_angles(cover_type="rational")
+            {1/8: 1, 1/4: 1, 5/8: 1}
+            sage: (1/8 - 1) + (1/4 - 1) + (5/8 - 1)  # Euler characteristic (of the sphere)
+            -2
+            sage: E.billiard_unfolding_angles(cover_type="half-translation")
+            {1/2: 3, 5/2: 1}
+            sage: E.billiard_unfolding_angles(cover_type="translation")
+            {1: 3, 5: 1}
+
+            sage: E = EquiangularPolygons(1, 3, 1, 7)
+            sage: E.billiard_unfolding_angles(cover_type="rational")
+            {1/6: 2, 1/2: 1, 7/6: 1}
+            sage: 2 * (1/6 - 1) + (1/2 - 1) + (7/6 - 1) # Euler characteristic
+            -2
+            sage: E.billiard_unfolding_angles(cover_type="half-translation")
+            {1/2: 5, 7/2: 1}
+            sage: E.billiard_unfolding_angles(cover_type="translation")
+            {1: 5, 7: 1}
+
+            sage: E = EquiangularPolygons(1, 3, 5, 7)
+            sage: E.billiard_unfolding_angles(cover_type="rational")
+            {1/8: 1, 3/8: 1, 5/8: 1, 7/8: 1}
+            sage: (1/8 - 1) + (3/8 - 1) + (5/8 - 1) + (7/8 - 1) # Euler characteristic
+            -2
+            sage: E.billiard_unfolding_angles(cover_type="half-translation")
+            {1/2: 1, 3/2: 1, 5/2: 1, 7/2: 1}
+            sage: E.billiard_unfolding_angles(cover_type="translation")
+             {1: 1, 3: 1, 5: 1, 7: 1}
+
+            sage: E = EquiangularPolygons(1, 2, 8)
+            sage: E.billiard_unfolding_angles(cover_type="rational")
+            {1/11: 1, 2/11: 1, 8/11: 1}
+            sage: (1/11 - 1) + (2/11 - 1) + (8/11 - 1) # Euler characteristic
+            -2
+            sage: E.billiard_unfolding_angles(cover_type="half-translation")
+            {1: 1, 2: 1, 8: 1}
+            sage: E.billiard_unfolding_angles(cover_type="translation")
+            {1: 1, 2: 1, 8: 1}
+        """
+        rat_angles = {}
+        for a in self.angles():
+            if 2*a in rat_angles:
+                rat_angles[2*a] += 1
+            else:
+                rat_angles[2*a] = 1
+        if cover_type == "rational":
+            return rat_angles
+
+        N = lcm([x.denominator() for x in rat_angles])
+        if N % 2:
+            N *= 2
+
+        cov_angles = {}
+        for x, mult in rat_angles.items():
+            y = x.numerator()
+            d = x.denominator()
+            if d%2:
+                y *= 2
+                d *= 2
+            y = y/2
+            if y in cov_angles:
+                cov_angles[y] += mult * N//d
+            else:
+                cov_angles[y] = mult * N//d
+
+        if cover_type == "translation" and any(y.denominator() == 2 for y in cov_angles):
+            return {y.numerator(): 2//y.denominator() * mult for y,mult in cov_angles.items()}
+        elif cover_type == "half-translation" or cover_type == "translation":
+            return cov_angles
+        else:
+            raise ValueError("unknown 'cover_type' {!r}".format(cover_type))
+
+    def billiard_unfolding_stratum(self, cover_type="translation", marked_points=False):
+        r"""
+        Return the stratum of quadratic or Abelian differential obtained by
+        unfolding a billiard in a polygon of this equiangular family.
+
+        INPUT:
+
+        - ``cover_type`` (optional, default ``"translation"``) - either ``"rational"``,
+          ``"half-translation"`` or ``"translation"``
+
+        - ``marked_poins`` (optional, default ``False``) - whether the stratum should
+          have regular marked points
+
+        EXAMPLES::
+
+            sage: from flatsurf import EquiangularPolygons, similarity_surfaces
+
+            sage: E = EquiangularPolygons(1, 2, 5)
+            sage: E.billiard_unfolding_stratum("half-translation")
+            Q_1(3, -1^3)
+            sage: E.billiard_unfolding_stratum("translation")
+            H_3(4)
+            sage: E.billiard_unfolding_stratum("half-translation", True)
+            Q_1(3, -1^3)
+            sage: E.billiard_unfolding_stratum("translation", True)
+            H_3(4, 0^3)
+
+            sage: E = EquiangularPolygons(1, 3, 1, 7)
+            sage: E.billiard_unfolding_stratum("half-translation")
+            Q_1(5, -1^5)
+            sage: E.billiard_unfolding_stratum("translation")
+            H_4(6)
+            sage: E.billiard_unfolding_stratum("half-translation", True)
+            Q_1(5, -1^5)
+            sage: E.billiard_unfolding_stratum("translation", True)
+            H_4(6, 0^5)
+
+            sage: P = E.an_element()
+            sage: S = similarity_surfaces.billiard(P)
+            sage: S.minimal_cover("half-translation").stratum()
+            Q_1(5, -1^5)
+            sage: S.minimal_cover("translation").stratum()
+            H_4(6, 0^5)
+
+            sage: E = EquiangularPolygons(1, 3, 5, 7)
+            sage: E.billiard_unfolding_stratum("half-translation")
+            Q_3(5, 3, 1, -1)
+            sage: E.billiard_unfolding_stratum("translation")
+            H_7(6, 4, 2)
+
+            sage: P = E.an_element()
+            sage: S = similarity_surfaces.billiard(P)
+            sage: S.minimal_cover("half-translation").stratum()
+            Q_3(5, 3, 1, -1)
+            sage: S.minimal_cover("translation").stratum()
+            H_7(6, 4, 2, 0)
+
+            sage: E = EquiangularPolygons(1, 2, 8)
+            sage: E.billiard_unfolding_stratum("half-translation")
+            H_5(7, 1)
+            sage: E.billiard_unfolding_stratum("translation")
+            H_5(7, 1)
+
+            sage: E.billiard_unfolding_stratum("half-translation", True)
+            H_5(7, 1, 0)
+            sage: E.billiard_unfolding_stratum("translation", True)
+            H_5(7, 1, 0)
+        """
+        angles = self.billiard_unfolding_angles(cover_type)
+        if all(a.is_integer() for a in angles):
+            from surface_dynamics import AbelianStratum
+            if not marked_points and len(angles) == 1 and 1 in angles:
+                return AbelianStratum([0])
+            else:
+                return AbelianStratum({ZZ(a-1): mult for a,mult in angles.items() if marked_points or a != 1})
+        else:
+            from surface_dynamics import QuadraticStratum
+            return QuadraticStratum({ZZ(2*(a-1)): mult for a,mult in angles.items() if marked_points or a != 1})
+
+    def billiard_unfolding_stratum_dimension(self, cover_type="translation", marked_points=False):
+        r"""
+        Return the dimension of the stratum of quadratic or Abelian differential
+        obtained by unfolding a billiard in a polygon of this equiangular family.
+
+        INPUT:
+
+        - ``cover_type`` (optional, default ``"translation"``) - either ``"rational"``,
+          ``"half-translation"`` or ``"translation"``
+
+        - ``marked_poins`` (optional, default ``False``) - whether the stratum should
+          have marked regular points
+
+        EXAMPLES::
+
+            sage: from flatsurf import EquiangularPolygons
+
+            sage: E = EquiangularPolygons(1, 2, 5)
+            sage: E.billiard_unfolding_stratum_dimension("half-translation")
             4
-            sage: EquiangularPolygons(1, 3, 5).billiard_unfolding_stratum_dimension()
+            sage: E.billiard_unfolding_stratum("half-translation").dimension()
+            4
+            sage: E.billiard_unfolding_stratum_dimension(cover_type="translation")
             6
-            sage: EquiangularPolygons(1, 3, 1, 7).billiard_unfolding_stratum_dimension()
+            sage: E.billiard_unfolding_stratum("translation").dimension()
             6
-            sage: EquiangularPolygons(1, 3, 5, 7).billiard_unfolding_stratum_dimension()
+            sage: E.billiard_unfolding_stratum_dimension("translation", True)
+            9
+            sage: E.billiard_unfolding_stratum("translation", True).dimension()
+            9
+
+            sage: E = EquiangularPolygons(1, 3, 5)
+            sage: E.billiard_unfolding_stratum_dimension("half-translation")
+            6
+            sage: E.billiard_unfolding_stratum("half-translation").dimension()
+            6
+            sage: E.billiard_unfolding_stratum_dimension("translation")
+            6
+            sage: E.billiard_unfolding_stratum("translation").dimension()
+            6
+
+            sage: E = EquiangularPolygons(1, 3, 1, 7)
+            sage: E.billiard_unfolding_stratum_dimension("half-translation")
+            6
+
+            sage: E = EquiangularPolygons(1, 3, 5, 7)
+            sage: E.billiard_unfolding_stratum_dimension("half-translation")
             8
 
             sage: E = EquiangularPolygons(1, 2, 8)
@@ -2155,28 +2288,26 @@ class EquiangularPolygons:
             sage: E.billiard_unfolding_stratum(marked_points=True).dimension()
             12
         """
-        angles = [2*a for a in self.angles()]
-        N = lcm([x.denominator() for x in angles])
-        if N % 2:
-            N *= 2
+        if cover_type == "rational":
+            raise NotImplementedError
+        if cover_type != "translation" and cover_type != "half-translation":
+            raise ValueError
 
-        quad = False  # whether the covering is a quadratic differential
-        chi = 0       # 4g-4
-        s = 0         # number of vertices
-        for x in angles:
-            d = x.denominator()
-            y = x.numerator()
-            if d%2:
-                y *= 2
-                d *= 2
-            quad = quad or (y % 2 == 1)
-            if y != 2 or marked_points:
-                mult = N // d
-                s += mult
-                chi += mult * (y - 2)
+        angles = self.billiard_unfolding_angles(cover_type)
+        if not marked_points:
+            if 1 in angles:
+                del angles[1]
+            if not angles:
+                angles[1] = 1
 
-        g = chi//4 + 1
-        return (2*g + s - 2 if quad else 2*g + s - 1)
+        abelian = all(a.is_integer() for a in angles)
+        s = sum(angles.values())
+        chi = sum(mult * (a - 1) for a, mult in angles.items())
+        assert chi.denominator() == 1
+        chi = ZZ(chi)
+        assert chi%2 == 0
+        g = chi//2 + 1
+        return (2*g + s - 1 if abelian else 2*g + s - 2)
 
 class PolygonsConstructor:
     def square(self, side=1, **kwds):
