@@ -1988,6 +1988,10 @@ class EquiangularPolygons:
 
     def an_element(self, *args, **kwds):
         r"""
+        Return a polygon in this family.
+
+        Note that this might fail due to intersection.
+
         EXAMPLES::
 
             sage: from flatsurf import EquiangularPolygons
@@ -2105,7 +2109,7 @@ class EquiangularPolygons:
             sage: E.billiard_unfolding_angles(cover_type="half-translation")
             {1/2: 1, 3/2: 1, 5/2: 1, 7/2: 1}
             sage: E.billiard_unfolding_angles(cover_type="translation")
-             {1: 1, 3: 1, 5: 1, 7: 1}
+            {1: 1, 3: 1, 5: 1, 7: 1}
 
             sage: E = EquiangularPolygons(1, 2, 8)
             sage: E.billiard_unfolding_angles(cover_type="rational")
@@ -2135,16 +2139,23 @@ class EquiangularPolygons:
             y = x.numerator()
             d = x.denominator()
             if d%2:
-                y *= 2
                 d *= 2
-            y = y/2
+            else:
+                y = y/2
+            assert N % d == 0
             if y in cov_angles:
                 cov_angles[y] += mult * N//d
             else:
                 cov_angles[y] = mult * N//d
 
         if cover_type == "translation" and any(y.denominator() == 2 for y in cov_angles):
-            return {y.numerator(): 2//y.denominator() * mult for y,mult in cov_angles.items()}
+            covcov_angles = {}
+            for y,mult in cov_angles.items():
+                yy = y.numerator()
+                if yy not in covcov_angles:
+                    covcov_angles[yy] = 0
+                covcov_angles[yy] += 2//y.denominator() * mult
+            return covcov_angles
         elif cover_type == "half-translation" or cover_type == "translation":
             return cov_angles
         else:
@@ -2217,6 +2228,18 @@ class EquiangularPolygons:
             H_5(7, 1, 0)
             sage: E.billiard_unfolding_stratum("translation", True)
             H_5(7, 1, 0)
+
+            sage: E = EquiangularPolygons(9, 6, 3, 2)
+            sage: p = E.an_element()
+            sage: B = similarity_surfaces.billiard(p)
+            sage: B.minimal_cover("half-translation").stratum()
+            Q_4(7, 4, 1, 0)
+            sage: E.billiard_unfolding_stratum("half-translation", True)
+            Q_4(7, 4, 1, 0)
+            sage: B.minimal_cover("translation").stratum()
+            H_8(8, 2^3, 0^2)
+            sage: E.billiard_unfolding_stratum("translation", True)
+            H_8(8, 2^3, 0^2)
         """
         angles = self.billiard_unfolding_angles(cover_type)
         if all(a.is_integer() for a in angles):
