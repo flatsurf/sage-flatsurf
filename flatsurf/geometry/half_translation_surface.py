@@ -13,6 +13,7 @@ from six.moves import range, map, filter, zip
 
 import itertools
 
+from .polygon import wedge_product
 from .surface import Surface
 from .half_dilation_surface import HalfDilationSurface
 from .rational_cone_surface import RationalConeSurface
@@ -217,6 +218,16 @@ class HalfTranslationSurface(HalfDilationSurface, RationalConeSurface):
             sage: S.base_ring()
             Number Field in a with defining polynomial y^6 - 6*y^4 + 9*y^2 - 3 with a = -0.6840402866513375?
             sage: TestSuite(U).run()
+
+            sage: from flatsurf import *
+            sage: E = EquiangularPolygons(1, 3, 1, 1)
+            sage: P = E.lengths_polytope()
+            sage: p = E(1, 1, 2, 2)
+            sage: B = similarity_surfaces.billiard(p)
+            sage: B.minimal_cover("translation")
+            sage: S = B.minimal_cover("translation")
+            sage: S, _ = S.normalized_coordinates()
+            TranslationSurface built from 6 polygons
         """
         if not self.is_finite():
             raise ValueError
@@ -227,6 +238,11 @@ class HalfTranslationSurface(HalfDilationSurface, RationalConeSurface):
         p = self.polygon(lab)
         u = p.edge(1)
         v = -p.edge(0)
+        i = 1
+        while wedge_product(u, v) == 0:
+            i += 1
+            u = p.edge(i)
+            v = -p.edge(i-1)
         M = matrix(2, [u,v]).transpose().inverse()
         assert M.det() > 0
         hols = []
