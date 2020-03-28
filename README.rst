@@ -22,6 +22,15 @@ the package's mathematical abilities.
 The package is currently in active development. If you would like assistance
 in using it, please contact the authors.
 
+Links
+-----
+
+* documentation: https://www.labri.fr/perso/vdelecro/sage-flatsurf/
+
+* Python Package Index page: https://pypi.org/project/sage-flatsurf/
+
+* development website: https://github.com/videlec/sage-flatsurf/
+
 Installing the dependency
 -------------------------
 
