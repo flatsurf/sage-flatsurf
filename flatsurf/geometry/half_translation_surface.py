@@ -219,14 +219,15 @@ class HalfTranslationSurface(HalfDilationSurface, RationalConeSurface):
             Number Field in a with defining polynomial y^6 - 6*y^4 + 9*y^2 - 3 with a = -0.6840402866513375?
             sage: TestSuite(U).run()
 
-            sage: from flatsurf import *
+            sage: from flatsurf import EquiangularPolygons
             sage: E = EquiangularPolygons(1, 3, 1, 1)
-            sage: P = E.lengths_polytope()
             sage: p = E(1, 1, 2, 2)
             sage: B = similarity_surfaces.billiard(p)
             sage: B.minimal_cover("translation")
+            TranslationSurface built from 6 polygons
             sage: S = B.minimal_cover("translation")
             sage: S, _ = S.normalized_coordinates()
+            sage: S
             TranslationSurface built from 6 polygons
         """
         if not self.is_finite():
