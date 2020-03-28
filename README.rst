@@ -29,7 +29,7 @@ Links
 
 * Python Package Index page: https://pypi.org/project/sage-flatsurf/
 
-* development website: https://github.com/videlec/sage-flatsurf/
+* development website: https://github.com/flatsurf/sage-flatsurf/
 
 Installing the dependency
 -------------------------
@@ -98,7 +98,7 @@ files in the module just do::
     $ sage -t --force-lib flatsurf
 
 Tests on the master branch are automatically run through
-`Travis-CI <https://travis-ci.org/videlec/sage-flatsurf?branch=master>`_.
+`Travis-CI <https://travis-ci.org/github/flatsurf/sage-flatsurf>`_
 
 Related projects
 ----------------
