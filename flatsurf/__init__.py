@@ -1,4 +1,9 @@
-from __future__ import absolute_import, print_function, division
+r"""
+sage-flatsurf: Sagemath module for similitude surfaces
+"""
+from __future__ import absolute_import, print_function
+
+from .version import version as __version__
 
 from .geometry.polygon import polygons, EquiangularPolygons, Polygons, ConvexPolygons
 
@@ -15,3 +20,5 @@ from .geometry.cone_surface import ConeSurface
 from .geometry.rational_cone_surface import RationalConeSurface
 from .geometry.half_translation_surface import HalfTranslationSurface
 from .geometry.translation_surface import TranslationSurface
+
+del absolute_import, print_function

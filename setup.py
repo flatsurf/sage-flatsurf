@@ -3,13 +3,15 @@ from distutils.core import setup
 with open('README.rst') as f:
     long_description = f.read()
 
+from flatsurf.version import version
+
 setup(name='sage_flatsurf',
     author='Vincent Delecroix and W. Patrick Hooper',
     author_email = 'vincent.delecroix@u-bordeaux.fr',
     description="flat surfaces",
     long_description=long_description,
     long_description_content_type="text/x-rst",
-    version='0.1.1b',
+    version=version,
     url='https://github.com/videlec/sage-flatsurf',
     license='GNU General Public License, version 2',
     packages = ['flatsurf', 'flatsurf.geometry', 'flatsurf.graphical'],
