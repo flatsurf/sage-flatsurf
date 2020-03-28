@@ -22,9 +22,6 @@ the package's mathematical abilities.
 The package is currently in active development. If you would like assistance
 in using it, please contact the authors.
 
-There is also a related `surface-dynamics`_ package, currently separate
-but the aim is to get them merged.
-
 Installing the dependency
 -------------------------
 
@@ -94,6 +91,20 @@ files in the module just do::
 Tests on the master branch are automatically run through
 `Travis-CI <https://travis-ci.org/videlec/sage-flatsurf?branch=master>`_.
 
+Related projects
+----------------
+
+There are several related projects
+
+* `surface-dynamics`_ (SageMath module): more focused on dynamics (interval
+  exchanges)
+
+* `veerer`_ (Python module): specific to handle specific triangulation of
+  half-translation surfaces
+
+* `flatsurf`_: (C++ library with Python interface) computing GL(2,R)-orbit
+  closure of translation surfaces
+
 Primary Contributors
 --------------------
 
@@ -117,3 +128,5 @@ Acknowledgements
 
 .. _SageMath: https://www.sagemath.org
 .. _surface-dynamics: https://gitlab.com/videlec/surface_dynamics
+.. _veerer: https://gitlab.com/videlec/veerer/
+.. _flatsurf: https://github.com/flatsurf/
