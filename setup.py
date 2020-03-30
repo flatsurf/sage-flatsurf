@@ -1,9 +1,12 @@
+import os
 from distutils.core import setup
 
 with open('README.rst') as f:
     long_description = f.read()
 
-from flatsurf.version import version
+version_file = os.path.join(os.path.dirname(__file__), 'flatsurf', 'version.py')
+with open(version_file) as f:
+    exec(f.read())
 
 setup(name='sage_flatsurf',
     author='Vincent Delecroix and W. Patrick Hooper',
