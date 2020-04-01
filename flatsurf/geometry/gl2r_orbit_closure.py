@@ -390,10 +390,8 @@ class GL2ROrbitClosure:
 
         surface = self._pysurface
         self.half_edge_to_face = {}
-        self.half_edge_to_edge = {}
         for e in surface.edges():
             h1 = e.positive()
-            self.half_edge_to_edge[h1] = e
             if h1 not in self.half_edge_to_face:
                 h2 = surface.nextInFace(h1)
                 h3 = surface.nextInFace(h2)
@@ -403,7 +401,6 @@ class GL2ROrbitClosure:
                 self.half_edge_to_face[h3] = h
 
             h1 = e.negative()
-            self.half_edge_to_edge[h1] = e
             if h1 not in self.half_edge_to_face:
                 h2 = surface.nextInFace(h1)
                 h3 = surface.nextInFace(h2)
@@ -629,9 +626,9 @@ class GL2ROrbitClosure:
             s2 = -1 if i2%2 else 1
             i3 = f3.index()
             s3 = -1 if i3%2 else 1
-            i1 = self.half_edge_to_edge[f1].index()
-            i2 = self.half_edge_to_edge[f2].index()
-            i3 = self.half_edge_to_edge[f3].index()
+            i1 = f1.edge().index()
+            i2 = f2.edge().index()
+            i3 = f3.edge().index()
             proj[i1] = -s1*(s2*proj[i2] + s3*proj[i3])
             for j in range(n):
                 assert proj[j,i1] == 0
@@ -738,9 +735,9 @@ class GL2ROrbitClosure:
             s2 = -1 if i2%2 else 1
             i3 = f3.index()
             s3 = -1 if i3%2 else 1
-            i1 = self.half_edge_to_edge[f1].index()
-            i2 = self.half_edge_to_edge[f2].index()
-            i3 = self.half_edge_to_edge[f3].index()
+            i1 = f1.edge().index()
+            i2 = f2.edge().index()
+            i3 = f3.edge().index()
             v = [0] * n
             v[i1] = 1
             v[i2] = s1 * s2
