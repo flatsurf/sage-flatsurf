@@ -389,29 +389,9 @@ class GL2ROrbitClosure:
         self._pysurface = to_pyflatsurf(surface)   # underlying libflatsurf surface
 
         surface = self._pysurface
-        self.half_edge_to_face = {}
-        for e in surface.edges():
-            h1 = e.positive()
-            if h1 not in self.half_edge_to_face:
-                h2 = surface.nextInFace(h1)
-                h3 = surface.nextInFace(h2)
-                h = min([h1, h2, h3], key=lambda x: x.index())
-                self.half_edge_to_face[h1] = h
-                self.half_edge_to_face[h2] = h
-                self.half_edge_to_face[h3] = h
-
-            h1 = e.negative()
-            if h1 not in self.half_edge_to_face:
-                h2 = surface.nextInFace(h1)
-                h3 = surface.nextInFace(h2)
-                h = min([h1, h2, h3], key=lambda x: x.index())
-                self.half_edge_to_face[h1] = h
-                self.half_edge_to_face[h2] = h
-                self.half_edge_to_face[h3] = h
-
         # spanning set of edges and projection matrix
         t, m = self._spanning_tree()
-        assert set(t.keys()) == set(self.half_edge_to_face.values())
+        assert set(t.keys()) == set(f[0] for f in self._faces())
         self.spanning_set = []
         v = set(t.values())
         for e in self._pysurface.edges():
@@ -452,6 +432,29 @@ class GL2ROrbitClosure:
         # NOTE: if too slow use echelonize directly
         # self.U.echelonize()
         self.U = self.U.row_space()
+
+    def _half_edge_to_face(self, h):
+        surface = self._pysurface
+        h1 = h
+        h2 = surface.nextInFace(h1)
+        h3 = surface.nextInFace(h2)
+        return min([h1, h2, h3], key=lambda x: x.index())
+
+    def _faces(self):
+        seen = set()
+        faces = []
+        surface = self._pysurface
+        for e in surface.edges():
+            for h1 in [e.positive(), e.negative()]:
+                if h1 in seen:
+                    continue
+                h2 = surface.nextInFace(h1)
+                h3 = surface.nextInFace(h2)
+                faces.append((h1, h2, h3))
+                seen.add(h1)
+                seen.add(h2)
+                seen.add(h3)
+        return faces
 
     def xy_vectors(self):
         n = self._pysurface.edges().size()
@@ -594,7 +597,7 @@ class GL2ROrbitClosure:
         if root is None:
             root = next(iter(self._pysurface.edges())).positive()
 
-        root = self.half_edge_to_face[root]
+        root = self._half_edge_to_face(root)
         t = {root: None} # face -> half edge to take to go to the root
         todo = [root]
         edges = []  # store edges in topological order to perform Gauss reduction
@@ -602,7 +605,7 @@ class GL2ROrbitClosure:
             f = todo.pop()
             for _ in range(3):
                 f1 = -f
-                g = self.half_edge_to_face[f1]
+                g = self._half_edge_to_face(f1)
                 if g not in t:
                     t[g] = f1
                     todo.append(g)
@@ -724,11 +727,7 @@ class GL2ROrbitClosure:
         n = self._pysurface.size()
         V = FreeModule(ZZ, n)
         B = []
-        for f1,F in self.half_edge_to_face.items():
-            if f1 != F:
-                continue
-            f2 = self._pysurface.nextInFace(f1)
-            f3 = self._pysurface.nextInFace(f2)
+        for (f1,f2,f3) in self._faces():
             i1 = f1.index()
             s1 = -1 if i1%2 else 1
             i2 = f2.index()
