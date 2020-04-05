@@ -191,3 +191,53 @@ def subfield_from_elements(self, alpha, name=None, polred=True, threshold=None):
     new_alpha = [K(M.solve_left(elt.vector())) for elt in alpha]
 
     return (K, new_alpha, hom)
+
+
+def is_embedded_subfield(K, L, certificate=False):
+    r"""
+    Return whether there exists a field morphism from ``K`` to ``L`` compatible with
+    the embeddings.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.subfield import is_embedded_subfield
+
+        sage: x = polygen(QQ)
+        sage: y = polygen(QQ, 'y')
+        sage: z = polygen(QQ, 'z')
+        sage: p = x^4 - 4*x^2 + 1
+        sage: emb = AA.polynomial_root(p, RIF(0.5, 0.6))
+        sage: L = NumberField(p, 'a', embedding=emb)
+        sage: K1 = NumberField(y^2 - 2, 'sqrt2', embedding=AA(2)**(1/2))
+        sage: K2 = NumberField(z^2 - 2, 'msqrt2', embedding=-AA(2)**(1/2))
+        sage: is_embedded_subfield(K1, L)
+        True
+        sage: is_embedded_subfield(K1, L, True)
+        (True, Generic morphism:
+           From: Number Field in sqrt2 with defining polynomial y^2 - 2 with sqrt2 = 1.414213562373095?
+           To:   Number Field in a with defining polynomial x^4 - 4*x^2 + 1 with a = 0.5176380902050415?
+           Defn: sqrt2 -> -a^3 + 3*a)
+        sage: is_embedded_subfield(K2, L, True)
+        (True, Generic morphism:
+           From: Number Field in msqrt2 with defining polynomial z^2 - 2 with msqrt2 = -1.414213562373095?
+           To:   Number Field in a with defining polynomial x^4 - 4*x^2 + 1 with a = 0.5176380902050415?
+           Defn: msqrt2 -> a^3 - 3*a)
+        sage: is_embedded_subfield(K1, K2, True)
+        (True, Generic morphism:
+           From: Number Field in sqrt2 with defining polynomial y^2 - 2 with sqrt2 = 1.414213562373095?
+           To:   Number Field in msqrt2 with defining polynomial z^2 - 2 with msqrt2 = -1.414213562373095?
+           Defn: sqrt2 -> -msqrt2)
+    """
+    assert K.coerce_embedding() is not None
+    assert L.coerce_embedding() is not None
+    assert K.coerce_embedding().codomain() == L.coerce_embedding().codomain()
+    pK = K.polynomial()
+    pL = L.polynomial()
+    emb = K.coerce_embedding().gen_image()
+    P = pL.parent()
+    pK = P(pK)
+    phi = L.coerce_embedding()
+    for r in pK.roots(L, multiplicities=False):
+        if phi(r) == emb:
+            return (True, K.hom(L, [r])) if certificate else True
+    return (False, None) if certificate else False
