@@ -44,6 +44,7 @@ Vertex = cppyy.gbl.flatsurf.Vertex
 
 from sage.all import VectorSpace, FreeModule, matrix, identity_matrix, ZZ, QQ, Unknown, vector
 
+from .subfield import subfield_from_elements
 from .polygon import is_between, projectivization
 from .translation_surface import TranslationSurface
 from .pyflatsurf_conversion import to_pyflatsurf
@@ -186,12 +187,13 @@ class Decomposition:
             sc = sc_pos[sc]
             c = sc.chain()
             v = [0] * self.orbit.d
-            for edge in self.orbit._pysurface.edges():
+            for edge in self.orbit._surface.edges():
                 A[i] += ZZ(str(c[edge])) * self.orbit.proj.column(edge.index())
         assert A.det().is_unit()
         return A, sc_index, proj
 
     # TODO: move to C++
+    # see https://github.com/flatsurf/flatsurf/pull/162
     def parabolic(self):
         r"""
         Return whether this decomposition is completely periodic with cylinder with
@@ -369,8 +371,8 @@ class Decomposition:
 
 class GL2ROrbitClosure:
     r"""
-    Approximation to the tangent space of a GL(2,R)-orbit closure of a
-    translation surface.
+    Lower bound approximation to the tangent space of a GL(2,R)-orbit closure of a
+    linear family of translation surfaces.
 
     EXAMPLES::
 
@@ -385,20 +387,21 @@ class GL2ROrbitClosure:
     def __init__(self, surface):
         if not isinstance(surface, TranslationSurface):
             raise ValueError("input must be a translation surface")
-        self._surface = surface
-        self._pysurface = to_pyflatsurf(surface)   # underlying libflatsurf surface
+        self._surface = to_pyflatsurf(surface)   # underlying libflatsurf surface
 
-        surface = self._pysurface
-        # spanning set of edges and projection matrix
+        # We construct a spanning set of edges, that is a subset of the
+        # edges that form a basis of H_1(S, Sigma; Z)
+        # It comes together with a projection matrix
+        surface = self._surface
         t, m = self._spanning_tree()
         assert set(t.keys()) == set(f[0] for f in self._faces())
         self.spanning_set = []
         v = set(t.values())
-        for e in self._pysurface.edges():
+        for e in self._surface.edges():
             if e.positive() not in v and e.negative() not in v:
                 self.spanning_set.append(e)
         self.d = len(self.spanning_set)
-        assert 3*self.d - 3 == self._pysurface.size()
+        assert 3*self.d - 3 == self._surface.size()
         assert m.rank() == self.d
         m = m.transpose()
         # projection matrix from Z^E to H_1(S, Sigma; Z) in the basis
@@ -425,16 +428,35 @@ class GL2ROrbitClosure:
         self.V = VectorSpace(self.V2.sage_base_ring, self.d)
         self.H = matrix(self.V2.sage_base_ring, self.d, 2)
         for i in range(self.d):
-            s = self._pysurface.fromEdge(self.spanning_set[i].positive())
+            s = self._surface.fromEdge(self.spanning_set[i].positive())
             self.H[i] = self.V2sage(self.V2(s))
         self.Hdual = self.Omega * self.H
         self.U = self.H.transpose()
-        # NOTE: if too slow use echelonize directly
-        # self.U.echelonize()
+        # NOTE: if using Sage vector spaces is too slow, we can use more directly the echelonize
+        # method of matrices
         self.U = self.U.row_space()
 
+    def dimension(self):
+        return self.U.dimension()
+
+    def ambient_stratum(self):
+        from surface_dynamics import AbelianStratum
+        surface = self._surface
+        angles = [surface.angle(v) for v in surface.vertices()]
+        return AbelianStratum([a-1 for a in angles])
+
+    def base_ring(self):
+        return self.U.base_ring()
+
+    def field_of_definition(self):
+        r"""
+        Return the field of definition of the current subspace.
+        """
+        L, elts, phi = subfield_from_elements(self.base_ring(), self.U.matrix().list())
+        return L
+
     def _half_edge_to_face(self, h):
-        surface = self._pysurface
+        surface = self._surface
         h1 = h
         h2 = surface.nextInFace(h1)
         h3 = surface.nextInFace(h2)
@@ -443,7 +465,7 @@ class GL2ROrbitClosure:
     def _faces(self):
         seen = set()
         faces = []
-        surface = self._pysurface
+        surface = self._surface
         for e in surface.edges():
             for h1 in [e.positive(), e.negative()]:
                 if h1 in seen:
@@ -456,29 +478,8 @@ class GL2ROrbitClosure:
                 seen.add(h3)
         return faces
 
-    def xy_vectors(self):
-        n = self._pysurface.edges().size()
-        H = matrix(self.V2.sage_base_ring, n, 2)
-        for i,e in enumerate(self._pysurface.edges()):
-            s = self._pysurface.fromEdge(e.positive())
-            H[i] = self.V2sage(self.V2(s))
-        return H.transpose()
-
-    def relative_holonomy_field(self):
-        r"""
-        Compute the smallest field you need to express this surface.
-        """
-        e0 = self._pysurface.edges()[0].positive()
-        e1 = self._pysurface.previousInFace(e0)
-
-        u = self._pysurface.fromEdge(e0)
-        v = self._pysurface.fromEdge(-e1)
-        m = matrix(2, [self.V2sage(self.V2(u)), self.V2sage(self.V2(v))]).transpose().inverse()
-        return m * self.xy_vectors()
-
-
     def __repr__(self):
-        return "GL(2,R)-orbit closure of dimension at least %d in %s (ambient dimension %d)" % (self.U.dimension(), self._surface.stratum(), self.d)
+        return "GL(2,R)-orbit closure of dimension at least %d in %s (ambient dimension %d)" % (self.U.dimension(), self.ambient_stratum(), self.d)
 
     def holonomy(self, v):
         r"""
@@ -504,8 +505,7 @@ class GL2ROrbitClosure:
             sage: u0,u1 = O.U.basis()
             sage: v0 = O.lift(u0)
             sage: v1 = O.lift(u1)
-            sage: span([v0, v1]) == span(O.xy_vectors().rows())
-            True
+            sage: span([v0, v1])
 
         This can be used to deform the surface::
 
@@ -521,7 +521,7 @@ class GL2ROrbitClosure:
             sage: dreal = d1/132 + d2/227 + d3/280 - d4/201
             sage: dimag = d1/141 - d2/233 + d4/230 + d4/250
             sage: d = [O.V2((x,y)).vector for x,y in zip(dreal,dimag)]
-            sage: S2 = O._pysurface + d
+            sage: S2 = O._surface + d
             sage: O2 = GL2ROrbitClosure(S2)
             sage: for d in O2.decompositions(4, 20, sector=((1,0),(5,1))):
             ....:     O2.update_tangent_space_from_flow_decomposition(d)
@@ -530,7 +530,7 @@ class GL2ROrbitClosure:
         # given the values on the spanning edges we reconstruct the unique vector that
         # vanishes on the boundary
         bdry = self.boundaries()
-        n = self._pysurface.edges().size()
+        n = self._surface.edges().size()
         k = len(self.spanning_set)
         assert k + len(bdry) == n + 1
         A = matrix(self.V2.sage_base_ring, n+1, n)
@@ -543,15 +543,15 @@ class GL2ROrbitClosure:
         return A.solve_right(u)
 
     def absolute_homology(self):
-        vert_index = {v:i for i,v in enumerate(self._pysurface.vertices())}
+        vert_index = {v:i for i,v in enumerate(self._surface.vertices())}
         m = len(vert_index)
         if m == 1:
             return self.V
         rows = []
         for e in self.spanning_set:
             r = [0] * m
-            i = vert_index[Vertex.target(e.positive(), self._pysurface)]
-            j = vert_index[Vertex.source(e.positive(), self._pysurface)]
+            i = vert_index[Vertex.target(e.positive(), self._surface)]
+            j = vert_index[Vertex.source(e.positive(), self._surface)]
             if i != j:
                 r[i] = 1
                 r[j] = -1
@@ -595,7 +595,7 @@ class GL2ROrbitClosure:
         - a matrix projection to the basis (modulo the triangle relations)
         """
         if root is None:
-            root = next(iter(self._pysurface.edges())).positive()
+            root = next(iter(self._surface.edges())).positive()
 
         root = self._half_edge_to_face(root)
         t = {root: None} # face -> half edge to take to go to the root
@@ -611,17 +611,17 @@ class GL2ROrbitClosure:
                     todo.append(g)
                     edges.append(f1)
 
-                f = self._pysurface.nextInFace(f)
+                f = self._surface.nextInFace(f)
 
         # gauss reduction
-        n = self._pysurface.size()
+        n = self._surface.size()
         proj = identity_matrix(ZZ, n)
         edges.reverse()
         for f1 in edges:
             v = [0] * n
-            f2 = self._pysurface.nextInFace(f1)
-            f3 = self._pysurface.nextInFace(f2)
-            assert self._pysurface.nextInFace(f3) == f1
+            f2 = self._surface.nextInFace(f1)
+            f3 = self._surface.nextInFace(f2)
+            assert self._surface.nextInFace(f3) == f1
 
             i1 = f1.index()
             s1 = -1 if i1%2 else 1
@@ -653,9 +653,9 @@ class GL2ROrbitClosure:
         while h not in contour_inv:
             contour_inv[h] = len(contour)
             contour.append(h)
-            h = self._pysurface.nextAtVertex(-h)
+            h = self._surface.nextAtVertex(-h)
             while h not in all_edges:
-                h = self._pysurface.nextAtVertex(h)
+                h = self._surface.nextAtVertex(h)
 
         assert len(contour) == len(all_edges)
 
@@ -724,7 +724,7 @@ class GL2ROrbitClosure:
             ....:             for b in O.boundaries():
             ....:                 assert (O.proj * b).is_zero()
         """
-        n = self._pysurface.size()
+        n = self._surface.size()
         V = FreeModule(ZZ, n)
         B = []
         for (f1,f2,f3) in self._faces():
@@ -748,7 +748,7 @@ class GL2ROrbitClosure:
 
     def decomposition(self, v, limit=-1):
         v = self.V2(v)
-        decomposition = pyflatsurf.flatsurf.makeFlowDecomposition(self._pysurface, v.vector)
+        decomposition = pyflatsurf.flatsurf.makeFlowDecomposition(self._surface, v.vector)
         u = self.V2sage(v)
         if limit != 0:
             pyflatsurf.flatsurf.decomposeFlowDecomposition(decomposition, int(limit))
@@ -759,7 +759,7 @@ class GL2ROrbitClosure:
         limit = int(limit)
         if visited is None:
             visited = set()
-        for connection in self._pysurface.saddle_connections(pyflatsurf.flatsurf.Bound(int(bound), 0)):
+        for connection in self._surface.saddle_connections(pyflatsurf.flatsurf.Bound(int(bound), 0)):
             v = connection.vector()
             slope = self.V2sage(self.V2(v))
             if slope[1].is_zero():
@@ -780,7 +780,7 @@ class GL2ROrbitClosure:
         if visited is None:
             visited = set()
         for i in range(bound + 1):
-            for connection in self._pysurface.saddle_connections(flatsurf.Bound(i, 0)):
+            for connection in self._surface.saddle_connections(flatsurf.Bound(i, 0)):
                 v = connection.vector()
                 slope = self.V2sage(self.V2(v))
                 if slope[1].is_zero():
