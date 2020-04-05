@@ -43,7 +43,7 @@ def test_veech_2n_gon(n, bound):
         assert d.parabolic()
 #        assert d.decomposition.cylinder_diagram()[0].stratum() == O.surface.stratum()
         O.update_tangent_space_from_flow_decomposition(d)
-    assert O.U.dimension() == 2
+    assert O.dimension() == O.absolute_dimension() == 2
 
 @pytest.mark.parametrize("n,bound", [(3,4),(5,4),(7,4),(9,4)])
 def test_veech_double_n_gon(n, bound):
@@ -53,6 +53,6 @@ def test_veech_double_n_gon(n, bound):
         assert d.parabolic()
 #        assert d.decomposition.cylinder_diagram()[0].stratum() == O.surface.stratum()
         O.update_tangent_space_from_flow_decomposition(d)
-    assert O.U.dimension() == 2
+    assert O.dimension() == O.absolute_dimension() == 2
 
 if __name__ == '__main__': sys.exit(pytest.main(sys.argv))

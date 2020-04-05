@@ -34,6 +34,10 @@ import itertools
 from sage.all import AA
 from flatsurf import EquiangularPolygons, similarity_surfaces, GL2ROrbitClosure
 
+# TODO: also test field of definition. For that purpose we need to be able to
+# check when two number fields (possibly defined by different polynomials /
+# embeddings) are actually equal.
+
 @pytest.mark.parametrize("a,b,c,d,l1,l2,veech", [
     (1,1,1,7,1,1,True),
     (1,1,1,7,AA(2).sqrt(),1,False),
@@ -53,16 +57,17 @@ def test_rank2_quadrilateral(a, b, c, d, l1, l2, veech):
     S = S.erase_marked_points()
     S, _ = S.normalized_coordinates()
     O = GL2ROrbitClosure(S)
+    assert O.ambient_stratum() == E.billiard_unfolding_stratum(cover_type="translation")
     D = itertools.islice(O.decompositions(9, 100), 50)
     if veech:
         assert S.base_ring().degree() <= 2
         for dec in D:
             O.update_tangent_space_from_flow_decomposition(dec)
             assert dec.parabolic()
-            assert O.U.dimension() == 2, (O.U.dimension(), O.absolute_dimension())
+        assert O.dimension() == O.absolute_dimension() == 2, (O.dimension(), O.absolute_dimension())
     else:
         for dec in D:
             O.update_tangent_space_from_flow_decomposition(dec)
-        assert O.absolute_dimension() == O.U.dimension() == 4, (O.U.dimension(), O.absolute_dimension())
+        assert O.absolute_dimension() == O.dimension() == 4, (O.U.dimension(), O.absolute_dimension())
 
 if __name__ == '__main__': sys.exit(pytest.main(sys.argv))

@@ -29,6 +29,7 @@ import pytest
 
 from sage.all import QQ, AA, NumberField, polygen
 from flatsurf import translation_surfaces, GL2ROrbitClosure
+from surface_dynamics import AbelianStratum
 
 def test_gothic_generic():
     x = polygen(QQ)
@@ -36,9 +37,11 @@ def test_gothic_generic():
     a = K.gen()
     S = translation_surfaces.cathedral(a, a**2)
     O = GL2ROrbitClosure(S)
+    assert O.ambient_stratum() == AbelianStratum(2, 2, 2)
     for d in O.decompositions(4, 50):
         O.update_tangent_space_from_flow_decomposition(d)
-    assert O.U.dimension() == O.absolute_dimension() == 4
+    assert O.dimension() == O.absolute_dimension() == 4
+    assert O.field_of_definition() == QQ
 
 def test_gothic_veech():
     x = polygen(QQ)
@@ -50,10 +53,12 @@ def test_gothic_veech():
     b = -3*x -QQ((3,2)) + 3*y*sqrt2
     S = translation_surfaces.cathedral(a,b)
     O = GL2ROrbitClosure(S)
+    assert O.ambient_stratum() == AbelianStratum(2, 2, 2)
     for d in O.decompositions(4, 50):
         assert d.parabolic()
 #        assert d.decomposition.cylinder_diagram()[0].stratum() == O.surface.stratum()
         O.update_tangent_space_from_flow_decomposition(d)
-    assert O.U.dimension() == 2
+    assert O.dimension() == O.absolute_dimension() == 2
+    assert O.field_of_definition() == O.base_ring()
 
 if __name__ == '__main__': sys.exit(pytest.main(sys.argv))
