@@ -30,6 +30,15 @@ class MinimalTranslationCover(Surface):
         sage: ss.num_polygons()
         8
         sage: TestSuite(ss).run()
+
+    The following is to test that unfolding is reasonably fast on the instances reported
+    in https://github.com/flatsurf/sage-flatsurf/issues/47::
+
+        sage: T = polygons.triangle(2, 13, 26)
+        sage: S = similarity_surfaces.billiard(T, rational=True)
+        sage: alarm(5); S = S.minimal_cover("translation"); cancel_alarm()
+        sage: S
+        TranslationSurface built from 82 polygons
     """
     def __init__(self, similarity_surface):
         if similarity_surface.underlying_surface().is_mutable():
@@ -44,15 +53,16 @@ class MinimalTranslationCover(Surface):
         if not self._ss.is_finite():
             finite = False
         else:
-            try:
-                from flatsurf.geometry.rational_cone_surface import RationalConeSurface
+            from flatsurf.geometry.rational_cone_surface import RationalConeSurface
+            finite = True
+            if not isinstance(self._ss, RationalConeSurface):
                 ss_copy = self._ss.reposition_polygons(relabel=True)
-                rcs = RationalConeSurface(ss_copy)
-                rcs._test_edge_matrix()
-                finite=True
-            except AssertionError:
-                # print("Warning: Could be indicating infinite surface falsely.")
-                finite=False
+                try:
+                    rcs = RationalConeSurface(ss_copy)
+                    rcs._test_edge_matrix()
+                except AssertionError:
+                    # print("Warning: Could be indicating infinite surface falsely.")
+                    finite = False
 
         self._F = self._ss.base_ring()
         base_label=(self._ss.base_label(), self._F.one(), self._F.zero())
@@ -96,6 +106,15 @@ class MinimalHalfTranslationCover(Surface):
         sage: ss.num_polygons()
         4
         sage: TestSuite(ss).run()
+
+    The following is to test that unfolding is reasonably fast on the instances reported
+    in https://github.com/flatsurf/sage-flatsurf/issues/47::
+
+        sage: T = polygons.triangle(2, 13, 26)
+        sage: S = similarity_surfaces.billiard(T, rational=True)
+        sage: alarm(5); S = S.minimal_cover("half-translation"); cancel_alarm()
+        sage: S
+        HalfTranslationSurface built from 82 polygons
     """
     def __init__(self, similarity_surface):
         if similarity_surface.underlying_surface().is_mutable():
@@ -110,15 +129,16 @@ class MinimalHalfTranslationCover(Surface):
         if not self._ss.is_finite():
             finite = False
         else:
-            try:
-                from flatsurf.geometry.rational_cone_surface import RationalConeSurface
+            from flatsurf.geometry.rational_cone_surface import RationalConeSurface
+            finite = True
+            if not isinstance(self._ss, RationalConeSurface):
                 ss_copy = self._ss.reposition_polygons(relabel=True)
-                rcs = RationalConeSurface(ss_copy)
-                rcs._test_edge_matrix()
-                finite=True
-            except AssertionError:
-                # print("Warning: Could be indicating infinite surface falsely.")
-                finite=False
+                try:
+                    rcs = RationalConeSurface(ss_copy)
+                    rcs._test_edge_matrix()
+                except AssertionError:
+                    # print("Warning: Could be indicating infinite surface falsely.")
+                    finite=False
 
         self._F = self._ss.base_ring()
         base_label=(self._ss.base_label(), self._F.one(), self._F.zero())
