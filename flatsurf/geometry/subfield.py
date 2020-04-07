@@ -1,7 +1,8 @@
 r"""
 Various helper for computations in number fields.
 """
-from sage.rings.all import QQ, AA, QQbar, NumberField
+from sage.misc.misc_c import prod
+from sage.rings.all import ZZ, QQ, AA, QQbar, NumberField, polygen
 from sage.structure.element import parent
 from sage.modules.free_module import VectorSpace
 from sage.matrix.constructor import matrix
@@ -251,6 +252,25 @@ def chebyshev_T(n, c):
 
         We use the polynomial as defined in [KosoleffRouillierTran2015] not
         the Sage version which uses a different normalization.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.subfield import chebyshev_T, cos_minpoly
+
+        sage: x = polygen(ZZ)
+
+        sage: chebyshev_T(1, x) - 1 == cos_minpoly(3, x)
+        True
+        sage: chebyshev_T(2, x) - chebyshev_T(1, x) + 1 == cos_minpoly(5, x)
+        True
+        sage: chebyshev_T(3, x) - chebyshev_T(2, x) + chebyshev_T(1, x) - 1 == cos_minpoly(7, x)
+        True
+
+        sage: cos_minpoly(5, x)(chebyshev_T(3, x)) == cos_minpoly(15, x) * cos_minpoly(5, x)
+        True
+        sage: cos_minpoly(3, x)(chebyshev_T(5, x)) == cos_minpoly(15, x) * cos_minpoly(3, x)
+        True
+
     """
     # T_0(x) = 2
     # T_1(x) = x
@@ -263,26 +283,101 @@ def chebyshev_T(n, c):
         T0, T1 = T1, c * T1 - T0
     return T1
 
+def cos_minpoly_odd_prime(p, var):
+    r"""
+    (-1)^k + (-1)^{k-1} T1 + ... + T_k
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.subfield import cos_minpoly_odd_prime
+
+        sage: x = polygen(ZZ)
+
+        sage: cos_minpoly_odd_prime(3, x)
+        x - 1
+        sage: cos_minpoly_odd_prime(5, x)
+        x^2 - x - 1
+        sage: cos_minpoly_odd_prime(7, x)
+        x^3 - x^2 - 2*x + 1
+        sage: cos_minpoly_odd_prime(11, x)
+        x^5 - x^4 - 4*x^3 + 3*x^2 + 3*x - 1
+    """
+    T0 = 2
+    T1 = var
+    k = (p-1)//2
+    s = (-1)**k
+    ans = s * (1 - T1)
+    for i in range(k-1):
+        T0, T1 = T1, var * T1 - T0
+        ans += s * T1
+        s *= -1
+    return ans
+
 def cos_minpoly(n, var='x'):
     r"""
     Return the minimal polynomial of 2 cos pi/n
 
-    .. TODO::
-
-        [KosoleffRouillierTran2015]
+    Done via Kosoleff-Rouillier-Tran 2015 Algorithm 3.
 
     EXAMPLES::
 
         sage: from flatsurf.geometry.subfield import cos_minpoly
+
+        sage: cos_minpoly(1)
+        x + 2
+        sage: cos_minpoly(2)
+        x
         sage: cos_minpoly(3)
         x - 1
+        sage: cos_minpoly(4)
+        x^2 - 2
         sage: cos_minpoly(5)
         x^2 - x - 1
+        sage: cos_minpoly(6)
+        x^2 - 3
         sage: cos_minpoly(8)
         x^4 - 4*x^2 + 2
+        sage: cos_minpoly(9)
+        x^3 - 3*x - 1
+        sage: cos_minpoly(10)
+        x^4 - 5*x^2 + 5
 
-        sage: all(cos_minpoly(n)(2*cos(pi/n)) == 0 for n in range(1,20))
-        True
+        sage: cos_minpoly(90)
+        x^24 - 24*x^22 + 252*x^20 - 1519*x^18 + 5796*x^16 - 14553*x^14 + 24206*x^12 - 26169*x^10 + 17523*x^8 - 6623*x^6 + 1182*x^4 - 72*x^2 + 1
+        sage: cos_minpoly(148)
+        x^72 - 72*x^70 + 2483*x^68 - 54604*x^66 + 860081*x^64 ... - 3511656*x^6 + 77691*x^4 - 684*x^2 + 1
     """
-    z = QQbar.zeta(2*n)
-    return (z + z.conjugate()).minpoly()
+    n = ZZ(n)
+    facs = list(n.factor())
+    if isinstance(var, str):
+        var = polygen(ZZ, var)
+
+    if not facs:
+        # 2 cos (pi) = -2
+        return var + 2
+    if facs[0][0] == 2:  # n is even
+        k = facs[0][1]
+        facs.pop(0)
+    else:
+        k = 0
+
+    if not facs:
+        # 0. n = 2^k
+        # ([KoRoTr2015] Lemma 12)
+        return chebyshev_T(2**(k-1), var)
+
+    # 1. Compute M_{n0} = M_{p1 ... ps}
+    # ([KoRoTr2015] Lemma 14 and Lemma 15)
+    M = cos_minpoly_odd_prime(facs[0][0], var)
+    for i in range(1, len(facs)):
+        p = facs[i][0]
+        M, r = M(chebyshev_T(p, var)).quo_rem(M)
+        assert r.is_zero()
+
+    # 2. Compute M_{2^k p1^{a1} ... ps^{as}}
+    # ([KoRoTr2015] Lemma 12)
+    nn = 2**k * prod(p**(a-1) for p,a in facs)
+    if nn != 1:
+        M = M(chebyshev_T(nn, var))
+
+    return M
