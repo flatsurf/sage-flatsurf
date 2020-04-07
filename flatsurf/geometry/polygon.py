@@ -354,17 +354,42 @@ def is_between(e0, e1, f):
         # - f[0] * e1[1] + e1[0] * f[1] > 0
         return e0[1] * f[0] <= e0[0] * f[1] or e1[0] * f[1] <= e1[1] * f[0]
 
-def projectivization(x, y):
+def projectivization(x, y, signed=True, denominator=True):
+    r"""
+    TESTS::
+
+        sage: from flatsurf.geometry.polygon import projectivization
+
+        sage: projectivization(2/3, -3/5, signed=True, denominator=True)
+        (10, -9)
+        sage: projectivization(2/3, -3/5, signed=False, denominator=True)
+        (-10, 9)
+        sage: projectivization(2/3, -3/5, signed=True, denominator=False)
+        (10/9, -1)
+        sage: projectivization(2/3, -3/5, signed=False, denominator=False)
+        (-10/9, 1)
+
+        sage: projectivization(-1/2, 0, signed=True, denominator=True)
+        (-1, 0)
+        sage: projectivization(-1/2, 0, signed=False, denominator=True)
+        (1, 0)
+        sage: projectivization(-1/2, 0, signed=True, denominator=False)
+        (-1, 0)
+        sage: projectivization(-1/2, 0, signed=False, denominator=False)
+        (1, 0)
+    """
     if y:
         z = x / y
-        d = z.denominator()
-        if y < 0:
+        if denominator:
+            d = z.denominator()
+        else:
+            d = 1
+        if signed and y < 0:
             d *= -1
         return (z * d, d)
-    elif x < 0:
+    elif signed and x < 0:
         return (-1, 0)
     else:
-        assert x > 0
         return (1, 0)
 
 def triangulate(vertices):
