@@ -172,9 +172,9 @@ class HalfTranslationSurface(HalfDilationSurface, RationalConeSurface):
             sage: S = similarity_surfaces.billiard(T)
             sage: S = S.minimal_cover("translation")
             sage: S.base_ring()
-            Number Field in a with defining polynomial y^6 - 6*y^4 + 9*y^2 - 3 with a = -0.6840402866513375?
+            Number Field in c with defining polynomial x^6 - 6*x^4 + 9*x^2 - 3 with c = 1.969615506024417?
             sage: S.holonomy_field()
-            Number Field in a0 with defining polynomial x^3 - 3*x - 1 with a0 = -1.532088886237957?
+            Number Field in c0 with defining polynomial x^3 - 3*x - 1 with c0 = 1.879385241571817?
         """
         return self.normalized_coordinates()[0].base_ring()
 
@@ -212,16 +212,17 @@ class HalfTranslationSurface(HalfDilationSurface, RationalConeSurface):
             sage: S = S.minimal_cover("translation")
             sage: U, _ = S.normalized_coordinates()
             sage: U.base_ring()
-            Number Field in a0 with defining polynomial x^3 - 3*x - 1 with a0 = -1.532088886237957?
+            Number Field in c0 with defining polynomial x^3 - 3*x - 1 with c0 = 1.879385241571817?
             sage: U.holonomy_field() == U.base_ring()
             True
             sage: S.base_ring()
-            Number Field in a with defining polynomial y^6 - 6*y^4 + 9*y^2 - 3 with a = -0.6840402866513375?
+            Number Field in c with defining polynomial x^6 - 6*x^4 + 9*x^2 - 3 with c = 1.969615506024417?
             sage: TestSuite(U).run()
 
             sage: from flatsurf import EquiangularPolygons
             sage: E = EquiangularPolygons(1, 3, 1, 1)
-            sage: p = E(1, 1, 2, 2)
+            sage: r1, r2 = [r.vector() for r in E.lengths_polytope().rays()]
+            sage: p = E(r1 + r2)
             sage: B = similarity_surfaces.billiard(p)
             sage: B.minimal_cover("translation")
             TranslationSurface built from 6 polygons

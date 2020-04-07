@@ -31,7 +31,7 @@ import operator
 
 from sage.all import cached_method, Parent, UniqueRepresentation, Sets,\
                      Fields, ZZ, QQ, AA, RR, QQbar, matrix, polygen, vector,\
-                     free_module_element
+                     free_module_element, NumberField
 from sage.structure.element import get_coercion_model, Vector
 from sage.structure.coerce import py_scalar_parent
 cm = get_coercion_model()
@@ -42,9 +42,8 @@ from sage.modules.free_module_element import vector
 from sage.modules.free_module import VectorSpace
 from sage.structure.sequence import Sequence
 
-
 from .matrix_2x2 import angle
-from .subfield import number_field_elements_from_algebraics
+from .subfield import number_field_elements_from_algebraics, cos_minpoly, chebyshev_T, subfield_from_elements
 
 # we implement action of GL(2,K) on polygons
 
@@ -354,6 +353,19 @@ def is_between(e0, e1, f):
         # f[0] * e0[1] - e0[0] * f[1] > 0
         # - f[0] * e1[1] + e1[0] * f[1] > 0
         return e0[1] * f[0] <= e0[0] * f[1] or e1[0] * f[1] <= e1[1] * f[0]
+
+def projectivization(x, y):
+    if y:
+        z = x / y
+        d = z.denominator()
+        if y < 0:
+            d *= -1
+        return (z * d, d)
+    elif x < 0:
+        return (-1, 0)
+    else:
+        assert x > 0
+        return (1, 0)
 
 def triangulate(vertices):
     r"""
@@ -1815,16 +1827,16 @@ class EquiangularPolygons:
 
         sage: P = EquiangularPolygons(1,2,5)
         sage: P
-        EquiangularPolygons(1, 2, 5) over Algebraic Real Field
+        EquiangularPolygons(1, 2, 5) over Number Field in c0 with defining polynomial x^2 - 2 with c0 = 1.414213562373095?
         sage: L = P.lengths_polytope()    # polytope of admissible lengths for edges
         sage: L
-        A 1-dimensional polyhedron in AA^3 defined as the convex hull of 1 vertex and 1 ray
+        A 1-dimensional polyhedron in (Number Field in c0 with defining polynomial x^2 - 2 with c0 = 1.414213562373095?)^3 defined as the convex hull of 1 vertex and 1 ray
         sage: lengths = L.rays()[0].vector()
         sage: lengths
-        (1, 0.4142135623730951?, 0.7653668647301795?)
+        (1, -1/2*c0 + 1, -1/2*c0 + 1)
         sage: p = P(*lengths)    # build one polygon with the given lengths
         sage: p
-        Polygon: (0, 0), (1, 0), (0.7071067811865475?, 0.2928932188134525?)
+        Polygon: (0, 0), (1, 0), (1/2*c0, -1/2*c0 + 1)
         sage: p.angles()
         [1/16, 1/8, 5/16]
         sage: P.angles(integral=False)
@@ -1833,24 +1845,28 @@ class EquiangularPolygons:
         sage: P = EquiangularPolygons(1, 2, 1, 2, 2, 1)
         sage: L = P.lengths_polytope()
         sage: L
-        A 4-dimensional polyhedron in AA^6 defined as the convex hull of 1 vertex and 6 rays
+        A 4-dimensional polyhedron in (Number Field in c with defining polynomial x^6 - 6*x^4 + 9*x^2 - 3 with c = 1.969615506024417?)^6 defined as the convex hull of 1 vertex and 6 rays
         sage: rays = [r.vector() for r in L.rays()]
         sage: rays
-        [(1, 0, 0, 0, 1, 0.3472963553338607?),
-         (0, 1, 0, 0, 0.8793852415718168?, 0.6527036446661393?),
-         (0.6527036446661393?, 0, 1, 0, 0, 0.8793852415718168?),
-         (0.8793852415718168?, 0, 0, 1, 0, 0.6527036446661393?),
-         (0, 0.6527036446661393?, 0.8793852415718168?, 0, 0, 1),
-         (0, 0.8793852415718168?, 0, 0.8793852415718168?, 0, 0.8793852415718168?)]
+        [(1, 0, 0, 0, -1/6*c^5 + 5/6*c^3 - 2/3*c, -1/6*c^5 + 5/6*c^3 - 2/3*c),
+         (0, 1, 0, 0, c^2 - 3, c^2 - 2),
+         (1/3*c^4 - 2*c^2 + 3, 0, -1/6*c^5 + 5/6*c^3 - 2/3*c, 0, 0, -1/6*c^5 + 5/6*c^3 - 2/3*c),
+         (-c^4 + 4*c^2, 0, 0, -1/6*c^5 + 5/6*c^3 - 2/3*c, 0, -1/6*c^5 + 5/6*c^3 - 2/3*c),
+         (0, 1/3*c^4 - 2*c^2 + 3, c^2 - 3, 0, 0, 1/3*c^4 - c^2),
+         (0, -c^4 + 4*c^2, 0, c^2 - 3, 0, -c^4 + 5*c^2 - 3)]
         sage: lengths = 3*rays[0] + rays[2] + 2*rays[3] + rays[4]
         sage: p = P(*lengths)
         sage: p
-        Polygon: (0, 0), (5.411474127809773?, 0), (6.024814926262611?, 0.2232377940978994?), (5.085122305476703?, 1.850833156796647?), (3.553033419238747?, 3.136408376169726?), (0.7339555568810219?, 4.162468806146732?)
+        Polygon: (0, 0), (-5/3*c^4 + 6*c^2 + 6, 0), (3*c^5 - 5/3*c^4 - 16*c^3 + 6*c^2 + 18*c + 6, c^4 - 6*c^2 + 9), (2*c^5 - 2*c^4 - 10*c^3 + 15/2*c^2 + 9*c + 5, -1/2*c^5 + c^4 + 5/2*c^3 - 3*c^2 - 2*c), (2*c^5 - 10*c^3 - 3/2*c^2 + 9*c + 9, -3/2*c^5 + c^4 + 15/2*c^3 - 3*c^2 - 6*c), (2*c^5 - 10*c^3 - 3*c^2 + 9*c + 12, -3*c^5 + c^4 + 15*c^3 - 3*c^2 - 12*c)
+
         sage: p.angles()
         [2/9, 4/9, 2/9, 4/9, 4/9, 2/9]
+
+        sage: EquiangularPolygons(1,2,1,2,1,2,1,2,2,2,2,1,1,2,1)
+        EquiangularPolygons(13, 26, 13, 26, 13, 26, 13, 26, 26, 26, 26, 13, 13, 26, 13) over Number Field in c with defining polynomial x^22 - 23*x^20 + 230*x^18 - 1311*x^16 + 4692*x^14 - 10948*x^12 + 16744*x^10 - 16445*x^8 + 9867*x^6 - 3289*x^4 + 506*x^2 - 23 with c = 1.995337538381079?
     """
     def __init__(self, *angles, **kwds):
-        number_field = kwds.pop('number_field', False)
+        number_field = kwds.pop('number_field', True)
         if kwds:
             raise ValueError("invalid keyword {!r}".format(next(iter(kwds))))
         if len(angles) == 1 and isinstance(angles[0], (tuple, list)):
@@ -1863,7 +1879,7 @@ class EquiangularPolygons:
         if any(angle <= 0 for angle in angles):
             raise ValueError("'angles' must be positive rational numbers")
 
-        # normalize the sum so that it is (n-2)/2 (ie in multiple of 2pi)
+        # normalize the sum so that it is (n-2)/2 (ie angles are given in multiple of 2pi)
         s = ZZ(n - 2) / sum(angles) / ZZ(2)
         if s != 1:
             angles = [s * a for a in angles]
@@ -1871,19 +1887,46 @@ class EquiangularPolygons:
             raise ValueError("each angle must be > 0 and < 2 pi")
         self._angles = angles
 
-        zetas = [QQbar.zeta(a.denominator()) ** a.numerator() for a in angles]
-        cosines = [z.real() for z in zetas]
-        sines = [z.imag() for z in zetas]
         if number_field:
-            base_ring, elts = number_field_elements_from_algebraics(cosines + sines, name='a')
-            cosines = elts[:n]
-            sines = elts[n:]
+            # write each angle as p_i / (2N)
+            N = lcm((2*a).denominator() for a in angles)
+            if N%2 == 0:
+                N //= 2
+            # when N is a multiple of 4, we don't want to do that
+            numerators = [(4*N*a).numerator() for a in angles]
+            assert all(p/(2*N) == 2*a for (p,a) in zip(numerators, angles))
+            if N == 1:
+                base_ring = QQ
+                c = QQ.zero()
+            else:
+                poly = cos_minpoly(2*N)
+                z = QQbar.zeta(4*N)
+                emb = AA(z + z.conjugate())
+                assert poly(emb).is_zero()
+                base_ring = NumberField(poly, 'c', embedding=emb)
+                c = base_ring.gen()  # = 2 cos(pi / 2N)
+            cosines = [chebyshev_T(p, c)/2 for p in numerators]
+            sines = [chebyshev_T(N-p, c)/2 if p < N else -chebyshev_T(3*N-p, c)/2 for p in numerators]
+            assert all((x**2 + y**2).is_one() for x,y in zip(cosines, sines))
         else:
+            zetas = [QQbar.zeta(a.denominator()) ** a.numerator() for a in angles]
+            cosines = [z.real() for z in zetas]
+            sines = [z.imag() for z in zetas]
             base_ring = AA
-        self._cosines = cosines
-        self._sines = sines
+
+        self._slopes = [projectivization(c,s) for c,s in zip(cosines, sines)]
         self._base_ring = base_ring
-        assert len(cosines) == n and len(sines) == n
+
+        if number_field:
+            # TODO: It might be the case that the slopes generate a smaller
+            # field. For now we use an ugly workaround via subfield_from_elements.
+            old_slopes = []
+            for v in self._slopes:
+                old_slopes.extend(v)
+            L, new_slopes, _ = subfield_from_elements(base_ring, old_slopes)
+            if L != base_ring:
+                self._slopes = [projectivization(*new_slopes[i:i+2]) for i in range(0, len(old_slopes), 2)]
+                self._base_ring = L
 
     def convexity(self):
         r"""
@@ -1925,54 +1968,56 @@ class EquiangularPolygons:
 
             sage: from flatsurf import EquiangularPolygons
             sage: EquiangularPolygons(1, 2, 3)
-            EquiangularPolygons(1, 2, 3) over Algebraic Real Field
-            sage: EquiangularPolygons(1, 2, 3, number_field=True)
-            EquiangularPolygons(1, 2, 3) over Number Field in a with defining polynomial y^2 - 3 with a = 1.732050807568878?
+            EquiangularPolygons(1, 2, 3) over Number Field in c with defining polynomial x^2 - 3 with c = 1.732050807568878?
         """
         return "EquiangularPolygons({}) over {}".format(", ".join(map(str,self.angles(True))), self._base_ring)
 
     def vector_space(self):
         return VectorSpace(self._base_ring, 2)
 
-    def slopes(self, e0=(1,0), cosines=None, sines=None):
+    def slopes(self, e0=(1,0)):
         r"""
-        List of slopes of the edges as a list of unit vectors.
+        List of slopes of the edges as a list of vectors.
 
         EXAMPLES::
 
             sage: from flatsurf import EquiangularPolygons
             sage: EquiangularPolygons(1, 2, 1, 2).slopes()
-            [(1, 0),
-             (0.500000000000000?, 0.866025403784439?),
-             (-1.000000000000000?, 0.?e-18),
-             (-0.500000000000000?, -0.866025403784439?)]
+            [(1, 0), (c, 3), (-1, 0), (-c, -3)]
         """
         V = self.vector_space()
-        if cosines is None:
-            cosines = self._cosines
-        if sines is None:
-            sines = self._sines
-        n = len(cosines)
+        slopes = self._slopes
+        n = len(slopes)
+        cosines = [x[0] for x in slopes]
+        sines = [x[1] for x in slopes]
         v = V.zero()
         e = V(e0)
         edges = [e]
         for i in range(n-1):
-            e = V((-cosines[i+1] * e[0] - sines[i+1] * e[1], sines[i+1] * e[0] - cosines[i+1] * e[1]))
-            edges.append(e)
+            e = (-cosines[i+1] * e[0] - sines[i+1] * e[1], sines[i+1] * e[0] - cosines[i+1] * e[1])
+            e = projectivization(*e)
+            edges.append(V(e))
         return edges
 
+    # TODO: rather than lengths, it would be more convenient to have access
+    # to the tangent space (that is the space of possible holonomies). However,
+    # since it is not defined over the real numbers, there are several possible ways
+    # to handle the data.
+    # TODO: here we ignored the direction SO(2) which provides additional symmetry
+    # in the tangent space
     def lengths_polytope(self):
         r"""
-        Return the polytope parametrizing the admissible length data.
+        Return the polytope parametrizing the admissible vectors data.
 
-        Be careful that even though the lengths are admissible, they may not
-        define a polygon without intersection.
+        This polytope parametrizes the tangent space to the set of these
+        equiangular polygons. Be careful that even though the lengths are
+        admissible, they may not define a polygon without intersection.
 
         EXAMPLES::
 
             sage: from flatsurf import EquiangularPolygons
             sage: EquiangularPolygons(1, 2, 1, 2).lengths_polytope()
-            A 2-dimensional polyhedron in AA^4 defined as the convex hull of 1 vertex and 2 rays
+            A 2-dimensional polyhedron in (Number Field in c with defining polynomial x^2 - 3 with c = 1.732050807568878?)^4 defined as the convex hull of 1 vertex and 2 rays
         """
         n = len(self._angles)
         slopes = self.slopes()
@@ -1986,7 +2031,7 @@ class EquiangularPolygons:
         from sage.geometry.polyhedron.constructor import Polyhedron
         return Polyhedron(eqns=eqns, ieqs=ieqs, base_ring=self._base_ring)
 
-    def an_element(self, *args, **kwds):
+    def an_element(self):
         r"""
         Return a polygon in this family.
 
@@ -1996,9 +2041,9 @@ class EquiangularPolygons:
 
             sage: from flatsurf import EquiangularPolygons
             sage: EquiangularPolygons(4, 3, 4, 4, 3, 4).an_element()
-            Polygon: (0, 0), (2, 0), (2.284629676546571?, 1.979642883761866?), (0.7720837808745704?, 3.725213899997057?), (-1.227916219125430?, 3.725213899997057?), (-1.512545895672000?, 1.745571016235191?)
+            Polygon: (0, 0), (1/22*c + 1, 0), (9*c^9 + 1/2*c^8 - 88*c^7 - 9/2*c^6 + 297*c^5 + 27/2*c^4 - 396*c^3 - 15*c^2 + 3631/22*c + 11/2, 1/2*c + 11), (16*c^9 + c^8 - 154*c^7 - 9*c^6 + 506*c^5 + 27*c^4 - 638*c^3 - 30*c^2 + 4841/22*c + 9, c + 22), (16*c^9 + c^8 - 154*c^7 - 9*c^6 + 506*c^5 + 27*c^4 - 638*c^3 - 30*c^2 + 220*c + 8, c + 22), (7*c^9 + 1/2*c^8 - 66*c^7 - 9/2*c^6 + 209*c^5 + 27/2*c^4 - 242*c^3 - 15*c^2 + 55*c + 7/2, 1/2*c + 11)
         """
-        return self(sum(r.vector() for r in self.lengths_polytope().rays()), *args, **kwds)
+        return self(sum(r.vector() for r in self.lengths_polytope().rays()), normalized=False)
 
     def __call__(self, *lengths, **kwds):
         r"""
@@ -2009,16 +2054,16 @@ class EquiangularPolygons:
             sage: L = P.lengths_polytope()
             sage: r0, r1 = [r.vector() for r in L.rays()]
             sage: lengths = r0 + r1
-            sage: P(*lengths)
-            Polygon: (0, 0), (1, 0), (3/2, 0.866025403784439?), (1/2, 0.866025403784439?)
             sage: P(*lengths[:-2])
-            Polygon: (0, 0), (1, 0), (3/2, 0.866025403784439?), (1/2, 0.866025403784439?)
+            Polygon: (0, 0), (1, 0), (c + 1, 3), (c, 3)
 
             sage: P = EquiangularPolygons(2, 2, 3, 13)
-            sage: P([1, 1])
-            Polygon: (0, 0), (1, 0), (0.1909830056250526?, 0.5877852522924731?), (0.1909830056250526?, 0.1387572757128878?)
+            sage: r0, r1 = [r.vector() for r in P.lengths_polytope().rays()]
+            sage: P(r0 + r1)
+            Polygon: (0, 0), (20, 0), (5, -15*c^3 + 60*c), (5, -5*c^3 + 20*c)
         """
         number_field = kwds.pop('number_field', False)
+        normalized = kwds.pop('normalized', False)
         if kwds:
             raise ValueError("invalid keyword {!r}".format(next(iter(kwds))))
         if len(lengths) == 1 and isinstance(lengths[0], (tuple, list, Vector)):
@@ -2028,20 +2073,20 @@ class EquiangularPolygons:
         if len(lengths) != n-2 and len(lengths) != n:
             raise ValueError("invalid 'lengths' argument")
 
-        cosines = self._cosines
-        sines = self._sines
         base_ring = self._base_ring
-        if number_field:
-            if base_ring is AA:
-                base_ring, elts = number_field_elements_from_algebraics(cosines + sines + list(lengths), name='a')
-                cosines = elts[:n]
-                sines = elts[n:2*n]
-                lengths = elts[2*n:]
-            elif any(l not in self._base_ring for l in lengths):
-                raise NotImplementedError
-
         V = self.vector_space()
-        slopes = self.slopes(cosines=cosines, sines=sines)
+        slopes = self.slopes()
+        if normalized:
+            # the lengths are assumed to be Euclidean lengths
+            base_ring = AA
+            V = VectorSpace(AA, 2)
+            for i, s in enumerate(slopes):
+                x, y = s
+                x = AA(x)
+                y = AA(y)
+                norm2 = (x**2 + y**2).sqrt()
+                slopes[i] = V((x/norm2, y/norm2))
+
         v = V((0,0))
         vertices = [v]
 
@@ -2376,26 +2421,14 @@ class PolygonsConstructor:
             sage: from flatsurf.geometry.polygon import polygons
             sage: T = polygons.triangle(3,4,5)
             sage: T
-            Polygon: (0, 0), (1, 0), (1/2*a + 3/2, 1/2*a + 3/2)
+            Polygon: (0, 0), (1, 0), (-1/2*c0 + 3/2, -1/2*c0 + 3/2)
             sage: T.base_ring()
-            Number Field in a with defining polynomial y^2 - 3 with a = -1.732050807568878?
+            Number Field in c0 with defining polynomial x^2 - 3 with c0 = 1.732050807568878?
 
             sage: polygons.triangle(1,2,3).angles()
             [1/12, 1/6, 1/4]
         """
-        from sage.rings.qqbar import QQbar
-        from sage.rings.qqbar import number_field_elements_from_algebraics
-        zN = QQbar.zeta(2 * (a + b + c))
-        L = polygen(QQbar, 'L')
-        z = zN**a
-        rotated = (1 - L * z) * zN**b
-        rotated_conjugate = rotated.map_coefficients(lambda z: z.conjugate())
-        real = rotated - rotated_conjugate
-        p = -real[0].imag() / real[1].imag() * z
-        r = p.real()
-        i = p.imag()
-        field, (r, i), phi = number_field_elements_from_algebraics((r, i), embedded=True)
-        return polygons(vertices=[(0, 0), (1, 0), (r, i)], ring=field)
+        return EquiangularPolygons(a, b, c)([1])
 
     @staticmethod
     def regular_ngon(n, field=None):
@@ -2512,11 +2545,11 @@ class PolygonsConstructor:
 
 
             sage: polygons(angles=[1,1,1,2], length=1)
-            Polygon: (0, 0), (1, 0), (-1/2*a^2 + 5/2, 1/2*a), (-1/2*a^2 + 2, 1/2*a^3 - 3/2*a)
+            Polygon: (0, 0), (1, 0), (0.6909830056250526?, 0.9510565162951536?), (0.1909830056250526?, 0.5877852522924731?)
             sage: polygons(angles=[1,1,1,2], length=2)
-            Polygon: (0, 0), (2, 0), (-a^2 + 5, a), (-a^2 + 4, a^3 - 3*a)
+            Polygon: (0, 0), (2, 0), (1.381966011250106?, 1.902113032590308?), (0.3819660112501051?, 1.175570504584947?)
             sage: polygons(angles=[1,1,1,2], length=AA(2)**(1/2))
-            Polygon: (0, 0), (a^5 - 5*a^3 + 5*a, 0), (1/2*a^7 - 5/2*a^5 + 3/2*a^3 + 3*a, -1/2*a^7 + 7/2*a^5 - 15/2*a^3 + 5*a), (1/2*a^7 - 3*a^5 + 4*a^3 + 1/2*a, -1/2*a^7 + 4*a^5 - 9*a^3 + 7/2*a)
+            Polygon: (0, 0), (1.414213562373095?, 0), (0.9771975379242739?, 1.344997023927915?), (0.2700907567377265?, 0.8312538755549069?)
 
             sage: polygons(angles=[1]*5).angles()
             [3/10, 3/10, 3/10, 3/10, 3/10]
@@ -2530,7 +2563,7 @@ class PolygonsConstructor:
             sage: e1 = P.edge(1); assert e1[0]**2 + e1[1]**2 == 1
 
             sage: polygons(angles=[1,1,1,2])
-            Polygon: (0, 0), (1, 0), (-1/2*a^2 + 5/2, 1/2*a), (-1/2*a^2 + 2, 1/2*a^3 - 3/2*a)
+            Polygon: (0, 0), (1, 0), (0.6909830056250526?, 0.9510565162951536?), (0.1909830056250526?, 0.5877852522924731?)
 
             sage: polygons(angles=[1,1,1,8])
             Traceback (most recent call last):
@@ -2541,7 +2574,7 @@ class PolygonsConstructor:
             ...
             ValueError: non-convex equiangular polygon; lengths must be provided
             sage: polygons(angles=[1,1,1,8], lengths=[1,1], convex=False)
-            Polygon: (0, 0), (1, 0), (1/2*a^8 - 9/2*a^6 + 27/2*a^4 - 15*a^2 + 11/2, 1/2*a), (1/2*a^8 - 9/2*a^6 + 13*a^4 - 13*a^2 + 4, -1/2*a^9 + 9/2*a^7 - 13*a^5 + 13*a^3 - 7/2*a)
+            Polygon: (0, 0), (1, 0), (0.1587464671688189?, 0.5406408174555976?), (0.3136072011141039?, 0.2015431103150154?)
 
         TESTS::
 
@@ -2606,7 +2639,7 @@ class PolygonsConstructor:
                     base_ring = py_scalar_parent(base_ring)
 
         elif angles is not None:
-            E = EquiangularPolygons(*angles, number_field=False)
+            E = EquiangularPolygons(*angles)
             if convex and not E.convexity():
                 raise ValueError("'angles' do not determine convex polygon; you might want to set the option 'convex=False'")
             n = len(angles)
@@ -2625,7 +2658,7 @@ class PolygonsConstructor:
             else:
                 raise ValueError("only one of 'length' or 'lengths' can be set together with 'angles'")
 
-            return E(lengths, number_field=True)
+            return E(lengths, normalized=True)
 
         if base_ring not in Fields():
             base_ring = base_ring.fraction_field()

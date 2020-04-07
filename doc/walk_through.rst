@@ -17,7 +17,7 @@ are some predefined ones
     Polygon: (0, 0), (1, 0), (1/2*a^2 - 1/2, 1/2*a), (1/2, 1/2*a^3 - a), (-1/2*a^2 + 3/2, 1/2*a)
 
     sage: flatsurf.polygons.triangle(1, 2, 5)
-    Polygon: (0, 0), (1, 0), (1/2*a, -1/2*a + 1)
+    Polygon: (0, 0), (1, 0), (1/2*c0, -1/2*c0 + 1)
 
 And you can also build your own polygon
 
@@ -30,7 +30,7 @@ And you can also build your own polygon
     sage: flatsurf.polygons(vertices = [(0,0), (1,0), (1,3)])   # from a list of vertices
     Polygon: (0, 0), (1, 0), (1, 3)
     sage: flatsurf.polygons(angles=[1,1,2,3], lengths=[2,1])    # from a list of angles and lengths
-    Polygon: (0, 0), (2, 0), (1/2*a^4 - 5/2*a^2 + 9/2, 1/2*a), (1/2*a^4 - 3*a^2 + 9/2, -1/2*a^5 + 5/2*a^3 - 3*a)
+    Polygon: (0, 0), (2, 0), (1.376510198141267?, 0.7818314824680299?), (0.1539892641849521?, 0.1930964297137938?)
 
 If you want to construct a polygon whose coordinates are algebraic
 numbers you need to build the appropriate embedded number field
