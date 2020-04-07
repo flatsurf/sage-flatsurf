@@ -1938,7 +1938,7 @@ class EquiangularPolygons:
             base_ring = AA
 
         self._slopes = [projectivization(c,s) for c,s in zip(cosines, sines)]
-        self._base_ring = base_ring
+        self._cosines_ring = self._base_ring = base_ring
 
         if number_field:
             # TODO: It might be the case that the slopes generate a smaller
@@ -2100,13 +2100,16 @@ class EquiangularPolygons:
         V = self.vector_space()
         slopes = self.slopes()
         if normalized:
-            # the lengths are assumed to be Euclidean lengths
-            base_ring = AA
-            V = VectorSpace(AA, 2)
+            # the input lengths are considered as Euclidean lengths
+            if all(l in self._cosines_ring for l in lengths):
+                base_ring = self._cosines_ring
+            else:
+                base_ring = AA
+            V = VectorSpace(base_ring, 2)
             for i, s in enumerate(slopes):
                 x, y = s
-                x = AA(x)
-                y = AA(y)
+                x = base_ring(x)
+                y = base_ring(y)
                 norm2 = (x**2 + y**2).sqrt()
                 slopes[i] = V((x/norm2, y/norm2))
 
@@ -2576,9 +2579,9 @@ class PolygonsConstructor:
 
 
             sage: polygons(angles=[1,1,1,2], length=1)
-            Polygon: (0, 0), (1, 0), (0.6909830056250526?, 0.9510565162951536?), (0.1909830056250526?, 0.5877852522924731?)
+            Polygon: (0, 0), (1, 0), (-1/2*c^2 + 5/2, 1/2*c), (-1/2*c^2 + 2, 1/2*c^3 - 3/2*c)
             sage: polygons(angles=[1,1,1,2], length=2)
-            Polygon: (0, 0), (2, 0), (1.381966011250106?, 1.902113032590308?), (0.3819660112501051?, 1.175570504584947?)
+            Polygon: (0, 0), (2, 0), (-c^2 + 5, c), (-c^2 + 4, c^3 - 3*c)
             sage: polygons(angles=[1,1,1,2], length=AA(2)**(1/2))
             Polygon: (0, 0), (1.414213562373095?, 0), (0.9771975379242739?, 1.344997023927915?), (0.2700907567377265?, 0.8312538755549069?)
 
@@ -2594,7 +2597,7 @@ class PolygonsConstructor:
             sage: e1 = P.edge(1); assert e1[0]**2 + e1[1]**2 == 1
 
             sage: polygons(angles=[1,1,1,2])
-            Polygon: (0, 0), (1, 0), (0.6909830056250526?, 0.9510565162951536?), (0.1909830056250526?, 0.5877852522924731?)
+            Polygon: (0, 0), (1, 0), (-1/2*c^2 + 5/2, 1/2*c), (-1/2*c^2 + 2, 1/2*c^3 - 3/2*c)
 
             sage: polygons(angles=[1,1,1,8])
             Traceback (most recent call last):
@@ -2605,7 +2608,7 @@ class PolygonsConstructor:
             ...
             ValueError: non-convex equiangular polygon; lengths must be provided
             sage: polygons(angles=[1,1,1,8], lengths=[1,1], convex=False)
-            Polygon: (0, 0), (1, 0), (0.1587464671688189?, 0.5406408174555976?), (0.3136072011141039?, 0.201543110315016?)
+            Polygon: (0, 0), (1, 0), (-1/2*c^4 + 2*c^2, 1/2*c^7 - 7/2*c^5 + 7*c^3 - 7/2*c), (1/2*c^6 - 7/2*c^4 + 13/2*c^2 - 3/2, 1/2*c^9 - 9/2*c^7 + 27/2*c^5 - 29/2*c^3 + 5/2*c)
 
         TESTS::
 
