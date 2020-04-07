@@ -457,7 +457,7 @@ class SimilaritySurfaceGenerators:
         A quadrilateral from Eskin-McMullen-Mukamel-Wright::
 
             sage: E = EquiangularPolygons(1, 1, 1, 7)
-            sage: P = E([2, AA(3).sqrt()])
+            sage: P = E.an_element()
             sage: S = similarity_surfaces.billiard(P)
             sage: TestSuite(S).run()
             sage: S = S.minimal_cover(cover_type="translation")
