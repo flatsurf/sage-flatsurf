@@ -51,8 +51,8 @@ from flatsurf import EquiangularPolygons, similarity_surfaces, GL2ROrbitClosure
 ])
 def test_rank2_quadrilateral(a, b, c, d, l1, l2, veech):
     E = EquiangularPolygons(a, b, c, d)
-    P = E([l1, l2])
-    B = similarity_surfaces.billiard(P)
+    P = E([l1, l2], normalized=True)
+    B = similarity_surfaces.billiard(P, rational=True)
     S = B.minimal_cover(cover_type="translation")
     S = S.erase_marked_points()
     S, _ = S.normalized_coordinates()
