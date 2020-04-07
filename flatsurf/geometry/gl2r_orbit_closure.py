@@ -311,7 +311,7 @@ class Decomposition:
                 area = self.orbit.Ksage_constructor(comp.area())
                 modules.append(area / (hol[0]**2 + hol[1]**2))
             else:
-                return self.orbit.V.subspace([])
+                return []
 
         # irrationally related cylinders can be twisted independently
         vectors = []
@@ -324,7 +324,7 @@ class Decomposition:
             for t in relations.right_kernel().basis():
                 vectors.append(sum(t[i] / modules[i] * vcyls[i] for i in range(ncyls)))
 
-        return self.orbit.V.subspace(vectors)
+        return vectors
 
     def plot_completely_periodic(self):
         from sage.plot.all import polygon2d, Graphics, point2d, text
@@ -431,13 +431,15 @@ class GL2ROrbitClosure:
             s = self._surface.fromEdge(self.spanning_set[i].positive())
             self.H[i] = self.V2sage(self.V2(s))
         self.Hdual = self.Omega * self.H
-        self.U = self.H.transpose()
-        # NOTE: if using Sage vector spaces is too slow, we can use more directly the echelonize
-        # method of matrices
-        self.U = self.U.row_space()
+
+        # NOTE: we don't use Sage vector spaces because they are usually way too slow
+        # (we avoid calling .echelonize())
+        self._U = matrix(self.V2.sage_base_ring, self.d)
+        self._U[:2] = self.H.transpose()
+        self._U_rank = 2
 
     def dimension(self):
-        return self.U.dimension()
+        return self._U_rank
 
     def ambient_stratum(self):
         from surface_dynamics import AbelianStratum
@@ -446,13 +448,20 @@ class GL2ROrbitClosure:
         return AbelianStratum([a-1 for a in angles])
 
     def base_ring(self):
-        return self.U.base_ring()
+        return self._U.base_ring()
 
     def field_of_definition(self):
         r"""
         Return the field of definition of the current subspace.
+
+        .. WARNING::
+
+            This involves the computation of the echelon form of the matrix. It
+            might be rather expensive if the computation of the tangent space is
+            not terminated.
         """
-        L, elts, phi = subfield_from_elements(self.base_ring(), self.U.matrix().list())
+        M = self._U.echelon_form()
+        L, elts, phi = subfield_from_elements(self.base_ring(), M[:self._U_rank].list())
         return L
 
     def _half_edge_to_face(self, h):
@@ -479,7 +488,7 @@ class GL2ROrbitClosure:
         return faces
 
     def __repr__(self):
-        return "GL(2,R)-orbit closure of dimension at least %d in %s (ambient dimension %d)" % (self.U.dimension(), self.ambient_stratum(), self.d)
+        return "GL(2,R)-orbit closure of dimension at least %d in %s (ambient dimension %d)" % (self._U_rank, self.ambient_stratum(), self.d)
 
     def holonomy(self, v):
         r"""
@@ -489,6 +498,9 @@ class GL2ROrbitClosure:
 
     def holonomy_dual(self, v):
         return self.V(v) * self.Hdual
+
+    def tangent_space_basis(self):
+        return self._U[:self._U_rank].rows()
 
     def lift(self, v):
         r"""
@@ -502,10 +514,14 @@ class GL2ROrbitClosure:
 
             sage: S = translation_surfaces.mcmullen_genus2_prototype(4,2,1,1,0)
             sage: O = GL2ROrbitClosure(S)
-            sage: u0,u1 = O.U.basis()
+            sage: u0,u1 = O.tangent_space_basis()
             sage: v0 = O.lift(u0)
             sage: v1 = O.lift(u1)
             sage: span([v0, v1])
+            Vector space of degree 9 and dimension 2 over Number Field in l with defining polynomial x^2 - x - 8 with l = 3.372281323269015?
+            Basis matrix:
+            [           1            0           -1  1/4*l - 1/4 -1/4*l + 1/4            0 -1/4*l + 1/4            0 -1/4*l + 1/4]
+            [           0            1           -1  1/8*l + 7/8 -1/8*l + 1/8           -1 3/8*l - 11/8 -1/2*l + 3/2 -1/8*l + 1/8]
 
         This can be used to deform the surface::
 
@@ -515,17 +531,19 @@ class GL2ROrbitClosure:
             sage: O = GL2ROrbitClosure(S)
             sage: for d in O.decompositions(4, 20):
             ....:     O.update_tangent_space_from_flow_decomposition(d)
-            ....:     if O.U.dimension() == 4:
+            ....:     if O.dimension() == 4:
             ....:         break
-            sage: d1,d2,d3,d4 = [O.lift(b) for b in O.U.basis()]
+            sage: d1,d2,d3,d4 = [O.lift(b) for b in O.tangent_space_basis()]
             sage: dreal = d1/132 + d2/227 + d3/280 - d4/201
             sage: dimag = d1/141 - d2/233 + d4/230 + d4/250
             sage: d = [O.V2((x,y)).vector for x,y in zip(dreal,dimag)]
-            sage: S2 = O._surface + d
-            sage: O2 = GL2ROrbitClosure(S2)
-            sage: for d in O2.decompositions(4, 20, sector=((1,0),(5,1))):
+
+        TODO: This is waiting for https://github.com/flatsurf/flatsurf/issues/145::
+
+            sage: S2 = O._surface + d  # not tested
+            sage: O2 = GL2ROrbitClosure(S2)   # not tested
+            sage: for d in O2.decompositions(4, 20, sector=((1,0),(5,1))):  # not tested
             ....:     O2.update_tangent_space_from_flow_decomposition(d)
-            sage: assert O.U == O2.U
         """
         # given the values on the spanning edges we reconstruct the unique vector that
         # vanishes on the boundary
@@ -580,12 +598,12 @@ class GL2ROrbitClosure:
             sage: O = GL2ROrbitClosure(S)
             sage: for d in O.decompositions(5, 100):
             ....:     O.update_tangent_space_from_flow_decomposition(d)
-            ....:     if O.U.dimension() == 9:
+            ....:     if O.dimension() == 9:
             ....:         break
             sage: O.absolute_dimension()
             6
         """
-        return (self.absolute_homology().matrix() * self.U.matrix().transpose()).rank()
+        return (self.absolute_homology().matrix() * self._U[:self._U_rank].transpose()).rank()
 
     def _spanning_tree(self, root=None):
         r"""
@@ -852,17 +870,18 @@ class GL2ROrbitClosure:
             sage: O = GL2ROrbitClosure(S)
             sage: for d in O.decompositions(3, 50):
             ....:     O.update_tangent_space_from_flow_decomposition(d)
-            sage: assert O.U.dimension() == 2
+            sage: assert O.dimension() == 2
         """
-        A = self.U.ambient_vector_space()
-        ambient_dim = A.dimension()
-        cur_dim = self.U.dimension()
-        if cur_dim == A.dimension():
-            if verbose:
-                print("full stratum")
+        A = self._U
+        i = self._U_rank
+        if self._U_rank == self._U.nrows():
             return
-        self.U += decomposition.cylinder_deformation_subspace()
-        new_dim = self.U.dimension()
-        if verbose and new_dim > cur_dim :
-            print("increase in dimension: {} in ambient dimension {}".format(new_dim, ambient_dim))
+        for v in decomposition.cylinder_deformation_subspace():
+            A[i] = v
+            r = A.rank()
+            if r > i:
+                assert r == i+1
+                i = self._U_rank = i + 1
+                if self._U_rank == self._U.nrows():
+                    return
 
