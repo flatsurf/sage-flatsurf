@@ -2580,7 +2580,7 @@ class PolygonsConstructor:
             ...
             ValueError: non-convex equiangular polygon; lengths must be provided
             sage: polygons(angles=[1,1,1,8], lengths=[1,1], convex=False)
-            Polygon: (0, 0), (1, 0), (0.1587464671688189?, 0.5406408174555976?), (0.3136072011141039?, 0.2015431103150154?)
+            Polygon: (0, 0), (1, 0), (0.1587464671688189?, 0.5406408174555976?), (0.3136072011141039?, 0.201543110315016?)
 
         TESTS::
 
