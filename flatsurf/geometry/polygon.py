@@ -29,7 +29,7 @@ from six.moves import range, map, filter, zip
 
 import operator
 
-from sage.all import cached_method, Parent, UniqueRepresentation, Sets,\
+from sage.all import cached_method, Parent, UniqueRepresentation, Sets, Rings,\
                      Fields, ZZ, QQ, AA, RR, RIF, QQbar, matrix, polygen, vector,\
                      free_module_element, NumberField
 from sage.structure.element import get_coercion_model, Vector
@@ -1646,17 +1646,18 @@ class ConvexPolygon(Polygon):
 class Polygons(UniqueRepresentation, Parent):
     Element = Polygon
 
-    def __init__(self, field):
+    def __init__(self, ring):
         Parent.__init__(self, category=Sets())
-        if not field in Fields():
-            raise ValueError("'field' must be a field")
-        self._field = field
+        if not ring in Rings():
+            raise ValueError("'ring' must be a ring")
+        self._ring = ring
         self.register_action(MatrixActionOnPolygons(self))
 
     def base_ring(self):
-        return self._field
+        return self._ring
 
-    field = base_ring
+    def field(self):
+        return self.base_ring().fraction_field()
 
     @cached_method
     def vector_space(self):
@@ -1673,7 +1674,7 @@ class Polygons(UniqueRepresentation, Parent):
             sage: C.vector_space()
             Vector space of dimension 2 over Rational Field
         """
-        return VectorSpace(self.base_ring(), 2)
+        return VectorSpace(self.field(), 2)
 
     def _repr_(self):
         return "Polygons(%s)"%self.base_ring()
@@ -1748,21 +1749,21 @@ class ConvexPolygons(Polygons):
         sage: C(edges=[(1,0), (0,1), (-1,0), (0,-1)])
         Polygon: (0, 0), (1, 0), (1, 1), (0, 1)
 
+    A set of polygons can also be created over non-fields::
+
+        sage: ConvexPolygons(ZZ)
+        ConvexPolygons(Integer Ring)
+
     TESTS::
 
         sage: ConvexPolygons(QQ) is ConvexPolygons(QQ)
         True
         sage: TestSuite(ConvexPolygons(QQ)).run()
         sage: TestSuite(ConvexPolygons(QQbar)).run()
+        sage: TestSuite(ConvexPolygons(ZZ)).run()
+    
     """
     Element = ConvexPolygon
-
-    def __init__(self, field):
-        Parent.__init__(self, category=Sets())
-        if not field in Fields():
-            raise ValueError("'field' must be a field")
-        self._field = field
-        self.register_action(MatrixActionOnPolygons(self))
 
     def has_coerce_map_from(self, other):
         r"""
@@ -2717,6 +2718,8 @@ class PolygonCreator():
         r"""Create a polygon in the provided field."""
         self._v=[]
         self._w=[]
+        if not field in Fields():
+            raise TypeError("field must be a field")
         self._field=field
 
     def vector_space(self):
@@ -2767,5 +2770,3 @@ class PolygonCreator():
         if len(self._v)<2:
             raise ValueError("Not enough vertices!")
         return ConvexPolygons(self._field)(self._w)
-
-
