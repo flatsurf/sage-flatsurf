@@ -354,7 +354,7 @@ def is_between(e0, e1, f):
         # - f[0] * e1[1] + e1[0] * f[1] > 0
         return e0[1] * f[0] <= e0[0] * f[1] or e1[0] * f[1] <= e1[1] * f[0]
 
-def projectivization(x, y, signed=True, denominator=True):
+def projectivization(x, y, signed=True, denominator=None):
     r"""
     TESTS::
 
@@ -380,7 +380,7 @@ def projectivization(x, y, signed=True, denominator=True):
     """
     if y:
         z = x / y
-        if denominator:
+        if denominator == True or (denominator is None and hasattr(z, 'denominator')):
             d = z.denominator()
         else:
             d = 1
@@ -1847,7 +1847,9 @@ class EquiangularPolygons:
     r"""
     Polygons with fixed (rational) angles.
 
-    EXAMPLES::
+    EXAMPLES:
+
+    Some polygons over number fields::
 
         sage: from flatsurf import EquiangularPolygons
 
@@ -1890,9 +1892,25 @@ class EquiangularPolygons:
 
         sage: EquiangularPolygons(1,2,1,2,1,2,1,2,2,2,2,1,1,2,1)
         EquiangularPolygons(13, 26, 13, 26, 13, 26, 13, 26, 26, 26, 26, 13, 13, 26, 13) over Number Field in c with defining polynomial x^22 - 23*x^20 + 230*x^18 - 1311*x^16 + 4692*x^14 - 10948*x^12 + 16744*x^10 - 16445*x^8 + 9867*x^6 - 3289*x^4 + 506*x^2 - 23 with c = 1.995337538381079?
+
+    A polygon over the algebraic numbers::
+
+        sage: EquiangularPolygons(1, 2, 5, base_ring=AA)
+        EquiangularPolygons(1, 2, 5) over Algebraic Real Field
+
     """
     def __init__(self, *angles, **kwds):
-        number_field = kwds.pop('number_field', True)
+        base_ring = kwds.pop('base_ring', None)
+
+        if 'number_field' in kwds:
+            from warnings import warn
+            warn("The number_field parameter has been deprecated and will be dropped in a future release of sage-flatsurf. To create an equiangular polygon over number field, do not pass this parameter, to create an equiangular polygon over the algebraic numbers, set base_ring=AA.")
+            number_field = kwds.pop('number_field', base_ring is None)
+            if number_field and base_ring is not None:
+                raise ValueError("Must not specify base_ring and number_field at the same time.")
+            if not number_field:
+                base_ring = AA
+
         if kwds:
             raise ValueError("invalid keyword {!r}".format(next(iter(kwds))))
         if len(angles) == 1 and isinstance(angles[0], (tuple, list)):
@@ -1913,7 +1931,7 @@ class EquiangularPolygons:
             raise ValueError("each angle must be > 0 and < 2 pi")
         self._angles = angles
 
-        if number_field:
+        if base_ring is None:
             # write each angle as p_i / (2N)
             N = lcm((2*a).denominator() for a in angles)
             if N%2 == 0:
@@ -1922,26 +1940,29 @@ class EquiangularPolygons:
             numerators = [(4*N*a).numerator() for a in angles]
             assert all(p/(2*N) == 2*a for (p,a) in zip(numerators, angles))
             if N == 1:
-                base_ring = QQ
+                self._base_ring = base_ring = QQ
                 c = QQ.zero()
             else:
                 poly = cos_minpoly(2*N)
                 emb = AA.polynomial_root(poly, 2 * (RIF.pi() / (2*N)).cos())
-                base_ring = NumberField(poly, 'c', embedding=emb)
-                c = base_ring.gen()  # = 2 cos(pi / 2N)
+                self._base_ring = NumberField(poly, 'c', embedding=emb)
+                c = self._base_ring.gen()  # = 2 cos(pi / 2N)
             cosines = [chebyshev_T(p, c)/2 for p in numerators]
             sines = [chebyshev_T(N-p, c)/2 if p < N else -chebyshev_T(3*N-p, c)/2 for p in numerators]
             assert all((x**2 + y**2).is_one() for x,y in zip(cosines, sines))
-        else:
+        elif base_ring is AA:
             zetas = [QQbar.zeta(a.denominator()) ** a.numerator() for a in angles]
             cosines = [z.real() for z in zetas]
             sines = [z.imag() for z in zetas]
-            base_ring = AA
+            self._base_ring = base_ring
+        else:
+            raise NotImplementedError("cannot create equiangular polygons over this ring yet")
 
         self._slopes = [projectivization(c,s) for c,s in zip(cosines, sines)]
-        self._cosines_ring = self._base_ring = base_ring
+        self._cosines_ring = self._base_ring
 
-        if number_field:
+        if base_ring is None:
+            base_ring = self._base_ring
             # TODO: It might be the case that the slopes generate a smaller
             # field. For now we use an ugly workaround via subfield_from_elements.
             old_slopes = []
