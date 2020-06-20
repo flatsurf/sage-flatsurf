@@ -20,9 +20,9 @@ install:
   - which gcc
   - ${SAGE} -sh -c "which gcc"
   - ccache -s
-  # flipper needs networkx; we force it to use a recent version so we do not
-  # see deprecation warnings issued by the version that comes with SageMath.
-  - ${SAGE} -pip install 'networkx>=2.4'
+  # flipper needs networkx; we force it to use a recent version if available so we do not
+  # see deprecation warnings issued by the version that comes with SageMath; see https://github.com/MarkCBell/flipper/pull/4
+  - ${SAGE} -pip install 'networkx>=2.4' || true
   - ${SAGE} -pip install flipper
   - ${SAGE} -pip install surface_dynamics
   - ${SAGE} -pip install --verbose --no-index --user .
