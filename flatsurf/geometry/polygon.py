@@ -1875,6 +1875,17 @@ class EquiangularPolygons:
         sage: _.base_ring()
         Algebraic Real Field
 
+    Polygons can also be defined over a module containing transcendent parameters::
+
+        sage: from pyexactreal import ExactReals # optional: exactreal
+        sage: R = ExactReals(P.base_ring()) # optional: exactreal
+        sage: P(R(1)) # optional: exactreal
+        Polygon: (0, 0), (1, 0), (((12*c0+17 ~ 33.970563))/((17*c0+24 ~ 48.041631)), ((5*c0+7 ~ 14.071068))/((17*c0+24 ~ 48.041631)))
+        sage: P(R(R.random_element([0.2, 0.3]))) # random output, optional: exactreal
+        Polygon: (0, 0), (ℝ(0.287373=2588422249976937p-53 + ℝ(0.120809…)p-54), 0), (((12*c0+17 ~ 33.970563)*ℝ(0.287373=2588422249976937p-53 + ℝ(0.120809…)p-54))/((17*c0+24 ~ 48.041631)), ((5*c0+7 ~ 14.071068)*ℝ(0.287373=2588422249976937p-53 + ℝ(0.120809…)p-54))/((17*c0+24 ~ 48.041631)))
+        sage: _.base_ring() # optional: exactreal
+        Real Numbers as (Number Field in c0 with defining polynomial x^2 - 2 with c0 = 1.414213562373095?)-Module
+
     ::
 
         sage: L = P.lengths_polytope()    # polytope of admissible lengths for edges
@@ -2157,10 +2168,10 @@ class EquiangularPolygons:
         vertices = [v]
 
         if len(lengths) == n - 2:
-            for i in range(n-2):
+            for i in range(n - 2):
                 v += lengths[i] * slopes[i]
                 vertices.append(v)
-            s,t = matrix([slopes[-1],slopes[n-2]]).solve_left(vertices[0] - vertices[n-2])
+            s, t = matrix(base_ring, [slopes[-1], slopes[n - 2]]).solve_left(vertices[0] - vertices[n - 2])
             assert vertices[0] - s*slopes[-1] == vertices[n-2] + t*slopes[n-2]
             if s <= 0 or t <= 0:
                 raise ValueError("the provided lengths do not give rise to a polygon")
