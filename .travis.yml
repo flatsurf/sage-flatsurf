@@ -5,6 +5,7 @@ env:
   - SAGE_VERSION="8.8"
   - SAGE_VERSION="8.9"
   - SAGE_VERSION="9.0"
+  - SAGE_VERSION="9.1"
 before_install:
   - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
   - bash miniconda.sh -b -p $HOME/miniconda
