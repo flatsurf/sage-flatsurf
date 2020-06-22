@@ -1865,11 +1865,11 @@ class EquiangularPolygons:
 
     Polygons can also be defined over other number field implementations::
 
-        sage: from pyeantic import RealEmbeddedNumberField
-        sage: K = RealEmbeddedNumberField(P.base_ring())
-        sage: P(K(1))
+        sage: from pyeantic import RealEmbeddedNumberField # optional: eantic
+        sage: K = RealEmbeddedNumberField(P.base_ring()) # optional: eantic
+        sage: P(K(1)) # optional: eantic
         Polygon: (0, 0), (1, 0), ((1/2*c0 ~ 0.70710678), (-1/2*c0+1 ~ 0.29289322))
-        sage: _.base_ring()
+        sage: _.base_ring() # optional: eantic
         Number Field in c0 with defining polynomial x^2 - 2 with c0 = 1.414213562373095?
 
     However, specific instances of such polygons might be defined over another ring::
