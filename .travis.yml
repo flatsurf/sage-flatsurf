@@ -1,28 +1,22 @@
-dist: xenial
-sudo: required
-language: c
-cache:
-  ccache: true
-  timeout: 1000
+language: python
+os:
+  - linux
 env:
   - SAGE_VERSION="8.8"
   - SAGE_VERSION="8.9"
   - SAGE_VERSION="9.0"
 before_install:
-  - sudo apt-get -qq update
-  - sudo apt-get install gcc g++ gfortran
-install: 
-  - export SAGE_MIRROR="http://mirrors.mit.edu/sage/linux/64bit"
-  - export SAGE_BINARY="sage-${SAGE_VERSION}-Ubuntu_16.04-x86_64.tar.bz2"
-  - export SAGE="${HOME}/SageMath/sage"
-  - ./.travis_sage_install.sh
-  - ${SAGE} --version
-  - which gcc
-  - ${SAGE} -sh -c "which gcc"
-  - ccache -s
-  - ${SAGE} -pip install flipper
-  - ${SAGE} -pip install surface_dynamics
-  - ${SAGE} -pip install --verbose --no-index --user .
+  - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
+  - bash miniconda.sh -b -p $HOME/miniconda
+  - source "$HOME/miniconda/etc/profile.d/conda.sh"
+  - hash -r
+  - conda config --set always_yes yes --set changeps1 no
+  - conda update -q conda
+  - conda info -a
+install:
+  - conda create -q -n test-environment sagelib=$SAGE_VERSION pip pyeantic pyexactreal surface-dynamics
+  - conda activate test-environment
+  - pip install flipper
+  - pip install --verbose --no-index .
 script:
-  - ${SAGE} -t --force-lib --long --optional=sage,flipper flatsurf
-  - ${SAGE} -t --force-lib --long --optional=sage,flipper doc
+  - sage -t --force-lib --long --optional=sage,flipper,eantic,exactreal flatsurf doc
