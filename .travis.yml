@@ -21,5 +21,7 @@ install:
   - conda activate test-environment
   - pip install flipper
   - pip install --verbose --no-index .
+  # Show information message about cppyy regenerating pre-compiled headers so it does not show during the tests
+  - python -c 'import cppyy'
 script:
   - sage -t --force-lib --long --optional=sage,flipper,eantic,exactreal flatsurf doc
