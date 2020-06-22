@@ -12,6 +12,8 @@ before_install:
   - source "$HOME/miniconda/etc/profile.d/conda.sh"
   - hash -r
   - conda config --set always_yes yes --set changeps1 no
+  - conda config --add channels conda-forge
+  - conda config --set channel_priority strict
   - conda update -q conda
   - conda info -a
 install:
