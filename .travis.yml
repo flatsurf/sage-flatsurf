@@ -1,11 +1,12 @@
 language: python
 os:
   - linux
-env:
-  - SAGE_VERSION="8.8"
-  - SAGE_VERSION="8.9"
-  - SAGE_VERSION="9.0"
-  - SAGE_VERSION="9.1"
+jobs:
+  include:
+  - env: SAGE_VERSION=8.8 PIP_PACKAGES=flipper CONDA_PACKAGES="pyeantic pyexactreal" SAGE_OPTIONALS="sage,flipper,eantic,exactreal"
+  - env: SAGE_VERSION=8.9 PIP_PACKAGES=flipper CONDA_PACKAGES="pyeantic pyexactreal" SAGE_OPTIONALS="sage,flipper,eantic,exactreal"
+  - env: SAGE_VERSION=9.0 PIP_PACKAGES=flipper CONDA_PACKAGES="pyeantic pyexactreal" SAGE_OPTIONALS="sage,flipper,eantic,exactreal"
+  - env: SAGE_VERSION=9.1 PIP_PACKAGES=flipper CONDA_PACKAGES="pyeantic pyexactreal" SAGE_OPTIONALS="sage,flipper,eantic,exactreal"
 before_install:
   - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
   - bash miniconda.sh -b -p $HOME/miniconda
@@ -17,11 +18,11 @@ before_install:
   - conda update -q conda
   - conda info -a
 install:
-  - conda create -q -n test-environment -c flatsurf sagelib=$SAGE_VERSION pip pyeantic pyexactreal surface-dynamics ipywidgets scipy mathplotlib-base
+  - conda create -q -n test-environment -c flatsurf sagelib=$SAGE_VERSION pip surface-dynamics ipywidgets scipy matplotlib-base $CONDA_PACKAGES
   - conda activate test-environment
-  - pip install flipper
+  - pip install $PIP_PACKAGES
   - pip install --verbose --no-index .
   # Show information message about cppyy regenerating pre-compiled headers so it does not show during the tests
   - python -c 'import cppyy'
 script:
-  - sage -t --force-lib --long --optional=sage,flipper,eantic,exactreal flatsurf doc
+  - sage -t --force-lib --long --optional=$SAGE_OPTIONALS flatsurf doc
