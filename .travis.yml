@@ -3,8 +3,8 @@ os:
   - linux
 jobs:
   include:
-  - env: SAGE_VERSION=8.8 PIP_PACKAGES=flipper CONDA_PACKAGES="pyeantic pyexactreal" SAGE_OPTIONALS="sage,flipper,eantic,exactreal"
-  - env: SAGE_VERSION=8.9 PIP_PACKAGES=flipper CONDA_PACKAGES="pyeantic pyexactreal" SAGE_OPTIONALS="sage,flipper,eantic,exactreal"
+  - env: SAGE_VERSION=8.8 PIP_PACKAGES=flipper CONDA_PACKAGES="" SAGE_OPTIONALS="sage,flipper"
+  - env: SAGE_VERSION=8.9 PIP_PACKAGES=flipper CONDA_PACKAGES="" SAGE_OPTIONALS="sage,flipper"
   - env: SAGE_VERSION=9.0 PIP_PACKAGES=flipper CONDA_PACKAGES="pyeantic pyexactreal" SAGE_OPTIONALS="sage,flipper,eantic,exactreal"
   - env: SAGE_VERSION=9.1 PIP_PACKAGES=flipper CONDA_PACKAGES="pyeantic pyexactreal" SAGE_OPTIONALS="sage,flipper,eantic,exactreal"
 before_install:
@@ -24,6 +24,6 @@ install:
   - pip install $PIP_PACKAGES
   - pip install --verbose --no-index .
   # Show information message about cppyy regenerating pre-compiled headers so it does not show during the tests
-  - python -c 'import cppyy'
+  - python -c 'import cppyy' || true
 script:
   - sage -t --force-lib --long --optional=$SAGE_OPTIONALS flatsurf doc
