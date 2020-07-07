@@ -29,7 +29,7 @@ from six.moves import range, map, filter, zip
 
 import operator
 
-from sage.all import cached_method, Parent, UniqueRepresentation, Sets,\
+from sage.all import cached_method, Parent, UniqueRepresentation, Sets, Rings,\
                      Fields, ZZ, QQ, AA, RR, RIF, QQbar, matrix, polygen, vector,\
                      free_module_element, NumberField
 from sage.structure.element import get_coercion_model, Vector
@@ -354,7 +354,7 @@ def is_between(e0, e1, f):
         # - f[0] * e1[1] + e1[0] * f[1] > 0
         return e0[1] * f[0] <= e0[0] * f[1] or e1[0] * f[1] <= e1[1] * f[0]
 
-def projectivization(x, y, signed=True, denominator=True):
+def projectivization(x, y, signed=True, denominator=None):
     r"""
     TESTS::
 
@@ -380,7 +380,7 @@ def projectivization(x, y, signed=True, denominator=True):
     """
     if y:
         z = x / y
-        if denominator:
+        if denominator == True or (denominator is None and hasattr(z, 'denominator')):
             d = z.denominator()
         else:
             d = 1
@@ -1646,17 +1646,18 @@ class ConvexPolygon(Polygon):
 class Polygons(UniqueRepresentation, Parent):
     Element = Polygon
 
-    def __init__(self, field):
+    def __init__(self, ring):
         Parent.__init__(self, category=Sets())
-        if not field in Fields():
-            raise ValueError("'field' must be a field")
-        self._field = field
+        if not ring in Rings():
+            raise ValueError("'ring' must be a ring")
+        self._ring = ring
         self.register_action(MatrixActionOnPolygons(self))
 
     def base_ring(self):
-        return self._field
+        return self._ring
 
-    field = base_ring
+    def field(self):
+        return self.base_ring().fraction_field()
 
     @cached_method
     def vector_space(self):
@@ -1673,7 +1674,7 @@ class Polygons(UniqueRepresentation, Parent):
             sage: C.vector_space()
             Vector space of dimension 2 over Rational Field
         """
-        return VectorSpace(self.base_ring(), 2)
+        return VectorSpace(self.field(), 2)
 
     def _repr_(self):
         return "Polygons(%s)"%self.base_ring()
@@ -1748,21 +1749,21 @@ class ConvexPolygons(Polygons):
         sage: C(edges=[(1,0), (0,1), (-1,0), (0,-1)])
         Polygon: (0, 0), (1, 0), (1, 1), (0, 1)
 
+    A set of polygons can also be created over non-fields::
+
+        sage: ConvexPolygons(ZZ)
+        ConvexPolygons(Integer Ring)
+
     TESTS::
 
         sage: ConvexPolygons(QQ) is ConvexPolygons(QQ)
         True
         sage: TestSuite(ConvexPolygons(QQ)).run()
         sage: TestSuite(ConvexPolygons(QQbar)).run()
+        sage: TestSuite(ConvexPolygons(ZZ)).run()
+    
     """
     Element = ConvexPolygon
-
-    def __init__(self, field):
-        Parent.__init__(self, category=Sets())
-        if not field in Fields():
-            raise ValueError("'field' must be a field")
-        self._field = field
-        self.register_action(MatrixActionOnPolygons(self))
 
     def has_coerce_map_from(self, other):
         r"""
@@ -1850,9 +1851,52 @@ class EquiangularPolygons:
 
         sage: from flatsurf import EquiangularPolygons
 
-        sage: P = EquiangularPolygons(1,2,5)
+    The polygons with inner angles `\pi/4`, `\pi/2`, `5\pi/4`::
+
+        sage: P = EquiangularPolygons(1, 2, 5)
         sage: P
-        EquiangularPolygons(1, 2, 5) over Number Field in c0 with defining polynomial x^2 - 2 with c0 = 1.414213562373095?
+        EquiangularPolygons(1, 2, 5)
+
+    Internally, polygons are given by their vertices' coordinates over some
+    number field, in this case a quadratic field::
+
+        sage: P.base_ring()
+        Number Field in c0 with defining polynomial x^2 - 2 with c0 = 1.414213562373095?
+
+    Polygons can also be defined over other number field implementations::
+
+        sage: from pyeantic import RealEmbeddedNumberField # optional: eantic
+        sage: K = RealEmbeddedNumberField(P.base_ring()) # optional: eantic
+        sage: P(K(1)) # optional: eantic
+        Polygon: (0, 0), (1, 0), ((1/2*c0 ~ 0.70710678), (-1/2*c0+1 ~ 0.29289322))
+        sage: _.base_ring() # optional: eantic
+        Number Field in c0 with defining polynomial x^2 - 2 with c0 = 1.414213562373095?
+
+    However, specific instances of such polygons might be defined over another ring::
+
+        sage: P(1)
+        Polygon: (0, 0), (1, 0), (1/2*c0, -1/2*c0 + 1)
+        sage: _.base_ring()
+        Number Field in c0 with defining polynomial x^2 - 2 with c0 = 1.414213562373095?
+
+        sage: P(AA(1))
+        Polygon: (0, 0), (1, 0), (0.7071067811865475?, 0.2928932188134525?)
+        sage: _.base_ring()
+        Algebraic Real Field
+
+    Polygons can also be defined over a module containing transcendent parameters::
+
+        sage: from pyexactreal import ExactReals # optional: exactreal
+        sage: R = ExactReals(P.base_ring()) # optional: exactreal
+        sage: P(R(1)) # optional: exactreal
+        Polygon: (0, 0), (1, 0), (((12*c0+17 ~ 33.970563))/((17*c0+24 ~ 48.041631)), ((5*c0+7 ~ 14.071068))/((17*c0+24 ~ 48.041631)))
+        sage: P(R(R.random_element([0.2, 0.3]))) # random output, optional: exactreal
+        Polygon: (0, 0), (ℝ(0.287373=2588422249976937p-53 + ℝ(0.120809…)p-54), 0), (((12*c0+17 ~ 33.970563)*ℝ(0.287373=2588422249976937p-53 + ℝ(0.120809…)p-54))/((17*c0+24 ~ 48.041631)), ((5*c0+7 ~ 14.071068)*ℝ(0.287373=2588422249976937p-53 + ℝ(0.120809…)p-54))/((17*c0+24 ~ 48.041631)))
+        sage: _.base_ring() # optional: exactreal
+        Real Numbers as (Number Field in c0 with defining polynomial x^2 - 2 with c0 = 1.414213562373095?)-Module
+
+    ::
+
         sage: L = P.lengths_polytope()    # polytope of admissible lengths for edges
         sage: L
         A 1-dimensional polyhedron in (Number Field in c0 with defining polynomial x^2 - 2 with c0 = 1.414213562373095?)^3 defined as the convex hull of 1 vertex and 1 ray
@@ -1887,11 +1931,16 @@ class EquiangularPolygons:
         sage: p.angles()
         [2/9, 4/9, 2/9, 4/9, 4/9, 2/9]
 
-        sage: EquiangularPolygons(1,2,1,2,1,2,1,2,2,2,2,1,1,2,1)
-        EquiangularPolygons(13, 26, 13, 26, 13, 26, 13, 26, 26, 26, 26, 13, 13, 26, 13) over Number Field in c with defining polynomial x^22 - 23*x^20 + 230*x^18 - 1311*x^16 + 4692*x^14 - 10948*x^12 + 16744*x^10 - 16445*x^8 + 9867*x^6 - 3289*x^4 + 506*x^2 - 23 with c = 1.995337538381079?
+        sage: EquiangularPolygons(1, 2, 1, 2, 1, 2, 1, 2, 2, 2, 2, 1, 1, 2, 1)
+        EquiangularPolygons(13, 26, 13, 26, 13, 26, 13, 26, 26, 26, 26, 13, 13, 26, 13)
+
     """
     def __init__(self, *angles, **kwds):
-        number_field = kwds.pop('number_field', True)
+        if 'number_field' in kwds:
+            from warnings import warn
+            warn("The number_field parameter has been removed in this release of sage-flatsurf. To create an equiangular polygon over a number field, do not pass this parameter; to create an equiangular polygon over the algebraic numbers, do not pass this parameter but call the returned object with algebraic lengths.")
+            kwds.pop('number_field')
+
         if kwds:
             raise ValueError("invalid keyword {!r}".format(next(iter(kwds))))
         if len(angles) == 1 and isinstance(angles[0], (tuple, list)):
@@ -1912,44 +1961,37 @@ class EquiangularPolygons:
             raise ValueError("each angle must be > 0 and < 2 pi")
         self._angles = angles
 
-        if number_field:
-            # write each angle as p_i / (2N)
-            N = lcm((2*a).denominator() for a in angles)
-            if N%2 == 0:
-                N //= 2
-            # when N is a multiple of 4, we don't want to do that
-            numerators = [(4*N*a).numerator() for a in angles]
-            assert all(p/(2*N) == 2*a for (p,a) in zip(numerators, angles))
-            if N == 1:
-                base_ring = QQ
-                c = QQ.zero()
-            else:
-                poly = cos_minpoly(2*N)
-                emb = AA.polynomial_root(poly, 2 * (RIF.pi() / (2*N)).cos())
-                base_ring = NumberField(poly, 'c', embedding=emb)
-                c = base_ring.gen()  # = 2 cos(pi / 2N)
-            cosines = [chebyshev_T(p, c)/2 for p in numerators]
-            sines = [chebyshev_T(N-p, c)/2 if p < N else -chebyshev_T(3*N-p, c)/2 for p in numerators]
-            assert all((x**2 + y**2).is_one() for x,y in zip(cosines, sines))
+        # write each angle as p_i / (2N)
+        N = lcm((2*a).denominator() for a in angles)
+        if N%2 == 0:
+            N //= 2
+        # when N is a multiple of 4, we don't want to do that
+        numerators = [(4*N*a).numerator() for a in angles]
+        assert all(p/(2*N) == 2*a for (p,a) in zip(numerators, angles))
+        if N == 1:
+            self._base_ring = QQ
+            c = QQ.zero()
         else:
-            zetas = [QQbar.zeta(a.denominator()) ** a.numerator() for a in angles]
-            cosines = [z.real() for z in zetas]
-            sines = [z.imag() for z in zetas]
-            base_ring = AA
+            poly = cos_minpoly(2*N)
+            emb = AA.polynomial_root(poly, 2 * (RIF.pi() / (2*N)).cos())
+            self._base_ring = NumberField(poly, 'c', embedding=emb)
+            c = self._base_ring.gen()  # = 2 cos(pi / 2N)
+        cosines = [chebyshev_T(p, c)/2 for p in numerators]
+        sines = [chebyshev_T(N-p, c)/2 if p < N else -chebyshev_T(3*N-p, c)/2 for p in numerators]
+        assert all((x**2 + y**2).is_one() for x,y in zip(cosines, sines))
 
         self._slopes = [projectivization(c,s) for c,s in zip(cosines, sines)]
-        self._cosines_ring = self._base_ring = base_ring
+        self._cosines_ring = self._base_ring
 
-        if number_field:
-            # TODO: It might be the case that the slopes generate a smaller
-            # field. For now we use an ugly workaround via subfield_from_elements.
-            old_slopes = []
-            for v in self._slopes:
-                old_slopes.extend(v)
-            L, new_slopes, _ = subfield_from_elements(base_ring, old_slopes)
-            if L != base_ring:
-                self._slopes = [projectivization(*new_slopes[i:i+2]) for i in range(0, len(old_slopes), 2)]
-                self._base_ring = L
+        # TODO: It might be the case that the slopes generate a smaller
+        # field. For now we use an ugly workaround via subfield_from_elements.
+        old_slopes = []
+        for v in self._slopes:
+            old_slopes.extend(v)
+        L, new_slopes, _ = subfield_from_elements(self._base_ring, old_slopes)
+        if L != self._base_ring:
+            self._slopes = [projectivization(*new_slopes[i:i+2]) for i in range(0, len(old_slopes), 2)]
+            self._base_ring = L
 
     def convexity(self):
         r"""
@@ -1962,6 +2004,20 @@ class EquiangularPolygons:
             False
         """
         return all(2 * a <= 1 for a in self._angles)
+
+    def base_ring(self):
+        r"""
+        Return the number field over which the coordinates of the vertices of
+        this family of polygons are represented internally.
+
+        EXAMPLES::
+
+            sage: from flatsurf import EquiangularPolygons
+            sage: EquiangularPolygons(1, 2, 5).base_ring()
+            Number Field in c0 with defining polynomial x^2 - 2 with c0 = 1.414213562373095?
+
+        """
+        return self._base_ring
 
     def strict_convexity(self):
         r"""
@@ -1991,9 +2047,9 @@ class EquiangularPolygons:
 
             sage: from flatsurf import EquiangularPolygons
             sage: EquiangularPolygons(1, 2, 3)
-            EquiangularPolygons(1, 2, 3) over Number Field in c with defining polynomial x^2 - 3 with c = 1.732050807568878?
+            EquiangularPolygons(1, 2, 3)
         """
-        return "EquiangularPolygons({}) over {}".format(", ".join(map(str,self.angles(True))), self._base_ring)
+        return "EquiangularPolygons({})".format(", ".join(map(str,self.angles(True))))
 
     def vector_space(self):
         return VectorSpace(self._base_ring, 2)
@@ -2066,7 +2122,7 @@ class EquiangularPolygons:
             sage: EquiangularPolygons(4, 3, 4, 4, 3, 4).an_element()
             Polygon: (0, 0), (1/22*c + 1, 0), (9*c^9 + 1/2*c^8 - 88*c^7 - 9/2*c^6 + 297*c^5 + 27/2*c^4 - 396*c^3 - 15*c^2 + 3631/22*c + 11/2, 1/2*c + 11), (16*c^9 + c^8 - 154*c^7 - 9*c^6 + 506*c^5 + 27*c^4 - 638*c^3 - 30*c^2 + 4841/22*c + 9, c + 22), (16*c^9 + c^8 - 154*c^7 - 9*c^6 + 506*c^5 + 27*c^4 - 638*c^3 - 30*c^2 + 220*c + 8, c + 22), (7*c^9 + 1/2*c^8 - 66*c^7 - 9/2*c^6 + 209*c^5 + 27/2*c^4 - 242*c^3 - 15*c^2 + 55*c + 7/2, 1/2*c + 11)
         """
-        return self(sum(r.vector() for r in self.lengths_polytope().rays()), normalized=False)
+        return self(sum(r.vector() for r in self.lengths_polytope().rays()))
 
     def __call__(self, *lengths, **kwds):
         r"""
@@ -2085,7 +2141,7 @@ class EquiangularPolygons:
             sage: P(r0 + r1)
             Polygon: (0, 0), (20, 0), (5, -15*c^3 + 60*c), (5, -5*c^3 + 20*c)
         """
-        number_field = kwds.pop('number_field', False)
+        base_ring = kwds.pop('base_ring', None)
         normalized = kwds.pop('normalized', False)
         if kwds:
             raise ValueError("invalid keyword {!r}".format(next(iter(kwds))))
@@ -2096,15 +2152,19 @@ class EquiangularPolygons:
         if len(lengths) != n-2 and len(lengths) != n:
             raise ValueError("invalid 'lengths' argument")
 
-        base_ring = self._base_ring
+        if base_ring is None:
+            from sage.all import Sequence
+            base_ring = Sequence(lengths).universe()
+
+            from sage.categories.pushout import pushout
+            if normalized:
+                base_ring = pushout(base_ring, self._cosines_ring)
+            else:
+                base_ring = pushout(base_ring, self._base_ring)
+
         V = self.vector_space()
         slopes = self.slopes()
         if normalized:
-            # the input lengths are considered as Euclidean lengths
-            if all(l in self._cosines_ring for l in lengths):
-                base_ring = self._cosines_ring
-            else:
-                base_ring = AA
             V = VectorSpace(base_ring, 2)
             for i, s in enumerate(slopes):
                 x, y = s
@@ -2117,10 +2177,10 @@ class EquiangularPolygons:
         vertices = [v]
 
         if len(lengths) == n - 2:
-            for i in range(n-2):
+            for i in range(n - 2):
                 v += lengths[i] * slopes[i]
                 vertices.append(v)
-            s,t = matrix([slopes[-1],slopes[n-2]]).solve_left(vertices[0] - vertices[n-2])
+            s, t = matrix(base_ring, [slopes[-1], slopes[n - 2]]).solve_left(vertices[0] - vertices[n - 2])
             assert vertices[0] - s*slopes[-1] == vertices[n-2] + t*slopes[n-2]
             if s <= 0 or t <= 0:
                 raise ValueError("the provided lengths do not give rise to a polygon")
@@ -2677,20 +2737,15 @@ class PolygonsConstructor:
             if convex and not E.convexity():
                 raise ValueError("'angles' do not determine convex polygon; you might want to set the option 'convex=False'")
             n = len(angles)
-            if length is None and lengths is None:
-                if not E.convexity():
-                    raise ValueError("non-convex equiangular polygon; lengths must be provided")
-                lengths = [AA(1)] * (n-2)
-            elif lengths is None:
-                if not E.convexity():
-                    raise ValueError("non-convex equiangular polygon; lengths must be provided")
-                lengths = [AA.coerce(length)] * (n-2)
-            elif length is None:
-                if len(lengths) != n-2:
-                    raise ValueError("'lengths' must be a list of n-2 numbers (one less than 'angles')")
-                lengths = [AA.coerce(length) for length in lengths]
-            else:
+            if length is not None and lengths is not None:
                 raise ValueError("only one of 'length' or 'lengths' can be set together with 'angles'")
+            if lengths is None:
+                if not E.convexity():
+                    raise ValueError("non-convex equiangular polygon; lengths must be provided")
+                lengths = [length or 1] * (n-2)
+
+            if len(lengths) != n-2:
+                raise ValueError("'lengths' must be a list of n-2 numbers (one less than 'angles')")
 
             return E(lengths, normalized=True)
 
@@ -2717,6 +2772,8 @@ class PolygonCreator():
         r"""Create a polygon in the provided field."""
         self._v=[]
         self._w=[]
+        if not field in Fields():
+            raise TypeError("field must be a field")
         self._field=field
 
     def vector_space(self):
@@ -2767,5 +2824,3 @@ class PolygonCreator():
         if len(self._v)<2:
             raise ValueError("Not enough vertices!")
         return ConvexPolygons(self._field)(self._w)
-
-

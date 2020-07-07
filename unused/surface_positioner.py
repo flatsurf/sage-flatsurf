@@ -1,5 +1,10 @@
+from sage.all import Fields
+
 class SurfacePositioner:
     def __init__(self,field):
+        if not field in Fields():
+            raise TypeError("field must be a field")
+
         self._positions={}
         self._field=field
         self._zero=self.vector_space().zero()

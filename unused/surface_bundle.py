@@ -2,6 +2,7 @@ from editor_actor import *
 from editor_renderer import *
 from graphical.edge_gluings import *
 
+from sage.all import Fields
 from sage.matrix.matrix_space import MatrixSpace
 from sage.modules.free_module import VectorSpace
 from sage.rings.real_double import RDF
@@ -33,6 +34,8 @@ class RenameDialog(tkSimpleDialog.Dialog):
 class SurfaceBundle:
 
     def __init__(self, name, editor, field=QQ):
+        if not field in Fields():
+            raise TypeError("field must be a field")
         self._name = name
         self._editor = editor
         self._field = field

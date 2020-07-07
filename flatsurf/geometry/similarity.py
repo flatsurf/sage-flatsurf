@@ -8,6 +8,8 @@ from sage.structure.unique_representation import UniqueRepresentation
 
 from sage.categories.groups import Groups
 
+from sage.all import Fields
+
 from sage.modules.free_module_element import vector
 from sage.groups.group import Group
 from sage.rings.integer import Integer
@@ -229,11 +231,14 @@ class Similarity(MultiplicativeGroupElement):
             sage: g(p, field=AA).parent()
             ConvexPolygons(Algebraic Real Field)
         """
+        if field is not None:
+            if not field in Fields():
+                raise TypeError("field must be a field")
         if isinstance(w,ConvexPolygon):
             if field is None:
-                P = ConvexPolygons(field=self.parent().base_field())
+                P = ConvexPolygons(self.parent().base_field())
             else:
-                P = ConvexPolygons(field=field)
+                P = ConvexPolygons(field)
             try:
                 return P(vertices=[self(v) for v in w.vertices()])
             except ValueError as e:
@@ -381,6 +386,8 @@ class SimilarityGroup(UniqueRepresentation, Group):
             sage: TestSuite(SimilarityGroup(QQ)).run()
             sage: TestSuite(SimilarityGroup(AA)).run()
         """
+        if not base_field in Fields():
+            raise TypeError("base_field must be a field")
         self._field = base_field
         # The vector space of vectors
         Group.__init__(self, category=Groups().Infinite())
