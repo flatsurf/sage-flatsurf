@@ -5,8 +5,8 @@ jobs:
   include:
   - env: SAGE_VERSION=8.8 PIP_PACKAGES=flipper CONDA_PACKAGES="" SAGE_OPTIONALS="sage,flipper"
   - env: SAGE_VERSION=8.9 PIP_PACKAGES=flipper CONDA_PACKAGES="" SAGE_OPTIONALS="sage,flipper"
-  - env: SAGE_VERSION=9.0 PIP_PACKAGES=flipper CONDA_PACKAGES="pyeantic pyexactreal" SAGE_OPTIONALS="sage,flipper,eantic,exactreal"
-  - env: SAGE_VERSION=9.1 PIP_PACKAGES=flipper CONDA_PACKAGES="pyeantic pyexactreal" SAGE_OPTIONALS="sage,flipper,eantic,exactreal"
+  - env: SAGE_VERSION=9.0 PIP_PACKAGES=flipper CONDA_PACKAGES="pyflatsurf pyeantic pyexactreal" SAGE_OPTIONALS="sage,flipper,eantic,exactreal,flatsurf"
+  - env: SAGE_VERSION=9.1 PIP_PACKAGES=flipper CONDA_PACKAGES="pyflatsurf pyeantic pyexactreal" SAGE_OPTIONALS="sage,flipper,eantic,exactreal,flatsurf"
 before_install:
   - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
   - bash miniconda.sh -b -p $HOME/miniconda
