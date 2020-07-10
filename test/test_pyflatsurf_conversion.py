@@ -25,6 +25,8 @@ Discriminant loci in H(1,1)
 import sys
 import pytest
 
+pytest.importorskip("pyflatsurf")
+
 from flatsurf import translation_surfaces
 from flatsurf.geometry.pyflatsurf_conversion import to_pyflatsurf
 

@@ -32,6 +32,8 @@ commensurable moduli ("parabolic direction").
 import sys
 import pytest
 
+pytest.importorskip('pyflatsurf')
+
 import sage.all
 from flatsurf import translation_surfaces, GL2ROrbitClosure
 

@@ -31,6 +31,8 @@ import pytest
 
 import itertools
 
+pytest.importorskip('pyflatsurf')
+
 from sage.all import AA
 from flatsurf import EquiangularPolygons, similarity_surfaces, GL2ROrbitClosure
 

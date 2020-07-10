@@ -25,6 +25,8 @@ Calta-McMullen Veech surfaces in H(2)
 import sys
 import pytest
 
+pytest.importorskip('pyflatsurf')
+
 from sage.all import polygen, NumberField, AA, QQ
 from flatsurf import translation_surfaces, GL2ROrbitClosure
 

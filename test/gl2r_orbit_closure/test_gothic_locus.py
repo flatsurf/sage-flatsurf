@@ -27,6 +27,8 @@ From the article McMullen-Mukamel-Wright (2017).
 import sys
 import pytest
 
+pytest.importorskip('pyflatsurf')
+
 from sage.all import QQ, AA, NumberField, polygen
 from flatsurf import translation_surfaces, GL2ROrbitClosure
 from surface_dynamics import AbelianStratum
