@@ -19,11 +19,12 @@ before_install:
   - conda install mamba
   - conda info -a
 install:
-  - mamba create -q -n test-environment -c flatsurf sagelib=$SAGE_VERSION pip surface-dynamics ipywidgets scipy matplotlib-base gap-defaults $CONDA_PACKAGES
+  - mamba create -q -n test-environment -c flatsurf sagelib=$SAGE_VERSION pip pytest surface-dynamics ipywidgets scipy matplotlib-base gap-defaults $CONDA_PACKAGES
   - conda activate test-environment
   - pip install $PIP_PACKAGES
   - pip install --verbose --no-index .
   # Show information message about cppyy regenerating pre-compiled headers so it does not show during the tests
   - python -c 'import cppyy' || true
 script:
-  - sage -t --force-lib --long --optional=$SAGE_OPTIONALS flatsurf doc
+  - sage -tp --force-lib --long --optional=$SAGE_OPTIONALS flatsurf doc
+  - ./test/run_tests.py
