@@ -61,5 +61,3 @@ def test_ward3():
 
     W17 = translation_surfaces.ward(17)
     X17 = to_pyflatsurf(W17)
-
-if __name__ == '__main__': sys.exit(pytest.main(sys.argv))

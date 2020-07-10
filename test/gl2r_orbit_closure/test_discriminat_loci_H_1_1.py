@@ -51,6 +51,3 @@ def test_D33():
         assert ((nmin == 0) or (ncyl == 0 and nmin == 2))
         O.update_tangent_space_from_flow_decomposition(d)
     assert O.dimension() == 3
-
-if __name__ == '__main__': sys.exit(pytest.main(sys.argv))
-

@@ -1,14 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 r"""
-Veech 2n-gons and double n-gons
+The gothic locus
 
-These two families of examples are from the article of Veech "Teichmüller
-curves in moduli space, Eisenstein series and an application to triangular
-billiards" (1989). These are examples of what now is called a Veech surface.
-These surface satisfies the so-called Veech dichotomy: in any direction of a
-saddle connection, the flow is completely periodic and the cylinders have
-commensurable moduli ("parabolic direction").
+From the article McMullen-Mukamel-Wright (2017).
 """
 ######################################################################
 # This file is part of sage-flatsurf.
@@ -32,27 +27,36 @@ commensurable moduli ("parabolic direction").
 import sys
 import pytest
 
-import sage.all
+from sage.all import QQ, AA, NumberField, polygen
 from flatsurf import translation_surfaces, GL2ROrbitClosure
+from surface_dynamics import AbelianStratum
 
-@pytest.mark.parametrize("n,bound", [(4,4),(5,4),(6,4),(7,4),(8,4)])
-def test_veech_2n_gon(n, bound):
-    S = translation_surfaces.veech_2n_gon(n)
+def test_gothic_generic():
+    x = polygen(QQ)
+    K = NumberField(x**3 - 2, 'a', embedding=AA(2)**QQ((1,3)))
+    a = K.gen()
+    S = translation_surfaces.cathedral(a, a**2)
     O = GL2ROrbitClosure(S)
-    for d in O.decompositions(bound):
+    assert O.ambient_stratum() == AbelianStratum(2, 2, 2)
+    for d in O.decompositions(4, 50):
+        O.update_tangent_space_from_flow_decomposition(d)
+    assert O.dimension() == O.absolute_dimension() == 4
+    assert O.field_of_definition() == QQ
+
+def test_gothic_veech():
+    x = polygen(QQ)
+    K = NumberField(x**2 - 2, 'sqrt2', embedding=AA(2)**QQ((1,2)))
+    sqrt2 = K.gen()
+    x = QQ((1,2))
+    y = 1
+    a = x + y * sqrt2
+    b = -3*x -QQ((3,2)) + 3*y*sqrt2
+    S = translation_surfaces.cathedral(a,b)
+    O = GL2ROrbitClosure(S)
+    assert O.ambient_stratum() == AbelianStratum(2, 2, 2)
+    for d in O.decompositions(4, 50):
         assert d.parabolic()
 #        assert d.decomposition.cylinder_diagram()[0].stratum() == O.surface.stratum()
         O.update_tangent_space_from_flow_decomposition(d)
     assert O.dimension() == O.absolute_dimension() == 2
-
-@pytest.mark.parametrize("n,bound", [(3,4),(5,4),(7,4),(9,4)])
-def test_veech_double_n_gon(n, bound):
-    S = translation_surfaces.veech_double_n_gon(n)
-    O = GL2ROrbitClosure(S)
-    for d in O.decompositions(bound):
-        assert d.parabolic()
-#        assert d.decomposition.cylinder_diagram()[0].stratum() == O.surface.stratum()
-        O.update_tangent_space_from_flow_decomposition(d)
-    assert O.dimension() == O.absolute_dimension() == 2
-
-if __name__ == '__main__': sys.exit(pytest.main(sys.argv))
+    assert O.field_of_definition() == O.base_ring()

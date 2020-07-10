@@ -69,5 +69,3 @@ def test_rank2_quadrilateral(a, b, c, d, l1, l2, veech):
         for dec in D:
             O.update_tangent_space_from_flow_decomposition(dec)
         assert O.absolute_dimension() == O.dimension() == 4, (O.U.dimension(), O.absolute_dimension())
-
-if __name__ == '__main__': sys.exit(pytest.main(sys.argv))

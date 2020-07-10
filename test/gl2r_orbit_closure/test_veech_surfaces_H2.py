@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 r"""
-The gothic locus
-
-From the article McMullen-Mukamel-Wright (2017).
+Calta-McMullen Veech surfaces in H(2)
 """
 ######################################################################
 # This file is part of sage-flatsurf.
@@ -27,38 +25,16 @@ From the article McMullen-Mukamel-Wright (2017).
 import sys
 import pytest
 
-from sage.all import QQ, AA, NumberField, polygen
+from sage.all import polygen, NumberField, AA, QQ
 from flatsurf import translation_surfaces, GL2ROrbitClosure
-from surface_dynamics import AbelianStratum
 
-def test_gothic_generic():
-    x = polygen(QQ)
-    K = NumberField(x**3 - 2, 'a', embedding=AA(2)**QQ((1,3)))
-    a = K.gen()
-    S = translation_surfaces.cathedral(a, a**2)
+@pytest.mark.parametrize("w,h,t,e", [(2,1,0,0), (3,1,0,0), (3,1,0,1), (4,1,0,1),
+               (4,1,0,2), (3,2,0,0), (4,2,1,0), (4,2,0,1), (4,2,1,1)])
+def test_H2(w,h,t,e):
+    S = translation_surfaces.mcmullen_genus2_prototype(w,h,t,e)
     O = GL2ROrbitClosure(S)
-    assert O.ambient_stratum() == AbelianStratum(2, 2, 2)
-    for d in O.decompositions(4, 50):
-        O.update_tangent_space_from_flow_decomposition(d)
-    assert O.dimension() == O.absolute_dimension() == 4
-    assert O.field_of_definition() == QQ
-
-def test_gothic_veech():
-    x = polygen(QQ)
-    K = NumberField(x**2 - 2, 'sqrt2', embedding=AA(2)**QQ((1,2)))
-    sqrt2 = K.gen()
-    x = QQ((1,2))
-    y = 1
-    a = x + y * sqrt2
-    b = -3*x -QQ((3,2)) + 3*y*sqrt2
-    S = translation_surfaces.cathedral(a,b)
-    O = GL2ROrbitClosure(S)
-    assert O.ambient_stratum() == AbelianStratum(2, 2, 2)
-    for d in O.decompositions(4, 50):
+    for d in O.decompositions(5, 50):
         assert d.parabolic()
 #        assert d.decomposition.cylinder_diagram()[0].stratum() == O.surface.stratum()
         O.update_tangent_space_from_flow_decomposition(d)
     assert O.dimension() == O.absolute_dimension() == 2
-    assert O.field_of_definition() == O.base_ring()
-
-if __name__ == '__main__': sys.exit(pytest.main(sys.argv))
