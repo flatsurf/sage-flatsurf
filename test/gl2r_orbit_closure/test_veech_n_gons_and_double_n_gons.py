@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 r"""
 Veech 2n-gons and double n-gons

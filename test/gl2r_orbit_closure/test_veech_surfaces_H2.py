@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 r"""
 Calta-McMullen Veech surfaces in H(2)
