@@ -775,46 +775,39 @@ class GL2ROrbitClosure:
             pyflatsurf.flatsurf.decomposeFlowDecomposition(decomposition, int(limit))
         return Decomposition(self, decomposition, u)
 
-    def decompositions_depth_first(self, bound, limit=-1, sector=None, visited=None):
-        # TODO: make the sector restriction at C++ level *without* filtering
+    def _visit_slope(self, visited, x, y):
+        if x == 0:
+            slope = 1e1337
+        else:
+            slope = float(y) / float(x)
+
+        if slope not in visited:
+            visited[slope] = []
+
+        for a, b in visited[slope]:
+            if b * x == a * y: return False
+
+        visited[slope].append((x, y))
+
+        return True
+
+    def decompositions_depth_first(self, bound, limit=-1):
+        # TODO: implement this and sector restriction at C++ level *without* filtering
         limit = int(limit)
-        if visited is None:
-            visited = set()
+        visited = {}
         for connection in self._surface.saddle_connections(pyflatsurf.flatsurf.Bound(int(bound), 0)):
             v = connection.vector()
-            slope = self.V2sage(self.V2(v))
-            if slope[1].is_zero():
-                slope = self.V2sage((1, 0))
-            else:
-                slope = slope / slope[1]
-            if sector is not None and not is_between(sector[0], sector[1], slope):
-                continue
-            slope.set_immutable()
-            if slope in visited:
-                continue
-            visited.add(slope)
-            yield self.decomposition(v, limit)
+            if self._visit_slope(visited, v.x(), v.y()):
+                yield self.decomposition(v, limit)
 
-    def decompositions_breadth_first(self, bound, limit=-1, sector=None, visited=None):
-        # TODO: make the sector restriction at C++ level *without* filtering
+    def decompositions_breadth_first(self, bound, limit=-1):
+        # TODO: implement this and sector restriction at C++ level *without* filtering
         limit = int(limit)
-        if visited is None:
-            visited = set()
+        visited = {}
         for i in range(bound + 1):
             for connection in self._surface.saddle_connections(flatsurf.Bound(i, 0)):
-                v = connection.vector()
-                slope = self.V2sage(self.V2(v))
-                if slope[1].is_zero():
-                    slope = self.V2sage((1, 0))
-                else:
-                    slope = slope / slope[1]
-                if sector is not None and not is_between(sector[0], sector[1], slope):
-                    continue
-                slope.set_immutable()
-                if slope in visited:
-                    continue
-                visited.add(slope)
-                yield self.decomposition(v, limit)
+                if self._visit_slope(visited, v.x(), v.y()):
+                    yield self.decomposition(v, limit)
 
     decompositions = decompositions_depth_first
 
