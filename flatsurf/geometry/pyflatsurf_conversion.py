@@ -84,7 +84,8 @@ def _cycle_decomposition(p):
 
 def to_pyflatsurf(S):
     r"""
-    Given S a translation surface from flatsurf builds a flat polygonization
+    Given S a translation surface from sage-flatsurf builds a
+    flatsurf::FlatTriangulation from libflatsurf/pyflatsurf.
     """
     if not isinstance(S, TranslationSurface):
         raise TypeError("S must be a translation surface")

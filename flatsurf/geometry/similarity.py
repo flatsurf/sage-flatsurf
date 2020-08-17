@@ -194,8 +194,25 @@ class Similarity(MultiplicativeGroupElement):
             -b*self._s - sign*a*self._t,
             sign)
 
-    def _div_(self, s):
-        return self._mul_(s.__invert__())
+    def _div_(left, right):
+        det = right.det()
+
+        inv_a = right._sign * right._a
+        inv_b = -right._b
+        inv_s = -right._sign * right._a * right._s - right._sign * right._b * right._t
+        inv_t = right._b * right._s - right._a * right._t
+
+        a = (left._a * inv_a - left._sign * left._b * inv_b) / det
+        b = (left._b * inv_a + left._sign * left._a * inv_b) / det
+        s = (left._a * inv_s - left._sign * left._b * inv_t) / det + left._s
+        t = (left._b * inv_s + left._sign * left._a * inv_t) / det + left._t
+
+        return left.parent().element_class(left.parent(),
+            left.base_ring()(a),
+            left.base_ring()(b),
+            left.base_ring()(s),
+            left.base_ring()(t),
+            left._sign * right._sign)
 
     def __hash__(self):
         return 73*hash(self._a)-19*hash(self._b)+13*hash(self._s)+53*hash(self._t)+67*hash(self._sign)
