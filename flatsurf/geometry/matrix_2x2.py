@@ -217,7 +217,7 @@ def rotation_matrix_angle(r, check=False):
     return r
 
 
-def is_cosine_sine_of_rational(c,s):
+def is_cosine_sine_of_rational(c, s):
     r"""
     Check whether the given pair is a cosine and sine of a same rational angle.
 
@@ -245,6 +245,14 @@ def is_cosine_sine_of_rational(c,s):
         sage: K.<sqrt2> = NumberField(x**2 - 2, embedding=1.414)
         sage: is_cosine_sine_of_rational(K.zero(),-K.one())
         True
+
+    TESTS::
+
+        sage: from pyexactreal import ExactReals # optional: exactreal
+        sage: R = ExactReals()
+        sage: is_cosine_sine_of_rational(R.one(), R.zero())
+        True
+
     """
     return (QQbar(c) + QQbar.gen() * QQbar(s)).minpoly().is_cyclotomic()
 
