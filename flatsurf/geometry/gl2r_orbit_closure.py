@@ -251,7 +251,7 @@ class Decomposition:
             else:
                 # check parallelism
                 assert hol0[0] * hol[1] == hol0[1] * hol[0]
-                if not (mod / mod0).is_rational():
+                if mod / mod0 not in QQ:
                     return False
         return state
 
