@@ -140,11 +140,6 @@ def is_same_direction(v,w,zero=None):
         ...
         TypeError: zero vector has no direction
 
-        sage: for _ in range(100):
-        ....:    v = V.random_element()
-        ....:    if not v: continue
-        ....:    assert is_same_direction(v, 2*v)
-        ....:    assert not is_same_direction(v, -v)
     """
     if not v or not w:
         raise TypeError("zero vector has no direction")
@@ -184,12 +179,6 @@ def is_opposite_direction(v,w):
         ...
         TypeError: zero vector has no direction
 
-        sage: for _ in range(100):
-        ....:    v = V.random_element()
-        ....:    if not v: continue
-        ....:    assert not is_opposite_direction(v, v)
-        ....:    assert not is_opposite_direction(v,2*v)
-        ....:    assert is_opposite_direction(v, -v)
     """
     if not v or not w:
         raise TypeError("zero vector has no direction")
@@ -244,27 +233,17 @@ def segment_intersect(e1, e2, base_ring=None):
     EXAMPLES::
 
         sage: from flatsurf.geometry.polygon import segment_intersect
-        sage: for (u,v,ans) in [(((0,0),(1,0)),((0,1),(0,3)),0),
-        ....:         (((0,0),(1,0)),((0,0),(0,3)),1), (((0,0),(1,0)),((0,-1),(0,3)),2),
-        ....:         (((-1,-1),(1,1)),((0,0),(2,2)),2), (((-1,-1),(1,1)),((1,1),(2,2)),1)]:
-        ....:     assert segment_intersect(u,v) == ans
+        sage: segment_intersect(((0,0),(1,0)),((0,1),(0,3)))
+        0
+        sage: segment_intersect(((0,0),(1,0)),((0,0),(0,3)))
+        1
+        sage: segment_intersect(((0,0),(1,0)),((0,-1),(0,3)))
+        2
+        sage: segment_intersect(((-1,-1),(1,1)),((0,0),(2,2)))
+        2
+        sage: segment_intersect(((-1,-1),(1,1)),((1,1),(2,2)))
+        1
 
-        sage: for _ in range(4000):
-        ....:     us = (randint(-4, 4), randint(-4, 4))
-        ....:     ut = (randint(-4, 4), randint(-4, 4))
-        ....:     vs = (randint(-4, 4), randint(-4, 4))
-        ....:     vt = (randint(-4, 4), randint(-4, 4))
-        ....:     if us == ut or vs == vt:
-        ....:         continue
-        ....:     ans1 = segment_intersect((us,ut),(vs,vt))
-        ....:     ans2 = segment_intersect((ut,us),(vs,vt))
-        ....:     ans3 = segment_intersect((us,ut),(vt,vs))
-        ....:     ans4 = segment_intersect((ut,us),(vt,vs))
-        ....:     ans5 = segment_intersect((vs,vt),(us,ut))
-        ....:     ans6 = segment_intersect((vt,vs),(us,ut))
-        ....:     ans7 = segment_intersect((vs,vt),(ut,us))
-        ....:     ans8 = segment_intersect((vt,vs),(ut,us))
-        ....:     assert (ans1 == ans2 == ans3 == ans4 == ans5 == ans6 == ans7 == ans8), (us, ut, vs, vt, ans1, ans2, ans3, ans4, ans5, ans6, ans7, ans8)
     """
     if e1[0] == e1[1] or e2[0] == e2[1]:
         raise ValueError("degenerate segments")
@@ -338,23 +317,13 @@ def is_between(e0, e1, f):
     Check whether the vector ``f`` is strictly in the sector formed by the vectors
     ``e0`` and ``e1`` (in counter-clockwise order).
 
-    TESTS::
+    EXAMPLES::
 
         sage: from flatsurf.geometry.polygon import is_between
         sage: V = ZZ^2
-        sage: vecs = [V((1,0)), V((2,1)), V((1,1)), V((1,2)),
-        ....:  V((0,1)), V((-1,2)), V((-1,1)), V((-2,1)),
-        ....:  V((-1,0)), V((-2,-1)), V((-1,-1)), V((-1,-2)),
-        ....:  V((0,-1)), V((1,-2)), V((1,-1)), V((2,-1))]
-        sage: for i in range(len(vecs)):
-        ....:     for j in range(len(vecs)):
-        ....:         if i == j: continue
-        ....:         for k in range(len(vecs)):
-        ....:             if k == i or k == j: continue
-        ....:             ans = is_between(vecs[i], vecs[j], vecs[k])
-        ....:             expected = i < k < j or k < j < i or j < i < k
-        ....:             if ans != expected:
-        ....:                 print((i,j,k),expected,ans)
+        sage: is_between(V((1, 0)), V((1, 1)), V((2, 1)))
+        True
+
     """
     if e0[0] * e1[1] > e1[0] * e0[1]:
         # positive determinant
