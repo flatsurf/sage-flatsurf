@@ -1655,7 +1655,7 @@ class ConvexPolygon(Polygon):
 
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import polygons
             sage: P = polygons(vertices=[(0,0),(1,0),(2,1),(-1,1)])
             sage: P.circumscribing_circle()
             Circle((1/2, 3/2), 5/2)
@@ -1672,7 +1672,7 @@ class Polygons(UniqueRepresentation, Parent):
 
     def __init__(self, ring):
         Parent.__init__(self, category=Sets())
-        if not ring in Rings():
+        if ring not in Rings():
             raise ValueError("'ring' must be a ring")
         self._ring = ring
         self.register_action(MatrixActionOnPolygons(self))
@@ -1681,7 +1681,18 @@ class Polygons(UniqueRepresentation, Parent):
         return self._ring
 
     def field(self):
-        return self.base_ring().fraction_field()
+        r"""
+        Return the field over which this polygon is defined.
+
+        EXAMPLES::
+
+            sage: from flatsurf import polygons
+            sage: P = polygons(vertices=[(0,0),(1,0),(2,1),(-1,1)])
+            sage: P.field()
+            Rational Field
+
+        """
+        return self._ring.fraction_field()
 
     @cached_method
     def module(self):
@@ -2561,11 +2572,11 @@ class PolygonsConstructor:
     def triangle(self, a, b, c):
         """
         Return the triangle with angles a*pi/N,b*pi/N,c*pi/N where N=a+b+c.
-        
+
         INPUT:
-        
+
         - ``a``, ``b``, ``c`` -- integers
-        
+
         EXAMPLES::
 
             sage: from flatsurf.geometry.polygon import polygons
@@ -2813,8 +2824,13 @@ class PolygonsConstructor:
 
             return E(lengths, normalized=True)
 
-        if base_ring not in Fields():
-            base_ring = base_ring.fraction_field()
+        if base_ring is ZZ:
+            # Typically, we do not want to go to the fraction field of the base
+            # ring, e.g., we do not want to go to FractionField(ExactReals()).
+            # However, manual input of parameters often leads to the
+            # automatically detected base ring ZZ which is essentially never
+            # what the user wanted.
+            base_ring = QQ
 
         if convex:
             return ConvexPolygons(base_ring)(vertices=vertices, edges=edges, base_point=base_point)
