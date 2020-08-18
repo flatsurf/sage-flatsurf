@@ -532,10 +532,6 @@ class SimilaritySurfaceGenerators:
             s = RationalConeSurface(surface)
         else:
             s = ConeSurface(surface)
-        if len(P) == 1:
-            # TODO: this is very add-hoc and must be removed
-            gs = s.graphical_surface(edge_labels=False, polygon_labels=False)
-            gs.make_adjacent(0,0,reverse=True)
         return s
 
     @staticmethod
