@@ -60,4 +60,4 @@ def test_gothic_veech():
 #        assert d.decomposition.cylinder_diagram()[0].stratum() == O.surface.stratum()
         O.update_tangent_space_from_flow_decomposition(d)
     assert O.dimension() == O.absolute_dimension() == 2
-    assert O.field_of_definition() == O.base_ring()
+    assert O.field_of_definition() == O.V2._isomorphic_vector_space.base_ring()

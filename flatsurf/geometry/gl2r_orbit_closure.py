@@ -34,6 +34,7 @@ GL(2,R)-orbit closure of translation surfaces
 ######################################################################
 
 import cppyy
+import gmpxxyy
 from pyeantic import RealEmbeddedNumberField
 
 import pyflatsurf
@@ -227,7 +228,7 @@ class Decomposition:
             Because of https://github.com/flatsurf/flatsurf/issues/140 we set a
             limit to decompositions but this should not be needed here.
         """
-        if self.orbit.V2.sage_base_ring is ZZ or self.orbit.V2.sage_base_ring is QQ:
+        if self.orbit.V2.base_ring() in [ZZ, QQ]:
             return True
 
         # from here we assume that the field self.orbit.K is a number field
@@ -242,8 +243,8 @@ class Decomposition:
             elif comp.cylinder() != True:
                 state = Unknown
             hol = comp.circumferenceHolonomy()
-            hol = self.orbit.V2sage(self.orbit.V2(hol))
-            area = self.orbit.Ksage_constructor(comp.area())
+            hol = self.orbit.V2._isomorphic_vector_space(self.orbit.V2(hol))
+            area = self.orbit.V2.base_ring()(comp.area())
             mod = area / (hol[0]**2 + hol[1]**2)
             if mod0 is None:
                 mod0 = mod
@@ -280,13 +281,13 @@ class Decomposition:
         # check
         hol = self.orbit.holonomy_dual(circumference)
         holbis = component.circumferenceHolonomy()
-        holbis = self.orbit.V2sage(self.orbit.V2(holbis))
+        holbis = self.orbit.V2._isomorphic_vector_space(self.orbit.V2(holbis))
         assert hol == holbis, (hol, holbis)
 
         u = sc.vector()
-        u = self.orbit.V2sage(self.orbit.V2(u))
+        u = self.orbit.V2._isomorphic_vector_space(self.orbit.V2(u))
         width = self.u[1] * u[0] - self.u[0] * u[1]
-        widthbis = self.orbit.Ksage_constructor(component.width())
+        widthbis = self.orbit.V2.base_ring()(component.width())
         assert width == widthbis, (width, widthbis)
 
         return circumference, width
@@ -297,6 +298,21 @@ class Decomposition:
 
         From A. Wright cylinder deformation Theorem.
         """
+        def eliminate_denominators(fractions):
+            r"""
+            Given a list of ``fractions``, pairs of numerators `n_i` and
+            denominators `d_i`, return a list of fractions `c n_i/d_i` scaled
+            uniformly such that the value can be represented in the underlying
+            ring.
+            """
+            try:
+                return [x.parent()(x / y) for x, y in fractions]
+            except ValueError:
+                # Note that this could be improved by using lcm instead of prod
+                return [x * prod(
+                    [z for (__, z), j in enumerate(fractions) if j != i]
+                ) for (x, _), i in enumerate(fractions)]
+
         v = self.orbit.V()
         modules = []
         vcyls = []
@@ -308,22 +324,49 @@ class Decomposition:
                 circ, width = self.circumference_width(comp, sc_index, proj)
                 vcyls.append(width * circ)
                 hol = comp.circumferenceHolonomy()
-                hol = self.orbit.V2sage(self.orbit.V2(hol))
-                area = self.orbit.Ksage_constructor(comp.area())
-                modules.append(area / (hol[0]**2 + hol[1]**2))
+                hol = self.orbit.V2._isomorphic_vector_space(self.orbit.V2(hol))
+                area = self.orbit.V2.base_ring()(comp.area())
+                modules.append((area, hol[0]**2 + hol[1]**2))
             else:
                 return []
 
-        # irrationally related cylinders can be twisted independently
-        vectors = []
-        if self.orbit.V2.sage_base_ring is ZZ or self.orbit.V2.sage_base_ring is QQ:
-            vectors.append(sum(vcyls))
-        else:
-            ncyls = len(vcyls)
-            M = matrix([mod.vector() for mod in modules])
-            relations = M.left_kernel().matrix()
-            for t in relations.right_kernel().basis():
-                vectors.append(sum(t[i] / modules[i] * vcyls[i] for i in range(ncyls)))
+        if not modules:
+            return []
+
+        modules = eliminate_denominators(modules)
+
+        def to_rational_vector(x):
+            r"""
+            Return the rational coefficients of `x` over its implicit basis,
+            e.g., if `x` is in a number field K, return the coefficients of x
+            in `K` as a vector space over the rationals.
+            """
+            if x.parent() in [ZZ, QQ]:
+                ret = [QQ(x)]
+            elif hasattr(x, 'vector'):
+                ret = x.vector()
+            if hasattr(x, 'renf_elem'):
+                ret = x.parent().number_field(x).vector()
+            elif hasattr(x, '_backend'):
+                from itertools import chain
+                ret = list(chain(*[to_rational_vector(self.orbit.V2.number_field(self.orbit.V2.base_ring().base_ring()(c))) for c in x._backend.coefficients()]))
+            else:
+                raise NotImplementedError("cannot turn %s, i.e., a %s, into a rational vector yet"%(x,type(x)))
+
+            assert all(y in QQ for y in ret)
+            return ret
+
+        assert all(module.parent() is modules[0].parent() for module in modules)
+        M = matrix([to_rational_vector(module) for module in modules])
+        assert M.base_ring() is QQ
+        relations = M.left_kernel().matrix()
+
+        vectors = list(
+            sum(eliminate_denominators(
+                (t * vcyl, module) for (t, vcyl, module) in zip(relation, vcyls, modules)
+            )) for relation in relations.right_kernel().basis())
+
+        assert all(v.base_ring() is self.orbit.V2._isomorphic_vector_space.base_ring() for v in vectors)
 
         return vectors
 
@@ -337,13 +380,13 @@ class Decomposition:
         xmin = xmax = ymin = ymax = 0
         for comp in self.decomposition.components():
             H = Graphics()
-            x = O.V2sage.zero()
+            x = O.V2._isomorphic_vector_space.zero()
 
             pts = [x]
             below = True
             for p in comp.perimeter():
                 sc = p.saddleConnection()
-                y = x + m * O.V2sage(O.V2(p.saddleConnection().vector()))
+                y = x + m * O.V2._isomorphic_vector_space(O.V2(p.saddleConnection().vector()))
 
                 if p.vertical():
                     if sc in indices:
@@ -384,16 +427,33 @@ class GL2ROrbitClosure:
         sage: S = S.minimal_cover(cover_type="translation")
         sage: GL2ROrbitClosure(S)  # optional: pyflatsurf
         GL(2,R)-orbit closure of dimension at least 2 in H_5(4, 2^2) (ambient dimension 12)
+
+    An orbit closure over an exact real ring with transcendental elements::
+
+        sage: from flatsurf import EquiangularPolygons
+        sage: from pyexactreal import ExactReals  # optional: exactreal
+        sage: E = EquiangularPolygons(3, 3, 5)
+        sage: R = ExactReals(E.base_ring())  # optional: exactreal
+        sage: T = E(R.random_element())  # optional: exactreal
+        sage: S = similarity_surfaces.billiard(T)  # optional: exactreal
+        sage: S = S.minimal_cover(cover_type="translation")  # optional: exactreal
+        sage: GL2ROrbitClosure(S)  # optional: exactreal, pyflatsurf
+        GL(2,R)-orbit closure of dimension at least 2 in H_5(4, 2^2) (ambient dimension 12)
+
     """
     def __init__(self, surface):
         if not isinstance(surface, TranslationSurface):
-            raise ValueError("input must be a translation surface")
-        self._surface = to_pyflatsurf(surface)   # underlying libflatsurf surface
+            raise ValueError("surface must be a translation surface")
+
+        # A model of the vector space R² in libflatsurf, e.g., to represent the
+        # vector associated to a saddle connection.
+        self.V2 = pyflatsurf.vector.Vectors(surface.base_ring())
+
+        self._surface = to_pyflatsurf(surface)
 
         # We construct a spanning set of edges, that is a subset of the
         # edges that form a basis of H_1(S, Sigma; Z)
         # It comes together with a projection matrix
-        surface = self._surface
         t, m = self._spanning_tree()
         assert set(t.keys()) == set(f[0] for f in self._faces())
         self.spanning_set = []
@@ -411,33 +471,19 @@ class GL2ROrbitClosure:
 
         self.Omega = self._intersection_matrix(t, self.spanning_set)
 
-        # TODO: this distinction between mpz/mpq/renf_elem_class is somehow annoying
-        # (and we completely ignore exact real)
-        x = surface.fromEdge(surface.halfEdges()[0]).x()
-        if isinstance(x, cppyy.gbl.eantic.renf_elem_class):
-            base = x.parent()
-        else:
-            base = type(x)
-        self.V2 = pyflatsurf.vector.Vectors(base)
-        self.V2sage = VectorSpace(self.V2.sage_base_ring, 2)
-
-        if self.V2.sage_base_ring is ZZ or self.V2.sage_base_ring is QQ:
-            self.Ksage_constructor = lambda x: self.V2.sage_base_ring(str(x))
-        else:
-            self.Ksage_constructor = lambda x: self.V2.sage_base_ring(self.V2.base_ring()(x))
-
-        self.V = VectorSpace(self.V2.sage_base_ring, self.d)
-        self.H = matrix(self.V2.sage_base_ring, self.d, 2)
+        self.V = FreeModule(self.V2.base_ring(), self.d)
+        self.H = matrix(self.V2.base_ring(), self.d, 2)
         for i in range(self.d):
             s = self._surface.fromEdge(self.spanning_set[i].positive())
-            self.H[i] = self.V2sage(self.V2(s))
+            self.H[i] = self.V2._isomorphic_vector_space(self.V2(s))
         self.Hdual = self.Omega * self.H
 
-        # NOTE: we don't use Sage vector spaces because they are usually way too slow
-        # (we avoid calling .echelonize())
-        self._U = matrix(self.V2.sage_base_ring, self.d)
-        self._U[:2] = self.H.transpose()
-        self._U_rank = 2
+        # Note that we don't use Sage vector spaces because they are usually
+        # way too slow (in particular we avoid calling .echelonize())
+        self._U = matrix(self.V2._algebraic_ring(), self.d)
+        self._U_rank = 0
+        self.update_tangent_space_from_vector(self.H.transpose()[0])
+        self.update_tangent_space_from_vector(self.H.transpose()[1])
 
     def dimension(self):
         return self._U_rank
@@ -462,7 +508,7 @@ class GL2ROrbitClosure:
             not terminated.
         """
         M = self._U.echelon_form()
-        L, elts, phi = subfield_from_elements(self.base_ring(), M[:self._U_rank].list())
+        L, elts, phi = subfield_from_elements(self.V2._isomorphic_vector_space.base_ring(), M[:self._U_rank].list())
         return L
 
     def _half_edge_to_face(self, h):
@@ -521,8 +567,8 @@ class GL2ROrbitClosure:
             sage: span([v0, v1])  # optional: pyflatsurf
             Vector space of degree 9 and dimension 2 over Number Field in l with defining polynomial x^2 - x - 8 with l = 3.372281323269015?
             Basis matrix:
-            [           1            0           -1  1/4*l - 1/4 -1/4*l + 1/4            0 -1/4*l + 1/4            0 -1/4*l + 1/4]
-            [           0            1           -1  1/8*l + 7/8 -1/8*l + 1/8           -1 3/8*l - 11/8 -1/2*l + 3/2 -1/8*l + 1/8]
+            [                         1                          0                         -1   (1/4*l-1/4 ~ 0.59307033) (-1/4*l+1/4 ~ -0.59307033)                          0 (-1/4*l+1/4 ~ -0.59307033)                          0 (-1/4*l+1/4 ~ -0.59307033)]
+            [                         0                          1                         -1    (1/8*l+7/8 ~ 1.2965352) (-1/8*l+1/8 ~ -0.29653517)                         -1 (3/8*l-11/8 ~ -0.11039450) (-1/2*l+3/2 ~ -0.18614066) (-1/8*l+1/8 ~ -0.29653517)]
 
         This can be used to deform the surface::
 
@@ -552,12 +598,12 @@ class GL2ROrbitClosure:
         n = self._surface.edges().size()
         k = len(self.spanning_set)
         assert k + len(bdry) == n + 1
-        A = matrix(self.V2.sage_base_ring, n+1, n)
+        A = matrix(self.V2.base_ring(), n+1, n)
         for i,e in enumerate(self.spanning_set):
             A[i,e.index()] = 1
         for i,b in enumerate(bdry):
             A[k+i,:] = b
-        u = vector(self.V2.sage_base_ring, n + 1)
+        u = vector(self.V2.base_ring(), n + 1)
         u[:k] = v
         return A.solve_right(u)
 
@@ -770,7 +816,7 @@ class GL2ROrbitClosure:
     def decomposition(self, v, limit=-1):
         v = self.V2(v)
         decomposition = pyflatsurf.flatsurf.makeFlowDecomposition(self._surface, v.vector)
-        u = self.V2sage(v)
+        u = self.V2._isomorphic_vector_space(v)
         if limit != 0:
             pyflatsurf.flatsurf.decomposeFlowDecomposition(decomposition, int(limit))
         return Decomposition(self, decomposition, u)
@@ -839,7 +885,7 @@ class GL2ROrbitClosure:
             1 2 3
             1 3 3
         """
-        if self.V2.sage_base_ring is ZZ or self.V2.sage_base_ring is QQ:
+        if self.V2.base_ring in [ZZ, QQ]:
             # square tiled surface
             return True
         # TODO: implement simpler criterion based on the holonomy field
@@ -870,16 +916,24 @@ class GL2ROrbitClosure:
             ....:     O.update_tangent_space_from_flow_decomposition(d)
             sage: assert O.dimension() == 2  # optional: pyflatsurf
         """
-        A = self._U
-        i = self._U_rank
+        if self._U_rank == self._U.nrows(): return
+        for v in decomposition.cylinder_deformation_subspace():
+            self.update_tangent_space_from_vector(v)
+            if self._U_rank == self._U.nrows(): return
+
+    def update_tangent_space_from_vector(self, v):
         if self._U_rank == self._U.nrows():
             return
-        for v in decomposition.cylinder_deformation_subspace():
-            A[i] = v
-            r = A.rank()
-            if r > i:
-                assert r == i+1
-                i = self._U_rank = i + 1
-                if self._U_rank == self._U.nrows():
-                    return
 
+        v = vector(v)
+
+        if v.base_ring() is not self.V2._algebraic_ring():
+            for gen, p in self.V2.decomposition(v):
+                self.update_tangent_space_from_vector(p)
+            return
+
+        self._U[self._U_rank] = v
+        r = self._U.rank()
+        if r > self._U_rank:
+            assert r == self._U_rank + 1
+            self._U_rank += 1

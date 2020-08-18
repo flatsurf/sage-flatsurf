@@ -413,9 +413,8 @@ class Surface(SageObject):
     def _test_base_ring(self, **options):
         # Test that the base_label is associated to a polygon
         tester = self._tester(**options)
-        from sage.rings.ring import Field
-        tester.assertTrue(isinstance(self.base_ring(), Field), \
-            "base_ring="+str(self.base_ring())+" is not a Field.")
+        from sage.all import Rings
+        tester.assertTrue(self.base_ring() in Rings())
 
     def _test_base_label(self, **options):
         # Test that the base_label is associated to a polygon

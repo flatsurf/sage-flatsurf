@@ -22,6 +22,8 @@ from sage.modules.free_module_element import vector
 from sage.matrix.constructor import matrix, identity_matrix
 from sage.modules.free_module import VectorSpace
 
+from sage.all import FreeModule
+
 from .matrix_2x2 import (is_similarity,
                     homothety_rotation_decomposition,
                     similarity_from_vectors,
@@ -427,7 +429,7 @@ class SimilaritySurface(SageObject):
         gg=G(bb[0]-aa[0],bb[1]-aa[1],aa[0],aa[1])
 
         # This is the similarity carrying (a,b) to (aa,bb):
-        return gg*(~g)
+        return gg/g
 
     def set_vertex_zero(self, label, v, in_place=False):
         r"""
@@ -1297,7 +1299,7 @@ class SimilaritySurface(SageObject):
             TranslationSurface built from infinitely many polygons
             sage: TestSuite(ps).run(skip="_test_pickling")
 
-            sage: from flatsurf import *
+            sage: from flatsurf import similarity_surfaces
             sage: S = similarity_surfaces.example()
             sage: T = S.minimal_cover(cover_type="translation")
             sage: T

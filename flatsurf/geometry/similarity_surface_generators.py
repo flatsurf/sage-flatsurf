@@ -466,6 +466,17 @@ class SimilaritySurfaceGenerators:
             sage: TestSuite(S).run()
             sage: S, _ = S.normalized_coordinates()
             sage: TestSuite(S).run()
+
+        Unfolding a triangle with non-algebraic lengths::
+
+            sage: E = EquiangularPolygons(3, 3, 5)
+            sage: from pyexactreal import ExactReals # optional: exactreal
+            sage: R = ExactReals(E.base_ring()) # optional: exactreal
+            sage: P = E(R.random_element()) # optional: exactreal
+            sage: S = similarity_surfaces.billiard(P); S # optional: exactreal
+            ConeSurface built from 2 polygons
+            sage: TestSuite(S).run() # optional: exactreal
+
         """
         if not isinstance(P, Polygon):
             raise TypeError("invalid input")
