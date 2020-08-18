@@ -1986,7 +1986,7 @@ class EquiangularPolygons:
         n = len(angles)
         if n < 3:
             raise ValueError("'angles' should be a list of at least 3 numbers")
-        angles = [QQ.coerce(a) for a in angles]  # total sum of angle should be
+        angles = [QQ.coerce(a) for a in angles]
         if any(angle <= 0 for angle in angles):
             raise ValueError("'angles' must be positive rational numbers")
 
