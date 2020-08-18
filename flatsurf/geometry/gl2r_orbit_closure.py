@@ -853,9 +853,9 @@ class GL2ROrbitClosure:
         # something similar) to certify that we do have a Veech surface
         return Unknown
 
-    def update_tangent_space_from_flow_decomposition(self, decomposition, verbose=False):
+    def update_tangent_space_from_flow_decomposition(self, decomposition):
         r"""
-        Update the current tangent space by using the cylinder deformation vector from ``decomposition``.
+        Update the current tangent space by using the cylinder deformation vectors from ``decomposition``.
 
         EXAMPLES::
 
