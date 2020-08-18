@@ -5,8 +5,8 @@ Interface with pyflatsurf
 #*********************************************************************
 #  This file is part of sage-flatsurf.
 #
-#        Copyright (C) 2019 Vincent Delecroix
-#        Copyright (C) 2019 Julian Rüth
+#        Copyright (C) 2019      Vincent Delecroix
+#                      2019-2020 Julian Rüth
 #
 #  sage-flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
