@@ -31,7 +31,7 @@ import operator
 
 from sage.all import cached_method, Parent, UniqueRepresentation, Sets, Rings,\
                      Fields, ZZ, QQ, AA, RR, RIF, QQbar, matrix, polygen, vector,\
-                     free_module_element, NumberField
+                     free_module_element, NumberField, FreeModule
 from sage.structure.element import get_coercion_model, Vector
 from sage.structure.coerce import py_scalar_parent
 cm = get_coercion_model()
@@ -867,9 +867,33 @@ class Polygon(Element):
         """
         return "Polygon: " + ", ".join(map(str,self.vertices()))
 
+    @cached_method
+    def module(self):
+        r"""
+        Return the free module of rank 2 in which this polygon embeds.
+
+        EXAMPLES::
+
+            sage: from flatsurf import polygons
+            sage: S = polygons.square()
+            sage: S.module()
+            Vector space of dimension 2 over Rational Field
+
+        """
+        return self.parent().module()
+
+    @cached_method
     def vector_space(self):
         r"""
-        Return the vector space containing the vertices.
+        Return the vector space of dimension 2 in which this polygon embeds.
+
+        EXAMPLES::
+
+            sage: from flatsurf import polygons
+            sage: S = polygons.square()
+            sage: S.vector_space()
+            Vector space of dimension 2 over Rational Field
+
         """
         return self.parent().vector_space()
 
@@ -1660,21 +1684,34 @@ class Polygons(UniqueRepresentation, Parent):
         return self.base_ring().fraction_field()
 
     @cached_method
-    def vector_space(self):
+    def module(self):
         r"""
-        Return the vector space in which this polygon embeds.
+        Return the free module of rank 2 in which these polygons embed.
 
         EXAMPLES::
 
-            sage: from flatsurf import Polygons, ConvexPolygons
-            sage: P = Polygons(QQ)
-            sage: P.vector_space()
+            sage: from flatsurf import Polygons
+            sage: C = Polygons(QQ)
+            sage: C.module()
             Vector space of dimension 2 over Rational Field
-            sage: C = ConvexPolygons(QQ)
+
+        """
+        return FreeModule(self.base_ring(), 2)
+
+    @cached_method
+    def vector_space(self):
+        r"""
+        Return the vector space of dimension 2 in which these polygons embed.
+
+        EXAMPLES::
+
+            sage: from flatsurf import Polygons
+            sage: C = Polygons(QQ)
             sage: C.vector_space()
             Vector space of dimension 2 over Rational Field
+
         """
-        return VectorSpace(self.field(), 2)
+        return VectorSpace(self.base_ring().fraction_field(), 2)
 
     def _repr_(self):
         return "Polygons(%s)"%self.base_ring()
@@ -1761,7 +1798,7 @@ class ConvexPolygons(Polygons):
         sage: TestSuite(ConvexPolygons(QQ)).run()
         sage: TestSuite(ConvexPolygons(QQbar)).run()
         sage: TestSuite(ConvexPolygons(ZZ)).run()
-    
+
     """
     Element = ConvexPolygon
 
@@ -2051,8 +2088,35 @@ class EquiangularPolygons:
         """
         return "EquiangularPolygons({})".format(", ".join(map(str,self.angles(True))))
 
+    @cached_method
+    def module(self):
+        r"""
+        Return the free module of rank 2 in which these polygons embed.
+
+        EXAMPLES::
+
+            sage: from flatsurf import EquiangularPolygons
+            sage: C = EquiangularPolygons(1, 2, 3)
+            sage: C.module()
+            Vector space of dimension 2 over Number Field in c with defining polynomial x^2 - 3 with c = 1.732050807568878?
+
+        """
+        return FreeModule(self._base_ring, 2)
+
+    @cached_method
     def vector_space(self):
-        return VectorSpace(self._base_ring, 2)
+        r"""
+        Return the vector space of dimension 2 in which these polygons embed.
+
+        EXAMPLES::
+
+            sage: from flatsurf import EquiangularPolygons
+            sage: C = EquiangularPolygons(1, 2, 3)
+            sage: C.vector_space()
+            Vector space of dimension 2 over Number Field in c with defining polynomial x^2 - 3 with c = 1.732050807568878?
+
+        """
+        return VectorSpace(self._base_ring.fraction_field(), 2)
 
     def slopes(self, e0=(1,0)):
         r"""
