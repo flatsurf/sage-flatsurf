@@ -26,8 +26,8 @@ def circle_from_three_points(p,q,r,base_ring=None):
     """
     if base_ring is None:
         base_ring=p.base_ring()
-    V2 = VectorSpace(base_ring,2)
-    V3 = VectorSpace(base_ring,3)
+    V2 = VectorSpace(base_ring.fraction_field(), 2)
+    V3 = VectorSpace(base_ring.fraction_field(), 3)
     
     v1=V3((p[0]+q[0],p[1]+q[1],2))
     v2=V3((p[1]-q[1],q[0]-p[0],0))
