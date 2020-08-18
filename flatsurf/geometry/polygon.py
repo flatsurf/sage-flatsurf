@@ -1303,7 +1303,7 @@ class ConvexPolygon(Polygon):
 
     def find_separatrix(self, direction=None, start_vertex=0):
         r"""
-        Returns a pair (v,same) where v is a vertex and dir is a boolean.
+        Returns a pair (v,same) where v is a vertex and same is a boolean.
         The provided parameter "direction" should be a non-zero vector with
         two entries, or by default direction=(0,1).
 
