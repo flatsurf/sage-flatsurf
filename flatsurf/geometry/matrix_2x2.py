@@ -269,8 +269,8 @@ def is_cosine_sine_of_rational(c, s):
     TESTS::
 
         sage: from pyexactreal import ExactReals # optional: exactreal
-        sage: R = ExactReals()
-        sage: is_cosine_sine_of_rational(R.one(), R.zero())
+        sage: R = ExactReals() # optional: exactreal
+        sage: is_cosine_sine_of_rational(R.one(), R.zero()) # optional: exactreal
         True
 
     """
