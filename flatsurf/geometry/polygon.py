@@ -656,7 +656,7 @@ class PolygonPosition:
 class Polygon(Element):
     def __init__(self, parent, vertices, check=True):
         Element.__init__(self, parent)
-        V = parent.vector_space()
+        V = parent.module()
         self._v = tuple(map(V, vertices))
         for vv in self._v: vv.set_immutable()
         if check:
@@ -809,7 +809,7 @@ class Polygon(Element):
             Polygon: (3, -2), (5, -2), (4, -1)
         """
         P = self.parent()
-        u = P.vector_space()(u)
+        u = P.module()(u)
         return P.element_class(P, [u+v for v in self._v], check=False)
 
     def change_ring(self, R):
@@ -1331,7 +1331,7 @@ class ConvexPolygon(Polygon):
             (3, False)
         """
         if direction is None:
-            direction = self.vector_space()((self.base_ring().zero(), self.base_ring().one()))
+            direction = self.module()((self.base_ring().zero(), self.base_ring().one()))
         else:
             assert not direction.is_zero()
         v=start_vertex
@@ -1870,9 +1870,9 @@ class ConvexPolygons(Polygons):
                 raise ValueError("invalid keyword {!r}".format(next(iter(kwds))))
 
             if edges is not None:
-                v = self.vector_space()(base_point)
+                v = self.module()(base_point)
                 vertices = []
-                for e in map(self.vector_space(), edges):
+                for e in map(self.module(), edges):
                     vertices.append(v)
                     v += e
                 if v != vertices[0]:
@@ -2128,7 +2128,7 @@ class EquiangularPolygons:
             sage: EquiangularPolygons(1, 2, 1, 2).slopes()
             [(1, 0), (c, 3), (-1, 0), (-c, -3)]
         """
-        V = self.vector_space()
+        V = self.module()
         slopes = self._slopes
         n = len(slopes)
         cosines = [x[0] for x in slopes]
@@ -2226,7 +2226,7 @@ class EquiangularPolygons:
             else:
                 base_ring = pushout(base_ring, self._base_ring)
 
-        V = self.vector_space()
+        V = self.module()
         slopes = self.slopes()
         if normalized:
             V = VectorSpace(base_ring, 2)

@@ -470,7 +470,7 @@ class SimilaritySurfaceGenerators:
         if not isinstance(P, Polygon):
             raise TypeError("invalid input")
 
-        V = P.vector_space()
+        V = P.module()
 
         if not isinstance(P, ConvexPolygon):
             # triangulate non-convex ones

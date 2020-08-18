@@ -2354,7 +2354,7 @@ class SimilaritySurface(SageObject):
         surface = surface.copy(relabel=True)
         angles = [adj for a,adj in surface.angles(return_adjacent_edges=True) if a == 1]
         C = ConvexPolygons(self.base_ring())
-        V = VectorSpace(self.base_ring(), 2)
+        V = FreeModule(self.base_ring(), 2)
         while angles:
             # remove the vertex corresponding to angles[-1]
             adj = angles.pop()
