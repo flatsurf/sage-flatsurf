@@ -346,7 +346,7 @@ class Decomposition:
                 ret = [QQ(x)]
             elif hasattr(x, 'vector'):
                 ret = x.vector()
-            if hasattr(x, 'renf_elem'):
+            elif hasattr(x, 'renf_elem'):
                 ret = x.parent().number_field(x).vector()
             elif hasattr(x, '_backend'):
                 from itertools import chain
