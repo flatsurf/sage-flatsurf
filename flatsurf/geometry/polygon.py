@@ -1761,7 +1761,7 @@ class ConvexPolygons(Polygons):
         sage: TestSuite(ConvexPolygons(QQ)).run()
         sage: TestSuite(ConvexPolygons(QQbar)).run()
         sage: TestSuite(ConvexPolygons(ZZ)).run()
-    
+
     """
     Element = ConvexPolygon
 
@@ -1933,6 +1933,11 @@ class EquiangularPolygons:
 
         sage: EquiangularPolygons(1, 2, 1, 2, 1, 2, 1, 2, 2, 2, 2, 1, 1, 2, 1)
         EquiangularPolygons(13, 26, 13, 26, 13, 26, 13, 26, 26, 26, 26, 13, 13, 26, 13)
+
+    ::
+
+        sage: E = EquiangularPolygons(1, 1, 1, 1, 1)
+        sage: E(1, 1, 1, 1, 1)
 
     """
     def __init__(self, *angles, **kwds):
@@ -2497,11 +2502,11 @@ class PolygonsConstructor:
     def triangle(self, a, b, c):
         """
         Return the triangle with angles a*pi/N,b*pi/N,c*pi/N where N=a+b+c.
-        
+
         INPUT:
-        
+
         - ``a``, ``b``, ``c`` -- integers
-        
+
         EXAMPLES::
 
             sage: from flatsurf.geometry.polygon import polygons
