@@ -1930,7 +1930,7 @@ class EquiangularPolygons:
         sage: P(R(R.random_element([0.2, 0.3]))) # random output, optional: exactreal
         Polygon: (0, 0), (ℝ(0.287373=2588422249976937p-53 + ℝ(0.120809…)p-54), 0), (((12*c0+17 ~ 33.970563)*ℝ(0.287373=2588422249976937p-53 + ℝ(0.120809…)p-54))/((17*c0+24 ~ 48.041631)), ((5*c0+7 ~ 14.071068)*ℝ(0.287373=2588422249976937p-53 + ℝ(0.120809…)p-54))/((17*c0+24 ~ 48.041631)))
         sage: _.base_ring() # optional: exactreal
-        Real Numbers as (Number Field in c0 with defining polynomial x^2 - 2 with c0 = 1.414213562373095?)-Module
+        Real Numbers as (Real Embedded Number Field in c0 with defining polynomial x^2 - 2 with c0 = 1.414213562373095?)-Module
 
     ::
 

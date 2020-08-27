@@ -350,7 +350,7 @@ class Decomposition:
                 ret = x.parent().number_field(x).vector()
             elif hasattr(x, '_backend'):
                 from itertools import chain
-                ret = list(chain(*[to_rational_vector(self.orbit.V2.number_field(self.orbit.V2.base_ring().base_ring()(c))) for c in x._backend.coefficients()]))
+                ret = list(chain(*[to_rational_vector(self.orbit.V2.base_ring().base_ring()(self.orbit.V2.base_ring().base_ring()(c))) for c in x._backend.coefficients()]))
             else:
                 raise NotImplementedError("cannot turn %s, i.e., a %s, into a rational vector yet"%(x,type(x)))
 
@@ -566,7 +566,7 @@ class GL2ROrbitClosure:
             sage: v0 = O.lift(u0)  # optional: pyflatsurf
             sage: v1 = O.lift(u1)  # optional: pyflatsurf
             sage: span([v0, v1])  # optional: pyflatsurf
-            Vector space of degree 9 and dimension 2 over Number Field in l with defining polynomial x^2 - x - 8 with l = 3.372281323269015?
+            Vector space of degree 9 and dimension 2 over Real Embedded Number Field in l with defining polynomial x^2 - x - 8 with l = 3.372281323269015?
             Basis matrix:
             [                         1                          0                         -1   (1/4*l-1/4 ~ 0.59307033) (-1/4*l+1/4 ~ -0.59307033)                          0 (-1/4*l+1/4 ~ -0.59307033)                          0 (-1/4*l+1/4 ~ -0.59307033)]
             [                         0                          1                         -1    (1/8*l+7/8 ~ 1.2965352) (-1/8*l+1/8 ~ -0.29653517)                         -1 (3/8*l-11/8 ~ -0.11039450) (-1/2*l+3/2 ~ -0.18614066) (-1/8*l+1/8 ~ -0.29653517)]
