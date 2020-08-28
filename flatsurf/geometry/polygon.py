@@ -1934,11 +1934,11 @@ class EquiangularPolygons:
         sage: EquiangularPolygons(1, 2, 1, 2, 1, 2, 1, 2, 2, 2, 2, 1, 1, 2, 1)
         EquiangularPolygons(13, 26, 13, 26, 13, 26, 13, 26, 26, 26, 26, 13, 13, 26, 13)
 
-    ::
+    A regular pentagon::
 
         sage: E = EquiangularPolygons(1, 1, 1, 1, 1)
-        sage: E(1, 1, 1, 1, 1)
-
+        sage: E(1, 1, 1, 1, 1, normalized=True)
+        Polygon: (0, 0), (1, 0), (1/2*c^2 - 1/2, 1/2*c), (1/2, 1/2*c^3 - c), (-1/2*c^2 + 3/2, 1/2*c)
     """
     def __init__(self, *angles, **kwds):
         if 'number_field' in kwds:
