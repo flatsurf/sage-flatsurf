@@ -445,12 +445,12 @@ class GL2ROrbitClosure:
         sage: S = similarity_surfaces.billiard(T)  # optional: exactreal
         sage: S = S.minimal_cover(cover_type="translation")  # optional: exactreal
         sage: O = GL2ROrbitClosure(S); O  # optional: exactreal, pyflatsurf
-        GL(2,R)-orbit closure of dimension at least 2 in H_1(0^4) (ambient dimension 5)
+        GL(2,R)-orbit closure of dimension at least 4 in H_4(3, 1^3) (ambient dimension 11)
         sage: for decomposition in O.decompositions(2):  # long time, optional: exactreal, pyflatsurf
         ....:     O.update_tangent_space_from_flow_decomposition(decomposition)
         ....:     if O.dimension() == E.billiard_unfolding_stratum('half-translation').dimension(): break
         sage: O  # optional: exactreal, pyflatsurf
-        GL(2,R)-orbit closure of dimension at least 5 in H_1(0^4) (ambient dimension 5)
+        GL(2,R)-orbit closure of dimension at least 11 in H_4(3, 1^3) (ambient dimension 11)
 
     """
     def __init__(self, surface):
