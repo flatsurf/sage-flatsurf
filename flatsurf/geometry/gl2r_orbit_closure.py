@@ -336,6 +336,12 @@ class Decomposition:
 
         modules = eliminate_denominators(modules)
 
+        if hasattr(modules[0], '_backend'):
+            # Make sure all modules live in the same K-Module so that .coefficients() below produces coefficient lists of the same length.
+            from functools import reduce
+            parent = reduce(lambda m, n: m.span(m, n), [module._backend.module() for module in modules], modules[0]._backend.module())
+            modules = [module.parent()(module._backend.promote(parent)) for module in modules]
+
         def to_rational_vector(x):
             r"""
             Return the rational coefficients of `x` over its implicit basis,
