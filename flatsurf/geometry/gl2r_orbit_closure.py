@@ -368,6 +368,9 @@ class Decomposition:
         assert M.base_ring() is QQ
         relations = M.left_kernel().matrix()
 
+        if not relations:
+            return []
+
         vectors = list(
             sum(eliminate_denominators(
                 (t * vcyl, module) for (t, vcyl, module) in zip(relation, vcyls, modules)
