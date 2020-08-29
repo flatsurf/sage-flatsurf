@@ -44,7 +44,7 @@ import pyflatsurf.vector
 # TODO: move into flatsurf
 Vertex = cppyy.gbl.flatsurf.Vertex
 
-from sage.all import VectorSpace, FreeModule, matrix, identity_matrix, ZZ, QQ, Unknown, vector
+from sage.all import VectorSpace, FreeModule, matrix, identity_matrix, ZZ, QQ, Unknown, vector, prod
 
 from .subfield import subfield_from_elements
 from .polygon import is_between, projectivization
@@ -308,11 +308,11 @@ class Decomposition:
             """
             try:
                 return [x.parent()(x / y) for x, y in fractions]
-            except ValueError:
+            except (ValueError, ArithmeticError, NotImplementedError):
                 # Note that this could be improved by using lcm instead of prod
                 return [x * prod(
-                    [z for (__, z), j in enumerate(fractions) if j != i]
-                ) for (x, _), i in enumerate(fractions)]
+                    [z for j, (__, z) in enumerate(fractions) if j != i]
+                ) for i, (x, _) in enumerate(fractions)]
 
         v = self.orbit.V()
         modules = []
