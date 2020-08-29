@@ -435,17 +435,22 @@ class GL2ROrbitClosure:
         sage: GL2ROrbitClosure(S)  # optional: pyflatsurf
         GL(2,R)-orbit closure of dimension at least 2 in H_5(4, 2^2) (ambient dimension 12)
 
-    An orbit closure over an exact real ring with transcendental elements::
+    Computing an orbit closure over an exact real ring with transcendental elements::
 
         sage: from flatsurf import EquiangularPolygons
         sage: from pyexactreal import ExactReals  # optional: exactreal
-        sage: E = EquiangularPolygons(3, 3, 5)
+        sage: E = EquiangularPolygons(1, 1, 1, 2)
         sage: R = ExactReals(E.base_ring())  # optional: exactreal
-        sage: T = E(R.random_element())  # optional: exactreal
+        sage: T = E(R(1), R.random_element())  # optional: exactreal
         sage: S = similarity_surfaces.billiard(T)  # optional: exactreal
         sage: S = S.minimal_cover(cover_type="translation")  # optional: exactreal
-        sage: GL2ROrbitClosure(S)  # optional: exactreal, pyflatsurf
-        GL(2,R)-orbit closure of dimension at least 2 in H_5(4, 2^2) (ambient dimension 12)
+        sage: O = GL2ROrbitClosure(S); O  # optional: exactreal, pyflatsurf
+        GL(2,R)-orbit closure of dimension at least 2 in H_1(0^4) (ambient dimension 5)
+        sage: for decomposition in O.decompositions(2):  # long time, optional: exactreal, pyflatsurf
+        ....:     O.update_tangent_space_from_flow_decomposition(decomposition)
+        ....:     if O.dimension() == E.billiard_unfolding_stratum('half-translation').dimension(): break
+        sage: O  # optional: exactreal, pyflatsurf
+        GL(2,R)-orbit closure of dimension at least 5 in H_1(0^4) (ambient dimension 5)
 
     """
     def __init__(self, surface):
