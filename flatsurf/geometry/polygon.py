@@ -2188,7 +2188,7 @@ class EquiangularPolygons:
         """
         return self(sum(r.vector() for r in self.lengths_polytope().rays()))
 
-    def __call__(self, *lengths, **kwds):
+    def __call__(self, *lengths, normalized=False, base_ring=None):
         r"""
         TESTS::
 
@@ -2215,8 +2215,9 @@ class EquiangularPolygons:
         V = self.module()
         slopes = self.slopes()
         if normalized:
+            V = V.change_ring(self._cosines_ring)
             for i, s in enumerate(slopes):
-                x, y = s
+                x, y = map(self._cosines_ring, s)
                 norm2 = (x**2 + y**2).sqrt()
                 slopes[i] = V((x/norm2, y/norm2))
 
