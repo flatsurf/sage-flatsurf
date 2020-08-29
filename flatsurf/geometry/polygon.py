@@ -2205,16 +2205,20 @@ class EquiangularPolygons:
             sage: P(r0 + r1)
             Polygon: (0, 0), (20, 0), (5, -15*c^3 + 60*c), (5, -5*c^3 + 20*c)
         """
-        base_ring = kwds.pop('base_ring', None)
-        normalized = kwds.pop('normalized', False)
-        if kwds:
-            raise ValueError("invalid keyword {!r}".format(next(iter(kwds))))
         if len(lengths) == 1 and isinstance(lengths[0], (tuple, list, Vector)):
             lengths = lengths[0]
 
         n = len(self._angles)
-        if len(lengths) != n-2 and len(lengths) != n:
-            raise ValueError("invalid 'lengths' argument")
+        if len(lengths) != n - 2 and len(lengths) != n:
+            raise ValueError("must provide %d or %d lengths but provided %d"%(n - 2, n, len(lengths)))
+
+        V = self.module()
+        slopes = self.slopes()
+        if normalized:
+            for i, s in enumerate(slopes):
+                x, y = s
+                norm2 = (x**2 + y**2).sqrt()
+                slopes[i] = V((x/norm2, y/norm2))
 
         if base_ring is None:
             from sage.all import Sequence
@@ -2225,17 +2229,6 @@ class EquiangularPolygons:
                 base_ring = pushout(base_ring, self._cosines_ring)
             else:
                 base_ring = pushout(base_ring, self._base_ring)
-
-        V = self.module()
-        slopes = self.slopes()
-        if normalized:
-            V = VectorSpace(base_ring, 2)
-            for i, s in enumerate(slopes):
-                x, y = s
-                x = base_ring(x)
-                y = base_ring(y)
-                norm2 = (x**2 + y**2).sqrt()
-                slopes[i] = V((x/norm2, y/norm2))
 
         v = V((0,0))
         vertices = [v]
