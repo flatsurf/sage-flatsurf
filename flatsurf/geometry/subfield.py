@@ -1,5 +1,15 @@
 r"""
-Various helper for computations in number fields.
+Various helper functions for computations in number fields.
+
+References
+
+.. [KoRoTr2015]
+    Pierre-Vincent Koseleff, Fabrice Rouillier, Cuong Tran.
+    On the Sign of a Trigonometric Expression.
+    ISSAC 2015. Proceedings of the 2015 ACM International
+    Symposium on Symbolic and Algebraic Computation.
+    Pages 259--266.
+    DOI: http://dx.doi.org/10.1145/2755996.2756664
 """
 from sage.misc.misc_c import prod
 from sage.rings.all import ZZ, QQ, AA, QQbar, NumberField, polygen
@@ -22,12 +32,11 @@ def number_field_elements_from_algebraics(elts, name='a'):
         sage: z = QQbar.zeta(5)
         sage: c = z.real()
         sage: s = z.imag()
-        sage: number_field_elements_from_algebraics((c,s))
-        (Number Field in a with defining polynomial y^4 - 5*y^2 + 5 with a = 1.902113032590308?,
-         [1/2*a^2 - 3/2, 1/2*a])
-
-         sage: number_field_elements_from_algebraics([AA(1), AA(2/3)])
-         (Rational Field, [1, 2/3])
+        sage: number_field_elements_from_algebraics((c, s))
+        (Number Field in a with defining polynomial y^4 - 5*y^2 + 5
+         with a = 1.902113032590308?, [1/2*a^2 - 3/2, 1/2*a])
+        sage: number_field_elements_from_algebraics([AA(1), AA(2/3)])
+        (Rational Field, [1, 2/3])
     """
     # case when all elements are rationals
     if all(x in QQ for x in elts):
@@ -246,12 +255,12 @@ def chebyshev_T(n, c):
     r"""
     Return the Chebyshev polynomial T_n so that
 
-    T_n(2 cos(x)) = 2 cos(nx)
+    T_n(2 cos(x)) = 2 cos(n x)
 
     .. NOTE::
 
-        We use the polynomial as defined in [KosoleffRouillierTran2015] not
-        the Sage version which uses a different normalization.
+        We use the polynomial as defined in [KoRoTr2015]_,
+        not the Sage version which uses a different normalization.
 
     EXAMPLES::
 
@@ -270,7 +279,6 @@ def chebyshev_T(n, c):
         True
         sage: cos_minpoly(3, x)(chebyshev_T(5, x)) == cos_minpoly(15, x) * cos_minpoly(3, x)
         True
-
     """
     # T_0(x) = 2
     # T_1(x) = x
@@ -317,7 +325,7 @@ def cos_minpoly(n, var='x'):
     r"""
     Return the minimal polynomial of 2 cos pi/n
 
-    Done via Kosoleff-Rouillier-Tran 2015 Algorithm 3.
+    Done via [KoRoTr2015]_ Algorithm 3.
 
     EXAMPLES::
 
