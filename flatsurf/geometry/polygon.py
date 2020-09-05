@@ -51,13 +51,12 @@ import operator
 
 from sage.all import cached_method, Parent, UniqueRepresentation, Sets, Rings,\
                      Fields, ZZ, QQ, AA, RR, RIF, QQbar, matrix, polygen, vector,\
-                     free_module_element, NumberField, FreeModule
+                     free_module_element, NumberField, FreeModule, lcm, gcd
 from sage.structure.element import get_coercion_model, Vector
 from sage.structure.coerce import py_scalar_parent
 cm = get_coercion_model()
 from sage.structure.element import Element
 from sage.categories.action import Action
-from sage.arith.functions import lcm
 from sage.modules.free_module_element import vector
 from sage.modules.free_module import VectorSpace
 from sage.structure.sequence import Sequence
@@ -1998,9 +1997,8 @@ class EquiangularPolygons:
         self._angles = angles
         assert sum(self._angles) == ZZ(n - 2) / 2
 
-        # We now determine the number field that contains the slopes of the
-        # sides, i.e., the cosines and sines of the inner angles of the
-        # polygon.
+        # We determine the number field that contains the slopes of the sides,
+        # i.e., the cosines and sines of the inner angles of the polygon.
         # Let us first write all angles as multiples of 2π/N with the smallest
         # possible common N.
         N = lcm(a.denominator() for a in angles)
@@ -2085,14 +2083,32 @@ class EquiangularPolygons:
             True
             sage: E.strict_convexity()
             False
+
         """
         return all(2 * a < 1 for a in self._angles)
 
     def angles(self, integral=False):
+        r"""
+        Return the interior angles of this polygon as multiples 2π.
+
+        EXAMPLES::
+
+            sage: from flatsurf import EquiangularPolygons
+            sage: E = EquiangularPolygons(1, 1, 1, 2, 6)
+            sage: E.angles()
+            [3/22, 3/22, 3/22, 3/11, 9/11]
+
+        When ``integral`` is set, the output is scaled to eliminate
+        denominators::
+
+            sage: E.angles(integral=True)
+            [1, 1, 1, 2, 6]
+
+        """
         angles = self._angles
         if integral:
-            D = lcm([a.denominator() for a in self._angles])
-            angles = [(D * a).numerator() for a in self._angles]
+            C = lcm([a.denominator() for a in self._angles]) / gcd([a.numerator() for a in self._angles])
+            angles = [ZZ(C * a) for a in angles]
         return angles
 
     def __repr__(self):
