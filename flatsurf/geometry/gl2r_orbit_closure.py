@@ -306,6 +306,7 @@ class Decomposition:
             uniformly such that the value can be represented in the underlying
             ring.
             """
+            fractions = list(fractions)
             try:
                 return [x.parent()(x / y) for x, y in fractions]
             except (ValueError, ArithmeticError, NotImplementedError):
@@ -371,10 +372,10 @@ class Decomposition:
         if not relations:
             return []
 
-        vectors = list(
+        vectors = [
             sum(eliminate_denominators(
                 (t * vcyl, module) for (t, vcyl, module) in zip(relation, vcyls, modules)
-            )) for relation in relations.right_kernel().basis())
+            )) for relation in relations.right_kernel().basis()]
 
         assert all(v.base_ring() is self.orbit.V2._isomorphic_vector_space.base_ring() for v in vectors)
 
@@ -440,20 +441,23 @@ class GL2ROrbitClosure:
 
     Computing an orbit closure over an exact real ring with transcendental elements::
 
+        sage: from flatsurf import polygons, similarity_surfaces
+        sage: from flatsurf import GL2ROrbitClosure  # optional: pyflatsurf
         sage: from flatsurf import EquiangularPolygons
         sage: from pyexactreal import ExactReals  # optional: exactreal
-        sage: E = EquiangularPolygons(1, 1, 1, 2)
+        sage: E = EquiangularPolygons(1, 5, 5, 5)
         sage: R = ExactReals(E.base_ring())  # optional: exactreal
-        sage: T = E(R(1), R.random_element())  # optional: exactreal
+        sage: T = E(R(1), R.random_element(1/4))  # optional: exactreal
         sage: S = similarity_surfaces.billiard(T)  # optional: exactreal
         sage: S = S.minimal_cover(cover_type="translation")  # optional: exactreal
         sage: O = GL2ROrbitClosure(S); O  # optional: exactreal, pyflatsurf
-        GL(2,R)-orbit closure of dimension at least 4 in H_4(3, 1^3) (ambient dimension 11)
-        sage: for decomposition in O.decompositions(2):  # long time, optional: exactreal, pyflatsurf
+        GL(2,R)-orbit closure of dimension at least 4 in H_7(4^3, 0) (ambient dimension 17)
+        sage: bound = E.billiard_unfolding_stratum('half-translation', marked_points=True).dimension()
+        sage: for decomposition in O.decompositions(1):  # long time, optional: exactreal, pyflatsurf
         ....:     O.update_tangent_space_from_flow_decomposition(decomposition)
-        ....:     if O.dimension() == E.billiard_unfolding_stratum('half-translation').dimension(): break
-        sage: O  # optional: exactreal, pyflatsurf
-        GL(2,R)-orbit closure of dimension at least 11 in H_4(3, 1^3) (ambient dimension 11)
+        ....:     if O.dimension() == bound: break
+        sage: O  # long time, optional: exactreal, pyflatsurf
+        GL(2,R)-orbit closure of dimension at least 8 in H_7(4^3, 0) (ambient dimension 17)
 
     """
     def __init__(self, surface):
