@@ -1990,34 +1990,51 @@ class EquiangularPolygons:
         if any(angle <= 0 for angle in angles):
             raise ValueError("'angles' must be positive rational numbers")
 
-        # normalize the sum so that it is (n-2)/2 (ie angles are given in multiple of 2pi)
-        s = ZZ(n - 2) / sum(angles) / ZZ(2)
-        if s != 1:
-            angles = [s * a for a in angles]
+        # Store each angle as a multiple of 2π, i.e., normalize them such their sum is (n - 2)/2.
+        angles = [a / sum(angles) for a in angles]
+        angles = [a * ZZ(n - 2) / 2 for a in angles]
         if any(angle <= 0 or angle >= 1 for angle in angles):
             raise ValueError("each angle must be > 0 and < 2 pi")
         self._angles = angles
+        assert sum(self._angles) == ZZ(n - 2) / 2
 
-        # write each angle as p_i / (2N)
-        N = lcm((2*a).denominator() for a in angles)
-        if N%2 == 0:
-            N //= 2
-        # when N is a multiple of 4, we don't want to do that
-        numerators = [(4*N*a).numerator() for a in angles]
-        assert all(p/(2*N) == 2*a for (p,a) in zip(numerators, angles))
-        if N == 1:
+        # We now determine the number field that contains the slopes of the
+        # sides, i.e., the cosines and sines of the inner angles of the
+        # polygon.
+        # Let us first write all angles as multiples of 2π/N with the smallest
+        # possible common N.
+        N = lcm(a.denominator() for a in angles)
+        # The field containing the cosine and sine of 2π/N might be too small
+        # to write down all the slopes when N is not divisible by 4.
+        assert N != 1, "there cannot be a polygon with all angles multiples of 2π"
+        if N == 2:
+            pass
+        elif N % 4:
+            while N % 4:
+                N *= 2
+
+        angles = [ZZ(a * N) for a in angles]
+
+        if N == 2:
             self._base_ring = QQ
             c = QQ.zero()
         else:
-            poly = cos_minpoly(2*N)
-            emb = AA.polynomial_root(poly, 2 * (RIF.pi() / (2*N)).cos())
-            self._base_ring = NumberField(poly, 'c', embedding=emb)
-            c = self._base_ring.gen()  # = 2 cos(pi / 2N)
-        cosines = [chebyshev_T(p, c)/2 for p in numerators]
-        sines = [chebyshev_T(N-p, c)/2 if p < N else -chebyshev_T(3*N-p, c)/2 for p in numerators]
-        assert all((x**2 + y**2).is_one() for x,y in zip(cosines, sines))
+            # Construct the minimal polynomial f(x) of c = 2 cos(2π / N)
+            f = cos_minpoly(N // 2)
+            emb = AA.polynomial_root(f, 2 * (2*RIF.pi() / N).cos())
+            self._base_ring = NumberField(f, 'c', embedding=emb)
+            c = self._base_ring.gen()
 
-        self._slopes = [projectivization(c,s) for c,s in zip(cosines, sines)]
+        # Construct the cosine and sine of each angle as an element of our number field.
+        def cosine(a):
+            return chebyshev_T(abs(a), c) / 2
+        def sine(a):
+            # Use sin(x) = cos(π/2 - x)
+            return cosine(N//4 - a)
+        slopes = [(cosine(a), sine(a)) for a in angles]
+        assert all((x**2 + y**2).is_one() for x, y in slopes)
+
+        self._slopes = [projectivization(x, y) for x, y in slopes]
         self._cosines_ring = self._base_ring
 
         # TODO: It might be the case that the slopes generate a smaller
