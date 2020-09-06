@@ -1968,7 +1968,7 @@ class EquiangularPolygons:
         [2/9, 4/9, 2/9, 4/9, 4/9, 2/9]
 
         sage: EquiangularPolygons(1, 2, 1, 2, 1, 2, 1, 2, 2, 2, 2, 1, 1, 2, 1)
-        EquiangularPolygons(13, 26, 13, 26, 13, 26, 13, 26, 26, 26, 26, 13, 13, 26, 13)
+        EquiangularPolygons(1, 2, 1, 2, 1, 2, 1, 2, 2, 2, 2, 1, 1, 2, 1)
 
     """
     def __init__(self, *angles, **kwds):
