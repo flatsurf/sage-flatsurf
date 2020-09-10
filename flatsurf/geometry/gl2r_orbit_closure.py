@@ -41,7 +41,9 @@ from pyeantic import RealEmbeddedNumberField
 import pyflatsurf
 import pyflatsurf.vector
 
-# TODO: move into flatsurf
+# TODO: it would be convenient to have Vertex directly available from
+# pyflatsurf, ie being able to do
+#     from pyflatsurf import Vertex
 Vertex = cppyy.gbl.flatsurf.Vertex
 
 from sage.all import VectorSpace, FreeModule, matrix, identity_matrix, ZZ, QQ, Unknown, vector, prod
