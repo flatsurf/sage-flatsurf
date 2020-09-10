@@ -29,7 +29,6 @@ pytest.importorskip('pyflatsurf')
 from sage.all import polygen, NumberField, AA, QQ
 from flatsurf import translation_surfaces, GL2ROrbitClosure
 
-# TODO: Does not work because of sage-flatsurf
 def test_D9_number_field():
     x = polygen(QQ)
     K = NumberField(x**3 - 2, 'a', embedding=AA(2)**QQ((1,3)))
