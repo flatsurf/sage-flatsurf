@@ -25,6 +25,7 @@ from six import iteritems, itervalues
 from sage.rings.all import ZZ, QQ, RIF, AA, NumberField, polygen
 from sage.modules.all import VectorSpace, vector
 from sage.structure.coerce import py_scalar_parent
+from sage.structure.element import get_coercion_model, parent
 from sage.misc.cachefunc import cached_method
 from sage.structure.sequence import Sequence
 
@@ -807,7 +808,7 @@ class TranslationSurfaceGenerators:
         return translation_surfaces.veech_2n_gon(4)
 
     @staticmethod
-    def mcmullen_genus2_prototype(w, h, t, e, rel=0):
+    def mcmullen_genus2_prototype(w, h, t, e, rel=0, base_ring=None):
         r"""
         McMullen prototypes in the stratum H(2).
 
@@ -882,15 +883,33 @@ class TranslationSurfaceGenerators:
         x = polygen(QQ)
         poly = x**2 - e * x - w*h
         if poly.is_irreducible():
-            emb = AA.polynomial_root(poly, RIF(0,w))
-            K = NumberField(poly, 'l', embedding=emb)
-            l = K.gen()
+            if base_ring is None:
+                emb = AA.polynomial_root(poly, RIF(0,w))
+                K = NumberField(poly, 'l', embedding=emb)
+                l = K.gen()
+            else:
+                K = base_ring
+                roots = poly.roots(K, multiplicities=False)
+                if len(roots) != 2:
+                    raise ValueError("invalid base ring")
+                roots.sort(key=lambda x: x.numerical_approx())
+                assert roots[0] < 0 and roots[0] > 0
+                l = roots[1]
         else:
-            K = QQ
+            if base_ring is None:
+                K = QQ
+            else:
+                K = base_ring
             D = e**2 + 4 * w*h
             d = D.sqrt()
             l = (e + d) / 2
-        rel = K(rel)
+
+        try:
+            rel = K(rel)
+        except TypeError:
+            K = get_coercion_model().common_parent(K, parent(rel))
+            l = K(l)
+            rel = K(rel)
 
         # (lambda,lambda) square on top
         # twisted (w,0), (t,h)

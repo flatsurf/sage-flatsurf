@@ -30,18 +30,35 @@ from sage.all import polygen, NumberField, AA, QQ
 from flatsurf import translation_surfaces, GL2ROrbitClosure
 
 # TODO: Does not work because of sage-flatsurf
-#def test_D9():
-#    x = polygen(QQ)
-#    K = NumberField(x**3 - 2, 'a', embedding=AA(2)**QQ((1,3)))
-#    a = K.gen()
-#    S = translation_surfaces.mcmullen_genus2_prototype(2,1,0,-1,a/4)
-#    O = GL2ROrbitClosure(S)
-#    for d in O.decompositions(5):
-#        ncyl, nmin, nund = d.num_cylinders_minimals_undetermined()
-#        assert (nund == 0)
-#        assert ((nmin == 0) or (ncyl == 0 and 1 <= nmin <= 2))
-#        O.update_tangent_space_from_flow_decomposition(d)
-#    assert O.U.dimension() == 3
+def test_D9_number_field():
+    x = polygen(QQ)
+    K = NumberField(x**3 - 2, 'a', embedding=AA(2)**QQ((1,3)))
+    a = K.gen()
+    S = translation_surfaces.mcmullen_genus2_prototype(2,1,0,-1,a/4)
+    O = GL2ROrbitClosure(S)
+    for d in O.decompositions(5):
+        ncyl, nmin, nund = d.num_cylinders_minimals_undetermined()
+        assert (nund == 0)
+        assert ((nmin == 0) or (ncyl == 0 and 1 <= nmin <= 2))
+        O.update_tangent_space_from_flow_decomposition(d)
+    assert O.dimension() == 3
+
+def test_D9_exact_real():
+    pytest.importorskip('pyexactreal')
+
+    from pyexactreal import ExactReals
+    R = ExactReals(QQ)
+    x = polygen(QQ)
+    K = NumberField(x**3 - 2, 'a', embedding=AA(2)**QQ((1,3)))
+    a = K.gen()
+    S = translation_surfaces.mcmullen_genus2_prototype(2,1,0,-1,R.random_element([0.1, 0.2]))
+    O = GL2ROrbitClosure(S)
+    for d in O.decompositions(5):
+        ncyl, nmin, nund = d.num_cylinders_minimals_undetermined()
+        assert (nund == 0)
+        assert ((nmin == 0) or (ncyl == 0 and 1 <= nmin <= 2))
+        O.update_tangent_space_from_flow_decomposition(d)
+    assert O.dimension() == 3
 
 def test_D33():
     S = translation_surfaces.mcmullen_genus2_prototype(4,2,1,1,QQ((1,4)))
