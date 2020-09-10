@@ -605,10 +605,10 @@ class GL2ROrbitClosure:
             sage: dreal = d1/132 + d2/227 + d3/280 - d4/201  # optional: pyflatsurf
             sage: dimag = d1/141 - d2/233 + d4/230 + d4/250  # optional: pyflatsurf
             sage: d = [O.V2((x,y)).vector for x,y in zip(dreal,dimag)]  # optional: pyflatsurf
+            sage: S2 = O._surface + d  # optional: pyflatsurf
 
-        TODO: This is waiting for https://github.com/flatsurf/flatsurf/issues/145::
+        TODO: ``GL2ROrbitClosure`` does not accept pyflatsurf surfaces as input::
 
-            sage: S2 = O._surface + d  # not tested
             sage: O2 = GL2ROrbitClosure(S2)   # not tested
             sage: for d in O2.decompositions(4, 20, sector=((1,0),(5,1))):  # not tested
             ....:     O2.update_tangent_space_from_flow_decomposition(d)
