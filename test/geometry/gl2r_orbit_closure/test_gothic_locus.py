@@ -44,6 +44,20 @@ def test_gothic_generic():
     assert O.dimension() == O.absolute_dimension() == 4
     assert O.field_of_definition() == QQ
 
+def test_gothic_exact_reals():
+    pytest.importorskip('pyexactreal')
+
+    from pyexactreal import ExactReals
+    x = polygen(QQ)
+    K = NumberField(x**3 - 2, 'a', embedding=AA(2)**QQ((1,3)))
+    R = ExactReals(K)
+    S = translation_surfaces.cathedral(K.gen(), R.random_element([0.1, 0.2]))
+    O = GL2ROrbitClosure(S)
+    assert O.ambient_stratum() == AbelianStratum(2, 2, 2)
+    for d in O.decompositions(4, 50):
+        O.update_tangent_space_from_flow_decomposition(d)
+    assert O.dimension() == O.absolute_dimension() == 4
+
 def test_gothic_veech():
     x = polygen(QQ)
     K = NumberField(x**2 - 2, 'sqrt2', embedding=AA(2)**QQ((1,2)))
@@ -57,7 +71,6 @@ def test_gothic_veech():
     assert O.ambient_stratum() == AbelianStratum(2, 2, 2)
     for d in O.decompositions(4, 50):
         assert d.parabolic()
-#        assert d.decomposition.cylinder_diagram()[0].stratum() == O.surface.stratum()
         O.update_tangent_space_from_flow_decomposition(d)
     assert O.dimension() == O.absolute_dimension() == 2
     assert O.field_of_definition() == O.V2._isomorphic_vector_space.base_ring()

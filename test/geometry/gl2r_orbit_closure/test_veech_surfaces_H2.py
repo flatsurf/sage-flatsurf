@@ -36,6 +36,5 @@ def test_H2(w,h,t,e):
     O = GL2ROrbitClosure(S)
     for d in O.decompositions(5, 50):
         assert d.parabolic()
-#        assert d.decomposition.cylinder_diagram()[0].stratum() == O.surface.stratum()
         O.update_tangent_space_from_flow_decomposition(d)
     assert O.dimension() == O.absolute_dimension() == 2

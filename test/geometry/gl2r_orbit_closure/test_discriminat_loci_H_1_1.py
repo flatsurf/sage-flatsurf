@@ -41,6 +41,7 @@ def test_D9_number_field():
         assert ((nmin == 0) or (ncyl == 0 and 1 <= nmin <= 2))
         O.update_tangent_space_from_flow_decomposition(d)
     assert O.dimension() == 3
+    assert O.field_of_definition() == QQ
 
 def test_D9_exact_real():
     pytest.importorskip('pyexactreal')
@@ -68,3 +69,6 @@ def test_D33():
         assert ((nmin == 0) or (ncyl == 0 and nmin == 2))
         O.update_tangent_space_from_flow_decomposition(d)
     assert O.dimension() == 3
+    K = O.field_of_definition()
+    assert K.degree() == 2
+    assert K.discriminant() == 33
