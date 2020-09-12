@@ -1065,16 +1065,24 @@ class TranslationSurfaceGenerators:
             sage: C.stratum()
             H_4(2^3)
             sage: TestSuite(C).run()
+
+            sage: from pyexactreal import ExactReals # optional: exactreal
+            sage: K = QuadraticField(5, embedding=AA(5).sqrt())
+            sage: R = ExactReals(K) # optional: exactreal
+            sage: C = translation_surfaces.cathedral(K.gen(), R.random_element([0.1, 0.2])) # optional: exactreal
+            sage: C.stratum() # optional: exactreal
+            H_4(2^3)
+            sage: TestSuite(C).run() # optional: exactreal
         """
-        field = Sequence([a,b]).universe()
-        if isinstance(field, type):
-            field = py_scalar_parent(field)
-        if not field.is_field():
-            field = field.fraction_field()
-        a = field(a)
-        b = field(b)
-        P = ConvexPolygons(field)
-        s = Surface_list(base_ring=field)
+        ring = Sequence([a,b]).universe()
+        if isinstance(ring, type):
+            ring = py_scalar_parent(ring)
+        if not ring.has_coerce_map_from(QQ):
+            ring = ring.fraction_field()
+        a = ring(a)
+        b = ring(b)
+        P = ConvexPolygons(ring)
+        s = Surface_list(base_ring=ring)
         half = QQ((1,2))
         p0 = P(vertices=[(0,0),(a,0),(a,1),(0,1)])
         p1 = P(vertices=[(a,0),(a,-b),(a+half,-b-half),(a+1,-b),(a+1,0),(a+1,1),(a+1,b+1),(a+half,b+1+half),(a,b+1),(a,1)])
