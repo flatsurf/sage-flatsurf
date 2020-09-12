@@ -29,6 +29,8 @@ from pyflatsurf.factory import make_surface
 from pyflatsurf.vector import Vectors
 
 from .translation_surface import TranslationSurface
+from .surface import Surface_list
+from .polygon import ConvexPolygons
 
 def _check_data(vp, fp, vec):
     r"""
@@ -84,7 +86,7 @@ def _cycle_decomposition(p):
 
 def to_pyflatsurf(S):
     r"""
-    Given S a translation surface from sage-flatsurf builds a
+    Given S a translation surface from sage-flatsurf return a
     flatsurf::FlatTriangulation from libflatsurf/pyflatsurf.
     """
     if not isinstance(S, TranslationSurface):
@@ -129,3 +131,74 @@ def to_pyflatsurf(S):
     _check_data(vp, fp, vec)
 
     return make_surface(verts, vec)
+
+def from_pyflatsurf(T):
+    r"""
+    Given T a flatsurf::FlatTriangulation from libflatsurf/pyflatsurf, return a
+    sage-flatsurf translation surface.
+
+    EXAMPLES::
+
+        sage: from flatsurf import translation_surfaces
+        sage: from flatsurf.geometry.pyflatsurf_conversion import to_pyflatsurf, from_pyflatsurf
+        sage: S = translation_surfaces.veech_double_n_gon(5)
+        sage: from_pyflatsurf(to_pyflatsurf(S))
+        TranslationSurface built from 6 polygons
+
+    """
+    import cppyy
+
+    def maybe_type(t):
+        class Nothing: pass
+        try:
+            return t()
+        except AttributeError: return Nothing
+
+    coordinate = type(T.fromHalfEdge(1).x())
+    if coordinate is maybe_type(lambda: cppyy.gbl.mpz_class):
+        ring = ZZ
+    elif coordinate is maybe_type(lambda: cppyy.gbl.mpq_class):
+        ring = QQ
+    elif coordinate is maybe_type(lambda: cppyy.gbl.eantic.renf_elem_class):
+        from pyeantic import RealEmbeddedNumberField
+        ring = RealEmbeddedNumberField(T.fromHalfEdge(1).x().parent())
+    elif coordinate is maybe_type(lambda: cppyy.gbl.exactreal.Element[cppyy.gbl.exactreal.IntegerRing]):
+        from pyexactreal import ExactReals
+        ring = ExactReals(ZZ)
+    elif coordinate is maybe_type(lambda: cppyy.gbl.exactreal.Element[cppyy.gbl.exactreal.RationalField]):
+        from pyexactreal import ExactReals
+        ring = ExactReals(QQ)
+    elif coordinate is maybe_type(lambda: cppyy.gbl.exactreal.Element[cppyy.gbl.exactreal.NumberField]):
+        from pyexactreal import ExactReals
+        ring = ExactReals(T.fromHalfEdge(1).x().module().ring().parameters)
+    else:
+        raise NotImplementedError("unknown coordinate ring %s"%(coordinate,))
+
+    S = Surface_list(ring)
+    P = ConvexPolygons(ring)
+    V = P.module()
+
+    half_edges = {}
+
+    for face in T.faces():
+        a, b, c = map(cppyy.gbl.flatsurf.HalfEdge, face)
+
+        vectors = [T.fromHalfEdge(he) for he in face]
+        vectors = [V([ring(v.x()), ring(v.y())]) for v in vectors]
+        triangle = P(vectors)
+        face_id = S.add_polygon(triangle)
+
+        assert(a not in half_edges)
+        half_edges[a] = (face_id, 0)
+        assert(b not in half_edges)
+        half_edges[b] = (face_id, 1)
+        assert(c not in half_edges)
+        half_edges[c] = (face_id, 2)
+
+    for half_edge, (face, id) in half_edges.items():
+        _face, _id = half_edges[-half_edge]
+        S.change_edge_gluing(face, id, _face, _id)
+
+    S.set_immutable()
+
+    return TranslationSurface(S)
