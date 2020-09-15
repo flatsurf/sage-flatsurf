@@ -32,6 +32,8 @@ import operator
 from sage.all import cached_method, Parent, UniqueRepresentation, Sets, Rings,\
                      Fields, ZZ, QQ, AA, RR, RIF, QQbar, matrix, polygen, vector,\
                      free_module_element, NumberField
+from sage.misc.cachefunc import cached_function
+from sage.misc.functional import numerical_approx
 from sage.structure.element import get_coercion_model, Vector
 from sage.structure.coerce import py_scalar_parent
 cm = get_coercion_model()
@@ -687,7 +689,7 @@ class Polygon(Element):
             sage: P(vertices=[(0,0),(2,0),(1,1),(1,-1)])
             Traceback (most recent call last):
             ...
-            ValueError: edge 0 (= ((0, 0), (2, 0))) and edge 2 (= ((1, 1), (1, -1))) intersects
+            ValueError: edge 0 (= ((0, 0), (2, 0))) and edge 2 (= ((1, 1), (1, -1))) intersect
         """
         n = len(self._v)
         for i in range(n-1):
@@ -699,7 +701,7 @@ class Polygon(Element):
                     if res > 1:
                         raise ValueError("edge %d (= %s) and edge %d (= %s) backtrack" % (i, ei, j, ej))
                 elif res > 0:
-                    raise ValueError("edge %d (= %s) and edge %d (= %s) intersects" % (i, ei, j, ej))
+                    raise ValueError("edge %d (= %s) and edge %d (= %s) intersect" % (i, ei, j, ej))
 
     def __hash__(self):
         # Apparently tuples do not cache their hash!
@@ -1761,7 +1763,6 @@ class ConvexPolygons(Polygons):
         sage: TestSuite(ConvexPolygons(QQ)).run()
         sage: TestSuite(ConvexPolygons(QQbar)).run()
         sage: TestSuite(ConvexPolygons(ZZ)).run()
-
     """
     Element = ConvexPolygon
 
@@ -2089,6 +2090,7 @@ class EquiangularPolygons:
     # to handle the data.
     # TODO: here we ignored the direction SO(2) which provides additional symmetry
     # in the tangent space
+    @cached_method
     def lengths_polytope(self):
         r"""
         Return the polytope parametrizing the admissible vectors data.
@@ -2128,6 +2130,48 @@ class EquiangularPolygons:
             Polygon: (0, 0), (1/22*c + 1, 0), (9*c^9 + 1/2*c^8 - 88*c^7 - 9/2*c^6 + 297*c^5 + 27/2*c^4 - 396*c^3 - 15*c^2 + 3631/22*c + 11/2, 1/2*c + 11), (16*c^9 + c^8 - 154*c^7 - 9*c^6 + 506*c^5 + 27*c^4 - 638*c^3 - 30*c^2 + 4841/22*c + 9, c + 22), (16*c^9 + c^8 - 154*c^7 - 9*c^6 + 506*c^5 + 27*c^4 - 638*c^3 - 30*c^2 + 220*c + 8, c + 22), (7*c^9 + 1/2*c^8 - 66*c^7 - 9/2*c^6 + 209*c^5 + 27/2*c^4 - 242*c^3 - 15*c^2 + 55*c + 7/2, 1/2*c + 11)
         """
         return self(sum(r.vector() for r in self.lengths_polytope().rays()))
+
+    def random_element(self, ring=None, **kwds):
+        r"""
+        Return a random polygon.
+
+        EXAMPLES::
+
+            sage: from flatsurf import EquiangularPolygons
+            sage: E = EquiangularPolygons(1, 1, 1, 2, 5)
+            sage: E.random_element() # not tested
+            Polygon: (0, 0), ...
+
+        .. TODO::
+
+            This method very often fails with ValueError('the vertices are in clockwise order')...
+        """
+        if ring is None:
+            ring = QQ
+
+        rays = [r.vector() for r in self.lengths_polytope().rays()]
+        def random_element():
+            while True:
+                coeffs = []
+                while len(coeffs) < len(rays):
+                    # many base ring (such as QQ) allows for minimum/maximum values in which case
+                    # the things below would be useless
+                    x = ring.random_element(**kwds)
+                    while x < 0:
+                        x = ring.random_element(**kwds)
+                    coeffs.append(x)
+
+                sol = sum(c*r for c,r in zip(coeffs, rays))
+                if all(x > 0 for x in sol):
+                    return coeffs, sol
+
+        while True:
+            try:
+                coeffs, r = random_element()
+                return self(*r)
+            except ValueError as e:
+                if not e.args[0].startswith('edge ') or not e.args[0].endswith('intersect') or e.args[0].count(' and edge ') != 1:
+                    raise RuntimeError("unexpected error with coeffs {!r} ~ {!r}: {!r}".format(coeffs, [numerical_approx(x) for x in coeffs], e))
 
     def __call__(self, *lengths, **kwds):
         r"""
