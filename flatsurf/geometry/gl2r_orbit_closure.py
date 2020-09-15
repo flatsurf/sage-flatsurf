@@ -60,15 +60,80 @@ class Decomposition:
         self.decomposition = decomposition
 
     def cylinders(self):
-        return [comp for comp in self.components() if comp.cylinder() == True]
+        r"""
+        Return the cylinders (aka completely periodic components)
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, GL2ROrbitClosure
+            sage: x = polygen(QQ)
+            sage: K.<a> = NumberField(x^3 - 2, embedding=AA(2)**(1/3))
+            sage: S = translation_surfaces.mcmullen_L(1,1,1,a)
+            sage: O = GL2ROrbitClosure(S)
+            sage: O.decomposition((1,2)).cylinders()
+            [Cylinder with perimeter [...]]
+        """
+        return [comp for comp in self.decomposition.components() if comp.cylinder() == True]
 
     def minimal_components(self):
-        return [comp for comp in self.components() if comp.withoutPeriodicTrajectory() == True]
+        r"""
+        Return the minimal components
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, GL2ROrbitClosure
+            sage: x = polygen(QQ)
+            sage: K.<a> = NumberField(x^3 - 2, embedding=AA(2)**(1/3))
+            sage: S = translation_surfaces.mcmullen_L(1,1,1,a)
+            sage: O = GL2ROrbitClosure(S)
+            sage: O.decomposition((1,2)).minimal_components()
+            [Component Without Periodic Trajectory with perimeter [...]]
+        """
+        return [comp for comp in self.decomposition.components() if comp.withoutPeriodicTrajectory() == True]
 
     def undetermined_components(self):
-        return [comp for comp in self.components() if comp.cylinder() == False and comp.withoutPeriodicTrajectory() == False]
+        r"""
+        Return the undetermined components that could either be cylinder or minimal components.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: from flatsurf import  GL2ROrbitClosure # optional: pyflatsurf
+            sage: S = translation_surfaces.mcmullen_genus2_prototype(4,2,1,1,1/4)
+            sage: O = GL2ROrbitClosure(S) # optional: pyflatsurf
+            sage: l = S.base_ring().gen()
+            sage: dec = O.decomposition((8*l - 25, 16), 10) # optional: pyflatsurf
+            sage: dec.undetermined_components() # optional: pyflatsurf
+            [Component with perimeter [...]]
+
+        Further refinement might change the status of undetermined components::
+
+            sage: import pyflatsurf # optional: pyflatsurf
+            sage: pyflatsurf.flatsurf.decomposeFlowDecomposition(dec.decomposition, 10r) # optional: pyflatsurf
+            True
+            sage: dec.undetermined_components() # optional: pyflatsurf
+            []
+        """
+        # NOTE: 2 is the unknown value of boost tribool
+        return [comp for comp in self.decomposition.components() if comp.cylinder().value == 2]
 
     def num_cylinders_minimals_undetermined(self):
+        r"""
+        Return the triple of numbers of respectively cylinders, minimal
+        components and undetermined components of this flow decomposition.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.mcmullen_genus2_prototype(4,2,1,1,1/4)
+            sage: l = S.base_ring().gen()
+
+            sage: from flatsurf import  GL2ROrbitClosure # optional: pyflatsurf
+            sage: O = GL2ROrbitClosure(S) # optional: pyflatsurf
+            sage: dec = O.decomposition((8*l - 25, 16), 100) # optional: pyflatsurf
+            sage: dec.num_cylinders_minimals_undetermined() # optional: pyflatsurf
+            (2, 0, 0)
+        """
         ncyl = 0
         nmin = 0
         nund = 0
@@ -86,18 +151,6 @@ class Decomposition:
     def __repr__(self):
         ncyl, nmin, nund = self.num_cylinders_minimals_undetermined()
         return "Flow decomposition with %d cylinders, %d minimal components and %d undetermined components" % (ncyl, nmin, nund)
-
-    def is_completely_periodic(self):
-        r"""
-        Return whether this flow decomposition consists only of cylinders.
-        """
-        ncyl, nmin, nund = self.num_cylinders_minimals_undetermined()
-        if nmin:
-            return False
-        elif nund:
-            return Unknown
-        else:
-            return True
 
     def _spanning_tree_decomposition(self, sc_index, sc_comp):
         r"""
