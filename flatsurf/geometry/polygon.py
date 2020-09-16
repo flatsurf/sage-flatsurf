@@ -662,8 +662,8 @@ class Polygon(Element):
         self._v = tuple(map(V, vertices))
         for vv in self._v: vv.set_immutable()
         if check:
-            self._inside_outside_check()
             self._non_intersection_check()
+            self._inside_outside_check()
 
     def _inside_outside_check(self):
         r"""
