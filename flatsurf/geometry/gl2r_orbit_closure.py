@@ -65,12 +65,14 @@ class Decomposition:
 
         EXAMPLES::
 
-            sage: from flatsurf import translation_surfaces, GL2ROrbitClosure
+            sage: from flatsurf import translation_surfaces
             sage: x = polygen(QQ)
             sage: K.<a> = NumberField(x^3 - 2, embedding=AA(2)**(1/3))
             sage: S = translation_surfaces.mcmullen_L(1,1,1,a)
-            sage: O = GL2ROrbitClosure(S)
-            sage: O.decomposition((1,2)).cylinders()
+
+            sage: from flatsurf import GL2ROrbitClosure # optional: pyflatsurf
+            sage: O = GL2ROrbitClosure(S) # optional: pyflatsurf
+            sage: O.decomposition((1,2)).cylinders() # optional: pyflatsurf
             [Cylinder with perimeter [...]]
         """
         return [comp for comp in self.decomposition.components() if comp.cylinder() == True]
@@ -81,12 +83,14 @@ class Decomposition:
 
         EXAMPLES::
 
-            sage: from flatsurf import translation_surfaces, GL2ROrbitClosure
+            sage: from flatsurf import translation_surfaces
             sage: x = polygen(QQ)
             sage: K.<a> = NumberField(x^3 - 2, embedding=AA(2)**(1/3))
             sage: S = translation_surfaces.mcmullen_L(1,1,1,a)
-            sage: O = GL2ROrbitClosure(S)
-            sage: O.decomposition((1,2)).minimal_components()
+
+            sage: from flatsurf import GL2ROrbitClosure # optional: pyflatsurf
+            sage: O = GL2ROrbitClosure(S) # optional: pyflatsurf
+            sage: O.decomposition((1,2)).minimal_components() # optional: pyflatsurf
             [Component Without Periodic Trajectory with perimeter [...]]
         """
         return [comp for comp in self.decomposition.components() if comp.withoutPeriodicTrajectory() == True]
@@ -98,10 +102,11 @@ class Decomposition:
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: from flatsurf import  GL2ROrbitClosure # optional: pyflatsurf
             sage: S = translation_surfaces.mcmullen_genus2_prototype(4,2,1,1,1/4)
-            sage: O = GL2ROrbitClosure(S) # optional: pyflatsurf
             sage: l = S.base_ring().gen()
+
+            sage: from flatsurf import  GL2ROrbitClosure # optional: pyflatsurf
+            sage: O = GL2ROrbitClosure(S) # optional: pyflatsurf
             sage: dec = O.decomposition((8*l - 25, 16), 10) # optional: pyflatsurf
             sage: dec.undetermined_components() # optional: pyflatsurf
             [Component with perimeter [...]]
