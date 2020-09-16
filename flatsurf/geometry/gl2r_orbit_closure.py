@@ -585,9 +585,28 @@ class GL2ROrbitClosure:
             This involves the computation of the echelon form of the matrix. It
             might be rather expensive if the computation of the tangent space is
             not terminated.
+
+        EXAMPLES::
+
+            sage: from flatsurf import polygons, similarity_surfaces, EquiangularPolygons
+            sage: from flatsurf import GL2ROrbitClosure  # optional: pyflatsurf
+            sage: from pyexactreal import ExactReals  # optional: exactreal
+            sage: E = EquiangularPolygons(1, 5, 5, 5)
+            sage: R = ExactReals(E.base_ring())  # optional: exactreal
+            sage: T = E(R(1), R.random_element(1/4))  # optional: exactreal
+            sage: S = similarity_surfaces.billiard(T)  # optional: exactreal
+            sage: S = S.minimal_cover(cover_type="translation")  # optional: exactreal
+            sage: O = GL2ROrbitClosure(S); O  # optional: exactreal, pyflatsurf
+            GL(2,R)-orbit closure of dimension at least 4 in H_7(4^3, 0) (ambient dimension 17)
+            sage: O.field_of_definition() # optional: exactreal, pyflatsurf
+            Number Field in c0 with defining polynomial x^2 - 2 with c0 = 1.414213562373095?
+            sage: for decomposition in O.decompositions(1):  # long time, optional: exactreal, pyflatsurf
+            ....:     O.update_tangent_space_from_flow_decomposition(decomposition)
+            sage: O.field_of_definition()  # long time, optional: exactreal, pyflatsurf
+            Rational Field
         """
         M = self._U.echelon_form()
-        L, elts, phi = subfield_from_elements(self.V2._isomorphic_vector_space.base_ring(), M[:self._U_rank].list())
+        L, elts, phi = subfield_from_elements(M.base_ring(), M[:self._U_rank].list())
         return L
 
     def _half_edge_to_face(self, h):
