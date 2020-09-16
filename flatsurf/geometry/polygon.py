@@ -2138,13 +2138,12 @@ class EquiangularPolygons:
         EXAMPLES::
 
             sage: from flatsurf import EquiangularPolygons
-            sage: E = EquiangularPolygons(1, 1, 1, 2, 5)
-            sage: E.random_element() # not tested
+            sage: EquiangularPolygons(1, 1, 1, 2, 5).random_element()
             Polygon: (0, 0), ...
-
-        .. TODO::
-
-            This method very often fails with ValueError('the vertices are in clockwise order')...
+            sage: EquiangularPolygons(1,1,1,15,15,15).random_element()
+            Polygon: (0, 0), ...
+            sage: EquiangularPolygons(1,15,1,15,1,15).random_element()
+            Polygon: (0, 0), ...
         """
         if ring is None:
             ring = QQ
@@ -2154,8 +2153,6 @@ class EquiangularPolygons:
             while True:
                 coeffs = []
                 while len(coeffs) < len(rays):
-                    # many base ring (such as QQ) allows for minimum/maximum values in which case
-                    # the things below would be useless
                     x = ring.random_element(**kwds)
                     while x < 0:
                         x = ring.random_element(**kwds)
