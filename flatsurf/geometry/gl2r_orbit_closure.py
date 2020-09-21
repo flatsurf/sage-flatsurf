@@ -370,13 +370,13 @@ class Decomposition:
             try:
                 return [x.parent()(x / y) for x, y in fractions]
             except (ValueError, ArithmeticError, NotImplementedError):
-                # Note that this could be improved by using lcm instead of prod
-                return [x * prod(
-                    [z for j, (__, z) in enumerate(fractions) if j != i]
-                ) for i, (x, _) in enumerate(fractions)]
+                denominators = set([denominator for numerator, denominator in fractions])
+                return [numerator * prod(
+                    [d for d in denominators if denominator != d]
+                ) for (numerator, denominator) in enumerate(fractions)]
 
         v = self.orbit.V()
-        modules = []
+        module_fractions = []
         vcyls = []
         A, sc_index, proj = self.kontsevich_zorich_cocycle()
         for comp in self.decomposition.components():
@@ -388,14 +388,14 @@ class Decomposition:
                 hol = comp.circumferenceHolonomy()
                 hol = self.orbit.V2._isomorphic_vector_space(self.orbit.V2(hol))
                 area = self.orbit.V2.base_ring()(comp.area())
-                modules.append((area, hol[0]**2 + hol[1]**2))
+                module_fractions.append((area, hol[0]**2 + hol[1]**2))
             else:
                 return []
 
-        if not modules:
+        if not module_fractions:
             return []
 
-        modules = eliminate_denominators(modules)
+        modules = eliminate_denominators(module_fractions)
 
         if hasattr(modules[0], '_backend'):
             # Make sure all modules live in the same K-Module so that .coefficients() below produces coefficient lists of the same length.
@@ -434,7 +434,7 @@ class Decomposition:
 
         vectors = [
             sum(eliminate_denominators(
-                (t * vcyl, module) for (t, vcyl, module) in zip(relation, vcyls, modules)
+                (t * vcyl * module[1], module[0]) for (t, vcyl, module) in zip(relation, vcyls, module_fractions)
             )) for relation in relations.right_kernel().basis()]
 
         assert all(v.base_ring() is self.orbit.V2._isomorphic_vector_space.base_ring() for v in vectors)
