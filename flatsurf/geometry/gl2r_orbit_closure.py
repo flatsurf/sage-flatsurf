@@ -495,6 +495,7 @@ class GL2ROrbitClosure:
 
         sage: from flatsurf import polygons, similarity_surfaces
         sage: from flatsurf import GL2ROrbitClosure  # optional: pyflatsurf
+
         sage: T = polygons.triangle(3, 3, 5)
         sage: S = similarity_surfaces.billiard(T)
         sage: S = S.minimal_cover(cover_type="translation")
@@ -503,10 +504,9 @@ class GL2ROrbitClosure:
 
     Computing an orbit closure over an exact real ring with transcendental elements::
 
-        sage: from flatsurf import polygons, similarity_surfaces
-        sage: from flatsurf import GL2ROrbitClosure  # optional: pyflatsurf
         sage: from flatsurf import EquiangularPolygons
         sage: from pyexactreal import ExactReals  # optional: exactreal
+
         sage: E = EquiangularPolygons(1, 5, 5, 5)
         sage: R = ExactReals(E.base_ring())  # optional: exactreal
         sage: T = E(R(1), R.random_element(1/4))  # optional: exactreal
@@ -521,6 +521,17 @@ class GL2ROrbitClosure:
         sage: O  # long time, optional: exactreal, pyflatsurf
         GL(2,R)-orbit closure of dimension at least 8 in H_7(4^3, 0) (ambient dimension 17)
 
+    TESTS::
+
+        sage: from flatsurf import translation_surfaces
+        sage: x = polygen(QQ)
+        sage: K = NumberField(x**3 - 2, 'a', embedding=AA(2)**QQ((1,3)))
+        sage: a = K.gen()
+        sage: S = translation_surfaces.mcmullen_genus2_prototype(2, 1, 0, -1, a/4)
+
+        sage: from flatsurf import GL2ROrbitClosure  # optional: pyflatsurf
+        sage: GL2ROrbitClosure(S)._U.base_ring() # optional: pyflatsurf
+        Number Field in a with defining polynomial x^3 - 2 with a = 1.259921049894873?
     """
     def __init__(self, surface):
         if not isinstance(surface, TranslationSurface):
@@ -567,15 +578,59 @@ class GL2ROrbitClosure:
         self.update_tangent_space_from_vector(self.H.transpose()[1])
 
     def dimension(self):
+        r"""
+        Return the current real dimension of the GL(2,R)-orbit closure.
+
+        EXAMPLES::
+
+            sage: from flatsurf import EquiangularPolygons, similarity_surfaces
+            sage: from flatsurf import GL2ROrbitClosure # optional: pyflatsurf
+            sage: E = EquiangularPolygons(1, 3, 5)
+            sage: T = E(1)
+            sage: S = similarity_surfaces.billiard(T)
+            sage: S = S.minimal_cover(cover_type="translation")
+            sage: O = GL2ROrbitClosure(S) # optional: pyflatsurf
+            sage: O.dimension() # optional: pyflatsurf
+            2
+            sage: for decomposition in O.decompositions(1):  # long time, optional: pyflatsurf
+            ....:     O.update_tangent_space_from_flow_decomposition(decomposition)
+            ....:     print(O.dimension())
+            3
+            5
+            5
+            7
+            9
+            10
+            ...
+            10
+        """
         return self._U_rank
 
     def ambient_stratum(self):
+        r"""
+        Return the stratum of Abelian differentials this surface belongs to.
+
+        EXAMPLES::
+
+            sage: from flatsurf import EquiangularPolygons, similarity_surfaces
+            sage: from flatsurf import GL2ROrbitClosure # optional: pyflatsurf
+            sage: E = EquiangularPolygons(1, 3, 5)
+            sage: T = E(1)
+            sage: S = similarity_surfaces.billiard(T)
+            sage: S = S.minimal_cover(cover_type="translation")
+            sage: O = GL2ROrbitClosure(S) # optional: pyflatsurf
+            sage: O.ambient_stratum() # optional: pyflatsurf
+            H_3(4, 0^4)
+        """
         from surface_dynamics import AbelianStratum
         surface = self._surface
         angles = [surface.angle(v) for v in surface.vertices()]
         return AbelianStratum([a-1 for a in angles])
 
     def base_ring(self):
+        r"""
+        Return the underlying base ring
+        """
         return self._U.base_ring()
 
     def field_of_definition(self):
@@ -605,6 +660,18 @@ class GL2ROrbitClosure:
             sage: for decomposition in O.decompositions(1):  # long time, optional: exactreal, pyflatsurf
             ....:     O.update_tangent_space_from_flow_decomposition(decomposition)
             sage: O.field_of_definition()  # long time, optional: exactreal, pyflatsurf
+            Rational Field
+
+            sage: E = EquiangularPolygons(1, 3, 5)
+            sage: T = E(1)
+            sage: S = similarity_surfaces.billiard(T)
+            sage: S = S.minimal_cover(cover_type="translation")
+            sage: O = GL2ROrbitClosure(S) # optional: pyflatsurf
+            sage: O.field_of_definition() # optional: pyflatsurf
+            Number Field in c0 with defining polynomial x^3 - 3*x - 1 with c0 = 1.879385241571817?
+            sage: for decomposition in O.decompositions(1):  # long time, optional: pyflatsurf
+            ....:     O.update_tangent_space_from_flow_decomposition(decomposition)
+            sage: O.field_of_definition()  # long time, optional: pyflatsurf
             Rational Field
         """
         M = self._U.echelon_form()
