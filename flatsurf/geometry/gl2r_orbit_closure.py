@@ -114,7 +114,7 @@ class Decomposition:
         Further refinement might change the status of undetermined components::
 
             sage: import pyflatsurf # optional: pyflatsurf
-            sage: pyflatsurf.flatsurf.decomposeFlowDecomposition(dec.decomposition, 10r) # optional: pyflatsurf
+            sage: dec.decomposition.decompose(10r) # optional: pyflatsurf
             True
             sage: dec.undetermined_components() # optional: pyflatsurf
             []
@@ -918,7 +918,7 @@ class GL2ROrbitClosure:
         decomposition = pyflatsurf.flatsurf.makeFlowDecomposition(self._surface, v.vector)
         u = self.V2._isomorphic_vector_space(v)
         if limit != 0:
-            pyflatsurf.flatsurf.decomposeFlowDecomposition(decomposition, int(limit))
+            decomposition.decompose(int(limit))
         return Decomposition(self, decomposition, u)
 
     def _visit_slope(self, visited, x, y):
