@@ -373,7 +373,7 @@ class Decomposition:
                 denominators = set([denominator for numerator, denominator in fractions])
                 return [numerator * prod(
                     [d for d in denominators if denominator != d]
-                ) for (numerator, denominator) in enumerate(fractions)]
+                ) for (numerator, denominator) in fractions]
 
         v = self.orbit.V()
         module_fractions = []
@@ -431,6 +431,8 @@ class Decomposition:
 
         if not relations:
             return []
+
+        assert len(vcyls) == len(module_fractions) == relations.ncols()
 
         vectors = [
             sum(eliminate_denominators(
