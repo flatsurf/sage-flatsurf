@@ -1,6 +1,26 @@
+# -*- coding: utf-8 -*-
 r"""
 Similarity surfaces.
 """
+#*********************************************************************
+#  This file is part of sage-flatsurf.
+#
+#        Copyright (C) 2016-2020 Vincent Delecroix
+#                      2020      Julian Rüth
+#
+#  sage-flatsurf is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  sage-flatsurf is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
+#*********************************************************************
 
 from __future__ import absolute_import, print_function, division
 from six.moves import range, map, filter, zip
@@ -21,6 +41,8 @@ from sage.modules.free_module_element import vector
 
 from sage.matrix.constructor import matrix, identity_matrix
 from sage.modules.free_module import VectorSpace
+
+from sage.all import FreeModule
 
 from .matrix_2x2 import (is_similarity,
                     homothety_rotation_decomposition,
@@ -427,7 +449,7 @@ class SimilaritySurface(SageObject):
         gg=G(bb[0]-aa[0],bb[1]-aa[1],aa[0],aa[1])
 
         # This is the similarity carrying (a,b) to (aa,bb):
-        return gg*(~g)
+        return gg/g
 
     def set_vertex_zero(self, label, v, in_place=False):
         r"""
@@ -1297,7 +1319,7 @@ class SimilaritySurface(SageObject):
             TranslationSurface built from infinitely many polygons
             sage: TestSuite(ps).run(skip="_test_pickling")
 
-            sage: from flatsurf import *
+            sage: from flatsurf import similarity_surfaces
             sage: S = similarity_surfaces.example()
             sage: T = S.minimal_cover(cover_type="translation")
             sage: T
@@ -2354,7 +2376,7 @@ class SimilaritySurface(SageObject):
         surface = surface.copy(relabel=True)
         angles = [adj for a,adj in surface.angles(return_adjacent_edges=True) if a == 1]
         C = ConvexPolygons(self.base_ring())
-        V = VectorSpace(self.base_ring(), 2)
+        V = FreeModule(self.base_ring(), 2)
         while angles:
             # remove the vertex corresponding to angles[-1]
             adj = angles.pop()

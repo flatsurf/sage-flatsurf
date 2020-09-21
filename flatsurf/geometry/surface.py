@@ -1,3 +1,24 @@
+# -*- coding: utf-8 -*-
+#*********************************************************************
+#  This file is part of sage-flatsurf.
+#
+#        Copyright (C) 2016-2020 Pat Hooper
+#                      2019-2020 Vincent Delecroix
+#                      2020      Julian Rüth
+#
+#  sage-flatsurf is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  sage-flatsurf is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
+#*********************************************************************
 from __future__ import absolute_import, print_function, division
 from six.moves import range, map, filter, zip
 from six import iteritems
@@ -413,9 +434,8 @@ class Surface(SageObject):
     def _test_base_ring(self, **options):
         # Test that the base_label is associated to a polygon
         tester = self._tester(**options)
-        from sage.rings.ring import Field
-        tester.assertTrue(isinstance(self.base_ring(), Field), \
-            "base_ring="+str(self.base_ring())+" is not a Field.")
+        from sage.all import Rings
+        tester.assertTrue(self.base_ring() in Rings())
 
     def _test_base_label(self, **options):
         # Test that the base_label is associated to a polygon

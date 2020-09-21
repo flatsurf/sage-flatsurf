@@ -11,9 +11,18 @@ modeled on the plane with monodromy given by similarities of the plane, though
 current efforts are focused on translation surfaces and half-translation
 surfaces.
 
-Currently, the package can generate images of flat surfaces, plot straight-line
-trajectories, deform surfaces through the SL(2,R) action, and compute Delaunay
-decompositions. `SageMath`_ is used to perform exact arithmetic.
+Currently, the package can:
+
+- generate images of flat surfaces
+  
+- compute and plot straight-line trajectories
+
+- deform translation surfaces through the GL(2,R) action and
+  compute GL(2,R)-orbit closure (the latter requires `libflatsurf`_)
+  
+- compute Delaunay decompositions.
+  
+`SageMath`_, `eantic`_ and `exact-real`_ are used to perform exact arithmetic.
 
 This package is open source software, released under GPL v2 (see the ``COPYING``
 file). We welcome any help to improve the package and especially to broaden
@@ -111,7 +120,7 @@ There are several related projects
 * `veerer`_ (Python module): specific to handle specific triangulation of
   half-translation surfaces
 
-* `flatsurf`_: (C++ library with Python interface) computing GL(2,R)-orbit
+* `libflatsurf`_: (C++ library with Python interface) computing GL(2,R)-orbit
   closure of translation surfaces
 
 Primary Contributors
@@ -138,4 +147,6 @@ Acknowledgements
 .. _SageMath: https://www.sagemath.org
 .. _surface-dynamics: https://gitlab.com/videlec/surface_dynamics
 .. _veerer: https://gitlab.com/videlec/veerer/
-.. _flatsurf: https://github.com/flatsurf/
+.. _libflatsurf: https://github.com/flatsurf/flatsurf
+.. _eantic: https://github.com/videlec/e-antic
+.. _exact-real: https://github.com/flatsurf/exact-real

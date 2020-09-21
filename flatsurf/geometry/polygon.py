@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 r"""
 Polygons embedded in the plane R^2.
 
@@ -23,6 +24,25 @@ EXAMPLES::
     sage: m * p
     Polygon: (0, 0), (1, 0), (sqrt2 + 4, sqrt2 + 1)
 """
+######################################################################
+#  This file is part of sage-flatsurf.
+#
+#        Copyright (C) 2016-2020 Vincent Delecroix
+#                      2020      Julian Rüth
+#
+#  sage-flatsurf is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  sage-flatsurf is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
+######################################################################
 
 from __future__ import absolute_import, print_function, division
 from six.moves import range, map, filter, zip
@@ -31,7 +51,7 @@ import operator
 
 from sage.all import cached_method, Parent, UniqueRepresentation, Sets, Rings,\
                      Fields, ZZ, QQ, AA, RR, RIF, QQbar, matrix, polygen, vector,\
-                     free_module_element, NumberField
+                     free_module_element, NumberField, FreeModule, lcm, gcd
 from sage.misc.cachefunc import cached_function
 from sage.misc.functional import numerical_approx
 from sage.structure.element import get_coercion_model, Vector
@@ -39,7 +59,6 @@ from sage.structure.coerce import py_scalar_parent
 cm = get_coercion_model()
 from sage.structure.element import Element
 from sage.categories.action import Action
-from sage.arith.functions import lcm
 from sage.modules.free_module_element import vector
 from sage.modules.free_module import VectorSpace
 from sage.structure.sequence import Sequence
@@ -122,11 +141,6 @@ def is_same_direction(v,w,zero=None):
         ...
         TypeError: zero vector has no direction
 
-        sage: for _ in range(100):
-        ....:    v = V.random_element()
-        ....:    if not v: continue
-        ....:    assert is_same_direction(v, 2*v)
-        ....:    assert not is_same_direction(v, -v)
     """
     if not v or not w:
         raise TypeError("zero vector has no direction")
@@ -166,12 +180,6 @@ def is_opposite_direction(v,w):
         ...
         TypeError: zero vector has no direction
 
-        sage: for _ in range(100):
-        ....:    v = V.random_element()
-        ....:    if not v: continue
-        ....:    assert not is_opposite_direction(v, v)
-        ....:    assert not is_opposite_direction(v,2*v)
-        ....:    assert is_opposite_direction(v, -v)
     """
     if not v or not w:
         raise TypeError("zero vector has no direction")
@@ -226,27 +234,17 @@ def segment_intersect(e1, e2, base_ring=None):
     EXAMPLES::
 
         sage: from flatsurf.geometry.polygon import segment_intersect
-        sage: for (u,v,ans) in [(((0,0),(1,0)),((0,1),(0,3)),0),
-        ....:         (((0,0),(1,0)),((0,0),(0,3)),1), (((0,0),(1,0)),((0,-1),(0,3)),2),
-        ....:         (((-1,-1),(1,1)),((0,0),(2,2)),2), (((-1,-1),(1,1)),((1,1),(2,2)),1)]:
-        ....:     assert segment_intersect(u,v) == ans
+        sage: segment_intersect(((0,0),(1,0)),((0,1),(0,3)))
+        0
+        sage: segment_intersect(((0,0),(1,0)),((0,0),(0,3)))
+        1
+        sage: segment_intersect(((0,0),(1,0)),((0,-1),(0,3)))
+        2
+        sage: segment_intersect(((-1,-1),(1,1)),((0,0),(2,2)))
+        2
+        sage: segment_intersect(((-1,-1),(1,1)),((1,1),(2,2)))
+        1
 
-        sage: for _ in range(4000):
-        ....:     us = (randint(-4, 4), randint(-4, 4))
-        ....:     ut = (randint(-4, 4), randint(-4, 4))
-        ....:     vs = (randint(-4, 4), randint(-4, 4))
-        ....:     vt = (randint(-4, 4), randint(-4, 4))
-        ....:     if us == ut or vs == vt:
-        ....:         continue
-        ....:     ans1 = segment_intersect((us,ut),(vs,vt))
-        ....:     ans2 = segment_intersect((ut,us),(vs,vt))
-        ....:     ans3 = segment_intersect((us,ut),(vt,vs))
-        ....:     ans4 = segment_intersect((ut,us),(vt,vs))
-        ....:     ans5 = segment_intersect((vs,vt),(us,ut))
-        ....:     ans6 = segment_intersect((vt,vs),(us,ut))
-        ....:     ans7 = segment_intersect((vs,vt),(ut,us))
-        ....:     ans8 = segment_intersect((vt,vs),(ut,us))
-        ....:     assert (ans1 == ans2 == ans3 == ans4 == ans5 == ans6 == ans7 == ans8), (us, ut, vs, vt, ans1, ans2, ans3, ans4, ans5, ans6, ans7, ans8)
     """
     if e1[0] == e1[1] or e2[0] == e2[1]:
         raise ValueError("degenerate segments")
@@ -320,23 +318,13 @@ def is_between(e0, e1, f):
     Check whether the vector ``f`` is strictly in the sector formed by the vectors
     ``e0`` and ``e1`` (in counter-clockwise order).
 
-    TESTS::
+    EXAMPLES::
 
         sage: from flatsurf.geometry.polygon import is_between
         sage: V = ZZ^2
-        sage: vecs = [V((1,0)), V((2,1)), V((1,1)), V((1,2)),
-        ....:  V((0,1)), V((-1,2)), V((-1,1)), V((-2,1)),
-        ....:  V((-1,0)), V((-2,-1)), V((-1,-1)), V((-1,-2)),
-        ....:  V((0,-1)), V((1,-2)), V((1,-1)), V((2,-1))]
-        sage: for i in range(len(vecs)):
-        ....:     for j in range(len(vecs)):
-        ....:         if i == j: continue
-        ....:         for k in range(len(vecs)):
-        ....:             if k == i or k == j: continue
-        ....:             ans = is_between(vecs[i], vecs[j], vecs[k])
-        ....:             expected = i < k < j or k < j < i or j < i < k
-        ....:             if ans != expected:
-        ....:                 print((i,j,k),expected,ans)
+        sage: is_between(V((1, 0)), V((1, 1)), V((2, 1)))
+        True
+
     """
     if e0[0] * e1[1] > e1[0] * e0[1]:
         # positive determinant
@@ -553,8 +541,8 @@ def build_faces(n, edges):
 class MatrixActionOnPolygons(Action):
     def __init__(self, polygons):
         from sage.matrix.matrix_space import MatrixSpace
-        K = polygons.field()
-        Action.__init__(self, MatrixSpace(K,2), polygons, True, operator.mul)
+        R = polygons.base_ring()
+        Action.__init__(self, MatrixSpace(R,2), polygons, True, operator.mul)
 
     def _act_(self, g, x):
         r"""
@@ -658,7 +646,7 @@ class PolygonPosition:
 class Polygon(Element):
     def __init__(self, parent, vertices, check=True):
         Element.__init__(self, parent)
-        V = parent.vector_space()
+        V = parent.module()
         self._v = tuple(map(V, vertices))
         for vv in self._v: vv.set_immutable()
         if check:
@@ -811,7 +799,7 @@ class Polygon(Element):
             Polygon: (3, -2), (5, -2), (4, -1)
         """
         P = self.parent()
-        u = P.vector_space()(u)
+        u = P.module()(u)
         return P.element_class(P, [u+v for v in self._v], check=False)
 
     def change_ring(self, R):
@@ -869,9 +857,33 @@ class Polygon(Element):
         """
         return "Polygon: " + ", ".join(map(str,self.vertices()))
 
+    @cached_method
+    def module(self):
+        r"""
+        Return the free module of rank 2 in which this polygon embeds.
+
+        EXAMPLES::
+
+            sage: from flatsurf import polygons
+            sage: S = polygons.square()
+            sage: S.module()
+            Vector space of dimension 2 over Rational Field
+
+        """
+        return self.parent().module()
+
+    @cached_method
     def vector_space(self):
         r"""
-        Return the vector space containing the vertices.
+        Return the vector space of dimension 2 in which this polygon embeds.
+
+        EXAMPLES::
+
+            sage: from flatsurf import polygons
+            sage: S = polygons.square()
+            sage: S.vector_space()
+            Vector space of dimension 2 over Rational Field
+
         """
         return self.parent().vector_space()
 
@@ -1281,7 +1293,7 @@ class ConvexPolygon(Polygon):
 
     def find_separatrix(self, direction=None, start_vertex=0):
         r"""
-        Returns a pair (v,same) where v is a vertex and dir is a boolean.
+        Returns a pair (v,same) where v is a vertex and same is a boolean.
         The provided parameter "direction" should be a non-zero vector with
         two entries, or by default direction=(0,1).
 
@@ -1309,7 +1321,7 @@ class ConvexPolygon(Polygon):
             (3, False)
         """
         if direction is None:
-            direction = self.vector_space()((self.base_ring().zero(), self.base_ring().one()))
+            direction = self.module()((self.base_ring().zero(), self.base_ring().one()))
         else:
             assert not direction.is_zero()
         v=start_vertex
@@ -1633,7 +1645,7 @@ class ConvexPolygon(Polygon):
 
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import polygons
             sage: P = polygons(vertices=[(0,0),(1,0),(2,1),(-1,1)])
             sage: P.circumscribing_circle()
             Circle((1/2, 3/2), 5/2)
@@ -1650,7 +1662,7 @@ class Polygons(UniqueRepresentation, Parent):
 
     def __init__(self, ring):
         Parent.__init__(self, category=Sets())
-        if not ring in Rings():
+        if ring not in Rings():
             raise ValueError("'ring' must be a ring")
         self._ring = ring
         self.register_action(MatrixActionOnPolygons(self))
@@ -1659,24 +1671,48 @@ class Polygons(UniqueRepresentation, Parent):
         return self._ring
 
     def field(self):
-        return self.base_ring().fraction_field()
+        r"""
+        Return the field over which this polygon is defined.
+
+        EXAMPLES::
+
+            sage: from flatsurf import polygons
+            sage: P = polygons(vertices=[(0,0),(1,0),(2,1),(-1,1)])
+            sage: P.field()
+            Rational Field
+
+        """
+        return self._ring.fraction_field()
+
+    @cached_method
+    def module(self):
+        r"""
+        Return the free module of rank 2 in which these polygons embed.
+
+        EXAMPLES::
+
+            sage: from flatsurf import Polygons
+            sage: C = Polygons(QQ)
+            sage: C.module()
+            Vector space of dimension 2 over Rational Field
+
+        """
+        return FreeModule(self.base_ring(), 2)
 
     @cached_method
     def vector_space(self):
         r"""
-        Return the vector space in which this polygon embeds.
+        Return the vector space of dimension 2 in which these polygons embed.
 
         EXAMPLES::
 
-            sage: from flatsurf import Polygons, ConvexPolygons
-            sage: P = Polygons(QQ)
-            sage: P.vector_space()
-            Vector space of dimension 2 over Rational Field
-            sage: C = ConvexPolygons(QQ)
+            sage: from flatsurf import Polygons
+            sage: C = Polygons(QQ)
             sage: C.vector_space()
             Vector space of dimension 2 over Rational Field
+
         """
-        return VectorSpace(self.field(), 2)
+        return VectorSpace(self.base_ring().fraction_field(), 2)
 
     def _repr_(self):
         return "Polygons(%s)"%self.base_ring()
@@ -1834,9 +1870,9 @@ class ConvexPolygons(Polygons):
                 raise ValueError("invalid keyword {!r}".format(next(iter(kwds))))
 
             if edges is not None:
-                v = self.vector_space()(base_point)
+                v = self.module()(base_point)
                 vertices = []
-                for e in map(self.vector_space(), edges):
+                for e in map(self.module(), edges):
                     vertices.append(v)
                     v += e
                 if v != vertices[0]:
@@ -1869,7 +1905,7 @@ class EquiangularPolygons:
         sage: from pyeantic import RealEmbeddedNumberField # optional: eantic
         sage: K = RealEmbeddedNumberField(P.base_ring()) # optional: eantic
         sage: P(K(1)) # optional: eantic
-        Polygon: (0, 0), (1, 0), ((1/2*c0 ~ 0.70710678), (-1/2*c0+1 ~ 0.29289322))
+        Polygon: (0, 0), (1, 0), (1/2*c0, -1/2*c0 + 1)
         sage: _.base_ring() # optional: eantic
         Number Field in c0 with defining polynomial x^2 - 2 with c0 = 1.414213562373095?
 
@@ -1890,11 +1926,11 @@ class EquiangularPolygons:
         sage: from pyexactreal import ExactReals # optional: exactreal
         sage: R = ExactReals(P.base_ring()) # optional: exactreal
         sage: P(R(1)) # optional: exactreal
-        Polygon: (0, 0), (1, 0), (((12*c0+17 ~ 33.970563))/((17*c0+24 ~ 48.041631)), ((5*c0+7 ~ 14.071068))/((17*c0+24 ~ 48.041631)))
+        Polygon: (0, 0), (1, 0), ((1/2*c0 ~ 0.70710678), (-1/2*c0+1 ~ 0.29289322))
         sage: P(R(R.random_element([0.2, 0.3]))) # random output, optional: exactreal
         Polygon: (0, 0), (ℝ(0.287373=2588422249976937p-53 + ℝ(0.120809…)p-54), 0), (((12*c0+17 ~ 33.970563)*ℝ(0.287373=2588422249976937p-53 + ℝ(0.120809…)p-54))/((17*c0+24 ~ 48.041631)), ((5*c0+7 ~ 14.071068)*ℝ(0.287373=2588422249976937p-53 + ℝ(0.120809…)p-54))/((17*c0+24 ~ 48.041631)))
         sage: _.base_ring() # optional: exactreal
-        Real Numbers as (Number Field in c0 with defining polynomial x^2 - 2 with c0 = 1.414213562373095?)-Module
+        Real Numbers as (Real Embedded Number Field in c0 with defining polynomial x^2 - 2 with c0 = 1.414213562373095?)-Module
 
     ::
 
@@ -1933,7 +1969,7 @@ class EquiangularPolygons:
         [2/9, 4/9, 2/9, 4/9, 4/9, 2/9]
 
         sage: EquiangularPolygons(1, 2, 1, 2, 1, 2, 1, 2, 2, 2, 2, 1, 1, 2, 1)
-        EquiangularPolygons(13, 26, 13, 26, 13, 26, 13, 26, 26, 26, 26, 13, 13, 26, 13)
+        EquiangularPolygons(1, 2, 1, 2, 1, 2, 1, 2, 2, 2, 2, 1, 1, 2, 1)
 
     A regular pentagon::
 
@@ -1955,38 +1991,54 @@ class EquiangularPolygons:
         n = len(angles)
         if n < 3:
             raise ValueError("'angles' should be a list of at least 3 numbers")
-        angles = [QQ.coerce(a) for a in angles]  # total sum of angle should be
+        angles = [QQ.coerce(a) for a in angles]
         if any(angle <= 0 for angle in angles):
             raise ValueError("'angles' must be positive rational numbers")
 
-        # normalize the sum so that it is (n-2)/2 (ie angles are given in multiple of 2pi)
-        s = ZZ(n - 2) / sum(angles) / ZZ(2)
-        if s != 1:
-            angles = [s * a for a in angles]
+        # Store each angle as a multiple of 2π, i.e., normalize them such their sum is (n - 2)/2.
+        angles = [a / sum(angles) for a in angles]
+        angles = [a * ZZ(n - 2) / 2 for a in angles]
         if any(angle <= 0 or angle >= 1 for angle in angles):
             raise ValueError("each angle must be > 0 and < 2 pi")
         self._angles = angles
+        assert sum(self._angles) == ZZ(n - 2) / 2
 
-        # write each angle as p_i / (2N)
-        N = lcm((2*a).denominator() for a in angles)
-        if N%2 == 0:
-            N //= 2
-        # when N is a multiple of 4, we don't want to do that
-        numerators = [(4*N*a).numerator() for a in angles]
-        assert all(p/(2*N) == 2*a for (p,a) in zip(numerators, angles))
-        if N == 1:
+        # We determine the number field that contains the slopes of the sides,
+        # i.e., the cosines and sines of the inner angles of the polygon.
+        # Let us first write all angles as multiples of 2π/N with the smallest
+        # possible common N.
+        N = lcm(a.denominator() for a in angles)
+        # The field containing the cosine and sine of 2π/N might be too small
+        # to write down all the slopes when N is not divisible by 4.
+        assert N != 1, "there cannot be a polygon with all angles multiples of 2π"
+        if N == 2:
+            pass
+        elif N % 4:
+            while N % 4:
+                N *= 2
+
+        angles = [ZZ(a * N) for a in angles]
+
+        if N == 2:
             self._base_ring = QQ
             c = QQ.zero()
         else:
-            poly = cos_minpoly(2*N)
-            emb = AA.polynomial_root(poly, 2 * (RIF.pi() / (2*N)).cos())
-            self._base_ring = NumberField(poly, 'c', embedding=emb)
-            c = self._base_ring.gen()  # = 2 cos(pi / 2N)
-        cosines = [chebyshev_T(p, c)/2 for p in numerators]
-        sines = [chebyshev_T(N-p, c)/2 if p < N else -chebyshev_T(3*N-p, c)/2 for p in numerators]
-        assert all((x**2 + y**2).is_one() for x,y in zip(cosines, sines))
+            # Construct the minimal polynomial f(x) of c = 2 cos(2π / N)
+            f = cos_minpoly(N // 2)
+            emb = AA.polynomial_root(f, 2 * (2*RIF.pi() / N).cos())
+            self._base_ring = NumberField(f, 'c', embedding=emb)
+            c = self._base_ring.gen()
 
-        self._slopes = [projectivization(c,s) for c,s in zip(cosines, sines)]
+        # Construct the cosine and sine of each angle as an element of our number field.
+        def cosine(a):
+            return chebyshev_T(abs(a), c) / 2
+        def sine(a):
+            # Use sin(x) = cos(π/2 - x)
+            return cosine(N//4 - a)
+        slopes = [(cosine(a), sine(a)) for a in angles]
+        assert all((x**2 + y**2).is_one() for x, y in slopes)
+
+        self._slopes = [projectivization(x, y) for x, y in slopes]
         self._cosines_ring = self._base_ring
 
         # TODO: It might be the case that the slopes generate a smaller
@@ -2037,14 +2089,32 @@ class EquiangularPolygons:
             True
             sage: E.strict_convexity()
             False
+
         """
         return all(2 * a < 1 for a in self._angles)
 
     def angles(self, integral=False):
+        r"""
+        Return the interior angles of this polygon as multiples 2π.
+
+        EXAMPLES::
+
+            sage: from flatsurf import EquiangularPolygons
+            sage: E = EquiangularPolygons(1, 1, 1, 2, 6)
+            sage: E.angles()
+            [3/22, 3/22, 3/22, 3/11, 9/11]
+
+        When ``integral`` is set, the output is scaled to eliminate
+        denominators::
+
+            sage: E.angles(integral=True)
+            [1, 1, 1, 2, 6]
+
+        """
         angles = self._angles
         if integral:
-            D = lcm([a.denominator() for a in self._angles])
-            angles = [(D * a).numerator() for a in self._angles]
+            C = lcm([a.denominator() for a in self._angles]) / gcd([a.numerator() for a in self._angles])
+            angles = [ZZ(C * a) for a in angles]
         return angles
 
     def __repr__(self):
@@ -2057,8 +2127,35 @@ class EquiangularPolygons:
         """
         return "EquiangularPolygons({})".format(", ".join(map(str,self.angles(True))))
 
+    @cached_method
+    def module(self):
+        r"""
+        Return the free module of rank 2 in which these polygons embed.
+
+        EXAMPLES::
+
+            sage: from flatsurf import EquiangularPolygons
+            sage: C = EquiangularPolygons(1, 2, 3)
+            sage: C.module()
+            Vector space of dimension 2 over Number Field in c with defining polynomial x^2 - 3 with c = 1.732050807568878?
+
+        """
+        return FreeModule(self._base_ring, 2)
+
+    @cached_method
     def vector_space(self):
-        return VectorSpace(self._base_ring, 2)
+        r"""
+        Return the vector space of dimension 2 in which these polygons embed.
+
+        EXAMPLES::
+
+            sage: from flatsurf import EquiangularPolygons
+            sage: C = EquiangularPolygons(1, 2, 3)
+            sage: C.vector_space()
+            Vector space of dimension 2 over Number Field in c with defining polynomial x^2 - 3 with c = 1.732050807568878?
+
+        """
+        return VectorSpace(self._base_ring.fraction_field(), 2)
 
     def slopes(self, e0=(1,0)):
         r"""
@@ -2070,7 +2167,7 @@ class EquiangularPolygons:
             sage: EquiangularPolygons(1, 2, 1, 2).slopes()
             [(1, 0), (c, 3), (-1, 0), (-c, -3)]
         """
-        V = self.vector_space()
+        V = self.module()
         slopes = self._slopes
         n = len(slopes)
         cosines = [x[0] for x in slopes]
@@ -2170,7 +2267,7 @@ class EquiangularPolygons:
                 if not e.args[0].startswith('edge ') or not e.args[0].endswith('intersect') or e.args[0].count(' and edge ') != 1:
                     raise RuntimeError("unexpected error with coeffs {!r} ~ {!r}: {!r}".format(coeffs, [numerical_approx(x) for x in coeffs], e))
 
-    def __call__(self, *lengths, **kwds):
+    def __call__(self, *lengths, normalized=False, base_ring=None):
         r"""
         TESTS::
 
@@ -2187,16 +2284,21 @@ class EquiangularPolygons:
             sage: P(r0 + r1)
             Polygon: (0, 0), (20, 0), (5, -15*c^3 + 60*c), (5, -5*c^3 + 20*c)
         """
-        base_ring = kwds.pop('base_ring', None)
-        normalized = kwds.pop('normalized', False)
-        if kwds:
-            raise ValueError("invalid keyword {!r}".format(next(iter(kwds))))
         if len(lengths) == 1 and isinstance(lengths[0], (tuple, list, Vector)):
             lengths = lengths[0]
 
         n = len(self._angles)
-        if len(lengths) != n-2 and len(lengths) != n:
-            raise ValueError("invalid 'lengths' argument")
+        if len(lengths) != n - 2 and len(lengths) != n:
+            raise ValueError("must provide %d or %d lengths but provided %d"%(n - 2, n, len(lengths)))
+
+        V = self.module()
+        slopes = self.slopes()
+        if normalized:
+            V = V.change_ring(self._cosines_ring)
+            for i, s in enumerate(slopes):
+                x, y = map(self._cosines_ring, s)
+                norm2 = (x**2 + y**2).sqrt()
+                slopes[i] = V((x/norm2, y/norm2))
 
         if base_ring is None:
             from sage.all import Sequence
@@ -2208,17 +2310,6 @@ class EquiangularPolygons:
             else:
                 base_ring = pushout(base_ring, self._base_ring)
 
-        V = self.vector_space()
-        slopes = self.slopes()
-        if normalized:
-            V = VectorSpace(base_ring, 2)
-            for i, s in enumerate(slopes):
-                x, y = s
-                x = base_ring(x)
-                y = base_ring(y)
-                norm2 = (x**2 + y**2).sqrt()
-                slopes[i] = V((x/norm2, y/norm2))
-
         v = V((0,0))
         vertices = [v]
 
@@ -2226,11 +2317,11 @@ class EquiangularPolygons:
             for i in range(n - 2):
                 v += lengths[i] * slopes[i]
                 vertices.append(v)
-            s, t = matrix(base_ring, [slopes[-1], slopes[n - 2]]).solve_left(vertices[0] - vertices[n - 2])
-            assert vertices[0] - s*slopes[-1] == vertices[n-2] + t*slopes[n-2]
+            s, t = vector(vertices[0] - vertices[n - 2]) * matrix([slopes[-1], slopes[n - 2]]).inverse()
+            assert vertices[0] - s * slopes[-1] == vertices[n - 2] + t * slopes[n - 2]
             if s <= 0 or t <= 0:
                 raise ValueError("the provided lengths do not give rise to a polygon")
-            vertices.append(vertices[0] - s*slopes[-1])
+            vertices.append(vertices[0] - s * slopes[-1])
 
         elif len(lengths) == n:
             for i in range(n):
@@ -2795,8 +2886,13 @@ class PolygonsConstructor:
 
             return E(lengths, normalized=True)
 
-        if base_ring not in Fields():
-            base_ring = base_ring.fraction_field()
+        if base_ring is ZZ:
+            # Typically, we do not want to go to the fraction field of the base
+            # ring, e.g., we do not want to go to FractionField(ExactReals()).
+            # However, manual input of parameters often leads to the
+            # automatically detected base ring ZZ which is essentially never
+            # what the user wanted.
+            base_ring = QQ
 
         if convex:
             return ConvexPolygons(base_ring)(vertices=vertices, edges=edges, base_point=base_point)

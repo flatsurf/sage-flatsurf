@@ -1,6 +1,26 @@
+# -*- coding: utf-8 -*-
 r"""
 Some tools for 2x2 matrices and planar geometry.
 """
+######################################################################
+#  This file is part of sage-flatsurf.
+#
+#        Copyright (C) 2016-2020 Vincent Delecroix
+#                      2020      Julian Rüth
+#
+#  sage-flatsurf is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  sage-flatsurf is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
+######################################################################
 from __future__ import absolute_import, print_function, division
 from six.moves import range, map, filter, zip
 
@@ -217,7 +237,7 @@ def rotation_matrix_angle(r, check=False):
     return r
 
 
-def is_cosine_sine_of_rational(c,s):
+def is_cosine_sine_of_rational(c, s):
     r"""
     Check whether the given pair is a cosine and sine of a same rational angle.
 
@@ -245,6 +265,14 @@ def is_cosine_sine_of_rational(c,s):
         sage: K.<sqrt2> = NumberField(x**2 - 2, embedding=1.414)
         sage: is_cosine_sine_of_rational(K.zero(),-K.one())
         True
+
+    TESTS::
+
+        sage: from pyexactreal import ExactReals # optional: exactreal
+        sage: R = ExactReals() # optional: exactreal
+        sage: is_cosine_sine_of_rational(R.one(), R.zero()) # optional: exactreal
+        True
+
     """
     return (QQbar(c) + QQbar.gen() * QQbar(s)).minpoly().is_cyclotomic()
 

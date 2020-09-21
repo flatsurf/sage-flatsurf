@@ -1,3 +1,23 @@
+# -*- coding: utf-8 -*-
+#*********************************************************************
+#  This file is part of sage-flatsurf.
+#
+#        Copyright (C) 2016-2020 Vincent Delecroix
+#                      2020      Julian Rüth
+#
+#  sage-flatsurf is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  sage-flatsurf is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
+#*********************************************************************
 from __future__ import absolute_import, print_function, division
 from six.moves import range, map, filter, zip
 
@@ -8,7 +28,7 @@ from sage.structure.unique_representation import UniqueRepresentation
 
 from sage.categories.groups import Groups
 
-from sage.all import Fields
+from sage.all import Rings
 
 from sage.modules.free_module_element import vector
 from sage.groups.group import Group
@@ -42,19 +62,24 @@ class Similarity(MultiplicativeGroupElement):
         """
         if p is None:
             raise ValueError("The parent must be provided")
-        field = p._field
-        if parent(a) is not field or \
-           parent(b) is not field or \
-           parent(s) is not field or \
-           parent(t) is not field:
-               raise ValueError("wrong parent for a,b,s or t")
+
+        if parent(a) is not p.base_ring():
+            raise ValueError("wrong parent for a")
+        if parent(b) is not p.base_ring():
+            raise ValueError("wrong parent for b")
+        if parent(s) is not p.base_ring():
+            raise ValueError("wrong parent for s")
+        if parent(t) is not p.base_ring():
+            raise ValueError("wrong parent for t")
+        if parent(sign) is not ZZ or not sign.is_unit():
+            raise ValueError("sign must be either 1 or -1.")
+
         self._a = a
         self._b = b
         self._s = s
         self._t = t
-        if parent(sign) is not ZZ or not sign.is_unit():
-            raise ValueError("sign must be either 1 or -1.")
         self._sign = sign
+
         MultiplicativeGroupElement.__init__(self, p)
 
     def sign(self):
@@ -194,17 +219,34 @@ class Similarity(MultiplicativeGroupElement):
             -b*self._s - sign*a*self._t,
             sign)
 
-    def _div_(self, s):
-        return self._mul_(s.__invert__())
+    def _div_(left, right):
+        det = right.det()
+
+        inv_a = right._sign * right._a
+        inv_b = -right._b
+        inv_s = -right._sign * right._a * right._s - right._sign * right._b * right._t
+        inv_t = right._b * right._s - right._a * right._t
+
+        a = (left._a * inv_a - left._sign * left._b * inv_b) / det
+        b = (left._b * inv_a + left._sign * left._a * inv_b) / det
+        s = (left._a * inv_s - left._sign * left._b * inv_t) / det + left._s
+        t = (left._b * inv_s + left._sign * left._a * inv_t) / det + left._t
+
+        return left.parent().element_class(left.parent(),
+            left.base_ring()(a),
+            left.base_ring()(b),
+            left.base_ring()(s),
+            left.base_ring()(t),
+            left._sign * right._sign)
 
     def __hash__(self):
         return 73*hash(self._a)-19*hash(self._b)+13*hash(self._s)+53*hash(self._t)+67*hash(self._sign)
 
-    def __call__(self,w, field = None):
+    def __call__(self, w, ring = None):
         r"""
         Return the image of ``w`` under the similarity. Here ``w`` may be a ConvexPolygon or a vector
-        (or something that can be indexed in the same way as a vector). If a field is provided,
-        the objects returned will be defined over this field.
+        (or something that can be indexed in the same way as a vector). If a ring is provided,
+        the objects returned will be defined over this ring.
 
         TESTS::
 
@@ -228,17 +270,17 @@ class Similarity(MultiplicativeGroupElement):
             (x, y) |-> (25*x + 4, 25*y + 10)
             sage: g(p)
             Polygon: (4, 10), (29, 10), (29, 35), (4, 35)
-            sage: g(p, field=AA).parent()
+            sage: g(p, ring=AA).parent()
             ConvexPolygons(Algebraic Real Field)
         """
-        if field is not None:
-            if not field in Fields():
-                raise TypeError("field must be a field")
-        if isinstance(w,ConvexPolygon):
-            if field is None:
-                P = ConvexPolygons(self.parent().base_field())
-            else:
-                P = ConvexPolygons(field)
+        if ring is not None and ring not in Rings():
+            raise TypeError("ring must be a ring")
+
+        if isinstance(w, ConvexPolygon):
+            if ring is None:
+                ring = self.parent().base_ring()
+            P = ConvexPolygons(ring)
+
             try:
                 return P(vertices=[self(v) for v in w.vertices()])
             except ValueError as e:
@@ -246,17 +288,26 @@ class Similarity(MultiplicativeGroupElement):
                     raise ValueError("Similarity must be orientation preserving.")
                 else:
                     # Not sure why this would happen:
-                    raise e
-        if field is None:
+                    raise
+
+        if ring is None:
             if self._sign.is_one():
-                return vector([self._a*w[0]-self._b*w[1]+self._s, self._b*w[0]+self._a*w[1]+self._t])
+                return vector([
+                    self._a * w[0] - self._b*w[1] + self._s,
+                    self._b * w[0] + self._a * w[1] + self._t])
             else:
-                return vector([self._a*w[0]+self._b*w[1]+self._s, self._b*w[0]-self._a*w[1]+self._t])
+                return vector([
+                    self._a * w[0] + self._b * w[1] + self._s,
+                    self._b * w[0] - self._a * w[1] + self._t])
         else:
             if self._sign.is_one():
-                return vector(field, [self._a*w[0]-self._b*w[1]+self._s, self._b*w[0]+self._a*w[1]+self._t])
+                return vector(ring, [
+                    self._a * w[0] - self._b * w[1] + self._s,
+                    self._b * w[0] + self._a * w[1] + self._t])
             else:
-                return vector(field, [self._a*w[0]+self._b*w[1]+self._s, self._b*w[0]-self._a*w[1]+self._t])
+                return vector(ring, [
+                    self._a * w[0] + self._b * w[1] + self._s,
+                    self._b * w[0] - self._a * w[1] + self._t])
 
     def _repr_(self):
         r"""
@@ -273,7 +324,7 @@ class Similarity(MultiplicativeGroupElement):
             sage: S((-1,0,2/3,3,-1))
             (x, y) |-> (-x + 2/3, y + 3)
         """
-        R = self.parent()._field['x','y']
+        R = self.parent().base_ring()['x','y']
         x,y = R.gens()
         return "(x, y) |-> ({}, {})".format(
                     self._a*x - self._sign*self._b*y + self._s,
@@ -325,8 +376,8 @@ class Similarity(MultiplicativeGroupElement):
         """
         P = self.parent()
         M = P._matrix_space_3x3()
-        z = P._field.zero()
-        o = P._field.one()
+        z = P._ring.zero()
+        o = P._ring.one()
         return M(
             [self._a, -self._sign*self._b, self._s,
              self._b, +self._sign*self._a, self._t,
@@ -378,7 +429,7 @@ class SimilarityGroup(UniqueRepresentation, Group):
     """
     Element = Similarity
 
-    def __init__(self, base_field):
+    def __init__(self, base_ring):
         r"""
         TESTS::
 
@@ -386,26 +437,23 @@ class SimilarityGroup(UniqueRepresentation, Group):
             sage: TestSuite(SimilarityGroup(QQ)).run()
             sage: TestSuite(SimilarityGroup(AA)).run()
         """
-        if not base_field in Fields():
-            raise TypeError("base_field must be a field")
-        self._field = base_field
-        # The vector space of vectors
+        self._ring = base_ring
         Group.__init__(self, category=Groups().Infinite())
 
     @cached_method
     def _matrix_space_2x2(self):
         from sage.matrix.matrix_space import MatrixSpace
-        return MatrixSpace(self._field, 2)
+        return MatrixSpace(self._ring, 2)
 
     @cached_method
     def _matrix_space_3x3(self):
         from sage.matrix.matrix_space import MatrixSpace
-        return MatrixSpace(self._field, 3)
+        return MatrixSpace(self._ring, 3)
 
     @cached_method
     def _vector_space(self):
         from sage.modules.free_module import VectorSpace
-        return VectorSpace(self._field, 2)
+        return VectorSpace(self._ring, 2)
 
     def _element_constructor_(self, *args, **kwds):
         r"""
@@ -428,19 +476,19 @@ class SimilarityGroup(UniqueRepresentation, Group):
         else:
             x = args
 
-        a = self._field.one()
-        b = s = t = self._field.zero()
+        a = self._ring.one()
+        b = s = t = self._ring.zero()
         sign = ZZ_1
 
         # TODO: 2x2 and 3x3 matrix input
 
         if isinstance(x, (tuple,list)):
             if len(x) == 2:
-                s,t = map(self._field, x)
+                s,t = map(self._ring, x)
             elif len(x) == 4:
-                a,b,s,t = map(self._field, x)
+                a,b,s,t = map(self._ring, x)
             elif len(x) == 5:
-                a,b,s,t = map(self._field, x[:4])
+                a,b,s,t = map(self._ring, x[:4])
                 sign = ZZ(x[4])
             else:
                 raise ValueError("can not construct a similarity from a list of length {}".format(len(x)))
@@ -461,18 +509,18 @@ class SimilarityGroup(UniqueRepresentation, Group):
                 raise ValueError("invalid dimension for matrix input")
         elif isinstance(x, FreeModuleElement):
             if len(x) == 2:
-                if x.base_ring() is self._field:
+                if x.base_ring() is self._ring:
                     s,t = x
                 else:
-                    s,t = map(self._field, x)
+                    s,t = map(self._ring, x)
             else:
                 raise ValueError("invalid dimension for vector input")
         else:
             p = parent(x)
-            if self._field.has_coerce_map_from(p):
-                a = self._field(x)
+            if self._ring.has_coerce_map_from(p):
+                a = self._ring(x)
             else:
-                raise ValueError
+                raise ValueError("element in %s cannot be used to create element in %s"%(p, self))
 
         if (a*a + b*b).is_zero():
             raise ValueError("not invertible")
@@ -480,10 +528,10 @@ class SimilarityGroup(UniqueRepresentation, Group):
         return self.element_class(self, a, b, s, t, sign)
 
     def _coerce_map_from_(self, S):
-        if self._field.has_coerce_map_from(S):
+        if self._ring.has_coerce_map_from(S):
             return True
         if isinstance(S, SimilarityGroup):
-            return self._field.has_coerce_map_from(S._field)
+            return self._ring.has_coerce_map_from(S._ring)
 
     def _repr_(self):
         r"""
@@ -493,7 +541,7 @@ class SimilarityGroup(UniqueRepresentation, Group):
             sage: SimilarityGroup(QQ)
             Similarity group over Rational Field
         """
-        return "Similarity group over {}".format(self._field)
+        return "Similarity group over {}".format(self._ring)
 
     def one(self):
         r"""
@@ -506,11 +554,11 @@ class SimilarityGroup(UniqueRepresentation, Group):
             True
         """
         return self.element_class(self,
-                self._field.one(),  # a
-                self._field.zero(), # b
-                self._field.zero(), # s
-                self._field.zero(), # t
-                ZZ_1)               # sign
+                self._ring.one(),  # a
+                self._ring.zero(), # b
+                self._ring.zero(), # s
+                self._ring.zero(), # t
+                ZZ_1)              # sign
 
     def an_element(self):
         return self(3, 4, 2, -1, -1)
@@ -518,5 +566,5 @@ class SimilarityGroup(UniqueRepresentation, Group):
     def is_abelian(self):
         return False
 
-    def base_field(self):
-        return self._field
+    def base_ring(self):
+        return self._ring

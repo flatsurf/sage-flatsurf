@@ -1,4 +1,23 @@
 # -*- coding: utf-8 -*-
+#*********************************************************************
+#  This file is part of sage-flatsurf.
+#
+#        Copyright (C) 2016-2020 Vincent Delecroix
+#                      2020      Julian Rüth
+#
+#  sage-flatsurf is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  sage-flatsurf is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
+#*********************************************************************
 from __future__ import absolute_import, print_function, division
 from six.moves import range, map, filter, zip
 from six import iteritems, itervalues
@@ -6,6 +25,7 @@ from six import iteritems, itervalues
 from sage.rings.all import ZZ, QQ, RIF, AA, NumberField, polygen
 from sage.modules.all import VectorSpace, vector
 from sage.structure.coerce import py_scalar_parent
+from sage.structure.element import get_coercion_model, parent
 from sage.misc.cachefunc import cached_method
 from sage.structure.sequence import Sequence
 
@@ -466,11 +486,22 @@ class SimilaritySurfaceGenerators:
             sage: TestSuite(S).run()
             sage: S, _ = S.normalized_coordinates()
             sage: TestSuite(S).run()
+
+        Unfolding a triangle with non-algebraic lengths::
+
+            sage: E = EquiangularPolygons(3, 3, 5)
+            sage: from pyexactreal import ExactReals # optional: exactreal
+            sage: R = ExactReals(E.base_ring()) # optional: exactreal
+            sage: P = E(R.random_element()) # optional: exactreal
+            sage: S = similarity_surfaces.billiard(P); S # optional: exactreal
+            ConeSurface built from 2 polygons
+            sage: TestSuite(S).run() # optional: exactreal
+
         """
         if not isinstance(P, Polygon):
             raise TypeError("invalid input")
 
-        V = P.vector_space()
+        V = P.module()
 
         if not isinstance(P, ConvexPolygon):
             # triangulate non-convex ones
@@ -532,10 +563,6 @@ class SimilaritySurfaceGenerators:
             s = RationalConeSurface(surface)
         else:
             s = ConeSurface(surface)
-        if len(P) == 1:
-            # TODO: this is very add-hoc and must be removed
-            gs = s.graphical_surface(edge_labels=False, polygon_labels=False)
-            gs.make_adjacent(0,0,reverse=True)
         return s
 
     @staticmethod
@@ -781,7 +808,7 @@ class TranslationSurfaceGenerators:
         return translation_surfaces.veech_2n_gon(4)
 
     @staticmethod
-    def mcmullen_genus2_prototype(w, h, t, e, rel=0):
+    def mcmullen_genus2_prototype(w, h, t, e, rel=0, base_ring=None):
         r"""
         McMullen prototypes in the stratum H(2).
 
@@ -856,15 +883,33 @@ class TranslationSurfaceGenerators:
         x = polygen(QQ)
         poly = x**2 - e * x - w*h
         if poly.is_irreducible():
-            emb = AA.polynomial_root(poly, RIF(0,w))
-            K = NumberField(poly, 'l', embedding=emb)
-            l = K.gen()
+            if base_ring is None:
+                emb = AA.polynomial_root(poly, RIF(0,w))
+                K = NumberField(poly, 'l', embedding=emb)
+                l = K.gen()
+            else:
+                K = base_ring
+                roots = poly.roots(K, multiplicities=False)
+                if len(roots) != 2:
+                    raise ValueError("invalid base ring")
+                roots.sort(key=lambda x: x.numerical_approx())
+                assert roots[0] < 0 and roots[0] > 0
+                l = roots[1]
         else:
-            K = QQ
+            if base_ring is None:
+                K = QQ
+            else:
+                K = base_ring
             D = e**2 + 4 * w*h
             d = D.sqrt()
             l = (e + d) / 2
-        rel = K(rel)
+
+        try:
+            rel = K(rel)
+        except TypeError:
+            K = get_coercion_model().common_parent(K, parent(rel))
+            l = K(l)
+            rel = K(rel)
 
         # (lambda,lambda) square on top
         # twisted (w,0), (t,h)
@@ -1020,16 +1065,24 @@ class TranslationSurfaceGenerators:
             sage: C.stratum()
             H_4(2^3)
             sage: TestSuite(C).run()
+
+            sage: from pyexactreal import ExactReals # optional: exactreal
+            sage: K = QuadraticField(5, embedding=AA(5).sqrt())
+            sage: R = ExactReals(K) # optional: exactreal
+            sage: C = translation_surfaces.cathedral(K.gen(), R.random_element([0.1, 0.2])) # optional: exactreal
+            sage: C.stratum() # optional: exactreal
+            H_4(2^3)
+            sage: TestSuite(C).run() # optional: exactreal
         """
-        field = Sequence([a,b]).universe()
-        if isinstance(field, type):
-            field = py_scalar_parent(field)
-        if not field.is_field():
-            field = field.fraction_field()
-        a = field(a)
-        b = field(b)
-        P = ConvexPolygons(field)
-        s = Surface_list(base_ring=field)
+        ring = Sequence([a,b]).universe()
+        if isinstance(ring, type):
+            ring = py_scalar_parent(ring)
+        if not ring.has_coerce_map_from(QQ):
+            ring = ring.fraction_field()
+        a = ring(a)
+        b = ring(b)
+        P = ConvexPolygons(ring)
+        s = Surface_list(base_ring=ring)
         half = QQ((1,2))
         p0 = P(vertices=[(0,0),(a,0),(a,1),(0,1)])
         p1 = P(vertices=[(a,0),(a,-b),(a+half,-b-half),(a+1,-b),(a+1,0),(a+1,1),(a+1,b+1),(a+half,b+1+half),(a,b+1),(a,1)])
