@@ -631,7 +631,7 @@ class GL2ROrbitClosure:
             sage: O.field_of_definition() # optional: pyflatsurf
             Number Field in c0 with defining polynomial x^3 - 3*x - 1 with c0 = 1.879385241571817?
             sage: bound = E.billiard_unfolding_stratum('half-translation', marked_points=True).dimension()
-            sage: for decomposition in O.decompositions(1):  # long time, optional: exactreal, pyflatsurf
+            sage: for decomposition in O.decompositions(1):  # long time, optional: pyflatsurf
             ....:     if O.dimension() == bound: break
             ....:     O.update_tangent_space_from_flow_decomposition(decomposition)
             sage: O.field_of_definition()  # long time, optional: pyflatsurf
