@@ -391,10 +391,6 @@ class Decomposition:
         M = matrix([to_rational_vector(module) for module in modules])
         assert M.base_ring() is QQ
         relations = M.left_kernel().matrix()
-
-        if not relations:
-            return []
-
         assert len(vcyls) == len(module_fractions) == relations.ncols()
 
         vectors = [
@@ -635,7 +631,7 @@ class GL2ROrbitClosure:
             sage: O.field_of_definition() # optional: pyflatsurf
             Number Field in c0 with defining polynomial x^3 - 3*x - 1 with c0 = 1.879385241571817?
             sage: bound = E.billiard_unfolding_stratum('half-translation', marked_points=True).dimension()
-            sage: for decomposition in O.decompositions(1):  # long time, optional: exactreal, pyflatsurf
+            sage: for decomposition in O.decompositions(1):  # long time, optional: pyflatsurf
             ....:     if O.dimension() == bound: break
             ....:     O.update_tangent_space_from_flow_decomposition(decomposition)
             sage: O.field_of_definition()  # long time, optional: pyflatsurf
@@ -1036,6 +1032,33 @@ class GL2ROrbitClosure:
             sage: for d in O.decompositions(1):  # optional: pyflatsurf
             ....:     O.update_tangent_space_from_flow_decomposition(d)
             sage: assert O.dimension() == 2  # optional: pyflatsurf
+
+        TESTS:
+
+        A regression test for  https://github.com/flatsurf/sage-flatsurf/pull/69::
+
+            sage: from itertools import islice
+            sage: from flatsurf import polygons, similarity_surfaces
+            sage: from flatsurf import GL2ROrbitClosure  # optional: pyflatsurf
+
+            sage: for (a,b,c,dim) in [(3,2,2,7), (4,2,1,8), (4,4,3,11), (5,3,3,11), (5,4,4,13), (5,5,3,13)]: # long time, optional: pyflatsurf
+            ....:     T = polygons.triangle(a, b, c)
+            ....:     S = similarity_surfaces.billiard(T)
+            ....:     S = S.minimal_cover(cover_type="translation")
+            ....:     O = GL2ROrbitClosure(S)  # optional: pyflatsurf
+            ....:     nsteps = 0
+            ....:     for d in islice(O.decompositions(3,100), 10):  # optional: pyflatsurf
+            ....:         O.update_tangent_space_from_flow_decomposition(d)
+            ....:         nsteps += 1
+            ....:         if O.dimension() == dim:
+            ....:             break
+            ....:     print("(%d, %d, %d): %d" % (a, b, c, nsteps))
+            (3, 2, 2): 5
+            (4, 2, 1): 4
+            (4, 4, 3): 4
+            (5, 3, 3): 4
+            (5, 4, 4): 7
+            (5, 5, 3): 4
         """
         if self._U_rank == self._U.nrows(): return
         for v in decomposition.cylinder_deformation_subspace():
