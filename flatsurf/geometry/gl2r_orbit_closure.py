@@ -251,8 +251,6 @@ class Decomposition:
         assert A.det().is_unit()
         return A, sc_index, proj
 
-    # TODO: move to C++
-    # see https://github.com/flatsurf/flatsurf/pull/162
     def parabolic(self):
         r"""
         Return whether this decomposition is completely periodic with cylinder with
@@ -276,43 +274,12 @@ class Decomposition:
 
             sage: S = translation_surfaces.mcmullen_genus2_prototype(4,2,1,1,1/4)
             sage: O = GL2ROrbitClosure(S)  # optional: pyflatsurf
-            sage: all((d.decomposition.hasCylinder() == False) or d.parabolic() for d in O.decompositions(6, 100))  # optional: pyflatsurf
+            sage: all((d.decomposition.hasCylinder() == False) or d.parabolic() for d in O.decompositions(6))  # optional: pyflatsurf
             False
-            sage: all((d.decomposition.completelyPeriodic() == True) or (d.decomposition.hasCylinder() == False) for d in O.decompositions(6, 100))  # optional: pyflatsurf
+            sage: all((d.decomposition.completelyPeriodic() == True) or (d.decomposition.hasCylinder() == False) for d in O.decompositions(6))  # optional: pyflatsurf
             True
-
-        .. TODO::
-
-            Because of https://github.com/flatsurf/flatsurf/issues/140 we set a
-            limit to decompositions but this should not be needed here.
         """
-        if self.orbit.V2.base_ring() in [ZZ, QQ]:
-            return True
-
-        # from here we assume that the field self.orbit.K is a number field
-        # as we need to test whether some number of the form (a * b / (c * d))
-        # are rationals
-        state = True
-        mod0 = None
-        hol0 = None
-        for comp in self.decomposition.components():
-            if comp.cylinder() == False:
-                return False
-            elif comp.cylinder() != True:
-                state = Unknown
-            hol = comp.circumferenceHolonomy()
-            hol = self.orbit.V2._isomorphic_vector_space(self.orbit.V2(hol))
-            area = self.orbit.V2.base_ring()(comp.area())
-            mod = area / (hol[0]**2 + hol[1]**2)
-            if mod0 is None:
-                mod0 = mod
-                hol0 = hol
-            else:
-                # check parallelism
-                assert hol0[0] * hol[1] == hol0[1] * hol[0]
-                if mod / mod0 not in QQ:
-                    return False
-        return state
+        return self.decomposition.parabolic()
 
     def circumference_width(self, component, sc_index, proj):
         r"""
