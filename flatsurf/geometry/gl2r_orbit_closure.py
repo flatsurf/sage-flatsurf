@@ -72,7 +72,7 @@ class Decomposition:
             sage: O.decomposition((1,2)).cylinders() # optional: pyflatsurf
             [Cylinder with perimeter [...]]
         """
-        return [comp for comp in self.decomposition.components() if comp.cylinder() == True]
+        return self.decomposition.cylinders()
 
     def minimal_components(self):
         r"""
@@ -90,7 +90,7 @@ class Decomposition:
             sage: O.decomposition((1,2)).minimal_components() # optional: pyflatsurf
             [Component Without Periodic Trajectory with perimeter [...]]
         """
-        return [comp for comp in self.decomposition.components() if comp.withoutPeriodicTrajectory() == True]
+        return self.decomposition.minimalComponents()
 
     def undetermined_components(self):
         r"""
@@ -116,8 +116,7 @@ class Decomposition:
             sage: dec.undetermined_components() # optional: pyflatsurf
             []
         """
-        # NOTE: 2 is the unknown value of boost tribool
-        return [comp for comp in self.decomposition.components() if comp.cylinder().value == 2]
+        return self.decomposition.undeterminedComponents()
 
     def num_cylinders_minimals_undetermined(self):
         r"""
