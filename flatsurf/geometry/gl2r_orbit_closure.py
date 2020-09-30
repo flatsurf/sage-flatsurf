@@ -391,10 +391,6 @@ class Decomposition:
         M = matrix([to_rational_vector(module) for module in modules])
         assert M.base_ring() is QQ
         relations = M.left_kernel().matrix()
-
-        if not relations:
-            return []
-
         assert len(vcyls) == len(module_fractions) == relations.ncols()
 
         vectors = [
