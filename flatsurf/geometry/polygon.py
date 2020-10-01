@@ -2589,7 +2589,7 @@ class EquiangularPolygons:
             if 1 in angles:
                 del angles[1]
             if not angles:
-                angles[1] = 1
+                angles[ZZ.one()] = ZZ.one()
 
         abelian = all(a.is_integer() for a in angles)
         s = sum(angles.values())
