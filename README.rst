@@ -1,9 +1,8 @@
 sage-flatsurf
 =============
 
-This is a software package for working with flat surfaces in
-`SageMath`_. The flatsurf documentation
-is available at http://www.labri.fr/perso/vdelecro/flatsurf/latest/
+This is a software package for working with flat surfaces in `SageMath`_.
+For the documentation, see the Links section below.
 
 We aim for this package to support the investigation of geometric, algebraic and
 dynamical questions related to flat surfaces. By flat surface we mean a surface
@@ -14,17 +13,17 @@ surfaces.
 Currently, the package can:
 
 - generate images of flat surfaces
-  
+
 - compute and plot straight-line trajectories
 
 - deform translation surfaces through the GL(2,R) action and
-  compute GL(2,R)-orbit closure (the latter requires `libflatsurf`_)
-  
-- compute Delaunay decompositions.
-  
-`SageMath`_, `eantic`_ and `exact-real`_ are used to perform exact arithmetic.
+  compute GL(2,R)-orbit closures (the latter requires `libflatsurf`_)
 
-This package is open source software, released under GPL v2 (see the ``COPYING``
+- compute Delaunay decompositions.
+
+`SageMath`_, `e-antic`_ and `exact-real`_ are used to perform exact arithmetic.
+
+This package is free software, released under the GPL v2 (see the ``COPYING``
 file). We welcome any help to improve the package and especially to broaden
 the package's mathematical abilities.
 
@@ -34,40 +33,39 @@ in using it, please contact the authors.
 Links
 -----
 
-* documentation: https://www.labri.fr/perso/vdelecro/sage-flatsurf/
+* Documentation: https://www.labri.fr/perso/vdelecro/sage-flatsurf/latest
 
-* Python Package Index page: https://pypi.org/project/sage-flatsurf/
+* Page on the Python package index: https://pypi.org/project/sage-flatsurf/
 
-* development website: https://github.com/flatsurf/sage-flatsurf/
+* Development website: https://github.com/flatsurf/sage-flatsurf/
 
 Installing the dependency
 -------------------------
 
-Our software depends on the `surface-dynamics`_ package,
-which is distributed on PyPI. To install it, run the
-following command::
+sage-flatsurf depends on the `surface_dynamics`_ package, which is
+distributed on PyPI and can be installed with the following command::
 
-    $ sage -pip install surface_dynamics [--user]
+    $ sage --pip install surface_dynamics [--user] [--upgrade]
 
-The --user option is optional and allows to install the corresponding
-Python module in your user space rather than system-wide (and thus
-does not require administrator rights).
+The options ``--user`` and ``--upgrade`` are optional; ``--user`` is to
+perform the installation in your user home instead of in the Sage sources;
+``--upgrade`` is to upgrade the package in case it is already installed.
 
 Installing the package
 ----------------------
 
-Since sage-flatsurf is available on PyPI at https://pypi.org/project/sage-flatsurf/,
+Since sage-flatsurf is available on PyPI (see Links section above),
 the released version of sage-flatsurf can be installed by running the following command::
 
-    $ sage -pip install sage-flatsurf [--user] [--upgrade]
+    $ sage --pip install sage-flatsurf [--user] [--upgrade]
 
 To install the development version of sage-flatsurf, run instead::
 
-    $ sage -pip install git+https://github.com/videlec/sage-flatsurf [--user] [--upgrade]
+    $ sage --pip install git+https://github.com/videlec/sage-flatsurf [--user] [--upgrade]
 
-The options ``--user`` and ``--upgrade`` are optional. The option ``--user`` make
-the installation in your home directory instead of in the Sage sources. The
-option ``--upgrade`` allows you to upgrade if the package is already installed.
+The options ``--user`` and ``--upgrade`` are optional; ``--user`` is to
+perform the installation in your user home instead of in the Sage sources;
+``--upgrade`` is to upgrade the package in case it is already installed.
 
 This might fail if `Git <https://git-scm.com/>`_ is not installed on your
 computer (which could happen for example with certain versions of Sage in Windows).
@@ -75,13 +73,13 @@ In this situation you have two options. Either you install Git. Or you download
 this project from the "Clone or download" drop-down menu above (you should get
 a zip file). Then you need to run the command::
 
-    $ sage -pip install TARBALL_NAME [--user] [--upgrade]
+    $ sage --pip install TARBALL_NAME [--user] [--upgrade]
 
 where ``TARBALL_NAME`` has to be replaced with the full path to your tarball.
 Under Windows, it should be a Cygwin path and will look something like
 ``/cygdrive/c/Users/You/Downloads/sage-flatsurf-master.zip``.
 
-Then you should be able to use the following within sage::
+Then you should be able to use the following within Sage::
 
     sage: import flatsurf.geometry.similarity_surface_generators as sfg
     sage: T = sfg.translation_surfaces.regular_octagon()
@@ -92,7 +90,7 @@ Then you should be able to use the following within sage::
 
 To uninstall the package, you can do::
 
-    $ sage -pip uninstall flatsurf
+    $ sage --pip uninstall flatsurf
 
 Run the tests
 -------------
@@ -107,21 +105,21 @@ files in the module just do::
     $ sage -t --force-lib flatsurf
 
 Tests on the master branch are automatically run through
-`Travis-CI <https://travis-ci.org/github/flatsurf/sage-flatsurf>`_
+`Travis-CI <https://travis-ci.org/github/flatsurf/sage-flatsurf>`_.
 
 Related projects
 ----------------
 
 There are several related projects
 
-* `surface-dynamics`_ (SageMath module): more focused on dynamics (interval
+* `surface_dynamics`_ (SageMath module): more focused on dynamics (interval
   exchanges)
 
-* `veerer`_ (Python module): specific to handle specific triangulation of
+* `veerer`_ (Python module): to handle specific triangulations of
   half-translation surfaces
 
 * `libflatsurf`_: (C++ library with Python interface) computing GL(2,R)-orbit
-  closure of translation surfaces
+  closures of translation surfaces
 
 Primary Contributors
 --------------------
@@ -145,8 +143,8 @@ Acknowledgements
   Horizon 2020 European Research Infrastructures project #676541.
 
 .. _SageMath: https://www.sagemath.org
-.. _surface-dynamics: https://gitlab.com/videlec/surface_dynamics
+.. _surface_dynamics: https://gitlab.com/videlec/surface_dynamics
 .. _veerer: https://gitlab.com/videlec/veerer/
 .. _libflatsurf: https://github.com/flatsurf/flatsurf
-.. _eantic: https://github.com/videlec/e-antic
+.. _e-antic: https://github.com/videlec/e-antic
 .. _exact-real: https://github.com/flatsurf/exact-real
