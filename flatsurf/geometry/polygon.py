@@ -2537,6 +2537,16 @@ class EquiangularPolygons:
 
             sage: from flatsurf import EquiangularPolygons
 
+            sage: E = EquiangularPolygons(1, 1, 1)
+            sage: E.billiard_unfolding_stratum_dimension("half-translation")
+            2
+            sage: E.billiard_unfolding_stratum_dimension("translation")
+            2
+            sage: E.billiard_unfolding_stratum_dimension("half-translation", True)
+            4
+            sage: E.billiard_unfolding_stratum_dimension("translation", True)
+            4
+
             sage: E = EquiangularPolygons(1, 2, 5)
             sage: E.billiard_unfolding_stratum_dimension("half-translation")
             4
