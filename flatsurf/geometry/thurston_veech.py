@@ -117,15 +117,15 @@ class ThurstonVeech:
             raise ValueError("invalid input lengths")
 
         E = self._E
-        H = diagonal_matrix(hmult) * E
-        V = E * diagonal_matrix(vmult)
+        H = E * diagonal_matrix(vmult)
+        V = E.transpose() * diagonal_matrix(hmult)
 
-        FH = H * V.transpose()
-        FV = H.transpose() * V
         if self._num_hcyls < self._num_vcyls:
-            p = FH.charpoly()
+            F = H * V
         else:
-            p = FV.charpoly()
+            F = V * H
+        p = F.charpoly()
+        assert F.nrows() == F.ncols() == min([self._num_hcyls, self._num_vcyls])
 
         pf = max(p.roots(AA, False))
         mp = pf.minpoly()
@@ -138,15 +138,29 @@ class ThurstonVeech:
             K = NumberField(q, 'a', embedding=im_gen)
             pf = bck(K.gen())
 
-        h = (FH - pf).right_kernel_matrix()
-        v = (FV - pf).right_kernel_matrix()
-        assert h.nrows() == 1 and v.nrows() == 1
-        assert h.ncols() == self._num_hcyls
-        assert v.ncols() == self._num_vcyls
-        h = h[0]
-        v = v[0]
-        assert all(x > 0 for x in h)
-        assert all(x > 0 for x in v)
+        # Compute widths of the cylinders via Perron-Frobenius
+        if self._num_hcyls < self._num_vcyls:
+            hcirc = (F - pf).right_kernel_matrix()
+            assert hcirc.nrows() == 1
+            assert hcirc.ncols() == self._num_hcyls
+            hcirc = hcirc[0]
+            assert all(x > 0 for x in hcirc)
+            vcirc = V * hcirc
+            c = 1
+            d = pf
+        else:
+            vcirc = (F - pf).right_kernel_matrix()
+            assert vcirc.nrows() == 1
+            assert vcirc.ncols() == self._num_vcyls
+            vcirc = vcirc[0]
+            assert all(x > 0 for x in vcirc)
+            hcirc = H * vcirc
+            d = 1
+            c = pf
+
+        # Solve linear systems to get heights
+        h = [hcirc[i] * hmult[i] / c for i in range(self._num_hcyls)]
+        v = [vcirc[i] * vmult[i] / d for i in range(self._num_vcyls)]
 
         C = ConvexPolygons(K)
         P = []
