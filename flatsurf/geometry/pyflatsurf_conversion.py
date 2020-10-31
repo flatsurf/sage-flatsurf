@@ -149,10 +149,11 @@ def from_pyflatsurf(T):
     import cppyy
 
     def maybe_type(t):
-        class Nothing: pass
         try:
             return t()
-        except AttributeError: return Nothing
+        except AttributeError: 
+            # The type constructed by t might not exist because the required C++ library has not been loaded.
+            return None
 
     coordinate = type(T.fromHalfEdge(1).x())
     if coordinate is maybe_type(lambda: cppyy.gbl.mpz_class):
