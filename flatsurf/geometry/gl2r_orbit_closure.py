@@ -280,9 +280,9 @@ class Decomposition:
         """
         return self.decomposition.parabolic()
 
-    def circumference_width(self, component, sc_index, proj):
+    def circumference(self, component, sc_index, proj):
         r"""
-        Return the circumference and width of ``component`` in the coordinate of the original
+        Return the circumference of ``component`` in the coordinate of the original
         surface.
         """
         if component.cylinder() != True:
@@ -308,13 +308,7 @@ class Decomposition:
         holbis = self.orbit.V2._isomorphic_vector_space(self.orbit.V2(holbis))
         assert hol == holbis, (hol, holbis)
 
-        u = sc.vector()
-        u = self.orbit.V2._isomorphic_vector_space(self.orbit.V2(u))
-        width = self.u[1] * u[0] - self.u[0] * u[1]
-        widthbis = self.orbit.V2.base_ring()(component.width())
-        assert width == widthbis, (width, widthbis)
-
-        return circumference, width
+        return circumference
 
     def cylinder_deformation_subspace(self):
         r"""
@@ -342,16 +336,16 @@ class Decomposition:
         module_fractions = []
         vcyls = []
         A, sc_index, proj = self.kontsevich_zorich_cocycle()
-        for comp in self.decomposition.components():
-            if comp.cylinder() == False:
+        for component in self.decomposition.components():
+            if component.cylinder() == False:
                 continue
-            elif comp.cylinder() == True:
-                circ, width = self.circumference_width(comp, sc_index, proj)
-                vcyls.append(width * circ)
-                hol = comp.circumferenceHolonomy()
-                hol = self.orbit.V2._isomorphic_vector_space(self.orbit.V2(hol))
-                area = self.orbit.V2.base_ring()(comp.area())
-                module_fractions.append((area, hol[0]**2 + hol[1]**2))
+            elif component.cylinder() == True:
+                vcyls.append(self.circumference(component, sc_index, proj))
+
+                vertical = component.vertical()
+                width = self.orbit.V2._isomorphic_vector_space.base_ring()(self.orbit.V2.base_ring()(component.width()))
+                height = self.orbit.V2._isomorphic_vector_space.base_ring()(self.orbit.V2.base_ring()(component.vertical().parallel(component.circumferenceHolonomy())))
+                module_fractions.append((width, height))
             else:
                 return []
 
