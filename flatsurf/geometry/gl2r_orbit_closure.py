@@ -696,7 +696,7 @@ class GL2ROrbitClosure:
 
             sage: T = polygons.triangle(3,4,13)
             sage: S = similarity_surfaces.billiard(T)
-            sage: S = S.minimal_cover("translation").erase_marked_points()
+            sage: S = S.minimal_cover("translation").erase_marked_points() # optional: pyflatsurf
             sage: O = GL2ROrbitClosure(S)  # optional: pyflatsurf
             sage: for d in O.decompositions(4, 20):  # optional: pyflatsurf
             ....:     O.update_tangent_space_from_flow_decomposition(d)
