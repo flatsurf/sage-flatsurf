@@ -48,7 +48,7 @@ from sage.all import VectorSpace, FreeModule, matrix, identity_matrix, ZZ, QQ, U
 from .subfield import subfield_from_elements
 from .polygon import is_between, projectivization
 from .translation_surface import TranslationSurface
-from .pyflatsurf_conversion import to_pyflatsurf
+from .pyflatsurf_conversion import to_pyflatsurf, from_pyflatsurf
 
 class Decomposition:
     def __init__(self, gl2rorbit, decomposition, u):
@@ -1072,3 +1072,22 @@ class GL2ROrbitClosure:
         if r > self._U_rank:
             assert r == self._U_rank + 1
             self._U_rank += 1
+
+    def __reduce__(self):
+        r"""
+        Return a serializable representation of this Orbit Closure.
+
+        EXAMPLES::
+
+            sage: from flatsurf import polygons, similarity_surfaces
+            sage: from flatsurf import GL2ROrbitClosure  # optional: pyflatsurf
+
+            sage: T = polygons.triangle(1, 2, 5)
+            sage: S = similarity_surfaces.billiard(T)
+            sage: S = S.minimal_cover(cover_type="translation")
+            sage: O = GL2ROrbitClosure(S)  # optional: pyflatsurf
+            sage: dumps(loads(O)) == O
+            True
+
+        """
+        return (GL2ROrbitClosure, (from_pyflatsurf(self._surface),), {'_U': self._U, '_U_rank': self._U_rank})
