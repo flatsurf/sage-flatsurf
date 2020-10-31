@@ -48,7 +48,6 @@ from sage.all import VectorSpace, FreeModule, matrix, identity_matrix, ZZ, QQ, U
 from .subfield import subfield_from_elements
 from .polygon import is_between, projectivization
 from .translation_surface import TranslationSurface
-from .pyflatsurf_conversion import to_pyflatsurf, from_pyflatsurf
 
 class Decomposition:
     def __init__(self, gl2rorbit, decomposition, u):
@@ -485,12 +484,14 @@ class GL2ROrbitClosure:
     """
     def __init__(self, surface):
         if not isinstance(surface, TranslationSurface):
-            raise ValueError("surface must be a translation surface")
+            from flatsurf.geometry.pyflatsurf_conversion import from_pyflatsurf
+            surface = from_pyflatsurf(surface)
 
         # A model of the vector space R² in libflatsurf, e.g., to represent the
         # vector associated to a saddle connection.
         self.V2 = pyflatsurf.vector.Vectors(surface.base_ring())
 
+        from flatsurf.geometry.pyflatsurf_conversion import to_pyflatsurf
         self._surface = to_pyflatsurf(surface)
 
         # We construct a spanning set of edges, that is a subset of the
@@ -1090,4 +1091,5 @@ class GL2ROrbitClosure:
             True
 
         """
+        from flatsurf.geometry.pyflatsurf_conversion import from_pyflatsurf
         return (GL2ROrbitClosure, (from_pyflatsurf(self._surface),), {'_U': self._U, '_U_rank': self._U_rank})
