@@ -1087,7 +1087,7 @@ class GL2ROrbitClosure:
             sage: S = similarity_surfaces.billiard(T)
             sage: S = S.minimal_cover(cover_type="translation")
             sage: O = GL2ROrbitClosure(S)  # optional: pyflatsurf
-            sage: dumps(loads(O)) == O
+            sage: loads(dumps(O)) == O
             True
 
         """
