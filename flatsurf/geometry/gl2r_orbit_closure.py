@@ -387,7 +387,7 @@ class Decomposition:
         relations = M.left_kernel().matrix()
         assert len(vcyls) == len(module_fractions) == relations.ncols()
 
-        vectors = [sum(t * vcyl * module[1] for (t, vcyl, module) in zip(relation, vcyls, module_fractions))) for relation in relations.right_kernel().basis()]
+        vectors = [sum(t * vcyl * module[1] for (t, vcyl, module) in zip(relation, vcyls, module_fractions)) for relation in relations.right_kernel().basis()]
 
         assert all(v.base_ring() is self.orbit.V2._isomorphic_vector_space.base_ring() for v in vectors)
 
