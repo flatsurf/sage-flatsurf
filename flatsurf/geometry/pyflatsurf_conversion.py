@@ -140,9 +140,9 @@ def from_pyflatsurf(T):
     EXAMPLES::
 
         sage: from flatsurf import translation_surfaces
-        sage: from flatsurf.geometry.pyflatsurf_conversion import to_pyflatsurf, from_pyflatsurf
-        sage: S = translation_surfaces.veech_double_n_gon(5)
-        sage: from_pyflatsurf(to_pyflatsurf(S))
+        sage: from flatsurf.geometry.pyflatsurf_conversion import to_pyflatsurf, from_pyflatsurf # optional: pyflatsurf
+        sage: S = translation_surfaces.veech_double_n_gon(5) # optional: pyflatsurf
+        sage: from_pyflatsurf(to_pyflatsurf(S)) # optional: pyflatsurf
         TranslationSurface built from 6 polygons
 
     """
