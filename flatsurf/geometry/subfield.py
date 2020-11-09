@@ -146,7 +146,7 @@ def subfield_from_elements(self, alpha, name=None, polred=True, threshold=None):
     alpha = [self(a) for a in alpha]
 
     # Rational case
-    if all(a.is_rational() for a in alpha):
+    if all(a in QQ for a in alpha):
         return (QQ, [QQ(a) for a in alpha], self.coerce_map_from(QQ))
 
     # Saturate with multiplication
