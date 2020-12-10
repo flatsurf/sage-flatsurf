@@ -12,6 +12,7 @@ Contents:
    :maxdepth: 2
 
    walk_through
+   apisa_wright_example
    geometry
    graphical
 
