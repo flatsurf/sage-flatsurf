@@ -483,16 +483,18 @@ class GL2ROrbitClosure:
         Number Field in a with defining polynomial x^3 - 2 with a = 1.259921049894873?
     """
     def __init__(self, surface):
-        if not isinstance(surface, TranslationSurface):
-            from flatsurf.geometry.pyflatsurf_conversion import from_pyflatsurf
-            surface = from_pyflatsurf(surface)
+        if isinstance(surface, TranslationSurface):
+            base_ring = surface.base_ring()
+            from flatsurf.geometry.pyflatsurf_conversion import to_pyflatsurf
+            self._surface = to_pyflatsurf(surface)
+        else:
+            from flatsurf.geometry.pyflatsurf_conversion import sage_base_ring
+            base_ring, _ = sage_base_ring(surface)
+            self._surface = surface
 
         # A model of the vector space R² in libflatsurf, e.g., to represent the
         # vector associated to a saddle connection.
-        self.V2 = pyflatsurf.vector.Vectors(surface.base_ring())
-
-        from flatsurf.geometry.pyflatsurf_conversion import to_pyflatsurf
-        self._surface = to_pyflatsurf(surface)
+        self.V2 = pyflatsurf.vector.Vectors(base_ring)
 
         # We construct a spanning set of edges, that is a subset of the
         # edges that form a basis of H_1(S, Sigma; Z)
@@ -1074,6 +1076,63 @@ class GL2ROrbitClosure:
             assert r == self._U_rank + 1
             self._U_rank += 1
 
+    def __eq__(self, other):
+        r"""
+        Return whether ``other`` was built starting from the same surface than
+        this orbit closure.
+
+        EXAMPLES::
+
+            sage: from flatsurf import polygons, similarity_surfaces
+            sage: from flatsurf import GL2ROrbitClosure  # optional: pyflatsurf
+
+            sage: T = polygons.triangle(1, 2, 5)
+            sage: S = similarity_surfaces.billiard(T)
+            sage: S = S.minimal_cover(cover_type="translation")
+            sage: GL2ROrbitClosure(S) == GL2ROrbitClosure(S) # optional: pyflatsurf
+            True
+            
+        """
+        return self._surface == other._surface
+
+    def __ne__(self, other):
+        r"""
+        Return whether ``other`` was not built starting from the same surface
+        than this orbit closure.
+
+        EXAMPLES::
+
+            sage: from flatsurf import polygons, similarity_surfaces
+            sage: from flatsurf import GL2ROrbitClosure  # optional: pyflatsurf
+
+            sage: T = polygons.triangle(1, 2, 5)
+            sage: S = similarity_surfaces.billiard(T)
+            sage: S = S.minimal_cover(cover_type="translation")
+            sage: GL2ROrbitClosure(S) != GL2ROrbitClosure(S) # optional: pyflatsurf
+            False
+            
+        """
+        return not (self == other)
+
+    def __hash__(self):
+        r"""
+        Return a hash value of this object compatible with equality operators.
+
+        EXAMPLES::
+
+            sage: from flatsurf import polygons, similarity_surfaces
+            sage: from flatsurf import GL2ROrbitClosure  # optional: pyflatsurf
+
+            sage: T = polygons.triangle(1, 2, 5)
+            sage: S = similarity_surfaces.billiard(T)
+            sage: S = S.minimal_cover(cover_type="translation")
+            sage: O = GL2ROrbitClosure(S) # optional: pyflatsurf
+            sage: hash(O) == hash(O)
+            True
+
+        """
+        return hash(self._surface)
+
     def __reduce__(self):
         r"""
         Return a serializable representation of this Orbit Closure.
@@ -1092,4 +1151,4 @@ class GL2ROrbitClosure:
 
         """
         from flatsurf.geometry.pyflatsurf_conversion import from_pyflatsurf
-        return (GL2ROrbitClosure, (from_pyflatsurf(self._surface),), {'_U': self._U, '_U_rank': self._U_rank})
+        return (GL2ROrbitClosure, (self._surface,), {'_U': self._U, '_U_rank': self._U_rank})

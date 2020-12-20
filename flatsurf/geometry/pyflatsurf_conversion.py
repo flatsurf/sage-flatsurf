@@ -132,18 +132,20 @@ def to_pyflatsurf(S):
 
     return make_surface(verts, vec)
 
-def from_pyflatsurf(T):
+def sage_base_ring(T):
     r"""
     Given T a flatsurf::FlatTriangulation from libflatsurf/pyflatsurf, return a
-    sage-flatsurf translation surface.
+    SageMath base ring over which from_pyflatsurf() can construct a translation
+    surface.
 
     EXAMPLES::
 
         sage: from flatsurf import translation_surfaces
-        sage: from flatsurf.geometry.pyflatsurf_conversion import to_pyflatsurf, from_pyflatsurf # optional: pyflatsurf
-        sage: S = translation_surfaces.veech_double_n_gon(5) # optional: pyflatsurf
-        sage: from_pyflatsurf(to_pyflatsurf(S)) # optional: pyflatsurf
-        TranslationSurface built from 6 polygons
+        sage: from flatsurf.geometry.pyflatsurf_conversion import to_pyflatsurf, sage_base_ring # optional: pyflatsurf
+        sage: S = to_pyflatsurf(translation_surfaces.veech_double_n_gon(5)) # optional: pyflatsurf
+        sage: ring, to_ring = sage_base_ring(S) # optional: pyflatsurf
+        sage: ring # optional: pyflatsurf
+        Number Field in a with defining polynomial x^4 - 5*x^2 + 5 with a = 1.902113032590308?
 
     """
     import cppyy
@@ -176,6 +178,26 @@ def from_pyflatsurf(T):
         to_ring = ring = ExactReals(T.fromHalfEdge(1).x().module().ring().parameters)
     else:
         raise NotImplementedError("unknown coordinate ring %s"%(coordinate,))
+
+    return ring, to_ring
+
+def from_pyflatsurf(T):
+    r"""
+    Given T a flatsurf::FlatTriangulation from libflatsurf/pyflatsurf, return a
+    sage-flatsurf translation surface.
+
+    EXAMPLES::
+
+        sage: from flatsurf import translation_surfaces
+        sage: from flatsurf.geometry.pyflatsurf_conversion import to_pyflatsurf, from_pyflatsurf # optional: pyflatsurf
+        sage: S = translation_surfaces.veech_double_n_gon(5) # optional: pyflatsurf
+        sage: from_pyflatsurf(to_pyflatsurf(S)) # optional: pyflatsurf
+        TranslationSurface built from 6 polygons
+
+    """
+    import cppyy
+
+    ring, to_ring = sage_base_ring(T)
 
     S = Surface_list(ring)
     P = ConvexPolygons(ring)
