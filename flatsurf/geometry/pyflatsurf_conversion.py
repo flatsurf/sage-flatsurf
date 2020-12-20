@@ -157,21 +157,23 @@ def from_pyflatsurf(T):
 
     coordinate = type(T.fromHalfEdge(1).x())
     if coordinate is maybe_type(lambda: cppyy.gbl.mpz_class):
-        ring = ZZ
+        to_ring = ring = ZZ
     elif coordinate is maybe_type(lambda: cppyy.gbl.mpq_class):
-        ring = QQ
+        to_ring = ring = QQ
     elif coordinate is maybe_type(lambda: cppyy.gbl.eantic.renf_elem_class):
         from pyeantic import RealEmbeddedNumberField
-        ring = RealEmbeddedNumberField(T.fromHalfEdge(1).x().parent())
+        rng = RealEmbeddedNumberField(T.fromHalfEdge(1).x().parent())
+        ring = rng.number_field
+        to_ring = lambda x: ring(rng(x))
     elif coordinate is maybe_type(lambda: cppyy.gbl.exactreal.Element[cppyy.gbl.exactreal.IntegerRing]):
         from pyexactreal import ExactReals
-        ring = ExactReals(ZZ)
+        to_ring = ring = ExactReals(ZZ)
     elif coordinate is maybe_type(lambda: cppyy.gbl.exactreal.Element[cppyy.gbl.exactreal.RationalField]):
         from pyexactreal import ExactReals
-        ring = ExactReals(QQ)
+        to_ring = ring = ExactReals(QQ)
     elif coordinate is maybe_type(lambda: cppyy.gbl.exactreal.Element[cppyy.gbl.exactreal.NumberField]):
         from pyexactreal import ExactReals
-        ring = ExactReals(T.fromHalfEdge(1).x().module().ring().parameters)
+        to_ring = ring = ExactReals(T.fromHalfEdge(1).x().module().ring().parameters)
     else:
         raise NotImplementedError("unknown coordinate ring %s"%(coordinate,))
 
@@ -185,7 +187,7 @@ def from_pyflatsurf(T):
         a, b, c = map(cppyy.gbl.flatsurf.HalfEdge, face)
 
         vectors = [T.fromHalfEdge(he) for he in face]
-        vectors = [V([ring(v.x()), ring(v.y())]) for v in vectors]
+        vectors = [V([to_ring(v.x()), to_ring(v.y())]) for v in vectors]
         triangle = P(vectors)
         face_id = S.add_polygon(triangle)
 
