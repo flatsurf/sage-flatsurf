@@ -32,7 +32,7 @@ import itertools
 
 pytest.importorskip('pyflatsurf')
 
-from sage.all import AA, QQ, sqrt, NumberField
+from sage.all import AA, QQ
 from flatsurf import EquiangularPolygons, similarity_surfaces, GL2ROrbitClosure
 
 # TODO: the test for field of definition with is_isomorphic() does not check
@@ -67,7 +67,7 @@ def test_rank2_quadrilateral(a, b, c, d, l1, l2, veech, discriminant):
     else:
         for dec in D:
             O.update_tangent_space_from_flow_decomposition(dec)
-        assert O.absolute_dimension() == O.dimension() == 4, (O.U.dimension(), O.absolute_dimension())
+        assert O.absolute_dimension() == O.dimension(), (O.dimension(), O.absolute_dimension())
 
     if discriminant == 1:
         assert O.field_of_definition() == QQ
