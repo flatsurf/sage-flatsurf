@@ -57,7 +57,7 @@ def test_rank2_quadrilateral(a, b, c, d, l1, l2, veech, discriminant):
     S, _ = S.normalized_coordinates()
     O = GL2ROrbitClosure(S)
     assert O.ambient_stratum() == E.billiard_unfolding_stratum(cover_type="translation")
-    D = itertools.islice(O.decompositions(9, 40), 30)
+    D = itertools.islice(O.decompositions(9, 40), 50)
     if veech:
         assert S.base_ring().degree() <= 2
         for dec in D:
@@ -67,7 +67,7 @@ def test_rank2_quadrilateral(a, b, c, d, l1, l2, veech, discriminant):
     else:
         for dec in D:
             O.update_tangent_space_from_flow_decomposition(dec)
-        assert O.absolute_dimension() == O.dimension(), (O.dimension(), O.absolute_dimension())
+        assert O.absolute_dimension() == O.dimension() == 4, (O.dimension(), O.absolute_dimension())
 
     if discriminant == 1:
         assert O.field_of_definition() == QQ
