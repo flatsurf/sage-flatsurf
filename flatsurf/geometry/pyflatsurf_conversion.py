@@ -22,7 +22,7 @@ Interface with pyflatsurf
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 #*********************************************************************
 
-from sage.all import QQ
+from sage.all import QQ, AA
 
 from pyflatsurf import flatsurf
 from pyflatsurf.factory import make_surface
@@ -126,8 +126,17 @@ def to_pyflatsurf(S):
 
     # convert the vp permutation into cycles
     verts = _cycle_decomposition(vp)
-    V = Vectors(S.base_ring())
+
+    # find a finite SageMath base ring that contains all the coordinates
+    base_ring = S.base_ring()
+    if base_ring is AA:
+        from sage.rings.qqbar import number_field_elements_from_algebraics
+        from itertools import chain
+        base_ring = number_field_elements_from_algebraics(list(chain(*[list(v) for v in vec])), embedded=True)[0]
+
+    V = Vectors(base_ring)
     vec = [V(v).vector for v in vec]
+
     _check_data(vp, fp, vec)
 
     return make_surface(verts, vec)
@@ -153,7 +162,7 @@ def sage_base_ring(T):
     def maybe_type(t):
         try:
             return t()
-        except AttributeError: 
+        except AttributeError:
             # The type constructed by t might not exist because the required C++ library has not been loaded.
             return None
 
