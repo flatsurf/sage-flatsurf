@@ -48,7 +48,6 @@ from sage.all import VectorSpace, FreeModule, matrix, identity_matrix, ZZ, QQ, U
 from .subfield import subfield_from_elements
 from .polygon import is_between, projectivization
 from .translation_surface import TranslationSurface
-from .pyflatsurf_conversion import to_pyflatsurf
 
 class Decomposition:
     def __init__(self, gl2rorbit, decomposition, u):
@@ -280,9 +279,9 @@ class Decomposition:
         """
         return self.decomposition.parabolic()
 
-    def circumference_width(self, component, sc_index, proj):
+    def circumference(self, component, sc_index, proj):
         r"""
-        Return the circumference and width of ``component`` in the coordinate of the original
+        Return the circumference of ``component`` in the coordinate of the original
         surface.
         """
         if component.cylinder() != True:
@@ -308,13 +307,7 @@ class Decomposition:
         holbis = self.orbit.V2._isomorphic_vector_space(self.orbit.V2(holbis))
         assert hol == holbis, (hol, holbis)
 
-        u = sc.vector()
-        u = self.orbit.V2._isomorphic_vector_space(self.orbit.V2(u))
-        width = self.u[1] * u[0] - self.u[0] * u[1]
-        widthbis = self.orbit.V2.base_ring()(component.width())
-        assert width == widthbis, (width, widthbis)
-
-        return circumference, width
+        return circumference
 
     def cylinder_deformation_subspace(self):
         r"""
@@ -342,16 +335,16 @@ class Decomposition:
         module_fractions = []
         vcyls = []
         A, sc_index, proj = self.kontsevich_zorich_cocycle()
-        for comp in self.decomposition.components():
-            if comp.cylinder() == False:
+        for component in self.decomposition.components():
+            if component.cylinder() == False:
                 continue
-            elif comp.cylinder() == True:
-                circ, width = self.circumference_width(comp, sc_index, proj)
-                vcyls.append(width * circ)
-                hol = comp.circumferenceHolonomy()
-                hol = self.orbit.V2._isomorphic_vector_space(self.orbit.V2(hol))
-                area = self.orbit.V2.base_ring()(comp.area())
-                module_fractions.append((area, hol[0]**2 + hol[1]**2))
+            elif component.cylinder() == True:
+                vcyls.append(self.circumference(component, sc_index, proj))
+
+                vertical = component.vertical()
+                width = self.orbit.V2._isomorphic_vector_space.base_ring()(self.orbit.V2.base_ring()(component.width()))
+                height = self.orbit.V2._isomorphic_vector_space.base_ring()(self.orbit.V2.base_ring()(component.vertical().parallel(component.circumferenceHolonomy())))
+                module_fractions.append((width, height))
             else:
                 return []
 
@@ -393,10 +386,7 @@ class Decomposition:
         relations = M.left_kernel().matrix()
         assert len(vcyls) == len(module_fractions) == relations.ncols()
 
-        vectors = [
-            sum(eliminate_denominators(
-                (t * vcyl * module[1], module[0]) for (t, vcyl, module) in zip(relation, vcyls, module_fractions)
-            )) for relation in relations.right_kernel().basis()]
+        vectors = [sum(t * vcyl * module[1] for (t, vcyl, module) in zip(relation, vcyls, module_fractions)) for relation in relations.right_kernel().basis()]
 
         assert all(v.base_ring() is self.orbit.V2._isomorphic_vector_space.base_ring() for v in vectors)
 
@@ -493,14 +483,18 @@ class GL2ROrbitClosure:
         Number Field in a with defining polynomial x^3 - 2 with a = 1.259921049894873?
     """
     def __init__(self, surface):
-        if not isinstance(surface, TranslationSurface):
-            raise ValueError("surface must be a translation surface")
+        if isinstance(surface, TranslationSurface):
+            base_ring = surface.base_ring()
+            from flatsurf.geometry.pyflatsurf_conversion import to_pyflatsurf
+            self._surface = to_pyflatsurf(surface)
+        else:
+            from flatsurf.geometry.pyflatsurf_conversion import sage_base_ring
+            base_ring, _ = sage_base_ring(surface)
+            self._surface = surface
 
         # A model of the vector space R² in libflatsurf, e.g., to represent the
         # vector associated to a saddle connection.
-        self.V2 = pyflatsurf.vector.Vectors(surface.base_ring())
-
-        self._surface = to_pyflatsurf(surface)
+        self.V2 = pyflatsurf.vector.Vectors(base_ring)
 
         # We construct a spanning set of edges, that is a subset of the
         # edges that form a basis of H_1(S, Sigma; Z)
@@ -704,7 +698,7 @@ class GL2ROrbitClosure:
 
             sage: T = polygons.triangle(3,4,13)
             sage: S = similarity_surfaces.billiard(T)
-            sage: S = S.minimal_cover("translation").erase_marked_points()
+            sage: S = S.minimal_cover("translation").erase_marked_points() # optional: pyflatsurf
             sage: O = GL2ROrbitClosure(S)  # optional: pyflatsurf
             sage: for d in O.decompositions(4, 20):  # optional: pyflatsurf
             ....:     O.update_tangent_space_from_flow_decomposition(d)
@@ -1081,3 +1075,80 @@ class GL2ROrbitClosure:
         if r > self._U_rank:
             assert r == self._U_rank + 1
             self._U_rank += 1
+
+    def __eq__(self, other):
+        r"""
+        Return whether ``other`` was built starting from the same surface than
+        this orbit closure.
+
+        EXAMPLES::
+
+            sage: from flatsurf import polygons, similarity_surfaces
+            sage: from flatsurf import GL2ROrbitClosure  # optional: pyflatsurf
+
+            sage: T = polygons.triangle(1, 2, 5)
+            sage: S = similarity_surfaces.billiard(T)
+            sage: S = S.minimal_cover(cover_type="translation")
+            sage: GL2ROrbitClosure(S) == GL2ROrbitClosure(S) # optional: pyflatsurf
+            True
+            
+        """
+        return self._surface == other._surface
+
+    def __ne__(self, other):
+        r"""
+        Return whether ``other`` was not built starting from the same surface
+        than this orbit closure.
+
+        EXAMPLES::
+
+            sage: from flatsurf import polygons, similarity_surfaces
+            sage: from flatsurf import GL2ROrbitClosure  # optional: pyflatsurf
+
+            sage: T = polygons.triangle(1, 2, 5)
+            sage: S = similarity_surfaces.billiard(T)
+            sage: S = S.minimal_cover(cover_type="translation")
+            sage: GL2ROrbitClosure(S) != GL2ROrbitClosure(S) # optional: pyflatsurf
+            False
+            
+        """
+        return not (self == other)
+
+    def __hash__(self):
+        r"""
+        Return a hash value of this object compatible with equality operators.
+
+        EXAMPLES::
+
+            sage: from flatsurf import polygons, similarity_surfaces
+            sage: from flatsurf import GL2ROrbitClosure  # optional: pyflatsurf
+
+            sage: T = polygons.triangle(1, 2, 5)
+            sage: S = similarity_surfaces.billiard(T)
+            sage: S = S.minimal_cover(cover_type="translation")
+            sage: O = GL2ROrbitClosure(S) # optional: pyflatsurf
+            sage: hash(O) == hash(O)
+            True
+
+        """
+        return hash(self._surface)
+
+    def __reduce__(self):
+        r"""
+        Return a serializable representation of this Orbit Closure.
+
+        EXAMPLES::
+
+            sage: from flatsurf import polygons, similarity_surfaces
+            sage: from flatsurf import GL2ROrbitClosure  # optional: pyflatsurf
+
+            sage: T = polygons.triangle(1, 2, 5)
+            sage: S = similarity_surfaces.billiard(T)
+            sage: S = S.minimal_cover(cover_type="translation")
+            sage: O = GL2ROrbitClosure(S)  # optional: pyflatsurf
+            sage: loads(dumps(O)) == O
+            True
+
+        """
+        from flatsurf.geometry.pyflatsurf_conversion import from_pyflatsurf
+        return (GL2ROrbitClosure, (self._surface,), {'_U': self._U, '_U_rank': self._U_rank})

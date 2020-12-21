@@ -2346,8 +2346,8 @@ class SimilaritySurface(SageObject):
 
     def erase_marked_points(self):
         r"""
-        Return an isometric or similar surface without regular vertex of angle
-        2pi (except in the torus case).
+        Return an isometric or similar surface with a minimal number of regular
+        vertices of angle 2π.
 
         EXAMPLES::
 
@@ -2357,10 +2357,10 @@ class SimilaritySurface(SageObject):
             sage: S = flatsurf.translation_surfaces.origami(G('(1,2,3,4)'), G('(1,4,2,3)'))
             sage: S.stratum()
             H_2(2, 0)
-            sage: S.erase_marked_points().stratum()
+            sage: S.erase_marked_points().stratum() # optional: pyflatsurf
             H_2(2)
 
-            sage: for (a,b,c) in [(1,4,11), (1,4,15), (3,4,13)]:
+            sage: for (a,b,c) in [(1,4,11), (1,4,15), (3,4,13)]: # optional: pyflatsurf
             ....:     T = flatsurf.polygons.triangle(a,b,c)
             ....:     S = flatsurf.similarity_surfaces.billiard(T)
             ....:     S = S.minimal_cover("translation")
@@ -2369,111 +2369,8 @@ class SimilaritySurface(SageObject):
             H_6(2^5)
             H_8(12, 2)
         """
-        if self.is_triangulated():
-            surface = self
-        else:
-            surface = self.triangulate()
-        surface = surface.copy(relabel=True)
-        angles = [adj for a,adj in surface.angles(return_adjacent_edges=True) if a == 1]
-        C = ConvexPolygons(self.base_ring())
-        V = FreeModule(self.base_ring(), 2)
-        while angles:
-            # remove the vertex corresponding to angles[-1]
-            adj = angles.pop()
-            assert surface.is_triangulated()
-            n = len(adj)
-            moved_triangles = sorted(set(p for p,_ in adj))
-            if len(moved_triangles) != n:
-                # we have an edge from the regular point to itself
-                # this is an edge inside a cylinder
-                # TODO: treat this case via
-                #    1. try a flip
-                #    2. try harder
-                raise NotImplementedError
-
-            # glue together the triangles adjacent in adj to form a (non-necessarily
-            # convex) polygon
-            a = 1
-            b = 0
-            boundary = []      # pairs (p,e) of edges on the boundary
-            boundary_inv = {}  # inverse map (p,e) -> index in boundary
-            vertices = []      # vertices of the modified polygon
-            for num,(p,e) in enumerate(adj):
-                P = surface.polygon(p)
-                x,y = P.edge(e)
-                vertices.append(V((x, y)))
-                f = (e + 1) % 3
-                boundary.append((p, f))
-                boundary_inv[(p, f)] = num
-                e = (e - 1) % 3
-                sim = surface.edge_transformation(p, e)
-                if sim._a != 1 or sim._b != 0:
-                    raise NotImplementedError("only translation surfaces are supported for now")
-            assert a == 1 and b == 0
-
-            # triangulate this polygon
-            edges = triangulate(vertices)
-            combinatorial_triangles = build_faces(len(vertices), edges)
-            assert len(combinatorial_triangles) == len(moved_triangles) - 2
-            new_triangles = []
-            edge_to_lab = {}
-            for num,(i,j,k) in enumerate(combinatorial_triangles):
-                new_triangles.append(C(vertices=[vertices[i], vertices[j], vertices[k]]))
-                assert (i,j) not in edge_to_lab
-                assert (j,k) not in edge_to_lab
-                assert (k,i) not in edge_to_lab
-                edge_to_lab[(i,j)] = edge_to_lab[(j,k)] = edge_to_lab[(k,i)] = num
-
-            # build a new surface
-            S = Surface_list(surface.base_ring())
-            for p in surface.label_iterator():
-                if p not in moved_triangles:
-                    S.add_polygon(surface.polygon(p), label=p)
-            for p,T in zip(moved_triangles, new_triangles):
-                S.add_polygon(T, label=p)
-
-            # glue edges away from the modified zone
-            for p in surface.label_iterator():
-                if p in moved_triangles:
-                    continue
-                for e in range(3):
-                    pp,ee = surface.opposite_edge(p, e)
-                    if pp not in moved_triangles:
-                        S.set_edge_pairing(p, e, pp, ee)
-
-            # glue edges of the modified zone
-            for p, tverts in zip(moved_triangles, combinatorial_triangles):
-                for e in range(3):
-                    i = tverts[e]
-                    j = tverts[(e+1)%3]
-                    if j == (i+1)%n:
-                        # boundary edge
-                        pold,eold = boundary[i]
-                        ppold, eeold = surface.opposite_edge(pold, eold)
-                        if (ppold,eeold) in boundary_inv:
-                            # glued to another triangle of the modified zone
-                            ii = boundary_inv[ppold,eeold]
-                            jj = (ii+1)%n
-                            num = edge_to_lab[ii,jj]
-                            pp = moved_triangles[num]
-                            t = combinatorial_triangles[num]
-                            ee = t.index(ii)
-                            S.set_edge_pairing(p, e, pp, ee)
-                        else:
-                            # glued to an old triangle
-                            pp = ppold
-                            ee = eeold
-                            S.set_edge_pairing(p, e, pp, ee)
-                    else:
-                        # internal edge
-                        num = edge_to_lab[j,i]
-                        pp = moved_triangles[num]
-                        ee = combinatorial_triangles[num].index(j)
-                        S.set_edge_pairing(p, e, pp, ee)
-
-            surface = type(self)(S)
-            from sage.misc.sage_unittest import TestSuite
-            TestSuite(surface).run()
-            angles = [adj for a,adj in surface.angles(return_adjacent_edges=True) if a == 1]
-
-        return surface
+        from .pyflatsurf_conversion import from_pyflatsurf, to_pyflatsurf
+        S = to_pyflatsurf(self)
+        S = S.eliminateMarkedPoints().surface()
+        S.delaunay()
+        return from_pyflatsurf(S)
