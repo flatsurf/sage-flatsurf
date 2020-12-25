@@ -118,13 +118,21 @@ the surface via A. Wright cylinder deformation.
 
 ::
 
-    sage: from flatsurf import GL2ROrbitClosure
-    sage: U = S.minimal_cover('translation')
-    sage: O = GL2ROrbitClosure(U)
-    sage: O.dimension() # at start, we only have the GL(2,R) direction
+    sage: from flatsurf import GL2ROrbitClosure  # optional: pyflatsurf
+    sage: U = S.minimal_cover('translation')  # optional: pyflatsurf
+    sage: O = GL2ROrbitClosure(U) # optional: pyflatsurf
+    sage: O.dimension() # optional: pyflatsurf
     2
-    sage: old_dim = O.dimension()
-    sage: for i, dec in enumerate(O.decompositions(16, bfs=True)):
+
+The above dimension is just the current dimension. At initialization it only
+consists of the `GL(2,R)`-direction.
+
+.. link
+
+::
+
+    sage: old_dim = O.dimension() # optional: pyflatsurf
+    sage: for i, dec in enumerate(O.decompositions(16, bfs=True)): # optional: pyflatsurf
     ....:     O.update_tangent_space_from_flow_decomposition(dec)
     ....:     new_dim = O.dimension()
     ....:     if old_dim != new_dim:
