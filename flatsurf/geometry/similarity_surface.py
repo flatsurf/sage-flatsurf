@@ -401,8 +401,27 @@ class SimilaritySurface(SageObject):
 
     def edge_matrix(self, p, e=None):
         r"""
-        Return the edge to which this edge is identified and the matrix to be
-        applied.
+        Returns the 2x2 matrix representing a similarity which when applied to the polygon with label `p`
+        makes it so the edge `e` can be glued to its opposite edge by translation.
+
+        If `e` is not provided, then `p` should be a pair consisting of a polygon label and an edge.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.similarity_surface_generators import SimilaritySurfaceGenerators
+            sage: s = SimilaritySurfaceGenerators.example()
+            sage: print(s.polygon(0))
+            Polygon: (0, 0), (2, -2), (2, 0)
+            sage: print(s.polygon(1))
+            Polygon: (0, 0), (2, 0), (1, 3)
+            sage: s.opposite_edge(0,0)
+            (1, 1)
+            sage: m = s.edge_matrix(0, 0)
+            sage: m
+            [   1  1/2]
+            [-1/2    1]
+            sage: m * vector((2,-2)) == -vector((-1, 3))
+            True
         """
         if e is None:
             p,e = p
