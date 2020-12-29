@@ -6,7 +6,8 @@ from .matrix_2x2 import is_cosine_sine_of_rational
 
 class RationalSimilaritySurface(SimilaritySurface):
     r"""
-    A similarity surface such that edges are glued by similarities whose rotational part has finite order.
+    A similarity surface such that the monodromy around any loop is similarity
+    whose rotational part has finite order.
 
     EXAMPLES::
 
