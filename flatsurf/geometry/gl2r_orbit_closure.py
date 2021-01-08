@@ -343,7 +343,7 @@ class Decomposition:
 
                 vertical = component.vertical()
                 width = self.orbit.V2._isomorphic_vector_space.base_ring()(self.orbit.V2.base_ring()(component.width()))
-                height = self.orbit.V2._isomorphic_vector_space.base_ring()(self.orbit.V2.base_ring()(component.vertical().parallel(component.circumferenceHolonomy())))
+                height = self.orbit.V2._isomorphic_vector_space.base_ring()(self.orbit.V2.base_ring()(component.vertical().project(component.circumferenceHolonomy())))
                 module_fractions.append((width, height))
             else:
                 return []
