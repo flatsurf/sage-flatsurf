@@ -36,6 +36,7 @@ from .polygon import polygons, ConvexPolygons, Polygon, ConvexPolygon, build_fac
 
 from .surface import Surface, Surface_list
 from .translation_surface import TranslationSurface
+from .dilation_surface import DilationSurface
 from .similarity_surface import SimilaritySurface
 from .half_translation_surface import HalfTranslationSurface
 from .cone_surface import ConeSurface
@@ -620,6 +621,96 @@ class SimilaritySurfaceGenerators:
 
 similarity_surfaces = SimilaritySurfaceGenerators()
 
+class DilationSurfaceGenerators:
+    @staticmethod
+    def basic_dilation_torus(a):
+        r"""
+        Return a dilation torus built from a $1 \times 1$ square and a $a \times 1$ rectangle.
+        Each edge of the square is glued to the opposite edge of the rectangle. This results
+        in horizontal edges glued by a dilation with a scaling factor of a, and vertical
+        edges being glued by translation.
+
+            b       a
+          +----+---------+
+          | 0  | 1       |
+        c |    |         | c
+          +----+---------+
+            a       b
+
+        EXAMPLES::
+
+            sage: from flatsurf import *
+            sage: ds = dilation_surfaces.basic_dilation_torus(AA(sqrt(2)))
+            sage: ds
+            DilationSurface built from 2 polygons
+            sage: TestSuite(ds).run()
+        """
+        s = Surface_list(base_ring=a.parent().fraction_field())
+        CP = ConvexPolygons(s.base_ring())
+        s.add_polygon(CP(edges=[(0,1),(-1,0),(0,-1),(1,0)])) # label 0
+        s.add_polygon(CP(edges=[(0,1),(-a,0),(0,-1),(a,0)])) # label 1
+        s.change_edge_gluing(0, 0, 1, 2)
+        s.change_edge_gluing(0, 1, 1, 3)
+        s.change_edge_gluing(0, 2, 1, 0)
+        s.change_edge_gluing(0, 3, 1, 1)
+        s.change_base_label(0)
+        s.set_immutable()
+        return DilationSurface(s)
+
+    @staticmethod
+    def genus_two_square(a, b, c, d):
+        r"""A genus two dilation surface is returned.
+
+        The unit square is made into an octagon by marking a point on
+        each of its edges. Then opposite sides of this octagon are
+        glued together by translation. (Since we currently require strictly
+        convex polygons, we subdivide the square into a hexagon and two
+        triangles as depicted below.) The parameters $a$, $b$, $c$,
+        and $d$ should be real numbers strictly between zero and one.
+        These represent the lengths of an edge of the resulting octagon,
+        as below.
+                 c
+           +--+-------+
+         d |2/        |
+           |/         |
+           +    0     +
+           |         /|
+           |        /1| b
+           +-------+--+
+              a
+        The other edges will have length $1-a$, $1-b$, $1-c$, and $1-d$.
+        Dilations used to glue edges will be by factors $c/a$, $d/b$,
+        $(1-c)/(1-a)$ and $(1-d)/(1-b)$.
+
+        EXAMPLES::
+
+            sage: from flatsurf import *
+            sage: ds = dilation_surfaces.genus_two_square(1/2, 1/3, 1/4, 1/5)
+            sage: ds
+            DilationSurface built from 3 polygons
+            sage: TestSuite(ds).run()
+        """
+        field = Sequence([a, b, c, d]).universe().fraction_field()
+        s = Surface_list(base_ring=QQ)
+        CP = ConvexPolygons(field)
+        hexagon = CP(edges=[(a,0), (1-a,b), (0,1-b), (-c,0), (c-1,-d), (0,d-1)])
+        s.add_polygon(hexagon) # polygon 0
+        s.change_base_label(0)
+        triangle1 = CP(edges=[(1-a,0), (0,b), (a-1,-b)])
+        s.add_polygon(triangle1) # polygon 1
+        triangle2 = CP(edges=[(1-c,d), (c-1,0), (0,-d)])
+        s.add_polygon(triangle2) # polygon 2
+        s.change_edge_gluing(0, 0, 0, 3)
+        s.change_edge_gluing(0, 2, 0, 5)
+        s.change_edge_gluing(0, 1, 1, 2)
+        s.change_edge_gluing(0, 4, 2, 0)
+        s.change_edge_gluing(1, 0, 2, 1)
+        s.change_edge_gluing(1, 1, 2, 2)
+        s.set_immutable()
+        return DilationSurface(s)
+
+dilation_surfaces = DilationSurfaceGenerators()
+
 class HalfTranslationSurfaceGenerators:
     # TODO: ideally, we should be able to construct a non-convex polygon and make the construction
     # below as a special case of billiard unfolding.
@@ -1044,7 +1135,7 @@ class TranslationSurfaceGenerators:
              +----+    +---+          +
              |    |    |   |          |
             1| P0 |P1  |P2 |  P3      |
-             |    |    |   |          | 
+             |    |    |   |          |
              +----+    +---+          +
                  b|    |    \        /
                    \  /      +------+
