@@ -25,7 +25,8 @@ jobs:
         run: |
           mamba env update -n test --quiet -f flatsurf/environment.yml
           echo ${{ matrix.optionals }} | grep pyflatsurf && mamba env update -n test --quiet -f flatsurf/environment.extra.yml
-          mamba install -n test sagelib=${{ matrix.sagelib }}
+          # We cannot use mamba due to https://github.com/mamba-org/mamba/issues/654
+          conda install -n test sagelib=${{ matrix.sagelib }}
           conda list
       - name: Install sage-flatsurf
         shell: bash -l {0}
