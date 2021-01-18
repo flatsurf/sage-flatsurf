@@ -7,6 +7,6 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - pyeantic
+  - pyeantic>=1.0.0rc11,<2
   - pyexactreal>=1.5.1,<2
-  - pyflatsurf
+  - pyflatsurf>=3.0.0,<4
