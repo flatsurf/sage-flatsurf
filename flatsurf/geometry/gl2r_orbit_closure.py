@@ -577,7 +577,8 @@ class GL2ROrbitClosure:
             from sage.all import next_prime
             self._good_prime = self._U.base_ring().ideal(next_prime(2**30)).factor()[0][0]
             self._Ubar = matrix(self._good_prime.residue_field(), self.d)
-            self._U_rank = 0
+
+        self._U_rank = 0
 
         self.update_tangent_space_from_vector(self.H.transpose()[0])
         self.update_tangent_space_from_vector(self.H.transpose()[1])
