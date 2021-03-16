@@ -61,7 +61,7 @@ the released version of sage-flatsurf can be installed by running the following 
 
 To install the development version of sage-flatsurf, run instead::
 
-    $ sage --pip install git+https://github.com/videlec/sage-flatsurf [--user] [--upgrade]
+    $ sage --pip install git+https://github.com/flatsurf/sage-flatsurf [--user] [--upgrade]
 
 The options ``--user`` and ``--upgrade`` are optional; ``--user`` is to
 perform the installation in your user home instead of in the Sage sources;
@@ -143,8 +143,8 @@ Acknowledgements
   Horizon 2020 European Research Infrastructures project #676541.
 
 .. _SageMath: https://www.sagemath.org
-.. _surface_dynamics: https://gitlab.com/videlec/surface_dynamics
+.. _surface_dynamics: https://github.com/flatsurf/surface_dynamics
 .. _veerer: https://gitlab.com/videlec/veerer/
 .. _libflatsurf: https://github.com/flatsurf/flatsurf
-.. _e-antic: https://github.com/videlec/e-antic
+.. _e-antic: https://github.com/flatsurf/e-antic
 .. _exact-real: https://github.com/flatsurf/exact-real
