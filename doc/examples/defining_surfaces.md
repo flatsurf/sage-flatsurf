@@ -278,7 +278,6 @@ class ParabolaSurface(Surface):
     def __init__(self):
         # The space of polygons with vertices in the rationals:
         self._P = Polygons(QQ)
- https://github.com/executablebooks/MyST-NB/issues/290       
         self._inv = matrix(QQ,[[-1,0],[0,-1]])
         
         # Set the base field to QQ, the base label to be 1, and note that the surface is infinite.
