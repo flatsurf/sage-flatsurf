@@ -148,7 +148,7 @@ jupyter:
   outputs_hidden: false
 ---
 for p in sc1.intersections(sc2):
-    print p
+    print(p)
 ```
 
 +++ {"deletable": true, "editable": true}
