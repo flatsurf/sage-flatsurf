@@ -61,6 +61,7 @@ def target(component):
     # This height bounds the size of any cylinder. However, it is stretched by the length of the vector
     # defining the vertical direction. (That vector is not normalized because that is hard to do in
     # general rings…)
+    from pyflatsurf import flatsurf
     bound = (height * height) / pyflatsurf.flatsurf.Bound.upper(vertical.vertical()).squared()
     return bound > L
 ```
