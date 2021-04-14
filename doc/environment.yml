@@ -10,3 +10,4 @@ dependencies:
   - sphinx
   - jupytext
   - myst-nb
+  - tachyon
