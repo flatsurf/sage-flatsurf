@@ -210,8 +210,8 @@ jupyter:
 ---
 # Build intersection graph
 d={}
-for i in xrange(len(sc_list2)):
-    for j in xrange(i+1,len(sc_list2)):
+for i in range(len(sc_list2)):
+    for j in range(i+1,len(sc_list2)):
         if not sc_list2[i].intersects(sc_list2[j]):
             if i not in d:
                 d[i]=[j]
@@ -243,7 +243,7 @@ jupyter:
   outputs_hidden: false
 ---
 pos={}
-for i in xrange(len(sc_list2)):
+for i in range(len(sc_list2)):
     sc = sc_list2[i]
     val = sc.holonomy().n()
     z = val[0]+I*val[1]
