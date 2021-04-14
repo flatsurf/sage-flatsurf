@@ -27,6 +27,6 @@ jobs:
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH: gh-pages
-          FOLDER: doc/manual/html
+          FOLDER: doc/_build/html
           TARGET_FOLDER: manual
         if: ${{ github.event_name == 'push' }}
