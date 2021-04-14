@@ -598,7 +598,7 @@ jupyter:
   outputs_hidden: false
 ---
 it = s.label_iterator()
-m.plot({it.next() for i in xrange(30)},label_to_color=label_to_color)
+m.plot({it.next() for i in range(30)},label_to_color=label_to_color)
 ```
 
 +++ {"deletable": true, "editable": true}
