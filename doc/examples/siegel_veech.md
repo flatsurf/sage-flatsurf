@@ -62,7 +62,7 @@ def target(component):
     # defining the vertical direction. (That vector is not normalized because that is hard to do in
     # general rings…)
     from pyflatsurf import flatsurf
-    bound = (height * height) / flatsurf.Bound.upper(vertical.vertical()).squared()
+    bound = (height * height) / flatsurf.Bound.upper(component.vertical.vertical()).squared()
     return bound > L
 ```
 
