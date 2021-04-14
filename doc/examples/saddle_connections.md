@@ -65,7 +65,7 @@ len(sc_list)
 
 +++ {"deletable": true, "editable": true}
 
-The following removes dublicate saddle connections which appear with opposite orientations.
+The following removes duplicate saddle connections which appear with opposite orientations.
 
 ```{code-cell} ipython3
 ---
