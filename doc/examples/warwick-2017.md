@@ -422,7 +422,7 @@ class SurfaceToSpaceMapping(SageObject):
         The other parameters are passed to a Polyhedron.plot method and affect the rendering.
         """
         it = iter(labels)
-        label = it.next()
+        label = next(it)
         if label_to_color is None:
             p = self.image_polygon(label).plot(point=point, line=line, polygon=polygon, \
                                                wireframe=wireframe,frame=frame,color="pink")
