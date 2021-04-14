@@ -1,0 +1,605 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Defining Surfaces in FlatSurf &#8212; sage-flatsurf 0.3 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/togglebutton.js"></script>
+    <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Graphics Configuration" href="graphics_configuration.html" />
+    <link rel="prev" title="Examples" href="../examples.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="graphics_configuration.html" title="Graphics Configuration"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../examples.html" title="Examples"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">sage-flatsurf 0.3 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../examples.html" accesskey="U">Examples</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Defining Surfaces in FlatSurf</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="defining-surfaces-in-flatsurf">
+<h1>Defining Surfaces in FlatSurf<a class="headerlink" href="#defining-surfaces-in-flatsurf" title="Permalink to this headline">¶</a></h1>
+<p>Initial version by Pat Hooper <a class="reference external" href="mailto:whooper&#37;&#52;&#48;ccny&#46;cuny&#46;edu">mailto:whooper<span>&#64;</span>ccny<span>&#46;</span>cuny<span>&#46;</span>edu</a>, Dec 16, 2017.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="o">*</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">ModuleNotFoundError</span><span class="g g-Whitespace">                       </span>Traceback (most recent call last)
+<span class="o">&lt;</span><span class="n">ipython</span><span class="o">-</span><span class="nb">input</span><span class="o">-</span><span class="mi">1</span><span class="o">-</span><span class="n">e5f5aaa54972</span><span class="o">&gt;</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="ne">ModuleNotFoundError</span>: No module named &#39;flatsurf&#39;
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="built-in-surfaces">
+<h2>Built in surfaces<a class="headerlink" href="#built-in-surfaces" title="Permalink to this headline">¶</a></h2>
+<p>Veech’s double n-gon surfaces:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">veech_double_n_gon</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">s</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The Arnoux-Yoccoz surface of arbitrary genus is built in:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s</span><span class="o">=</span><span class="n">translation_surfaces</span><span class="o">.</span><span class="n">arnoux_yoccoz</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">s</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Chamanara’s infinite translation surface:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s</span><span class="o">=</span><span class="n">translation_surfaces</span><span class="o">.</span><span class="n">chamanara</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">polygon_labels</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">edge_labels</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s</span><span class="o">=</span><span class="n">translation_surfaces</span><span class="o">.</span><span class="n">infinite_staircase</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="billiard-tables">
+<h2>Billiard tables<a class="headerlink" href="#billiard-tables" title="Permalink to this headline">¶</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s</span><span class="o">=</span><span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">billiard</span><span class="p">(</span><span class="n">polygons</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">4</span><span class="p">)]))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="minimal-translation-surface-covers">
+<h2>Minimal translation surface covers<a class="headerlink" href="#minimal-translation-surface-covers" title="Permalink to this headline">¶</a></h2>
+<p>Continuing the billiard example above, we get an infinite translation surface below:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ss</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">minimal_cover</span><span class="p">(</span><span class="n">cover_type</span><span class="o">=</span><span class="s2">&quot;translation&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">relabel</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gs</span> <span class="o">=</span> <span class="n">ss</span><span class="o">.</span><span class="n">graphical_surface</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gs</span><span class="o">.</span><span class="n">make_all_visible</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gs</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="building-surfaces-from-polygons">
+<h2>Building surfaces from polygons<a class="headerlink" href="#building-surfaces-from-polygons" title="Permalink to this headline">¶</a></h2>
+<p>This defines a regular 12-gon with algebraic real coordinates (AA) with first vector given by (1,0):</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">p0</span> <span class="o">=</span> <span class="n">polygons</span><span class="o">.</span><span class="n">regular_ngon</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="n">field</span><span class="o">=</span><span class="n">AA</span><span class="p">)</span>
+<span class="n">p1</span> <span class="o">=</span> <span class="n">polygons</span><span class="o">.</span><span class="n">regular_ngon</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="n">field</span><span class="o">=</span><span class="n">AA</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">p0</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span><span class="o">+</span><span class="n">p1</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The vertices of n-gons are numbered by <span class="math notranslate nohighlight">\(\{0,...,n-1\}\)</span>, with the <span class="math notranslate nohighlight">\(0\)</span>-th vertex at the origin. Edge <span class="math notranslate nohighlight">\(i\)</span> joins vertex <span class="math notranslate nohighlight">\(i\)</span> to vertex <span class="math notranslate nohighlight">\(i+1 \pmod{n}\)</span>.</p>
+<p>We can act on polygon with <span class="math notranslate nohighlight">\(2 \times 2\)</span> matrices. We define the rotation by <span class="math notranslate nohighlight">\(\frac{\pi}{6}\)</span> below:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">R</span> <span class="o">=</span> <span class="n">matrix</span><span class="p">(</span><span class="n">AA</span><span class="p">,[[</span><span class="n">cos</span><span class="p">(</span><span class="n">pi</span><span class="o">/</span><span class="mi">6</span><span class="p">),</span><span class="o">-</span><span class="n">sin</span><span class="p">(</span><span class="n">pi</span><span class="o">/</span><span class="mi">6</span><span class="p">)],[</span><span class="n">sin</span><span class="p">(</span><span class="n">pi</span><span class="o">/</span><span class="mi">6</span><span class="p">),</span><span class="n">cos</span><span class="p">(</span><span class="n">pi</span><span class="o">/</span><span class="mi">6</span><span class="p">)]])</span>
+<span class="n">show</span><span class="p">(</span><span class="n">R</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">R</span><span class="o">*</span><span class="n">p1</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Define a surface over the field <code>AA</code> of algebraic reals.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">surface</span> <span class="o">=</span> <span class="n">Surface_dict</span><span class="p">(</span><span class="n">base_ring</span><span class="o">=</span><span class="n">AA</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Add two polygons to the surface with labels 0 and 1:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">surface</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span><span class="n">p0</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">surface</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Set the “base label” for the surface. This is just a choice of a favorite polygon label.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">surface</span><span class="o">.</span><span class="n">change_base_label</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Glue the edges of polygon 0 to the parallel edges of polygon 1.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">surface</span><span class="o">.</span><span class="n">change_edge_gluing</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">surface</span><span class="o">.</span><span class="n">change_edge_gluing</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">surface</span><span class="o">.</span><span class="n">change_edge_gluing</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Add three more rotated triangles and glue them appropriately.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">):</span>
+    <span class="n">surface</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">((</span><span class="n">R</span><span class="o">**</span><span class="n">i</span><span class="p">)</span><span class="o">*</span><span class="n">p1</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">surface</span><span class="o">.</span><span class="n">change_edge_gluing</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">6</span><span class="o">+</span><span class="n">i</span><span class="p">,</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">surface</span><span class="o">.</span><span class="n">change_edge_gluing</span><span class="p">(</span><span class="mi">0</span><span class="p">,(</span><span class="mi">10</span><span class="o">+</span><span class="n">i</span><span class="p">)</span><span class="o">%</span><span class="k">12</span>,i+1,1)
+    <span class="n">surface</span><span class="o">.</span><span class="n">change_edge_gluing</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="o">+</span><span class="n">i</span><span class="p">,</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Now we have a closed surface. In fact we have defined a Translation Surface. The package also supports
+SimilaritySurface, ConeSurface, HalfDilationSurface, DilationSurface, and HalfTranslationSurface.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s</span><span class="o">=</span><span class="n">TranslationSurface</span><span class="p">(</span><span class="n">surface</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Test to insure that we created the translation surface correctly. (Errors would be printed if you did not glue parallel edges, or have some unglued edges, etc.)</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">TestSuite</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We can plot the surface. Edges are labeled according to the polygon they are glued to.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The field containing the vertices:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Computations in the Algebraic Real Field (AA) are slow. It is better to use a NumberField. The following finds the smallest embedding into a NumberField:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ss</span><span class="o">=</span><span class="n">s</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">optimal_number_field</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ss</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="getting-a-surface-from-flipper">
+<h2>Getting a surface from Flipper<a class="headerlink" href="#getting-a-surface-from-flipper" title="Permalink to this headline">¶</a></h2>
+<p><span style="color: red; font-weight: bold; ">This does not work as of SageMath 9.0. Code is commented out below.</span></p>
+<p><a href="http://flipper.readthedocs.io/en/latest/">Flipper</a> is a program written by Mark Bell which understands mapping classes and can compute the flat structure associated to a pseudo-Anosov mapping class. FlatSurf can import this structure.</p>
+<p>This code below requires flipper to be installed. You can do this by running the shell within sage:
+<code>sage –sh</code>
+Then within the shell execute:
+<code>python -m pip install flipper –user –upgrade</code>
+More information including pitfalls are described in <a href="http://flipper.readthedocs.io/en/latest/start.html#installation">Flipper’s installation instructions</a>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># import flipper</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># T = flipper.load(&#39;SB_4&#39;)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># h = T.mapping_class(&#39;s_0S_1s_2S_3s_1S_2&#39;) </span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># h.is_pseudo_anosov()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># s = translation_surfaces.from_flipper(h)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The surface s is actually a half translation surface</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># type(s)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># s.plot()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="from-polyhedra">
+<h2>From polyhedra<a class="headerlink" href="#from-polyhedra" title="Permalink to this headline">¶</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flatsurf.geometry.polyhedra</span> <span class="kn">import</span> <span class="o">*</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">polyhedron</span><span class="p">,</span><span class="n">s</span><span class="p">,</span><span class="n">mapping</span> <span class="o">=</span> <span class="n">platonic_dodecahedron</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The surface <span class="math notranslate nohighlight">\(s\)</span> is a Euclidean cone surface.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">type</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Sage has a built in polyhedron class. You can build a polyhedron as a convex hull of a list of vertices.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">polyhedron</span><span class="o">=</span><span class="n">Polyhedron</span><span class="p">([(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">),(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">polyhedron</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The following computes the boundary surface as a Euclidean cone surface. It also provides a map from the surface to the polyhedron.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s</span><span class="p">,</span><span class="n">mapping</span> <span class="o">=</span> <span class="n">polyhedron_to_cone_surface</span><span class="p">(</span><span class="n">polyhedron</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="defining-an-infinite-surface-from-scratch">
+<h2>Defining an infinite surface from scratch<a class="headerlink" href="#defining-an-infinite-surface-from-scratch" title="Permalink to this headline">¶</a></h2>
+<p>The following demonstrates the implementation of a TranslationSurface. Each geometric structure has an underlying “Surface”. The following defines a surface and then uses it to construct a translation surface.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flatsurf.geometry.surface</span> <span class="kn">import</span> <span class="n">Surface</span>
+
+<span class="k">class</span> <span class="nc">ParabolaSurface</span><span class="p">(</span><span class="n">Surface</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># The space of polygons with vertices in the rationals:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_P</span> <span class="o">=</span> <span class="n">Polygons</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span>
+ <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">executablebooks</span><span class="o">/</span><span class="n">MyST</span><span class="o">-</span><span class="n">NB</span><span class="o">/</span><span class="n">issues</span><span class="o">/</span><span class="mi">290</span>       
+        <span class="bp">self</span><span class="o">.</span><span class="n">_inv</span> <span class="o">=</span> <span class="n">matrix</span><span class="p">(</span><span class="n">QQ</span><span class="p">,[[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">]])</span>
+        
+        <span class="c1"># Set the base field to QQ, the base label to be 1, and note that the surface is infinite.</span>
+        <span class="n">Surface</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">QQ</span><span class="p">,</span> <span class="n">ZZ</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">finite</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">label</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ZZ</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;invalid label </span><span class="si">{!r}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lab</span><span class="p">))</span>
+        <span class="k">assert</span> <span class="n">label</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;Label should not be zero.&quot;</span>
+        <span class="k">if</span> <span class="n">label</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">label</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_P</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_P</span><span class="p">(</span> <span class="n">vertices</span><span class="o">=</span><span class="p">[</span>
+                    <span class="p">(</span><span class="n">label</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="n">label</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">),</span>
+                    <span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">label</span><span class="o">**</span><span class="mi">2</span><span class="p">),</span>
+                    <span class="p">(</span><span class="o">-</span><span class="n">label</span><span class="p">,</span> <span class="n">label</span><span class="o">**</span><span class="mi">2</span><span class="p">),</span>
+                    <span class="p">(</span><span class="o">-</span><span class="n">label</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="n">label</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="p">]</span> <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inv</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="o">-</span><span class="n">label</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">opposite_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">label</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ZZ</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;invalid label </span><span class="si">{!r}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lab</span><span class="p">))</span>
+        <span class="k">assert</span> <span class="n">label</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;Label should not be zero.&quot;</span>
+
+        <span class="k">if</span> <span class="n">label</span><span class="o">==</span><span class="mi">1</span> <span class="ow">or</span> <span class="n">label</span><span class="o">==-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">e</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>
+                <span class="k">return</span> <span class="mi">2</span><span class="o">*</span><span class="n">label</span><span class="p">,</span><span class="mi">3</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="o">-</span><span class="n">label</span><span class="p">,</span><span class="n">e</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">e</span><span class="o">==</span><span class="mi">0</span> <span class="ow">or</span> <span class="n">e</span><span class="o">==</span><span class="mi">2</span><span class="p">:</span>
+                <span class="k">return</span> <span class="o">-</span><span class="n">label</span><span class="p">,</span><span class="n">e</span>
+            <span class="k">if</span> <span class="n">e</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">label</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">label</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">label</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span>
+            <span class="k">if</span> <span class="n">e</span><span class="o">==</span><span class="mi">3</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">label</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">label</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">label</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s</span> <span class="o">=</span> <span class="n">TranslationSurface</span><span class="p">(</span><span class="n">ParabolaSurface</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">TestSuite</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">skip</span><span class="o">=</span><span class="s2">&quot;_test_pickling&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>A graphical surface controls the display of graphical data. For an infinite surface you need to configure the display manually.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gs</span><span class="o">=</span><span class="n">s</span><span class="o">.</span><span class="n">graphical_surface</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We make six polygons nearest to the polygon with the base label visible.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gs</span><span class="o">.</span><span class="n">make_all_visible</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Defining Surfaces in FlatSurf</a><ul>
+<li><a class="reference internal" href="#built-in-surfaces">Built in surfaces</a></li>
+<li><a class="reference internal" href="#billiard-tables">Billiard tables</a></li>
+<li><a class="reference internal" href="#minimal-translation-surface-covers">Minimal translation surface covers</a></li>
+<li><a class="reference internal" href="#building-surfaces-from-polygons">Building surfaces from polygons</a></li>
+<li><a class="reference internal" href="#getting-a-surface-from-flipper">Getting a surface from Flipper</a></li>
+<li><a class="reference internal" href="#from-polyhedra">From polyhedra</a></li>
+<li><a class="reference internal" href="#defining-an-infinite-surface-from-scratch">Defining an infinite surface from scratch</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../examples.html"
+                        title="previous chapter">Examples</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="graphics_configuration.html"
+                        title="next chapter">Graphics Configuration</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/examples/defining_surfaces.md.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="graphics_configuration.html" title="Graphics Configuration"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../examples.html" title="Examples"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">sage-flatsurf 0.3 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../examples.html" >Examples</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Defining Surfaces in FlatSurf</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2016-2021, Vincent Delecroix and Pat Hooper.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.4.
+    </div>
+  </body>
+</html>

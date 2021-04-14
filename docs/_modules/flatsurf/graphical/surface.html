@@ -1,0 +1,1126 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>flatsurf.graphical.surface &#8212; sage-flatsurf 0.3 documentation</title>
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.css" />
+    
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/togglebutton.js"></script>
+    <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">sage-flatsurf 0.3 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">flatsurf.graphical.surface</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for flatsurf.graphical.surface</h1><div class="highlight"><pre>
+<span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">EXAMPLES::</span>
+
+<span class="sd">    sage: import flatsurf</span>
+<span class="sd">    sage: flatsurf.translation_surfaces.veech_2n_gon(4).plot()</span>
+<span class="sd">    Graphics object consisting of 18 graphics primitives</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c1">#*****************************************************************************</span>
+<span class="c1">#       Copyright (C) 2013-2019 Vincent Delecroix &lt;20100.delecroix@gmail.com&gt;</span>
+<span class="c1">#                     2013-2019 W. Patrick Hooper &lt;wphooper@gmail.com&gt;</span>
+<span class="c1">#</span>
+<span class="c1">#  Distributed under the terms of the GNU General Public License (GPL)</span>
+<span class="c1">#  as published by the Free Software Foundation; either version 2 of</span>
+<span class="c1">#  the License, or (at your option) any later version.</span>
+<span class="c1">#                  https://www.gnu.org/licenses/</span>
+<span class="c1">#*****************************************************************************</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span><span class="p">,</span> <span class="n">print_function</span><span class="p">,</span> <span class="n">division</span>
+<span class="kn">from</span> <span class="nn">six.moves</span> <span class="kn">import</span> <span class="nb">range</span><span class="p">,</span> <span class="nb">map</span><span class="p">,</span> <span class="nb">filter</span><span class="p">,</span> <span class="nb">zip</span>
+<span class="kn">from</span> <span class="nn">six</span> <span class="kn">import</span> <span class="n">iteritems</span>
+
+<span class="kn">from</span> <span class="nn">flatsurf.geometry.similarity_surface</span> <span class="kn">import</span> <span class="n">SimilaritySurface</span>
+<span class="kn">from</span> <span class="nn">.polygon</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="kn">from</span> <span class="nn">sage.rings.integer_ring</span> <span class="kn">import</span> <span class="n">ZZ</span>
+<span class="kn">from</span> <span class="nn">sage.rings.rational_field</span> <span class="kn">import</span> <span class="n">QQ</span>
+<span class="kn">from</span> <span class="nn">sage.modules.free_module_element</span> <span class="kn">import</span> <span class="n">vector</span>
+
+<div class="viewcode-block" id="GraphicalSurface"><a class="viewcode-back" href="../../../graphical.html#flatsurf.graphical.surface.GraphicalSurface">[docs]</a><span class="k">class</span> <span class="nc">GraphicalSurface</span><span class="p">:</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class manages the rendering of a SimilaritySurface.</span>
+
+<span class="sd">    This class essentially consists of a collection of GraphicalPolygons which</span>
+<span class="sd">    control how individual polygons are positioned. In addition, this class</span>
+<span class="sd">    stores options which are passed to the polygons when they are rendered.</span>
+
+<span class="sd">    Some setup features set in the constructor and can be set again later via</span>
+<span class="sd">    `process_options()`.</span>
+
+<span class="sd">    The basic tasks of the class are to render the polygons, edges and labels.</span>
+<span class="sd">    To customize a rendering, it is useful to know something about how this</span>
+<span class="sd">    class works. (Apologies!)</span>
+
+<span class="sd">    There are attributes which control whether or not certain objects are</span>
+<span class="sd">    rendered, namely:</span>
+
+<span class="sd">    - `will_plot_polygons` -- Whether to plot polygons which are right-side up.</span>
+
+<span class="sd">    - `will_plot_upside_down_polygons` -- Whether to plot polygons which are</span>
+<span class="sd">        upside down. Defaults to False.</span>
+
+<span class="sd">    - `will_plot_polygon_labels` -- Whether to plot polygon labels.</span>
+
+<span class="sd">    - `will_plot_edges` -- If this is False then no edges will be plotted.</span>
+
+<span class="sd">    - `will_plot_non_adjacent_edges` = Whether to plot polygon edges which are</span>
+<span class="sd">        not adjacent to the edge it is glued to.</span>
+
+<span class="sd">    - `will_plot_adjacent_edges` -- Whether to plot polygon edges which are</span>
+<span class="sd">        adjacent to the polygon they are glued to.</span>
+
+<span class="sd">    - `will_plot_self_glued_edges` -- Whether to plot polygon edges which are</span>
+<span class="sd">        glued to themselves.</span>
+
+<span class="sd">    - `will_plot_edge_labels` -- Whether to plot polygon edges labels.</span>
+
+<span class="sd">    - `will_plot_zero_flags` -- Whether to plot line segments from the</span>
+<span class="sd">        baricenter to the zero vertex of each polygon. Useful in working out</span>
+<span class="sd">        vertex and edge labels. Defaults to False.</span>
+
+<span class="sd">    The `plot` method calls some other built in methods: `plot_polygon`,</span>
+<span class="sd">    `plot_polygon_label`, `plot_edge` and `plot_edge_label`. These in turn</span>
+<span class="sd">    call methods in `GraphicalPolygon`.</span>
+
+<span class="sd">    - `polygon_options` -- Options passed to :func:`graphical_polygon.GraphicalPolygon.plot_polygon` when</span>
+<span class="sd">        plotting a polygon right-side up.</span>
+
+<span class="sd">    - `upside_down_polygon_options` -- Options passed to</span>
+<span class="sd">        :func:`graphical_polygon.GraphicalPolygon.plot_polygon` when plotting a polygon upside-down.</span>
+
+<span class="sd">    - `polygon_label_options` -- Options passed to :func:`graphical_polygon.GraphicalPolygon.plot_label`</span>
+<span class="sd">        when plotting a polygon label.</span>
+
+<span class="sd">    - `non_adjacent_edge_options` -- Options passed to</span>
+<span class="sd">        :func:`graphical_polygon.GraphicalPolygon.plot_edge` when plotting a polygon edge which is not</span>
+<span class="sd">        adjacent to the edge it is glued to.</span>
+
+<span class="sd">    - `self.adjacent_edge_options` -- Options passed to</span>
+<span class="sd">        :func:`graphical_polygon.GraphicalPolygon.plot_edge` when plotting a polygon edge which is</span>
+<span class="sd">        adjacent to the edge it is glued to.</span>
+
+<span class="sd">    - `self_glued_edge_options` -- Options passed to :func:`graphical_polygon.GraphicalPolygon.plot_edge`</span>
+<span class="sd">        when plotting a polygon edge which is glued to itself.</span>
+
+<span class="sd">    - `edge_label_options` -- Options passed to :func:`graphical_polygon.GraphicalPolygon.edge_label`</span>
+<span class="sd">        when plotting a edge label.</span>
+
+<span class="sd">    - `zero_flag_options` -- Options passed to</span>
+<span class="sd">        :func:`graphical_polygon.GraphicalPolygon.plot_zero_flag` when plotting a zero_flag.</span>
+
+<span class="sd">    EXAMPLES::</span>
+
+<span class="sd">        sage: from flatsurf import *</span>
+<span class="sd">        sage: from flatsurf.graphical.surface import GraphicalSurface</span>
+
+<span class="sd">        sage: s = similarity_surfaces.example()</span>
+<span class="sd">        sage: gs = GraphicalSurface(s)</span>
+<span class="sd">        sage: gs.polygon_options[&quot;color&quot;]=&quot;red&quot;</span>
+<span class="sd">        sage: gs.plot()     # not tested (problem with matplotlib font caches on Travis)</span>
+<span class="sd">        Graphics object consisting of 13 graphics primitives</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">similarity_surface</span><span class="p">,</span> <span class="n">adjacencies</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">polygon_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> \
+                 <span class="n">edge_labels</span><span class="o">=</span><span class="s2">&quot;gluings&quot;</span><span class="p">,</span> <span class="n">default_position_function</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Construct a GraphicalSurface from a similarity surface.</span>
+
+<span class="sd">        INPUT:</span>
+
+<span class="sd">        - ``similarity_surface`` -- a similarity surface</span>
+
+<span class="sd">        - ``polygon_labels`` -- a boolean (default ``True``) whether the label</span>
+<span class="sd">          of polygons are displayed</span>
+
+<span class="sd">        - ``edge_labels`` -- option to control the display of edge labels. It</span>
+<span class="sd">          can be one of</span>
+
+<span class="sd">            - ``False`` or ``None`` for no labels</span>
+
+<span class="sd">            - ``&#39;gluings&#39;`` -- to put on each side of each non-adjacent edge, the</span>
+<span class="sd">              name of the polygon to which it is glued</span>
+
+<span class="sd">            - ``&#39;number&#39;`` -- to put on each side of each edge the number of the</span>
+<span class="sd">              edge</span>
+
+<span class="sd">            - ``&#39;gluings and number&#39;`` -- full information</span>
+
+<span class="sd">            - ``&#39;letter&#39;`` -- add matching letters to glued edges in an arbitrary way</span>
+
+<span class="sd">        - ``adjacencies`` -- a list of pairs ``(p,e)`` to be used to set</span>
+<span class="sd">          adjacencies of polygons.</span>
+
+<span class="sd">        - ``default_position_function`` -- a function mapping polygon labels to</span>
+<span class="sd">          similarities describing the position of the corresponding polygon.</span>
+
+<span class="sd">        If adjacencies is not defined and the surface is finite, make_all_visible()</span>
+<span class="sd">        is called to make all polygons visible.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">similarity_surface</span><span class="p">,</span> <span class="n">SimilaritySurface</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ss</span> <span class="o">=</span> <span class="n">similarity_surface</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_default_position_function</span> <span class="o">=</span> <span class="n">default_position_function</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_polygons</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_visible</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">base_label</span><span class="p">()])</span>
+
+        <span class="k">if</span> <span class="n">adjacencies</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">is_finite</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">make_all_visible</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_edge_labels</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">will_plot_polygons</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Whether to plot polygons which are right-side up.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">polygon_options</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span><span class="s2">&quot;lightgray&quot;</span><span class="p">}</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Options passed to :func:`graphical_polygon.GraphicalPolygon.plot_polygon` when plotting a polygon right-side up.&quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">will_plot_upside_down_polygons</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Whether to plot polygons which are upside down</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">upside_down_polygon_options</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span><span class="s2">&quot;lightgray&quot;</span><span class="p">,</span> <span class="s2">&quot;zorder&quot;</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">}</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Options passed to :func:`graphical_polygon.GraphicalPolygon.plot_polygon` when plotting a polygon upside-down.&quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">will_plot_polygon_labels</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Whether to plot polygon labels.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">polygon_label_options</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="s2">&quot;vertical_alignment&quot;</span><span class="p">:</span><span class="s2">&quot;center&quot;</span><span class="p">,</span> <span class="s2">&quot;horizontal_alignment&quot;</span><span class="p">:</span><span class="s2">&quot;center&quot;</span><span class="p">}</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Options passed to :func:`graphical_polygon.GraphicalPolygon.plot_label` when plotting a polygon label.&quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">will_plot_edges</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        If this is False then no edges will be plotted.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">will_plot_non_adjacent_edges</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Whether to plot polygon edges which are not adjacent to the edge it is glued to.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">non_adjacent_edge_options</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span><span class="s2">&quot;blue&quot;</span><span class="p">}</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Options passed to :func:`graphical_polygon.GraphicalPolygon.plot_edge` when plotting a polygon edge</span>
+<span class="sd">        which is not adjacent to the edge it is glued to.&quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">will_plot_adjacent_edges</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Whether to plot polygon edges which are adjacent to the polygon they are glued to.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">adjacent_edge_options</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span><span class="s2">&quot;blue&quot;</span><span class="p">,</span> <span class="s2">&quot;linestyle&quot;</span><span class="p">:</span><span class="s2">&quot;:&quot;</span><span class="p">}</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Options passed to :func:`graphical_polygon.GraphicalPolygon.plot_edge`</span>
+<span class="sd">        when plotting a polygon edge which is adjacent to the edge it is glued to.&quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">will_plot_self_glued_edges</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Whether to plot polygon edges which are glued to themselves.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">self_glued_edge_options</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span><span class="s2">&quot;red&quot;</span><span class="p">}</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Options passed to :func:`graphical_polygon.GraphicalPolygon.plot_edge` when plotting a polygon edge</span>
+<span class="sd">        which is glued to itself.&quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">will_plot_edge_labels</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Whether to plot polygon edges which are not adjacent to the polygon they are glued to.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">edge_label_options</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span><span class="s2">&quot;blue&quot;</span><span class="p">}</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Options passed to :func:`graphical_polygon.GraphicalPolygon.edge_label` when plotting a polygon label.&quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">will_plot_zero_flags</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Whether to plot line segments from the baricenter to the zero vertex of each polygon.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">zero_flag_options</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span><span class="s2">&quot;green&quot;</span><span class="p">,</span> <span class="s2">&quot;thickness&quot;</span><span class="p">:</span><span class="mf">0.5</span><span class="p">}</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Options passed to :func:`graphical_polygon.GraphicalPolygon.plot_zero_flag` when plotting a zero_flag.&quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">process_options</span><span class="p">(</span><span class="n">adjacencies</span><span class="o">=</span><span class="n">adjacencies</span><span class="p">,</span>
+                <span class="n">polygon_labels</span><span class="o">=</span><span class="n">polygon_labels</span><span class="p">,</span> <span class="n">edge_labels</span><span class="o">=</span><span class="n">edge_labels</span><span class="p">)</span>
+
+<div class="viewcode-block" id="GraphicalSurface.process_options"><a class="viewcode-back" href="../../../graphical.html#flatsurf.graphical.surface.GraphicalSurface.process_options">[docs]</a>    <span class="k">def</span> <span class="nf">process_options</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">adjacencies</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">polygon_labels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">edge_labels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">default_position_function</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Process the options listed as if the graphical_surface was first</span>
+<span class="sd">        created.</span>
+
+<span class="sd">        INPUT:</span>
+
+<span class="sd">        - ``adjacencies`` -- a list of pairs ``(p,e)`` to be used to set</span>
+<span class="sd">          adjacencies of polygons.</span>
+
+<span class="sd">        - ``polygon_labels`` -- a boolean (default ``True``) whether the label</span>
+<span class="sd">          of polygons are displayed</span>
+
+<span class="sd">        - ``edge_labels`` -- option to control the display of edge labels. It</span>
+<span class="sd">          can be one of</span>
+
+<span class="sd">            - ``None`` for no change</span>
+
+<span class="sd">            - ``False`` for no labels</span>
+
+<span class="sd">            - ``&#39;gluings&#39;`` -- to put on each side of each non-adjacent edge, the</span>
+<span class="sd">              name of the polygon to which it is glued</span>
+
+<span class="sd">            - ``&#39;number&#39;`` -- to put on each side of each edge the number of the</span>
+<span class="sd">              edge</span>
+
+<span class="sd">            - ``&#39;gluings and number&#39;`` -- full information</span>
+
+<span class="sd">            - ``&#39;letter&#39;`` -- add matching letters to glued edges in an arbitrary way</span>
+
+<span class="sd">        - ``default_position_function`` -- a function mapping polygon labels to</span>
+<span class="sd">          similarities describing the position of the corresponding polygon.</span>
+<span class="sd">          Note that this will not affect polygons which have already been</span>
+<span class="sd">          positioned.</span>
+
+<span class="sd">        TESTS::</span>
+
+<span class="sd">            sage: from flatsurf import *</span>
+
+<span class="sd">            sage: c = translation_surfaces.chamanara(1/2)</span>
+<span class="sd">            sage: gs = c.graphical_surface()</span>
+<span class="sd">            sage: gs.process_options(edge_labels=&#39;hey&#39;)</span>
+<span class="sd">            Traceback (most recent call last):</span>
+<span class="sd">            ...</span>
+<span class="sd">            ValueError: invalid value for edge_labels (=&#39;hey&#39;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">adjacencies</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">p</span><span class="p">,</span><span class="n">e</span> <span class="ow">in</span> <span class="n">adjacencies</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">make_adjacent</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">polygon_labels</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">polygon_labels</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;polygon_labels must be True, False or None.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">will_plot_polygon_labels</span> <span class="o">=</span> <span class="n">polygon_labels</span>
+        <span class="k">if</span> <span class="n">edge_labels</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">edge_labels</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">will_plot_edge_labels</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">edge_labels</span> <span class="o">=</span> <span class="s1">&#39;gluings&#39;</span>
+            <span class="k">elif</span> <span class="n">edge_labels</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">will_plot_edge_labels</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="n">edge_labels</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">elif</span> <span class="n">edge_labels</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;gluings&#39;</span><span class="p">,</span> <span class="s1">&#39;number&#39;</span><span class="p">,</span> <span class="s1">&#39;gluings and number&#39;</span><span class="p">,</span> <span class="s1">&#39;letter&#39;</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_edge_labels</span> <span class="o">=</span> <span class="n">edge_labels</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">will_plot_edge_labels</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;invalid value for edge_labels (=</span><span class="si">{!r}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">edge_labels</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">default_position_function</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_default_position_function</span> <span class="o">=</span> <span class="n">default_position_function</span></div>
+
+<div class="viewcode-block" id="GraphicalSurface.copy"><a class="viewcode-back" href="../../../graphical.html#flatsurf.graphical.surface.GraphicalSurface.copy">[docs]</a>    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Make a copy of this GraphicalSurface.</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf import *</span>
+<span class="sd">            sage: s = translation_surfaces.octagon_and_squares()</span>
+<span class="sd">            sage: gs = s.graphical_surface()</span>
+<span class="sd">            sage: gs.will_plot_zero_flags = True</span>
+<span class="sd">            sage: gs.graphical_polygon(1).transformation()</span>
+<span class="sd">            (x, y) |-&gt; (x + 2, y)</span>
+<span class="sd">            sage: gs.make_adjacent(0,2)</span>
+<span class="sd">            sage: gs.graphical_polygon(1).transformation()</span>
+<span class="sd">            (x, y) |-&gt; (x + (a + 4), y + (a + 2))</span>
+<span class="sd">            sage: gs.polygon_options[&quot;color&quot;]=&quot;yellow&quot;</span>
+<span class="sd">            sage: gs2 = gs.copy()</span>
+<span class="sd">            sage: gs2 == gs</span>
+<span class="sd">            False</span>
+<span class="sd">            sage: gs2.will_plot_zero_flags</span>
+<span class="sd">            True</span>
+<span class="sd">            sage: gs2.graphical_polygon(1).transformation()</span>
+<span class="sd">            (x, y) |-&gt; (x + (a + 4), y + (a + 2))</span>
+<span class="sd">            sage: gs2.polygon_options</span>
+<span class="sd">            {&#39;color&#39;: &#39;yellow&#39;}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">gs</span> <span class="o">=</span> <span class="n">GraphicalSurface</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_surface</span><span class="p">(),</span> <span class="n">default_position_function</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_position_function</span><span class="p">)</span>
+
+        <span class="c1"># Copy plot options</span>
+        <span class="n">gs</span><span class="o">.</span><span class="n">will_plot_polygons</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">will_plot_polygons</span>
+        <span class="n">gs</span><span class="o">.</span><span class="n">polygon_options</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">polygon_options</span><span class="p">)</span>
+        <span class="n">gs</span><span class="o">.</span><span class="n">will_plot_upside_down_polygons</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">will_plot_upside_down_polygons</span>
+        <span class="n">gs</span><span class="o">.</span><span class="n">upside_down_polygon_options</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">upside_down_polygon_options</span><span class="p">)</span>
+        <span class="n">gs</span><span class="o">.</span><span class="n">will_plot_polygon_labels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">will_plot_polygon_labels</span>
+        <span class="n">gs</span><span class="o">.</span><span class="n">polygon_label_options</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">polygon_label_options</span><span class="p">)</span>
+        <span class="n">gs</span><span class="o">.</span><span class="n">will_plot_edges</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">will_plot_edges</span>
+        <span class="n">gs</span><span class="o">.</span><span class="n">will_plot_non_adjacent_edges</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">will_plot_non_adjacent_edges</span>
+        <span class="n">gs</span><span class="o">.</span><span class="n">non_adjacent_edge_options</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">non_adjacent_edge_options</span><span class="p">)</span>
+        <span class="n">gs</span><span class="o">.</span><span class="n">will_plot_adjacent_edges</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">will_plot_adjacent_edges</span>
+        <span class="n">gs</span><span class="o">.</span><span class="n">adjacent_edge_options</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">adjacent_edge_options</span><span class="p">)</span>
+        <span class="n">gs</span><span class="o">.</span><span class="n">will_plot_self_glued_edges</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">will_plot_self_glued_edges</span>
+        <span class="n">gs</span><span class="o">.</span><span class="n">self_glued_edge_options</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">self_glued_edge_options</span><span class="p">)</span>
+        <span class="n">gs</span><span class="o">.</span><span class="n">will_plot_edge_labels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">will_plot_edge_labels</span>
+        <span class="n">gs</span><span class="o">.</span><span class="n">edge_label_options</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">edge_label_options</span><span class="p">)</span>
+        <span class="n">gs</span><span class="o">.</span><span class="n">will_plot_zero_flags</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">will_plot_zero_flags</span>
+        <span class="n">gs</span><span class="o">.</span><span class="n">zero_flag_options</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">zero_flag_options</span><span class="p">)</span>
+
+        <span class="c1"># Copy polygons and visible set.</span>
+        <span class="n">gs</span><span class="o">.</span><span class="n">_polygons</span> <span class="o">=</span> <span class="p">{</span><span class="n">label</span><span class="p">:</span><span class="n">gp</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">for</span> <span class="n">label</span><span class="p">,</span><span class="n">gp</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_polygons</span><span class="p">)}</span>
+        <span class="n">gs</span><span class="o">.</span><span class="n">_visible</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_visible</span><span class="p">)</span>
+        <span class="n">gs</span><span class="o">.</span><span class="n">_edge_labels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_labels</span>
+
+        <span class="k">return</span> <span class="n">gs</span></div>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;Graphical version of Similarity Surface </span><span class="si">{!r}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="p">)</span>
+
+<div class="viewcode-block" id="GraphicalSurface.visible"><a class="viewcode-back" href="../../../graphical.html#flatsurf.graphical.surface.GraphicalSurface.visible">[docs]</a>    <span class="k">def</span> <span class="nf">visible</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a copy of the set of visible labels.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_visible</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GraphicalSurface.is_visible"><a class="viewcode-back" href="../../../graphical.html#flatsurf.graphical.surface.GraphicalSurface.is_visible">[docs]</a>    <span class="k">def</span> <span class="nf">is_visible</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">label</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return whether the polygon with the given label is marked as visible.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">label</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_visible</span></div>
+
+<div class="viewcode-block" id="GraphicalSurface.make_visible"><a class="viewcode-back" href="../../../graphical.html#flatsurf.graphical.surface.GraphicalSurface.make_visible">[docs]</a>    <span class="k">def</span> <span class="nf">make_visible</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Mark the polygon with the given label as visible.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_visible</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">label</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GraphicalSurface.hide"><a class="viewcode-back" href="../../../graphical.html#flatsurf.graphical.surface.GraphicalSurface.hide">[docs]</a>    <span class="k">def</span> <span class="nf">hide</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Mark the polygon with the given label as invisible.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_visible</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">label</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GraphicalSurface.make_all_visible"><a class="viewcode-back" href="../../../graphical.html#flatsurf.graphical.surface.GraphicalSurface.make_all_visible">[docs]</a>    <span class="k">def</span> <span class="nf">make_all_visible</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">adjacent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Attempt to show all invisible polygons by walking over the surface.</span>
+
+<span class="sd">        INPUT:</span>
+
+<span class="sd">        - ``adjacent`` -- (default ``None``) whether the newly added polygon are</span>
+<span class="sd">          set to be adjacent or not. Defaults to true unless a default_position_function was</span>
+<span class="sd">          provided.</span>
+
+<span class="sd">        - ``limit`` -- (default ``None``) maximal number of additional polygons to make visible</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf import *</span>
+
+<span class="sd">            sage: s = similarity_surfaces.example()</span>
+<span class="sd">            sage: g = s.graphical_surface()</span>
+<span class="sd">            sage: g.make_all_visible()</span>
+<span class="sd">            sage: g.plot()      # not tested (problem with matplotlib font caches on Travis)</span>
+<span class="sd">            Graphics object consisting of 13 graphics primitives</span>
+
+<span class="sd">            sage: s = similarity_surfaces.example()</span>
+<span class="sd">            sage: g = s.graphical_surface(cached=False, adjacencies=[])</span>
+<span class="sd">            sage: g.make_all_visible(adjacent=False)</span>
+<span class="sd">            sage: g.plot()      # not tested (problem with matplotlib font caches on Travis)</span>
+<span class="sd">            Graphics object consisting of 16 graphics primitives</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">adjacent</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">adjacent</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_default_position_function</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">limit</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">is_finite</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">adjacent</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">l</span><span class="p">,</span><span class="n">poly</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">walker</span><span class="p">()</span><span class="o">.</span><span class="n">label_polygon_iterator</span><span class="p">():</span>
+                    <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">poly</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()):</span>
+                        <span class="n">l2</span><span class="p">,</span><span class="n">e2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="n">e</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_visible</span><span class="p">(</span><span class="n">l2</span><span class="p">):</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">make_adjacent</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="n">e</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="kn">from</span> <span class="nn">flatsurf.geometry.similarity</span> <span class="kn">import</span> <span class="n">SimilarityGroup</span>
+                <span class="n">T</span> <span class="o">=</span> <span class="n">SimilarityGroup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">base_ring</span><span class="p">())</span>
+                <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">label_iterator</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_visible</span><span class="p">(</span><span class="n">l</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_position_function</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                            <span class="c1"># No reasonable way to display the polygon, so we do this hack:</span>
+                            <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graphical_polygon</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+                            <span class="n">poly</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+                            <span class="n">sxmax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xmax</span><span class="p">()</span>
+                            <span class="n">pxmin</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">xmin</span><span class="p">()</span>
+                            <span class="n">t</span> <span class="o">=</span> <span class="n">T</span><span class="p">((</span><span class="n">QQ</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xmax</span><span class="p">()</span> <span class="o">-</span> <span class="n">g</span><span class="o">.</span><span class="n">xmin</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span>
+                                <span class="n">QQ</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">ymin</span><span class="p">()</span><span class="o">+</span><span class="n">g</span><span class="o">.</span><span class="n">ymax</span><span class="p">())</span> <span class="o">/</span> <span class="n">ZZ</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="p">)))</span>
+                            <span class="n">g</span><span class="o">.</span><span class="n">set_transformation</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">make_visible</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">limit</span><span class="o">&gt;</span><span class="mi">0</span>
+            <span class="k">if</span> <span class="n">adjacent</span><span class="p">:</span>
+                <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">for</span> <span class="n">l</span><span class="p">,</span><span class="n">poly</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">walker</span><span class="p">()</span><span class="o">.</span><span class="n">label_polygon_iterator</span><span class="p">():</span>
+                    <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">poly</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()):</span>
+                        <span class="n">l2</span><span class="p">,</span><span class="n">e2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="n">e</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_visible</span><span class="p">(</span><span class="n">l2</span><span class="p">):</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">make_adjacent</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="n">e</span><span class="p">)</span>
+                            <span class="n">i</span><span class="o">=</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span>
+                            <span class="k">if</span> <span class="n">i</span><span class="o">&gt;=</span><span class="n">limit</span><span class="p">:</span>
+                                <span class="k">return</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="kn">from</span> <span class="nn">flatsurf.geometry.similarity</span> <span class="kn">import</span> <span class="n">SimilarityGroup</span>
+                <span class="n">T</span> <span class="o">=</span> <span class="n">SimilarityGroup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">base_ring</span><span class="p">())</span>
+                <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">label_iterator</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_visible</span><span class="p">(</span><span class="n">l</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_position_function</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                            <span class="c1"># No reasonable way to display the polygon, so we do this hack:</span>
+                            <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graphical_polygon</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+                            <span class="n">poly</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+                            <span class="n">sxmax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xmax</span><span class="p">()</span>
+                            <span class="n">pxmin</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">xmin</span><span class="p">()</span>
+                            <span class="n">t</span> <span class="o">=</span> <span class="n">T</span><span class="p">((</span><span class="n">QQ</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xmax</span><span class="p">()</span> <span class="o">-</span> <span class="n">g</span><span class="o">.</span><span class="n">xmin</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span>
+                                <span class="n">QQ</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">ymin</span><span class="p">()</span><span class="o">+</span><span class="n">g</span><span class="o">.</span><span class="n">ymax</span><span class="p">())</span> <span class="o">/</span> <span class="n">ZZ</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="p">)))</span>
+                            <span class="n">g</span><span class="o">.</span><span class="n">set_transformation</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">make_visible</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+                        <span class="n">i</span><span class="o">=</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span>
+                        <span class="k">if</span> <span class="n">i</span><span class="o">&gt;=</span><span class="n">limit</span><span class="p">:</span>
+                            <span class="k">return</span></div>
+
+<div class="viewcode-block" id="GraphicalSurface.get_surface"><a class="viewcode-back" href="../../../graphical.html#flatsurf.graphical.surface.GraphicalSurface.get_surface">[docs]</a>    <span class="k">def</span> <span class="nf">get_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the underlying similarity surface.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ss</span></div>
+
+<div class="viewcode-block" id="GraphicalSurface.xmin"><a class="viewcode-back" href="../../../graphical.html#flatsurf.graphical.surface.GraphicalSurface.xmin">[docs]</a>    <span class="k">def</span> <span class="nf">xmin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the minimal x-coordinate of a vertex of a visible graphical polygon.</span>
+
+<span class="sd">        .. TODO::</span>
+
+<span class="sd">            this should be xmin</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">min</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">graphical_polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">.</span><span class="n">xmin</span><span class="p">()</span> <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">visible</span><span class="p">()])</span></div>
+
+<div class="viewcode-block" id="GraphicalSurface.ymin"><a class="viewcode-back" href="../../../graphical.html#flatsurf.graphical.surface.GraphicalSurface.ymin">[docs]</a>    <span class="k">def</span> <span class="nf">ymin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the minimal y-coordinate of a vertex of a visible graphical polygon.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">min</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">graphical_polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">.</span><span class="n">ymin</span><span class="p">()</span> <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">visible</span><span class="p">()])</span></div>
+
+<div class="viewcode-block" id="GraphicalSurface.xmax"><a class="viewcode-back" href="../../../graphical.html#flatsurf.graphical.surface.GraphicalSurface.xmax">[docs]</a>    <span class="k">def</span> <span class="nf">xmax</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the maximal x-coordinate of a vertex of a visible graphical polygon.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">max</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">graphical_polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">.</span><span class="n">xmax</span><span class="p">()</span> <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">visible</span><span class="p">()])</span></div>
+
+<div class="viewcode-block" id="GraphicalSurface.ymax"><a class="viewcode-back" href="../../../graphical.html#flatsurf.graphical.surface.GraphicalSurface.ymax">[docs]</a>    <span class="k">def</span> <span class="nf">ymax</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the minimal y-coordinate of a vertex of a visible graphical polygon.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">max</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">graphical_polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">.</span><span class="n">ymax</span><span class="p">()</span> <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">visible</span><span class="p">()])</span></div>
+
+<div class="viewcode-block" id="GraphicalSurface.bounding_box"><a class="viewcode-back" href="../../../graphical.html#flatsurf.graphical.surface.GraphicalSurface.bounding_box">[docs]</a>    <span class="k">def</span> <span class="nf">bounding_box</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the quadruple (x1,y1,x2,y2) where x1 and y1 are the minimal</span>
+<span class="sd">        x- and y-coordinates of a visible graphical polygon and x2 and y2 are the</span>
+<span class="sd">        maximal x-and y- cordinates  of a visible graphical polygon.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">xmin</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">ymin</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">xmax</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">ymax</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="GraphicalSurface.graphical_polygon"><a class="viewcode-back" href="../../../graphical.html#flatsurf.graphical.surface.GraphicalSurface.graphical_polygon">[docs]</a>    <span class="k">def</span> <span class="nf">graphical_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the graphical_polygon with the given label.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">label</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_polygons</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_polygons</span><span class="p">[</span><span class="n">label</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_position_function</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">t</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_default_position_function</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="n">GraphicalPolygon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">),</span> <span class="n">transformation</span><span class="o">=</span><span class="n">t</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_polygons</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="n">p</span>
+            <span class="k">return</span> <span class="n">p</span></div>
+
+<div class="viewcode-block" id="GraphicalSurface.make_adjacent"><a class="viewcode-back" href="../../../graphical.html#flatsurf.graphical.surface.GraphicalSurface.make_adjacent">[docs]</a>    <span class="k">def</span> <span class="nf">make_adjacent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">reverse</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">visible</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Move the polygon across the prescribed edge so that is adjacent.</span>
+<span class="sd">        The polygon moved is obtained from opposite_edge(p,e).</span>
+
+<span class="sd">        If reverse=True then the polygon is moved so that there is a fold</span>
+<span class="sd">        at the edge.</span>
+
+<span class="sd">        If visible is True (by default), we also make the moved polygon visible.</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf import *</span>
+<span class="sd">            sage: s = similarity_surfaces.example()</span>
+<span class="sd">            sage: gs = s.graphical_surface(adjacencies=[])</span>
+<span class="sd">            sage: gs.graphical_polygon(0)</span>
+<span class="sd">            GraphicalPolygon with vertices [(0.0, 0.0), (2.0, -2.0), (2.0, 0.0)]</span>
+<span class="sd">            sage: gs.graphical_polygon(1)</span>
+<span class="sd">            GraphicalPolygon with vertices [(0.0, 0.0), (2.0, 0.0), (1.0, 3.0)]</span>
+<span class="sd">            sage: print(&quot;Polygon 0, edge 0 is opposite &quot;+str(gs.opposite_edge(0,0)))</span>
+<span class="sd">            Polygon 0, edge 0 is opposite (1, 1)</span>
+<span class="sd">            sage: gs.make_adjacent(0,0)</span>
+<span class="sd">            sage: gs.graphical_polygon(0)</span>
+<span class="sd">            GraphicalPolygon with vertices [(0.0, 0.0), (2.0, -2.0), (2.0, 0.0)]</span>
+<span class="sd">            sage: gs.graphical_polygon(1)</span>
+<span class="sd">            GraphicalPolygon with vertices [(0.4, -2.8), (2.0, -2.0), (0.0, 0.0)]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">pp</span><span class="p">,</span><span class="n">ee</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">p</span><span class="p">,</span><span class="n">e</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">reverse</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">flatsurf.geometry.similarity</span> <span class="kn">import</span> <span class="n">SimilarityGroup</span>
+            <span class="n">G</span> <span class="o">=</span> <span class="n">SimilarityGroup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">base_ring</span><span class="p">())</span>
+
+            <span class="n">q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="n">q</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="n">q</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="n">e</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+            <span class="c1"># This is the similarity carrying the origin to a and (1,0) to b:</span>
+            <span class="n">g</span> <span class="o">=</span> <span class="n">G</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+            <span class="n">qq</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">pp</span><span class="p">)</span>
+            <span class="n">aa</span> <span class="o">=</span> <span class="n">qq</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="n">ee</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">bb</span> <span class="o">=</span> <span class="n">qq</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="n">ee</span><span class="p">)</span>
+            <span class="c1"># This is the similarity carrying the origin to aa and (1,0) to bb:</span>
+            <span class="n">gg</span> <span class="o">=</span> <span class="n">G</span><span class="p">(</span><span class="n">bb</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">aa</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">bb</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">aa</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">aa</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">aa</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+            <span class="n">reflection</span> <span class="o">=</span> <span class="n">G</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span><span class="o">.</span><span class="n">one</span><span class="p">(),</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span><span class="o">.</span><span class="n">zero</span><span class="p">(),</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span><span class="o">.</span><span class="n">zero</span><span class="p">(),</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span><span class="o">.</span><span class="n">zero</span><span class="p">(),</span>
+                <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+            <span class="c1"># This is the similarity carrying (a,b) to (aa,bb):</span>
+            <span class="n">g</span> <span class="o">=</span> <span class="n">gg</span><span class="o">*</span><span class="n">reflection</span><span class="o">*</span><span class="p">(</span><span class="o">~</span><span class="n">g</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">edge_transformation</span><span class="p">(</span><span class="n">pp</span><span class="p">,</span><span class="n">ee</span><span class="p">)</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graphical_polygon</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="o">.</span><span class="n">transformation</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graphical_polygon</span><span class="p">(</span><span class="n">pp</span><span class="p">)</span><span class="o">.</span><span class="n">set_transformation</span><span class="p">(</span><span class="n">h</span><span class="o">*</span><span class="n">g</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">visible</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">make_visible</span><span class="p">(</span><span class="n">pp</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GraphicalSurface.make_adjacent_and_visible"><a class="viewcode-back" href="../../../graphical.html#flatsurf.graphical.surface.GraphicalSurface.make_adjacent_and_visible">[docs]</a>    <span class="k">def</span> <span class="nf">make_adjacent_and_visible</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Move the polygon across the prescribed edge so that is adjacent,</span>
+<span class="sd">        and make the moved polygon visible.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">sage.misc.superseded</span> <span class="kn">import</span> <span class="n">deprecation</span>
+        <span class="n">deprecation</span><span class="p">(</span><span class="mi">42</span><span class="p">,</span> <span class="s2">&quot;Do not use .make_adjacent_and_visible(). Use .make_adjacent() instead.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">make_adjacent</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="n">reverse</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GraphicalSurface.is_adjacent"><a class="viewcode-back" href="../../../graphical.html#flatsurf.graphical.surface.GraphicalSurface.is_adjacent">[docs]</a>    <span class="k">def</span> <span class="nf">is_adjacent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">p</span><span class="p">,</span><span class="n">e</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the truth value of the statement</span>
+<span class="sd">        &#39;The polygon opposite edge (p,e) is adjacent to that edge.&#39;</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf import *</span>
+<span class="sd">            sage: s = similarity_surfaces.example()</span>
+<span class="sd">            sage: g = s.graphical_surface(adjacencies=[])</span>
+<span class="sd">            sage: g.is_adjacent(0,0)</span>
+<span class="sd">            False</span>
+<span class="sd">            sage: g.is_adjacent(0,1)</span>
+<span class="sd">            False</span>
+<span class="sd">            sage: g.make_all_visible(adjacent=True)</span>
+<span class="sd">            sage: g.is_adjacent(0,0)</span>
+<span class="sd">            True</span>
+<span class="sd">            sage: g.is_adjacent(0,1)</span>
+<span class="sd">            False</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">pp</span><span class="p">,</span><span class="n">ee</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">p</span><span class="p">,</span><span class="n">e</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_visible</span><span class="p">(</span><span class="n">pp</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graphical_polygon</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+        <span class="n">gg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graphical_polygon</span><span class="p">(</span><span class="n">pp</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">g</span><span class="o">.</span><span class="n">transformed_vertex</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="o">==</span> <span class="n">gg</span><span class="o">.</span><span class="n">transformed_vertex</span><span class="p">(</span><span class="n">ee</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="ow">and</span> \
+               <span class="n">g</span><span class="o">.</span><span class="n">transformed_vertex</span><span class="p">(</span><span class="n">e</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="n">gg</span><span class="o">.</span><span class="n">transformed_vertex</span><span class="p">(</span><span class="n">ee</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GraphicalSurface.to_surface"><a class="viewcode-back" href="../../../graphical.html#flatsurf.graphical.surface.GraphicalSurface.to_surface">[docs]</a>    <span class="k">def</span> <span class="nf">to_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">point</span><span class="p">,</span> <span class="n">v</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ring</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">return_all</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> \
+                   <span class="n">singularity_limit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">search_all</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">search_limit</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot; Converts from graphical coordinates to similarity surface coordinates.</span>
+
+<span class="sd">        A point always must be provided. If a vector v is provided then a</span>
+<span class="sd">        SimilaritySurfaceTangentVector will be returned. If v is not provided, then a</span>
+<span class="sd">        SurfacePoint is returned.</span>
+
+<span class="sd">        INPUT:</span>
+
+<span class="sd">        - ``point`` -- Coordinates of a point in graphical coordinates to be</span>
+<span class="sd">            converted to graphical coordinates.</span>
+
+<span class="sd">        - ``v`` -- (default ``None``) If provided a tangent vector in graphical</span>
+<span class="sd">            coordinates based at the provided point.</span>
+
+<span class="sd">        - ``label`` -- (default ``None``) If provided, then we only convert</span>
+<span class="sd">            points and tangent vectors in the corresponding graphical polygon.</span>
+
+<span class="sd">        - ``ring`` -- (default ``None``) If provided, then objects returned</span>
+<span class="sd">            will be defined over the given ring, otherwise we use the base_ring</span>
+<span class="sd">            of the surface.</span>
+
+<span class="sd">        - ``return_all`` -- (default ``False``) By default we return the first</span>
+<span class="sd">            point or vector we find. However if the graphical polygons overlap,</span>
+<span class="sd">            then a point or vector might correspond to more than one point or</span>
+<span class="sd">            vector on the surface. If ``return_all`` is set to ``True`` then we</span>
+<span class="sd">            return a set of all points we find instead.</span>
+
+<span class="sd">        - ``singularity_limit`` -- (default ``None``) This only has an effect</span>
+<span class="sd">            if returning a singular point (i.e., ``v`` is ``None``) and the</span>
+<span class="sd">            surface is infinite. In this case, the singularity should be</span>
+<span class="sd">            returned but it could be infinite. Then singularity_limit controls</span>
+<span class="sd">            how far we look for the singularity to close. This value is passed</span>
+<span class="sd">            to ``SimilaritySurface.surface_point``.</span>
+
+<span class="sd">        - ``search_all`` -- (default ``False``) By default we look just in</span>
+<span class="sd">            polygons with visible label. If set to `True``, then we instead</span>
+<span class="sd">            look in all labels.</span>
+
+<span class="sd">        - ``search_limit`` -- (default ``None``) If ``search_all`` is ``True``,</span>
+<span class="sd">            then we look at the first ``search_limit`` polygons instead of all</span>
+<span class="sd">            polygons. This must be set to an positive integer if ``search_all``</span>
+<span class="sd">            is and the surface is infinite.</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf import *</span>
+<span class="sd">            sage: s = similarity_surfaces.example()</span>
+<span class="sd">            sage: gs = s.graphical_surface()</span>
+<span class="sd">            sage: gs.to_surface((1,-2))</span>
+<span class="sd">            Surface point located at (1, 1/2) in polygon 1</span>
+<span class="sd">            sage: gs.to_surface((1,-2), v=(1,0))</span>
+<span class="sd">            SimilaritySurfaceTangentVector in polygon 1 based at (1, 1/2) with vector (1, -1/2)</span>
+
+<span class="sd">            sage: s = translation_surfaces.infinite_staircase()</span>
+<span class="sd">            sage: gs = s.graphical_surface()</span>
+<span class="sd">            sage: gs.to_surface((4,4), (1,1), search_all=True, search_limit=20)</span>
+<span class="sd">            SimilaritySurfaceTangentVector in polygon 8 based at (0, 0) with vector (1, 1)</span>
+
+<span class="sd">            sage: s = translation_surfaces.square_torus()</span>
+<span class="sd">            sage: pc = s.minimal_cover(cover_type=&quot;planar&quot;)</span>
+<span class="sd">            sage: gs = pc.graphical_surface()</span>
+<span class="sd">            sage: gs.to_surface((3,2), search_all=True, search_limit=20)</span>
+<span class="sd">            Traceback (most recent call last):</span>
+<span class="sd">            ...</span>
+<span class="sd">            ValueError: To obtain a singularity on an infinite surface, singularity_limit must be set.</span>
+<span class="sd">            sage: gs.to_surface((3,2), search_all=True, search_limit=20, singularity_limit=4)</span>
+<span class="sd">            Surface point with 4 coordinate representations</span>
+<span class="sd">            sage: p = gs.to_surface((sqrt(3),sqrt(2)), ring=AA, search_all=True, search_limit=20)</span>
+<span class="sd">            sage: next(iter(p.coordinates(p.labels()[0]))).parent()</span>
+<span class="sd">            Vector space of dimension 2 over Algebraic Real Field</span>
+<span class="sd">            sage: v = gs.to_surface((3/2,3/2),(sqrt(3),sqrt(2)),ring=AA,search_all=True, search_limit=20)</span>
+<span class="sd">            sage: v.bundle()</span>
+<span class="sd">            Tangent bundle of TranslationSurface built from infinitely many polygons defined over Algebraic Real Field</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">label</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">return_all</span><span class="p">:</span>
+                <span class="n">ret</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_surface</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">search_all</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">search_limit</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">is_finite</span><span class="p">():</span>
+                        <span class="n">it</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">label_iterator</span><span class="p">()</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;If search_all=True and the surface is infinite, then a search_limit must be provided.&quot;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">islice</span>
+                    <span class="n">it</span> <span class="o">=</span> <span class="n">islice</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">label_iterator</span><span class="p">(),</span> <span class="n">search_limit</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">it</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">visible</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">it</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_surface</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">v</span><span class="o">=</span><span class="n">v</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span> <span class="n">ring</span><span class="o">=</span><span class="n">ring</span><span class="p">,</span> <span class="n">singularity_limit</span><span class="o">=</span><span class="n">singularity_limit</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">return_all</span><span class="p">:</span>
+                        <span class="n">ret</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="n">val</span>
+                <span class="k">except</span> <span class="ne">AssertionError</span><span class="p">:</span>
+                    <span class="c1"># Not in the polygon</span>
+                    <span class="k">pass</span>
+                <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;need a limit when working with an infinite surface&#39;</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;To obtain a singularity on an infinite surface, &quot;</span> <span class="o">+</span> \
+                            <span class="s2">&quot;singularity_limit must be set.&quot;</span><span class="p">)</span>
+                    <span class="c1"># Otherwise it is not in the polygon.</span>
+            <span class="k">if</span> <span class="n">return_all</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">ret</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Point or vector is not in a visible graphical_polygon.&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">gp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graphical_polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+            <span class="n">coords</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">transform_back</span><span class="p">(</span><span class="n">point</span><span class="p">)</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_surface</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">surface_point</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">ring</span><span class="o">=</span><span class="n">ring</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">singularity_limit</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">tangent_vector</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="p">(</span><span class="o">~</span><span class="p">(</span><span class="n">gp</span><span class="o">.</span><span class="n">transformation</span><span class="p">()</span><span class="o">.</span><span class="n">derivative</span><span class="p">()))</span><span class="o">*</span><span class="n">vector</span><span class="p">(</span><span class="n">v</span><span class="p">),</span> <span class="n">ring</span><span class="o">=</span><span class="n">ring</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GraphicalSurface.opposite_edge"><a class="viewcode-back" href="../../../graphical.html#flatsurf.graphical.surface.GraphicalSurface.opposite_edge">[docs]</a>    <span class="k">def</span> <span class="nf">opposite_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Given the label ``p`` of a polygon and an edge ``e`` in that polygon</span>
+<span class="sd">        returns the pair (``pp``, ``ee``) to which this edge is glued.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">p</span><span class="p">,</span><span class="n">e</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GraphicalSurface.reset_letters"><a class="viewcode-back" href="../../../graphical.html#flatsurf.graphical.surface.GraphicalSurface.reset_letters">[docs]</a>    <span class="k">def</span> <span class="nf">reset_letters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">p</span><span class="p">,</span><span class="n">e</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Resets the letter dictionary for storing letters used in</span>
+<span class="sd">        edge labeling if edge_labels=&quot;letter&quot; is used.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_letters</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_next_letter</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">pass</span></div>
+
+    <span class="k">def</span> <span class="nf">_get_letter_for_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="s2">&quot;_letters&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_letters</span><span class="o">=</span><span class="p">{}</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_next_letter</span><span class="o">=</span><span class="mi">1</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_letters</span><span class="p">[(</span><span class="n">p</span><span class="p">,</span><span class="n">e</span><span class="p">)]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="c1"># convert number to string</span>
+            <span class="n">nl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_next_letter</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_next_letter</span> <span class="o">=</span> <span class="n">nl</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">letter</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="k">while</span> <span class="n">nl</span><span class="o">!=</span><span class="mi">0</span><span class="p">:</span>
+                <span class="n">val</span> <span class="o">=</span> <span class="n">nl</span> <span class="o">%</span> <span class="mi">52</span>
+                <span class="k">if</span> <span class="n">val</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+                    <span class="n">val</span><span class="o">=</span><span class="mi">52</span>
+                    <span class="n">letter</span> <span class="o">=</span> <span class="s2">&quot;Z&quot;</span> <span class="o">+</span> <span class="n">letter</span>
+                <span class="k">elif</span> <span class="n">val</span><span class="o">&lt;</span><span class="mi">27</span><span class="p">:</span>
+                    <span class="n">letter</span> <span class="o">=</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">97</span><span class="o">+</span><span class="n">val</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">letter</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">letter</span> <span class="o">=</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">65</span><span class="o">+</span><span class="n">val</span><span class="o">-</span><span class="mi">27</span><span class="p">)</span> <span class="o">+</span> <span class="n">letter</span>
+                <span class="n">nl</span> <span class="o">=</span> <span class="p">(</span><span class="n">nl</span><span class="o">-</span><span class="n">val</span><span class="p">)</span><span class="o">/</span><span class="mi">52</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_letters</span><span class="p">[(</span><span class="n">p</span><span class="p">,</span><span class="n">e</span><span class="p">)]</span> <span class="o">=</span> <span class="n">letter</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_letters</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">p</span><span class="p">,</span><span class="n">e</span><span class="p">)]</span> <span class="o">=</span> <span class="n">letter</span>
+            <span class="k">return</span> <span class="n">letter</span>
+
+<div class="viewcode-block" id="GraphicalSurface.edge_labels"><a class="viewcode-back" href="../../../graphical.html#flatsurf.graphical.surface.GraphicalSurface.edge_labels">[docs]</a>    <span class="k">def</span> <span class="nf">edge_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lab</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the list of edge labels to be used for the polygon with label ``lab``.</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf import *</span>
+<span class="sd">            sage: s = similarity_surfaces.example()</span>
+<span class="sd">            sage: g = s.graphical_surface(cached=False, adjacencies=[])</span>
+<span class="sd">            sage: g.edge_labels(0)</span>
+<span class="sd">            [&#39;1&#39;, &#39;1&#39;, &#39;1&#39;]</span>
+<span class="sd">            sage: g.make_all_visible(adjacent=True)</span>
+<span class="sd">            sage: g.edge_labels(0)</span>
+<span class="sd">            [None, &#39;1&#39;, &#39;1&#39;]</span>
+
+<span class="sd">            sage: g.make_adjacent(0,0)</span>
+<span class="sd">            sage: g.edge_labels(0)</span>
+<span class="sd">            [None, &#39;1&#39;, &#39;1&#39;]</span>
+<span class="sd">            sage: g.edge_labels(1)</span>
+<span class="sd">            [&#39;0&#39;, None, &#39;0&#39;]</span>
+
+<span class="sd">            sage: s = similarity_surfaces.example()</span>
+<span class="sd">            sage: g = s.graphical_surface(cached=False, adjacencies=[], edge_labels=&#39;number&#39;)</span>
+<span class="sd">            sage: g.edge_labels(0)</span>
+<span class="sd">            [&#39;0&#39;, &#39;1&#39;, &#39;2&#39;]</span>
+
+<span class="sd">            sage: g = s.graphical_surface(cached=False, adjacencies=[], edge_labels=&#39;gluings and number&#39;)</span>
+<span class="sd">            sage: g.edge_labels(0)</span>
+<span class="sd">            [&#39;0 -&gt; (1, 1)&#39;, &#39;1 -&gt; (1, 2)&#39;, &#39;2 -&gt; (1, 0)&#39;]</span>
+<span class="sd">            sage: g.make_all_visible(adjacent=True)</span>
+<span class="sd">            sage: g.edge_labels(0)</span>
+<span class="sd">            [&#39;0&#39;, &#39;1 -&gt; (1, 2)&#39;, &#39;2 -&gt; (1, 0)&#39;]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_labels</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ss</span>
+        <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graphical_polygon</span><span class="p">(</span><span class="n">lab</span><span class="p">)</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">base_polygon</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_labels</span> <span class="o">==</span> <span class="s1">&#39;gluings&#39;</span><span class="p">:</span>
+            <span class="n">ans</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()):</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_adjacent</span><span class="p">(</span><span class="n">lab</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+                    <span class="n">ans</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">llab</span><span class="p">,</span><span class="n">ee</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">lab</span><span class="p">,</span><span class="n">e</span><span class="p">)</span>
+                    <span class="n">ans</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">llab</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_labels</span> <span class="o">==</span> <span class="s1">&#39;number&#39;</span><span class="p">:</span>
+            <span class="n">ans</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">num_edges</span><span class="p">())))</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_labels</span> <span class="o">==</span> <span class="s1">&#39;gluings and number&#39;</span><span class="p">:</span>
+            <span class="n">ans</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()):</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_adjacent</span><span class="p">(</span><span class="n">lab</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+                    <span class="n">ans</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">ans</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> -&gt; </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">lab</span><span class="p">,</span><span class="n">e</span><span class="p">)))</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_labels</span> <span class="o">==</span> <span class="s2">&quot;letter&quot;</span><span class="p">:</span>
+            <span class="n">ans</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()):</span>
+                <span class="n">llab</span><span class="p">,</span><span class="n">ee</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">lab</span><span class="p">,</span><span class="n">e</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_visible</span><span class="p">(</span><span class="n">llab</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_adjacent</span><span class="p">(</span><span class="n">lab</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+                    <span class="n">ans</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">ans</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_letter_for_edge</span><span class="p">(</span><span class="n">lab</span><span class="p">,</span><span class="n">e</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;invalid option for edge_labels&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">ans</span></div>
+
+<div class="viewcode-block" id="GraphicalSurface.plot_polygon"><a class="viewcode-back" href="../../../graphical.html#flatsurf.graphical.surface.GraphicalSurface.plot_polygon">[docs]</a>    <span class="k">def</span> <span class="nf">plot_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">graphical_polygon</span><span class="p">,</span> <span class="n">upside_down</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Internal method for plotting polygons returning a Graphics object.</span>
+
+<span class="sd">        Calls :func:`graphical_polygon.GraphicalPolygon.plot_polygon` passing</span>
+<span class="sd">        the attribute `upside_down_polygon_options` if the polygon is upside down</span>
+<span class="sd">        and `polygon_options` otherwise.</span>
+
+<span class="sd">        Override this method for fine control of how the polygons are drawn.</span>
+
+<span class="sd">        INPUT:</span>
+
+<span class="sd">        - ``label`` -- The label of the polygon being plotted.</span>
+
+<span class="sd">        - ``graphical_polygon`` -- The associated graphical polygon.</span>
+
+<span class="sd">        - ``upside_down`` -- True if and only if the polygon will be rendered upside down.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">upside_down</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">graphical_polygon</span><span class="o">.</span><span class="n">plot_polygon</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">upside_down_polygon_options</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">graphical_polygon</span><span class="o">.</span><span class="n">plot_polygon</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">polygon_options</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GraphicalSurface.plot_polygon_label"><a class="viewcode-back" href="../../../graphical.html#flatsurf.graphical.surface.GraphicalSurface.plot_polygon_label">[docs]</a>    <span class="k">def</span> <span class="nf">plot_polygon_label</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">graphical_polygon</span><span class="p">,</span> <span class="n">upside_down</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Internal method for plotting polygon labels returning a Graphics2D.</span>
+
+<span class="sd">        Calls :func:`graphical_polygon.GraphicalPolygon.plot_polygon_label` passing</span>
+<span class="sd">        the attribute `polygon_label_options`.</span>
+
+<span class="sd">        Override this method for fine control of how the polygons are drawn.</span>
+
+<span class="sd">        INPUT:</span>
+
+<span class="sd">        - ``label`` -- The label of the polygon being plotted.</span>
+
+<span class="sd">        - ``graphical_polygon`` -- The associated graphical polygon.</span>
+
+<span class="sd">        - ``upside_down`` -- True if and only if the polygon will be rendered upside down.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">graphical_polygon</span><span class="o">.</span><span class="n">plot_label</span><span class="p">(</span><span class="n">label</span><span class="p">,</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">polygon_label_options</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GraphicalSurface.plot_edge"><a class="viewcode-back" href="../../../graphical.html#flatsurf.graphical.surface.GraphicalSurface.plot_edge">[docs]</a>    <span class="k">def</span> <span class="nf">plot_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">graphical_polygon</span><span class="p">,</span> <span class="n">is_adjacent</span><span class="p">,</span> <span class="n">is_self_glued</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Internal method for plotting a polygon&#39;s edge returning a Graphics2D.</span>
+
+<span class="sd">        The method calls :func:`graphical_polygon.GraphicalPolygon.plot_edge`.</span>
+<span class="sd">        Depending on the geometry of the edge pair, it passes one of the attributes</span>
+<span class="sd">        `adjacent_edge_options`, `self_glued_edge_options` or `non_adjacent_edge_options`.</span>
+
+<span class="sd">        Override this method for fine control of how the edge is drawn.</span>
+
+<span class="sd">        INPUT:</span>
+
+<span class="sd">        - ``label`` -- The label of the polygon.</span>
+
+<span class="sd">        - ``edge`` -- Integer representing the edge of the polygon.</span>
+
+<span class="sd">        - ``graphical_polygon`` -- The associated graphical polygon.</span>
+
+<span class="sd">        - ``is_adjacent`` -- True if and only if the polygon opposite this edge is visible and adjacent to this edge.</span>
+<span class="sd">            In this case, plot_edge is called only once for this edge.</span>
+
+<span class="sd">        - ``is_self_glued`` -- True if and only if the edge is glued to itself by a 180 degree rotation.</span>
+<span class="sd">            This is never True if is_adjacent is True.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">is_adjacent</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">graphical_polygon</span><span class="o">.</span><span class="n">plot_edge</span><span class="p">(</span><span class="n">edge</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">adjacent_edge_options</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">is_self_glued</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">graphical_polygon</span><span class="o">.</span><span class="n">plot_edge</span><span class="p">(</span><span class="n">edge</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">self_glued_edge_options</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">graphical_polygon</span><span class="o">.</span><span class="n">plot_edge</span><span class="p">(</span><span class="n">edge</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">non_adjacent_edge_options</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GraphicalSurface.plot_edge_label"><a class="viewcode-back" href="../../../graphical.html#flatsurf.graphical.surface.GraphicalSurface.plot_edge_label">[docs]</a>    <span class="k">def</span> <span class="nf">plot_edge_label</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">edge_label</span><span class="p">,</span> <span class="n">graphical_polygon</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Internal method for plotting an edge label.</span>
+<span class="sd">        Calls :func:`graphical_polygon.GraphicalPolygon.plot_edge_label` passing</span>
+<span class="sd">        the attribute `edge_label_options`.</span>
+
+<span class="sd">        Override this method for fine control of how the edge is drawn.</span>
+
+<span class="sd">        INPUT:</span>
+
+<span class="sd">        - ``p`` -- The label of the polygon.</span>
+
+<span class="sd">        - ``e`` -- Integer representing the edge of the polygon.</span>
+
+<span class="sd">        - ``edge_label`` -- A string containing the label to be printed on the edge.</span>
+
+<span class="sd">        - ``graphical_polygon`` -- The associated graphical polygon.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">graphical_polygon</span><span class="o">.</span><span class="n">plot_edge_label</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">edge_label</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">edge_label_options</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GraphicalSurface.plot_zero_flag"><a class="viewcode-back" href="../../../graphical.html#flatsurf.graphical.surface.GraphicalSurface.plot_zero_flag">[docs]</a>    <span class="k">def</span> <span class="nf">plot_zero_flag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">graphical_polygon</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Internal method for plotting a polygon&#39;s zero_flag and returning a Graphics2D.</span>
+<span class="sd">        Simply calls :func:`graphical_polygon.GraphicalPolygon.plot_zero_flag` passing</span>
+<span class="sd">        the attribute `zero_flag_options`.</span>
+
+<span class="sd">        Override this method for fine control of how the edge is drawn.</span>
+
+<span class="sd">        INPUT:</span>
+
+<span class="sd">        - ``label`` -- The label of the polygon.</span>
+
+<span class="sd">        - ``graphical_polygon`` -- The associated graphical polygon.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">graphical_polygon</span><span class="o">.</span><span class="n">plot_zero_flag</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">zero_flag_options</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="GraphicalSurface.plot"><a class="viewcode-back" href="../../../graphical.html#flatsurf.graphical.surface.GraphicalSurface.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a plot of the GraphicalSurface</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf import *</span>
+<span class="sd">            sage: s = similarity_surfaces.example()</span>
+<span class="sd">            sage: from flatsurf.graphical.surface import GraphicalSurface</span>
+<span class="sd">            sage: gs = GraphicalSurface(s)</span>
+<span class="sd">            sage: gs.make_visible(1)</span>
+<span class="sd">            sage: gs.plot()      # not tested (problem with matplotlib font caches on Travis)</span>
+<span class="sd">            Graphics object consisting of 13 graphics primitives</span>
+
+
+<span class="sd">        Check that label options are handled correctly::</span>
+
+<span class="sd">            sage: S = translation_surfaces.square_torus()</span>
+<span class="sd">            sage: S.plot(polygon_labels=True, edge_labels=True)     # not tested (problem with matplotlib font caches on Travis)</span>
+<span class="sd">            Graphics object consisting of 10 graphics primitives</span>
+<span class="sd">            sage: S.plot(polygon_labels=False, edge_labels=True)    # not tested (problem with matplotlib font caches on Travis)</span>
+<span class="sd">            Graphics object consisting of 9 graphics primitives</span>
+<span class="sd">            sage: S.plot(polygon_labels=True, edge_labels=False)    # not tested (problem with matplotlib font caches on Travis)</span>
+<span class="sd">            Graphics object consisting of 6 graphics primitives</span>
+<span class="sd">            sage: S.plot(polygon_labels=False, edge_labels=False)   # not tested (problem with matplotlib font caches on Travis)</span>
+<span class="sd">            Graphics object consisting of 5 graphics primitives</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">sage.plot.graphics</span> <span class="kn">import</span> <span class="n">Graphics</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">Graphics</span><span class="p">()</span>
+
+        <span class="c1"># Make sure we don&#39;t plot adjacent edges more than once.</span>
+        <span class="n">plotted_adjacent_edges</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_visible</span><span class="p">:</span>
+            <span class="n">polygon</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graphical_polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+            <span class="n">upside_down</span> <span class="o">=</span> <span class="n">polygon</span><span class="o">.</span><span class="n">transformation</span><span class="p">()</span><span class="o">.</span><span class="n">sign</span><span class="p">()</span><span class="o">==-</span><span class="mi">1</span>
+
+            <span class="c1"># Plot the polygons</span>
+            <span class="k">if</span> <span class="n">upside_down</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">will_plot_upside_down_polygons</span><span class="p">:</span>
+                    <span class="n">p</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot_polygon</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">polygon</span><span class="p">,</span> <span class="n">upside_down</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">will_plot_polygons</span><span class="p">:</span>
+                <span class="n">p</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot_polygon</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">polygon</span><span class="p">,</span> <span class="n">upside_down</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">will_plot_zero_flags</span><span class="p">:</span>
+                <span class="n">p</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot_zero_flag</span><span class="p">(</span><span class="n">label</span><span class="p">,</span><span class="n">polygon</span><span class="p">)</span>
+
+            <span class="c1"># Add the polygon label</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">will_plot_polygon_labels</span><span class="p">:</span>
+                <span class="n">p</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot_polygon_label</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">polygon</span><span class="p">,</span> <span class="n">upside_down</span><span class="p">)</span>
+
+            <span class="c1"># Plot the edges</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">will_plot_edges</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()):</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_adjacent</span><span class="p">(</span><span class="n">label</span><span class="p">,</span><span class="n">i</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">will_plot_adjacent_edges</span> <span class="ow">and</span> <span class="p">(</span><span class="n">label</span><span class="p">,</span><span class="n">i</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">plotted_adjacent_edges</span><span class="p">:</span>
+                            <span class="n">plotted_adjacent_edges</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">label</span><span class="p">,</span><span class="n">i</span><span class="p">))</span>
+                            <span class="n">p</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot_edge</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">polygon</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="p">(</span><span class="n">label</span><span class="p">,</span><span class="n">i</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">label</span><span class="p">,</span><span class="n">i</span><span class="p">):</span>
+                        <span class="c1"># Self-glued edge</span>
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">will_plot_self_glued_edges</span><span class="p">:</span>
+                            <span class="n">p</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot_edge</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">polygon</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">will_plot_non_adjacent_edges</span><span class="p">:</span>
+                            <span class="n">p</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot_edge</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">polygon</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+
+            <span class="c1"># Plot the edge labels.</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">will_plot_edge_labels</span><span class="p">:</span>
+                <span class="c1"># get the edge labels</span>
+                <span class="n">edge_labels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_labels</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">edge_labels</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()):</span>
+                        <span class="k">if</span> <span class="n">edge_labels</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                            <span class="n">p</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot_edge_label</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">edge_labels</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">polygon</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">p</span></div></div>
+
+
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">sage-flatsurf 0.3 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">flatsurf.graphical.surface</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2016-2021, Vincent Delecroix and Pat Hooper.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.4.
+    </div>
+  </body>
+</html>

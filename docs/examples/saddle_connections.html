@@ -1,0 +1,291 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Saddle Connection Demo &#8212; sage-flatsurf 0.3 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/togglebutton.js"></script>
+    <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Siegel-Veech Constants" href="siegel_veech.html" />
+    <link rel="prev" title="Relative Period Deformations" href="rel_deformations.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="siegel_veech.html" title="Siegel-Veech Constants"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="rel_deformations.html" title="Relative Period Deformations"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">sage-flatsurf 0.3 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../examples.html" accesskey="U">Examples</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Saddle Connection Demo</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="saddle-connection-demo">
+<h1>Saddle Connection Demo<a class="headerlink" href="#saddle-connection-demo" title="Permalink to this headline">¶</a></h1>
+<p>Initial version by Pat Hooper <a class="reference external" href="mailto:whooper&#37;&#52;&#48;ccny&#46;cuny&#46;edu">mailto:whooper<span>&#64;</span>ccny<span>&#46;</span>cuny<span>&#46;</span>edu</a> on Dec. 16, 2017.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="o">*</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">ModuleNotFoundError</span><span class="g g-Whitespace">                       </span>Traceback (most recent call last)
+<span class="o">&lt;</span><span class="n">ipython</span><span class="o">-</span><span class="nb">input</span><span class="o">-</span><span class="mi">1</span><span class="o">-</span><span class="n">e5f5aaa54972</span><span class="o">&gt;</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="ne">ModuleNotFoundError</span>: No module named &#39;flatsurf&#39;
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">veech_double_n_gon</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We get a list of all saddle connections of length less than <span class="math notranslate nohighlight">\(\sqrt{100}\)</span>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sc_list</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">saddle_connections</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+<span class="nb">len</span><span class="p">(</span><span class="n">sc_list</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The following removes dublicate saddle connections which appear with opposite orientations.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sc_set</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">sc</span> <span class="ow">in</span> <span class="n">sc_list</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">sc</span><span class="o">.</span><span class="n">invert</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sc_set</span><span class="p">:</span>
+        <span class="n">sc_set</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">sc</span><span class="p">)</span>
+<span class="n">sc_list2</span> <span class="o">=</span> <span class="p">[</span><span class="n">sc</span> <span class="k">for</span> <span class="n">sc</span> <span class="ow">in</span> <span class="n">sc_set</span><span class="p">]</span>
+<span class="nb">len</span><span class="p">(</span><span class="n">sc_list2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We pick two saddle connections:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sc1</span> <span class="o">=</span> <span class="n">sc_list2</span><span class="p">[</span><span class="mi">99</span><span class="p">]</span>
+<span class="n">sc2</span> <span class="o">=</span> <span class="n">sc_list2</span><span class="p">[</span><span class="mi">55</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We can find their holonomies and other information about them using methods.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Holonomy of sc1 is&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">sc1</span><span class="o">.</span><span class="n">holonomy</span><span class="p">())</span><span class="o">+</span><span class="s2">&quot; = &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">sc1</span><span class="o">.</span><span class="n">holonomy</span><span class="p">()</span><span class="o">.</span><span class="n">n</span><span class="p">()))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Holonomy of sc2 is&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">sc2</span><span class="o">.</span><span class="n">holonomy</span><span class="p">())</span><span class="o">+</span><span class="s2">&quot; = &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">sc2</span><span class="o">.</span><span class="n">holonomy</span><span class="p">()</span><span class="o">.</span><span class="n">n</span><span class="p">()))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span> <span class="o">+</span> <span class="n">sc1</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span> <span class="o">+</span> <span class="n">sc2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;green&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We can test that they intersect. By default the singularity does not count.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sc1</span><span class="o">.</span><span class="n">intersects</span><span class="p">(</span><span class="n">sc2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We can get an iterator over the set of intersection points:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">sc1</span><span class="o">.</span><span class="n">intersections</span><span class="p">(</span><span class="n">sc2</span><span class="p">):</span>
+    <span class="nb">print</span> <span class="n">p</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>It is a good idea to store the intersections in a list if you want to reuse them:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">intersections</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">sc1</span><span class="o">.</span><span class="n">intersections</span><span class="p">(</span><span class="n">sc2</span><span class="p">)]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We can plot the intersection points:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span> <span class="o">+</span> <span class="n">sc1</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span> <span class="o">+</span> <span class="n">sc2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;green&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">intersections</span><span class="p">:</span>
+    <span class="n">plot</span> <span class="o">+=</span> <span class="n">p</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">plot</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We can plot all the saddle connections:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot</span><span class="o">=</span><span class="n">s</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">edge_labels</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">polygon_labels</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">sc</span> <span class="ow">in</span> <span class="n">sc_list</span><span class="p">:</span>
+    <span class="n">plot</span> <span class="o">+=</span> <span class="n">sc</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">thickness</span><span class="o">=</span><span class="mf">0.05</span><span class="p">)</span>
+<span class="n">plot</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We will build a subset of the saddle connection graph where vertices are saddle connections and two vertices are joined by an edge if and only if the saddle connections do not intersect (on their interiors).</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Build intersection graph</span>
+<span class="n">d</span><span class="o">=</span><span class="p">{}</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sc_list2</span><span class="p">)):</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">sc_list2</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">sc_list2</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">intersects</span><span class="p">(</span><span class="n">sc_list2</span><span class="p">[</span><span class="n">j</span><span class="p">]):</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
+                <span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">j</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">j</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
+                <span class="n">d</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">=</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">d</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">g</span><span class="o">=</span><span class="n">Graph</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We place the vertex of a saddle connection with holonomy <span class="math notranslate nohighlight">\(z \in {\mathbb C}\)</span> at the point <span class="math notranslate nohighlight">\(z^2\)</span>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pos</span><span class="o">=</span><span class="p">{}</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sc_list2</span><span class="p">)):</span>
+    <span class="n">sc</span> <span class="o">=</span> <span class="n">sc_list2</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+    <span class="n">val</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">holonomy</span><span class="p">()</span><span class="o">.</span><span class="n">n</span><span class="p">()</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">I</span><span class="o">*</span><span class="n">val</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="n">z</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="n">z</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span>
+    <span class="n">pos</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">real</span><span class="p">(),</span><span class="n">w</span><span class="o">.</span><span class="n">imag</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">g</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">pos</span><span class="o">=</span><span class="n">pos</span><span class="p">,</span><span class="n">vertex_labels</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">vertex_size</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="rel_deformations.html"
+                        title="previous chapter">Relative Period Deformations</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="siegel_veech.html"
+                        title="next chapter">Siegel-Veech Constants</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/examples/saddle_connections.md.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="siegel_veech.html" title="Siegel-Veech Constants"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="rel_deformations.html" title="Relative Period Deformations"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">sage-flatsurf 0.3 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../examples.html" >Examples</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Saddle Connection Demo</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2016-2021, Vincent Delecroix and Pat Hooper.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.4.
+    </div>
+  </body>
+</html>

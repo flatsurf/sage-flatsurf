@@ -1,0 +1,656 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>flatsurf.geometry.similarity &#8212; sage-flatsurf 0.3 documentation</title>
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.css" />
+    
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/togglebutton.js"></script>
+    <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">sage-flatsurf 0.3 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">flatsurf.geometry.similarity</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for flatsurf.geometry.similarity</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1">#*********************************************************************</span>
+<span class="c1">#  This file is part of sage-flatsurf.</span>
+<span class="c1">#</span>
+<span class="c1">#        Copyright (C) 2016-2020 Vincent Delecroix</span>
+<span class="c1">#                      2020      Julian Rüth</span>
+<span class="c1">#</span>
+<span class="c1">#  sage-flatsurf is free software: you can redistribute it and/or modify</span>
+<span class="c1">#  it under the terms of the GNU General Public License as published by</span>
+<span class="c1">#  the Free Software Foundation, either version 2 of the License, or</span>
+<span class="c1">#  (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1">#  sage-flatsurf is distributed in the hope that it will be useful,</span>
+<span class="c1">#  but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1">#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1">#  GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1">#  You should have received a copy of the GNU General Public License</span>
+<span class="c1">#  along with sage-flatsurf. If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
+<span class="c1">#*********************************************************************</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span><span class="p">,</span> <span class="n">print_function</span><span class="p">,</span> <span class="n">division</span>
+<span class="kn">from</span> <span class="nn">six.moves</span> <span class="kn">import</span> <span class="nb">range</span><span class="p">,</span> <span class="nb">map</span><span class="p">,</span> <span class="nb">filter</span><span class="p">,</span> <span class="nb">zip</span>
+
+<span class="kn">from</span> <span class="nn">sage.misc.cachefunc</span> <span class="kn">import</span> <span class="n">cached_method</span>
+
+<span class="kn">from</span> <span class="nn">sage.structure.element</span> <span class="kn">import</span> <span class="n">MultiplicativeGroupElement</span><span class="p">,</span> <span class="n">parent</span>
+<span class="kn">from</span> <span class="nn">sage.structure.unique_representation</span> <span class="kn">import</span> <span class="n">UniqueRepresentation</span>
+
+<span class="kn">from</span> <span class="nn">sage.categories.groups</span> <span class="kn">import</span> <span class="n">Groups</span>
+
+<span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">Rings</span>
+
+<span class="kn">from</span> <span class="nn">sage.modules.free_module_element</span> <span class="kn">import</span> <span class="n">vector</span>
+<span class="kn">from</span> <span class="nn">sage.groups.group</span> <span class="kn">import</span> <span class="n">Group</span>
+<span class="kn">from</span> <span class="nn">sage.rings.integer</span> <span class="kn">import</span> <span class="n">Integer</span>
+<span class="kn">from</span> <span class="nn">sage.rings.integer_ring</span> <span class="kn">import</span> <span class="n">ZZ</span>
+<span class="kn">from</span> <span class="nn">sage.modules.free_module_element</span> <span class="kn">import</span> <span class="n">FreeModuleElement</span>
+
+<span class="kn">from</span> <span class="nn">sage.env</span> <span class="kn">import</span> <span class="n">SAGE_VERSION</span>
+<span class="k">if</span> <span class="n">SAGE_VERSION</span> <span class="o">&gt;=</span> <span class="s1">&#39;8.2&#39;</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">sage.structure.element</span> <span class="kn">import</span> <span class="n">is_Matrix</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">sage.matrix.matrix</span> <span class="kn">import</span> <span class="n">is_Matrix</span>
+
+<span class="kn">from</span> <span class="nn">flatsurf.geometry.polygon</span> <span class="kn">import</span> <span class="n">ConvexPolygon</span><span class="p">,</span> <span class="n">ConvexPolygons</span>
+
+<span class="n">ZZ_0</span> <span class="o">=</span> <span class="n">Integer</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">ZZ_1</span> <span class="o">=</span> <span class="n">Integer</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">ZZ_m1</span> <span class="o">=</span> <span class="o">-</span><span class="n">ZZ_1</span>
+
+<div class="viewcode-block" id="Similarity"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity.Similarity">[docs]</a><span class="k">class</span> <span class="nc">Similarity</span><span class="p">(</span><span class="n">MultiplicativeGroupElement</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class for a similarity of the plane with possible reflection.</span>
+
+<span class="sd">    Construct the similarity (x,y) mapsto (ax-by+s,bx+ay+t) if sign=1,</span>
+<span class="sd">    and (ax+by+s,bx-ay+t) if sign=-1</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">sign</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Construct the similarity (x,y) mapsto (ax-by+s,bx+ay+t) if sign=1,</span>
+<span class="sd">        and (ax+by+s,bx-ay+t) if sign=-1</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">p</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The parent must be provided&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">parent</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">p</span><span class="o">.</span><span class="n">base_ring</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;wrong parent for a&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">parent</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">p</span><span class="o">.</span><span class="n">base_ring</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;wrong parent for b&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">parent</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">p</span><span class="o">.</span><span class="n">base_ring</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;wrong parent for s&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">parent</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">p</span><span class="o">.</span><span class="n">base_ring</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;wrong parent for t&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">parent</span><span class="p">(</span><span class="n">sign</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">ZZ</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">sign</span><span class="o">.</span><span class="n">is_unit</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;sign must be either 1 or -1.&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_a</span> <span class="o">=</span> <span class="n">a</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_b</span> <span class="o">=</span> <span class="n">b</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_s</span> <span class="o">=</span> <span class="n">s</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_t</span> <span class="o">=</span> <span class="n">t</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sign</span> <span class="o">=</span> <span class="n">sign</span>
+
+        <span class="n">MultiplicativeGroupElement</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Similarity.sign"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity.Similarity.sign">[docs]</a>    <span class="k">def</span> <span class="nf">sign</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sign</span></div>
+
+<div class="viewcode-block" id="Similarity.is_translation"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity.Similarity.is_translation">[docs]</a>    <span class="k">def</span> <span class="nf">is_translation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return whether this element is a translation.</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf.geometry.similarity import SimilarityGroup</span>
+<span class="sd">            sage: S = SimilarityGroup(QQ)</span>
+<span class="sd">            sage: S((1,2)).is_translation()</span>
+<span class="sd">            True</span>
+<span class="sd">            sage: S((1,0,3,-1/2)).is_translation()</span>
+<span class="sd">            True</span>
+<span class="sd">            sage: S((0,1,0,0)).is_translation()</span>
+<span class="sd">            False</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sign</span><span class="o">.</span><span class="n">is_one</span><span class="p">()</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_a</span><span class="o">.</span><span class="n">is_one</span><span class="p">()</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_b</span><span class="o">.</span><span class="n">is_zero</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Similarity.is_half_translation"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity.Similarity.is_half_translation">[docs]</a>    <span class="k">def</span> <span class="nf">is_half_translation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return whether this element is a half translation.</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf.geometry.similarity import SimilarityGroup</span>
+<span class="sd">            sage: S = SimilarityGroup(QQ)</span>
+<span class="sd">            sage: S((1,2)).is_half_translation()</span>
+<span class="sd">            True</span>
+<span class="sd">            sage: S((-1, 0, 0, 2)).is_half_translation()</span>
+<span class="sd">            True</span>
+<span class="sd">            sage: S((0,1,0,0)).is_half_translation()</span>
+<span class="sd">            False</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sign</span><span class="o">.</span><span class="n">is_one</span><span class="p">()</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_a</span><span class="o">.</span><span class="n">is_one</span><span class="p">()</span> <span class="ow">or</span> <span class="p">((</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">_a</span><span class="p">)</span><span class="o">.</span><span class="n">is_one</span><span class="p">()))</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_b</span><span class="o">.</span><span class="n">is_zero</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Similarity.is_orientable"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity.Similarity.is_orientable">[docs]</a>    <span class="k">def</span> <span class="nf">is_orientable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sign</span><span class="o">.</span><span class="n">is_one</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Similarity.is_rotation"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity.Similarity.is_rotation">[docs]</a>    <span class="k">def</span> <span class="nf">is_rotation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check whether this element is a rotation</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf.geometry.similarity import SimilarityGroup</span>
+<span class="sd">            sage: S = SimilarityGroup(QQ)</span>
+<span class="sd">            sage: S((1,2)).is_rotation()</span>
+<span class="sd">            False</span>
+<span class="sd">            sage: S((0,-1,0,0)).is_rotation()</span>
+<span class="sd">            True</span>
+<span class="sd">            sage: S.one().is_rotation()</span>
+<span class="sd">            True</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_one</span><span class="p">()</span> <span class="ow">or</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">det</span><span class="p">()</span><span class="o">.</span><span class="n">is_one</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_translation</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="Similarity.is_isometry"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity.Similarity.is_isometry">[docs]</a>    <span class="k">def</span> <span class="nf">is_isometry</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check whether this element is an isometry</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf.geometry.similarity import SimilarityGroup</span>
+<span class="sd">            sage: S = SimilarityGroup(QQ)</span>
+<span class="sd">            sage: S.one().is_isometry()</span>
+<span class="sd">            True</span>
+<span class="sd">            sage: S((0,1,0,0)).is_isometry()</span>
+<span class="sd">            True</span>
+<span class="sd">            sage: S((0,1,0,0,-1)).is_isometry()</span>
+<span class="sd">            True</span>
+<span class="sd">            sage: S((1,1,0,0)).is_isometry()</span>
+<span class="sd">            False</span>
+<span class="sd">            sage: S((3,-1/2)).is_isometry()</span>
+<span class="sd">            True</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">det</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">det</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">det</span><span class="o">.</span><span class="n">is_one</span><span class="p">()</span> <span class="ow">or</span> <span class="p">(</span><span class="o">-</span><span class="n">det</span><span class="p">)</span><span class="o">.</span><span class="n">is_one</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Similarity.det"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity.Similarity.det">[docs]</a>    <span class="k">def</span> <span class="nf">det</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the determinant of this element</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sign</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_a</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_a</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_b</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_b</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_mul_</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Composition</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf.geometry.similarity import SimilarityGroup</span>
+<span class="sd">            sage: S = SimilarityGroup(QQ)</span>
+<span class="sd">            sage: S((1,2)) * S((3,-5)) == S((4,-3))</span>
+<span class="sd">            True</span>
+
+<span class="sd">            sage: from itertools import product</span>
+<span class="sd">            sage: a1 = S((0,2,0,0,1))</span>
+<span class="sd">            sage: a2 = S((1,0,0,0,-1))</span>
+<span class="sd">            sage: a3 = S((1,1,0,0))</span>
+<span class="sd">            sage: a4 = S((1,0,-1,1))</span>
+<span class="sd">            sage: a5 = S((2,-1,3/5,2/3,-1))</span>
+<span class="sd">            sage: for g1,g2,g3 in product([a1,a2,a3,a4,a5], repeat=3):</span>
+<span class="sd">            ....:     assert g1.matrix()*g2.matrix() == (g1*g2).matrix()</span>
+<span class="sd">            ....:     assert (g1*g2).matrix()*g3.matrix() == (g1*g2*g3).matrix()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">left</span><span class="o">.</span><span class="n">_a</span> <span class="o">*</span> <span class="n">right</span><span class="o">.</span><span class="n">_a</span> <span class="o">-</span> <span class="n">left</span><span class="o">.</span><span class="n">_sign</span> <span class="o">*</span> <span class="n">left</span><span class="o">.</span><span class="n">_b</span> <span class="o">*</span> <span class="n">right</span><span class="o">.</span><span class="n">_b</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">left</span><span class="o">.</span><span class="n">_b</span> <span class="o">*</span> <span class="n">right</span><span class="o">.</span><span class="n">_a</span> <span class="o">+</span> <span class="n">left</span><span class="o">.</span><span class="n">_sign</span> <span class="o">*</span> <span class="n">left</span><span class="o">.</span><span class="n">_a</span> <span class="o">*</span> <span class="n">right</span><span class="o">.</span><span class="n">_b</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">left</span><span class="o">.</span><span class="n">_a</span> <span class="o">*</span> <span class="n">right</span><span class="o">.</span><span class="n">_s</span> <span class="o">-</span> <span class="n">left</span><span class="o">.</span><span class="n">_sign</span> <span class="o">*</span> <span class="n">left</span><span class="o">.</span><span class="n">_b</span> <span class="o">*</span> <span class="n">right</span><span class="o">.</span><span class="n">_t</span> <span class="o">+</span> <span class="n">left</span><span class="o">.</span><span class="n">_s</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">left</span><span class="o">.</span><span class="n">_b</span> <span class="o">*</span> <span class="n">right</span><span class="o">.</span><span class="n">_s</span> <span class="o">+</span> <span class="n">left</span><span class="o">.</span><span class="n">_sign</span> <span class="o">*</span> <span class="n">left</span><span class="o">.</span><span class="n">_a</span> <span class="o">*</span> <span class="n">right</span><span class="o">.</span><span class="n">_t</span> <span class="o">+</span> <span class="n">left</span><span class="o">.</span><span class="n">_t</span>
+        <span class="n">sign</span> <span class="o">=</span> <span class="n">left</span><span class="o">.</span><span class="n">_sign</span> <span class="o">*</span> <span class="n">right</span><span class="o">.</span><span class="n">_sign</span>
+        <span class="n">P</span> <span class="o">=</span> <span class="n">left</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">P</span><span class="o">.</span><span class="n">element_class</span><span class="p">(</span><span class="n">P</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">sign</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__invert__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Invert a similarity.</span>
+
+<span class="sd">        TESTS::</span>
+
+<span class="sd">            sage: from flatsurf.geometry.similarity import SimilarityGroup</span>
+<span class="sd">            sage: S = SimilarityGroup(QQ)</span>
+<span class="sd">            sage: from itertools import product</span>
+<span class="sd">            sage: for a in [S((0,2,0,0,1)), S((1,0,0,0,-1)), S((1,1,0,0)),</span>
+<span class="sd">            ....:           S((1,0,-1,1)), S((2,-1,3/5,2/3,-1))]:</span>
+<span class="sd">            ....:     assert (a*~a).is_one() and (~a*a).is_one()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">P</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span>
+        <span class="n">sign</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sign</span>
+        <span class="n">det</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">det</span><span class="p">()</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">sign</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_a</span><span class="o">/</span><span class="n">det</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">_b</span><span class="o">/</span><span class="n">det</span>
+        <span class="k">return</span> <span class="n">P</span><span class="o">.</span><span class="n">element_class</span><span class="p">(</span><span class="n">P</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span>
+            <span class="o">-</span><span class="n">a</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_s</span> <span class="o">+</span> <span class="n">sign</span><span class="o">*</span><span class="n">b</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_t</span><span class="p">,</span>
+            <span class="o">-</span><span class="n">b</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_s</span> <span class="o">-</span> <span class="n">sign</span><span class="o">*</span><span class="n">a</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_t</span><span class="p">,</span>
+            <span class="n">sign</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_div_</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">):</span>
+        <span class="n">det</span> <span class="o">=</span> <span class="n">right</span><span class="o">.</span><span class="n">det</span><span class="p">()</span>
+
+        <span class="n">inv_a</span> <span class="o">=</span> <span class="n">right</span><span class="o">.</span><span class="n">_sign</span> <span class="o">*</span> <span class="n">right</span><span class="o">.</span><span class="n">_a</span>
+        <span class="n">inv_b</span> <span class="o">=</span> <span class="o">-</span><span class="n">right</span><span class="o">.</span><span class="n">_b</span>
+        <span class="n">inv_s</span> <span class="o">=</span> <span class="o">-</span><span class="n">right</span><span class="o">.</span><span class="n">_sign</span> <span class="o">*</span> <span class="n">right</span><span class="o">.</span><span class="n">_a</span> <span class="o">*</span> <span class="n">right</span><span class="o">.</span><span class="n">_s</span> <span class="o">-</span> <span class="n">right</span><span class="o">.</span><span class="n">_sign</span> <span class="o">*</span> <span class="n">right</span><span class="o">.</span><span class="n">_b</span> <span class="o">*</span> <span class="n">right</span><span class="o">.</span><span class="n">_t</span>
+        <span class="n">inv_t</span> <span class="o">=</span> <span class="n">right</span><span class="o">.</span><span class="n">_b</span> <span class="o">*</span> <span class="n">right</span><span class="o">.</span><span class="n">_s</span> <span class="o">-</span> <span class="n">right</span><span class="o">.</span><span class="n">_a</span> <span class="o">*</span> <span class="n">right</span><span class="o">.</span><span class="n">_t</span>
+
+        <span class="n">a</span> <span class="o">=</span> <span class="p">(</span><span class="n">left</span><span class="o">.</span><span class="n">_a</span> <span class="o">*</span> <span class="n">inv_a</span> <span class="o">-</span> <span class="n">left</span><span class="o">.</span><span class="n">_sign</span> <span class="o">*</span> <span class="n">left</span><span class="o">.</span><span class="n">_b</span> <span class="o">*</span> <span class="n">inv_b</span><span class="p">)</span> <span class="o">/</span> <span class="n">det</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="p">(</span><span class="n">left</span><span class="o">.</span><span class="n">_b</span> <span class="o">*</span> <span class="n">inv_a</span> <span class="o">+</span> <span class="n">left</span><span class="o">.</span><span class="n">_sign</span> <span class="o">*</span> <span class="n">left</span><span class="o">.</span><span class="n">_a</span> <span class="o">*</span> <span class="n">inv_b</span><span class="p">)</span> <span class="o">/</span> <span class="n">det</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="p">(</span><span class="n">left</span><span class="o">.</span><span class="n">_a</span> <span class="o">*</span> <span class="n">inv_s</span> <span class="o">-</span> <span class="n">left</span><span class="o">.</span><span class="n">_sign</span> <span class="o">*</span> <span class="n">left</span><span class="o">.</span><span class="n">_b</span> <span class="o">*</span> <span class="n">inv_t</span><span class="p">)</span> <span class="o">/</span> <span class="n">det</span> <span class="o">+</span> <span class="n">left</span><span class="o">.</span><span class="n">_s</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="p">(</span><span class="n">left</span><span class="o">.</span><span class="n">_b</span> <span class="o">*</span> <span class="n">inv_s</span> <span class="o">+</span> <span class="n">left</span><span class="o">.</span><span class="n">_sign</span> <span class="o">*</span> <span class="n">left</span><span class="o">.</span><span class="n">_a</span> <span class="o">*</span> <span class="n">inv_t</span><span class="p">)</span> <span class="o">/</span> <span class="n">det</span> <span class="o">+</span> <span class="n">left</span><span class="o">.</span><span class="n">_t</span>
+
+        <span class="k">return</span> <span class="n">left</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">element_class</span><span class="p">(</span><span class="n">left</span><span class="o">.</span><span class="n">parent</span><span class="p">(),</span>
+            <span class="n">left</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()(</span><span class="n">a</span><span class="p">),</span>
+            <span class="n">left</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()(</span><span class="n">b</span><span class="p">),</span>
+            <span class="n">left</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()(</span><span class="n">s</span><span class="p">),</span>
+            <span class="n">left</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()(</span><span class="n">t</span><span class="p">),</span>
+            <span class="n">left</span><span class="o">.</span><span class="n">_sign</span> <span class="o">*</span> <span class="n">right</span><span class="o">.</span><span class="n">_sign</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="mi">73</span><span class="o">*</span><span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_a</span><span class="p">)</span><span class="o">-</span><span class="mi">19</span><span class="o">*</span><span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_b</span><span class="p">)</span><span class="o">+</span><span class="mi">13</span><span class="o">*</span><span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="p">)</span><span class="o">+</span><span class="mi">53</span><span class="o">*</span><span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_t</span><span class="p">)</span><span class="o">+</span><span class="mi">67</span><span class="o">*</span><span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sign</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">ring</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the image of ``w`` under the similarity. Here ``w`` may be a ConvexPolygon or a vector</span>
+<span class="sd">        (or something that can be indexed in the same way as a vector). If a ring is provided,</span>
+<span class="sd">        the objects returned will be defined over this ring.</span>
+
+<span class="sd">        TESTS::</span>
+
+<span class="sd">            sage: from flatsurf.geometry.similarity import SimilarityGroup</span>
+<span class="sd">            sage: S = SimilarityGroup(AA)</span>
+<span class="sd">            sage: a = S((1,-1,AA(2).sqrt(),0))</span>
+<span class="sd">            sage: a((1,2))</span>
+<span class="sd">            (4.414213562373095?, 1)</span>
+<span class="sd">            sage: a.matrix()*vector((1,2,1))</span>
+<span class="sd">            (4.414213562373095?, 1, 1)</span>
+
+<span class="sd">            sage: from flatsurf.geometry.similarity import SimilarityGroup</span>
+<span class="sd">            sage: SG = SimilarityGroup(QQ)</span>
+<span class="sd">            sage: from flatsurf import ConvexPolygons</span>
+<span class="sd">            sage: P = ConvexPolygons(QQ)</span>
+<span class="sd">            sage: p = P.an_element()</span>
+<span class="sd">            sage: p</span>
+<span class="sd">            Polygon: (0, 0), (1, 0), (1, 1), (0, 1)</span>
+<span class="sd">            sage: g = SG.an_element()**2</span>
+<span class="sd">            sage: g</span>
+<span class="sd">            (x, y) |-&gt; (25*x + 4, 25*y + 10)</span>
+<span class="sd">            sage: g(p)</span>
+<span class="sd">            Polygon: (4, 10), (29, 10), (29, 35), (4, 35)</span>
+<span class="sd">            sage: g(p, ring=AA).parent()</span>
+<span class="sd">            ConvexPolygons(Algebraic Real Field)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">ring</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">ring</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">Rings</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;ring must be a ring&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">ConvexPolygon</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">ring</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">ring</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span>
+            <span class="n">P</span> <span class="o">=</span> <span class="n">ConvexPolygons</span><span class="p">(</span><span class="n">ring</span><span class="p">)</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">P</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">w</span><span class="o">.</span><span class="n">vertices</span><span class="p">()])</span>
+            <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sign</span><span class="o">.</span><span class="n">is_one</span><span class="p">():</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Similarity must be orientation preserving.&quot;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># Not sure why this would happen:</span>
+                    <span class="k">raise</span>
+
+        <span class="k">if</span> <span class="n">ring</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sign</span><span class="o">.</span><span class="n">is_one</span><span class="p">():</span>
+                <span class="k">return</span> <span class="n">vector</span><span class="p">([</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_a</span> <span class="o">*</span> <span class="n">w</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_b</span><span class="o">*</span><span class="n">w</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_b</span> <span class="o">*</span> <span class="n">w</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_a</span> <span class="o">*</span> <span class="n">w</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_t</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">vector</span><span class="p">([</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_a</span> <span class="o">*</span> <span class="n">w</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_b</span> <span class="o">*</span> <span class="n">w</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_b</span> <span class="o">*</span> <span class="n">w</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_a</span> <span class="o">*</span> <span class="n">w</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_t</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sign</span><span class="o">.</span><span class="n">is_one</span><span class="p">():</span>
+                <span class="k">return</span> <span class="n">vector</span><span class="p">(</span><span class="n">ring</span><span class="p">,</span> <span class="p">[</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_a</span> <span class="o">*</span> <span class="n">w</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_b</span> <span class="o">*</span> <span class="n">w</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_b</span> <span class="o">*</span> <span class="n">w</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_a</span> <span class="o">*</span> <span class="n">w</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_t</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">vector</span><span class="p">(</span><span class="n">ring</span><span class="p">,</span> <span class="p">[</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_a</span> <span class="o">*</span> <span class="n">w</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_b</span> <span class="o">*</span> <span class="n">w</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_b</span> <span class="o">*</span> <span class="n">w</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_a</span> <span class="o">*</span> <span class="n">w</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_t</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">_repr_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        TESTS::</span>
+
+<span class="sd">            sage: from flatsurf.geometry.similarity import SimilarityGroup</span>
+<span class="sd">            sage: S = SimilarityGroup(QQ)</span>
+<span class="sd">            sage: S.one()</span>
+<span class="sd">            (x, y) |-&gt; (x, y)</span>
+<span class="sd">            sage: S((1,-2/3))</span>
+<span class="sd">            (x, y) |-&gt; (x + 1, y - 2/3)</span>
+<span class="sd">            sage: S((-1,0,2/3,3))</span>
+<span class="sd">            (x, y) |-&gt; (-x + 2/3, -y + 3)</span>
+<span class="sd">            sage: S((-1,0,2/3,3,-1))</span>
+<span class="sd">            (x, y) |-&gt; (-x + 2/3, y + 3)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">R</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()[</span><span class="s1">&#39;x&#39;</span><span class="p">,</span><span class="s1">&#39;y&#39;</span><span class="p">]</span>
+        <span class="n">x</span><span class="p">,</span><span class="n">y</span> <span class="o">=</span> <span class="n">R</span><span class="o">.</span><span class="n">gens</span><span class="p">()</span>
+        <span class="k">return</span> <span class="s2">&quot;(x, y) |-&gt; (</span><span class="si">{}</span><span class="s2">, </span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_a</span><span class="o">*</span><span class="n">x</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sign</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_b</span><span class="o">*</span><span class="n">y</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_b</span><span class="o">*</span><span class="n">x</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sign</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_a</span><span class="o">*</span><span class="n">y</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_t</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        TESTS::</span>
+
+<span class="sd">            sage: from flatsurf.geometry.similarity import SimilarityGroup</span>
+<span class="sd">            sage: S = SimilarityGroup(QQ)</span>
+<span class="sd">            sage: S((1,0)) == S((1,0))</span>
+<span class="sd">            True</span>
+<span class="sd">            sage: S((1,0)) == S((0,1))</span>
+<span class="sd">            False</span>
+<span class="sd">            sage: S((1,0,0,0)) == S((0,1,0,0))</span>
+<span class="sd">            False</span>
+<span class="sd">            sage: S((1,0,0,0,1)) == S((1,0,0,0,-1))</span>
+<span class="sd">            False</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">other</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">other</span><span class="p">)</span><span class="o">==</span><span class="nb">int</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span> <span class="o">!=</span> <span class="n">other</span><span class="o">.</span><span class="n">parent</span><span class="p">():</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_a</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_a</span> <span class="ow">and</span> \
+               <span class="bp">self</span><span class="o">.</span><span class="n">_b</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_b</span> <span class="ow">and</span> \
+               <span class="bp">self</span><span class="o">.</span><span class="n">_s</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_s</span> <span class="ow">and</span> \
+               <span class="bp">self</span><span class="o">.</span><span class="n">_t</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_t</span> <span class="ow">and</span> \
+               <span class="bp">self</span><span class="o">.</span><span class="n">_sign</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_sign</span>
+
+    <span class="k">def</span> <span class="fm">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span> <span class="o">==</span> <span class="n">other</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Similarity.matrix"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity.Similarity.matrix">[docs]</a>    <span class="k">def</span> <span class="nf">matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the 3x3 matrix representative of this element</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf.geometry.similarity import SimilarityGroup</span>
+<span class="sd">            sage: S = SimilarityGroup(QQ)</span>
+
+<span class="sd">            sage: S((1,-2/3,1,1,-1)).matrix()</span>
+<span class="sd">            [   1 -2/3    1]</span>
+<span class="sd">            [-2/3   -1    1]</span>
+<span class="sd">            [   0    0    1]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">P</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span>
+        <span class="n">M</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">_matrix_space_3x3</span><span class="p">()</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">_ring</span><span class="o">.</span><span class="n">zero</span><span class="p">()</span>
+        <span class="n">o</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">_ring</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">M</span><span class="p">(</span>
+            <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_a</span><span class="p">,</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">_sign</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_b</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="p">,</span>
+             <span class="bp">self</span><span class="o">.</span><span class="n">_b</span><span class="p">,</span> <span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_sign</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_a</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_t</span><span class="p">,</span>
+            <span class="n">z</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">o</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="Similarity.derivative"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity.Similarity.derivative">[docs]</a>    <span class="k">def</span> <span class="nf">derivative</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the 2x2 matrix corresponding to the derivative of this element</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf.geometry.similarity import SimilarityGroup</span>
+<span class="sd">            sage: S = SimilarityGroup(QQ)</span>
+
+<span class="sd">            sage: S((1,-2/3,1,1,-1)).derivative()</span>
+<span class="sd">            [   1 -2/3]</span>
+<span class="sd">            [-2/3   -1]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">M</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">_matrix_space_2x2</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">M</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_a</span><span class="p">,</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">_sign</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_b</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_b</span><span class="p">,</span>  <span class="bp">self</span><span class="o">.</span><span class="n">_sign</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_a</span><span class="p">])</span></div>
+
+    <span class="c1"># OLD AND DEPRECATED</span>
+
+<div class="viewcode-block" id="Similarity.a"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity.Similarity.a">[docs]</a>    <span class="k">def</span> <span class="nf">a</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">sage.misc.superseded</span> <span class="kn">import</span> <span class="n">deprecation</span>
+        <span class="n">deprecation</span><span class="p">(</span><span class="mi">42</span><span class="p">,</span> <span class="s2">&quot;Do not use .a()&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_a</span></div>
+
+<div class="viewcode-block" id="Similarity.b"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity.Similarity.b">[docs]</a>    <span class="k">def</span> <span class="nf">b</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">sage.misc.superseded</span> <span class="kn">import</span> <span class="n">deprecation</span>
+        <span class="n">deprecation</span><span class="p">(</span><span class="mi">42</span><span class="p">,</span> <span class="s2">&quot;Do not use .b()&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_b</span></div>
+
+<div class="viewcode-block" id="Similarity.s"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity.Similarity.s">[docs]</a>    <span class="k">def</span> <span class="nf">s</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">sage.misc.superseded</span> <span class="kn">import</span> <span class="n">deprecation</span>
+        <span class="n">deprecation</span><span class="p">(</span><span class="mi">42</span><span class="p">,</span> <span class="s2">&quot;Do not use .s()&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span></div>
+
+<div class="viewcode-block" id="Similarity.t"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity.Similarity.t">[docs]</a>    <span class="k">def</span> <span class="nf">t</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">sage.misc.superseded</span> <span class="kn">import</span> <span class="n">deprecation</span>
+        <span class="n">deprecation</span><span class="p">(</span><span class="mi">42</span><span class="p">,</span> <span class="s2">&quot;Do not use .t()&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_t</span></div></div>
+
+<div class="viewcode-block" id="SimilarityGroup"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity.SimilarityGroup">[docs]</a><span class="k">class</span> <span class="nc">SimilarityGroup</span><span class="p">(</span><span class="n">UniqueRepresentation</span><span class="p">,</span> <span class="n">Group</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The group of possibly orientation reversing similarities in the plane.</span>
+
+<span class="sd">    This is the group generated by rotations, translations and dilations.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">Element</span> <span class="o">=</span> <span class="n">Similarity</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_ring</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        TESTS::</span>
+
+<span class="sd">            sage: from flatsurf.geometry.similarity import SimilarityGroup</span>
+<span class="sd">            sage: TestSuite(SimilarityGroup(QQ)).run()</span>
+<span class="sd">            sage: TestSuite(SimilarityGroup(AA)).run()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ring</span> <span class="o">=</span> <span class="n">base_ring</span>
+        <span class="n">Group</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">Groups</span><span class="p">()</span><span class="o">.</span><span class="n">Infinite</span><span class="p">())</span>
+
+    <span class="nd">@cached_method</span>
+    <span class="k">def</span> <span class="nf">_matrix_space_2x2</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">sage.matrix.matrix_space</span> <span class="kn">import</span> <span class="n">MatrixSpace</span>
+        <span class="k">return</span> <span class="n">MatrixSpace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ring</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+    <span class="nd">@cached_method</span>
+    <span class="k">def</span> <span class="nf">_matrix_space_3x3</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">sage.matrix.matrix_space</span> <span class="kn">import</span> <span class="n">MatrixSpace</span>
+        <span class="k">return</span> <span class="n">MatrixSpace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ring</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+
+    <span class="nd">@cached_method</span>
+    <span class="k">def</span> <span class="nf">_vector_space</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">sage.modules.free_module</span> <span class="kn">import</span> <span class="n">VectorSpace</span>
+        <span class="k">return</span> <span class="n">VectorSpace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ring</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_element_constructor_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        TESTS::</span>
+
+<span class="sd">            sage: from flatsurf.geometry.similarity import SimilarityGroup</span>
+<span class="sd">            sage: S = SimilarityGroup(QQ)</span>
+<span class="sd">            sage: S((1,1))  # translation</span>
+<span class="sd">            (x, y) |-&gt; (x + 1, y + 1)</span>
+
+<span class="sd">            sage: V = QQ^2</span>
+<span class="sd">            sage: S(V((1,-1)))</span>
+<span class="sd">            (x, y) |-&gt; (x + 1, y - 1)</span>
+
+<span class="sd">            sage: S(vector((1,1)))</span>
+<span class="sd">            (x, y) |-&gt; (x + 1, y + 1)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">args</span>
+
+        <span class="n">a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ring</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">s</span> <span class="o">=</span> <span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ring</span><span class="o">.</span><span class="n">zero</span><span class="p">()</span>
+        <span class="n">sign</span> <span class="o">=</span> <span class="n">ZZ_1</span>
+
+        <span class="c1"># TODO: 2x2 and 3x3 matrix input</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span><span class="nb">list</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="n">s</span><span class="p">,</span><span class="n">t</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ring</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+                <span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">s</span><span class="p">,</span><span class="n">t</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ring</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">==</span> <span class="mi">5</span><span class="p">:</span>
+                <span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">s</span><span class="p">,</span><span class="n">t</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ring</span><span class="p">,</span> <span class="n">x</span><span class="p">[:</span><span class="mi">4</span><span class="p">])</span>
+                <span class="n">sign</span> <span class="o">=</span> <span class="n">ZZ</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;can not construct a similarity from a list of length </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)))</span>
+        <span class="k">elif</span> <span class="n">is_Matrix</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+            <span class="c1">#   a -sb</span>
+            <span class="c1">#   b sa</span>
+            <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">nrows</span><span class="p">()</span> <span class="o">==</span> <span class="n">x</span><span class="o">.</span><span class="n">ncols</span><span class="p">()</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="n">a</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">d</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">list</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">a</span> <span class="o">==</span> <span class="n">d</span> <span class="ow">and</span> <span class="n">b</span> <span class="o">==</span> <span class="o">-</span><span class="n">c</span><span class="p">:</span>
+                    <span class="n">sign</span> <span class="o">=</span> <span class="n">ZZ_1</span>
+                <span class="k">elif</span> <span class="n">a</span> <span class="o">==</span> <span class="o">-</span><span class="n">d</span> <span class="ow">and</span> <span class="n">b</span> <span class="o">==</span> <span class="n">c</span><span class="p">:</span>
+                    <span class="n">sign</span> <span class="o">=</span> <span class="n">ZZ_m1</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;not a similarity matrix&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">x</span><span class="o">.</span><span class="n">nrows</span><span class="p">()</span> <span class="o">==</span> <span class="n">x</span><span class="o">.</span><span class="n">ncols</span><span class="p">()</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;invalid dimension for matrix input&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">FreeModuleElement</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span> <span class="ow">is</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ring</span><span class="p">:</span>
+                    <span class="n">s</span><span class="p">,</span><span class="n">t</span> <span class="o">=</span> <span class="n">x</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">s</span><span class="p">,</span><span class="n">t</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ring</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;invalid dimension for vector input&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="n">parent</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ring</span><span class="o">.</span><span class="n">has_coerce_map_from</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+                <span class="n">a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ring</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;element in </span><span class="si">%s</span><span class="s2"> cannot be used to create element in </span><span class="si">%s</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="bp">self</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">a</span><span class="o">*</span><span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="o">*</span><span class="n">b</span><span class="p">)</span><span class="o">.</span><span class="n">is_zero</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;not invertible&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">element_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">sign</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_coerce_map_from_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">S</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ring</span><span class="o">.</span><span class="n">has_coerce_map_from</span><span class="p">(</span><span class="n">S</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">SimilarityGroup</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ring</span><span class="o">.</span><span class="n">has_coerce_map_from</span><span class="p">(</span><span class="n">S</span><span class="o">.</span><span class="n">_ring</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_repr_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        TESTS::</span>
+
+<span class="sd">            sage: from flatsurf.geometry.similarity import SimilarityGroup</span>
+<span class="sd">            sage: SimilarityGroup(QQ)</span>
+<span class="sd">            Similarity group over Rational Field</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;Similarity group over </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ring</span><span class="p">)</span>
+
+<div class="viewcode-block" id="SimilarityGroup.one"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity.SimilarityGroup.one">[docs]</a>    <span class="k">def</span> <span class="nf">one</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf.geometry.similarity import SimilarityGroup</span>
+<span class="sd">            sage: SimilarityGroup(QQ).one()</span>
+<span class="sd">            (x, y) |-&gt; (x, y)</span>
+<span class="sd">            sage: SimilarityGroup(QQ).one().is_one()</span>
+<span class="sd">            True</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">element_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_ring</span><span class="o">.</span><span class="n">one</span><span class="p">(),</span>  <span class="c1"># a</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_ring</span><span class="o">.</span><span class="n">zero</span><span class="p">(),</span> <span class="c1"># b</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_ring</span><span class="o">.</span><span class="n">zero</span><span class="p">(),</span> <span class="c1"># s</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_ring</span><span class="o">.</span><span class="n">zero</span><span class="p">(),</span> <span class="c1"># t</span>
+                <span class="n">ZZ_1</span><span class="p">)</span>              <span class="c1"># sign</span></div>
+
+<div class="viewcode-block" id="SimilarityGroup.an_element"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity.SimilarityGroup.an_element">[docs]</a>    <span class="k">def</span> <span class="nf">an_element</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SimilarityGroup.is_abelian"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity.SimilarityGroup.is_abelian">[docs]</a>    <span class="k">def</span> <span class="nf">is_abelian</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="SimilarityGroup.base_ring"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity.SimilarityGroup.base_ring">[docs]</a>    <span class="k">def</span> <span class="nf">base_ring</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ring</span></div></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">sage-flatsurf 0.3 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">flatsurf.geometry.similarity</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2016-2021, Vincent Delecroix and Pat Hooper.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.4.
+    </div>
+  </body>
+</html>
