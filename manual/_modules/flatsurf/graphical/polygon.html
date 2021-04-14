@@ -1,0 +1,441 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>flatsurf.graphical.polygon &#8212; sage-flatsurf 0.3 documentation</title>
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.css" />
+    
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/togglebutton.js"></script>
+    <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">sage-flatsurf 0.3 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">flatsurf.graphical.polygon</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for flatsurf.graphical.polygon</h1><div class="highlight"><pre>
+<span></span><span class="c1">#*****************************************************************************</span>
+<span class="c1">#       Copyright (C) 2013-2019 Vincent Delecroix &lt;20100.delecroix@gmail.com&gt;</span>
+<span class="c1">#                     2013-2019 W. Patrick Hooper &lt;wphooper@gmail.com&gt;</span>
+<span class="c1">#</span>
+<span class="c1">#  Distributed under the terms of the GNU General Public License (GPL)</span>
+<span class="c1">#  as published by the Free Software Foundation; either version 2 of</span>
+<span class="c1">#  the License, or (at your option) any later version.</span>
+<span class="c1">#                  https://www.gnu.org/licenses/</span>
+<span class="c1">#*****************************************************************************</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span><span class="p">,</span> <span class="n">print_function</span><span class="p">,</span> <span class="n">division</span>
+<span class="kn">from</span> <span class="nn">six.moves</span> <span class="kn">import</span> <span class="nb">range</span><span class="p">,</span> <span class="nb">map</span><span class="p">,</span> <span class="nb">filter</span><span class="p">,</span> <span class="nb">zip</span>
+
+<span class="kn">from</span> <span class="nn">sage.rings.real_double</span> <span class="kn">import</span> <span class="n">RDF</span>
+<span class="kn">from</span> <span class="nn">sage.modules.free_module</span> <span class="kn">import</span> <span class="n">VectorSpace</span>
+<span class="kn">from</span> <span class="nn">sage.plot.polygon</span> <span class="kn">import</span> <span class="n">polygon2d</span>
+<span class="kn">from</span> <span class="nn">sage.plot.graphics</span> <span class="kn">import</span> <span class="n">Graphics</span>
+<span class="kn">from</span> <span class="nn">sage.plot.text</span> <span class="kn">import</span> <span class="n">text</span>
+<span class="kn">from</span> <span class="nn">sage.plot.line</span> <span class="kn">import</span> <span class="n">line2d</span>
+<span class="kn">from</span> <span class="nn">sage.plot.point</span> <span class="kn">import</span> <span class="n">point2d</span>
+
+<span class="kn">from</span> <span class="nn">flatsurf.geometry.similarity</span> <span class="kn">import</span> <span class="n">SimilarityGroup</span>
+
+<span class="n">V</span> <span class="o">=</span> <span class="n">VectorSpace</span><span class="p">(</span><span class="n">RDF</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+<div class="viewcode-block" id="GraphicalPolygon"><a class="viewcode-back" href="../../../graphical.html#flatsurf.graphical.polygon.GraphicalPolygon">[docs]</a><span class="k">class</span> <span class="nc">GraphicalPolygon</span><span class="p">:</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Stores data necessary to draw one of the polygons from a surface.</span>
+
+<span class="sd">    Note that this involves converting between geometric coordinates, defined for the SimilaritySurface,</span>
+<span class="sd">    and graphical coordinates. We do this with a similarity (called transformation below).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">polygon</span><span class="p">,</span> <span class="n">transformation</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        INPUT:</span>
+
+<span class="sd">        - ``polygon`` -- the actual polygon</span>
+
+<span class="sd">        - ``transformation`` -- a transformation to be applied to the polygon</span>
+
+<span class="sd">        - ``outline_color`` -- a color</span>
+
+<span class="sd">        - ``fill_color`` -- another color</span>
+
+<span class="sd">        - ``label`` -- an optional label for the polygon</span>
+
+<span class="sd">        - ``edge_labels`` -- one of ``False``, ``True`` or a list of labels</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_p</span> <span class="o">=</span> <span class="n">polygon</span>
+
+        <span class="c1"># the following stores _transformation and _v</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_transformation</span><span class="p">(</span><span class="n">transformation</span><span class="p">)</span>
+
+<div class="viewcode-block" id="GraphicalPolygon.copy"><a class="viewcode-back" href="../../../graphical.html#flatsurf.graphical.polygon.GraphicalPolygon.copy">[docs]</a>    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a copy of this GraphicalPolygon.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">GraphicalPolygon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">transformation</span><span class="p">())</span></div>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        String representation.</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf import *</span>
+<span class="sd">            sage: s = similarity_surfaces.example()</span>
+<span class="sd">            sage: gs = s.graphical_surface()</span>
+<span class="sd">            sage: gs.graphical_polygon(0)</span>
+<span class="sd">            GraphicalPolygon with vertices [(0.0, 0.0), (2.0, -2.0), (2.0, 0.0)]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;GraphicalPolygon with vertices </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_v</span><span class="p">)</span>
+
+<div class="viewcode-block" id="GraphicalPolygon.base_polygon"><a class="viewcode-back" href="../../../graphical.html#flatsurf.graphical.polygon.GraphicalPolygon.base_polygon">[docs]</a>    <span class="k">def</span> <span class="nf">base_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the polygon of the surface in geometric coordinates.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_p</span></div>
+
+<div class="viewcode-block" id="GraphicalPolygon.transformed_vertex"><a class="viewcode-back" href="../../../graphical.html#flatsurf.graphical.polygon.GraphicalPolygon.transformed_vertex">[docs]</a>    <span class="k">def</span> <span class="nf">transformed_vertex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the graphical coordinates of the vertex in double precision.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transformation</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="n">e</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="GraphicalPolygon.xmin"><a class="viewcode-back" href="../../../graphical.html#flatsurf.graphical.polygon.GraphicalPolygon.xmin">[docs]</a>    <span class="k">def</span> <span class="nf">xmin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the minimal x-coordinate of a vertex.</span>
+
+<span class="sd">        .. TODO::</span>
+
+<span class="sd">            to fit with Sage conventions this should be xmin</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">min</span><span class="p">([</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_v</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="GraphicalPolygon.ymin"><a class="viewcode-back" href="../../../graphical.html#flatsurf.graphical.polygon.GraphicalPolygon.ymin">[docs]</a>    <span class="k">def</span> <span class="nf">ymin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the minimal y-coordinate of a vertex.</span>
+
+<span class="sd">        .. TODO::</span>
+
+<span class="sd">            to fit with Sage conventions this should be ymin</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">min</span><span class="p">([</span><span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_v</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="GraphicalPolygon.xmax"><a class="viewcode-back" href="../../../graphical.html#flatsurf.graphical.polygon.GraphicalPolygon.xmax">[docs]</a>    <span class="k">def</span> <span class="nf">xmax</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the maximal x-coordinate of a vertex.</span>
+
+<span class="sd">        .. TODO::</span>
+
+<span class="sd">            to fit with Sage conventions this should be xmax</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">max</span><span class="p">([</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_v</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="GraphicalPolygon.ymax"><a class="viewcode-back" href="../../../graphical.html#flatsurf.graphical.polygon.GraphicalPolygon.ymax">[docs]</a>    <span class="k">def</span> <span class="nf">ymax</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the minimal y-coordinate of a vertex</span>
+
+<span class="sd">        .. TODO::</span>
+
+<span class="sd">            To fit with Sage conventions this should be ymax</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">max</span><span class="p">([</span><span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_v</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="GraphicalPolygon.bounding_box"><a class="viewcode-back" href="../../../graphical.html#flatsurf.graphical.polygon.GraphicalPolygon.bounding_box">[docs]</a>    <span class="k">def</span> <span class="nf">bounding_box</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the quadruple (x1,y1,x2,y2) where x1 and y1 are the minimal</span>
+<span class="sd">        x- and y-coordinates and x2 and y2 are the maximal x-and y- cordinates.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">xmin</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">ymin</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">xmax</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">ymax</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="GraphicalPolygon.transform"><a class="viewcode-back" href="../../../graphical.html#flatsurf.graphical.polygon.GraphicalPolygon.transform">[docs]</a>    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">point</span><span class="p">,</span> <span class="n">double_precision</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the transformation of point into graphical coordinates.</span>
+
+<span class="sd">        By default returned point is in double precision. This can be changed</span>
+<span class="sd">        to an exact representation by setting `double_precision` to False.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transformation</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">double_precision</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">V</span><span class="p">(</span><span class="n">point</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">point</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">double_precision</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">V</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_transformation</span><span class="p">(</span><span class="n">point</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transformation</span><span class="p">(</span><span class="n">point</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GraphicalPolygon.transform_back"><a class="viewcode-back" href="../../../graphical.html#flatsurf.graphical.polygon.GraphicalPolygon.transform_back">[docs]</a>    <span class="k">def</span> <span class="nf">transform_back</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">point</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the transformation of point from graphical coordinates to the geometric coordinates</span>
+<span class="sd">        of the underlying SimilaritySurface.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transformation</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">point</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="o">~</span><span class="bp">self</span><span class="o">.</span><span class="n">_transformation</span><span class="p">)(</span><span class="n">point</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GraphicalPolygon.contains"><a class="viewcode-back" href="../../../graphical.html#flatsurf.graphical.polygon.GraphicalPolygon.contains">[docs]</a>    <span class="k">def</span> <span class="nf">contains</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">point</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the transformation of point from graphical coordinates to the geometric coordinates</span>
+<span class="sd">        of the underlying SimilaritySurface.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="o">.</span><span class="n">contains_point</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transform_back</span><span class="p">(</span><span class="n">point</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="GraphicalPolygon.transformation"><a class="viewcode-back" href="../../../graphical.html#flatsurf.graphical.polygon.GraphicalPolygon.transformation">[docs]</a>    <span class="k">def</span> <span class="nf">transformation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the transformation (similarity) which converts from</span>
+<span class="sd">        mathematical to graphical coordinates.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transformation</span></div>
+
+<div class="viewcode-block" id="GraphicalPolygon.set_transformation"><a class="viewcode-back" href="../../../graphical.html#flatsurf.graphical.polygon.GraphicalPolygon.set_transformation">[docs]</a>    <span class="k">def</span> <span class="nf">set_transformation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">transformation</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Set the transformation to be applied to the polygon.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">transformation</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_transformation</span> <span class="o">=</span> <span class="n">SimilarityGroup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="o">.</span><span class="n">base_ring</span><span class="p">())</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_transformation</span> <span class="o">=</span> <span class="n">transformation</span>
+        <span class="c1"># recompute the location of vertices:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_v</span> <span class="o">=</span> <span class="p">[</span><span class="n">V</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_transformation</span><span class="p">(</span><span class="n">v</span><span class="p">))</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="o">.</span><span class="n">vertices</span><span class="p">()]</span></div>
+
+<div class="viewcode-block" id="GraphicalPolygon.plot_polygon"><a class="viewcode-back" href="../../../graphical.html#flatsurf.graphical.polygon.GraphicalPolygon.plot_polygon">[docs]</a>    <span class="k">def</span> <span class="nf">plot_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns only the filled polygon.</span>
+
+<span class="sd">        Options are processed as in sage.plot.polygon.polygon2d except</span>
+<span class="sd">        that by default axes=False.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="s2">&quot;axes&quot;</span> <span class="ow">in</span> <span class="n">options</span><span class="p">:</span>
+            <span class="n">options</span><span class="p">[</span><span class="s2">&quot;axes&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="n">polygon2d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_v</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GraphicalPolygon.plot_label"><a class="viewcode-back" href="../../../graphical.html#flatsurf.graphical.polygon.GraphicalPolygon.plot_label">[docs]</a>    <span class="k">def</span> <span class="nf">plot_label</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Write the label of the polygon as text.</span>
+
+<span class="sd">        Set ``position`` to a pair (x,y) to determine where</span>
+<span class="sd">        the label is drawn (in graphical coordinates). If this parameter</span>
+<span class="sd">        is not provided, the label is positioned in the baricenter</span>
+<span class="sd">        of the polygon.</span>
+
+<span class="sd">        Other options are processed as in sage.plot.text.text.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;position&quot;</span> <span class="ow">in</span> <span class="n">options</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">text</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">label</span><span class="p">),</span> <span class="n">options</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;position&quot;</span><span class="p">),</span> <span class="o">**</span><span class="n">options</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">text</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">label</span><span class="p">),</span> <span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_v</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_v</span><span class="p">),</span> <span class="o">**</span><span class="n">options</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GraphicalPolygon.plot_edge"><a class="viewcode-back" href="../../../graphical.html#flatsurf.graphical.polygon.GraphicalPolygon.plot_edge">[docs]</a>    <span class="k">def</span> <span class="nf">plot_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Plot the edge e, with e a number 0,...,n-1 with n being the number</span>
+<span class="sd">        of edges of the polygon.</span>
+
+<span class="sd">        Options are processed as in sage.plot.line.line2d.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">line2d</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_v</span><span class="p">[</span><span class="n">e</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_v</span><span class="p">[(</span><span class="n">e</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">%</span><span class="bp">self</span><span class="o">.</span><span class="n">base_polygon</span><span class="p">()</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()]],</span> \
+            <span class="o">**</span><span class="n">options</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GraphicalPolygon.plot_edge_label"><a class="viewcode-back" href="../../../graphical.html#flatsurf.graphical.polygon.GraphicalPolygon.plot_edge_label">[docs]</a>    <span class="k">def</span> <span class="nf">plot_edge_label</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Write label on the i-th edge.</span>
+
+<span class="sd">        A parameter ``t`` in the interval [0,1] can be provided to position the</span>
+<span class="sd">        label along the edge. A value of t=0 will position it at the starting</span>
+<span class="sd">        vertex and t=1 will position it at the terminating vertex. Defaults to</span>
+<span class="sd">        0.3.</span>
+
+<span class="sd">        If the parameter ``position`` can take the values &quot;outside&quot;, &quot;inside&quot;</span>
+<span class="sd">        or &quot;edge&quot; to indicate if the label should be drawn outside the polygon,</span>
+<span class="sd">        inside the polygon or on the edge. Defaults to &quot;inside&quot;.</span>
+
+<span class="sd">        A ``push_off`` perturbation parameter controls how far off the edge the label is pushed.</span>
+
+<span class="sd">        Other options are processed as in sage.plot.text.text.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">e</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_v</span><span class="p">[(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">%</span><span class="bp">self</span><span class="o">.</span><span class="n">base_polygon</span><span class="p">()</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_v</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="s2">&quot;position&quot;</span> <span class="ow">in</span> <span class="n">options</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">options</span><span class="p">[</span><span class="s2">&quot;position&quot;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;inside&quot;</span><span class="p">,</span> <span class="s2">&quot;outside&quot;</span><span class="p">,</span> <span class="s2">&quot;edge&quot;</span><span class="p">]:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The &#39;position&#39; parameter must take the value &#39;inside&#39;, &#39;outside&#39;, or &#39;edge&#39;.&quot;</span><span class="p">)</span>
+            <span class="n">pos</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;position&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">pos</span> <span class="o">=</span> <span class="s2">&quot;inside&quot;</span>
+
+        <span class="k">if</span> <span class="n">pos</span> <span class="o">==</span> <span class="s2">&quot;outside&quot;</span><span class="p">:</span>
+            <span class="c1"># position outside polygon.</span>
+            <span class="k">if</span> <span class="s2">&quot;horizontal_alignment&quot;</span> <span class="ow">in</span> <span class="n">options</span><span class="p">:</span>
+                <span class="k">pass</span>
+            <span class="k">elif</span> <span class="n">e</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">options</span><span class="p">[</span><span class="s2">&quot;horizontal_alignment&quot;</span><span class="p">]</span><span class="o">=</span><span class="s2">&quot;left&quot;</span>
+            <span class="k">elif</span> <span class="n">e</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">options</span><span class="p">[</span><span class="s2">&quot;horizontal_alignment&quot;</span><span class="p">]</span><span class="o">=</span><span class="s2">&quot;right&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">options</span><span class="p">[</span><span class="s2">&quot;horizontal_alignment&quot;</span><span class="p">]</span><span class="o">=</span><span class="s2">&quot;center&quot;</span>
+
+            <span class="k">if</span> <span class="s2">&quot;vertical_alignment&quot;</span> <span class="ow">in</span> <span class="n">options</span><span class="p">:</span>
+                <span class="k">pass</span>
+            <span class="k">elif</span> <span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">options</span><span class="p">[</span><span class="s2">&quot;vertical_alignment&quot;</span><span class="p">]</span><span class="o">=</span><span class="s2">&quot;top&quot;</span>
+            <span class="k">elif</span> <span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">options</span><span class="p">[</span><span class="s2">&quot;vertical_alignment&quot;</span><span class="p">]</span><span class="o">=</span><span class="s2">&quot;bottom&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">options</span><span class="p">[</span><span class="s2">&quot;vertical_alignment&quot;</span><span class="p">]</span><span class="o">=</span><span class="s2">&quot;center&quot;</span>
+
+        <span class="k">elif</span> <span class="n">pos</span> <span class="o">==</span> <span class="s2">&quot;inside&quot;</span><span class="p">:</span>
+            <span class="c1"># position inside polygon.</span>
+            <span class="k">if</span> <span class="s2">&quot;horizontal_alignment&quot;</span> <span class="ow">in</span> <span class="n">options</span><span class="p">:</span>
+                <span class="k">pass</span>
+            <span class="k">elif</span> <span class="n">e</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">options</span><span class="p">[</span><span class="s2">&quot;horizontal_alignment&quot;</span><span class="p">]</span><span class="o">=</span><span class="s2">&quot;left&quot;</span>
+            <span class="k">elif</span> <span class="n">e</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">options</span><span class="p">[</span><span class="s2">&quot;horizontal_alignment&quot;</span><span class="p">]</span><span class="o">=</span><span class="s2">&quot;right&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">options</span><span class="p">[</span><span class="s2">&quot;horizontal_alignment&quot;</span><span class="p">]</span><span class="o">=</span><span class="s2">&quot;center&quot;</span>
+
+            <span class="k">if</span> <span class="s2">&quot;vertical_alignment&quot;</span> <span class="ow">in</span> <span class="n">options</span><span class="p">:</span>
+                <span class="k">pass</span>
+            <span class="k">elif</span> <span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">options</span><span class="p">[</span><span class="s2">&quot;vertical_alignment&quot;</span><span class="p">]</span><span class="o">=</span><span class="s2">&quot;top&quot;</span>
+            <span class="k">elif</span> <span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">options</span><span class="p">[</span><span class="s2">&quot;vertical_alignment&quot;</span><span class="p">]</span><span class="o">=</span><span class="s2">&quot;bottom&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">options</span><span class="p">[</span><span class="s2">&quot;vertical_alignment&quot;</span><span class="p">]</span><span class="o">=</span><span class="s2">&quot;center&quot;</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># centered on edge.</span>
+            <span class="k">if</span> <span class="s2">&quot;horizontal_alignment&quot;</span> <span class="ow">in</span> <span class="n">options</span><span class="p">:</span>
+                <span class="k">pass</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">options</span><span class="p">[</span><span class="s2">&quot;horizontal_alignment&quot;</span><span class="p">]</span><span class="o">=</span><span class="s2">&quot;center&quot;</span>
+            <span class="k">if</span> <span class="s2">&quot;vertical_alignment&quot;</span> <span class="ow">in</span> <span class="n">options</span><span class="p">:</span>
+                <span class="k">pass</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">options</span><span class="p">[</span><span class="s2">&quot;vertical_alignment&quot;</span><span class="p">]</span><span class="o">=</span><span class="s2">&quot;center&quot;</span>
+
+        <span class="k">if</span> <span class="s2">&quot;t&quot;</span> <span class="ow">in</span> <span class="n">options</span><span class="p">:</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="n">RDF</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;t&quot;</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="mf">0.3</span>
+
+        <span class="k">if</span> <span class="s2">&quot;push_off&quot;</span> <span class="ow">in</span> <span class="n">options</span><span class="p">:</span>
+            <span class="n">push_off</span> <span class="o">=</span> <span class="n">RDF</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;push_off&quot;</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">push_off</span> <span class="o">=</span> <span class="mf">0.03</span>
+        <span class="k">if</span> <span class="n">pos</span> <span class="o">==</span> <span class="s2">&quot;outside&quot;</span><span class="p">:</span>
+            <span class="n">push_off</span> <span class="o">=</span> <span class="o">-</span><span class="n">push_off</span>
+        <span class="c1"># Now push_off stores the amount it should be pushed into the polygon</span>
+
+        <span class="n">no</span> <span class="o">=</span> <span class="n">V</span><span class="p">((</span><span class="o">-</span><span class="n">e</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+        <span class="k">return</span> <span class="n">text</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_v</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">t</span> <span class="o">*</span> <span class="n">e</span> <span class="o">+</span> <span class="n">push_off</span> <span class="o">*</span> <span class="n">no</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GraphicalPolygon.plot_zero_flag"><a class="viewcode-back" href="../../../graphical.html#flatsurf.graphical.polygon.GraphicalPolygon.plot_zero_flag">[docs]</a>    <span class="k">def</span> <span class="nf">plot_zero_flag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Draw a line segment from the zero vertex toward the baricenter.</span>
+
+<span class="sd">        A real parameter ``t`` can be provided. If t=1, then the segment will</span>
+<span class="sd">        go all the way to the baricenter.  The value of ``t`` is linear in the</span>
+<span class="sd">        length of the segment. Defaults to t=0.5.</span>
+
+<span class="sd">        Other options are processed as in sage.plot.line.line2d.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;t&quot;</span> <span class="ow">in</span> <span class="n">options</span><span class="p">:</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="n">RDF</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;t&quot;</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="mf">0.5</span>
+
+        <span class="k">return</span> <span class="n">line2d</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_v</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">t</span><span class="o">*</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_v</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_v</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_v</span><span class="p">[</span><span class="mi">0</span><span class="p">])],</span>
+            <span class="o">**</span><span class="n">options</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GraphicalPolygon.plot_points"><a class="viewcode-back" href="../../../graphical.html#flatsurf.graphical.polygon.GraphicalPolygon.plot_points">[docs]</a>    <span class="k">def</span> <span class="nf">plot_points</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Plot the points in the given collection of points.</span>
+
+<span class="sd">        The options are passed to point2d.</span>
+
+<span class="sd">        If no &quot;zorder&quot; option is provided then we set &quot;zorder&quot; to 50.</span>
+
+<span class="sd">        By default coordinates are taken in the underlying surface. Call with coordinates=&quot;graphical&quot;</span>
+<span class="sd">        to use graphical coordinates instead.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;zorder&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">options</span><span class="p">:</span>
+            <span class="n">options</span><span class="p">[</span><span class="s2">&quot;zorder&quot;</span><span class="p">]</span><span class="o">=</span><span class="mi">50</span>
+        <span class="k">if</span> <span class="s2">&quot;coordinates&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">options</span><span class="p">:</span>
+            <span class="n">points2</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">point</span><span class="p">)</span> <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="n">points</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">options</span><span class="p">[</span><span class="s2">&quot;coordinates&quot;</span><span class="p">]</span><span class="o">==</span><span class="s2">&quot;graphical&quot;</span><span class="p">:</span>
+            <span class="n">points2</span><span class="o">=</span><span class="p">[</span><span class="n">V</span><span class="p">(</span><span class="n">point</span><span class="p">)</span> <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="n">points</span><span class="p">]</span>
+            <span class="k">del</span> <span class="n">options</span><span class="p">[</span><span class="s2">&quot;coordinates&quot;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid value of &#39;coordinates&#39; option&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">point2d</span><span class="p">(</span><span class="n">points</span><span class="o">=</span><span class="n">points2</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">)</span></div></div>
+   
+
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">sage-flatsurf 0.3 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">flatsurf.graphical.polygon</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2016-2021, Vincent Delecroix and Pat Hooper.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.4.
+    </div>
+  </body>
+</html>

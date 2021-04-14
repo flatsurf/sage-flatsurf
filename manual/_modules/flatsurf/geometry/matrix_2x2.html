@@ -1,0 +1,478 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>flatsurf.geometry.matrix_2x2 &#8212; sage-flatsurf 0.3 documentation</title>
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.css" />
+    
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/togglebutton.js"></script>
+    <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">sage-flatsurf 0.3 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">flatsurf.geometry.matrix_2x2</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for flatsurf.geometry.matrix_2x2</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Some tools for 2x2 matrices and planar geometry.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c1">######################################################################</span>
+<span class="c1">#  This file is part of sage-flatsurf.</span>
+<span class="c1">#</span>
+<span class="c1">#        Copyright (C) 2016-2020 Vincent Delecroix</span>
+<span class="c1">#                      2020      Julian Rüth</span>
+<span class="c1">#</span>
+<span class="c1">#  sage-flatsurf is free software: you can redistribute it and/or modify</span>
+<span class="c1">#  it under the terms of the GNU General Public License as published by</span>
+<span class="c1">#  the Free Software Foundation, either version 2 of the License, or</span>
+<span class="c1">#  (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1">#  sage-flatsurf is distributed in the hope that it will be useful,</span>
+<span class="c1">#  but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1">#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1">#  GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1">#  You should have received a copy of the GNU General Public License</span>
+<span class="c1">#  along with sage-flatsurf. If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
+<span class="c1">######################################################################</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span><span class="p">,</span> <span class="n">print_function</span><span class="p">,</span> <span class="n">division</span>
+<span class="kn">from</span> <span class="nn">six.moves</span> <span class="kn">import</span> <span class="nb">range</span><span class="p">,</span> <span class="nb">map</span><span class="p">,</span> <span class="nb">filter</span><span class="p">,</span> <span class="nb">zip</span>
+
+<span class="kn">from</span> <span class="nn">sage.misc.cachefunc</span> <span class="kn">import</span> <span class="n">cached_function</span>
+
+<span class="kn">from</span> <span class="nn">sage.rings.all</span> <span class="kn">import</span> <span class="n">ZZ</span><span class="p">,</span> <span class="n">QQ</span><span class="p">,</span> <span class="n">AA</span><span class="p">,</span> <span class="n">QQbar</span><span class="p">,</span> <span class="n">RR</span><span class="p">,</span> <span class="n">CC</span><span class="p">,</span> <span class="n">RDF</span><span class="p">,</span> <span class="n">CDF</span><span class="p">,</span> <span class="n">RIF</span><span class="p">,</span> <span class="n">CIF</span>
+<span class="kn">from</span> <span class="nn">sage.rings.rational</span> <span class="kn">import</span> <span class="n">Rational</span>
+<span class="kn">from</span> <span class="nn">sage.rings.complex_interval_field</span> <span class="kn">import</span> <span class="n">ComplexIntervalField</span>
+
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">pi</span> <span class="k">as</span> <span class="n">pi_float</span>
+
+<span class="kn">from</span> <span class="nn">sage.symbolic.constants</span> <span class="kn">import</span> <span class="n">pi</span>
+<span class="kn">from</span> <span class="nn">sage.matrix.constructor</span> <span class="kn">import</span> <span class="n">matrix</span><span class="p">,</span> <span class="n">identity_matrix</span>
+<span class="kn">from</span> <span class="nn">sage.modules.free_module_element</span> <span class="kn">import</span> <span class="n">vector</span>
+
+<div class="viewcode-block" id="number_field_to_AA"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.matrix_2x2.number_field_to_AA">[docs]</a><span class="k">def</span> <span class="nf">number_field_to_AA</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    It is a mess to convert an element of a number field to the algebraic field</span>
+<span class="sd">    ``AA``. This is a temporary fix.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">AA</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">AA</span><span class="o">.</span><span class="n">polynomial_root</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">minpoly</span><span class="p">(),</span> <span class="n">RIF</span><span class="p">(</span><span class="n">a</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="is_similarity"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.matrix_2x2.is_similarity">[docs]</a><span class="k">def</span> <span class="nf">is_similarity</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return ``True`` if ``m`` is a similarity and ``False`` otherwise.</span>
+
+<span class="sd">    EXAMPLES::</span>
+
+<span class="sd">        sage: from flatsurf.geometry.matrix_2x2 import is_similarity</span>
+
+<span class="sd">        sage: is_similarity(matrix([[0,1],[1,0]]))</span>
+<span class="sd">        True</span>
+<span class="sd">        sage: is_similarity(matrix([[0,-2],[2,0]]))</span>
+<span class="sd">        True</span>
+<span class="sd">        sage: is_similarity(matrix([[1,1],[0,1]]))</span>
+<span class="sd">        False</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">m</span> <span class="o">*</span> <span class="n">m</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">is_zero</span><span class="p">()</span> <span class="ow">and</span> <span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">is_zero</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="homothety_rotation_decomposition"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.matrix_2x2.homothety_rotation_decomposition">[docs]</a><span class="k">def</span> <span class="nf">homothety_rotation_decomposition</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return a couple composed of the homothety and a rotation matrix.</span>
+
+<span class="sd">    The coefficients of the returned pair are either in the ground field of</span>
+<span class="sd">    ``m`` or in the algebraic field ``AA``.</span>
+
+<span class="sd">    EXAMPLES::</span>
+
+<span class="sd">        sage: from flatsurf.geometry.matrix_2x2 import homothety_rotation_decomposition</span>
+
+<span class="sd">        sage: R.&lt;x&gt; = PolynomialRing(QQ)</span>
+<span class="sd">        sage: K.&lt;sqrt2&gt; = NumberField(x^2 - 2, embedding=1.4142)</span>
+<span class="sd">        sage: m = matrix([[sqrt2, -sqrt2],[sqrt2,sqrt2]])</span>
+<span class="sd">        sage: a,rot = homothety_rotation_decomposition(m)</span>
+<span class="sd">        sage: a</span>
+<span class="sd">        2</span>
+<span class="sd">        sage: rot</span>
+<span class="sd">        [ 1/2*sqrt2 -1/2*sqrt2]</span>
+<span class="sd">        [ 1/2*sqrt2  1/2*sqrt2]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">is_similarity</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;the matrix must be a similarity&quot;</span><span class="p">)</span>
+
+    <span class="n">det</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">det</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">det</span><span class="o">.</span><span class="n">is_square</span><span class="p">():</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">AA</span><span class="o">.</span><span class="n">has_coerce_map_from</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()):</span>
+            <span class="n">l</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="n">number_field_to_AA</span><span class="p">,</span><span class="n">m</span><span class="o">.</span><span class="n">list</span><span class="p">())</span>
+            <span class="n">M</span> <span class="o">=</span> <span class="n">MatrixSpace</span><span class="p">(</span><span class="n">AA</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+            <span class="n">m</span> <span class="o">=</span> <span class="n">M</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">m</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">change_ring</span><span class="p">(</span><span class="n">AA</span><span class="p">)</span>
+
+    <span class="n">sqrt_det</span> <span class="o">=</span> <span class="n">det</span><span class="o">.</span><span class="n">sqrt</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">sqrt_det</span><span class="p">,</span> <span class="n">m</span> <span class="o">/</span> <span class="n">sqrt_det</span></div>
+
+<div class="viewcode-block" id="similarity_from_vectors"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.matrix_2x2.similarity_from_vectors">[docs]</a><span class="k">def</span> <span class="nf">similarity_from_vectors</span><span class="p">(</span><span class="n">u</span><span class="p">,</span><span class="n">v</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the unique similarity matrix that maps ``u`` to ``v``.</span>
+
+<span class="sd">    EXAMPLES::</span>
+
+<span class="sd">        sage: from flatsurf.geometry.matrix_2x2 import similarity_from_vectors</span>
+
+<span class="sd">        sage: V = VectorSpace(QQ,2)</span>
+<span class="sd">        sage: u = V((1,0))</span>
+<span class="sd">        sage: v = V((0,1))</span>
+<span class="sd">        sage: m = similarity_from_vectors(u,v); m</span>
+<span class="sd">        [ 0 -1]</span>
+<span class="sd">        [ 1  0]</span>
+<span class="sd">        sage: m*u == v</span>
+<span class="sd">        True</span>
+
+<span class="sd">        sage: u = V((2,1))</span>
+<span class="sd">        sage: v = V((1,-2))</span>
+<span class="sd">        sage: m = similarity_from_vectors(u,v); m</span>
+<span class="sd">        [ 0  1]</span>
+<span class="sd">        [-1  0]</span>
+<span class="sd">        sage: m * u == v</span>
+<span class="sd">        True</span>
+
+<span class="sd">    An example built from the Pythagorean triple 3^2 + 4^2 = 5^2::</span>
+
+<span class="sd">        sage: u2 = V((5,0))</span>
+<span class="sd">        sage: v2 = V((3,4))</span>
+<span class="sd">        sage: m = similarity_from_vectors(u2,v2); m</span>
+<span class="sd">        [ 3/5 -4/5]</span>
+<span class="sd">        [ 4/5  3/5]</span>
+<span class="sd">        sage: m * u2 == v2</span>
+<span class="sd">        True</span>
+
+<span class="sd">    Some test over number fields::</span>
+
+<span class="sd">        sage: K.&lt;sqrt2&gt; = NumberField(x^2-2, embedding=1.4142)</span>
+<span class="sd">        sage: V = VectorSpace(K,2)</span>
+<span class="sd">        sage: u = V((sqrt2,0))</span>
+<span class="sd">        sage: v = V((1, 1))</span>
+<span class="sd">        sage: m = similarity_from_vectors(u,v); m</span>
+<span class="sd">        [ 1/2*sqrt2 -1/2*sqrt2]</span>
+<span class="sd">        [ 1/2*sqrt2  1/2*sqrt2]</span>
+<span class="sd">        sage: m*u == v</span>
+<span class="sd">        True</span>
+
+<span class="sd">        sage: m = similarity_from_vectors(u, 2*v); m</span>
+<span class="sd">        [ sqrt2 -sqrt2]</span>
+<span class="sd">        [ sqrt2  sqrt2]</span>
+<span class="sd">        sage: m*u == 2*v</span>
+<span class="sd">        True</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="n">u</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span> <span class="ow">is</span> <span class="n">v</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">u</span> <span class="o">==</span> <span class="n">v</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">identity_matrix</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span> <span class="n">n</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="n">sqnorm_u</span> <span class="o">=</span> <span class="n">u</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">u</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">u</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">u</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="c1"># Editted by Pat to remove worry about subfield...</span>
+    <span class="c1">#sqnorm_v = v[0]*v[0] + v[1]*v[1]</span>
+
+    <span class="c1">#if sqnorm_u != sqnorm_v:</span>
+    <span class="c1">#    r = sqnorm_u / sqnorm_v</span>
+    <span class="c1">#    if not r.is_square():</span>
+    <span class="c1">#        raise ValueError(&quot;there is no similarity in the ground field; consider a suitable field extension. Note: u=&quot;+str(u)+&quot; and v=&quot;+str(v)+&quot;.&quot;)</span>
+    <span class="c1">#    sqrt_r = r.sqrt()</span>
+    <span class="c1">#else:</span>
+    <span class="c1">#    sqrt_r = 1</span>
+
+    <span class="c1">#vv = sqrt_r * v</span>
+
+    <span class="c1">#cos_uv = (u[0]*vv[0] + u[1]*vv[1]) / sqnorm_u</span>
+    <span class="c1">#sin_uv = (u[0]*vv[1] - u[1]*vv[0]) / sqnorm_u</span>
+    <span class="c1"># return 1/sqrt_r * matrix([[cos_uv, -sin_uv],[sin_uv, cos_uv]])</span>
+
+    <span class="n">cos_uv</span> <span class="o">=</span> <span class="p">(</span><span class="n">u</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">u</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="n">sqnorm_u</span>
+    <span class="n">sin_uv</span> <span class="o">=</span> <span class="p">(</span><span class="n">u</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">u</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="n">sqnorm_u</span>
+    <span class="k">return</span> <span class="n">matrix</span><span class="p">([[</span><span class="n">cos_uv</span><span class="p">,</span> <span class="o">-</span><span class="n">sin_uv</span><span class="p">],[</span><span class="n">sin_uv</span><span class="p">,</span> <span class="n">cos_uv</span><span class="p">]])</span></div>
+
+
+<div class="viewcode-block" id="rotation_matrix_angle"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.matrix_2x2.rotation_matrix_angle">[docs]</a><span class="k">def</span> <span class="nf">rotation_matrix_angle</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the angle of the rotation matrix ``r`` divided by ``2 pi``.</span>
+
+<span class="sd">    EXAMPLES::</span>
+
+<span class="sd">        sage: from flatsurf.geometry.matrix_2x2 import rotation_matrix_angle</span>
+
+<span class="sd">        sage: def rot_matrix(p, q):</span>
+<span class="sd">        ....:     z = QQbar.zeta(q) ** p</span>
+<span class="sd">        ....:     c = z.real()</span>
+<span class="sd">        ....:     s = z.imag()</span>
+<span class="sd">        ....:     return matrix(AA, 2, [c,-s,s,c])</span>
+<span class="sd">        sage: [rotation_matrix_angle(rot_matrix(i, 5)) for i in range(1,5)]</span>
+<span class="sd">        [1/5, 2/5, 3/5, 4/5]</span>
+<span class="sd">        sage: [rotation_matrix_angle(rot_matrix(i,7)) for i in range(1,7)]</span>
+<span class="sd">        [1/7, 2/7, 3/7, 4/7, 5/7, 6/7]</span>
+
+<span class="sd">    Some random tests::</span>
+
+<span class="sd">        sage: for _ in range(100):</span>
+<span class="sd">        ....:     r = QQ.random_element(x=0,y=500)</span>
+<span class="sd">        ....:     r -= r.floor()</span>
+<span class="sd">        ....:     m = rot_matrix(r.numerator(), r.denominator())</span>
+<span class="sd">        ....:     assert rotation_matrix_angle(m) == r</span>
+
+<span class="sd">    .. NOTE::</span>
+
+<span class="sd">        This is using floating point arithmetic and might be wrong.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">e0</span><span class="p">,</span><span class="n">e1</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">change_ring</span><span class="p">(</span><span class="n">CDF</span><span class="p">)</span><span class="o">.</span><span class="n">eigenvalues</span><span class="p">()</span>
+    <span class="n">m0</span> <span class="o">=</span> <span class="p">(</span><span class="n">e0</span><span class="o">.</span><span class="n">log</span><span class="p">()</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">CDF</span><span class="o">.</span><span class="n">pi</span><span class="p">())</span><span class="o">.</span><span class="n">imag</span><span class="p">()</span>
+    <span class="n">m1</span> <span class="o">=</span> <span class="p">(</span><span class="n">e1</span><span class="o">.</span><span class="n">log</span><span class="p">()</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">CDF</span><span class="o">.</span><span class="n">pi</span><span class="p">())</span><span class="o">.</span><span class="n">imag</span><span class="p">()</span>
+    <span class="n">r0</span> <span class="o">=</span> <span class="n">RR</span><span class="p">(</span><span class="n">m0</span><span class="p">)</span><span class="o">.</span><span class="n">nearby_rational</span><span class="p">(</span><span class="n">max_denominator</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span>
+    <span class="n">r1</span> <span class="o">=</span> <span class="n">RR</span><span class="p">(</span><span class="n">m1</span><span class="p">)</span><span class="o">.</span><span class="n">nearby_rational</span><span class="p">(</span><span class="n">max_denominator</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">r0</span> <span class="o">!=</span> <span class="o">-</span><span class="n">r1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span>
+    <span class="n">r0</span> <span class="o">=</span> <span class="n">r0</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">QQ</span><span class="o">.</span><span class="n">one</span><span class="p">()</span> <span class="o">-</span> <span class="n">r0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">r0</span>
+
+    <span class="k">if</span> <span class="n">check</span><span class="p">:</span>
+        <span class="n">e</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">change_ring</span><span class="p">(</span><span class="n">AA</span><span class="p">)</span><span class="o">.</span><span class="n">eigenvalues</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">minpoly</span><span class="p">()</span> <span class="o">!=</span> <span class="n">ZZ</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">cyclotomic_polynomial</span><span class="p">()(</span><span class="n">r</span><span class="o">.</span><span class="n">denominator</span><span class="p">()):</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="n">QQbar</span><span class="o">.</span><span class="n">zeta</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">denominator</span><span class="p">())</span>
+        <span class="k">if</span> <span class="n">z</span><span class="o">**</span><span class="n">r</span><span class="o">.</span><span class="n">numerator</span><span class="p">()</span> <span class="o">!=</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span>
+
+    <span class="k">return</span> <span class="n">r</span></div>
+
+
+<div class="viewcode-block" id="is_cosine_sine_of_rational"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.matrix_2x2.is_cosine_sine_of_rational">[docs]</a><span class="k">def</span> <span class="nf">is_cosine_sine_of_rational</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">s</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check whether the given pair is a cosine and sine of a same rational angle.</span>
+
+<span class="sd">    EXAMPLES::</span>
+
+<span class="sd">        sage: from flatsurf.geometry.matrix_2x2 import is_cosine_sine_of_rational</span>
+
+<span class="sd">        sage: c = s = AA(sqrt(2))/2</span>
+<span class="sd">        sage: is_cosine_sine_of_rational(c,s)</span>
+<span class="sd">        True</span>
+<span class="sd">        sage: c = AA(sqrt(3))/2; s = AA(1/2)</span>
+<span class="sd">        sage: is_cosine_sine_of_rational(c,s)</span>
+<span class="sd">        True</span>
+
+<span class="sd">        sage: c = AA(sqrt(5)/2); s = (1 - c**2).sqrt()</span>
+<span class="sd">        sage: c**2 + s**2</span>
+<span class="sd">        1.000000000000000?</span>
+<span class="sd">        sage: is_cosine_sine_of_rational(c,s)</span>
+<span class="sd">        False</span>
+
+<span class="sd">        sage: c = (AA(sqrt(5)) + 1)/4; s = (1 - c**2).sqrt()</span>
+<span class="sd">        sage: is_cosine_sine_of_rational(c,s)</span>
+<span class="sd">        True</span>
+
+<span class="sd">        sage: K.&lt;sqrt2&gt; = NumberField(x**2 - 2, embedding=1.414)</span>
+<span class="sd">        sage: is_cosine_sine_of_rational(K.zero(),-K.one())</span>
+<span class="sd">        True</span>
+
+<span class="sd">    TESTS::</span>
+
+<span class="sd">        sage: from pyexactreal import ExactReals # optional: exactreal</span>
+<span class="sd">        sage: R = ExactReals() # optional: exactreal</span>
+<span class="sd">        sage: is_cosine_sine_of_rational(R.one(), R.zero()) # optional: exactreal</span>
+<span class="sd">        True</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">QQbar</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="o">+</span> <span class="n">QQbar</span><span class="o">.</span><span class="n">gen</span><span class="p">()</span> <span class="o">*</span> <span class="n">QQbar</span><span class="p">(</span><span class="n">s</span><span class="p">))</span><span class="o">.</span><span class="n">minpoly</span><span class="p">()</span><span class="o">.</span><span class="n">is_cyclotomic</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="angle"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.matrix_2x2.angle">[docs]</a><span class="k">def</span> <span class="nf">angle</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">numerical</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">assume_rational</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the angle between the vectors ``u`` and ``v`` divided by `2 \pi`.</span>
+
+<span class="sd">    INPUT:</span>
+
+<span class="sd">    - ``u``, ``v`` - vectors</span>
+
+<span class="sd">    - ``numerical`` - boolean, whether to return floating point numbers</span>
+
+<span class="sd">    - ``assume_rational`` - whether we assume that the angle is a multiple</span>
+<span class="sd">      rational of ``pi``. By default it is ``False`` but if it is known in</span>
+<span class="sd">      advance that the result is rational then setting it to ``True`` might be</span>
+<span class="sd">      much faster.</span>
+
+<span class="sd">    EXAMPLES::</span>
+
+<span class="sd">        sage: from flatsurf.geometry.matrix_2x2 import angle</span>
+
+<span class="sd">    As the implementation is dirty, we at least check that it works for all</span>
+<span class="sd">    denominator up to 20::</span>
+
+<span class="sd">        sage: u = vector((AA(1),AA(0)))</span>
+<span class="sd">        sage: for n in xsrange(1,20):       # long time  (10 sec)</span>
+<span class="sd">        ....:     for k in xsrange(1,n):</span>
+<span class="sd">        ....:         v = vector((AA(cos(2*k*pi/n)), AA(sin(2*k*pi/n))))</span>
+<span class="sd">        ....:         assert angle(u,v) == k/n</span>
+
+<span class="sd">    The numerical version (working over floating point numbers)::</span>
+
+<span class="sd">        sage: import math</span>
+<span class="sd">        sage: u = (1, 0)</span>
+<span class="sd">        sage: for n in xsrange(1,20):</span>
+<span class="sd">        ....:     for k in xsrange(1,n):</span>
+<span class="sd">        ....:         a = 2 * k * math.pi / n</span>
+<span class="sd">        ....:         v = (math.cos(a), math.sin(a))</span>
+<span class="sd">        ....:         assert abs(angle(u,v,numerical=True) * 2 * math.pi - a) &lt; 1.e-10</span>
+
+<span class="sd">    And we test up to 50 when setting ``assume_rational`` to ``True``::</span>
+
+<span class="sd">        sage: for n in xsrange(1,20):       # long time</span>
+<span class="sd">        ....:     for k in xsrange(1,n):</span>
+<span class="sd">        ....:         v = vector((AA(cos(2*k*pi/n)), AA(sin(2*k*pi/n))))</span>
+<span class="sd">        ....:         assert angle(u,v,assume_rational=True) == k/n</span>
+
+<span class="sd">    If the angle is not rational, then the method returns an element in the real</span>
+<span class="sd">    lazy field::</span>
+
+<span class="sd">        sage: v = vector((AA(sqrt(2)), AA(sqrt(3))))</span>
+<span class="sd">        sage: a = angle(u, v)</span>
+<span class="sd">        sage: a    # abs tol 1e-14</span>
+<span class="sd">        0.14102355421224375</span>
+<span class="sd">        sage: exp(2*pi.n()*CC(0,1)*a)</span>
+<span class="sd">        0.632455532033676 + 0.774596669241483*I</span>
+<span class="sd">        sage: v / v.norm()</span>
+<span class="sd">        (0.6324555320336758?, 0.774596669241484?)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">assume_rational</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">numerical</span><span class="p">:</span>
+        <span class="n">sqnorm_u</span> <span class="o">=</span> <span class="n">u</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">u</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">u</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">u</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">sqnorm_v</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">sqnorm_u</span> <span class="o">!=</span> <span class="n">sqnorm_v</span><span class="p">:</span>
+            <span class="n">uu</span> <span class="o">=</span> <span class="n">vector</span><span class="p">(</span><span class="n">AA</span><span class="p">,</span> <span class="n">u</span><span class="p">)</span>
+            <span class="n">vv</span> <span class="o">=</span> <span class="p">(</span><span class="n">AA</span><span class="p">(</span><span class="n">sqnorm_u</span><span class="p">)</span> <span class="o">/</span> <span class="n">AA</span><span class="p">(</span><span class="n">sqnorm_v</span><span class="p">))</span><span class="o">.</span><span class="n">sqrt</span><span class="p">()</span> <span class="o">*</span> <span class="n">vector</span><span class="p">(</span><span class="n">AA</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">uu</span> <span class="o">=</span> <span class="n">u</span>
+            <span class="n">vv</span> <span class="o">=</span> <span class="n">v</span>
+
+        <span class="n">cos_uv</span> <span class="o">=</span> <span class="p">(</span><span class="n">uu</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">vv</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">uu</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">vv</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="n">sqnorm_u</span>
+        <span class="n">sin_uv</span> <span class="o">=</span> <span class="p">(</span><span class="n">uu</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">vv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">uu</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">vv</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="n">sqnorm_u</span>
+
+        <span class="n">is_rational</span> <span class="o">=</span> <span class="n">is_cosine_sine_of_rational</span><span class="p">(</span><span class="n">cos_uv</span><span class="p">,</span> <span class="n">sin_uv</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">assume_rational</span><span class="p">:</span>
+        <span class="n">is_rational</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="kn">import</span> <span class="nn">math</span>
+
+    <span class="n">u0</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">u</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span> <span class="n">u1</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">u</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">v0</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span> <span class="n">v1</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="n">cos_uv</span> <span class="o">=</span> <span class="p">(</span><span class="n">u0</span><span class="o">*</span><span class="n">v0</span> <span class="o">+</span> <span class="n">u1</span><span class="o">*</span><span class="n">v1</span><span class="p">)</span> <span class="o">/</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">u0</span><span class="o">*</span><span class="n">u0</span> <span class="o">+</span> <span class="n">u1</span><span class="o">*</span><span class="n">u1</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">v0</span><span class="o">*</span><span class="n">v0</span> <span class="o">+</span> <span class="n">v1</span><span class="o">*</span><span class="n">v1</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">cos_uv</span> <span class="o">&lt;</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="n">cos_uv</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mf">1.0000001</span>
+        <span class="n">cos_uv</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span>
+    <span class="k">elif</span> <span class="n">cos_uv</span> <span class="o">&gt;</span> <span class="mf">1.0</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="n">cos_uv</span> <span class="o">&lt;</span> <span class="mf">1.0000001</span>
+        <span class="n">cos_uv</span> <span class="o">=</span> <span class="mf">1.0</span>
+    <span class="n">angle</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">acos</span><span class="p">(</span><span class="n">cos_uv</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>   <span class="c1"># rat number between 0 and 1/2</span>
+
+    <span class="k">if</span> <span class="n">numerical</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">is_rational</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="n">angle</span> <span class="k">if</span> <span class="n">u0</span> <span class="o">*</span> <span class="n">v1</span> <span class="o">-</span> <span class="n">u1</span><span class="o">*</span><span class="n">v0</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">angle</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># fast and dirty way using floating point approximation</span>
+        <span class="c1"># (see below for a slow but exact method)</span>
+        <span class="n">angle_rat</span> <span class="o">=</span> <span class="n">RR</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span><span class="o">.</span><span class="n">nearby_rational</span><span class="p">(</span><span class="mf">0.00000001</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">angle_rat</span><span class="o">.</span><span class="n">denominator</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">100</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;the numerical method used is not smart enough!&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">angle_rat</span> <span class="k">if</span> <span class="n">u0</span><span class="o">*</span><span class="n">v1</span> <span class="o">-</span> <span class="n">u1</span><span class="o">*</span><span class="n">v0</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">angle_rat</span></div>
+
+        <span class="c1"># a neater way is provided below by working only with number fields</span>
+        <span class="c1"># but this method is slower...</span>
+        <span class="c1">#sqnorm_u = u[0]*u[0] + u[1]*u[1]</span>
+        <span class="c1">#sqnorm_v = v[0]*v[0] + v[1]*v[1]</span>
+        <span class="c1">#</span>
+        <span class="c1">#if sqnorm_u != sqnorm_v:</span>
+        <span class="c1">#    # we need to take a square root in order that u and v have the</span>
+        <span class="c1">#    # same norm</span>
+        <span class="c1">#    u = (1 / AA(sqnorm_u)).sqrt() * u.change_ring(AA)</span>
+        <span class="c1">#    v = (1 / AA(sqnorm_v)).sqrt() * v.change_ring(AA)</span>
+        <span class="c1">#    sqnorm_u = AA.one()</span>
+        <span class="c1">#    sqnorm_v = AA.one()</span>
+        <span class="c1">#</span>
+        <span class="c1">#cos_uv = (u[0]*v[0] + u[1]*v[1]) / sqnorm_u</span>
+        <span class="c1">#sin_uv = (u[0]*v[1] - u[1]*v[0]) / sqnorm_u</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">sage-flatsurf 0.3 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">flatsurf.geometry.matrix_2x2</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2016-2021, Vincent Delecroix and Pat Hooper.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.4.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,222 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Siegel-Veech Constants &#8212; sage-flatsurf 0.3 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/togglebutton.js"></script>
+    <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Straight-line flow" href="straight_line_flow.html" />
+    <link rel="prev" title="Saddle Connection Demo" href="saddle_connections.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="straight_line_flow.html" title="Straight-line flow"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="saddle_connections.html" title="Saddle Connection Demo"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">sage-flatsurf 0.3 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../examples.html" accesskey="U">Examples</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Siegel-Veech Constants</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="siegel-veech-constants">
+<h1>Siegel-Veech Constants<a class="headerlink" href="#siegel-veech-constants" title="Permalink to this headline">¶</a></h1>
+<p>We count the number of cylinders of circumference at most <span class="math notranslate nohighlight">\(L\)</span> in a surface.</p>
+<p>We start by creating a surface with <a class="reference external" href="https://github.com/flatsurf/sage-flatsurf">sage-flatsurf</a>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">mcmullen_L</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">ModuleNotFoundError</span><span class="g g-Whitespace">                       </span>Traceback (most recent call last)
+<span class="o">&lt;</span><span class="n">ipython</span><span class="o">-</span><span class="nb">input</span><span class="o">-</span><span class="mi">1</span><span class="o">-</span><span class="mi">2</span><span class="n">b15310059f1</span><span class="o">&gt;</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">mcmullen_L</span><span class="p">(</span><span class="n">Integer</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">Integer</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">Integer</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">Integer</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+
+<span class="ne">ModuleNotFoundError</span>: No module named &#39;flatsurf&#39;
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">S</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Decomposition of a surface into cylinders is implemented in <a class="reference external" href="https://github.com/flatsurf/flatsurf">pyflatsurf</a>. We triangulate our surface and make sure that its vertices are singularities.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flatsurf.geometry.pyflatsurf_conversion</span> <span class="kn">import</span> <span class="n">to_pyflatsurf</span>
+<span class="n">S</span> <span class="o">=</span> <span class="n">to_pyflatsurf</span><span class="p">(</span><span class="n">S</span><span class="p">)</span>
+<span class="n">S</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">eliminateMarkedPoints</span><span class="p">()</span><span class="o">.</span><span class="n">surface</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We will iterate over all directions coming from saddle connections of length at most L (ignoring connections that have the same slope.)</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">L</span> <span class="o">=</span> <span class="mi">16</span><span class="n">R</span>
+
+<span class="n">directions</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">connections</span><span class="p">()</span><span class="o">.</span><span class="n">bound</span><span class="p">(</span><span class="n">L</span><span class="p">)</span><span class="o">.</span><span class="n">slopes</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>For each direction we want to compute a decomposition into cylinders and minimal components. Note that sometimes our algorithm cannot decide whether a component is minimal. However, this is not an issue here: we can stop the decomposition process when a component has become so stretched out that it has no hope of producing a cylinder of circumference <span class="math notranslate nohighlight">\(≤L\)</span> anymore.</p>
+<p>Here we define the target of the decomposition, i.e., a predicate that determines when a decomposition of a component can be stopped:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">target</span><span class="p">(</span><span class="n">component</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">component</span><span class="o">.</span><span class="n">cylinder</span><span class="p">():</span>
+        <span class="c1"># This component is a cylinder. No further decomposition needed.</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">if</span> <span class="n">component</span><span class="o">.</span><span class="n">withoutPeriodicTrajectory</span><span class="p">():</span>
+        <span class="c1"># This component is minimal. Further decomposition will not produce any cylinders.</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="n">height</span> <span class="o">=</span> <span class="n">component</span><span class="o">.</span><span class="n">height</span><span class="p">()</span>
+    
+    <span class="c1"># This height bounds the size of any cylinder. However, it is stretched by the length of the vector</span>
+    <span class="c1"># defining the vertical direction. (That vector is not normalized because that is hard to do in</span>
+    <span class="c1"># general rings…)</span>
+    <span class="n">bound</span> <span class="o">=</span> <span class="p">(</span><span class="n">height</span> <span class="o">*</span> <span class="n">height</span><span class="p">)</span> <span class="o">/</span> <span class="n">pyflatsurf</span><span class="o">.</span><span class="n">flatsurf</span><span class="o">.</span><span class="n">Bound</span><span class="o">.</span><span class="n">upper</span><span class="p">(</span><span class="n">vertical</span><span class="o">.</span><span class="n">vertical</span><span class="p">())</span><span class="o">.</span><span class="n">squared</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">bound</span> <span class="o">&gt;</span> <span class="n">L</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Now we perform the actual decomposition and collect the cylinders of circumference <span class="math notranslate nohighlight">\(≤L\)</span>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">circumferences</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="k">for</span> <span class="n">direction</span> <span class="ow">in</span> <span class="n">directions</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">pyflatsurf</span> <span class="kn">import</span> <span class="n">flatsurf</span>
+    <span class="n">decomposition</span> <span class="o">=</span> <span class="n">flatsurf</span><span class="o">.</span><span class="n">makeFlowDecomposition</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">direction</span><span class="o">.</span><span class="n">vector</span><span class="p">())</span>
+    <span class="n">decomposition</span><span class="o">.</span><span class="n">decompose</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">component</span> <span class="ow">in</span> <span class="n">decomposition</span><span class="o">.</span><span class="n">components</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">component</span><span class="o">.</span><span class="n">cylinder</span><span class="p">():</span>
+            <span class="n">circumference</span> <span class="o">=</span> <span class="n">component</span><span class="o">.</span><span class="n">circumferenceHolonomy</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">circumference</span> <span class="o">&gt;</span> <span class="n">L</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">circumferences</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">circumference</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We will plot a histogram of all the cylinders that we found ordered by their length. It would be easy to plot this differently, weighted by the area, …</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">lengths</span> <span class="o">=</span> <span class="p">[</span><span class="n">sqrt</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">x</span><span class="p">())</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="nb">float</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">y</span><span class="p">())</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">circumferences</span><span class="p">]</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plot</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">lengths</span><span class="p">)</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">L</span><span class="p">)</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">circumferences</span><span class="p">)</span><span class="si">}</span><span class="s2"> cylinders with length at most </span><span class="si">{</span><span class="n">L</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Length&#39;</span><span class="p">)</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Count&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="saddle_connections.html"
+                        title="previous chapter">Saddle Connection Demo</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="straight_line_flow.html"
+                        title="next chapter">Straight-line flow</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/examples/siegel_veech.md.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="straight_line_flow.html" title="Straight-line flow"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="saddle_connections.html" title="Saddle Connection Demo"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">sage-flatsurf 0.3 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../examples.html" >Examples</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Siegel-Veech Constants</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2016-2021, Vincent Delecroix and Pat Hooper.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.4.
+    </div>
+  </body>
+</html>
