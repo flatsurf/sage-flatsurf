@@ -14,6 +14,7 @@ Contents:
    walk_through
    geometry
    graphical
+   examples
 
 
 Indices and tables

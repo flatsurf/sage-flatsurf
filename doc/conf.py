@@ -35,6 +35,7 @@ extensions = [
     'sphinx.ext.todo',
     'sphinx.ext.mathjax',
     'sphinx.ext.viewcode',
+    'myst_nb',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -51,7 +52,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'sage-flatsurf'
-copyright = u'2016, Vincent Delecroix and Pat Hooper'
+copyright = u'2016-2021, Vincent Delecroix and Pat Hooper'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

@@ -1,0 +1,12 @@
+# This file lists the optional dependencies needed to test all of sage-flatsurf.
+# Add these to your existing environment with
+# conda env update -f environment.extra.yml
+name: sage-flatsurf-build
+channels:
+  - flatsurf
+  - conda-forge
+  - defaults
+dependencies:
+  - pyeantic>=1.0.0rc11,<2
+  - pyexactreal>=1.5.1,<2
+  - pyflatsurf>=3.0.0,<4
