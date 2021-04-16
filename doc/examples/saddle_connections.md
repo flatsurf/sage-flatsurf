@@ -50,7 +50,7 @@ s.plot()
 
 +++ {"deletable": true, "editable": true}
 
-We get a list of all saddle connections of length less than $\sqrt{100}$.
+We get a list of all saddle connections of length less than 10.
 
 ```{code-cell} ipython3
 ---
@@ -59,7 +59,7 @@ editable: true
 jupyter:
   outputs_hidden: false
 ---
-sc_list = s.saddle_connections(100)
+sc_list = s.saddle_connections(10)
 len(sc_list)
 ```
 
