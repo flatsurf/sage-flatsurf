@@ -39,17 +39,11 @@ Links
 
 * Development website: https://github.com/flatsurf/sage-flatsurf/
 
-Installing the dependency
--------------------------
+Dependencies
+------------
 
-sage-flatsurf depends on the `surface_dynamics`_ package, which is
-distributed on PyPI and can be installed with the following command::
-
-    $ sage --pip install surface_dynamics [--user] [--upgrade]
-
-The options ``--user`` and ``--upgrade`` are optional; ``--user`` is to
-perform the installation in your user home instead of in the Sage sources;
-``--upgrade`` is to upgrade the package in case it is already installed.
+- `surface_dynamics`_
+- (optional) `libflatsurf`_
 
 Installing the package
 ----------------------
@@ -104,9 +98,6 @@ files in the module just do::
 
     $ sage -t --force-lib flatsurf
 
-Tests on the master branch are automatically run through
-`Travis-CI <https://travis-ci.org/github/flatsurf/sage-flatsurf>`_.
-
 Related projects
 ----------------
 
@@ -121,11 +112,15 @@ There are several related projects
 * `libflatsurf`_: (C++ library with Python interface) computing GL(2,R)-orbit
   closures of translation surfaces
 
-Primary Contributors
---------------------
+* `curver`_ (Python module): computation in the curve complex and the mapping
+  class group
+
+Contributors
+------------
 
 * Vincent Delecroix (Bordeaux)
 * Pat Hooper (City College of New York and CUNY Graduate Center)
+* Julian Rüth
 
 We welcome others to contribute.
 
@@ -148,3 +143,4 @@ Acknowledgements
 .. _libflatsurf: https://github.com/flatsurf/flatsurf
 .. _e-antic: https://github.com/flatsurf/e-antic
 .. _exact-real: https://github.com/flatsurf/exact-real
+.. _curver: https://github.com/MarkCBell/curver
