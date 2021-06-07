@@ -2387,6 +2387,27 @@ class SimilaritySurface(SageObject):
             H_6(10)
             H_6(2^5)
             H_8(12, 2)
+
+        TESTS:
+
+        Verify that https://github.com/flatsurf/flatsurf/issues/263 has been resolved::
+
+            sage: from flatsurf import EquiangularPolygons, similarity_surfaces
+            sage: E = EquiangularPolygons((10, 8, 3, 1, 1, 1))
+            sage: P = E((1, 1, 2, 4), normalized=True)
+            sage: B = similarity_surfaces.billiard(P, rational=True)
+            sage: S = B.minimal_cover(cover_type="translation")
+            sage: S = S.erase_marked_points() # optional: pyflatsurf
+
+        ::
+
+            sage: from flatsurf import EquiangularPolygons, similarity_surfaces
+            sage: E = EquiangularPolygons((10, 7, 2, 2, 2, 1))
+            sage: P = E((1, 1, 2, 3), normalized=True)
+            sage: B = similarity_surfaces.billiard(P, rational=True)
+            sage: S_mp = B.minimal_cover(cover_type="translation")
+            sage: S = S_mp.erase_marked_points() # optional: pyflatsurf
+
         """
         from .pyflatsurf_conversion import from_pyflatsurf, to_pyflatsurf
         S = to_pyflatsurf(self)
