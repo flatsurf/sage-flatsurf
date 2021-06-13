@@ -429,7 +429,6 @@ def triangulate(vertices):
         sage: for i in range(len(poly)):
         ....:     _ = triangulate(poly[i:] + poly[:i])
 
-
         sage: x = polygen(QQ)
         sage: p = x^4 - 5*x^2 + 5
         sage: r = AA.polynomial_root(p, RIF(1.17,1.18))
@@ -448,12 +447,36 @@ def triangulate(vertices):
         sage: poly = list(map(V, poly))
         sage: triangulate(poly)
         [(0, 3), (1, 3), (3, 5), (5, 7), (7, 9), (9, 3), (3, 7)]
+
+        sage: z = QQbar.zeta(24)
+        sage: pts = [(1+i%2) * z**i for i in range(24)]
+        sage: pts = [vector(AA, (x.real(), x.imag())) for x in pts]
+        sage: triangulate(pts)
+        [(0, 2), ..., (16, 0)]
+
+    TESTS:
+
+    This is https://github.com/flatsurf/sage-flatsurf/issues/87 ::
+
+        sage: from flatsurf.geometry.polygon import triangulate
+        sage: x = polygen(QQ)
+        sage: K.<c> = NumberField(x^2 - 3, embedding=AA(3).sqrt())
+        sage: pts = [(0, 0), (1, 0), (1/2*c + 1, -1/2), (c + 1, 0), (-3/2*c + 1, 5/2), (0, c - 2)]
+        sage: pts = [vector(K, v) for v in pts]
+        sage: triangulate(pts)
+        [(0, 4), (1, 3), (4, 1)]
     """
+
     n = len(vertices)
     if n < 3:
         raise ValueError
     if n == 3:
         return []
+
+    # NOTE: The algorithm is naive. We look at all possible chords between
+    # the i-th and j-th vertices. If the chord does not intersect any edge
+    # then we cut the polygon along this edge and call recursively
+    # triangulate on the two pieces.
     for i in range(n - 1):
         eiright = vertices[(i+1)%n] - vertices[i]
         eileft = vertices[(i-1)%n] - vertices[i]
@@ -472,15 +495,13 @@ def triangulate(vertices):
             good = True
             for k in range(n):
                 f = (vertices[k], vertices[(k+1)%n])
-                if k == (i - 1) % n or k == i or \
-                   k == (j - 1) % n or k == j:
-                       assert segment_intersect(e, f) == 1
-                       continue
                 res = segment_intersect(e, f)
-                if res:
-                    assert res == 2
+                if res == 2:
                     good = False
                     break
+                elif res == 1:
+                    assert k == (i - 1) % n or k == i or k == (j - 1) % n or k == j
+
             if good:
                 part0 = [(s+i, t+i) for s,t in triangulate(vertices[i:j+1])]
                 part1 = []
