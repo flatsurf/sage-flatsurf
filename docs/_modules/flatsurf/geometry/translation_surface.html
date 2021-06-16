@@ -129,9 +129,10 @@
 
 <div class="viewcode-block" id="TranslationSurface.standardize_polygons"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.translation_surface.TranslationSurface.standardize_polygons">[docs]</a>    <span class="k">def</span> <span class="nf">standardize_polygons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Replaces each polygon with a combinatorially rotated polygons (i.e., with</span>
-<span class="sd">        reindexed vertices) so that all vertices of the polygon lie in the upper half plane,</span>
-<span class="sd">        or in the x-axis with non-negative x-coordinate.</span>
+<span class="sd">        Replaces each polygon with a polygon with a new polygon which differs by translation</span>
+<span class="sd">        and reindexing. The new polygon will have the property that vertex zero is the origin,</span>
+<span class="sd">        and all vertices lie either in the upper half plane, or on the x-axis with non-negative</span>
+<span class="sd">        x-coordinate.</span>
 
 <span class="sd">        This is done to the current surface if in_place=True. A mutable copy is created and returned</span>
 <span class="sd">        if in_place=False (as default).</span>
@@ -150,6 +151,19 @@
 <span class="sd">            sage: [ss.opposite_edge(0,i) for i in range(4)]</span>
 <span class="sd">            [(1, 2), (1, 3), (1, 0), (1, 1)]</span>
 <span class="sd">            sage: TestSuite(ss).run()</span>
+
+<span class="sd">        Make sure first vertex is sent to origin::</span>
+<span class="sd">            sage: from flatsurf import *</span>
+<span class="sd">            sage: P = ConvexPolygons(QQ)</span>
+<span class="sd">            sage: p = P(vertices = ([(1,1),(2,1),(2,2),(1,2)]))</span>
+<span class="sd">            sage: s = Surface_list(QQ)</span>
+<span class="sd">            sage: s.add_polygon(p)</span>
+<span class="sd">            0</span>
+<span class="sd">            sage: s.change_polygon_gluings(0, [(0,2),(0,3),(0,0),(0,1)])</span>
+<span class="sd">            sage: s.change_base_label(0)</span>
+<span class="sd">            sage: ts = TranslationSurface(s)</span>
+<span class="sd">            sage: ts.standardize_polygons().polygon(0)</span>
+<span class="sd">            Polygon: (0, 0), (1, 0), (1, 1), (0, 1)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_finite</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">in_place</span><span class="p">:</span>
@@ -168,7 +182,9 @@
                     <span class="k">if</span> <span class="p">(</span><span class="n">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">&lt;</span><span class="n">best_pt</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="ow">or</span> <span class="p">(</span><span class="n">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">==</span><span class="n">best_pt</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">and</span> <span class="n">pt</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">&lt;</span><span class="n">best_pt</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
                         <span class="n">best</span><span class="o">=</span><span class="n">v</span>
                         <span class="n">best_pt</span><span class="o">=</span><span class="n">pt</span>
-                <span class="k">if</span> <span class="n">best</span><span class="o">!=</span><span class="mi">0</span><span class="p">:</span>
+                <span class="c1"># We replace the polygon if the best vertex is not the zero vertex, or</span>
+                <span class="c1"># if the coordinates of the best vertex differs from the origin.</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">best</span><span class="o">==</span><span class="mi">0</span> <span class="ow">and</span> <span class="n">best_pt</span><span class="o">.</span><span class="n">is_zero</span><span class="p">()):</span>
                     <span class="n">cv</span><span class="p">[</span><span class="n">l</span><span class="p">]</span><span class="o">=</span><span class="n">best</span>
             <span class="k">for</span> <span class="n">l</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">cv</span><span class="p">):</span>
                 <span class="n">s</span><span class="o">.</span><span class="n">set_vertex_zero</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="n">v</span><span class="p">,</span><span class="n">in_place</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>

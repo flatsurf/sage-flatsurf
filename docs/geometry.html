@@ -3732,9 +3732,10 @@ linear in limit.</p></li>
 <dl class="py method">
 <dt id="flatsurf.geometry.translation_surface.TranslationSurface.standardize_polygons">
 <code class="sig-name descname"><span class="pre">standardize_polygons</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_place</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/translation_surface.html#TranslationSurface.standardize_polygons"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.translation_surface.TranslationSurface.standardize_polygons" title="Permalink to this definition">¶</a></dt>
-<dd><p>Replaces each polygon with a combinatorially rotated polygons (i.e., with
-reindexed vertices) so that all vertices of the polygon lie in the upper half plane,
-or in the x-axis with non-negative x-coordinate.</p>
+<dd><p>Replaces each polygon with a polygon with a new polygon which differs by translation
+and reindexing. The new polygon will have the property that vertex zero is the origin,
+and all vertices lie either in the upper half plane, or on the x-axis with non-negative
+x-coordinate.</p>
 <p>This is done to the current surface if in_place=True. A mutable copy is created and returned
 if in_place=False (as default).</p>
 <p>EXAMPLES:</p>
@@ -3752,6 +3753,20 @@ if in_place=False (as default).</p>
 <span class="n">sage</span><span class="p">:</span> <span class="n">TestSuite</span><span class="p">(</span><span class="n">ss</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
 </pre></div>
 </div>
+<dl class="simple">
+<dt>Make sure first vertex is sent to origin::</dt><dd><p>sage: from flatsurf import *
+sage: P = ConvexPolygons(QQ)
+sage: p = P(vertices = ([(1,1),(2,1),(2,2),(1,2)]))
+sage: s = Surface_list(QQ)
+sage: s.add_polygon(p)
+0
+sage: s.change_polygon_gluings(0, [(0,2),(0,3),(0,0),(0,1)])
+sage: s.change_base_label(0)
+sage: ts = TranslationSurface(s)
+sage: ts.standardize_polygons().polygon(0)
+Polygon: (0, 0), (1, 0), (1, 1), (0, 1)</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
