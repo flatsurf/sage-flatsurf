@@ -55,6 +55,17 @@ class HalfDilationSurface(SimilaritySurface):
             sage: TestSuite(s2).run(skip='_test_pickling')
             sage: s2.polygon(0)
             Polygon: (0, 0), (1, 0), (3, 1), (2, 1)
+
+        Testing multiplication by a matrix with negative determinant::
+
+            sage: from flatsurf import *
+            sage: ds1 = dilation_surfaces.genus_two_square(1/2, 1/3, 1/4, 1/5)
+            sage: ds1.polygon(0)
+            Polygon: (0, 0), (1/2, 0), (1, 1/3), (1, 1), (3/4, 1), (0, 4/5)
+            sage: m = matrix(QQ, [[0, 1], [1, 0]]) # maps (x,y) to (y, x)
+            sage: ds2 = m*ds1
+            sage: ds2.polygon(0)
+            Polygon: (0, 0), (4/5, 0), (1, 3/4), (1, 1), (1/3, 1), (0, 1/2)
         """
         if not is_Matrix(matrix):
             raise NotImplementedError("Only implemented for matrices.")
@@ -326,7 +337,7 @@ class GL2RImageSurface(Surface):
             return self._P(edges)
         else:
             p = self._s.polygon(lab)
-            edges = [ self._m * p.edge(e) for e in range(p.num_edges()-1,-1,-1)]
+            edges = [ self._m * (-p.edge(e)) for e in range(p.num_edges()-1,-1,-1)]
             return self._P(edges)
 
     def opposite_edge(self, p, e):
