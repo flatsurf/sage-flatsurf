@@ -4415,7 +4415,7 @@ The length of the vector matches the length of the indexed edge.</p>
 
 <dl class="py method">
 <dt id="flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentVector.clockwise_to">
-<code class="sig-name descname"><span class="pre">clockwise_to</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">w</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/tangent_bundle.html#SimilaritySurfaceTangentVector.clockwise_to"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentVector.clockwise_to" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">clockwise_to</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/tangent_bundle.html#SimilaritySurfaceTangentVector.clockwise_to"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentVector.clockwise_to" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the new tangent vector obtained by rotating this one in the clockwise
 direction until the vector is parallel to w, and scaling so that the length matches
 that of w.</p>
@@ -4426,6 +4426,10 @@ that of w.</p>
 so we impose a limit (representing the maximal number of polygons
 that must be rotated through.) This is the variable rotate_limit
 in this package.</p>
+<p>If code is True, we compute the sequences of numbers associated to edges
+crossed as a list. We return a pair consisting of the newly computing
+tangent vector an this code. This is currently only implemented when
+based at a singularity.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">s</span><span class="o">=</span><span class="n">translation_surfaces</span><span class="o">.</span><span class="n">regular_octagon</span><span class="p">()</span>
@@ -4434,13 +4438,15 @@ in this package.</p>
 <span class="n">SimilaritySurfaceTangentVector</span> <span class="ow">in</span> <span class="n">polygon</span> <span class="mi">0</span> <span class="n">based</span> <span class="n">at</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">a</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="k">with</span> <span class="n">vector</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">clockwise_to</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
 <span class="n">SimilaritySurfaceTangentVector</span> <span class="ow">in</span> <span class="n">polygon</span> <span class="mi">0</span> <span class="n">based</span> <span class="n">at</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">a</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">a</span><span class="p">)</span> <span class="k">with</span> <span class="n">vector</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">clockwise_to</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">code</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="p">(</span><span class="n">SimilaritySurfaceTangentVector</span> <span class="ow">in</span> <span class="n">polygon</span> <span class="mi">0</span> <span class="n">based</span> <span class="n">at</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">a</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">a</span><span class="p">)</span> <span class="k">with</span> <span class="n">vector</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
 </pre></div>
 </div>
 </dd></dl>
 
 <dl class="py method">
 <dt id="flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentVector.counterclockwise_to">
-<code class="sig-name descname"><span class="pre">counterclockwise_to</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">w</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/tangent_bundle.html#SimilaritySurfaceTangentVector.counterclockwise_to"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentVector.counterclockwise_to" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">counterclockwise_to</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/tangent_bundle.html#SimilaritySurfaceTangentVector.counterclockwise_to"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentVector.counterclockwise_to" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the new tangent vector obtained by rotating this one in the counterclockwise
 direction until the vector is parallel to w, and scaling so that the length matches
 that of w.</p>
@@ -4451,6 +4457,10 @@ that of w.</p>
 so we impose a limit (representing the maximal number of polygons
 that must be rotated through.) This is the variable rotate_limit
 in this package.</p>
+<p>If code is True, we compute the sequences of numbers associated to edges
+crossed as a list. We return a pair consisting of the newly computing
+tangent vector an this code. This is currently only implemented when
+based at a singularity.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">s</span><span class="o">=</span><span class="n">translation_surfaces</span><span class="o">.</span><span class="n">regular_octagon</span><span class="p">()</span>
@@ -4459,6 +4469,8 @@ in this package.</p>
 <span class="n">SimilaritySurfaceTangentVector</span> <span class="ow">in</span> <span class="n">polygon</span> <span class="mi">0</span> <span class="n">based</span> <span class="n">at</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">a</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">a</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="k">with</span> <span class="n">vector</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">counterclockwise_to</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
 <span class="n">SimilaritySurfaceTangentVector</span> <span class="ow">in</span> <span class="n">polygon</span> <span class="mi">0</span> <span class="n">based</span> <span class="n">at</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">with</span> <span class="n">vector</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">counterclockwise_to</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">code</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="p">(</span><span class="n">SimilaritySurfaceTangentVector</span> <span class="ow">in</span> <span class="n">polygon</span> <span class="mi">0</span> <span class="n">based</span> <span class="n">at</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">with</span> <span class="n">vector</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">[</span><span class="mi">7</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
 </pre></div>
 </div>
 </dd></dl>

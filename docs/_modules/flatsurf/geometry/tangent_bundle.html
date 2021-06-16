@@ -361,7 +361,7 @@
         <span class="kn">from</span> <span class="nn">flatsurf.geometry.straight_line_trajectory</span> <span class="kn">import</span> <span class="n">StraightLineTrajectory</span>
         <span class="k">return</span> <span class="n">StraightLineTrajectory</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SimilaritySurfaceTangentVector.clockwise_to"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentVector.clockwise_to">[docs]</a>    <span class="k">def</span> <span class="nf">clockwise_to</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">w</span><span class="p">):</span>
+<div class="viewcode-block" id="SimilaritySurfaceTangentVector.clockwise_to"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentVector.clockwise_to">[docs]</a>    <span class="k">def</span> <span class="nf">clockwise_to</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">code</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the new tangent vector obtained by rotating this one in the clockwise</span>
 <span class="sd">        direction until the vector is parallel to w, and scaling so that the length matches</span>
@@ -377,6 +377,11 @@
 <span class="sd">        that must be rotated through.) This is the variable rotate_limit</span>
 <span class="sd">        in this package.</span>
 
+<span class="sd">        If code is True, we compute the sequences of numbers associated to edges</span>
+<span class="sd">        crossed as a list. We return a pair consisting of the newly computing</span>
+<span class="sd">        tangent vector an this code. This is currently only implemented when</span>
+<span class="sd">        based at a singularity.</span>
+
 <span class="sd">        EXAMPLES::</span>
 
 <span class="sd">            sage: from flatsurf import *</span>
@@ -386,6 +391,8 @@
 <span class="sd">            SimilaritySurfaceTangentVector in polygon 0 based at (0, a + 1) with vector (-1, -1)</span>
 <span class="sd">            sage: v.clockwise_to((1,1))</span>
 <span class="sd">            SimilaritySurfaceTangentVector in polygon 0 based at (-1/2*a, 1/2*a) with vector (1, 1)</span>
+<span class="sd">            sage: v.clockwise_to((1,1), code=True)</span>
+<span class="sd">            (SimilaritySurfaceTangentVector in polygon 0 based at (-1/2*a, 1/2*a) with vector (1, 1), [0, 5, 2])</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">assert</span> <span class="n">w</span><span class="o">!=</span><span class="bp">self</span><span class="o">.</span><span class="n">surface</span><span class="p">()</span><span class="o">.</span><span class="n">vector_space</span><span class="p">()</span><span class="o">.</span><span class="n">zero</span><span class="p">(),</span> <span class="s2">&quot;Vector w must be non-zero.&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_based_at_singularity</span><span class="p">():</span>
@@ -396,10 +403,14 @@
             <span class="n">v2</span><span class="o">=</span><span class="n">s</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="n">vertex</span><span class="p">)</span>
             <span class="kn">from</span> <span class="nn">sage.matrix.constructor</span> <span class="kn">import</span> <span class="n">Matrix</span>
             <span class="n">der</span> <span class="o">=</span> <span class="n">Matrix</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span> <span class="p">[[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]])</span>
+            <span class="k">if</span> <span class="n">code</span><span class="p">:</span>
+                <span class="n">codes</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">for</span> <span class="n">count</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">rotate_limit</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">wedge_product</span><span class="p">(</span><span class="n">v2</span><span class="p">,</span><span class="n">w</span><span class="p">)</span><span class="o">&gt;=</span><span class="mi">0</span> <span class="ow">and</span> <span class="n">wedge_product</span><span class="p">(</span><span class="n">w</span><span class="p">,</span><span class="n">v1</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
                     <span class="c1"># We&#39;ve found it!</span>
                     <span class="k">break</span>
+                <span class="k">if</span> <span class="n">code</span><span class="p">:</span>
+                    <span class="n">codes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">vertex</span><span class="p">)</span>
                 <span class="n">label2</span><span class="p">,</span><span class="n">edge2</span><span class="o">=</span><span class="n">s</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">label</span><span class="p">,</span><span class="n">vertex</span><span class="p">)</span>
                 <span class="n">der</span><span class="o">=</span><span class="n">der</span><span class="o">*</span><span class="n">s</span><span class="o">.</span><span class="n">edge_matrix</span><span class="p">(</span><span class="n">label2</span><span class="p">,</span><span class="n">edge2</span><span class="p">)</span>
                 <span class="n">v1</span><span class="o">=</span><span class="n">der</span><span class="o">*</span><span class="p">(</span><span class="o">-</span><span class="n">s</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label2</span><span class="p">)</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="n">edge2</span><span class="p">))</span>
@@ -407,12 +418,19 @@
                 <span class="n">vertex</span><span class="o">=</span><span class="p">(</span><span class="n">edge2</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="n">s</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label2</span><span class="p">)</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()</span>
                 <span class="n">v2</span><span class="o">=</span><span class="n">der</span><span class="o">*</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label2</span><span class="p">)</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="n">vertex</span><span class="p">))</span>
             <span class="k">assert</span> <span class="n">count</span><span class="o">&lt;</span><span class="n">rotate_limit</span><span class="p">,</span> <span class="s2">&quot;Reached limit!&quot;</span>
-                
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">surface</span><span class="p">()</span><span class="o">.</span><span class="n">tangent_vector</span><span class="p">(</span><span class="n">label</span><span class="p">,</span><span class="n">s</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="n">vertex</span><span class="p">),</span><span class="n">w</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">code</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">surface</span><span class="p">()</span><span class="o">.</span><span class="n">tangent_vector</span><span class="p">(</span><span class="n">label</span><span class="p">,</span><span class="n">s</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="n">vertex</span><span class="p">),</span><span class="n">w</span><span class="p">),</span>
+                    <span class="n">codes</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">surface</span><span class="p">()</span><span class="o">.</span><span class="n">tangent_vector</span><span class="p">(</span><span class="n">label</span><span class="p">,</span><span class="n">s</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="n">vertex</span><span class="p">),</span><span class="n">w</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">code</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;codes are only implemented when based at a singularity&#39;</span><span class="p">)</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">surface</span><span class="p">()</span><span class="o">.</span><span class="n">tangent_vector</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">polygon_label</span><span class="p">(),</span><span class="n">v</span><span class="o">.</span><span class="n">point</span><span class="p">(),</span><span class="n">w</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SimilaritySurfaceTangentVector.counterclockwise_to"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentVector.counterclockwise_to">[docs]</a>    <span class="k">def</span> <span class="nf">counterclockwise_to</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">w</span><span class="p">):</span>
+<div class="viewcode-block" id="SimilaritySurfaceTangentVector.counterclockwise_to"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentVector.counterclockwise_to">[docs]</a>    <span class="k">def</span> <span class="nf">counterclockwise_to</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the new tangent vector obtained by rotating this one in the counterclockwise</span>
 <span class="sd">        direction until the vector is parallel to w, and scaling so that the length matches</span>
@@ -428,6 +446,11 @@
 <span class="sd">        that must be rotated through.) This is the variable rotate_limit</span>
 <span class="sd">        in this package.</span>
 
+<span class="sd">        If code is True, we compute the sequences of numbers associated to edges</span>
+<span class="sd">        crossed as a list. We return a pair consisting of the newly computing</span>
+<span class="sd">        tangent vector an this code. This is currently only implemented when</span>
+<span class="sd">        based at a singularity.</span>
+
 <span class="sd">        EXAMPLES::</span>
 
 <span class="sd">            sage: from flatsurf import *</span>
@@ -437,6 +460,8 @@
 <span class="sd">            SimilaritySurfaceTangentVector in polygon 0 based at (1/2*a + 1, 1/2*a + 1) with vector (-1, -1)</span>
 <span class="sd">            sage: v.counterclockwise_to((1,1))</span>
 <span class="sd">            SimilaritySurfaceTangentVector in polygon 0 based at (1, 0) with vector (1, 1)</span>
+<span class="sd">            sage: v.counterclockwise_to((1,1), code=True)</span>
+<span class="sd">            (SimilaritySurfaceTangentVector in polygon 0 based at (1, 0) with vector (1, 1), [7, 2, 5])</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">assert</span> <span class="n">w</span><span class="o">!=</span><span class="bp">self</span><span class="o">.</span><span class="n">surface</span><span class="p">()</span><span class="o">.</span><span class="n">vector_space</span><span class="p">()</span><span class="o">.</span><span class="n">zero</span><span class="p">(),</span> <span class="s2">&quot;Vector w must be non-zero.&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_based_at_singularity</span><span class="p">():</span>
@@ -449,9 +474,13 @@
             <span class="n">v2</span><span class="o">=-</span><span class="n">s</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="n">previous_vertex</span><span class="p">)</span>
             <span class="kn">from</span> <span class="nn">sage.matrix.constructor</span> <span class="kn">import</span> <span class="n">Matrix</span>
             <span class="n">der</span> <span class="o">=</span> <span class="n">Matrix</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span> <span class="p">[[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]])</span>
+            <span class="k">if</span> <span class="n">code</span><span class="p">:</span>
+                <span class="n">codes</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">wedge_product</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span><span class="n">w</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span> <span class="ow">and</span> <span class="n">wedge_product</span><span class="p">(</span><span class="n">w</span><span class="p">,</span><span class="n">v2</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">):</span>
                 <span class="k">for</span> <span class="n">count</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">rotate_limit</span><span class="p">):</span>
                     <span class="n">label2</span><span class="p">,</span><span class="n">edge2</span><span class="o">=</span><span class="n">s</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">label</span><span class="p">,</span><span class="n">previous_vertex</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">code</span><span class="p">:</span>
+                        <span class="n">codes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">previous_vertex</span><span class="p">)</span>
                     <span class="n">der</span><span class="o">=</span><span class="n">der</span><span class="o">*</span><span class="n">s</span><span class="o">.</span><span class="n">edge_matrix</span><span class="p">(</span><span class="n">label2</span><span class="p">,</span><span class="n">edge2</span><span class="p">)</span>
                     <span class="n">label</span><span class="o">=</span><span class="n">label2</span>
                     <span class="n">vertex</span><span class="o">=</span><span class="n">edge2</span>
@@ -463,8 +492,16 @@
                         <span class="c1"># We&#39;ve found it!</span>
                         <span class="k">break</span>
                 <span class="k">assert</span> <span class="n">count</span><span class="o">&lt;</span><span class="n">rotate_limit</span><span class="p">,</span> <span class="s2">&quot;Reached limit!&quot;</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">surface</span><span class="p">()</span><span class="o">.</span><span class="n">tangent_vector</span><span class="p">(</span><span class="n">label</span><span class="p">,</span><span class="n">s</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="n">vertex</span><span class="p">),</span><span class="n">w</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">code</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">surface</span><span class="p">()</span><span class="o">.</span><span class="n">tangent_vector</span><span class="p">(</span><span class="n">label</span><span class="p">,</span><span class="n">s</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="n">vertex</span><span class="p">),</span><span class="n">w</span><span class="p">),</span>
+                    <span class="n">codes</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">surface</span><span class="p">()</span><span class="o">.</span><span class="n">tangent_vector</span><span class="p">(</span><span class="n">label</span><span class="p">,</span><span class="n">s</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="n">vertex</span><span class="p">),</span><span class="n">w</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">code</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;codes are only implemented when based at a singularity&#39;</span><span class="p">)</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">surface</span><span class="p">()</span><span class="o">.</span><span class="n">tangent_vector</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">polygon_label</span><span class="p">(),</span><span class="n">v</span><span class="o">.</span><span class="n">point</span><span class="p">(),</span><span class="n">w</span><span class="p">)</span></div></div>
 
 
