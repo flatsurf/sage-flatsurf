@@ -478,6 +478,9 @@ class SimilaritySurface(SageObject):
         what is currently vertex (or edge) e will now become vertex (e-v)%n where
         n is the number of sides of the polygon.
 
+        For the updated polygons, the polygons will be translated so that vertex
+        0 is the origin.
+
         EXAMPLES:
 
         Example with polygon glued to another polygon::
