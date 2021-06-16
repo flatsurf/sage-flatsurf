@@ -85,9 +85,10 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
 
     def standardize_polygons(self, in_place=False):
         r"""
-        Replaces each polygon with a combinatorially rotated polygons (i.e., with
-        reindexed vertices) so that all vertices of the polygon lie in the upper half plane,
-        or in the x-axis with non-negative x-coordinate.
+        Replaces each polygon with a polygon with a new polygon which differs by translation
+        and reindexing. The new polygon will have the property that vertex zero is the origin,
+        and all vertices lie either in the upper half plane, or on the x-axis with non-negative
+        x-coordinate.
 
         This is done to the current surface if in_place=True. A mutable copy is created and returned
         if in_place=False (as default).
@@ -106,6 +107,19 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
             sage: [ss.opposite_edge(0,i) for i in range(4)]
             [(1, 2), (1, 3), (1, 0), (1, 1)]
             sage: TestSuite(ss).run()
+
+        Make sure first vertex is sent to origin::
+            sage: from flatsurf import *
+            sage: P = ConvexPolygons(QQ)
+            sage: p = P(vertices = ([(1,1),(2,1),(2,2),(1,2)]))
+            sage: s = Surface_list(QQ)
+            sage: s.add_polygon(p)
+            0
+            sage: s.change_polygon_gluings(0, [(0,2),(0,3),(0,0),(0,1)])
+            sage: s.change_base_label(0)
+            sage: ts = TranslationSurface(s)
+            sage: ts.standardize_polygons().polygon(0)
+            Polygon: (0, 0), (1, 0), (1, 1), (0, 1)
         """
         if self.is_finite():
             if in_place:
@@ -124,7 +138,9 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
                     if (pt[1]<best_pt[1]) or (pt[1]==best_pt[1] and pt[0]<best_pt[0]):
                         best=v
                         best_pt=pt
-                if best!=0:
+                # We replace the polygon if the best vertex is not the zero vertex, or
+                # if the coordinates of the best vertex differs from the origin.
+                if not (best==0 and best_pt.is_zero()):
                     cv[l]=best
             for l,v in iteritems(cv):
                 s.set_vertex_zero(l,v,in_place=True)
