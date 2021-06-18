@@ -2997,3 +2997,4 @@ class PolygonCreator():
         if len(self._v)<2:
             raise ValueError("Not enough vertices!")
         return ConvexPolygons(self._field)(self._w)
+        #test
