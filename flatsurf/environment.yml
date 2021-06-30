@@ -16,7 +16,7 @@ dependencies:
   - pytest-xdist
   - sagelib>=8.8
   - scipy
-  - surface-dynamics>=0.4.6=*_1
+  - surface-dynamics>=0.4.6=*_2
   - pip:
     - flipper
 

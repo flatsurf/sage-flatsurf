@@ -11,15 +11,24 @@ jobs:
         include:
           - optionals: "sage,flipper"
             sagelib: "8.8"
+            python: "3.7.10"
           - optionals: "sage,flipper"
             sagelib: "8.9"
+            python: "3.7.10"
           - optionals: "sage,flipper,eantic,exactreal,pyflatsurf"
             sagelib: "9.1"
+            python: "3.7.10"
+          - optionals: "sage,flipper,eantic,exactreal,pyflatsurf"
+            sagelib: "9.2"
+            python: "3.9.5"
+          - optionals: "sage,flipper,eantic,exactreal,pyflatsurf"
+            sagelib: "9.3"
+            python: "3.9.5"
     steps:
       - uses: actions/checkout@v2
         with: { submodules: recursive }
       - uses: conda-incubator/setup-miniconda@v2
-        with: { mamba-version: "*", channels: "flatsurf,conda-forge", python-version: "3.7.10", channel-priority: true }
+        with: { mamba-version: "*", channels: "flatsurf,conda-forge", python-version: "${{ matrix.python }}", channel-priority: true }
       - name: Install dependencies
         shell: bash -l {0}
         run: |

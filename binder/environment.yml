@@ -1,0 +1,18 @@
+# This exnvironment.yml can be used to create a conda environment with
+# sage-flatsurf and all its dependencies installed. It is used for our demo
+# binders.
+name: binder
+channels:
+  - flatsurf
+  - conda-forge
+dependencies:
+  - sagelib
+  - notebook
+  - pyflatsurf
+  - matplotlib-base
+  - surface-dynamics
+  - jupytext
+  - pip:
+    - git+https://gitlab.com/videlec/veerer.git@2b6abf596ad5481a4e3a960c6f7a7fad8433bc70
+    - git+https://github.com/flatsurf/surface_dynamics.git@eb05ff321ae81b84d60f792cd527f773c3c78f9c
+    - git+https://github.com/flatsurf/sage-flatsurf.git@991450e8f750cc3a583f248155787a6b087de6c0
