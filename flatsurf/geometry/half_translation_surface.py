@@ -232,7 +232,7 @@ class HalfTranslationSurface(HalfDilationSurface, RationalConeSurface):
             TranslationSurface built from 6 polygons
         """
         if not self.is_finite():
-            raise ValueError
+            raise ValueError('the surface must be finite')
         if self.base_ring() is QQ:
             return (self, matrix(QQ, 2, 2, 1))
 
