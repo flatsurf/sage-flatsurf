@@ -37,9 +37,10 @@ jobs:
       - name: Install dependencies
         shell: bash -l {0}
         run: |
+          mamba install -n test sagelib=${{ matrix.sagelib }}
+          echo "sagelib ==${{ matrix.sagelib }}" >> $CONDA_PREFIX/conda-meta/pinned
           mamba env update -n test --quiet -f flatsurf/environment.yml
           echo ${{ matrix.optionals }} | grep pyflatsurf && mamba env update -n test --quiet -f flatsurf/environment.extra.yml
-          mamba install -n test sagelib=${{ matrix.sagelib }}
           conda list
         if: ${{ matrix.environment != 'binder' }}
       - name: Install sage-flatsurf
