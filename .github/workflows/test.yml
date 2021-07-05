@@ -24,6 +24,11 @@ jobs:
           - optionals: "sage,flipper,eantic,exactreal,pyflatsurf"
             sagelib: "9.3"
             python: "3.9.5"
+          - optionals: "sage,flipper,eantic,exactreal,pyflatsurf"
+            environment: "binder"
+            # Default docker version for binder:
+            # https://github.com/jupyterhub/repo2docker/blob/master/repo2docker/buildpacks/conda/environment.yml
+            python: "3.7"
     steps:
       - uses: actions/checkout@v2
         with: { submodules: recursive }
@@ -36,12 +41,22 @@ jobs:
           echo ${{ matrix.optionals }} | grep pyflatsurf && mamba env update -n test --quiet -f flatsurf/environment.extra.yml
           mamba install -n test sagelib=${{ matrix.sagelib }}
           conda list
+        if: ${{ matrix.environment != 'binder' }}
       - name: Install sage-flatsurf
         shell: bash -l {0}
         run: |
           pip install --verbose --no-index .
           # Show message about cppyy regenerating pre-compiled headers so it does not show during the tests
           python -c 'import cppyy' || true
+        if: ${{ matrix.environment != 'binder' }}
+      - name: Create binder environment
+        shell: bash -l {0}
+        run: |
+          wget -O repo2docker.yml https://github.com/jupyterhub/repo2docker/raw/master/repo2docker/buildpacks/conda/environment.yml
+          mamba env update -n test --quiet -f repo2docker.yml
+          mamba env update -n test --quiet -f binder/environment.yml
+          conda list
+        if: ${{ matrix.environment == 'binder' }}
       - name: Run SageMath doctests
         shell: bash -l {0}
         run: sage -tp --force-lib --long --optional=${{ matrix.optionals }} flatsurf doc
