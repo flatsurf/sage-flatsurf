@@ -13,5 +13,4 @@ dependencies:
   - surface-dynamics>=0.4.7
   - jupytext
   - pip:
-    - git+https://gitlab.com/videlec/veerer.git@2b6abf596ad5481a4e3a960c6f7a7fad8433bc70
     - git+https://github.com/flatsurf/sage-flatsurf.git@991450e8f750cc3a583f248155787a6b087de6c0
