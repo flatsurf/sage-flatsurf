@@ -47,8 +47,6 @@ jobs:
         shell: bash -l {0}
         run: |
           pip install --verbose --no-index .
-          # Show message about cppyy regenerating pre-compiled headers so it does not show during the tests
-          python -c 'import cppyy' || true
         if: ${{ matrix.environment != 'binder' }}
       - name: Create binder environment
         shell: bash -l {0}
@@ -58,6 +56,11 @@ jobs:
           mamba env update -n test --quiet -f binder/environment.yml
           conda list
         if: ${{ matrix.environment == 'binder' }}
+      - name: Initialize cppyy
+        shell: bash -l {0}
+        run: |
+          # Show message about cppyy regenerating pre-compiled headers so it does not show during the tests
+          python -c 'import cppyy' || true
       - name: Run SageMath doctests
         shell: bash -l {0}
         run: sage -tp --force-lib --long --optional=${{ matrix.optionals }} flatsurf doc
