@@ -7,6 +7,7 @@ channels:
   - conda-forge
 dependencies:
   - sagelib
+  - sympy
   - notebook
   - pyflatsurf>=3.6.4,<4
   - matplotlib-base
