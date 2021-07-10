@@ -52,6 +52,7 @@ jobs:
         shell: bash -l {0}
         run: |
           wget -O repo2docker.yml https://github.com/jupyterhub/repo2docker/raw/master/repo2docker/buildpacks/conda/environment.yml
+          mamba install -n test --quiet -y pytest
           mamba env update -n test --quiet -f repo2docker.yml
           mamba env update -n test --quiet -f binder/environment.yml
           conda list
