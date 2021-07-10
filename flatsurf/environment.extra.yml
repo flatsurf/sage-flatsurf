@@ -15,5 +15,5 @@ dependencies:
   # https://bitbucket.org/wlav/cppyy/issues/364/segfault-in-clang-cxxrecorddecl
   # - cppyy>=2.0.0,<3
   # Instead, we use a working combination of c++ compiler and cppyy
-  - cppyy
+  - cppyy<2
   - cxx-compiler>=1.2
