@@ -1,7 +1,7 @@
 name: Cancel outdated runs
 on:
   workflow_run:
-    workflows: ['Test', 'Documentation']
+    workflows: ['Test', 'Documentation', 'Publish to Anaconda']
     types: ['requested']
 
 jobs:
