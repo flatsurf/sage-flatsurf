@@ -17,5 +17,5 @@ dependencies:
   - jupytext
   - pip
   - pip:
-    - git+https://github.com/flatsurf/sage-flatsurf.git@991450e8f750cc3a583f248155787a6b087de6c0
     - flipper
+    - git+https://github.com/flatsurf/sage-flatsurf.git@master
