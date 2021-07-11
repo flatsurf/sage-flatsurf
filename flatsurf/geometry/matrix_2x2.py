@@ -198,6 +198,8 @@ def rotation_matrix_angle(r, check=False):
         ....:     return matrix(AA, 2, [c,-s,s,c])
         sage: [rotation_matrix_angle(rot_matrix(i, 5)) for i in range(1,5)]
         [1/5, 2/5, 3/5, 4/5]
+        sage: [rotation_matrix_angle(rot_matrix(i, 5)) for i in range(1,5)]
+        [1/5, 2/5, 3/5, 4/5]
         sage: [rotation_matrix_angle(rot_matrix(i,7)) for i in range(1,7)]
         [1/7, 2/7, 3/7, 4/7, 5/7, 6/7]
 
