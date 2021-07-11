@@ -1007,7 +1007,7 @@
 <span class="sd">            3/8</span>
 
 <span class="sd">            sage: T = polygons(vertices=[(0,0), (3,1), (1,5)])</span>
-<span class="sd">            sage: [T.angle(i, numerical=True) for i in range(3)]</span>
+<span class="sd">            sage: [T.angle(i, numerical=True) for i in range(3)]  # abs tol 1e-13</span>
 <span class="sd">            [0.16737532973071603, 0.22741638234956674, 0.10520828791971722]</span>
 <span class="sd">            sage: sum(T.angle(i, numerical=True) for i in range(3))   # abs tol 1e-13</span>
 <span class="sd">            0.5</span>
