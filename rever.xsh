@@ -42,7 +42,7 @@ $VERSION_BUMP_PATTERNS = [
     ('recipe/meta.yaml', r"\{% set version =", r"{% set version = '$VERSION' %}"),
     ('recipe/meta.yaml', r"\{% set build_number =", r"{% set build_number = '0' %}"),
     ('flatsurf/version.py', r"version =", r"version = '$VERSION'"),
-    ('setup.py', r"    version=", r"    version='$VERSION'"),
+    ('setup.py', r"    version=", r"    version='$VERSION',"),
 ]
 
 $CHANGELOG_FILENAME = 'ChangeLog'
