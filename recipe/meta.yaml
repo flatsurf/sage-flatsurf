@@ -37,5 +37,5 @@ about:
     surface modeled on the plane with monodromy given by similarities of the
     plane, though current efforts are focused on translation surfaces and
     half-translation surfaces.
-  doc_url: http://www.labri.fr/perso/vdelecro/flatsurf/latest/
-  dev_url: https://github.com/videlec/sage-flatsurf
+  doc_url: https://flatsurf.github.io/sage-flatsurf/
+  dev_url: https://github.com/flatsurf/sage-flatsurf

@@ -33,7 +33,7 @@ in using it, please contact the authors.
 Links
 -----
 
-* Documentation: https://www.labri.fr/perso/vdelecro/sage-flatsurf/latest
+* Documentation: https://flatsurf.github.io/sage-flatsurf/
 
 * Page on the Python package index: https://pypi.org/project/sage-flatsurf/
 
