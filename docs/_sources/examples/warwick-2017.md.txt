@@ -422,7 +422,7 @@ class SurfaceToSpaceMapping(SageObject):
         The other parameters are passed to a Polyhedron.plot method and affect the rendering.
         """
         it = iter(labels)
-        label = it.next()
+        label = next(it)
         if label_to_color is None:
             p = self.image_polygon(label).plot(point=point, line=line, polygon=polygon, \
                                                wireframe=wireframe,frame=frame,color="pink")
@@ -453,7 +453,7 @@ class SurfaceToSpaceMapping(SageObject):
         if isinstance(o, StraightLineTrajectory):
             points=[]
             it = iter(o.segments())
-            s=it.next()
+            s=next(it)
             label = s.polygon_label()
             m,t = self.transformation(label)
             
@@ -487,12 +487,12 @@ jupyter:
   outputs_hidden: true
 ---
 from flatsurf.geometry.surface import Surface
-from flatsurf.geometry.polygon import Polygons
+from flatsurf.geometry.polygon import ConvexPolygons
 from flatsurf.geometry.similarity import SimilarityGroup
 class CubeSurf(Surface):
     def __init__(self,F):
         ZZ3=IntegerModRing(3)
-        P=Polygons(F)
+        P=ConvexPolygons(F)
         self._faceA=P(vertices=[(0,0),(1,0),(1,1),(0,1)])
         self._faceB=P(vertices=[(0,0),(1,0),(1,1),(0,1)])
         self._faceC=P(vertices=[(0,0),(1,0),(1,1),(0,1)])
@@ -598,7 +598,7 @@ jupyter:
   outputs_hidden: false
 ---
 it = s.label_iterator()
-m.plot({it.next() for i in xrange(30)},label_to_color=label_to_color)
+m.plot({next(it) for i in range(30)},label_to_color=label_to_color)
 ```
 
 +++ {"deletable": true, "editable": true}

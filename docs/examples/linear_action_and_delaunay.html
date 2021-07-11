@@ -23,7 +23,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Relative Period Deformations" href="rel_deformations.html" />
-    <link rel="prev" title="Graphics Configuration" href="graphics_configuration.html" /> 
+    <link rel="prev" title="Defining Surfaces in FlatSurf" href="defining_surfaces.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -38,7 +38,7 @@
           <a href="rel_deformations.html" title="Relative Period Deformations"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="graphics_configuration.html" title="Graphics Configuration"
+          <a href="defining_surfaces.html" title="Defining Surfaces in FlatSurf"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">sage-flatsurf 0.3 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../examples.html" accesskey="U">Examples</a> &#187;</li>
@@ -60,16 +60,6 @@
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">ModuleNotFoundError</span><span class="g g-Whitespace">                       </span>Traceback (most recent call last)
-<span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">ipykernel_4174</span><span class="o">/</span><span class="mf">2513896608.</span><span class="n">py</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
-<span class="ne">----&gt; </span><span class="mi">1</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="o">*</span>
-
-<span class="ne">ModuleNotFoundError</span>: No module named &#39;flatsurf&#39;
-</pre></div>
-</div>
-</div>
 </div>
 <div class="section" id="acting-on-surfaces-by-matrices">
 <h2>Acting on surfaces by matrices.<a class="headerlink" href="#acting-on-surfaces-by-matrices" title="Permalink to this headline">¶</a></h2>
@@ -85,6 +75,9 @@
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 </pre></div>
 </div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/linear_action_and_delaunay_4_0.png" src="../_images/linear_action_and_delaunay_4_0.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -102,12 +95,20 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>TranslationSurface built from 2 polygons
+</pre></div>
+</div>
+</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ss</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 </pre></div>
 </div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/linear_action_and_delaunay_8_0.png" src="../_images/linear_action_and_delaunay_8_0.png" />
 </div>
 </div>
 <p>To “renormalize” you can improve the presentation using the Delaunay decomposition.</p>
@@ -123,6 +124,9 @@
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sss</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 </pre></div>
 </div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/linear_action_and_delaunay_11_0.png" src="../_images/linear_action_and_delaunay_11_0.png" />
 </div>
 </div>
 </div>
@@ -144,12 +148,22 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Polygon: (0, 0), (1, 0), (1/2*a^2 - 1/2, 1/2*a), (1/2, 1/2*a^3 - a), (-1/2*a^2 + 3/2, 1/2*a)
+</pre></div>
+</div>
+</div>
 </div>
 <p>The surface has a horizontal cylinder decomposition all of whose moduli are given as below</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">modulus</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="mi">3</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">p</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="mi">2</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span><span class="o">/</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="mi">2</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">p</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="mi">4</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
 <span class="n">AA</span><span class="p">(</span><span class="n">modulus</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.3632712640026804?
 </pre></div>
 </div>
 </div>
@@ -161,6 +175,11 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output text_html"><html><script type="math/tex; mode=display">\newcommand{\Bold}[1]{\mathbf{#1}}\left(\begin{array}{rr}
+1 & \frac{2}{5} a^{3} \\
+0 & 1
+\end{array}\right)</script></html></div></div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -168,11 +187,21 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output text_html"><html><script type="math/tex; mode=display">\newcommand{\Bold}[1]{\mathbf{#1}}\left(\begin{array}{rr}
+1 & 2.752763840942347? \\
+0 & 1
+\end{array}\right)</script></html></div></div>
 </div>
 <p>The following can be used to check that <span class="math notranslate nohighlight">\(m\)</span> is in the Veech group of <span class="math notranslate nohighlight">\(s\)</span>.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s</span><span class="o">.</span><span class="n">canonicalize</span><span class="p">()</span> <span class="o">==</span> <span class="p">(</span><span class="n">m</span><span class="o">*</span><span class="n">s</span><span class="p">)</span><span class="o">.</span><span class="n">canonicalize</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>True
 </pre></div>
 </div>
 </div>
@@ -194,6 +223,9 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<img alt="../_images/linear_action_and_delaunay_24_0.png" src="../_images/linear_action_and_delaunay_24_0.png" />
+</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -214,6 +246,9 @@
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ss</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">edge_labels</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">polygon_labels</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/linear_action_and_delaunay_27_0.png" src="../_images/linear_action_and_delaunay_27_0.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -237,6 +272,9 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<img alt="../_images/linear_action_and_delaunay_30_0.png" src="../_images/linear_action_and_delaunay_30_0.png" />
+</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -251,6 +289,9 @@
 <span class="n">mss</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">edge_labels</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">polygon_labels</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/linear_action_and_delaunay_32_0.png" src="../_images/linear_action_and_delaunay_32_0.png" />
 </div>
 </div>
 <p>You can tell from the above picture that <span class="math notranslate nohighlight">\(m\)</span> is in the Veech group.</p>
@@ -275,8 +316,8 @@
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="graphics_configuration.html"
-                        title="previous chapter">Graphics Configuration</a></p>
+  <p class="topless"><a href="defining_surfaces.html"
+                        title="previous chapter">Defining Surfaces in FlatSurf</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="rel_deformations.html"
                         title="next chapter">Relative Period Deformations</a></p>
@@ -314,7 +355,7 @@
           <a href="rel_deformations.html" title="Relative Period Deformations"
              >next</a> |</li>
         <li class="right" >
-          <a href="graphics_configuration.html" title="Graphics Configuration"
+          <a href="defining_surfaces.html" title="Defining Surfaces in FlatSurf"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">sage-flatsurf 0.3 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../examples.html" >Examples</a> &#187;</li>

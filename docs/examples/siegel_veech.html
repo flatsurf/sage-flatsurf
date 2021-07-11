@@ -62,23 +62,15 @@
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">ModuleNotFoundError</span><span class="g g-Whitespace">                       </span>Traceback (most recent call last)
-<span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">ipykernel_4430</span><span class="o">/</span><span class="mf">2374402709.</span><span class="n">py</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
-<span class="ne">----&gt; </span><span class="mi">1</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
-<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">mcmullen_L</span><span class="p">(</span><span class="n">Integer</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">Integer</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">Integer</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">Integer</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
-
-<span class="ne">ModuleNotFoundError</span>: No module named &#39;flatsurf&#39;
-</pre></div>
-</div>
-</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">S</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 </pre></div>
 </div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/siegel_veech_2_0.png" src="../_images/siegel_veech_2_0.png" />
 </div>
 </div>
 <p>Decomposition of a surface into cylinders is implemented in <a class="reference external" href="https://github.com/flatsurf/flatsurf">pyflatsurf</a>. We triangulate our surface and make sure that its vertices are singularities.</p>
@@ -118,7 +110,8 @@
     <span class="c1"># This height bounds the size of any cylinder. However, it is stretched by the length of the vector</span>
     <span class="c1"># defining the vertical direction. (That vector is not normalized because that is hard to do in</span>
     <span class="c1"># general rings…)</span>
-    <span class="n">bound</span> <span class="o">=</span> <span class="p">(</span><span class="n">height</span> <span class="o">*</span> <span class="n">height</span><span class="p">)</span> <span class="o">/</span> <span class="n">pyflatsurf</span><span class="o">.</span><span class="n">flatsurf</span><span class="o">.</span><span class="n">Bound</span><span class="o">.</span><span class="n">upper</span><span class="p">(</span><span class="n">vertical</span><span class="o">.</span><span class="n">vertical</span><span class="p">())</span><span class="o">.</span><span class="n">squared</span><span class="p">()</span>
+    <span class="kn">from</span> <span class="nn">pyflatsurf</span> <span class="kn">import</span> <span class="n">flatsurf</span>
+    <span class="n">bound</span> <span class="o">=</span> <span class="p">(</span><span class="n">height</span> <span class="o">*</span> <span class="n">height</span><span class="p">)</span> <span class="o">/</span> <span class="n">flatsurf</span><span class="o">.</span><span class="n">Bound</span><span class="o">.</span><span class="n">upper</span><span class="p">(</span><span class="n">component</span><span class="o">.</span><span class="n">vertical</span><span class="p">()</span><span class="o">.</span><span class="n">vertical</span><span class="p">())</span><span class="o">.</span><span class="n">squared</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">bound</span> <span class="o">&gt;</span> <span class="n">L</span>
 </pre></div>
 </div>
@@ -156,6 +149,9 @@
 <span class="n">_</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Count&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/siegel_veech_12_0.png" src="../_images/siegel_veech_12_0.png" />
 </div>
 </div>
 </div>

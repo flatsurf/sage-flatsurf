@@ -22,7 +22,7 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Graphics Configuration" href="graphics_configuration.html" />
+    <link rel="next" title="The GL(2,R) action, the Veech group, Delaunay decomposition" href="linear_action_and_delaunay.html" />
     <link rel="prev" title="Examples" href="../examples.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
@@ -35,7 +35,7 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="graphics_configuration.html" title="Graphics Configuration"
+          <a href="linear_action_and_delaunay.html" title="The GL(2,R) action, the Veech group, Delaunay decomposition"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="../examples.html" title="Examples"
@@ -60,16 +60,6 @@
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">ModuleNotFoundError</span><span class="g g-Whitespace">                       </span>Traceback (most recent call last)
-<span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">ipykernel_4004</span><span class="o">/</span><span class="mf">2513896608.</span><span class="n">py</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
-<span class="ne">----&gt; </span><span class="mi">1</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="o">*</span>
-
-<span class="ne">ModuleNotFoundError</span>: No module named &#39;flatsurf&#39;
-</pre></div>
-</div>
-</div>
 </div>
 <div class="section" id="built-in-surfaces">
 <h2>Built in surfaces<a class="headerlink" href="#built-in-surfaces" title="Permalink to this headline">¶</a></h2>
@@ -81,6 +71,9 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<img alt="../_images/defining_surfaces_3_0.png" src="../_images/defining_surfaces_3_0.png" />
+</div>
 </div>
 <p>The Arnoux-Yoccoz surface of arbitrary genus is built in:</p>
 <div class="cell docutils container">
@@ -89,6 +82,9 @@
 <span class="n">s</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 </pre></div>
 </div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/defining_surfaces_5_0.png" src="../_images/defining_surfaces_5_0.png" />
 </div>
 </div>
 <p>Chamanara’s infinite translation surface:</p>
@@ -105,6 +101,9 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<img alt="../_images/defining_surfaces_8_0.png" src="../_images/defining_surfaces_8_0.png" />
+</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -118,6 +117,9 @@
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 </pre></div>
 </div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/defining_surfaces_10_0.png" src="../_images/defining_surfaces_10_0.png" />
 </div>
 </div>
 </div>
@@ -135,6 +137,9 @@
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 </pre></div>
 </div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/defining_surfaces_13_0.png" src="../_images/defining_surfaces_13_0.png" />
 </div>
 </div>
 </div>
@@ -168,6 +173,9 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<img alt="../_images/defining_surfaces_18_0.png" src="../_images/defining_surfaces_18_0.png" />
+</div>
 </div>
 </div>
 <div class="section" id="building-surfaces-from-polygons">
@@ -187,6 +195,9 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<img alt="../_images/defining_surfaces_21_0.png" src="../_images/defining_surfaces_21_0.png" />
+</div>
 </div>
 <p>The vertices of n-gons are numbered by <span class="math notranslate nohighlight">\(\{0,...,n-1\}\)</span>, with the <span class="math notranslate nohighlight">\(0\)</span>-th vertex at the origin. Edge <span class="math notranslate nohighlight">\(i\)</span> joins vertex <span class="math notranslate nohighlight">\(i\)</span> to vertex <span class="math notranslate nohighlight">\(i+1 \pmod{n}\)</span>.</p>
 <p>We can act on polygon with <span class="math notranslate nohighlight">\(2 \times 2\)</span> matrices. We define the rotation by <span class="math notranslate nohighlight">\(\frac{\pi}{6}\)</span> below:</p>
@@ -197,10 +208,20 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output text_html"><html><script type="math/tex; mode=display">\newcommand{\Bold}[1]{\mathbf{#1}}\left(\begin{array}{rr}
+0.866025403784439? & -\frac{1}{2} \\
+\frac{1}{2} & 0.866025403784439?
+\end{array}\right)</script></html></div></div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">R</span><span class="o">*</span><span class="n">p1</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Polygon: (0, 0), (0.866025403784439?, 1/2), (0, 1)
 </pre></div>
 </div>
 </div>
@@ -220,10 +241,20 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0
+</pre></div>
+</div>
+</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">surface</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>1
 </pre></div>
 </div>
 </div>
@@ -274,6 +305,104 @@ SimilaritySurface, ConeSurface, HalfDilationSurface, DilationSurface, and HalfTr
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>running ._test_category() . . .
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> pass
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>running ._test_edge_matrix() . . .
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> pass
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>running ._test_new() . . .
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> pass
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>running ._test_not_implemented_methods() . . .
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> pass
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>running ._test_pickling() . . .
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> pass
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>running ._test_underlying_surface() . . .
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  running ._test_base_label() . . .
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> pass
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  running ._test_base_ring() . . .
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> pass
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  running ._test_category() . . .
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> pass
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  running ._test_gluings() . . .
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> pass
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  running ._test_new() . . .
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> pass
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  running ._test_not_implemented_methods() . . .
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> pass
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  running ._test_override() . . .
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> pass
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  running ._test_pickling() . . .
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> pass
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  running ._test_polygons() . . .
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> pass
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> 
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> pass
+</pre></div>
+</div>
+</div>
 </div>
 <p>We can plot the surface. Edges are labeled according to the polygon they are glued to.</p>
 <div class="cell docutils container">
@@ -282,11 +411,19 @@ SimilaritySurface, ConeSurface, HalfDilationSurface, DilationSurface, and HalfTr
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<img alt="../_images/defining_surfaces_41_0.png" src="../_images/defining_surfaces_41_0.png" />
+</div>
 </div>
 <p>The field containing the vertices:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Algebraic Real Field
 </pre></div>
 </div>
 </div>
@@ -302,6 +439,11 @@ SimilaritySurface, ConeSurface, HalfDilationSurface, DilationSurface, and HalfTr
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ss</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Number Field in a with defining polynomial y^2 - 3 with a = 1.732050807568878?
 </pre></div>
 </div>
 </div>
@@ -390,12 +532,20 @@ More information including pitfalls are described in <a href="http://flipper.rea
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;class &#39;flatsurf.geometry.cone_surface.ConeSurface&#39;&gt;
+</pre></div>
+</div>
+</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 </pre></div>
 </div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/defining_surfaces_61_0.png" src="../_images/defining_surfaces_61_0.png" />
 </div>
 </div>
 <p>Sage has a built in polyhedron class. You can build a polyhedron as a convex hull of a list of vertices.</p>
@@ -409,6 +559,15 @@ More information including pitfalls are described in <a href="http://flipper.rea
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">polyhedron</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/usr/share/miniconda/envs/test/lib/python3.9/site-packages/sage/repl/rich_output/display_manager.py:594: RichReprWarning: Exception in _rich_repr_ while displaying object: [Errno 2] No such file or directory: &#39;/usr/share/miniconda/envs/test/share/threejs/version&#39;
+  warnings.warn(
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Graphics3d Object
 </pre></div>
 </div>
 </div>
@@ -427,6 +586,9 @@ More information including pitfalls are described in <a href="http://flipper.rea
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<img alt="../_images/defining_surfaces_67_0.png" src="../_images/defining_surfaces_67_0.png" />
+</div>
 </div>
 </div>
 <div class="section" id="defining-an-infinite-surface-from-scratch">
@@ -440,7 +602,6 @@ More information including pitfalls are described in <a href="http://flipper.rea
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># The space of polygons with vertices in the rationals:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_P</span> <span class="o">=</span> <span class="n">Polygons</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span>
- <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">executablebooks</span><span class="o">/</span><span class="n">MyST</span><span class="o">-</span><span class="n">NB</span><span class="o">/</span><span class="n">issues</span><span class="o">/</span><span class="mi">290</span>       
         <span class="bp">self</span><span class="o">.</span><span class="n">_inv</span> <span class="o">=</span> <span class="n">matrix</span><span class="p">(</span><span class="n">QQ</span><span class="p">,[[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">]])</span>
         
         <span class="c1"># Set the base field to QQ, the base label to be 1, and note that the surface is infinite.</span>
@@ -502,6 +663,108 @@ More information including pitfalls are described in <a href="http://flipper.rea
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>running ._test_category() . . .
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> pass
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>running ._test_edge_matrix() . . .
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> pass
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>running ._test_new() . . .
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> pass
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>running ._test_not_implemented_methods() . . .
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> pass
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>running ._test_underlying_surface() . . .
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  running ._test_base_label() . . .
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> fail
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Traceback (most recent call last):
+    File &quot;/usr/share/miniconda/envs/test/lib/python3.9/site-packages/sage/misc/sage_unittest.py&quot;, line 297, in run
+      test_method(tester=tester)
+    File &quot;/usr/share/miniconda/envs/test/lib/python3.9/site-packages/flatsurf/geometry/surface.py&quot;, line 444, in _test_base_label
+      tester.assertTrue(isinstance(self.polygon(self.base_label()), ConvexPolygon), \
+    File &quot;/usr/share/miniconda/envs/test/lib/python3.9/unittest/case.py&quot;, line 682, in assertTrue
+      raise self.failureException(msg)
+  AssertionError: polygon(base_label) does not return a ConvexPolygon. Here base_label=1
+  ------------------------------------------------------------
+  running ._test_base_ring() . . .
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> pass
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  running ._test_category() . . .
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> pass
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  running ._test_gluings() . . .
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> pass
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  running ._test_new() . . .
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> pass
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  running ._test_not_implemented_methods() . . .
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> pass
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  running ._test_override() . . .
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> pass
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  running ._test_polygons() . . .
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> fail
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Traceback (most recent call last):
+    File &quot;/usr/share/miniconda/envs/test/lib/python3.9/site-packages/sage/misc/sage_unittest.py&quot;, line 297, in run
+      test_method(tester=tester)
+    File &quot;/usr/share/miniconda/envs/test/lib/python3.9/site-packages/flatsurf/geometry/surface.py&quot;, line 540, in _test_polygons
+      tester.assertTrue(isinstance(self.polygon(label), ConvexPolygon), \
+    File &quot;/usr/share/miniconda/envs/test/lib/python3.9/unittest/case.py&quot;, line 682, in assertTrue
+      raise self.failureException(msg)
+  AssertionError: polygon(label) does not return a ConvexPolygon when label=1
+  ------------------------------------------------------------
+  The following tests failed: _test_base_label, _test_polygons
+The following tests failed: _test_underlying_surface
+</pre></div>
+</div>
+</div>
 </div>
 <p>A graphical surface controls the display of graphical data. For an infinite surface you need to configure the display manually.</p>
 <div class="cell docutils container">
@@ -524,6 +787,9 @@ More information including pitfalls are described in <a href="http://flipper.rea
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 </pre></div>
 </div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/defining_surfaces_76_0.png" src="../_images/defining_surfaces_76_0.png" />
 </div>
 </div>
 </div>
@@ -554,8 +820,8 @@ More information including pitfalls are described in <a href="http://flipper.rea
   <p class="topless"><a href="../examples.html"
                         title="previous chapter">Examples</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="graphics_configuration.html"
-                        title="next chapter">Graphics Configuration</a></p>
+  <p class="topless"><a href="linear_action_and_delaunay.html"
+                        title="next chapter">The GL(2,R) action, the Veech group, Delaunay decomposition</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -587,7 +853,7 @@ More information including pitfalls are described in <a href="http://flipper.rea
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="graphics_configuration.html" title="Graphics Configuration"
+          <a href="linear_action_and_delaunay.html" title="The GL(2,R) action, the Veech group, Delaunay decomposition"
              >next</a> |</li>
         <li class="right" >
           <a href="../examples.html" title="Examples"

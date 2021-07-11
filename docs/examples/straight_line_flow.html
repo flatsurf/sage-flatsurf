@@ -60,16 +60,6 @@
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">ModuleNotFoundError</span><span class="g g-Whitespace">                       </span>Traceback (most recent call last)
-<span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">ipykernel_4515</span><span class="o">/</span><span class="mf">2513896608.</span><span class="n">py</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
-<span class="ne">----&gt; </span><span class="mi">1</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="o">*</span>
-
-<span class="ne">ModuleNotFoundError</span>: No module named &#39;flatsurf&#39;
-</pre></div>
-</div>
-</div>
 </div>
 <div class="section" id="acting-on-surfaces-by-matrices">
 <h2>Acting on surfaces by matrices.<a class="headerlink" href="#acting-on-surfaces-by-matrices" title="Permalink to this headline">¶</a></h2>
@@ -85,6 +75,9 @@
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 </pre></div>
 </div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/straight_line_flow_4_0.png" src="../_images/straight_line_flow_4_0.png" />
 </div>
 </div>
 <p>Defines the tangent_bundle on the surface defined over the base_ring of s.</p>
@@ -124,6 +117,9 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<img alt="../_images/straight_line_flow_12_0.png" src="../_images/straight_line_flow_12_0.png" />
+</div>
 </div>
 <p>Flow into the next <span class="math notranslate nohighlight">\(100\)</span> polygons or until the trajectory hits a vertex.</p>
 <div class="cell docutils container">
@@ -139,11 +135,19 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<img alt="../_images/straight_line_flow_15_0.png" src="../_images/straight_line_flow_15_0.png" />
+</div>
 </div>
 <p>We can tell its type.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">traj</span><span class="o">.</span><span class="n">is_saddle_connection</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>True
 </pre></div>
 </div>
 </div>
@@ -176,6 +180,9 @@
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span><span class="o">+</span><span class="n">traj</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 </pre></div>
 </div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/straight_line_flow_22_0.png" src="../_images/straight_line_flow_22_0.png" />
 </div>
 </div>
 <p>We remark that it follows from work of Veech that the slope one direction is ergodic for the straight-line flow.</p>
