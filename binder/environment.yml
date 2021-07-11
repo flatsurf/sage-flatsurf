@@ -1,4 +1,4 @@
-# This exnvironment.yml can be used to create a conda environment with
+# This environment.yml can be used to create a conda environment with
 # sage-flatsurf and all its dependencies installed. It is used for our demo
 # binders.
 name: binder
