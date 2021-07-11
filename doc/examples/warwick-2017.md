@@ -487,12 +487,12 @@ jupyter:
   outputs_hidden: true
 ---
 from flatsurf.geometry.surface import Surface
-from flatsurf.geometry.polygon import Polygons
+from flatsurf.geometry.polygon import ConvexPolygons
 from flatsurf.geometry.similarity import SimilarityGroup
 class CubeSurf(Surface):
     def __init__(self,F):
         ZZ3=IntegerModRing(3)
-        P=Polygons(F)
+        P=ConvexPolygons(F)
         self._faceA=P(vertices=[(0,0),(1,0),(1,1),(0,1)])
         self._faceB=P(vertices=[(0,0),(1,0),(1,1),(0,1)])
         self._faceC=P(vertices=[(0,0),(1,0),(1,1),(0,1)])
