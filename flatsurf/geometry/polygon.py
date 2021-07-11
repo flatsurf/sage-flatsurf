@@ -963,7 +963,7 @@ class Polygon(Element):
             3/8
 
             sage: T = polygons(vertices=[(0,0), (3,1), (1,5)])
-            sage: [T.angle(i, numerical=True) for i in range(3)]
+            sage: [T.angle(i, numerical=True) for i in range(3)]  # abs tol 1e-13
             [0.16737532973071603, 0.22741638234956674, 0.10520828791971722]
             sage: sum(T.angle(i, numerical=True) for i in range(3))   # abs tol 1e-13
             0.5

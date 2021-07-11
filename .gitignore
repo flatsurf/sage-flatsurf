@@ -6,3 +6,4 @@ doc/_build/*
 *.swp
 dist/
 MANIFEST
+/rever
