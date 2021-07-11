@@ -18,11 +18,19 @@ jobs:
           mamba env update -n test --quiet -f flatsurf/environment.extra.yml
           mamba env update -n test --quiet -f doc/environment.yml
           conda list
+      - name: install sage-flatsurf
+        shell: bash -l {0}
+        run: |
+          pip install --verbose --no-index .
+          # Show message about cppyy regenerating pre-compiled headers so it does not show during the tests
+          python -c 'import cppyy' || true
       - name: build documentation
         shell: bash -l {0}
         run: |
           cd doc
-          make html
+          make html SPHINXOPTS="-W"
+          # Do not run Jekyll to create GitHub Pages but take HTML files as they are.
+          touch _build/html/.nojekyll
       - uses: JamesIves/github-pages-deploy-action@3.7.1
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -30,3 +38,5 @@ jobs:
           FOLDER: doc/_build/html
           TARGET_FOLDER: docs
         if: ${{ github.event_name == 'push' }}
+      - uses: flatsurf/actions/show-logs@main
+        if: ${{ always() }}
