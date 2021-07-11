@@ -196,7 +196,7 @@ def rotation_matrix_angle(r, check=False):
         ....:     c = z.real()
         ....:     s = z.imag()
         ....:     return matrix(AA, 2, [c,-s,s,c])
-        sage: [rotation_matrix_angle(rot_matrix(i, 5)) for i in range(1,5)]  # random output, due to numpy warnings on the first invocation on some architectures.
+        sage: [rotation_matrix_angle(rot_matrix(i, 5)) for i in range(1,5)]
         [1/5, 2/5, 3/5, 4/5]
         sage: [rotation_matrix_angle(rot_matrix(i, 5)) for i in range(1,5)]
         [1/5, 2/5, 3/5, 4/5]
