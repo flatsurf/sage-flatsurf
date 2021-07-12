@@ -763,8 +763,8 @@ class GL2ROrbitClosure:
             sage: d = [O.V2((x,y)).vector for x,y in zip(dreal,dimag)]  # optional: pyflatsurf
             sage: S2 = O._surface + d  # optional: pyflatsurf
 
-            sage: O2 = GL2ROrbitClosure(S2.surface())
-            sage: for d in O2.decompositions(4, 20, sector=((1,0),(5,1))):
+            sage: O2 = GL2ROrbitClosure(S2.surface())  # optional: pyflatsurf
+            sage: for d in O2.decompositions(4, 20, sector=((1,0),(5,1))):  # optional: pyflatsurf
             ....:     O2.update_tangent_space_from_flow_decomposition(d)
 
         """
