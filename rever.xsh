@@ -51,7 +51,7 @@ $CHANGELOG_NEWS = 'doc/news'
 $PUSH_TAG_REMOTE = 'git@github.com:flatsurf/sage-flatsurf.git'
 
 $PYPI_BUILD_COMMANDS = ['sdist', 'bdist_wheel']
-$PYPI_NAME = "sage_flatsurf"
+$PYPI_NAME = "sage-flatsurf"
 
 $GITHUB_ORG = 'flatsurf'
 $GITHUB_REPO = 'sage-flatsurf'
