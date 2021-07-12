@@ -1,7 +1,7 @@
 # This file lists the minimial dependencies needed to build and test
 # sage-flatsurf. Create a conda environment with these dependencies
 # preinstalled with:
-# conda env create -f environment.minimal.yml
+# conda env create -f environment.yml
 name: sage-flatsurf-build
 channels:
   - flatsurf
@@ -16,7 +16,7 @@ dependencies:
   - pytest-xdist
   - sagelib>=8.8
   - scipy
-  - surface-dynamics
+  - surface-dynamics>=0.4.7
   - pip:
     - flipper
 
