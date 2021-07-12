@@ -55,3 +55,5 @@ $PYPI_NAME = "sage-flatsurf"
 
 $GITHUB_ORG = 'flatsurf'
 $GITHUB_REPO = 'sage-flatsurf'
+
+$CHANGELOG_CATEGORIES = ('Added', 'Changed', 'Deprecated', 'Removed', 'Fixed', 'Performance')
