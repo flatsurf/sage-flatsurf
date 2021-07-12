@@ -4,6 +4,15 @@ sage-flatsurf Change Log
 
 .. current developments
 
+v0.4.1
+====================
+
+**Performance:**
+
+* Speed up kernel and rank computations when computing orbit closures.
+
+
+
 v0.4.0
 ====================
 
