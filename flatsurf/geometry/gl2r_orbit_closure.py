@@ -394,6 +394,11 @@ class Decomposition:
 
     @classmethod
     def _right_kernel_matrix(cls, M):
+        r"""
+        Compute the right kernel of the rational matrix `M`.
+
+        See https://github.com/flatsurf/sage-flatsurf/issues/100.
+        """
         M = M._clear_denom()[0]
 
         rows = M.nrows()
@@ -426,17 +431,16 @@ class Decomposition:
         if ker.nrows() == 0 and ker.ncols() != M.ncols():
             ker = ker.new_matrix(nrows=0, ncols=M.ncols())
 
-        # ker.echelonize()
-
-        # assert ker.dimensions() == M.right_kernel().matrix().dimensions()
-
         return ker
 
     @classmethod
     def _left_kernel_matrix(cls, M):
-        ker = cls._right_kernel_matrix(M.transpose())
-        # assert ker.dimensions() == M.left_kernel().matrix().dimensions()
-        return ker
+        r"""
+        Compute the left kernel of the rational matrix `M`.
+
+        See https://github.com/flatsurf/sage-flatsurf/issues/100.
+        """
+        return cls._right_kernel_matrix(M.transpose())
 
     def plot_completely_periodic(self):
         from sage.plot.all import polygon2d, Graphics, point2d, text
@@ -774,7 +778,6 @@ class GL2ROrbitClosure:
         n = self._surface.edges().size()
         k = len(self.spanning_set)
         assert k + len(bdry) == n + 1
-        # A = matrix(self.V2.base_ring(), n+1, n)
         A = matrix(QQ, n+1, n)
         for i,e in enumerate(self.spanning_set):
             A[i,e.index()] = 1
