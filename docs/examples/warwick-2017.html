@@ -52,10 +52,18 @@
 <div class="section" id="warwick-epsrc-symposium-on-computation-in-geometric-topology">
 <h2>Warwick EPSRC Symposium on “Computation in geometric topology”<a class="headerlink" href="#warwick-epsrc-symposium-on-computation-in-geometric-topology" title="Permalink to this headline">¶</a></h2>
 <p>By Pat Hooper <a class="reference external" href="mailto:whooper&#37;&#52;&#48;ccny&#46;cuny&#46;edu">mailto:whooper<span>&#64;</span>ccny<span>&#46;</span>cuny<span>&#46;</span>edu</a></p>
-<p>This material is based upon work supported by the National Science Foundation under Grant 1500965.</p>
-<p>FlatSurf is a SAGE module which works with “flat surfaces” written so far mostly by Vincent Delecroix and P. H. It is developing in random directions depending on our interests, but we would like it to be as helpful as possible for everyone… We welcome other contributors!</p>
-<p>To get FlatSurf you first need <a href="http://www.sagemath.org/">SAGE</a>. Then you can get FlatSurf by following the directions here on the <a href="https://github.com/videlec/sage-flatsurf#installing-the-module">FlatSurf GitHub page</a>. (Currently we recommend running</p>
-<p><code>sage -pip install git+https://github.com/videlec/sage-flatsurf</code></p>
+<p>This material is based upon work supported by the National Science Foundation
+under Grant 1500965.</p>
+<p>Flatsurf is a Sage module to work with “flat surfaces”
+written so far mostly by Vincent Delecroix and Pat Hooper.
+It is developing in random directions depending on our interests,
+but we would like it to be as helpful as possible for everyone…
+We welcome other contributors!</p>
+<p>To get flatsurf you first need <a href="https://www.sagemath.org/">Sage</a>.
+Then you can get flatsurf by following the directions here on the
+<a href="https://github.com/flatsurf/sage-flatsurf#installing-the-module">flatsurf GitHub page</a>.
+(Currently we recommend running</p>
+<p><code>sage -pip install git+https://github.com/flatsurf/sage-flatsurf</code></p>
 <p>to install.)</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -66,7 +74,7 @@
 </div>
 </div>
 <div class="section" id="veech-group-elements-affine-symmetries">
-<h2>Veech Group Elements (Affine symmetries)<a class="headerlink" href="#veech-group-elements-affine-symmetries" title="Permalink to this headline">¶</a></h2>
+<h2>Veech group elements (affine symmetries)<a class="headerlink" href="#veech-group-elements-affine-symmetries" title="Permalink to this headline">¶</a></h2>
 <p>Veech’s double n-gon surfaces:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -81,8 +89,8 @@
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">p</span><span class="o">=</span><span class="n">s</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-<span class="n">modulus</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="mi">3</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">p</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="mi">2</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span><span class="o">/</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="mi">2</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">p</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="mi">4</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">p</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">modulus</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="mi">3</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="mi">2</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="mi">2</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="mi">4</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
 <span class="n">AA</span><span class="p">(</span><span class="n">modulus</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -95,8 +103,8 @@
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">m</span> <span class="o">=</span> <span class="n">matrix</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),[[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]])</span>
-<span class="n">show</span><span class="p">(</span><span class="n">matrix</span><span class="p">(</span><span class="n">AA</span><span class="p">,</span><span class="n">m</span><span class="p">))</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">m</span> <span class="o">=</span> <span class="n">matrix</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span> <span class="p">[[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span>
+<span class="n">show</span><span class="p">(</span><span class="n">matrix</span><span class="p">(</span><span class="n">AA</span><span class="p">,</span> <span class="n">m</span><span class="p">))</span>
 <span class="n">ss</span> <span class="o">=</span> <span class="n">m</span><span class="o">*</span><span class="n">s</span>
 <span class="n">ss</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 </pre></div>
@@ -122,7 +130,7 @@
 <p>The following checks that the matrix m stabilizes s:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ss</span><span class="o">.</span><span class="n">canonicalize</span><span class="p">()</span><span class="o">==</span><span class="n">s</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ss</span><span class="o">.</span><span class="n">canonicalize</span><span class="p">()</span> <span class="o">==</span> <span class="n">s</span>
 </pre></div>
 </div>
 </div>
@@ -150,11 +158,11 @@
 </div>
 </div>
 </div>
-<p>Define a tangent vector in polygon <span class="math notranslate nohighlight">\(0\)</span> starting at <span class="math notranslate nohighlight">\((\frac{1}{2},0)\)</span> and pointed in some direction:</p>
+<p>Define a tangent vector in polygon <span class="math notranslate nohighlight">\(0\)</span> starting at <span class="math notranslate nohighlight">\((\frac{1}{2}, 0)\)</span> and pointed in some direction:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">direction</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">+</span><span class="mi">3</span><span class="o">*</span><span class="n">s</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
-<span class="n">v</span><span class="o">=</span><span class="n">TB</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="n">direction</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">direction</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="mi">3</span><span class="o">*</span><span class="n">s</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">v</span> <span class="o">=</span> <span class="n">TB</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">direction</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -162,14 +170,14 @@
 <p>Convert the vector to a straight-line trajectory.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">traj</span><span class="o">=</span><span class="n">v</span><span class="o">.</span><span class="n">straight_line_trajectory</span><span class="p">()</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">traj</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">straight_line_trajectory</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span><span class="o">+</span><span class="n">traj</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span> <span class="o">+</span> <span class="n">traj</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -182,7 +190,7 @@
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">traj</span><span class="o">.</span><span class="n">flow</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">traj</span><span class="o">.</span><span class="n">is_closed</span><span class="p">())</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">traj</span><span class="o">.</span><span class="n">combinatorial_length</span><span class="p">())</span>
-<span class="n">s</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span><span class="o">+</span><span class="n">traj</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+<span class="n">s</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span> <span class="o">+</span> <span class="n">traj</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -197,7 +205,8 @@
 </div>
 <div class="section" id="cone-surfaces-from-polyhedra">
 <h2>Cone surfaces from polyhedra<a class="headerlink" href="#cone-surfaces-from-polyhedra" title="Permalink to this headline">¶</a></h2>
-<p>Polyhedra are built into SAGE and you can use them to build a translation surface. In this Demo we only use a built in function for a Platonic Solid.</p>
+<p>Polyhedra are built into Sage and you can use them to build a translation surface.
+In this demo we only use a built-in function for a Platonic Solid.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flatsurf.geometry.polyhedra</span> <span class="kn">import</span> <span class="o">*</span>
@@ -207,7 +216,7 @@
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">polyhedron</span><span class="p">,</span><span class="n">s</span><span class="p">,</span><span class="n">mapping</span> <span class="o">=</span> <span class="n">platonic_dodecahedron</span><span class="p">()</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">polyhedron</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">mapping</span> <span class="o">=</span> <span class="n">platonic_dodecahedron</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -230,7 +239,7 @@
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">polygon_labels</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">edge_labels</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">polygon_labels</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">edge_labels</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -241,9 +250,9 @@
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">TB</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">tangent_bundle</span><span class="p">()</span>
-<span class="n">direction</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">+</span><span class="mi">2</span><span class="o">*</span><span class="n">s</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
-<span class="n">v</span><span class="o">=</span><span class="n">TB</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="n">direction</span><span class="p">)</span>
-<span class="n">traj</span><span class="o">=</span><span class="n">v</span><span class="o">.</span><span class="n">straight_line_trajectory</span><span class="p">()</span>
+<span class="n">direction</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span><span class="o">*</span><span class="n">s</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">v</span> <span class="o">=</span> <span class="n">TB</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">direction</span><span class="p">)</span>
+<span class="n">traj</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">straight_line_trajectory</span><span class="p">()</span>
 <span class="n">traj</span><span class="o">.</span><span class="n">flow</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">traj</span><span class="o">.</span><span class="n">is_closed</span><span class="p">())</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">traj</span><span class="o">.</span><span class="n">combinatorial_length</span><span class="p">())</span>
@@ -259,7 +268,7 @@
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span><span class="o">+</span><span class="n">traj</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span> <span class="o">+</span> <span class="n">traj</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -269,7 +278,9 @@
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">polyhedron</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">frame</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">point</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">line</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">wireframe</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span><span class="o">+</span><span class="n">line3d</span><span class="p">(</span><span class="n">mapping</span><span class="p">(</span><span class="n">traj</span><span class="p">),</span><span class="n">radius</span><span class="o">=</span><span class="mf">0.02</span><span class="p">,</span> <span class="n">frame</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">G</span> <span class="o">=</span> <span class="n">polyhedron</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">frame</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">point</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">line</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">wireframe</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="n">G</span> <span class="o">+=</span> <span class="n">line3d</span><span class="p">(</span><span class="n">mapping</span><span class="p">(</span><span class="n">traj</span><span class="p">),</span> <span class="n">radius</span><span class="o">=</span><span class="mf">0.02</span><span class="p">,</span> <span class="n">frame</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">G</span>
 </pre></div>
 </div>
 </div>
@@ -282,9 +293,9 @@
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">TB</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">tangent_bundle</span><span class="p">()</span>
-<span class="n">direction</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">+</span><span class="mi">3</span><span class="o">*</span><span class="n">s</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
-<span class="n">v</span><span class="o">=</span><span class="n">TB</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="n">direction</span><span class="p">)</span>
-<span class="n">traj</span><span class="o">=</span><span class="n">v</span><span class="o">.</span><span class="n">straight_line_trajectory</span><span class="p">()</span>
+<span class="n">direction</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="mi">3</span><span class="o">*</span><span class="n">s</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">v</span> <span class="o">=</span> <span class="n">TB</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">direction</span><span class="p">)</span>
+<span class="n">traj</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">straight_line_trajectory</span><span class="p">()</span>
 <span class="n">traj</span><span class="o">.</span><span class="n">flow</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">traj</span><span class="o">.</span><span class="n">is_closed</span><span class="p">())</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">traj</span><span class="o">.</span><span class="n">combinatorial_length</span><span class="p">())</span>
@@ -300,7 +311,7 @@
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">show</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span><span class="o">+</span><span class="n">traj</span><span class="o">.</span><span class="n">plot</span><span class="p">())</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">show</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span> <span class="o">+</span> <span class="n">traj</span><span class="o">.</span><span class="n">plot</span><span class="p">())</span>
 </pre></div>
 </div>
 </div>
@@ -310,8 +321,9 @@
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">p</span> <span class="o">=</span> <span class="n">polyhedron</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">frame</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">point</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">line</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">wireframe</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span><span class="o">+</span><span class="n">line3d</span><span class="p">(</span><span class="n">mapping</span><span class="p">(</span><span class="n">traj</span><span class="p">),</span><span class="n">radius</span><span class="o">=</span><span class="mf">0.02</span><span class="p">,</span> <span class="n">frame</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="n">show</span><span class="p">(</span><span class="n">p</span><span class="p">,</span><span class="n">viewer</span><span class="o">=</span><span class="s1">&#39;tachyon&#39;</span><span class="p">,</span><span class="n">frame</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">p</span> <span class="o">=</span> <span class="n">polyhedron</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">frame</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">point</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">line</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">wireframe</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="n">p</span> <span class="o">+=</span> <span class="n">line3d</span><span class="p">(</span><span class="n">mapping</span><span class="p">(</span><span class="n">traj</span><span class="p">),</span> <span class="n">radius</span><span class="o">=</span><span class="mf">0.02</span><span class="p">,</span> <span class="n">frame</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">p</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">viewer</span><span class="o">=</span><span class="s1">&#39;tachyon&#39;</span><span class="p">,</span> <span class="n">frame</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -325,7 +337,7 @@
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">veech_2n_gon</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
-<span class="n">s</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">edge_labels</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">polygon_labels</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">s</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">edge_labels</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">polygon_labels</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -336,7 +348,7 @@
 <p>Currently we have to triangulate to do a rel deformation.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">triangulate</span><span class="p">()</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">relabel</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">mutable</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">triangulate</span><span class="p">()</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">relabel</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">mutable</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -344,7 +356,7 @@
 <p>A singularity is an equivalence class of vertices of polygons.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sing</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">singularity</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sing</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">singularity</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 <span class="n">sing</span>
 </pre></div>
 </div>
@@ -355,10 +367,11 @@
 </div>
 </div>
 </div>
-<p>We can now deform by moving one singularity relative to the others. Here is a small deformation in the slope one direction.</p>
+<p>We can now deform by moving one singularity relative to the others.
+Here is a small deformation in the slope one direction.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ss</span><span class="o">=</span><span class="n">s</span><span class="o">.</span><span class="n">rel_deformation</span><span class="p">({</span><span class="n">sing</span><span class="p">:</span><span class="n">vector</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),(</span><span class="mi">1</span><span class="o">/</span><span class="mi">20</span><span class="p">,</span><span class="mi">1</span><span class="o">/</span><span class="mi">20</span><span class="p">))})</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ss</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">rel_deformation</span><span class="p">({</span><span class="n">sing</span><span class="p">:</span> <span class="n">vector</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">20</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">20</span><span class="p">))})</span>
 <span class="n">ss</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -370,7 +383,7 @@
 <p>A larger deformation:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ss</span><span class="o">=</span><span class="n">s</span><span class="o">.</span><span class="n">rel_deformation</span><span class="p">({</span><span class="n">sing</span><span class="p">:</span><span class="n">vector</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),(</span><span class="mi">100</span><span class="p">,</span><span class="mi">100</span><span class="p">))})</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ss</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">rel_deformation</span><span class="p">({</span><span class="n">sing</span><span class="p">:</span><span class="n">vector</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span> <span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">))})</span>
 <span class="n">ss</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -382,96 +395,122 @@
 </div>
 <div class="section" id="the-necker-cube-surface">
 <h2>The Necker Cube Surface<a class="headerlink" href="#the-necker-cube-surface" title="Permalink to this headline">¶</a></h2>
-<p>I’m demonstrating a result (in progress) of Pavel Javornik, an undergraduate at City College of New York.</p>
+<p>I’m demonstrating a result (in progress) of Pavel Javornik,
+an undergraduate at City College of New York.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flatsurf.geometry.straight_line_trajectory</span> <span class="kn">import</span> <span class="n">StraightLineTrajectory</span>
 
 <span class="k">class</span> <span class="nc">SurfaceToSpaceMapping</span><span class="p">(</span><span class="n">SageObject</span><span class="p">):</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">similarity_surface</span><span class="p">,</span> <span class="n">tranformation</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">=</span><span class="n">similarity_surface</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_s</span> <span class="o">=</span> <span class="n">similarity_surface</span>
         <span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">FunctionType</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">transformation</span><span class="p">,</span><span class="n">FunctionType</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">transformation</span><span class="o">=</span><span class="n">transformation</span>
-        
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">transformation</span><span class="p">,</span> <span class="n">FunctionType</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">transformation</span> <span class="o">=</span> <span class="n">transformation</span>
+
     <span class="k">def</span> <span class="nf">transformation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return a pair (m,t) where m is a 3x2 matrix and v is a vector with 3 entries.</span>
-<span class="sd">        The associated tranformation from the polygon with the given label is v mapsto</span>
-<span class="sd">        m*v+t where v is a point in the polygon.</span>
+<span class="sd">        Return a pair (m, t) where m is a 3x2 matrix and t is a vector with 3 entries.</span>
+
+<span class="sd">        The associated tranformation from the polygon with the given label</span>
+<span class="sd">        is v mapsto m*v + t where v is a point in the polygon.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_t</span><span class="p">[</span><span class="n">label</span><span class="p">]</span>
     
-    <span class="k">def</span> <span class="nf">image_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">label</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">image_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return a 2-dimensional polyhedron in 3-space representing the image of the polygon with the given label.</span>
+<span class="sd">        Return a 2-dimensional polyhedron in 3-space representing</span>
+<span class="sd">        the image of the polygon with the given label.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
-        <span class="n">m</span><span class="p">,</span><span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transformation</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
-        <span class="n">vertices</span> <span class="o">=</span> <span class="p">[</span> <span class="n">m</span><span class="o">*</span><span class="n">v</span><span class="o">+</span><span class="n">t</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">p</span><span class="o">.</span><span class="n">vertices</span><span class="p">()</span> <span class="p">]</span>
+        <span class="n">m</span><span class="p">,</span> <span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transformation</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+        <span class="n">vertices</span> <span class="o">=</span> <span class="p">[</span><span class="n">m</span><span class="o">*</span><span class="n">v</span> <span class="o">+</span> <span class="n">t</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">p</span><span class="o">.</span><span class="n">vertices</span><span class="p">()]</span>
         <span class="k">return</span> <span class="n">Polyhedron</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="n">vertices</span><span class="p">)</span>
-    
-    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">point</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">line</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">polygon</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">wireframe</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">frame</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">label_to_color</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">point</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">line</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">polygon</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+             <span class="n">wireframe</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">frame</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">label_to_color</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return a 3d plot of the polygonal images in 3-space corresponding to the collection of labels.</span>
-<span class="sd">        The other parameters are passed to a Polyhedron.plot method and affect the rendering.</span>
+<span class="sd">        Return a 3d plot of the polygonal images in 3-space</span>
+<span class="sd">        corresponding to the collection of labels.</span>
+
+<span class="sd">        The other parameters are passed to a Polyhedron.plot method</span>
+<span class="sd">        and affect the rendering.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">it</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span>
         <span class="n">label</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">it</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">label_to_color</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">point</span><span class="o">=</span><span class="n">point</span><span class="p">,</span> <span class="n">line</span><span class="o">=</span><span class="n">line</span><span class="p">,</span> <span class="n">polygon</span><span class="o">=</span><span class="n">polygon</span><span class="p">,</span> \
-                                               <span class="n">wireframe</span><span class="o">=</span><span class="n">wireframe</span><span class="p">,</span><span class="n">frame</span><span class="o">=</span><span class="n">frame</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;pink&quot;</span><span class="p">)</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">point</span><span class="o">=</span><span class="n">point</span><span class="p">,</span>
+                                               <span class="n">line</span><span class="o">=</span><span class="n">line</span><span class="p">,</span>
+                                               <span class="n">polygon</span><span class="o">=</span><span class="n">polygon</span><span class="p">,</span>
+                                               <span class="n">wireframe</span><span class="o">=</span><span class="n">wireframe</span><span class="p">,</span>
+                                               <span class="n">frame</span><span class="o">=</span><span class="n">frame</span><span class="p">,</span>
+                                               <span class="n">color</span><span class="o">=</span><span class="s2">&quot;pink&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">point</span><span class="o">=</span><span class="n">point</span><span class="p">,</span> <span class="n">line</span><span class="o">=</span><span class="n">line</span><span class="p">,</span> <span class="n">polygon</span><span class="o">=</span><span class="n">polygon</span><span class="p">,</span> \
-                                               <span class="n">wireframe</span><span class="o">=</span><span class="n">wireframe</span><span class="p">,</span><span class="n">frame</span><span class="o">=</span><span class="n">frame</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="n">label_to_color</span><span class="p">(</span><span class="n">label</span><span class="p">))</span>            
+            <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">point</span><span class="o">=</span><span class="n">point</span><span class="p">,</span>
+                                               <span class="n">line</span><span class="o">=</span><span class="n">line</span><span class="p">,</span>
+                                               <span class="n">polygon</span><span class="o">=</span><span class="n">polygon</span><span class="p">,</span>
+                                               <span class="n">wireframe</span><span class="o">=</span><span class="n">wireframe</span><span class="p">,</span>
+                                               <span class="n">frame</span><span class="o">=</span><span class="n">frame</span><span class="p">,</span>
+                                               <span class="n">color</span><span class="o">=</span><span class="n">label_to_color</span><span class="p">(</span><span class="n">label</span><span class="p">))</span>
         <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">it</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">label_to_color</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">p</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">point</span><span class="o">=</span><span class="n">point</span><span class="p">,</span> <span class="n">line</span><span class="o">=</span><span class="n">line</span><span class="p">,</span> <span class="n">polygon</span><span class="o">=</span><span class="n">polygon</span><span class="p">,</span> \
-                                                   <span class="n">wireframe</span><span class="o">=</span><span class="n">wireframe</span><span class="p">,</span><span class="n">frame</span><span class="o">=</span><span class="n">frame</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;pink&quot;</span><span class="p">)</span>
+                <span class="n">p</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">point</span><span class="o">=</span><span class="n">point</span><span class="p">,</span>
+                                                    <span class="n">line</span><span class="o">=</span><span class="n">line</span><span class="p">,</span>
+                                                    <span class="n">polygon</span><span class="o">=</span><span class="n">polygon</span><span class="p">,</span>
+                                                    <span class="n">wireframe</span><span class="o">=</span><span class="n">wireframe</span><span class="p">,</span>
+                                                    <span class="n">frame</span><span class="o">=</span><span class="n">frame</span><span class="p">,</span>
+                                                    <span class="n">color</span><span class="o">=</span><span class="s2">&quot;pink&quot;</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">p</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">point</span><span class="o">=</span><span class="n">point</span><span class="p">,</span> <span class="n">line</span><span class="o">=</span><span class="n">line</span><span class="p">,</span> <span class="n">polygon</span><span class="o">=</span><span class="n">polygon</span><span class="p">,</span> \
-                                                   <span class="n">wireframe</span><span class="o">=</span><span class="n">wireframe</span><span class="p">,</span><span class="n">frame</span><span class="o">=</span><span class="n">frame</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="n">label_to_color</span><span class="p">(</span><span class="n">label</span><span class="p">))</span> 
+                <span class="n">p</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">point</span><span class="o">=</span><span class="n">point</span><span class="p">,</span>
+                                                    <span class="n">line</span><span class="o">=</span><span class="n">line</span><span class="p">,</span>
+                                                    <span class="n">polygon</span><span class="o">=</span><span class="n">polygon</span><span class="p">,</span>
+                                                    <span class="n">wireframe</span><span class="o">=</span><span class="n">wireframe</span><span class="p">,</span>
+                                                    <span class="n">frame</span><span class="o">=</span><span class="n">frame</span><span class="p">,</span>
+                                                    <span class="n">color</span><span class="o">=</span><span class="n">label_to_color</span><span class="p">(</span><span class="n">label</span><span class="p">))</span>
         <span class="kn">from</span> <span class="nn">sage.modules.free_module_element</span> <span class="kn">import</span> <span class="n">vector</span>
-        <span class="n">p</span><span class="o">.</span><span class="n">frame_aspect_ratio</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">vector</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">bounding_box</span><span class="p">()[</span><span class="mi">1</span><span class="p">])</span><span class="o">-</span><span class="n">vector</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">bounding_box</span><span class="p">()[</span><span class="mi">0</span><span class="p">])))</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">frame_aspect_ratio</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">vector</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">bounding_box</span><span class="p">()[</span><span class="mi">1</span><span class="p">])</span>
+                                   <span class="o">-</span> <span class="n">vector</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">bounding_box</span><span class="p">()[</span><span class="mi">0</span><span class="p">])))</span>
         <span class="k">return</span> <span class="n">p</span>
 
-    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">o</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method is used to convert from an object on the surface to an object in space.</span>
-<span class="sd">        </span>
-<span class="sd">        Currently works with </span>
-<span class="sd">        - StraightLineTrajectory -- returns the corresponding list of points in space</span>
-<span class="sd">        - SegmentInPolygon -- returns the corresponding pair of points in space</span>
-<span class="sd">        - SimilaritySurfaceTangentVector -- returns a pair of points corresponding to the image point and image of the tangent vector.</span>
+
+<span class="sd">        Currently works with</span>
+
+<span class="sd">        - ``StraightLineTrajectory`` -- returns the corresponding list of points in space</span>
+<span class="sd">        - ``SegmentInPolygon`` -- returns the corresponding pair of points in space</span>
+<span class="sd">        - ``SimilaritySurfaceTangentVector`` -- returns a pair of points corresponding</span>
+<span class="sd">          to the image point and image of the tangent vector.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">StraightLineTrajectory</span><span class="p">):</span>
-            <span class="n">points</span><span class="o">=</span><span class="p">[]</span>
+            <span class="n">points</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="n">it</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">segments</span><span class="p">())</span>
-            <span class="n">s</span><span class="o">=</span><span class="nb">next</span><span class="p">(</span><span class="n">it</span><span class="p">)</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">it</span><span class="p">)</span>
             <span class="n">label</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">polygon_label</span><span class="p">()</span>
-            <span class="n">m</span><span class="p">,</span><span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transformation</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
-            
+            <span class="n">m</span><span class="p">,</span> <span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transformation</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
             <span class="n">points</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span> <span class="o">+</span> <span class="n">m</span><span class="o">*</span><span class="n">s</span><span class="o">.</span><span class="n">start</span><span class="p">()</span><span class="o">.</span><span class="n">point</span><span class="p">())</span>
             <span class="n">points</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span> <span class="o">+</span> <span class="n">m</span><span class="o">*</span><span class="n">s</span><span class="o">.</span><span class="n">end</span><span class="p">()</span><span class="o">.</span><span class="n">point</span><span class="p">())</span>
             <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">it</span><span class="p">:</span>
                 <span class="n">label</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">polygon_label</span><span class="p">()</span>
-                <span class="n">m</span><span class="p">,</span><span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transformation</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+                <span class="n">m</span><span class="p">,</span> <span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transformation</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
                 <span class="n">points</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span> <span class="o">+</span> <span class="n">m</span><span class="o">*</span><span class="n">s</span><span class="o">.</span><span class="n">end</span><span class="p">()</span><span class="o">.</span><span class="n">point</span><span class="p">())</span>
             <span class="k">return</span> <span class="n">points</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">SegmentInPolygon</span><span class="p">):</span>
             <span class="c1"># Return the pair of images of the endpoints.</span>
             <span class="n">label</span> <span class="o">=</span> <span class="n">o</span><span class="o">.</span><span class="n">polygon_label</span><span class="p">()</span>
-            <span class="n">m</span><span class="p">,</span><span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transformation</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
-            <span class="k">return</span> <span class="p">(</span> <span class="n">t</span><span class="o">+</span><span class="n">m</span><span class="o">*</span><span class="n">o</span><span class="o">.</span><span class="n">start</span><span class="p">()</span><span class="o">.</span><span class="n">point</span><span class="p">(),</span> <span class="n">t</span><span class="o">+</span><span class="n">m</span><span class="o">*</span><span class="n">o</span><span class="o">.</span><span class="n">end</span><span class="p">()</span><span class="o">.</span><span class="n">point</span><span class="p">()</span> <span class="p">)</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span><span class="n">SimilaritySurfaceTangentVector</span><span class="p">):</span>
-            <span class="c1"># Map to a pair of vectors consisting of the image of the basepoint and the image of the vector.</span>
+            <span class="n">m</span><span class="p">,</span> <span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transformation</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">t</span> <span class="o">+</span> <span class="n">m</span><span class="o">*</span><span class="n">o</span><span class="o">.</span><span class="n">start</span><span class="p">()</span><span class="o">.</span><span class="n">point</span><span class="p">(),</span> <span class="n">t</span> <span class="o">+</span> <span class="n">m</span><span class="o">*</span><span class="n">o</span><span class="o">.</span><span class="n">end</span><span class="p">()</span><span class="o">.</span><span class="n">point</span><span class="p">())</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">SimilaritySurfaceTangentVector</span><span class="p">):</span>
+            <span class="c1"># Map to a pair of vectors consisting of the image</span>
+            <span class="c1"># of the basepoint and the image of the vector.</span>
             <span class="n">label</span> <span class="o">=</span> <span class="n">o</span><span class="o">.</span><span class="n">polygon_label</span><span class="p">()</span>
-            <span class="n">m</span><span class="p">,</span><span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transformation</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+            <span class="n">m</span><span class="p">,</span> <span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transformation</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
             <span class="n">point</span> <span class="o">=</span> <span class="n">o</span><span class="o">.</span><span class="n">point</span><span class="p">()</span>
             <span class="n">vector</span> <span class="o">=</span> <span class="n">o</span><span class="o">.</span><span class="n">vector</span><span class="p">()</span>
             <span class="k">return</span> <span class="p">(</span><span class="n">t</span> <span class="o">+</span> <span class="n">m</span><span class="o">*</span><span class="n">point</span><span class="p">,</span> <span class="n">m</span><span class="o">*</span><span class="n">vector</span><span class="p">)</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Failed to recognize type of passed object&quot;</span><span class="p">)</span>    
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Failed to recognize type of passed object&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -482,97 +521,97 @@
 <span class="kn">from</span> <span class="nn">flatsurf.geometry.polygon</span> <span class="kn">import</span> <span class="n">ConvexPolygons</span>
 <span class="kn">from</span> <span class="nn">flatsurf.geometry.similarity</span> <span class="kn">import</span> <span class="n">SimilarityGroup</span>
 <span class="k">class</span> <span class="nc">CubeSurf</span><span class="p">(</span><span class="n">Surface</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">F</span><span class="p">):</span>
-        <span class="n">ZZ3</span><span class="o">=</span><span class="n">IntegerModRing</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
-        <span class="n">P</span><span class="o">=</span><span class="n">ConvexPolygons</span><span class="p">(</span><span class="n">F</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_faceA</span><span class="o">=</span><span class="n">P</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_faceB</span><span class="o">=</span><span class="n">P</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_faceC</span><span class="o">=</span><span class="n">P</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)])</span>
-        <span class="n">Surface</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">F</span><span class="p">,(</span><span class="n">ZZ</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span><span class="n">ZZ</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span><span class="n">ZZ3</span><span class="p">(</span><span class="mi">0</span><span class="p">)),</span> <span class="n">finite</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">F</span><span class="p">):</span>
+        <span class="n">ZZ3</span> <span class="o">=</span> <span class="n">IntegerModRing</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+        <span class="n">P</span> <span class="o">=</span> <span class="n">ConvexPolygons</span><span class="p">(</span><span class="n">F</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_faceA</span> <span class="o">=</span> <span class="n">P</span><span class="p">(</span><span class="n">vertices</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_faceB</span> <span class="o">=</span> <span class="n">P</span><span class="p">(</span><span class="n">vertices</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_faceC</span> <span class="o">=</span> <span class="n">P</span><span class="p">(</span><span class="n">vertices</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)])</span>
+        <span class="n">Surface</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="p">(</span><span class="n">ZZ</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">ZZ</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">ZZ3</span><span class="p">(</span><span class="mi">0</span><span class="p">)),</span> <span class="n">finite</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
-        <span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">l</span><span class="o">=</span><span class="n">label</span>
-        <span class="k">if</span> <span class="n">l</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+        <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">l</span> <span class="o">=</span> <span class="n">label</span>
+        <span class="k">if</span> <span class="n">l</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_faceA</span>
-        <span class="k">if</span> <span class="n">l</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">l</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_faceB</span>
-        <span class="k">if</span> <span class="n">l</span><span class="o">==</span><span class="mi">2</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">l</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_faceC</span>
-    <span class="k">def</span> <span class="nf">opposite_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">label</span><span class="p">,</span><span class="n">edge</span><span class="p">):</span>
-        <span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">l</span><span class="o">=</span><span class="n">label</span>
-        <span class="c1">## l(0)=A l(1)=B l(2)=C</span>
-        <span class="k">if</span> <span class="n">l</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">edge</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
-                <span class="k">return</span><span class="p">((</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">l</span><span class="o">+</span><span class="mi">2</span><span class="p">),</span><span class="mi">2</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">edge</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>
-                <span class="k">return</span><span class="p">((</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">l</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span><span class="mi">3</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">edge</span><span class="o">==</span><span class="mi">2</span><span class="p">:</span>
-                <span class="k">return</span><span class="p">((</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">l</span><span class="o">+</span><span class="mi">2</span><span class="p">),</span><span class="mi">0</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">edge</span><span class="o">==</span><span class="mi">3</span><span class="p">:</span>
-                <span class="k">return</span><span class="p">((</span><span class="n">x</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">l</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span><span class="mi">1</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">l</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">edge</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
-                <span class="k">return</span><span class="p">((</span><span class="n">x</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">y</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">l</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span><span class="mi">3</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">edge</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>
-                <span class="k">return</span><span class="p">((</span><span class="n">x</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">l</span><span class="o">+</span><span class="mi">2</span><span class="p">),</span><span class="mi">3</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">edge</span><span class="o">==</span><span class="mi">2</span><span class="p">:</span>
-                <span class="k">return</span><span class="p">((</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">l</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span><span class="mi">1</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">edge</span><span class="o">==</span><span class="mi">3</span><span class="p">:</span>
-                <span class="k">return</span><span class="p">((</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">l</span><span class="o">+</span><span class="mi">2</span><span class="p">),</span><span class="mi">1</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">l</span><span class="o">==</span><span class="mi">2</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">edge</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
-                <span class="k">return</span><span class="p">((</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">l</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span><span class="mi">2</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">edge</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>
-                <span class="k">return</span><span class="p">((</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">l</span><span class="o">+</span><span class="mi">2</span><span class="p">),</span><span class="mi">2</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">edge</span><span class="o">==</span><span class="mi">2</span><span class="p">:</span>
-                <span class="k">return</span><span class="p">((</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">l</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span><span class="mi">0</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">edge</span><span class="o">==</span><span class="mi">3</span><span class="p">:</span>
-                <span class="k">return</span><span class="p">((</span><span class="n">x</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">y</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">l</span><span class="o">+</span><span class="mi">2</span><span class="p">),</span><span class="mi">0</span><span class="p">)</span>
-<span class="n">SG</span><span class="o">=</span><span class="n">SimilarityGroup</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">opposite_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">):</span>
+        <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">l</span> <span class="o">=</span> <span class="n">label</span>
+        <span class="c1"># l(0) = A, l(1) = B, l(2) = C</span>
+        <span class="k">if</span> <span class="n">l</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">edge</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">return</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">l</span> <span class="o">+</span> <span class="mi">2</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">edge</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">return</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">l</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="mi">3</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">edge</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="k">return</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">l</span> <span class="o">+</span> <span class="mi">2</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">edge</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+                <span class="k">return</span><span class="p">((</span><span class="n">x</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">l</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">l</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">edge</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">return</span><span class="p">((</span><span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">y</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">l</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="mi">3</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">edge</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">return</span><span class="p">((</span><span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">l</span> <span class="o">+</span> <span class="mi">2</span><span class="p">),</span> <span class="mi">3</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">edge</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="k">return</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">l</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">edge</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+                <span class="k">return</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">l</span> <span class="o">+</span> <span class="mi">2</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">l</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">edge</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">return</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">l</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">edge</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">return</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">l</span> <span class="o">+</span> <span class="mi">2</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">edge</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="k">return</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">l</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">edge</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+                <span class="k">return</span><span class="p">((</span><span class="n">x</span> <span class="o">-</span> <span class="mi">1</span> <span class="p">,</span> <span class="n">y</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">l</span> <span class="o">+</span> <span class="mi">2</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
+
+<span class="n">SG</span> <span class="o">=</span> <span class="n">SimilarityGroup</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">default_position</span><span class="p">(</span><span class="n">label</span><span class="p">):</span>
-    <span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">l</span> <span class="o">=</span> <span class="n">label</span>
-    <span class="k">if</span><span class="p">(</span><span class="n">ZZ</span><span class="p">(</span><span class="n">l</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">SG</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">x</span><span class="p">,</span><span class="mi">2</span><span class="o">*</span><span class="n">y</span><span class="p">)</span> <span class="c1">#(b+c)x,(a+c)y</span>
-    <span class="k">if</span><span class="p">(</span><span class="n">ZZ</span><span class="p">(</span><span class="n">l</span><span class="p">)</span><span class="o">==</span><span class="mi">1</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">SG</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">x</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="o">*</span><span class="n">y</span><span class="p">)</span> <span class="c1">#(b+c)x + c, (a+c)y</span>
-    <span class="k">if</span><span class="p">(</span><span class="n">ZZ</span><span class="p">(</span><span class="n">l</span><span class="p">)</span><span class="o">==</span><span class="mi">2</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">SG</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">x</span><span class="p">,</span><span class="mi">2</span><span class="o">*</span><span class="n">y</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="c1">#(b+c)x, (a+c)y + c</span>
-    <span class="c1">##Reminder to parameterize a,b,c here for positions.</span>
-    <span class="c1">##Rework this to work for surfaces of different sizes.</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">l</span> <span class="o">=</span> <span class="n">label</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">ZZ</span><span class="p">(</span><span class="n">l</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">SG</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">x</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="n">y</span><span class="p">)</span>  <span class="c1"># (b + c) x, (a + c) y</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">ZZ</span><span class="p">(</span><span class="n">l</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">SG</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="n">y</span><span class="p">)</span>  <span class="c1"># (b + c) x + c, (a + c) y</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">ZZ</span><span class="p">(</span><span class="n">l</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">SG</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">x</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="n">y</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># (b + c) x, (a + c) y + c</span>
+    <span class="c1"># Reminder to parameterize a, b, c here for positions.</span>
+    <span class="c1"># Rework this to work for surfaces of different sizes.</span>
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s</span><span class="o">=</span><span class="n">SimilaritySurface</span><span class="p">(</span><span class="n">CubeSurf</span><span class="p">(</span><span class="n">QQ</span><span class="p">))</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s</span> <span class="o">=</span> <span class="n">SimilaritySurface</span><span class="p">(</span><span class="n">CubeSurf</span><span class="p">(</span><span class="n">QQ</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">MM</span><span class="o">=</span><span class="n">matrix</span><span class="p">(</span><span class="n">QQ</span><span class="p">,[</span>
-    <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span>
-    <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span>
-    <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">MM</span> <span class="o">=</span> <span class="n">matrix</span><span class="p">(</span><span class="n">QQ</span><span class="p">,[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+                <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+                <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
 <span class="p">])</span>
 <span class="k">def</span> <span class="nf">transformation</span><span class="p">(</span><span class="n">label</span><span class="p">):</span>
-    <span class="n">M</span><span class="o">=</span><span class="n">MatrixSpace</span><span class="p">(</span><span class="n">QQ</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
-    <span class="n">V</span><span class="o">=</span><span class="n">VectorSpace</span><span class="p">(</span><span class="n">QQ</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
-    <span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">l</span><span class="o">=</span><span class="n">label</span>
-    <span class="k">if</span> <span class="n">l</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">MM</span><span class="o">*</span><span class="n">M</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]]),</span><span class="n">MM</span><span class="o">*</span><span class="n">V</span><span class="p">([</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="o">-</span><span class="n">x</span><span class="o">-</span><span class="n">y</span><span class="p">])</span>
-    <span class="k">elif</span> <span class="n">l</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">MM</span><span class="o">*</span><span class="n">M</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]]),</span><span class="n">MM</span><span class="o">*</span><span class="n">V</span><span class="p">([</span><span class="n">x</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="o">-</span><span class="n">x</span><span class="o">-</span><span class="n">y</span><span class="p">])</span>
-    <span class="k">else</span><span class="p">:</span> <span class="c1"># l==2</span>
-        <span class="k">return</span> <span class="n">MM</span><span class="o">*</span><span class="n">M</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">]]),</span><span class="n">MM</span><span class="o">*</span><span class="n">V</span><span class="p">([</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="n">x</span><span class="o">-</span><span class="n">y</span><span class="p">])</span>
-<span class="n">m</span><span class="o">=</span><span class="n">SurfaceToSpaceMapping</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="n">transformation</span><span class="p">)</span>
+    <span class="n">M</span> <span class="o">=</span> <span class="n">MatrixSpace</span><span class="p">(</span><span class="n">QQ</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">V</span> <span class="o">=</span> <span class="n">VectorSpace</span><span class="p">(</span><span class="n">QQ</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">l</span> <span class="o">=</span> <span class="n">label</span>
+    <span class="k">if</span> <span class="n">l</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">MM</span><span class="o">*</span><span class="n">M</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]),</span> <span class="n">MM</span><span class="o">*</span><span class="n">V</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="o">-</span><span class="n">x</span> <span class="o">-</span> <span class="n">y</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">l</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">MM</span><span class="o">*</span><span class="n">M</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]),</span> <span class="n">MM</span><span class="o">*</span><span class="n">V</span><span class="p">([</span><span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="o">-</span><span class="n">x</span> <span class="o">-</span> <span class="n">y</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>  <span class="c1"># l == 2</span>
+        <span class="k">return</span> <span class="n">MM</span><span class="o">*</span><span class="n">M</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]]),</span> <span class="n">MM</span><span class="o">*</span><span class="n">V</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="n">x</span> <span class="o">-</span> <span class="n">y</span><span class="p">])</span>
+<span class="n">m</span> <span class="o">=</span> <span class="n">SurfaceToSpaceMapping</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">transformation</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">label_to_color</span><span class="p">(</span><span class="n">label</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">label</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">label</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">return</span> <span class="s2">&quot;pink&quot;</span>
-    <span class="k">if</span> <span class="n">label</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">label</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">return</span> <span class="s2">&quot;yellow&quot;</span>
-    <span class="k">if</span> <span class="n">label</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">==</span><span class="mi">2</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">label</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
         <span class="k">return</span> <span class="s2">&quot;beige&quot;</span>
 </pre></div>
 </div>
@@ -581,7 +620,7 @@
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">it</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">label_iterator</span><span class="p">()</span>
-<span class="n">m</span><span class="o">.</span><span class="n">plot</span><span class="p">({</span><span class="nb">next</span><span class="p">(</span><span class="n">it</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">30</span><span class="p">)},</span><span class="n">label_to_color</span><span class="o">=</span><span class="n">label_to_color</span><span class="p">)</span>
+<span class="n">m</span><span class="o">.</span><span class="n">plot</span><span class="p">({</span><span class="nb">next</span><span class="p">(</span><span class="n">it</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">30</span><span class="p">)},</span> <span class="n">label_to_color</span><span class="o">=</span><span class="n">label_to_color</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -595,24 +634,28 @@
 </div>
 </div>
 </div>
-<p><b>Theorem (Pavel Javornik)</b> A trajectory of rational slope (measured on one of the squares interpretted tohave horizontal and vertical sides) on the Necker Cube Surface closes up if and only if the slope can be expressed as the ratio of two odd integers.</p>
+<p><b>Theorem (Pavel Javornik).</b>
+A trajectory of rational slope (measured on one of the squares interpreted to
+have horizontal and vertical sides) on the Necker Cube Surface closes up
+if and only if the slope can be expressed as the ratio of two odd integers.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">B</span><span class="o">=</span><span class="n">s</span><span class="o">.</span><span class="n">tangent_bundle</span><span class="p">()</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">B</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">tangent_bundle</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 </div>
-<p>The following builds a trajectory starting in the base polygon at the point <span class="math notranslate nohighlight">\((\frac{1}{4}, \frac{1}{4})\)</span> and traveling in a direction of slope one.</p>
+<p>The following builds a trajectory starting in the base polygon at the point
+<span class="math notranslate nohighlight">\((\frac{1}{4}, \frac{1}{4})\)</span> and traveling in a direction of slope one.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">v</span><span class="o">=</span><span class="n">B</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">base_label</span><span class="p">(),(</span><span class="mi">1</span><span class="o">/</span><span class="mi">4</span><span class="p">,</span><span class="mi">1</span><span class="o">/</span><span class="mi">4</span><span class="p">),(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
-<span class="n">traj</span><span class="o">=</span><span class="n">v</span><span class="o">.</span><span class="n">straight_line_trajectory</span><span class="p">()</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">v</span> <span class="o">=</span> <span class="n">B</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">base_label</span><span class="p">(),</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="n">traj</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">straight_line_trajectory</span><span class="p">()</span>
 <span class="n">traj</span><span class="o">.</span><span class="n">flow</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
 <span class="k">if</span> <span class="n">traj</span><span class="o">.</span><span class="n">is_closed</span><span class="p">():</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The trajectory closed up.&quot;</span><span class="p">)</span>
-<span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="n">seg</span><span class="o">.</span><span class="n">polygon_label</span><span class="p">()</span> <span class="k">for</span> <span class="n">seg</span> <span class="ow">in</span> <span class="n">traj</span><span class="o">.</span><span class="n">segments</span><span class="p">()]</span>
-<span class="n">m</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span><span class="n">label_to_color</span><span class="o">=</span><span class="n">label_to_color</span><span class="p">)</span><span class="o">+</span><span class="n">line3d</span><span class="p">(</span><span class="n">m</span><span class="p">(</span><span class="n">traj</span><span class="p">),</span><span class="n">radius</span><span class="o">=</span><span class="mf">0.02</span><span class="p">)</span>
+<span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="n">seg</span><span class="o">.</span><span class="n">polygon_label</span><span class="p">()</span> <span class="k">for</span> <span class="n">seg</span> <span class="ow">in</span> <span class="n">traj</span><span class="o">.</span><span class="n">segments</span><span class="p">()]</span>
+<span class="n">m</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">label_to_color</span><span class="o">=</span><span class="n">label_to_color</span><span class="p">)</span> <span class="o">+</span> <span class="n">line3d</span><span class="p">(</span><span class="n">m</span><span class="p">(</span><span class="n">traj</span><span class="p">),</span> <span class="n">radius</span><span class="o">=</span><span class="mf">0.02</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -628,12 +671,14 @@
 <p>A trajectory of slope <span class="math notranslate nohighlight">\(5/4\)</span>.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">v</span><span class="o">=</span><span class="n">B</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">base_label</span><span class="p">(),(</span><span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="o">/</span><span class="mi">4</span><span class="p">),(</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
-<span class="n">traj</span><span class="o">=</span><span class="n">v</span><span class="o">.</span><span class="n">straight_line_trajectory</span><span class="p">()</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">v</span> <span class="o">=</span> <span class="n">B</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">base_label</span><span class="p">(),</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">traj</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">straight_line_trajectory</span><span class="p">()</span>
 <span class="n">traj</span><span class="o">.</span><span class="n">flow</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span>
-<span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="n">seg</span><span class="o">.</span><span class="n">polygon_label</span><span class="p">()</span> <span class="k">for</span> <span class="n">seg</span> <span class="ow">in</span> <span class="n">traj</span><span class="o">.</span><span class="n">segments</span><span class="p">()]</span>
-<span class="n">p</span><span class="o">=</span><span class="n">m</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span><span class="n">label_to_color</span><span class="o">=</span><span class="n">label_to_color</span><span class="p">)</span><span class="o">+</span><span class="n">line3d</span><span class="p">(</span><span class="n">m</span><span class="p">(</span><span class="n">traj</span><span class="p">),</span><span class="n">radius</span><span class="o">=</span><span class="mf">0.04</span><span class="p">,</span><span class="n">label_to_color</span><span class="o">=</span><span class="n">label_to_color</span><span class="p">)</span>
-<span class="n">p</span><span class="o">.</span><span class="n">frame_aspect_ratio</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">vector</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">bounding_box</span><span class="p">()[</span><span class="mi">1</span><span class="p">])</span><span class="o">-</span><span class="n">vector</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">bounding_box</span><span class="p">()[</span><span class="mi">0</span><span class="p">])))</span>
+<span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="n">seg</span><span class="o">.</span><span class="n">polygon_label</span><span class="p">()</span> <span class="k">for</span> <span class="n">seg</span> <span class="ow">in</span> <span class="n">traj</span><span class="o">.</span><span class="n">segments</span><span class="p">()]</span>
+<span class="n">p</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">label_to_color</span><span class="o">=</span><span class="n">label_to_color</span><span class="p">)</span> <span class="o">+</span> <span class="n">line3d</span><span class="p">(</span><span class="n">m</span><span class="p">(</span><span class="n">traj</span><span class="p">),</span>
+           <span class="n">radius</span><span class="o">=</span><span class="mf">0.04</span><span class="p">,</span> <span class="n">label_to_color</span><span class="o">=</span><span class="n">label_to_color</span><span class="p">)</span>
+<span class="n">p</span><span class="o">.</span><span class="n">frame_aspect_ratio</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">vector</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">bounding_box</span><span class="p">()[</span><span class="mi">1</span><span class="p">])</span>
+                           <span class="o">-</span> <span class="n">vector</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">bounding_box</span><span class="p">()[</span><span class="mi">0</span><span class="p">])))</span>
 <span class="n">p</span>
 </pre></div>
 </div>
@@ -647,21 +692,22 @@
 <p>A trajectory of slope <span class="math notranslate nohighlight">\(11/9\)</span></p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">v</span><span class="o">=</span><span class="n">B</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">base_label</span><span class="p">(),(</span><span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="o">/</span><span class="mi">4</span><span class="p">),(</span><span class="mi">9</span><span class="p">,</span><span class="mi">11</span><span class="p">))</span>
-<span class="n">traj</span><span class="o">=</span><span class="n">v</span><span class="o">.</span><span class="n">straight_line_trajectory</span><span class="p">()</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">v</span> <span class="o">=</span> <span class="n">B</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">base_label</span><span class="p">(),</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">11</span><span class="p">))</span>
+<span class="n">traj</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">straight_line_trajectory</span><span class="p">()</span>
 <span class="n">traj</span><span class="o">.</span><span class="n">flow</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
 <span class="k">while</span> <span class="ow">not</span> <span class="n">traj</span><span class="o">.</span><span class="n">is_closed</span><span class="p">():</span>
     <span class="n">traj</span><span class="o">.</span><span class="n">flow</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
-<span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="n">seg</span><span class="o">.</span><span class="n">polygon_label</span><span class="p">()</span> <span class="k">for</span> <span class="n">seg</span> <span class="ow">in</span> <span class="n">traj</span><span class="o">.</span><span class="n">segments</span><span class="p">()]</span>
-<span class="n">p</span><span class="o">=</span><span class="n">m</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span><span class="n">label_to_color</span><span class="o">=</span><span class="n">label_to_color</span><span class="p">)</span><span class="o">+</span><span class="n">line3d</span><span class="p">(</span><span class="n">m</span><span class="p">(</span><span class="n">traj</span><span class="p">),</span><span class="n">radius</span><span class="o">=</span><span class="mf">0.04</span><span class="p">)</span>
-<span class="c1">#p</span>
+<span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="n">seg</span><span class="o">.</span><span class="n">polygon_label</span><span class="p">()</span> <span class="k">for</span> <span class="n">seg</span> <span class="ow">in</span> <span class="n">traj</span><span class="o">.</span><span class="n">segments</span><span class="p">()]</span>
+<span class="n">p</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">label_to_color</span><span class="o">=</span><span class="n">label_to_color</span><span class="p">)</span>
+<span class="n">p</span> <span class="o">+=</span> <span class="n">line3d</span><span class="p">(</span><span class="n">m</span><span class="p">(</span><span class="n">traj</span><span class="p">),</span> <span class="n">radius</span><span class="o">=</span><span class="mf">0.04</span><span class="p">)</span>
+<span class="c1"># p</span>
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">show</span><span class="p">(</span><span class="n">p</span><span class="p">,</span><span class="n">frame</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">viewer</span><span class="o">=</span><span class="s2">&quot;tachyon&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">show</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">frame</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">viewer</span><span class="o">=</span><span class="s2">&quot;tachyon&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -671,7 +717,7 @@
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#show(p,frame=False)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># show(p, frame=False)</span>
 </pre></div>
 </div>
 </div>
@@ -690,7 +736,7 @@
   <ul>
 <li><a class="reference internal" href="#">FlatSurf Demo</a><ul>
 <li><a class="reference internal" href="#warwick-epsrc-symposium-on-computation-in-geometric-topology">Warwick EPSRC Symposium on “Computation in geometric topology”</a></li>
-<li><a class="reference internal" href="#veech-group-elements-affine-symmetries">Veech Group Elements (Affine symmetries)</a></li>
+<li><a class="reference internal" href="#veech-group-elements-affine-symmetries">Veech group elements (affine symmetries)</a></li>
 <li><a class="reference internal" href="#geodesics">Geodesics</a></li>
 <li><a class="reference internal" href="#cone-surfaces-from-polyhedra">Cone surfaces from polyhedra</a></li>
 <li><a class="reference internal" href="#relative-period-deformations">Relative period deformations</a></li>
