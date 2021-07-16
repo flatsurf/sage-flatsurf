@@ -129,6 +129,12 @@ Primary Contributors
 
 We welcome others to contribute.
 
+How to Cite This Project
+-------------------------
+
+If you have used this project please cite us as described `on our zenodo
+website <https://zenodo.org/badge/latestdoi/13970050>`_.
+
 Acknowledgements
 ----------------
 
