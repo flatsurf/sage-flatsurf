@@ -15,6 +15,8 @@ dependencies:
   - matplotlib-base
   - surface-dynamics>=0.4.7
   - jupytext
+  - three.js
+  - tachyon
   - pip
   - pip:
     - flipper
