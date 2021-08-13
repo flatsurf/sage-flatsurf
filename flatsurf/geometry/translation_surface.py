@@ -53,7 +53,7 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
         r"""
         Return the stratum this surface belongs to.
 
-        This uses the package ``surface_dynamics``
+        This uses the package ``surface-dynamics``
         (see http://www.labri.fr/perso/vdelecro/flatsurf_sage.html)
 
         EXAMPLES::
