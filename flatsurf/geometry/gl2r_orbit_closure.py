@@ -532,7 +532,7 @@ class GL2ROrbitClosure:
         sage: GL2ROrbitClosure(S)._U.base_ring() # optional: pyflatsurf
         Number Field in a with defining polynomial x^3 - 2 with a = 1.259921049894873?
     """
-    def __init__(self, surface):
+    def __init__(self, surface, spanning_tree = None):
         if isinstance(surface, TranslationSurface):
             base_ring = surface.base_ring()
             from flatsurf.geometry.pyflatsurf_conversion import to_pyflatsurf
@@ -549,7 +549,7 @@ class GL2ROrbitClosure:
         # We construct a spanning set of edges, that is a subset of the
         # edges that form a basis of H_1(S, Sigma; Z)
         # It comes together with a projection matrix
-        t, m = self._spanning_tree()
+        t, m = self._spanning_tree(eligible=spanning_tree)
         assert set(t.keys()) == set(f[0] for f in self._faces())
         self.spanning_set = []
         v = set(t.values())
@@ -837,7 +837,7 @@ class GL2ROrbitClosure:
         """
         return (self.absolute_homology().matrix() * self._U[:self._U_rank].transpose()).rank()
 
-    def _spanning_tree(self, root=None):
+    def _spanning_tree(self, root=None, eligible=None):
         r"""
         Return
 
@@ -845,7 +845,10 @@ class GL2ROrbitClosure:
         - a matrix projection to the basis (modulo the triangle relations)
         """
         if root is None:
-            root = next(iter(self._surface.edges())).positive()
+            if eligible is not None:
+                root = next(iter(eligible))
+            else:
+                root = next(iter(self._surface.edges())).positive()
 
         root = self._half_edge_to_face(root)
         t = {root: None} # face -> half edge to take to go to the root
@@ -855,11 +858,12 @@ class GL2ROrbitClosure:
             f = todo.pop()
             for _ in range(3):
                 f1 = -f
-                g = self._half_edge_to_face(f1)
-                if g not in t:
-                    t[g] = f1
-                    todo.append(g)
-                    edges.append(f1)
+                if eligible is None or f1 in eligible:
+                    g = self._half_edge_to_face(f1)
+                    if g not in t:
+                        t[g] = f1
+                        todo.append(g)
+                        edges.append(f1)
 
                 f = self._surface.nextInFace(f)
 
