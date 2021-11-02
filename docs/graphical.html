@@ -4,19 +4,20 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>The Graphical Package &#8212; sage-flatsurf 0.4.1 documentation</title>
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>The Graphical Package &#8212; sage-flatsurf 0.4.2 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
     <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="_static/mystnb.css" />
     
-    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/togglebutton.js"></script>
-    <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -38,7 +39,7 @@
         <li class="right" >
           <a href="geometry.html" title="The Geometry Package"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">sage-flatsurf 0.4.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">sage-flatsurf 0.4.2 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">The Graphical Package</a></li> 
       </ul>
     </div>  
@@ -48,55 +49,55 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="module-flatsurf.graphical">
+  <section id="module-flatsurf.graphical">
 <span id="the-graphical-package"></span><h1>The Graphical Package<a class="headerlink" href="#module-flatsurf.graphical" title="Permalink to this headline">¶</a></h1>
 <p>The goal of this package is to prepare geometric objects for rendering in a figure or in a gui. 
 This package is intended to support graphical output via matplotlib.</p>
-<div class="section" id="module-flatsurf.graphical.polygon">
+<section id="module-flatsurf.graphical.polygon">
 <span id="graphical-polygons"></span><h2>Graphical Polygons<a class="headerlink" href="#module-flatsurf.graphical.polygon" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
-<dt id="flatsurf.graphical.polygon.GraphicalPolygon">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">flatsurf.graphical.polygon.</span></code><code class="sig-name descname"><span class="pre">GraphicalPolygon</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">polygon</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transformation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/polygon.html#GraphicalPolygon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.polygon.GraphicalPolygon" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.polygon.GraphicalPolygon">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">flatsurf.graphical.polygon.</span></span><span class="sig-name descname"><span class="pre">GraphicalPolygon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">polygon</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transformation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/polygon.html#GraphicalPolygon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.polygon.GraphicalPolygon" title="Permalink to this definition">¶</a></dt>
 <dd><p>Stores data necessary to draw one of the polygons from a surface.</p>
 <p>Note that this involves converting between geometric coordinates, defined for the SimilaritySurface,
 and graphical coordinates. We do this with a similarity (called transformation below).</p>
 <dl class="py method">
-<dt id="flatsurf.graphical.polygon.GraphicalPolygon.base_polygon">
-<code class="sig-name descname"><span class="pre">base_polygon</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/polygon.html#GraphicalPolygon.base_polygon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.polygon.GraphicalPolygon.base_polygon" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.polygon.GraphicalPolygon.base_polygon">
+<span class="sig-name descname"><span class="pre">base_polygon</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/polygon.html#GraphicalPolygon.base_polygon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.polygon.GraphicalPolygon.base_polygon" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the polygon of the surface in geometric coordinates.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="flatsurf.graphical.polygon.GraphicalPolygon.bounding_box">
-<code class="sig-name descname"><span class="pre">bounding_box</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/polygon.html#GraphicalPolygon.bounding_box"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.polygon.GraphicalPolygon.bounding_box" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.polygon.GraphicalPolygon.bounding_box">
+<span class="sig-name descname"><span class="pre">bounding_box</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/polygon.html#GraphicalPolygon.bounding_box"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.polygon.GraphicalPolygon.bounding_box" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the quadruple (x1,y1,x2,y2) where x1 and y1 are the minimal
 x- and y-coordinates and x2 and y2 are the maximal x-and y- cordinates.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="flatsurf.graphical.polygon.GraphicalPolygon.contains">
-<code class="sig-name descname"><span class="pre">contains</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">point</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/polygon.html#GraphicalPolygon.contains"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.polygon.GraphicalPolygon.contains" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.polygon.GraphicalPolygon.contains">
+<span class="sig-name descname"><span class="pre">contains</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">point</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/polygon.html#GraphicalPolygon.contains"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.polygon.GraphicalPolygon.contains" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the transformation of point from graphical coordinates to the geometric coordinates
 of the underlying SimilaritySurface.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="flatsurf.graphical.polygon.GraphicalPolygon.copy">
-<code class="sig-name descname"><span class="pre">copy</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/polygon.html#GraphicalPolygon.copy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.polygon.GraphicalPolygon.copy" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.polygon.GraphicalPolygon.copy">
+<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/polygon.html#GraphicalPolygon.copy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.polygon.GraphicalPolygon.copy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a copy of this GraphicalPolygon.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="flatsurf.graphical.polygon.GraphicalPolygon.plot_edge">
-<code class="sig-name descname"><span class="pre">plot_edge</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">e</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">options</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/polygon.html#GraphicalPolygon.plot_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.polygon.GraphicalPolygon.plot_edge" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.polygon.GraphicalPolygon.plot_edge">
+<span class="sig-name descname"><span class="pre">plot_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">e</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">options</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/polygon.html#GraphicalPolygon.plot_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.polygon.GraphicalPolygon.plot_edge" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot the edge e, with e a number 0,…,n-1 with n being the number
 of edges of the polygon.</p>
 <p>Options are processed as in sage.plot.line.line2d.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="flatsurf.graphical.polygon.GraphicalPolygon.plot_edge_label">
-<code class="sig-name descname"><span class="pre">plot_edge_label</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">options</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/polygon.html#GraphicalPolygon.plot_edge_label"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.polygon.GraphicalPolygon.plot_edge_label" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.polygon.GraphicalPolygon.plot_edge_label">
+<span class="sig-name descname"><span class="pre">plot_edge_label</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">options</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/polygon.html#GraphicalPolygon.plot_edge_label"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.polygon.GraphicalPolygon.plot_edge_label" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write label on the i-th edge.</p>
 <p>A parameter <code class="docutils literal notranslate"><span class="pre">t</span></code> in the interval [0,1] can be provided to position the
 label along the edge. A value of t=0 will position it at the starting
@@ -110,8 +111,8 @@ inside the polygon or on the edge. Defaults to “inside”.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="flatsurf.graphical.polygon.GraphicalPolygon.plot_label">
-<code class="sig-name descname"><span class="pre">plot_label</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">options</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/polygon.html#GraphicalPolygon.plot_label"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.polygon.GraphicalPolygon.plot_label" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.polygon.GraphicalPolygon.plot_label">
+<span class="sig-name descname"><span class="pre">plot_label</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">options</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/polygon.html#GraphicalPolygon.plot_label"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.polygon.GraphicalPolygon.plot_label" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write the label of the polygon as text.</p>
 <p>Set <code class="docutils literal notranslate"><span class="pre">position</span></code> to a pair (x,y) to determine where
 the label is drawn (in graphical coordinates). If this parameter
@@ -121,8 +122,8 @@ of the polygon.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="flatsurf.graphical.polygon.GraphicalPolygon.plot_points">
-<code class="sig-name descname"><span class="pre">plot_points</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">options</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/polygon.html#GraphicalPolygon.plot_points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.polygon.GraphicalPolygon.plot_points" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.polygon.GraphicalPolygon.plot_points">
+<span class="sig-name descname"><span class="pre">plot_points</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">options</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/polygon.html#GraphicalPolygon.plot_points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.polygon.GraphicalPolygon.plot_points" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot the points in the given collection of points.</p>
 <p>The options are passed to point2d.</p>
 <p>If no “zorder” option is provided then we set “zorder” to 50.</p>
@@ -131,16 +132,16 @@ to use graphical coordinates instead.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="flatsurf.graphical.polygon.GraphicalPolygon.plot_polygon">
-<code class="sig-name descname"><span class="pre">plot_polygon</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">options</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/polygon.html#GraphicalPolygon.plot_polygon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.polygon.GraphicalPolygon.plot_polygon" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.polygon.GraphicalPolygon.plot_polygon">
+<span class="sig-name descname"><span class="pre">plot_polygon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">options</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/polygon.html#GraphicalPolygon.plot_polygon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.polygon.GraphicalPolygon.plot_polygon" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns only the filled polygon.</p>
 <p>Options are processed as in sage.plot.polygon.polygon2d except
 that by default axes=False.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="flatsurf.graphical.polygon.GraphicalPolygon.plot_zero_flag">
-<code class="sig-name descname"><span class="pre">plot_zero_flag</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">options</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/polygon.html#GraphicalPolygon.plot_zero_flag"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.polygon.GraphicalPolygon.plot_zero_flag" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.polygon.GraphicalPolygon.plot_zero_flag">
+<span class="sig-name descname"><span class="pre">plot_zero_flag</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">options</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/polygon.html#GraphicalPolygon.plot_zero_flag"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.polygon.GraphicalPolygon.plot_zero_flag" title="Permalink to this definition">¶</a></dt>
 <dd><p>Draw a line segment from the zero vertex toward the baricenter.</p>
 <p>A real parameter <code class="docutils literal notranslate"><span class="pre">t</span></code> can be provided. If t=1, then the segment will
 go all the way to the baricenter.  The value of <code class="docutils literal notranslate"><span class="pre">t</span></code> is linear in the
@@ -149,67 +150,67 @@ length of the segment. Defaults to t=0.5.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="flatsurf.graphical.polygon.GraphicalPolygon.set_transformation">
-<code class="sig-name descname"><span class="pre">set_transformation</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transformation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/polygon.html#GraphicalPolygon.set_transformation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.polygon.GraphicalPolygon.set_transformation" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.polygon.GraphicalPolygon.set_transformation">
+<span class="sig-name descname"><span class="pre">set_transformation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transformation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/polygon.html#GraphicalPolygon.set_transformation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.polygon.GraphicalPolygon.set_transformation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set the transformation to be applied to the polygon.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="flatsurf.graphical.polygon.GraphicalPolygon.transform">
-<code class="sig-name descname"><span class="pre">transform</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">point</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">double_precision</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/polygon.html#GraphicalPolygon.transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.polygon.GraphicalPolygon.transform" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.polygon.GraphicalPolygon.transform">
+<span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">point</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">double_precision</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/polygon.html#GraphicalPolygon.transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.polygon.GraphicalPolygon.transform" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the transformation of point into graphical coordinates.</p>
 <p>By default returned point is in double precision. This can be changed
 to an exact representation by setting <cite>double_precision</cite> to False.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="flatsurf.graphical.polygon.GraphicalPolygon.transform_back">
-<code class="sig-name descname"><span class="pre">transform_back</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">point</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/polygon.html#GraphicalPolygon.transform_back"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.polygon.GraphicalPolygon.transform_back" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.polygon.GraphicalPolygon.transform_back">
+<span class="sig-name descname"><span class="pre">transform_back</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">point</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/polygon.html#GraphicalPolygon.transform_back"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.polygon.GraphicalPolygon.transform_back" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the transformation of point from graphical coordinates to the geometric coordinates
 of the underlying SimilaritySurface.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="flatsurf.graphical.polygon.GraphicalPolygon.transformation">
-<code class="sig-name descname"><span class="pre">transformation</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/polygon.html#GraphicalPolygon.transformation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.polygon.GraphicalPolygon.transformation" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.polygon.GraphicalPolygon.transformation">
+<span class="sig-name descname"><span class="pre">transformation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/polygon.html#GraphicalPolygon.transformation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.polygon.GraphicalPolygon.transformation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the transformation (similarity) which converts from
 mathematical to graphical coordinates.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="flatsurf.graphical.polygon.GraphicalPolygon.transformed_vertex">
-<code class="sig-name descname"><span class="pre">transformed_vertex</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">e</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/polygon.html#GraphicalPolygon.transformed_vertex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.polygon.GraphicalPolygon.transformed_vertex" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.polygon.GraphicalPolygon.transformed_vertex">
+<span class="sig-name descname"><span class="pre">transformed_vertex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">e</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/polygon.html#GraphicalPolygon.transformed_vertex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.polygon.GraphicalPolygon.transformed_vertex" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the graphical coordinates of the vertex in double precision.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="flatsurf.graphical.polygon.GraphicalPolygon.xmax">
-<code class="sig-name descname"><span class="pre">xmax</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/polygon.html#GraphicalPolygon.xmax"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.polygon.GraphicalPolygon.xmax" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.polygon.GraphicalPolygon.xmax">
+<span class="sig-name descname"><span class="pre">xmax</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/polygon.html#GraphicalPolygon.xmax"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.polygon.GraphicalPolygon.xmax" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the maximal x-coordinate of a vertex.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="flatsurf.graphical.polygon.GraphicalPolygon.xmin">
-<code class="sig-name descname"><span class="pre">xmin</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/polygon.html#GraphicalPolygon.xmin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.polygon.GraphicalPolygon.xmin" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.polygon.GraphicalPolygon.xmin">
+<span class="sig-name descname"><span class="pre">xmin</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/polygon.html#GraphicalPolygon.xmin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.polygon.GraphicalPolygon.xmin" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the minimal x-coordinate of a vertex.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="flatsurf.graphical.polygon.GraphicalPolygon.ymax">
-<code class="sig-name descname"><span class="pre">ymax</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/polygon.html#GraphicalPolygon.ymax"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.polygon.GraphicalPolygon.ymax" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.polygon.GraphicalPolygon.ymax">
+<span class="sig-name descname"><span class="pre">ymax</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/polygon.html#GraphicalPolygon.ymax"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.polygon.GraphicalPolygon.ymax" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the minimal y-coordinate of a vertex</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="flatsurf.graphical.polygon.GraphicalPolygon.ymin">
-<code class="sig-name descname"><span class="pre">ymin</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/polygon.html#GraphicalPolygon.ymin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.polygon.GraphicalPolygon.ymin" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.polygon.GraphicalPolygon.ymin">
+<span class="sig-name descname"><span class="pre">ymin</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/polygon.html#GraphicalPolygon.ymin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.polygon.GraphicalPolygon.ymin" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the minimal y-coordinate of a vertex.</p>
 </dd></dl>
 
 </dd></dl>
 
-</div>
-<div class="section" id="module-flatsurf.graphical.surface">
+</section>
+<section id="module-flatsurf.graphical.surface">
 <span id="graphical-surfaces"></span><h2>Graphical Surfaces<a class="headerlink" href="#module-flatsurf.graphical.surface" title="Permalink to this headline">¶</a></h2>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">import</span> <span class="nn">flatsurf</span>
@@ -218,8 +219,8 @@ mathematical to graphical coordinates.</p>
 </pre></div>
 </div>
 <dl class="py class">
-<dt id="flatsurf.graphical.surface.GraphicalSurface">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">flatsurf.graphical.surface.</span></code><code class="sig-name descname"><span class="pre">GraphicalSurface</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">similarity_surface</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adjacencies</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">polygon_labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'gluings'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_position_function</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/surface.html#GraphicalSurface"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.surface.GraphicalSurface">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">flatsurf.graphical.surface.</span></span><span class="sig-name descname"><span class="pre">GraphicalSurface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">similarity_surface</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adjacencies</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">polygon_labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'gluings'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_position_function</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/surface.html#GraphicalSurface"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface" title="Permalink to this definition">¶</a></dt>
 <dd><p>This class manages the rendering of a SimilaritySurface.</p>
 <p>This class essentially consists of a collection of GraphicalPolygons which
 control how individual polygons are positioned. In addition, this class
@@ -322,23 +323,23 @@ adjacent to the edge it is glued to.</p>
 </pre></div>
 </div>
 <dl class="py attribute">
-<dt id="flatsurf.graphical.surface.GraphicalSurface.adjacent_edge_options">
-<code class="sig-name descname"><span class="pre">adjacent_edge_options</span></code><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.adjacent_edge_options" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.surface.GraphicalSurface.adjacent_edge_options">
+<span class="sig-name descname"><span class="pre">adjacent_edge_options</span></span><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.adjacent_edge_options" title="Permalink to this definition">¶</a></dt>
 <dd><p>Options passed to <code class="xref py py-func docutils literal notranslate"><span class="pre">graphical_polygon.GraphicalPolygon.plot_edge()</span></code>
 when plotting a polygon edge which is adjacent to the edge it is glued to.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="flatsurf.graphical.surface.GraphicalSurface.bounding_box">
-<code class="sig-name descname"><span class="pre">bounding_box</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/surface.html#GraphicalSurface.bounding_box"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.bounding_box" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.surface.GraphicalSurface.bounding_box">
+<span class="sig-name descname"><span class="pre">bounding_box</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/surface.html#GraphicalSurface.bounding_box"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.bounding_box" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the quadruple (x1,y1,x2,y2) where x1 and y1 are the minimal
 x- and y-coordinates of a visible graphical polygon and x2 and y2 are the
 maximal x-and y- cordinates  of a visible graphical polygon.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="flatsurf.graphical.surface.GraphicalSurface.copy">
-<code class="sig-name descname"><span class="pre">copy</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/surface.html#GraphicalSurface.copy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.copy" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.surface.GraphicalSurface.copy">
+<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/surface.html#GraphicalSurface.copy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.copy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Make a copy of this GraphicalSurface.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="o">*</span>
@@ -365,14 +366,14 @@ maximal x-and y- cordinates  of a visible graphical polygon.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="flatsurf.graphical.surface.GraphicalSurface.edge_label_options">
-<code class="sig-name descname"><span class="pre">edge_label_options</span></code><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.edge_label_options" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.surface.GraphicalSurface.edge_label_options">
+<span class="sig-name descname"><span class="pre">edge_label_options</span></span><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.edge_label_options" title="Permalink to this definition">¶</a></dt>
 <dd><p>Options passed to <code class="xref py py-func docutils literal notranslate"><span class="pre">graphical_polygon.GraphicalPolygon.edge_label()</span></code> when plotting a polygon label.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="flatsurf.graphical.surface.GraphicalSurface.edge_labels">
-<code class="sig-name descname"><span class="pre">edge_labels</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lab</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/surface.html#GraphicalSurface.edge_labels"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.edge_labels" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.surface.GraphicalSurface.edge_labels">
+<span class="sig-name descname"><span class="pre">edge_labels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lab</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/surface.html#GraphicalSurface.edge_labels"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.edge_labels" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the list of edge labels to be used for the polygon with label <code class="docutils literal notranslate"><span class="pre">lab</span></code>.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="o">*</span>
@@ -406,26 +407,26 @@ maximal x-and y- cordinates  of a visible graphical polygon.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="flatsurf.graphical.surface.GraphicalSurface.get_surface">
-<code class="sig-name descname"><span class="pre">get_surface</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/surface.html#GraphicalSurface.get_surface"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.get_surface" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.surface.GraphicalSurface.get_surface">
+<span class="sig-name descname"><span class="pre">get_surface</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/surface.html#GraphicalSurface.get_surface"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.get_surface" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the underlying similarity surface.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="flatsurf.graphical.surface.GraphicalSurface.graphical_polygon">
-<code class="sig-name descname"><span class="pre">graphical_polygon</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/surface.html#GraphicalSurface.graphical_polygon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.graphical_polygon" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.surface.GraphicalSurface.graphical_polygon">
+<span class="sig-name descname"><span class="pre">graphical_polygon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/surface.html#GraphicalSurface.graphical_polygon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.graphical_polygon" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the graphical_polygon with the given label.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="flatsurf.graphical.surface.GraphicalSurface.hide">
-<code class="sig-name descname"><span class="pre">hide</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/surface.html#GraphicalSurface.hide"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.hide" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.surface.GraphicalSurface.hide">
+<span class="sig-name descname"><span class="pre">hide</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/surface.html#GraphicalSurface.hide"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.hide" title="Permalink to this definition">¶</a></dt>
 <dd><p>Mark the polygon with the given label as invisible.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="flatsurf.graphical.surface.GraphicalSurface.is_adjacent">
-<code class="sig-name descname"><span class="pre">is_adjacent</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/surface.html#GraphicalSurface.is_adjacent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.is_adjacent" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.surface.GraphicalSurface.is_adjacent">
+<span class="sig-name descname"><span class="pre">is_adjacent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/surface.html#GraphicalSurface.is_adjacent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.is_adjacent" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the truth value of the statement
 ‘The polygon opposite edge (p,e) is adjacent to that edge.’</p>
 <p>EXAMPLES:</p>
@@ -446,14 +447,14 @@ maximal x-and y- cordinates  of a visible graphical polygon.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="flatsurf.graphical.surface.GraphicalSurface.is_visible">
-<code class="sig-name descname"><span class="pre">is_visible</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/surface.html#GraphicalSurface.is_visible"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.is_visible" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.surface.GraphicalSurface.is_visible">
+<span class="sig-name descname"><span class="pre">is_visible</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/surface.html#GraphicalSurface.is_visible"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.is_visible" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return whether the polygon with the given label is marked as visible.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="flatsurf.graphical.surface.GraphicalSurface.make_adjacent">
-<code class="sig-name descname"><span class="pre">make_adjacent</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reverse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">visible</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/surface.html#GraphicalSurface.make_adjacent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.make_adjacent" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.surface.GraphicalSurface.make_adjacent">
+<span class="sig-name descname"><span class="pre">make_adjacent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reverse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">visible</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/surface.html#GraphicalSurface.make_adjacent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.make_adjacent" title="Permalink to this definition">¶</a></dt>
 <dd><p>Move the polygon across the prescribed edge so that is adjacent.
 The polygon moved is obtained from opposite_edge(p,e).</p>
 <p>If reverse=True then the polygon is moved so that there is a fold
@@ -479,15 +480,15 @@ at the edge.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="flatsurf.graphical.surface.GraphicalSurface.make_adjacent_and_visible">
-<code class="sig-name descname"><span class="pre">make_adjacent_and_visible</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reverse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/surface.html#GraphicalSurface.make_adjacent_and_visible"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.make_adjacent_and_visible" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.surface.GraphicalSurface.make_adjacent_and_visible">
+<span class="sig-name descname"><span class="pre">make_adjacent_and_visible</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reverse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/surface.html#GraphicalSurface.make_adjacent_and_visible"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.make_adjacent_and_visible" title="Permalink to this definition">¶</a></dt>
 <dd><p>Move the polygon across the prescribed edge so that is adjacent,
 and make the moved polygon visible.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="flatsurf.graphical.surface.GraphicalSurface.make_all_visible">
-<code class="sig-name descname"><span class="pre">make_all_visible</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">adjacent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/surface.html#GraphicalSurface.make_all_visible"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.make_all_visible" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.surface.GraphicalSurface.make_all_visible">
+<span class="sig-name descname"><span class="pre">make_all_visible</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">adjacent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/surface.html#GraphicalSurface.make_all_visible"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.make_all_visible" title="Permalink to this definition">¶</a></dt>
 <dd><p>Attempt to show all invisible polygons by walking over the surface.</p>
 <p>INPUT:</p>
 <ul class="simple">
@@ -515,28 +516,28 @@ provided.</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt id="flatsurf.graphical.surface.GraphicalSurface.make_visible">
-<code class="sig-name descname"><span class="pre">make_visible</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/surface.html#GraphicalSurface.make_visible"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.make_visible" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.surface.GraphicalSurface.make_visible">
+<span class="sig-name descname"><span class="pre">make_visible</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/surface.html#GraphicalSurface.make_visible"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.make_visible" title="Permalink to this definition">¶</a></dt>
 <dd><p>Mark the polygon with the given label as visible.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="flatsurf.graphical.surface.GraphicalSurface.non_adjacent_edge_options">
-<code class="sig-name descname"><span class="pre">non_adjacent_edge_options</span></code><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.non_adjacent_edge_options" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.surface.GraphicalSurface.non_adjacent_edge_options">
+<span class="sig-name descname"><span class="pre">non_adjacent_edge_options</span></span><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.non_adjacent_edge_options" title="Permalink to this definition">¶</a></dt>
 <dd><p>Options passed to <code class="xref py py-func docutils literal notranslate"><span class="pre">graphical_polygon.GraphicalPolygon.plot_edge()</span></code> when plotting a polygon edge
 which is not adjacent to the edge it is glued to.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="flatsurf.graphical.surface.GraphicalSurface.opposite_edge">
-<code class="sig-name descname"><span class="pre">opposite_edge</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/surface.html#GraphicalSurface.opposite_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.opposite_edge" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.surface.GraphicalSurface.opposite_edge">
+<span class="sig-name descname"><span class="pre">opposite_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/surface.html#GraphicalSurface.opposite_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.opposite_edge" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given the label <code class="docutils literal notranslate"><span class="pre">p</span></code> of a polygon and an edge <code class="docutils literal notranslate"><span class="pre">e</span></code> in that polygon
 returns the pair (<code class="docutils literal notranslate"><span class="pre">pp</span></code>, <code class="docutils literal notranslate"><span class="pre">ee</span></code>) to which this edge is glued.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="flatsurf.graphical.surface.GraphicalSurface.plot">
-<code class="sig-name descname"><span class="pre">plot</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/surface.html#GraphicalSurface.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.plot" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.surface.GraphicalSurface.plot">
+<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/surface.html#GraphicalSurface.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.plot" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a plot of the GraphicalSurface</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="o">*</span>
@@ -563,8 +564,8 @@ returns the pair (<code class="docutils literal notranslate"><span class="pre">p
 </dd></dl>
 
 <dl class="py method">
-<dt id="flatsurf.graphical.surface.GraphicalSurface.plot_edge">
-<code class="sig-name descname"><span class="pre">plot_edge</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graphical_polygon</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_adjacent</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_self_glued</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/surface.html#GraphicalSurface.plot_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.plot_edge" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.surface.GraphicalSurface.plot_edge">
+<span class="sig-name descname"><span class="pre">plot_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graphical_polygon</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_adjacent</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_self_glued</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/surface.html#GraphicalSurface.plot_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.plot_edge" title="Permalink to this definition">¶</a></dt>
 <dd><p>Internal method for plotting a polygon’s edge returning a Graphics2D.</p>
 <p>The method calls <code class="xref py py-func docutils literal notranslate"><span class="pre">graphical_polygon.GraphicalPolygon.plot_edge()</span></code>.
 Depending on the geometry of the edge pair, it passes one of the attributes
@@ -589,8 +590,8 @@ Depending on the geometry of the edge pair, it passes one of the attributes
 </dd></dl>
 
 <dl class="py method">
-<dt id="flatsurf.graphical.surface.GraphicalSurface.plot_edge_label">
-<code class="sig-name descname"><span class="pre">plot_edge_label</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graphical_polygon</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/surface.html#GraphicalSurface.plot_edge_label"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.plot_edge_label" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.surface.GraphicalSurface.plot_edge_label">
+<span class="sig-name descname"><span class="pre">plot_edge_label</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graphical_polygon</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/surface.html#GraphicalSurface.plot_edge_label"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.plot_edge_label" title="Permalink to this definition">¶</a></dt>
 <dd><p>Internal method for plotting an edge label.
 Calls <code class="xref py py-func docutils literal notranslate"><span class="pre">graphical_polygon.GraphicalPolygon.plot_edge_label()</span></code> passing
 the attribute <cite>edge_label_options</cite>.</p>
@@ -605,8 +606,8 @@ the attribute <cite>edge_label_options</cite>.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="flatsurf.graphical.surface.GraphicalSurface.plot_polygon">
-<code class="sig-name descname"><span class="pre">plot_polygon</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graphical_polygon</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upside_down</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/surface.html#GraphicalSurface.plot_polygon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.plot_polygon" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.surface.GraphicalSurface.plot_polygon">
+<span class="sig-name descname"><span class="pre">plot_polygon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graphical_polygon</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upside_down</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/surface.html#GraphicalSurface.plot_polygon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.plot_polygon" title="Permalink to this definition">¶</a></dt>
 <dd><p>Internal method for plotting polygons returning a Graphics object.</p>
 <p>Calls <code class="xref py py-func docutils literal notranslate"><span class="pre">graphical_polygon.GraphicalPolygon.plot_polygon()</span></code> passing
 the attribute <cite>upside_down_polygon_options</cite> if the polygon is upside down
@@ -621,8 +622,8 @@ and <cite>polygon_options</cite> otherwise.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="flatsurf.graphical.surface.GraphicalSurface.plot_polygon_label">
-<code class="sig-name descname"><span class="pre">plot_polygon_label</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graphical_polygon</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upside_down</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/surface.html#GraphicalSurface.plot_polygon_label"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.plot_polygon_label" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.surface.GraphicalSurface.plot_polygon_label">
+<span class="sig-name descname"><span class="pre">plot_polygon_label</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graphical_polygon</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upside_down</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/surface.html#GraphicalSurface.plot_polygon_label"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.plot_polygon_label" title="Permalink to this definition">¶</a></dt>
 <dd><p>Internal method for plotting polygon labels returning a Graphics2D.</p>
 <p>Calls <code class="xref py py-func docutils literal notranslate"><span class="pre">graphical_polygon.GraphicalPolygon.plot_polygon_label()</span></code> passing
 the attribute <cite>polygon_label_options</cite>.</p>
@@ -636,8 +637,8 @@ the attribute <cite>polygon_label_options</cite>.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="flatsurf.graphical.surface.GraphicalSurface.plot_zero_flag">
-<code class="sig-name descname"><span class="pre">plot_zero_flag</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graphical_polygon</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/surface.html#GraphicalSurface.plot_zero_flag"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.plot_zero_flag" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.surface.GraphicalSurface.plot_zero_flag">
+<span class="sig-name descname"><span class="pre">plot_zero_flag</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graphical_polygon</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/surface.html#GraphicalSurface.plot_zero_flag"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.plot_zero_flag" title="Permalink to this definition">¶</a></dt>
 <dd><p>Internal method for plotting a polygon’s zero_flag and returning a Graphics2D.
 Simply calls <code class="xref py py-func docutils literal notranslate"><span class="pre">graphical_polygon.GraphicalPolygon.plot_zero_flag()</span></code> passing
 the attribute <cite>zero_flag_options</cite>.</p>
@@ -650,20 +651,20 @@ the attribute <cite>zero_flag_options</cite>.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="flatsurf.graphical.surface.GraphicalSurface.polygon_label_options">
-<code class="sig-name descname"><span class="pre">polygon_label_options</span></code><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.polygon_label_options" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.surface.GraphicalSurface.polygon_label_options">
+<span class="sig-name descname"><span class="pre">polygon_label_options</span></span><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.polygon_label_options" title="Permalink to this definition">¶</a></dt>
 <dd><p>Options passed to <code class="xref py py-func docutils literal notranslate"><span class="pre">graphical_polygon.GraphicalPolygon.plot_label()</span></code> when plotting a polygon label.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="flatsurf.graphical.surface.GraphicalSurface.polygon_options">
-<code class="sig-name descname"><span class="pre">polygon_options</span></code><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.polygon_options" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.surface.GraphicalSurface.polygon_options">
+<span class="sig-name descname"><span class="pre">polygon_options</span></span><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.polygon_options" title="Permalink to this definition">¶</a></dt>
 <dd><p>Options passed to <code class="xref py py-func docutils literal notranslate"><span class="pre">graphical_polygon.GraphicalPolygon.plot_polygon()</span></code> when plotting a polygon right-side up.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="flatsurf.graphical.surface.GraphicalSurface.process_options">
-<code class="sig-name descname"><span class="pre">process_options</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">adjacencies</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">polygon_labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_position_function</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/surface.html#GraphicalSurface.process_options"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.process_options" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.surface.GraphicalSurface.process_options">
+<span class="sig-name descname"><span class="pre">process_options</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">adjacencies</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">polygon_labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_position_function</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/surface.html#GraphicalSurface.process_options"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.process_options" title="Permalink to this definition">¶</a></dt>
 <dd><p>Process the options listed as if the graphical_surface was first
 created.</p>
 <p>INPUT:</p>
@@ -706,22 +707,22 @@ positioned.</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt id="flatsurf.graphical.surface.GraphicalSurface.reset_letters">
-<code class="sig-name descname"><span class="pre">reset_letters</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/surface.html#GraphicalSurface.reset_letters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.reset_letters" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.surface.GraphicalSurface.reset_letters">
+<span class="sig-name descname"><span class="pre">reset_letters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/surface.html#GraphicalSurface.reset_letters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.reset_letters" title="Permalink to this definition">¶</a></dt>
 <dd><p>Resets the letter dictionary for storing letters used in
 edge labeling if edge_labels=”letter” is used.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="flatsurf.graphical.surface.GraphicalSurface.self_glued_edge_options">
-<code class="sig-name descname"><span class="pre">self_glued_edge_options</span></code><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.self_glued_edge_options" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.surface.GraphicalSurface.self_glued_edge_options">
+<span class="sig-name descname"><span class="pre">self_glued_edge_options</span></span><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.self_glued_edge_options" title="Permalink to this definition">¶</a></dt>
 <dd><p>Options passed to <code class="xref py py-func docutils literal notranslate"><span class="pre">graphical_polygon.GraphicalPolygon.plot_edge()</span></code> when plotting a polygon edge
 which is glued to itself.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="flatsurf.graphical.surface.GraphicalSurface.to_surface">
-<code class="sig-name descname"><span class="pre">to_surface</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">point</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ring</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_all</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">singularity_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">search_all</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">search_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/surface.html#GraphicalSurface.to_surface"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.to_surface" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.surface.GraphicalSurface.to_surface">
+<span class="sig-name descname"><span class="pre">to_surface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">point</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ring</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_all</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">singularity_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">search_all</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">search_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/surface.html#GraphicalSurface.to_surface"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.to_surface" title="Permalink to this definition">¶</a></dt>
 <dd><p>Converts from graphical coordinates to similarity surface coordinates.</p>
 <p>A point always must be provided. If a vector v is provided then a
 SimilaritySurfaceTangentVector will be returned. If v is not provided, then a
@@ -814,118 +815,118 @@ is and the surface is infinite.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="flatsurf.graphical.surface.GraphicalSurface.upside_down_polygon_options">
-<code class="sig-name descname"><span class="pre">upside_down_polygon_options</span></code><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.upside_down_polygon_options" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.surface.GraphicalSurface.upside_down_polygon_options">
+<span class="sig-name descname"><span class="pre">upside_down_polygon_options</span></span><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.upside_down_polygon_options" title="Permalink to this definition">¶</a></dt>
 <dd><p>Options passed to <code class="xref py py-func docutils literal notranslate"><span class="pre">graphical_polygon.GraphicalPolygon.plot_polygon()</span></code> when plotting a polygon upside-down.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="flatsurf.graphical.surface.GraphicalSurface.visible">
-<code class="sig-name descname"><span class="pre">visible</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/surface.html#GraphicalSurface.visible"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.visible" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.surface.GraphicalSurface.visible">
+<span class="sig-name descname"><span class="pre">visible</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/surface.html#GraphicalSurface.visible"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.visible" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a copy of the set of visible labels.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="flatsurf.graphical.surface.GraphicalSurface.will_plot_adjacent_edges">
-<code class="sig-name descname"><span class="pre">will_plot_adjacent_edges</span></code><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.will_plot_adjacent_edges" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.surface.GraphicalSurface.will_plot_adjacent_edges">
+<span class="sig-name descname"><span class="pre">will_plot_adjacent_edges</span></span><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.will_plot_adjacent_edges" title="Permalink to this definition">¶</a></dt>
 <dd><p>Whether to plot polygon edges which are adjacent to the polygon they are glued to.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="flatsurf.graphical.surface.GraphicalSurface.will_plot_edge_labels">
-<code class="sig-name descname"><span class="pre">will_plot_edge_labels</span></code><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.will_plot_edge_labels" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.surface.GraphicalSurface.will_plot_edge_labels">
+<span class="sig-name descname"><span class="pre">will_plot_edge_labels</span></span><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.will_plot_edge_labels" title="Permalink to this definition">¶</a></dt>
 <dd><p>Whether to plot polygon edges which are not adjacent to the polygon they are glued to.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="flatsurf.graphical.surface.GraphicalSurface.will_plot_edges">
-<code class="sig-name descname"><span class="pre">will_plot_edges</span></code><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.will_plot_edges" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.surface.GraphicalSurface.will_plot_edges">
+<span class="sig-name descname"><span class="pre">will_plot_edges</span></span><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.will_plot_edges" title="Permalink to this definition">¶</a></dt>
 <dd><p>If this is False then no edges will be plotted.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="flatsurf.graphical.surface.GraphicalSurface.will_plot_non_adjacent_edges">
-<code class="sig-name descname"><span class="pre">will_plot_non_adjacent_edges</span></code><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.will_plot_non_adjacent_edges" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.surface.GraphicalSurface.will_plot_non_adjacent_edges">
+<span class="sig-name descname"><span class="pre">will_plot_non_adjacent_edges</span></span><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.will_plot_non_adjacent_edges" title="Permalink to this definition">¶</a></dt>
 <dd><p>Whether to plot polygon edges which are not adjacent to the edge it is glued to.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="flatsurf.graphical.surface.GraphicalSurface.will_plot_polygon_labels">
-<code class="sig-name descname"><span class="pre">will_plot_polygon_labels</span></code><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.will_plot_polygon_labels" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.surface.GraphicalSurface.will_plot_polygon_labels">
+<span class="sig-name descname"><span class="pre">will_plot_polygon_labels</span></span><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.will_plot_polygon_labels" title="Permalink to this definition">¶</a></dt>
 <dd><p>Whether to plot polygon labels.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="flatsurf.graphical.surface.GraphicalSurface.will_plot_polygons">
-<code class="sig-name descname"><span class="pre">will_plot_polygons</span></code><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.will_plot_polygons" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.surface.GraphicalSurface.will_plot_polygons">
+<span class="sig-name descname"><span class="pre">will_plot_polygons</span></span><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.will_plot_polygons" title="Permalink to this definition">¶</a></dt>
 <dd><p>Whether to plot polygons which are right-side up.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="flatsurf.graphical.surface.GraphicalSurface.will_plot_self_glued_edges">
-<code class="sig-name descname"><span class="pre">will_plot_self_glued_edges</span></code><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.will_plot_self_glued_edges" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.surface.GraphicalSurface.will_plot_self_glued_edges">
+<span class="sig-name descname"><span class="pre">will_plot_self_glued_edges</span></span><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.will_plot_self_glued_edges" title="Permalink to this definition">¶</a></dt>
 <dd><p>Whether to plot polygon edges which are glued to themselves.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="flatsurf.graphical.surface.GraphicalSurface.will_plot_upside_down_polygons">
-<code class="sig-name descname"><span class="pre">will_plot_upside_down_polygons</span></code><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.will_plot_upside_down_polygons" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.surface.GraphicalSurface.will_plot_upside_down_polygons">
+<span class="sig-name descname"><span class="pre">will_plot_upside_down_polygons</span></span><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.will_plot_upside_down_polygons" title="Permalink to this definition">¶</a></dt>
 <dd><p>Whether to plot polygons which are upside down</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="flatsurf.graphical.surface.GraphicalSurface.will_plot_zero_flags">
-<code class="sig-name descname"><span class="pre">will_plot_zero_flags</span></code><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.will_plot_zero_flags" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.surface.GraphicalSurface.will_plot_zero_flags">
+<span class="sig-name descname"><span class="pre">will_plot_zero_flags</span></span><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.will_plot_zero_flags" title="Permalink to this definition">¶</a></dt>
 <dd><p>Whether to plot line segments from the baricenter to the zero vertex of each polygon.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="flatsurf.graphical.surface.GraphicalSurface.xmax">
-<code class="sig-name descname"><span class="pre">xmax</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/surface.html#GraphicalSurface.xmax"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.xmax" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.surface.GraphicalSurface.xmax">
+<span class="sig-name descname"><span class="pre">xmax</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/surface.html#GraphicalSurface.xmax"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.xmax" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the maximal x-coordinate of a vertex of a visible graphical polygon.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="flatsurf.graphical.surface.GraphicalSurface.xmin">
-<code class="sig-name descname"><span class="pre">xmin</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/surface.html#GraphicalSurface.xmin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.xmin" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.surface.GraphicalSurface.xmin">
+<span class="sig-name descname"><span class="pre">xmin</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/surface.html#GraphicalSurface.xmin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.xmin" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the minimal x-coordinate of a vertex of a visible graphical polygon.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="flatsurf.graphical.surface.GraphicalSurface.ymax">
-<code class="sig-name descname"><span class="pre">ymax</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/surface.html#GraphicalSurface.ymax"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.ymax" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.surface.GraphicalSurface.ymax">
+<span class="sig-name descname"><span class="pre">ymax</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/surface.html#GraphicalSurface.ymax"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.ymax" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the minimal y-coordinate of a vertex of a visible graphical polygon.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="flatsurf.graphical.surface.GraphicalSurface.ymin">
-<code class="sig-name descname"><span class="pre">ymin</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/surface.html#GraphicalSurface.ymin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.ymin" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.surface.GraphicalSurface.ymin">
+<span class="sig-name descname"><span class="pre">ymin</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/surface.html#GraphicalSurface.ymin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.ymin" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the minimal y-coordinate of a vertex of a visible graphical polygon.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="flatsurf.graphical.surface.GraphicalSurface.zero_flag_options">
-<code class="sig-name descname"><span class="pre">zero_flag_options</span></code><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.zero_flag_options" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.surface.GraphicalSurface.zero_flag_options">
+<span class="sig-name descname"><span class="pre">zero_flag_options</span></span><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.zero_flag_options" title="Permalink to this definition">¶</a></dt>
 <dd><p>Options passed to <code class="xref py py-func docutils literal notranslate"><span class="pre">graphical_polygon.GraphicalPolygon.plot_zero_flag()</span></code> when plotting a zero_flag.</p>
 </dd></dl>
 
 </dd></dl>
 
-</div>
-<div class="section" id="module-flatsurf.graphical.straight_line_trajectory">
+</section>
+<section id="module-flatsurf.graphical.straight_line_trajectory">
 <span id="graphical-straight-line-trajectories"></span><h2>Graphical Straight-Line Trajectories<a class="headerlink" href="#module-flatsurf.graphical.straight_line_trajectory" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
-<dt id="flatsurf.graphical.straight_line_trajectory.GraphicalSegmentInPolygon">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">flatsurf.graphical.straight_line_trajectory.</span></code><code class="sig-name descname"><span class="pre">GraphicalSegmentInPolygon</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graphical_surface</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/straight_line_trajectory.html#GraphicalSegmentInPolygon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.straight_line_trajectory.GraphicalSegmentInPolygon" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.straight_line_trajectory.GraphicalSegmentInPolygon">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">flatsurf.graphical.straight_line_trajectory.</span></span><span class="sig-name descname"><span class="pre">GraphicalSegmentInPolygon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graphical_surface</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/straight_line_trajectory.html#GraphicalSegmentInPolygon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.straight_line_trajectory.GraphicalSegmentInPolygon" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="py method">
-<dt id="flatsurf.graphical.straight_line_trajectory.GraphicalSegmentInPolygon.end">
-<code class="sig-name descname"><span class="pre">end</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/straight_line_trajectory.html#GraphicalSegmentInPolygon.end"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.straight_line_trajectory.GraphicalSegmentInPolygon.end" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.straight_line_trajectory.GraphicalSegmentInPolygon.end">
+<span class="sig-name descname"><span class="pre">end</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/straight_line_trajectory.html#GraphicalSegmentInPolygon.end"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.straight_line_trajectory.GraphicalSegmentInPolygon.end" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the end point as a RDF Vector.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="flatsurf.graphical.straight_line_trajectory.GraphicalSegmentInPolygon.plot">
-<code class="sig-name descname"><span class="pre">plot</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">options</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/straight_line_trajectory.html#GraphicalSegmentInPolygon.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.straight_line_trajectory.GraphicalSegmentInPolygon.plot" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.straight_line_trajectory.GraphicalSegmentInPolygon.plot">
+<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">options</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/straight_line_trajectory.html#GraphicalSegmentInPolygon.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.straight_line_trajectory.GraphicalSegmentInPolygon.plot" title="Permalink to this definition">¶</a></dt>
 <dd><p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">s</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">example</span><span class="p">()</span>
@@ -943,25 +944,25 @@ is and the surface is infinite.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="flatsurf.graphical.straight_line_trajectory.GraphicalSegmentInPolygon.polygon_label">
-<code class="sig-name descname"><span class="pre">polygon_label</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/straight_line_trajectory.html#GraphicalSegmentInPolygon.polygon_label"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.straight_line_trajectory.GraphicalSegmentInPolygon.polygon_label" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.straight_line_trajectory.GraphicalSegmentInPolygon.polygon_label">
+<span class="sig-name descname"><span class="pre">polygon_label</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/straight_line_trajectory.html#GraphicalSegmentInPolygon.polygon_label"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.straight_line_trajectory.GraphicalSegmentInPolygon.polygon_label" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="flatsurf.graphical.straight_line_trajectory.GraphicalSegmentInPolygon.start">
-<code class="sig-name descname"><span class="pre">start</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/straight_line_trajectory.html#GraphicalSegmentInPolygon.start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.straight_line_trajectory.GraphicalSegmentInPolygon.start" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.straight_line_trajectory.GraphicalSegmentInPolygon.start">
+<span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/straight_line_trajectory.html#GraphicalSegmentInPolygon.start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.straight_line_trajectory.GraphicalSegmentInPolygon.start" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the start point as a RDF Vector.</p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt id="flatsurf.graphical.straight_line_trajectory.GraphicalStraightLineTrajectory">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">flatsurf.graphical.straight_line_trajectory.</span></code><code class="sig-name descname"><span class="pre">GraphicalStraightLineTrajectory</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trajectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graphical_surface</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/straight_line_trajectory.html#GraphicalStraightLineTrajectory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.straight_line_trajectory.GraphicalStraightLineTrajectory" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.straight_line_trajectory.GraphicalStraightLineTrajectory">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">flatsurf.graphical.straight_line_trajectory.</span></span><span class="sig-name descname"><span class="pre">GraphicalStraightLineTrajectory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trajectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graphical_surface</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/straight_line_trajectory.html#GraphicalStraightLineTrajectory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.straight_line_trajectory.GraphicalStraightLineTrajectory" title="Permalink to this definition">¶</a></dt>
 <dd><p>Allows for the rendering of a straight-line trajectory through a graphical surface.</p>
 <dl class="py method">
-<dt id="flatsurf.graphical.straight_line_trajectory.GraphicalStraightLineTrajectory.plot">
-<code class="sig-name descname"><span class="pre">plot</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">options</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/straight_line_trajectory.html#GraphicalStraightLineTrajectory.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.straight_line_trajectory.GraphicalStraightLineTrajectory.plot" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="flatsurf.graphical.straight_line_trajectory.GraphicalStraightLineTrajectory.plot">
+<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">options</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/straight_line_trajectory.html#GraphicalStraightLineTrajectory.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.straight_line_trajectory.GraphicalStraightLineTrajectory.plot" title="Permalink to this definition">¶</a></dt>
 <dd><p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">s</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">example</span><span class="p">()</span>
@@ -980,8 +981,8 @@ is and the surface is infinite.</p>
 
 </dd></dl>
 
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -1017,7 +1018,7 @@ is and the surface is infinite.</p>
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
@@ -1042,13 +1043,13 @@ is and the surface is infinite.</p>
         <li class="right" >
           <a href="geometry.html" title="The Geometry Package"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">sage-flatsurf 0.4.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">sage-flatsurf 0.4.2 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">The Graphical Package</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016-2021, Vincent Delecroix and Pat Hooper.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0.
     </div>
   </body>
 </html>
