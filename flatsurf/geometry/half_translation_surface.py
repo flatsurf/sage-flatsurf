@@ -42,10 +42,10 @@ class HalfTranslationSurface(HalfDilationSurface, RationalConeSurface):
             [2, 2]
             sage: S.angles(numerical=True)
             [2.0, 2.0]
-            sage: S.angles(return_adjacent_edges=True)
+            sage: S.angles(return_adjacent_edges=True) # random output
             [(2, [(0, 1), (0, 5), (0, 9), (0, 3), (0, 7)]),
              (2, [(0, 0), (0, 4), (0, 8), (0, 2), (0, 6)])]
-            sage: S.angles(numerical=True, return_adjacent_edges=True)
+            sage: S.angles(numerical=True, return_adjacent_edges=True) # random output
             [(2.0, [(0, 1), (0, 5), (0, 9), (0, 3), (0, 7)]),
              (2.0, [(0, 0), (0, 4), (0, 8), (0, 2), (0, 6)])]
 
@@ -78,6 +78,9 @@ class HalfTranslationSurface(HalfDilationSurface, RationalConeSurface):
 
         if return_adjacent_edges:
             while edges:
+                # Note that iteration order here is different for different
+                # versions of Python. Therefore, the output in the doctest
+                # above is random.
                 pair = p,e = next(iter(edges))
                 ve = self.polygon(p).edge(e)
                 angle = 0
@@ -232,7 +235,7 @@ class HalfTranslationSurface(HalfDilationSurface, RationalConeSurface):
             TranslationSurface built from 6 polygons
         """
         if not self.is_finite():
-            raise ValueError
+            raise ValueError('the surface must be finite')
         if self.base_ring() is QQ:
             return (self, matrix(QQ, 2, 2, 1))
 

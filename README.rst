@@ -33,23 +33,17 @@ in using it, please contact the authors.
 Links
 -----
 
-* Documentation: https://www.labri.fr/perso/vdelecro/sage-flatsurf/latest
+* Documentation: https://flatsurf.github.io/sage-flatsurf/
 
 * Page on the Python package index: https://pypi.org/project/sage-flatsurf/
 
 * Development website: https://github.com/flatsurf/sage-flatsurf/
 
-Installing the dependency
--------------------------
+Dependencies
+------------
 
-sage-flatsurf depends on the `surface_dynamics`_ package, which is
-distributed on PyPI and can be installed with the following command::
-
-    $ sage --pip install surface_dynamics [--user] [--upgrade]
-
-The options ``--user`` and ``--upgrade`` are optional; ``--user`` is to
-perform the installation in your user home instead of in the Sage sources;
-``--upgrade`` is to upgrade the package in case it is already installed.
+- `surface_dynamics`_
+- (optional) `libflatsurf`_
 
 Installing the package
 ----------------------
@@ -61,7 +55,7 @@ the released version of sage-flatsurf can be installed by running the following 
 
 To install the development version of sage-flatsurf, run instead::
 
-    $ sage --pip install git+https://github.com/videlec/sage-flatsurf [--user] [--upgrade]
+    $ sage --pip install git+https://github.com/flatsurf/sage-flatsurf [--user] [--upgrade]
 
 The options ``--user`` and ``--upgrade`` are optional; ``--user`` is to
 perform the installation in your user home instead of in the Sage sources;
@@ -104,9 +98,6 @@ files in the module just do::
 
     $ sage -t --force-lib flatsurf
 
-Tests on the master branch are automatically run through
-`Travis-CI <https://travis-ci.org/github/flatsurf/sage-flatsurf>`_.
-
 Related projects
 ----------------
 
@@ -121,13 +112,23 @@ There are several related projects
 * `libflatsurf`_: (C++ library with Python interface) computing GL(2,R)-orbit
   closures of translation surfaces
 
-Primary Contributors
---------------------
+* `curver`_ (Python module): computation in the curve complex and the mapping
+  class group
+
+Contributors
+------------
 
 * Vincent Delecroix (Bordeaux)
 * Pat Hooper (City College of New York and CUNY Graduate Center)
+* Julian Rüth
 
 We welcome others to contribute.
+
+How to Cite This Project
+-------------------------
+
+If you have used this project please cite us as described `on our zenodo
+website <https://zenodo.org/badge/latestdoi/13970050>`_.
 
 Acknowledgements
 ----------------
@@ -143,8 +144,9 @@ Acknowledgements
   Horizon 2020 European Research Infrastructures project #676541.
 
 .. _SageMath: https://www.sagemath.org
-.. _surface_dynamics: https://gitlab.com/videlec/surface_dynamics
+.. _surface_dynamics: https://github.com/flatsurf/surface_dynamics
 .. _veerer: https://gitlab.com/videlec/veerer/
 .. _libflatsurf: https://github.com/flatsurf/flatsurf
-.. _e-antic: https://github.com/videlec/e-antic
+.. _e-antic: https://github.com/flatsurf/e-antic
 .. _exact-real: https://github.com/flatsurf/exact-real
+.. _curver: https://github.com/MarkCBell/curver

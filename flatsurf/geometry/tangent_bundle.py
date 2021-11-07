@@ -317,7 +317,7 @@ class SimilaritySurfaceTangentVector:
         from flatsurf.geometry.straight_line_trajectory import StraightLineTrajectory
         return StraightLineTrajectory(self)
 
-    def clockwise_to(self, w):
+    def clockwise_to(self, w, code = False):
         r"""
         Return the new tangent vector obtained by rotating this one in the clockwise
         direction until the vector is parallel to w, and scaling so that the length matches
@@ -333,6 +333,11 @@ class SimilaritySurfaceTangentVector:
         that must be rotated through.) This is the variable rotate_limit
         in this package.
 
+        If code is True, we compute the sequences of numbers associated to edges
+        crossed as a list. We return a pair consisting of the newly computing
+        tangent vector an this code. This is currently only implemented when
+        based at a singularity.
+
         EXAMPLES::
 
             sage: from flatsurf import *
@@ -342,6 +347,8 @@ class SimilaritySurfaceTangentVector:
             SimilaritySurfaceTangentVector in polygon 0 based at (0, a + 1) with vector (-1, -1)
             sage: v.clockwise_to((1,1))
             SimilaritySurfaceTangentVector in polygon 0 based at (-1/2*a, 1/2*a) with vector (1, 1)
+            sage: v.clockwise_to((1,1), code=True)
+            (SimilaritySurfaceTangentVector in polygon 0 based at (-1/2*a, 1/2*a) with vector (1, 1), [0, 5, 2])
         """
         assert w!=self.surface().vector_space().zero(), "Vector w must be non-zero."
         if self.is_based_at_singularity():
@@ -352,10 +359,14 @@ class SimilaritySurfaceTangentVector:
             v2=s.polygon(label).edge(vertex)
             from sage.matrix.constructor import Matrix
             der = Matrix(s.base_ring(), [[1,0],[0,1]])
+            if code:
+                codes = []
             for count in range(rotate_limit):
                 if wedge_product(v2,w)>=0 and wedge_product(w,v1)>0:
                     # We've found it!
                     break
+                if code:
+                    codes.append(vertex)
                 label2,edge2=s.opposite_edge(label,vertex)
                 der=der*s.edge_matrix(label2,edge2)
                 v1=der*(-s.polygon(label2).edge(edge2))
@@ -363,12 +374,19 @@ class SimilaritySurfaceTangentVector:
                 vertex=(edge2+1) % s.polygon(label2).num_edges()
                 v2=der*(s.polygon(label2).edge(vertex))
             assert count<rotate_limit, "Reached limit!"
-                
-            return self.surface().tangent_vector(label,s.polygon(label).vertex(vertex),w)
+            if code:
+                return (
+                    self.surface().tangent_vector(label,s.polygon(label).vertex(vertex),w),
+                    codes
+                )
+            else:
+                return self.surface().tangent_vector(label,s.polygon(label).vertex(vertex),w)
         else:
+            if code:
+                raise NotImplementedError('codes are only implemented when based at a singularity')
             return self.surface().tangent_vector(v.polygon_label(),v.point(),w)
 
-    def counterclockwise_to(self, w):
+    def counterclockwise_to(self, w, code=False):
         r"""
         Return the new tangent vector obtained by rotating this one in the counterclockwise
         direction until the vector is parallel to w, and scaling so that the length matches
@@ -384,6 +402,11 @@ class SimilaritySurfaceTangentVector:
         that must be rotated through.) This is the variable rotate_limit
         in this package.
 
+        If code is True, we compute the sequences of numbers associated to edges
+        crossed as a list. We return a pair consisting of the newly computing
+        tangent vector an this code. This is currently only implemented when
+        based at a singularity.
+
         EXAMPLES::
 
             sage: from flatsurf import *
@@ -393,6 +416,8 @@ class SimilaritySurfaceTangentVector:
             SimilaritySurfaceTangentVector in polygon 0 based at (1/2*a + 1, 1/2*a + 1) with vector (-1, -1)
             sage: v.counterclockwise_to((1,1))
             SimilaritySurfaceTangentVector in polygon 0 based at (1, 0) with vector (1, 1)
+            sage: v.counterclockwise_to((1,1), code=True)
+            (SimilaritySurfaceTangentVector in polygon 0 based at (1, 0) with vector (1, 1), [7, 2, 5])
         """
         assert w!=self.surface().vector_space().zero(), "Vector w must be non-zero."
         if self.is_based_at_singularity():
@@ -405,9 +430,13 @@ class SimilaritySurfaceTangentVector:
             v2=-s.polygon(label).edge(previous_vertex)
             from sage.matrix.constructor import Matrix
             der = Matrix(s.base_ring(), [[1,0],[0,1]])
+            if code:
+                codes = []
             if not (wedge_product(v1,w)>0 and wedge_product(w,v2)>0):
                 for count in range(rotate_limit):
                     label2,edge2=s.opposite_edge(label,previous_vertex)
+                    if code:
+                        codes.append(previous_vertex)
                     der=der*s.edge_matrix(label2,edge2)
                     label=label2
                     vertex=edge2
@@ -419,8 +448,16 @@ class SimilaritySurfaceTangentVector:
                         # We've found it!
                         break
                 assert count<rotate_limit, "Reached limit!"
-            return self.surface().tangent_vector(label,s.polygon(label).vertex(vertex),w)
+            if code:
+                return (
+                    self.surface().tangent_vector(label,s.polygon(label).vertex(vertex),w),
+                    codes
+                )
+            else:
+                return self.surface().tangent_vector(label,s.polygon(label).vertex(vertex),w)
         else:
+            if code:
+                raise NotImplementedError('codes are only implemented when based at a singularity')
             return self.surface().tangent_vector(v.polygon_label(),v.point(),w)
 
 

@@ -1,12 +1,8 @@
-import os
+import setuptools
 from distutils.core import setup
 
 with open('README.rst') as f:
     long_description = f.read()
-
-version_file = os.path.join(os.path.dirname(__file__), 'flatsurf', 'version.py')
-with open(version_file) as f:
-    exec(f.read())
 
 setup(name='sage_flatsurf',
     author='Vincent Delecroix and W. Patrick Hooper',
@@ -14,11 +10,13 @@ setup(name='sage_flatsurf',
     description="flat surfaces",
     long_description=long_description,
     long_description_content_type="text/x-rst",
-    version=version,
-    url='https://github.com/videlec/sage-flatsurf',
+    version='0.4.2',
+    url='https://github.com/flatsurf/sage-flatsurf',
     license='GNU General Public License, version 2',
     packages = ['flatsurf', 'flatsurf.geometry', 'flatsurf.graphical'],
     install_requires = ['surface_dynamics'],
+    setup_requires = ['wheel'],
+    include_package_data = True,
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Science/Research',

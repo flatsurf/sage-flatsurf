@@ -12,7 +12,7 @@ kernelspec:
   name: sagemath
 ---
 
-## Siegel-Veech Constants
+# Siegel-Veech Constants
 
 We count the number of cylinders of circumference at most $L$ in a surface.
 

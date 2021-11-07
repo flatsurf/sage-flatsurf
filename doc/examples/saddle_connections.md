@@ -93,8 +93,8 @@ editable: true
 jupyter:
   outputs_hidden: false
 ---
-sc1 = sc_list2[99]
-sc2 = sc_list2[55]
+sc1 = sc_list2[-1]
+sc2 = sc_list2[-2]
 ```
 
 +++ {"deletable": true, "editable": true}
