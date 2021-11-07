@@ -1016,11 +1016,12 @@ class GL2ROrbitClosure:
         if bfs:
             connections = connections.byLength()
 
-        Vector = cppyy.gbl.flatsurf.Vector[type(self._surface).Coordinate]
-        slopes = cppyy.gbl.std.set[Vector, Vector.CompareSlope]()
+        slopes = None
 
         for connection in connections:
             direction = connection.vector()
+            if slopes is None:
+                slopes = cppyy.gbl.std.set[type(direction), type(direction).CompareSlope]()
             if slopes.find(direction) != slopes.end():
                 continue
             slopes.insert(direction)
