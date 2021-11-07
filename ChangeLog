@@ -1,0 +1,33 @@
+========================
+sage-flatsurf Change Log
+========================
+
+.. current developments
+
+v0.4.2
+====================
+
+**Fixed:**
+
+* Adapted to type changes in pyflatsurf 3.7.0.
+
+
+
+v0.4.1
+====================
+
+**Performance:**
+
+* Speed up kernel and rank computations when computing orbit closures.
+
+
+
+v0.4.0
+====================
+
+
+
+v0.4.0
+====================
+
+

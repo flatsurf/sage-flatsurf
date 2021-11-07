@@ -15,6 +15,7 @@ Contents:
    apisa_wright_example
    geometry
    graphical
+   examples
 
 
 Indices and tables

@@ -343,7 +343,7 @@ class Decomposition:
 
                 vertical = component.vertical()
                 width = self.orbit.V2._isomorphic_vector_space.base_ring()(self.orbit.V2.base_ring()(component.width()))
-                height = self.orbit.V2._isomorphic_vector_space.base_ring()(self.orbit.V2.base_ring()(component.vertical().parallel(component.circumferenceHolonomy())))
+                height = self.orbit.V2._isomorphic_vector_space.base_ring()(self.orbit.V2.base_ring()(component.vertical().project(component.circumferenceHolonomy())))
                 module_fractions.append((width, height))
             else:
                 return []
@@ -383,14 +383,64 @@ class Decomposition:
         assert all(module.parent() is modules[0].parent() for module in modules)
         M = matrix([to_rational_vector(module) for module in modules])
         assert M.base_ring() is QQ
-        relations = M.left_kernel().matrix()
+        relations = self._left_kernel_matrix(M)
         assert len(vcyls) == len(module_fractions) == relations.ncols()
 
-        vectors = [sum(t * vcyl * module[1] for (t, vcyl, module) in zip(relation, vcyls, module_fractions)) for relation in relations.right_kernel().basis()]
+        vectors = [sum(t * vcyl * module[1] for (t, vcyl, module) in zip(relation, vcyls, module_fractions)) for relation in self._right_kernel_matrix(relations).rows()]
 
         assert all(v.base_ring() is self.orbit.V2._isomorphic_vector_space.base_ring() for v in vectors)
 
         return vectors
+
+    @classmethod
+    def _right_kernel_matrix(cls, M):
+        r"""
+        Compute the right kernel of the rational matrix `M`.
+
+        See https://github.com/flatsurf/sage-flatsurf/issues/100.
+        """
+        M = M._clear_denom()[0]
+
+        rows = M.nrows()
+        columns = M.ncols()
+
+        # The backends cannot handle these trivial cases
+        if M.ncols() == 0:
+            return M.new_matrix(nrows=0, ncols=M.ncols())
+        if M.nrows() == 0:
+            return M.matrix_space(M.ncols(), M.ncols()).identity_matrix()
+
+        height = M.height()
+
+        if height >= 2**256:
+            algorithm = 'flint'
+        elif columns >= 64 and rows >= 64:
+            algorithm = 'padic'
+        elif rows * columns <= 32:
+            algorithm = 'flint'
+        else:
+            algorithm = 'pari'
+
+        if algorithm == 'pari':
+            ker = M.__pari__().matker().mattranspose().sage()
+        elif algorithm == 'flint':
+            ker = M._rational_kernel_flint().transpose()
+        else:
+            ker = M._rational_kernel_iml().transpose()
+
+        if ker.nrows() == 0 and ker.ncols() != M.ncols():
+            ker = ker.new_matrix(nrows=0, ncols=M.ncols())
+
+        return ker
+
+    @classmethod
+    def _left_kernel_matrix(cls, M):
+        r"""
+        Compute the left kernel of the rational matrix `M`.
+
+        See https://github.com/flatsurf/sage-flatsurf/issues/100.
+        """
+        return cls._right_kernel_matrix(M.transpose())
 
     def plot_completely_periodic(self):
         from sage.plot.all import polygon2d, Graphics, point2d, text
@@ -526,7 +576,14 @@ class GL2ROrbitClosure:
         # Note that we don't use Sage vector spaces because they are usually
         # way too slow (in particular we avoid calling .echelonize())
         self._U = matrix(self.V2._algebraic_ring(), self.d)
+        
+        if self._U.base_ring() is not QQ:
+            from sage.all import next_prime
+            self._good_prime = self._U.base_ring().ideal(next_prime(2**30)).factor()[0][0]
+            self._Ubar = matrix(self._good_prime.residue_field(), self.d)
+
         self._U_rank = 0
+
         self.update_tangent_space_from_vector(self.H.transpose()[0])
         self.update_tangent_space_from_vector(self.H.transpose()[1])
 
@@ -710,11 +767,10 @@ class GL2ROrbitClosure:
             sage: d = [O.V2((x,y)).vector for x,y in zip(dreal,dimag)]  # optional: pyflatsurf
             sage: S2 = O._surface + d  # optional: pyflatsurf
 
-        TODO: ``GL2ROrbitClosure`` does not accept pyflatsurf surfaces as input::
-
-            sage: O2 = GL2ROrbitClosure(S2)   # not tested
-            sage: for d in O2.decompositions(4, 20, sector=((1,0),(5,1))):  # not tested
+            sage: O2 = GL2ROrbitClosure(S2.surface())  # optional: pyflatsurf
+            sage: for d in O2.decompositions(4, 20):  # optional: pyflatsurf
             ....:     O2.update_tangent_space_from_flow_decomposition(d)
+
         """
         # given the values on the spanning edges we reconstruct the unique vector that
         # vanishes on the boundary
@@ -722,13 +778,17 @@ class GL2ROrbitClosure:
         n = self._surface.edges().size()
         k = len(self.spanning_set)
         assert k + len(bdry) == n + 1
-        A = matrix(self.V2.base_ring(), n+1, n)
+        A = matrix(QQ, n+1, n)
         for i,e in enumerate(self.spanning_set):
             A[i,e.index()] = 1
         for i,b in enumerate(bdry):
             A[k+i,:] = b
         u = vector(self.V2.base_ring(), n + 1)
         u[:k] = v
+        from sage.all import Fields
+        if not self.V2.base_ring() in Fields():
+            assert all(uu._backend.coefficients().size() == 1 for uu in u)
+            u = u.parent().change_ring(self.V2.base_ring().base_ring())([uu._backend.coefficients()[0] for uu in u])
         return A.solve_right(u)
 
     def absolute_homology(self):
@@ -952,11 +1012,12 @@ class GL2ROrbitClosure:
         if bfs:
             connections = connections.byLength()
 
-        Vector = cppyy.gbl.flatsurf.Vector[type(self._surface).Coordinate]
-        slopes = cppyy.gbl.std.set[Vector, Vector.CompareSlope]()
+        slopes = None
 
         for connection in connections:
             direction = connection.vector()
+            if slopes is None:
+                slopes = cppyy.gbl.std.set[type(direction), type(direction).CompareSlope]()
             if slopes.find(direction) != slopes.end():
                 continue
             slopes.insert(direction)
@@ -1059,6 +1120,35 @@ class GL2ROrbitClosure:
             self.update_tangent_space_from_vector(v)
             if self._U_rank == self._U.nrows(): return
 
+    def _rank(self, v):
+        r"""
+        Return a lower bound for the rank of the matrix U.
+        """
+        self._U[self._U_rank] = v
+
+        K = self._U.base_ring()
+        if K is QQ:
+            return self._U.rank()
+
+        k = K.residue_field(self._good_prime)
+        try:
+            self._Ubar[self._U_rank] = v.change_ring(k)
+        except ValueError:
+            # Some denominator in v is not a unit mod q.
+            while True:
+                from sage.all import next_prime
+                self._good_prime = next_prime(self._good_prime.residue_field().characteristic())
+                self._good_prime = K.ideal(self._good_prime).factor()[0][0]
+                k = K.residue_field(self._good_prime)
+                try:
+                    self._Ubar = self._U.change_ring(k)
+                except ValueError:
+                    continue
+
+        if self._Ubar.rank() == self._U_rank + 1:
+            return self._U_rank + 1
+        return self._U_rank
+
     def update_tangent_space_from_vector(self, v):
         if self._U_rank == self._U.nrows():
             return
@@ -1070,8 +1160,7 @@ class GL2ROrbitClosure:
                 self.update_tangent_space_from_vector(p)
             return
 
-        self._U[self._U_rank] = v
-        r = self._U.rank()
+        r = self._rank(v)
         if r > self._U_rank:
             assert r == self._U_rank + 1
             self._U_rank += 1

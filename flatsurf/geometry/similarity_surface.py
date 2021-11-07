@@ -401,8 +401,27 @@ class SimilaritySurface(SageObject):
 
     def edge_matrix(self, p, e=None):
         r"""
-        Return the edge to which this edge is identified and the matrix to be
-        applied.
+        Returns the 2x2 matrix representing a similarity which when applied to the polygon with label `p`
+        makes it so the edge `e` can be glued to its opposite edge by translation.
+
+        If `e` is not provided, then `p` should be a pair consisting of a polygon label and an edge.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.similarity_surface_generators import SimilaritySurfaceGenerators
+            sage: s = SimilaritySurfaceGenerators.example()
+            sage: print(s.polygon(0))
+            Polygon: (0, 0), (2, -2), (2, 0)
+            sage: print(s.polygon(1))
+            Polygon: (0, 0), (2, 0), (1, 3)
+            sage: s.opposite_edge(0,0)
+            (1, 1)
+            sage: m = s.edge_matrix(0, 0)
+            sage: m
+            [   1  1/2]
+            [-1/2    1]
+            sage: m * vector((2,-2)) == -vector((-1, 3))
+            True
         """
         if e is None:
             p,e = p
@@ -458,6 +477,9 @@ class SimilaritySurface(SageObject):
         This makes what is currently vertex v of this polygon vertex 0. In other words,
         what is currently vertex (or edge) e will now become vertex (e-v)%n where
         n is the number of sides of the polygon.
+
+        For the updated polygons, the polygons will be translated so that vertex
+        0 is the origin.
 
         EXAMPLES:
 
@@ -2368,6 +2390,27 @@ class SimilaritySurface(SageObject):
             H_6(10)
             H_6(2^5)
             H_8(12, 2)
+
+        TESTS:
+
+        Verify that https://github.com/flatsurf/flatsurf/issues/263 has been resolved::
+
+            sage: from flatsurf import EquiangularPolygons, similarity_surfaces
+            sage: E = EquiangularPolygons((10, 8, 3, 1, 1, 1))
+            sage: P = E((1, 1, 2, 4), normalized=True)
+            sage: B = similarity_surfaces.billiard(P, rational=True)
+            sage: S = B.minimal_cover(cover_type="translation")
+            sage: S = S.erase_marked_points() # optional: pyflatsurf
+
+        ::
+
+            sage: from flatsurf import EquiangularPolygons, similarity_surfaces
+            sage: E = EquiangularPolygons((10, 7, 2, 2, 2, 1))
+            sage: P = E((1, 1, 2, 3), normalized=True)
+            sage: B = similarity_surfaces.billiard(P, rational=True)
+            sage: S_mp = B.minimal_cover(cover_type="translation")
+            sage: S = S_mp.erase_marked_points() # optional: pyflatsurf
+
         """
         from .pyflatsurf_conversion import from_pyflatsurf, to_pyflatsurf
         S = to_pyflatsurf(self)

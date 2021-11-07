@@ -6,7 +6,8 @@ from .matrix_2x2 import is_cosine_sine_of_rational
 
 class RationalConeSurface(ConeSurface):
     r"""
-    A Euclidean cone surface whose cone angles are all rational multiples of pi.
+    A Euclidean cone surface such that the rotational part of the monodromy around any loop
+    is a finite order rotation.
     """
     def _test_edge_matrix(self, **options):
         r"""
