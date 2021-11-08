@@ -8,6 +8,7 @@ Examples
    examples/linear_action_and_delaunay
    examples/rel_deformations
    examples/saddle_connections
+   examples/apisa_wright
    examples/siegel_veech
    examples/straight_line_flow
    examples/warwick-2017
