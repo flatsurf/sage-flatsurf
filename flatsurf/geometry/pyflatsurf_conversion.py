@@ -204,35 +204,6 @@ def from_pyflatsurf(T):
         TranslationSurface built from 6 polygons
 
     """
-    import cppyy
-
-    ring, to_ring = sage_base_ring(T)
-
-    S = Surface_list(ring)
-    P = ConvexPolygons(ring)
-    V = P.module()
-
-    half_edges = {}
-
-    for face in T.faces():
-        a, b, c = map(cppyy.gbl.flatsurf.HalfEdge, face)
-
-        vectors = [T.fromHalfEdge(he) for he in face]
-        vectors = [V([to_ring(v.x()), to_ring(v.y())]) for v in vectors]
-        triangle = P(vectors)
-        face_id = S.add_polygon(triangle)
-
-        assert(a not in half_edges)
-        half_edges[a] = (face_id, 0)
-        assert(b not in half_edges)
-        half_edges[b] = (face_id, 1)
-        assert(c not in half_edges)
-        half_edges[c] = (face_id, 2)
-
-    for half_edge, (face, id) in half_edges.items():
-        _face, _id = half_edges[-half_edge]
-        S.change_edge_gluing(face, id, _face, _id)
-
-    S.set_immutable()
-
-    return TranslationSurface(S)
+    from .surface_pyflatsurf import Surface_pyflatsurf
+    from .translation_surface import TranslationSurface
+    return TranslationSurface(Surface_pyflatsurf(T))
