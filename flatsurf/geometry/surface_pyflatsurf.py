@@ -92,7 +92,7 @@ class Surface_pyflatsurf(Surface):
         raise NotImplementedError
 
     def label_iterator(self):
-        return range(self.num_polygons())
+        return iter(range(self.num_polygons()))
 
     def edge_iterator(self):
         return ((l, e) for l in self.label_iterator() for e in range(3))
