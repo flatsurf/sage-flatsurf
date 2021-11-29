@@ -34,10 +34,10 @@ class MinimalTranslationCover(Surface):
     The following is to test that unfolding is reasonably fast on the instances reported
     in https://github.com/flatsurf/sage-flatsurf/issues/47::
 
-        sage: T = polygons.triangle(2, 13, 26)
-        sage: S = similarity_surfaces.billiard(T, rational=True)
-        sage: alarm(5); S = S.minimal_cover("translation"); cancel_alarm()
-        sage: S
+        sage: T = polygons.triangle(2, 13, 26)  # long time, 3s in late 2021
+        sage: S = similarity_surfaces.billiard(T, rational=True)  # long time
+        sage: alarm(5); S = S.minimal_cover("translation"); cancel_alarm()  # long time
+        sage: S  # long time
         TranslationSurface built from 82 polygons
     """
     def __init__(self, similarity_surface):
@@ -110,10 +110,10 @@ class MinimalHalfTranslationCover(Surface):
     The following is to test that unfolding is reasonably fast on the instances reported
     in https://github.com/flatsurf/sage-flatsurf/issues/47::
 
-        sage: T = polygons.triangle(2, 13, 26)
-        sage: S = similarity_surfaces.billiard(T, rational=True)
-        sage: alarm(5); S = S.minimal_cover("half-translation"); cancel_alarm()
-        sage: S
+        sage: T = polygons.triangle(2, 13, 26)  # long time, 3s in late 2021
+        sage: S = similarity_surfaces.billiard(T, rational=True)  # long time
+        sage: alarm(5); S = S.minimal_cover("half-translation"); cancel_alarm()  # long time
+        sage: S  # long time
         HalfTranslationSurface built from 82 polygons
     """
     def __init__(self, similarity_surface):

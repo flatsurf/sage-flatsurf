@@ -2684,10 +2684,10 @@ class PolygonsConstructor:
 
         Some fairly complicated examples::
 
-            sage: polygons.triangle(1, 15, 21)
+            sage: polygons.triangle(1, 15, 21)  # long time (2s)
             Polygon: (0, 0), (1, 0), (1/2*c^34 - 17*c^32 + 264*c^30 - 2480*c^28 + 15732*c^26 - 142481/2*c^24 + 237372*c^22 - 1182269/2*c^20 + 1106380*c^18 - 1552100*c^16 + 3229985/2*c^14 - 2445665/2*c^12 + 654017*c^10 - 472615/2*c^8 + 107809/2*c^6 - 13923/2*c^4 + 416*c^2 - 6, -1/2*c^27 + 27/2*c^25 - 323/2*c^23 + 1127*c^21 - 10165/2*c^19 + 31009/2*c^17 - 65093/2*c^15 + 46911*c^13 - 91091/2*c^11 + 57355/2*c^9 - 10994*c^7 + 4621/2*c^5 - 439/2*c^3 + 6*c)
 
-            sage: polygons.triangle(2, 13, 26)
+            sage: polygons.triangle(2, 13, 26)  # long time (3s)
             Polygon: (0, 0), (1, 0), (1/2*c^30 - 15*c^28 + 405/2*c^26 - 1625*c^24 + 8625*c^22 - 31878*c^20 + 168245/2*c^18 - 159885*c^16 + 218025*c^14 - 209950*c^12 + 138567*c^10 - 59670*c^8 + 15470*c^6 - 2100*c^4 + 225/2*c^2 - 1/2, -1/2*c^39 + 19*c^37 - 333*c^35 + 3571*c^33 - 26212*c^31 + 139593*c^29 - 557844*c^27 + 1706678*c^25 - 8085237/2*c^23 + 7449332*c^21 - 10671265*c^19 + 11812681*c^17 - 9983946*c^15 + 6317339*c^13 - 5805345/2*c^11 + 1848183/2*c^9 - 378929/2*c^7 + 44543/2*c^5 - 2487/2*c^3 + 43/2*c)
         """
         return EquiangularPolygons(a, b, c)([1])
@@ -2841,7 +2841,7 @@ class PolygonsConstructor:
         TESTS::
 
             sage: from itertools import product
-            sage: for a,b,c in product(range(1,5), repeat=3):
+            sage: for a,b,c in product(range(1,5), repeat=3):  # long time (3s)
             ....:     if gcd([a,b,c]) != 1:
             ....:         continue
             ....:     T = polygons(angles=[a,b,c])

@@ -755,20 +755,20 @@ class GL2ROrbitClosure:
 
             sage: T = polygons.triangle(3,4,13)
             sage: S = similarity_surfaces.billiard(T)
-            sage: S = S.minimal_cover("translation").erase_marked_points() # optional: pyflatsurf
-            sage: O = GL2ROrbitClosure(S)  # optional: pyflatsurf
-            sage: for d in O.decompositions(4, 20):  # optional: pyflatsurf
+            sage: S = S.minimal_cover("translation").erase_marked_points() # long time (3s), optional: pyflatsurf
+            sage: O = GL2ROrbitClosure(S)  # long time (above), optional: pyflatsurf
+            sage: for d in O.decompositions(4, 20):  # long time (2s), optional: pyflatsurf
             ....:     O.update_tangent_space_from_flow_decomposition(d)
             ....:     if O.dimension() == 4:
             ....:         break
-            sage: d1,d2,d3,d4 = [O.lift(b) for b in O.tangent_space_basis()]  # optional: pyflatsurf
-            sage: dreal = d1/132 + d2/227 + d3/280 - d4/201  # optional: pyflatsurf
-            sage: dimag = d1/141 - d2/233 + d4/230 + d4/250  # optional: pyflatsurf
-            sage: d = [O.V2((x,y)).vector for x,y in zip(dreal,dimag)]  # optional: pyflatsurf
-            sage: S2 = O._surface + d  # optional: pyflatsurf
+            sage: d1,d2,d3,d4 = [O.lift(b) for b in O.tangent_space_basis()]  # long time (above), optional: pyflatsurf
+            sage: dreal = d1/132 + d2/227 + d3/280 - d4/201  # long time (above), optional: pyflatsurf
+            sage: dimag = d1/141 - d2/233 + d4/230 + d4/250  # long time (above), optional: pyflatsurf
+            sage: d = [O.V2((x,y)).vector for x,y in zip(dreal,dimag)]  # long time (above), optional: pyflatsurf
+            sage: S2 = O._surface + d  # long time (6s), optional: pyflatsurf
 
-            sage: O2 = GL2ROrbitClosure(S2.surface())  # optional: pyflatsurf
-            sage: for d in O2.decompositions(4, 20):  # optional: pyflatsurf
+            sage: O2 = GL2ROrbitClosure(S2.surface())  # long time (above), optional: pyflatsurf
+            sage: for d in O2.decompositions(1, 20):  # long time (25s), optional: pyflatsurf
             ....:     O2.update_tangent_space_from_flow_decomposition(d)
 
         """
@@ -828,11 +828,11 @@ class GL2ROrbitClosure:
             sage: S = similarity_surfaces.billiard(T)
             sage: S = S.minimal_cover("translation")
             sage: O = GL2ROrbitClosure(S)  # optional: pyflatsurf
-            sage: for d in O.decompositions(5, 100):  # optional: pyflatsurf
+            sage: for d in O.decompositions(5, 100):  # long time (3s) optional: pyflatsurf
             ....:     O.update_tangent_space_from_flow_decomposition(d)
             ....:     if O.dimension() == 9:
             ....:         break
-            sage: O.absolute_dimension()  # optional: pyflatsurf
+            sage: O.absolute_dimension()  # long time (above), optional: pyflatsurf
             6
         """
         return (self.absolute_homology().matrix() * self._U[:self._U_rank].transpose()).rank()
@@ -963,7 +963,7 @@ class GL2ROrbitClosure:
             sage: from flatsurf import GL2ROrbitClosure  # optional: pyflatsurf
 
             sage: from itertools import product
-            sage: for a in range(1,5):  # optional: pyflatsurf
+            sage: for a in range(1,5):  # long time (1s), optional: pyflatsurf
             ....:     for b in range(a, 5):
             ....:         for c in range(b, 5):
             ....:             if gcd([a, b, c]) != 1 or (a,b,c) == (1,1,2):
@@ -1039,7 +1039,7 @@ class GL2ROrbitClosure:
 
             sage: from flatsurf import polygons, similarity_surfaces
             sage: from flatsurf import GL2ROrbitClosure  # optional: pyflatsurf
-            sage: for a in range(1,6):  # optional: pyflatsurf
+            sage: for a in range(1,6):  # long time (8s), optional: pyflatsurf
             ....:     for b in range(a,6):
             ....:         for c in range(b,6):
             ....:             if a + b + c > 7 or gcd([a,b,c]) != 1:
@@ -1084,9 +1084,9 @@ class GL2ROrbitClosure:
             sage: S = similarity_surfaces.billiard(T)
             sage: S = S.minimal_cover(cover_type="translation")
             sage: O = GL2ROrbitClosure(S)  # optional: pyflatsurf
-            sage: for d in O.decompositions(1):  # optional: pyflatsurf
+            sage: for d in O.decompositions(1):  # long time (1s), optional: pyflatsurf
             ....:     O.update_tangent_space_from_flow_decomposition(d)
-            sage: assert O.dimension() == 2  # optional: pyflatsurf
+            sage: assert O.dimension() == 2  # long time (above), optional: pyflatsurf
 
         TESTS:
 
@@ -1235,7 +1235,7 @@ class GL2ROrbitClosure:
             sage: S = similarity_surfaces.billiard(T)
             sage: S = S.minimal_cover(cover_type="translation")
             sage: O = GL2ROrbitClosure(S)  # optional: pyflatsurf
-            sage: loads(dumps(O)) == O
+            sage: loads(dumps(O)) == O  # long time (6s)
             True
 
         """
