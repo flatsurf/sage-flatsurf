@@ -206,14 +206,14 @@
 <span class="sd">            sage: SimilaritySurface(3)</span>
 <span class="sd">            Traceback (most recent call last):</span>
 <span class="sd">            ...</span>
-<span class="sd">            TypeError: invalid argument surface=3 to build a half-translation surface</span>
+<span class="sd">            TypeError: invalid argument surface=3 to build a similarity surface</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">surface</span><span class="p">,</span> <span class="n">SimilaritySurface</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_s</span> <span class="o">=</span> <span class="n">surface</span><span class="o">.</span><span class="n">underlying_surface</span><span class="p">()</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">surface</span><span class="p">,</span> <span class="n">Surface</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_s</span> <span class="o">=</span> <span class="n">surface</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;invalid argument surface=</span><span class="si">{}</span><span class="s2"> to build a half-translation surface&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">surface</span><span class="p">))</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;invalid argument surface=</span><span class="si">{}</span><span class="s2"> to build a similarity surface&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">surface</span><span class="p">))</span>
 
 <div class="viewcode-block" id="SimilaritySurface.underlying_surface"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity_surface.SimilaritySurface.underlying_surface">[docs]</a>    <span class="k">def</span> <span class="nf">underlying_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -2499,7 +2499,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016-2021, Vincent Delecroix and Pat Hooper.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.1.
     </div>
   </body>
 </html>
