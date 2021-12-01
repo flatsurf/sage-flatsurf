@@ -162,14 +162,14 @@ class SimilaritySurface(SageObject):
             sage: SimilaritySurface(3)
             Traceback (most recent call last):
             ...
-            TypeError: invalid argument surface=3 to build a half-translation surface
+            TypeError: invalid argument surface=3 to build a similarity surface
         """
         if isinstance(surface, SimilaritySurface):
             self._s = surface.underlying_surface()
         elif isinstance(surface, Surface):
             self._s = surface
         else:
-            raise TypeError("invalid argument surface={} to build a half-translation surface".format(surface))
+            raise TypeError("invalid argument surface={} to build a similarity surface".format(surface))
 
     def underlying_surface(self):
         r"""
