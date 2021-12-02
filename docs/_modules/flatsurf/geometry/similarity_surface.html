@@ -2423,10 +2423,10 @@
 <span class="sd">            sage: S = flatsurf.translation_surfaces.origami(G(&#39;(1,2,3,4)&#39;), G(&#39;(1,4,2,3)&#39;))</span>
 <span class="sd">            sage: S.stratum()</span>
 <span class="sd">            H_2(2, 0)</span>
-<span class="sd">            sage: S.erase_marked_points().stratum() # optional: pyflatsurf</span>
+<span class="sd">            sage: S.erase_marked_points().stratum() # optional: pyflatsurf  # long time (1s)</span>
 <span class="sd">            H_2(2)</span>
 
-<span class="sd">            sage: for (a,b,c) in [(1,4,11), (1,4,15), (3,4,13)]: # optional: pyflatsurf</span>
+<span class="sd">            sage: for (a,b,c) in [(1,4,11), (1,4,15), (3,4,13)]: # long time (10s), optional: pyflatsurf</span>
 <span class="sd">            ....:     T = flatsurf.polygons.triangle(a,b,c)</span>
 <span class="sd">            ....:     S = flatsurf.similarity_surfaces.billiard(T)</span>
 <span class="sd">            ....:     S = S.minimal_cover(&quot;translation&quot;)</span>
@@ -2444,7 +2444,7 @@
 <span class="sd">            sage: P = E((1, 1, 2, 4), normalized=True)</span>
 <span class="sd">            sage: B = similarity_surfaces.billiard(P, rational=True)</span>
 <span class="sd">            sage: S = B.minimal_cover(cover_type=&quot;translation&quot;)</span>
-<span class="sd">            sage: S = S.erase_marked_points() # optional: pyflatsurf</span>
+<span class="sd">            sage: S = S.erase_marked_points() # long time (5s), optional: pyflatsurf</span>
 
 <span class="sd">        ::</span>
 
@@ -2453,7 +2453,7 @@
 <span class="sd">            sage: P = E((1, 1, 2, 3), normalized=True)</span>
 <span class="sd">            sage: B = similarity_surfaces.billiard(P, rational=True)</span>
 <span class="sd">            sage: S_mp = B.minimal_cover(cover_type=&quot;translation&quot;)</span>
-<span class="sd">            sage: S = S_mp.erase_marked_points() # optional: pyflatsurf</span>
+<span class="sd">            sage: S = S_mp.erase_marked_points() # long time (3s), optional: pyflatsurf</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span> <span class="nn">.pyflatsurf_conversion</span> <span class="kn">import</span> <span class="n">from_pyflatsurf</span><span class="p">,</span> <span class="n">to_pyflatsurf</span>
