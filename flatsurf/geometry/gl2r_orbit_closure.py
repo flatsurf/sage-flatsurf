@@ -14,7 +14,7 @@ GL(2,R)-orbit closure of translation surfaces
 ######################################################################
 #  This file is part of sage-flatsurf.
 #
-#        Copyright (C) 2019-2020 Julian Rüth
+#        Copyright (C) 2019-2021 Julian Rüth
 #                      2020      Vincent Delecroix
 #
 #  sage-flatsurf is free software: you can redistribute it and/or modify
@@ -31,23 +31,8 @@ GL(2,R)-orbit closure of translation surfaces
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 ######################################################################
 
-import cppyy
-import gmpxxyy
-from pyeantic import RealEmbeddedNumberField
-
-import pyflatsurf
-import pyflatsurf.vector
-
-# TODO: it would be convenient to have Vertex directly available from
-# pyflatsurf, ie being able to do
-#     from pyflatsurf import Vertex
-Vertex = cppyy.gbl.flatsurf.Vertex
-
 from sage.all import VectorSpace, FreeModule, matrix, identity_matrix, ZZ, QQ, Unknown, vector, prod
 
-from .subfield import subfield_from_elements
-from .polygon import is_between, projectivization
-from .translation_surface import TranslationSurface
 
 class Decomposition:
     def __init__(self, gl2rorbit, decomposition, u):
@@ -533,6 +518,7 @@ class GL2ROrbitClosure:
         Number Field in a with defining polynomial x^3 - 2 with a = 1.259921049894873?
     """
     def __init__(self, surface):
+        from flatsurf.geometry.translation_surface import TranslationSurface
         if isinstance(surface, TranslationSurface):
             base_ring = surface.base_ring()
             from flatsurf.geometry.pyflatsurf_conversion import to_pyflatsurf
@@ -544,6 +530,10 @@ class GL2ROrbitClosure:
 
         # A model of the vector space R² in libflatsurf, e.g., to represent the
         # vector associated to a saddle connection.
+        from flatsurf.features import pyflatsurf_feature
+        pyflatsurf_feature.require()
+        import pyflatsurf.vector
+
         self.V2 = pyflatsurf.vector.Vectors(base_ring)
 
         # We construct a spanning set of edges, that is a subset of the
@@ -689,7 +679,10 @@ class GL2ROrbitClosure:
             Rational Field
         """
         M = self._U.echelon_form()
+
+        from flatsurf.geometry.subfield import subfield_from_elements
         L, elts, phi = subfield_from_elements(M.base_ring(), M[:self._U_rank].list())
+
         return L
 
     def _half_edge_to_face(self, h):
@@ -797,10 +790,15 @@ class GL2ROrbitClosure:
         if m == 1:
             return self.V
         rows = []
+
+        from flatsurf.features import pyflatsurf_feature
+        pyflatsurf_feature.require()
+        import pyflatsurf
+
         for e in self.spanning_set:
             r = [0] * m
-            i = vert_index[Vertex.target(e.positive(), self._surface.combinatorial())]
-            j = vert_index[Vertex.source(e.positive(), self._surface.combinatorial())]
+            i = vert_index[pyflatsurf.flatsurf.Vertex.target(e.positive(), self._surface.combinatorial())]
+            j = vert_index[pyflatsurf.flatsurf.Vertex.source(e.positive(), self._surface.combinatorial())]
             if i != j:
                 r[i] = 1
                 r[j] = -1
@@ -999,7 +997,13 @@ class GL2ROrbitClosure:
 
     def decomposition(self, v, limit=-1):
         v = self.V2(v)
+
+        from flatsurf.features import pyflatsurf_feature
+        pyflatsurf_feature.require()
+        import pyflatsurf
+
         decomposition = pyflatsurf.flatsurf.makeFlowDecomposition(self._surface, v.vector)
+
         u = self.V2._isomorphic_vector_space(v)
         if limit != 0:
             decomposition.decompose(int(limit))
@@ -1013,6 +1017,10 @@ class GL2ROrbitClosure:
             connections = connections.byLength()
 
         slopes = None
+
+        from flatsurf.features import cppyy_feature
+        cppyy_feature.require()
+        import cppyy
 
         for connection in connections:
             direction = connection.vector()
