@@ -2379,10 +2379,10 @@ class SimilaritySurface(SageObject):
             sage: S = flatsurf.translation_surfaces.origami(G('(1,2,3,4)'), G('(1,4,2,3)'))
             sage: S.stratum()
             H_2(2, 0)
-            sage: S.erase_marked_points().stratum() # optional: pyflatsurf
+            sage: S.erase_marked_points().stratum() # optional: pyflatsurf  # long time (1s)
             H_2(2)
 
-            sage: for (a,b,c) in [(1,4,11), (1,4,15), (3,4,13)]: # optional: pyflatsurf
+            sage: for (a,b,c) in [(1,4,11), (1,4,15), (3,4,13)]: # long time (10s), optional: pyflatsurf
             ....:     T = flatsurf.polygons.triangle(a,b,c)
             ....:     S = flatsurf.similarity_surfaces.billiard(T)
             ....:     S = S.minimal_cover("translation")
@@ -2400,7 +2400,7 @@ class SimilaritySurface(SageObject):
             sage: P = E((1, 1, 2, 4), normalized=True)
             sage: B = similarity_surfaces.billiard(P, rational=True)
             sage: S = B.minimal_cover(cover_type="translation")
-            sage: S = S.erase_marked_points() # optional: pyflatsurf
+            sage: S = S.erase_marked_points() # long time (5s), optional: pyflatsurf
 
         ::
 
@@ -2409,7 +2409,7 @@ class SimilaritySurface(SageObject):
             sage: P = E((1, 1, 2, 3), normalized=True)
             sage: B = similarity_surfaces.billiard(P, rational=True)
             sage: S_mp = B.minimal_cover(cover_type="translation")
-            sage: S = S_mp.erase_marked_points() # optional: pyflatsurf
+            sage: S = S_mp.erase_marked_points() # long time (3s), optional: pyflatsurf
 
         """
         from .pyflatsurf_conversion import from_pyflatsurf, to_pyflatsurf
