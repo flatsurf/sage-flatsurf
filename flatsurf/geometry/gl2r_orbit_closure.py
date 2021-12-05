@@ -540,7 +540,7 @@ class GL2ROrbitClosure:
         # edges that form a basis of H_1(S, Sigma; Z)
         # It comes together with a projection matrix
         t, m = self._spanning_tree()
-        assert set(t.keys()) == set(f[0] for f in self._faces())
+        assert set(t.keys()) == set(f[0] for f in self._surface.faces())
         self.spanning_set = []
         v = set(t.values())
         for e in self._surface.edges():
@@ -691,22 +691,6 @@ class GL2ROrbitClosure:
         h2 = surface.nextInFace(h1)
         h3 = surface.nextInFace(h2)
         return min([h1, h2, h3], key=lambda x: x.index())
-
-    def _faces(self):
-        seen = set()
-        faces = []
-        surface = self._surface
-        for e in surface.edges():
-            for h1 in [e.positive(), e.negative()]:
-                if h1 in seen:
-                    continue
-                h2 = surface.nextInFace(h1)
-                h3 = surface.nextInFace(h2)
-                faces.append((h1, h2, h3))
-                seen.add(h1)
-                seen.add(h2)
-                seen.add(h3)
-        return faces
 
     def __repr__(self):
         return "GL(2,R)-orbit closure of dimension at least %d in %s (ambient dimension %d)" % (self._U_rank, self.ambient_stratum(), self.d)
@@ -976,7 +960,7 @@ class GL2ROrbitClosure:
         n = self._surface.size()
         V = FreeModule(ZZ, n)
         B = []
-        for (f1,f2,f3) in self._faces():
+        for (f1,f2,f3) in self._surface.faces():
             i1 = f1.index()
             s1 = -1 if i1%2 else 1
             i2 = f2.index()
