@@ -540,7 +540,7 @@ class GL2ROrbitClosure:
         # edges that form a basis of H_1(S, Sigma; Z)
         # It comes together with a projection matrix
         t, m = self._spanning_tree()
-        assert set(t.keys()) == set(f[0] for f in self._surface.faces())
+        assert set(t.keys()) == set(f[2] for f in self._surface.faces())
         self.spanning_set = []
         v = set(t.values())
         for e in self._surface.edges():
