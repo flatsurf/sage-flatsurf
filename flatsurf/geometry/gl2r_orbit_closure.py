@@ -821,10 +821,39 @@ class GL2ROrbitClosure:
 
     def _spanning_tree(self, root=None):
         r"""
-        Return
+        Return a pair ``(t, proj)`` where
 
-        - a list of indices of edges that form a basis
-        - a matrix projection to the basis (modulo the triangle relations)
+        - ``t`` is a tree encoded in a dictionnary. Its keys are the faces
+          (coded by their minimal adjacent half-edge) and the corresponding
+          value is the half-edge to cross to go toward the root face.
+
+        - ``proj`` a matrix projection ``P``: for a vector ``v``, the vector
+          ``v * P`` is cohomologous to ``v`` and only takes values on the
+          spanning set.
+
+        EXAMPLES:
+
+        The following example illustrate the projection matrix::
+
+            sage: from flatsurf import polygons, similarity_surfaces
+            sage: from flatsurf import GL2ROrbitClosure  # optional: pyflatsurf
+            sage: T = polygons.triangle(1,3,4)
+            sage: S = similarity_surfaces.billiard(T)
+            sage: S = S.minimal_cover("translation")
+            sage: O = GL2ROrbitClosure(S)  # optional: pyflatsurf
+            sage: num_edges = O._surface.edges().size()  # optional: pyflatsurf
+            sage: V = VectorSpace(QQ, num_edges)  # optional: pyflatsurf
+            sage: tree, P = O._spanning_tree()  # optional: pyflatsurf
+            sage: values = tree.values()  # optional: pyflatsurf
+            sage: indices = set(e.index() for e in O._surface.edges() if e.positive() not in values and e.negative() not in values)  # optional: pyflatsurf
+            sage: B = V.subspace(O.boundaries())  # optional: pyflatsurf
+            sage: for e in range(num_edges):  # optional: pyflatsurf
+            ....:     v = V.gen(e)
+            ....:     assert (v * P - v) in B
+            ....:     if e in indices:
+            ....:         assert v * P == v
+            ....:     else:
+            ....:         assert (P * v).is_zero()
         """
         if root is None:
             root = next(iter(self._surface.edges())).positive()
