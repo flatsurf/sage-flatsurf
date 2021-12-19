@@ -344,7 +344,6 @@ class Surface(SageObject):
         """
         self._mutable = False
 
-
     def make_immutable(self):
         r"""
         Mark this surface as immutable.
@@ -370,7 +369,6 @@ class Surface(SageObject):
         """
         assert(self.is_mutable())
         # Remove the cache which will likely be invalidated.
-        #self._cache=CachedData()
         self._cache = {}
 
     def change_polygon(self, label, new_polygon, gluing_list=None):
@@ -467,7 +465,6 @@ class Surface(SageObject):
             h = h + 3*hash(edgepair)
         self._hash=h
         return h
-
 
     def __eq__(self, other):
         r"""
@@ -622,9 +619,6 @@ class Surface(SageObject):
             tester.assertTrue(isinstance(self.polygon(label), ConvexPolygon), \
                 "polygon(label) does not return a ConvexPolygon when label="+str(label))
 
-####
-#### Surface_list
-####
 
 class Surface_list(Surface):
     r"""
@@ -1079,6 +1073,7 @@ class Surface_list(Surface):
                 cover.set_edge_pairing(p0, e, p1, ee)
         return cover
 
+
 def surface_list_from_polygons_and_gluings(polygons, gluings, mutable=False):
     r"""
     Take a list of polygons and gluings (given either as a list of pairs of edges, or as a dictionary),
@@ -1103,9 +1098,6 @@ def surface_list_from_polygons_and_gluings(polygons, gluings, mutable=False):
         s.set_immutable()
     return s
 
-####
-#### Surface_dict
-####
 
 class Surface_dict(Surface):
     r"""
@@ -1396,6 +1388,7 @@ class Surface_dict(Surface):
                 # Assume on faith we are removing a polygon in the base_surface.
                 self._p[label] = None
 
+
 class BaseRingChangedSurface(Surface):
     r"""
     A surface with a different base_ring.
@@ -1413,12 +1406,6 @@ class BaseRingChangedSurface(Surface):
     def opposite_edge(self, p, e):
         return self._s.opposite_edge(p,e)
 
-
-#####
-##### LABEL WALKER
-#####
-
-from collections import deque
 
 class LabelWalker:
     r"""
@@ -1582,9 +1569,6 @@ class LabelWalker:
     def surface(self):
         return self._s
 
-######
-###### ExtraLabels
-######
 
 class ExtraLabel(SageObject):
     r"""
@@ -1618,9 +1602,6 @@ class ExtraLabel(SageObject):
     def __repr__(self):
         return "ExtraLabel("+str(self._label)+")"
 
-######
-###### LabelComparator
-######
 
 class LabelComparator(object):
     r"""
@@ -1680,4 +1661,3 @@ class LabelComparator(object):
         Return the truth value of l1 >= l2.
         r"""
         return self.lt(l2, l1) or l1 == l2
-
