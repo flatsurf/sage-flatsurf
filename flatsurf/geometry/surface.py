@@ -70,64 +70,74 @@ We can recover the underlying surface again::
 #
 #  You should have received a copy of the GNU General Public License
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
-#*********************************************************************
+# ********************************************************************
 from __future__ import absolute_import, print_function, division
-from six.moves import range, map, filter, zip
+from six.moves import range
 from six import iteritems
+from collections import deque
 
 from sage.structure.sage_object import SageObject
-from sage.sets.family import Family
+
 
 class Surface(SageObject):
     r"""
-    An oriented surface built from a set of polygons and edges identified with
-    similarities (i.e. composition of homothety, rotations and translations).
+    Abstract base class of all surfaces that are built from a set of polygons
+    with edges identified by similarities, i.e., compositions of homothety,
+    rotations and translations.
 
-    Each polygon is identified with a unique key (its label). The choice of the
-    label of the polygons is done at startup. If the set is finite then by
-    default the labels are the first non-negative integers 0,1,...
+    Concrete implementations of a surface must implement at least
+    :meth:`polygon` and :meth:`opposite_edge`.
 
-    The edge are identified by a couple (polygon label, edge number).
+    To be able to modify a surface, subclasses should also implement
+    :meth:`_change_polygon`, :meth:`_set_edge_pairing`, :meth:`_add_polygon`,
+    :meth:`_remove_polygon`.
 
-    .. NOTE::
+    For concrete implementations of a Surface, see, e.g., :class:`Surface_list`
+    and :class:`Surface_dict`.
 
-        This class is abstract and should not be called directly. Instead you
-        can either use Surface_list or Surface_dict. Another option is to
-        inherit from Surface and implement the two methods:
+    INPUT:
 
-        - polygon(self, label): the polygon associated to the provided label
-        - opposite_edge(self, label, edge): a couple (``other_label``, ``other_edge``)
-          representing the edge being glued
+    - ``base_ring`` -- the ring containing the coordinates of the vertices of
+      the polygons
 
-        If you want the surface to be mutable, you should override the methods:
-        - _change_polygon(self, label, new_polygon, gluing_list=None)
-        - _set_edge_pairing(self, label1, edge1, label2, edge2)
-        - _add_polygon(self, new_polygon, gluing_list=None, label=None)
-        - _remove_polygon(self, label)
-        See the documentation of those methods for details.
+    - ``base_label`` -- the label of a chosen special polygon in the surface,
+      see :meth:`base_label`
+
+    - ``finite`` -- whether this is a finite surface, see :meth:`is_finite`
+
+    - ``mutable`` -- whether this is a mutable surface; can be changed later
+      with :meth:`set_immutable`
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.surface import Surface, Surface_list, Surface_dict
+
+        sage: S = Surface_list(QQ)
+        sage: isinstance(S, Surface)
+        True
+
+        sage: S = Surface_dict(QQ)
+        sage: isinstance(S, Surface)
+        True
+
     """
-    def __init__(self, base_ring, base_label, finite=None, mutable=False):
-        r"""
-        Represents a surface defined using polygons whose vertices lie
-        in the provided base_ring.
 
-        Parameters
-        ----------
-        base_ring : field
-            Field containing the vertices of the polygons.
-        base_label :
-            A preferred label for a polygon in the surface.
-        finite : boolean
-            The truth value of the statement "The surface is finite."
-        mutable : boolean
-            If mutable is true, the resulting surface will be mutable.
-        """
-        if finite is None:
+    def __init__(self, base_ring, base_label, finite, mutable):
+        if finite not in [False, True]:
             raise ValueError("finite must be either True or False")
+
+        from sage.all import Rings
+        if base_ring not in Rings():
+            raise ValueError("base_ring must be a ring")
+
+        if mutable not in [False, True]:
+            raise ValueError("mutable must be either True or False")
+
         self._base_ring = base_ring
         self._base_label = base_label
-        self._finite=finite
+        self._finite = finite
         self._mutable = mutable
+
         self._cache = {}
 
     def is_triangulated(self, limit=None):
