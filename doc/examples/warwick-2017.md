@@ -537,7 +537,8 @@ class CubeSurf(Surface):
         self._faceA = P(vertices = [(0, 0), (1, 0), (1, 1), (0, 1)])
         self._faceB = P(vertices = [(0, 0), (1, 0), (1, 1), (0, 1)])
         self._faceC = P(vertices = [(0, 0), (1, 0), (1, 1), (0, 1)])
-        Surface.__init__(self, F, (ZZ(0), ZZ(0), ZZ3(0)), finite=False)
+        Surface.__init__(self, F, (ZZ(0), ZZ(0), ZZ3(0)), finite=False, mutable=False)
+
     def polygon(self, label):
         x, y, l = label
         if l == 0:
@@ -546,6 +547,7 @@ class CubeSurf(Surface):
             return self._faceB
         if l == 2:
             return self._faceC
+
     def opposite_edge(self, label, edge):
         x, y, l = label
         # l(0) = A, l(1) = B, l(2) = C
