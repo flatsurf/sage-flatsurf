@@ -1,10 +1,62 @@
 # -*- coding: utf-8 -*-
-#*********************************************************************
+r"""
+Data structures for surfaces built from polygons.
+
+All surfaces in sage-flatsurf are fundamentally built from polygons whose sides
+are identified by similarities. This module provides data structures to
+describe such surfaces. Currently, there are two fundamental such data
+structures, namely :class:`Surface_list` and `Surface_dict`. The former labels
+the polygons that make up a surface by non-negative integers and the latter can
+use arbitrary labels. Additionally, there are lots of other surface
+representations that are not really implementing data structures but
+essentially just wrap these two, e.g., a :class:`MinimalTranslationCover`.
+
+All these surface implementations inherit from :class:`Surface` which describes
+the contract that all surfaces must satisfy. As an absolute minimum, they
+implement :meth:`Surface.polygon` which maps polygon labels to actual polygons,
+and :meth:`Surface.opposite_edge` which describes the gluing of polygons.
+
+EXAMPLES:
+
+We built a torus by gluing the opposite sides of a square::
+
+    sage: from flatsurf import polygons
+    sage: from flatsurf.geometry.surface import Surface_list
+
+    sage: S = Surface_list(QQ)
+    sage: S.add_polygon(polygons(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]))
+    0
+    sage: S.set_edge_pairing(0, 0, 0, 2)
+    sage: S.set_edge_pairing(0, 1, 0, 3)
+
+    sage: S.polygon(0)
+    Polygon: (0, 0), (1, 0), (1, 1), (0, 1)
+    sage: S.opposite_edge(0, 0)
+    (0, 2)
+
+There are two separate hierarchies of surfaces in sage-flatsurf. The underlying
+data of a surface described by the subclasses of :class:`Surface` here and the
+:class:`SimilaritySurface` and its subclasses which wrap a :class:`Surface`.
+While a :class:`Surface` essentially provides the raw data of a surface, a
+:class:`SimilaritySurface` then adds mathematical knowledge to that data
+structure, e.g., by declaring that the data describes a
+:class:`TranslationSurface`::
+
+    sage: from flatsurf import TranslationSurface
+    sage: T = TranslationSurface(S)
+
+We can recover the underlying surface again::
+
+    sage: T.underlying_surface() is S
+    True
+
+"""
+# ********************************************************************
 #  This file is part of sage-flatsurf.
 #
 #        Copyright (C) 2016-2020 Pat Hooper
 #                      2019-2020 Vincent Delecroix
-#                      2020      Julian Rüth
+#                      2020-2021 Julian Rüth
 #
 #  sage-flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
