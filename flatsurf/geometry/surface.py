@@ -553,54 +553,25 @@ class Surface(SageObject):
             tester = options['tester']
         else:
             tester = self._tester(**options)
-        # Build a naive Surface.
-        from sage.rings.rational_field import QQ
-        s=Surface(QQ,0,finite=True)
 
         # Check for override:
         tester.assertNotEqual(self.polygon.__func__,
-                              s.polygon.__func__,
+                              Surface.polygon,
             "Method polygon of Surface must be overridden. The Surface is of type "+str(type(self))+".")
-        tester.assertNotEqual(self.opposite_edge.__func__, s.opposite_edge.__func__,
+        tester.assertNotEqual(self.opposite_edge.__func__, Surface.opposite_edge,
             "Method opposite_edge of Surface must be overridden. The Surface is of type "+str(type(self))+".")
-
-        # Check not overridden:
-        tester.assertEqual(self.base_ring.__func__, s.base_ring.__func__, \
-            "Method base_ring of Surface should not be overridden. The Surface is of type "+str(type(self))+".")
-        tester.assertEqual(self.base_label.__func__, s.base_label.__func__, \
-            "Method base_label of Surface should not be overridden. The Surface is of type "+str(type(self))+".")
-        tester.assertEqual(self.is_finite.__func__, s.is_finite.__func__, \
-            "Method is_finite of Surface should not be overridden. The Surface is of type "+str(type(self))+".")
-        tester.assertEqual(self.is_mutable.__func__, s.is_mutable.__func__, \
-            "Method is_mutable of Surface should not be overridden. The Surface is of type "+str(type(self))+".")
-        tester.assertEqual(self.set_immutable.__func__, s.set_immutable.__func__, \
-            "Method set_immutable of Surface should not be overridden. The Surface is of type "+str(type(self))+".")
-        tester.assertEqual(self.walker.__func__, s.walker.__func__, \
-            "Method walker of Surface should not be overridden. The Surface is of type "+str(type(self))+".")
-        tester.assertEqual(self.change_polygon.__func__, s.change_polygon.__func__, \
-            "Method change_polygon of Surface should not be overridden. The Surface is of type "+str(type(self))+".")
-        tester.assertEqual(self.change_polygon_gluings.__func__, s.change_polygon_gluings.__func__, \
-            "Method change_polygon_gluings of Surface should not be overridden. The Surface is of type "+str(type(self))+".")
-        tester.assertEqual(self.change_edge_gluing.__func__, s.change_edge_gluing.__func__, \
-            "Method change_edge_gluing of Surface should not be overridden. The Surface is of type "+str(type(self))+".")
-        tester.assertEqual(self.add_polygon.__func__, s.add_polygon.__func__, \
-            "Method add_polygon of Surface should not be overridden. The Surface is of type "+str(type(self))+".")
-        tester.assertEqual(self.remove_polygon.__func__, s.remove_polygon.__func__, \
-            "Method remove_polygon of Surface should not be overridden. The Surface is of type "+str(type(self))+".")
-        tester.assertEqual(self.change_base_label.__func__, s.change_base_label.__func__, \
-            "Method change_base_label of Surface should not be overridden. The Surface is of type "+str(type(self))+".")
 
         if self.is_mutable():
             # Check for override:
-            tester.assertNotEqual(self._change_polygon.__func__,s._change_polygon.__func__,\
+            tester.assertNotEqual(self._change_polygon.__func__, Surface._change_polygon,\
                 "Method _change_polygon of Surface must be overridden in a mutable surface. "+\
                 "The Surface is of type "+str(type(self))+".")
-            tester.assertNotEqual(self._set_edge_pairing.__func__, s._set_edge_pairing.__func__,\
+            tester.assertNotEqual(self._set_edge_pairing.__func__, Surface._set_edge_pairing,\
                 "Method _set_edge_pairing of Surface must be overridden in a mutable surface. "+\
                 "The Surface is of type "+str(type(self))+".")
-            tester.assertNotEqual(self._add_polygon.__func__,s._add_polygon.__func__,"Method _add_polygon of Surface must be overridden in a mutable surface. "+\
+            tester.assertNotEqual(self._add_polygon.__func__, Surface._add_polygon, "Method _add_polygon of Surface must be overridden in a mutable surface. "+\
                 "The Surface is of type "+str(type(self))+".")
-            tester.assertNotEqual(self._remove_polygon.__func__,s._remove_polygon.__func__,"Method _remove_polygon of Surface must be overridden in a mutable surface. "+\
+            tester.assertNotEqual(self._remove_polygon.__func__, Surface._remove_polygon, "Method _remove_polygon of Surface must be overridden in a mutable surface. "+\
                 "The Surface is of type "+str(type(self))+".")
 
     def _test_polygons(self, **options):
