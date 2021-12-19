@@ -219,7 +219,7 @@ class Surface(SageObject):
         sage.rings.infinity.Infinity if the surface is infinite.
 
         This is a generic method. On a finite surface it will be linear time in
-        the edges the first time it is run, then constant time (assuming not
+        the edges the first time it is run, then constant time (assuming no
         mutation occurs).
 
         Subclasses should consider overriding this method for increased
@@ -617,7 +617,7 @@ class Surface_list(Surface):
     - ``copy`` -- boolean or ``None`` (default: ``None``); whether the data
       underlying ``surface`` is copied into this surface or just a reference to
       that surface is kept. If ``None``, a sensible default is chosen depending
-      on the finiteness and mutability ``surface``.
+      on the finiteness and mutability of ``surface``.
 
     - ``mutable`` -- boolean or ``None`` (default: ``None``); whether this
       surface is mutable. When ``None``, the surface will be mutable iff
@@ -1094,7 +1094,6 @@ class Surface_dict(Surface):
     Each ``_p[label]`` is typically a pair ``(polygon, gluing_dict)`` where
     ``gluing_dict`` is maps ``other_label`` to ``other_edge`` such that
     :meth:`opposite_edge(label, edge)` returns ``_p[label][1][edge]``.
-
 
     INPUT:
 
