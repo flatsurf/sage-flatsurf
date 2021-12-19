@@ -812,11 +812,21 @@ class Surface_list(Surface):
         try:
             data = self._p[lab]
         except IndexError:
-            raise ValueError("No known polygon with provided label "+str(lab)+". "+\
-                "This can be caused by failing to explore your surface. "+\
-                "See the documentation in flatsurf.geometry.surface.Surface_list.")
+            if self._reference_surface is None:
+                raise ValueError(f"No polygon with label {lab}.")
+
+            for label in self.label_iterator():
+                if label >= lab:
+                    break
+
+            if lab >= len(self._p):
+                raise ValueError(f"No polygon with label {lab}.")
+
+            data = self._p[lab]
+
         if data is None:
             raise ValueError("Provided label was removed.")
+
         return data[0]
 
     def opposite_edge(self, p, e):
@@ -1162,14 +1172,14 @@ class Surface_dict(Surface):
         try:
             data = self._p[lab]
         except KeyError:
-            # No label in dictionary.
             if self._reference_surface is None:
-               raise ValueError("No known polygon with provided label "+str(lab)+".")
-            else:
-                polygon = self._reference_surface.polygon(lab)
-                data = [ self._reference_surface.polygon(lab), \
-                    [ self._reference_surface.opposite_edge(lab,e) for e in range(polygon.num_edges()) ] ]
-                self._p[lab] = data
+                raise ValueError(f"No polygon with label {lab}.")
+
+            polygon = self._reference_surface.polygon(lab)
+            data = [self._reference_surface.polygon(lab),
+                    [self._reference_surface.opposite_edge(lab, e) for e in range(polygon.num_edges())]]
+            self._p[lab] = data
+
         if data is None:
             raise ValueError("Label "+str(lab)+" was removed from the surface.")
         return data[0]
