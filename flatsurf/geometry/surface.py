@@ -2,14 +2,14 @@
 r"""
 Data structures for surfaces built from polygons.
 
-All surfaces in sage-flatsurf are fundamentally built from polygons whose sides
-are identified by similarities. This module provides data structures to
-describe such surfaces. Currently, there are two fundamental such data
-structures, namely :class:`Surface_list` and `Surface_dict`. The former labels
-the polygons that make up a surface by non-negative integers and the latter can
-use arbitrary labels. Additionally, there are lots of other surface
-representations that are not really implementing data structures but
-essentially just wrap these two, e.g., a :class:`MinimalTranslationCover`.
+All surfaces in sage-flatsurf are built from polygons whose sides are
+identified by similarities. This module provides data structures to describe
+such surfaces. Currently, there are two fundamental such data structures,
+namely :class:`Surface_list` and `Surface_dict`. The former labels the polygons
+that make up a surface by non-negative integers and the latter can use
+arbitrary labels. Additionally, there are lots of other surface representations
+that are not really implementing data structures but essentially just wrap
+these two, e.g., a :class:`MinimalTranslationCover`.
 
 All these surface implementations inherit from :class:`Surface` which describes
 the contract that all surfaces must satisfy. As an absolute minimum, they
