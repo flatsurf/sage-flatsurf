@@ -616,8 +616,8 @@ class Surface_list(Surface):
 
     - ``copy`` -- boolean or ``None`` (default: ``None``); whether the data
       underlying ``surface`` is copied into this surface or just a reference to
-      that surface is kept. If ``None``, a sensible default is chosen depending
-      on the finiteness and mutability of ``surface``.
+      that surface is kept. If ``None``, a sensible default is chosen, namely
+      ``surface.is_mutable()``.
 
     - ``mutable`` -- boolean or ``None`` (default: ``None``); whether this
       surface is mutable. When ``None``, the surface will be mutable iff
@@ -765,19 +765,17 @@ class Surface_list(Surface):
             if base_ring != surface.base_ring():
                 raise NotImplementedError("Cannot provide both a surface and a base_ring yet.")
 
-            if copy is None:
-                copy = surface.is_finite()
-
-            if not surface.is_finite():
-                if copy:
-                    raise ValueError("Cannot copy infinite surface.")
-
-            if surface.is_mutable():
-                if not copy:
-                    raise ValueError("Cannot reference mutable surface.")
-
             if mutable is None:
-                mutable = False
+                mutable = True
+
+            if copy is None:
+                copy = surface.is_mutable()
+
+            if copy and not surface.is_finite():
+                raise ValueError("Cannot copy infinite surface.")
+
+            if surface.is_mutable() and not copy:
+                raise ValueError("Cannot reference mutable surface.")
 
             finite = surface.is_finite()
 
@@ -1107,8 +1105,8 @@ class Surface_dict(Surface):
 
     - ``copy`` -- boolean or ``None`` (default: ``None``); whether the data
       underlying ``surface`` is copied into this surface or just a reference to
-      that surface is kept. If ``None``, a sensible default is chosen depending
-      on the finiteness and mutability ``surface``.
+      that surface is kept. If ``None``, a sensible default is chosen, namely
+      ``surface.is_mutable()``.
 
     - ``mutable`` -- boolean or ``None`` (default: ``None``); whether this
       surface is mutable. When ``None``, the surface will be mutable iff
