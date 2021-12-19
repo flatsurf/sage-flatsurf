@@ -404,7 +404,7 @@ class Surface(SageObject):
         self.__mutate()
         p=self.polygon(label)
         if p.num_edges() != len(glue_list):
-            raise ValueEror("len(glue_list)="+str(len(glue_list))+\
+            raise ValueError("len(glue_list)="+str(len(glue_list))+\
                 " and number of sides of polygon="+str(p.num_edges())+\
                 " should be the same.")
         for e,(pp,ee) in enumerate(glue_list):
