@@ -121,7 +121,7 @@ class EInfinitySurface(Surface):
                 field=lambda_squared.parent()
             else:
                 self._l=field(lambda_squared)
-        Surface.__init__(self,field, ZZ.zero(), finite=False)
+        super().__init__(field, ZZ.zero(), finite=False, mutable=False)
 
     def _repr_(self):
         r"""
@@ -267,7 +267,7 @@ class TFractalSurface(Surface):
 
         base_label=self.polygon_labels()._cartesian_product_of_elements((self._words(''), 0))
 
-        Surface.__init__(self, field, base_label, finite=False)
+        super().__init__(field, base_label, finite=False, mutable=False)
 
     def _repr_(self):
         return "The T-fractal surface with parameters w=%s, r=%s, h1=%s, h2=%s"%(
