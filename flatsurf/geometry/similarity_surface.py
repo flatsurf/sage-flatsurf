@@ -874,11 +874,11 @@ class SimilaritySurface(SageObject):
             # Just test if the flip would be successful
             p1=self.polygon(l1)
             if not p1.num_edges()==3:
-                return false
+                return False
             l2,e2 = self.opposite_edge(l1,e1)
             p2 = self.polygon(l2)
             if not p2.num_edges()==3:
-                return false
+                return False
             sim = self.edge_transformation(l2,e2)
             hol = sim( p2.vertex( (e2+2)%3 ) - p1.vertex((e1+2)%3) )
             from flatsurf.geometry.polygon import wedge_product
