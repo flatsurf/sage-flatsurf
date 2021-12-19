@@ -181,43 +181,49 @@ class Surface(SageObject):
         """
         raise NotImplementedError
 
-    #
-    # If the surface can be changed, implement the following methods:
-    #
-
     def _change_polygon(self, label, new_polygon, gluing_list=None):
         r"""
         Internal method used by change_polygon(). Should not be called directly.
+
+        Mutable surfaces should implement this method.
         """
         raise NotImplementedError
 
     def _set_edge_pairing(self, label1, edge1, label2, edge2):
         r"""
         Internal method used by change_edge_gluing(). Should not be called directly.
+
+        Mutable surfaces should implement this method.
         """
         raise NotImplementedError
 
     def _add_polygon(self, new_polygon, gluing_list=None, label=None):
         r"""
         Internal method used by add_polygon(). Should not be called directly.
+
+        Mutable surfaces should implement this method.
         """
         raise NotImplementedError
 
     def _remove_polygon(self, label):
         r"""
         Internal method used by remove_polygon(). Should not be called directly.
+
+        Mutable surfaces should implement this method.
         """
         raise NotImplementedError
 
-    #
-    # generic methods: override these for speed if possible
-    #
-
     def num_polygons(self):
         r"""
-        Return the number of polygons making up the surface, or sage.rings.infinity.Infinity if the surface is infinite.
+        Return the number of polygons making up the surface, or
+        sage.rings.infinity.Infinity if the surface is infinite.
 
-        This is a generic method. On a finite surface it will be linear time in the edges the first time it is run, then constant time (assuming not mutation occurs).
+        This is a generic method. On a finite surface it will be linear time in
+        the edges the first time it is run, then constant time (assuming not
+        mutation occurs).
+
+        Subclasses should consider overriding this method for increased
+        performance.
         """
         if self.is_finite():
             lw=self.walker()
@@ -230,19 +236,21 @@ class Surface(SageObject):
     def label_iterator(self):
         r"""
         Iterator over all polygon labels.
+
+        Subclasses should consider overriding this method for increased
+        performance.
         """
         return iter(self.walker())
 
     def label_polygon_iterator(self):
         r"""
-        Iterate over pairs (label,polygon).
+        Iterate over pairs (label, polygon).
+
+        Subclasses should consider overriding this method for increased
+        performance.
         """
         for label in self.label_iterator():
             yield label, self.polygon(label)
-
-    #
-    # Methods which you probably do not want to override.
-    #
 
     def num_edges(self):
         r"""
@@ -287,10 +295,6 @@ class Surface(SageObject):
         for label_edge_pair in self.edge_iterator():
             yield (label_edge_pair, \
                 self.opposite_edge(label_edge_pair[0], label_edge_pair[1]))
-
-    #
-    # Methods which should not be overriden
-    #
 
     def base_ring(self):
         r"""
