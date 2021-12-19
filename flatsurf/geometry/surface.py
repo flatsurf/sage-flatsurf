@@ -1212,7 +1212,7 @@ class Surface_dict(Surface):
                     [ self._reference_surface.opposite_edge(lab,e) for e in range(polygon.num_edges()) ] ]
                 self._p[lab] = data
         if data is None:
-            raise ValueError("Label "+str(label)+" was removed from the surface.")
+            raise ValueError("Label "+str(lab)+" was removed from the surface.")
         return data[0]
 
     def opposite_edge(self, p, e):
@@ -1226,7 +1226,7 @@ class Surface_dict(Surface):
              self.polygon(p)
              data=self._p[p]
         if data is None:
-            raise ValueError("Label "+str(label)+" was removed from the surface.")
+            raise ValueError("Label "+str(p)+" was removed from the surface.")
         gluing_data=data[1]
         try:
             return gluing_data[e]
