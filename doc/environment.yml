@@ -11,3 +11,6 @@ dependencies:
   - jupytext
   - myst-nb
   - tachyon
+  # Use a jsonschema version that does not produce deprecation warnings in late
+  # 2021. This pin can be dropped once myst-nb has been upgraded.
+  - jsonschema 4.2
