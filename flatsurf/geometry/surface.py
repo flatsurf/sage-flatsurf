@@ -701,12 +701,46 @@ class Surface_list(Surface):
         self._num_polygons = 0
 
         # Validate input parameters and fill in defaults
+        base_ring, surface, copy, mutable, finite = Surface_list._validate_init_parameters(base_ring=base_ring, surface=surface, copy=copy, mutable=mutable, finite=None)
+
+        Surface.__init__(self, base_ring, base_label=0, finite=finite, mutable=True)
+
+        # Initialize surface from reference surface
+        if surface is not None:
+            if copy is True:
+                reference_label_to_label = {
+                    label: self.add_polygon(polygon)
+                    for label, polygon in surface.label_polygon_iterator()
+                }
+
+                for ((label, edge), (glued_label, glued_edge)) in surface.edge_gluing_iterator():
+                    self.set_edge_pairing(reference_label_to_label[label], edge, reference_label_to_label[glued_label], glued_edge)
+
+                self.change_base_label(reference_label_to_label[surface.base_label()])
+            else:
+                self._reference_surface = surface
+                self._ref_to_int = {}
+                self._int_to_ref = []
+
+                self._num_polygons = surface.num_polygons()
+
+                # Cache the base polygon
+                self.change_base_label(self.__get_label(surface.base_label()))
+                assert self.base_label() == 0
+
+        if not mutable:
+            self.set_immutable()
+
+    @classmethod
+    def _validate_init_parameters(cls, base_ring, surface, copy, mutable, finite):
+        r"""
+        Helper method for ``__init__`` that validates the parameters and
+        returns them in the same order with defaults filled in.
+        """
         if surface is None and base_ring is None:
             raise ValueError("Either surface or base_ring must be provided.")
 
         if surface is None:
-            if mutable is False:
-                raise ValueError("If no surface is provided, then mutable must be true.")
             if copy is not None:
                 raise ValueError("Cannot copy when surface was provided.")
 
@@ -747,32 +781,7 @@ class Surface_list(Surface):
 
             finite = surface.is_finite()
 
-        Surface.__init__(self, base_ring, base_label=0, finite=finite, mutable=True)
-
-        if surface is not None:
-            if copy is True:
-                reference_label_to_label = {
-                    label: self.add_polygon(polygon)
-                    for label, polygon in surface.label_polygon_iterator()
-                }
-
-                for ((label, edge), (glued_label, glued_edge)) in surface.edge_gluing_iterator():
-                    self.set_edge_pairing(reference_label_to_label[label], edge, reference_label_to_label[glued_label], glued_edge)
-
-                self.change_base_label(reference_label_to_label[surface.base_label()])
-            else:
-                self._reference_surface = surface
-                self._ref_to_int = {}
-                self._int_to_ref = []
-
-                self._num_polygons = surface.num_polygons()
-
-                # Cache the base polygon
-                self.change_base_label(self.__get_label(surface.base_label()))
-                assert self.base_label() == 0
-
-        if not mutable:
-            self.set_immutable()
+        return base_ring, surface, copy, mutable, finite
 
     def __get_label(self, ref_label):
         r"""
@@ -1071,10 +1080,40 @@ def surface_list_from_polygons_and_gluings(polygons, gluings, mutable=False):
 
 class Surface_dict(Surface):
     r"""
-    A mutable implementation of surface using a dictionary to store polygons and gluings. The dictionary
-    implementation has the advantage that many label types are supported.
+    A mutable :class:`Surface` using a dict to store polygons and gluings.
 
-    The example below indicates how to construct a Surface_dict.
+    Unlike :class:`Surface_list`, this surface is not limited to integer
+    labels. However, :class:`Surface_list` is likely more efficient for most
+    applications.
+
+    ALGORITHM:
+
+    Internally, we maintain a dict ``_p`` for storing polygons together with
+    gluing data.
+
+    Each ``_p[label]`` is typically a pair ``(polygon, gluing_dict)`` where
+    ``gluing_dict`` is maps ``other_label`` to ``other_edge`` such that
+    :meth:`opposite_edge(label, edge)` returns ``_p[label][1][edge]``.
+
+
+    INPUT:
+
+    - ``base_ring`` -- ring or ``None`` (default: ``None``); the ring
+      containing the coordinates of the vertices of the polygons. If ``None``,
+      the :meth:`base_ring` will be the one of ``surface``.
+
+    - ``surface`` -- :class:`Surface`, :class:`SimilaritySurface`, or
+      ``None`` (default: ``None``); a surface to be copied or referenced (see
+      ``copy``). If ``None``, the surface is initially empty.
+
+    - ``copy`` -- boolean or ``None`` (default: ``None``); whether the data
+      underlying ``surface`` is copied into this surface or just a reference to
+      that surface is kept. If ``None``, a sensible default is chosen depending
+      on the finiteness and mutability ``surface``.
+
+    - ``mutable`` -- boolean or ``None`` (default: ``None``); whether this
+      surface is mutable. When ``None``, the surface will be mutable iff
+      ``surface`` is ``None``.
 
     EXAMPLES::
 
@@ -1088,83 +1127,35 @@ class Surface_dict(Surface):
         sage: s.set_immutable()
         sage: TestSuite(s).run()
     """
-    ###
-    ### Brief summary of internal workings.
-    ###
-    #
-    # The Surface_dict maintains a dictionary self._p for storing polygons together with gluing data.
-    # Here self._p[label] is typically a list of two elements [polygon, gluing_list].
-    # The gluing_list is then a list of pairs (other_label, other_edge) so that typically
-    # self.opposite_edge(label, edge) returns self._p[label][1][edge].
-    #
-    # If constructed with a surface parameter which is not None and copy=False, then Surface_dict
-    # stores a reference to the provided surface as self._reference_surface.
-    # (Otherwise self._reference_surface is None). If we have a reference surface, then to represent a removed
-    # polygon we set self._p[label]=None.
-    #
-    def __init__(self, base_ring=None, surface = None, copy=True, mutable=None):
-        r"""
-        Surface_list is a Surface implementation which uses int for labels.
-        (Internally, things are stored in a list.)
 
-        Parameters
-        ----------
-        base_ring : field or None
-            Field containing the vertices of the polygons. If left None (as default)
-            the base_ring is copied from the surface. If surface is also None
-            a ValueError will be raised.
-        surface : Surface or SimilaritySurface or None
-            A surface to be copied or referenced to obtain the initial state.
-            If surface is None (as default), the surface is initialized to be
-            empty and mutability is forced.
-        copy : boolean
-            If copy is true and surface is not None, then a copy is made of the
-            surface. This will result in an error if surface is infinite. If
-            copy is true, an reference to surface is used instead. Results of
-            querying are cached, therefore trying to store a reference of a
-            mutable surface is not allowed. The main purpose of the option
-            copy=False is to obtain a "copy" of an infinite surface. In case
-            copy=False, the labels for polygons are decided on in a lazy way.
-            In particular, you need to explore the resulting surface before
-            calling polygon(100). (You can explore the surface using any
-            of the iterators.)
-        mutable : boolean or None
-            If mutable is true, the resulting surface will be mutable. If mutable
-            is fals e, then the resulting surface will not be mutable. If mutable
-            is left at its default value of None, then the surface will be mutable
-            if and only if a surface is not provided.
-        """
+    def __init__(self, base_ring=None, surface=None, copy=None, mutable=None):
         self._p = {}
         self._reference_surface = None
-        if surface is None:
-            if base_ring is None:
-                raise ValueError("Either surface or base_ring must be provided.")
-            if not mutable is None and not mutable:
-                raise ValueError("If no surface is provided, then mutable must be true.")
-            Surface.__init__(self, base_ring, None, finite=True, mutable=True)
-        else:
-            from .similarity_surface import SimilaritySurface
-            if isinstance(surface,SimilaritySurface):
-                surface=surface.underlying_surface()
-            if not isinstance(surface,Surface):
-                raise ValueError("surface must be either a Surface or SimilaritySurface")
-            if not base_ring is None and base_ring != surface.base_ring():
-                raise ValueError("You currently can not provide both a surface and a base_ring.")
-            if copy==True:
-                if not surface.is_finite():
-                    raise ValueError("Can not copy an infinite surface.")
-                for label,polygon in surface.label_polygon_iterator():
-                    self._p[label]=[polygon, \
-                        [ surface.opposite_edge(label,e) for e in range(polygon.num_edges()) ] ]
-                # The only way we're mutable is if mutable=True:
-                Surface.__init__(self, surface.base_ring(), surface.base_label(), finite=True, mutable=not mutable is None and mutable)
+
+        # Validate input parameters and fill in defaults
+        base_ring, surface, copy, mutable, finite = Surface_list._validate_init_parameters(base_ring=base_ring, surface=surface, copy=copy, mutable=mutable, finite=None)
+
+        Surface.__init__(self, base_ring, base_label=None, finite=finite, mutable=True)
+
+        # Initialize surface from reference surface
+        if surface is not None:
+            if copy is True:
+                reference_label_to_label = {
+                    label: self.add_polygon(polygon, label=label)
+                    for label, polygon in surface.label_polygon_iterator()
+                }
+
+                for ((label, edge), (glued_label, glued_edge)) in surface.edge_gluing_iterator():
+                    self.set_edge_pairing(reference_label_to_label[label], edge, reference_label_to_label[glued_label], glued_edge)
+
+                self.change_base_label(reference_label_to_label[surface.base_label()])
             else:
-                if surface.is_mutable():
-                    raise ValueError("Surface_dict will not store reference to a mutable surface.")
                 self._reference_surface = surface
-                # The only way we're mutable is if mutable=True:
-                Surface.__init__(self, surface.base_ring(), surface.base_label(), \
-                    finite=surface.is_finite(), mutable=not mutable is None and mutable)
+
+                self.change_base_label(surface.base_label())
+
+        if not mutable:
+            self.set_immutable()
 
     def polygon(self, lab):
         r"""
