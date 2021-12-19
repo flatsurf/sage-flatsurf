@@ -750,7 +750,7 @@ class Surface_list(Surface):
         if surface is None:
             if base_ring is None:
                 raise ValueError("Either surface or base_ring must be provided.")
-            if not mutable is None and not mutable:
+            if mutable == False:
                 raise ValueError("If no surface is provided, then mutable must be true.")
             self._num_polygons=0
             # default label is zero.
