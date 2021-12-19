@@ -306,7 +306,23 @@ class Surface(SageObject):
 
     def base_label(self):
         r"""
-        Always returns the same label.
+        Return the label of a special chosen polygon in the surface.
+
+        When no specific choice was made with :meth:`set_base_label`, this
+        might just be the initial polygon, i.e., the one that was first added
+        in the construction of this surface.
+
+        This label is for example used as the starting position when walking
+        the surface in a canonical order with :meth:`walker`.
+
+        EXAMPLES::
+
+            sage: import flatsurf
+            sage: G = SymmetricGroup(4)
+            sage: S = flatsurf.translation_surfaces.origami(G('(1,2,3,4)'), G('(1,4,2,3)'))
+            sage: S.base_label()
+            1
+
         """
         return self._base_label
 
