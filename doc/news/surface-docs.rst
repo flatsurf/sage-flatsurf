@@ -8,7 +8,7 @@
 * The `mutable` parameter of `Surface_list.__init__()` and
   `Surface_dict.__init__()` now defaults to `True`. Before its default was
   `False` in many cases. This change might break some existing code. If it
-  does, one needs to either explicitly set `mutable=True` in this invocation or
+  does, one needs to either explicitly set `mutable=False` in this invocation or
   call `surface.set_immutable()`.
 
 **Fixed:**
