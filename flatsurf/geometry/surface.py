@@ -820,7 +820,7 @@ class Surface_list(Surface):
                     break
 
             if lab >= len(self._p):
-                raise ValueError(f"No polygon with label {lab}.")
+                raise ValueError(f"no polygon with label {lab}")
 
             data = self._p[lab]
 
