@@ -124,7 +124,7 @@ for i, dec in enumerate(O.decompositions(16, bfs=True)): # optional: pyflatsurf
          print("holonomy           :", dec.u)
          print("length             :", (dec.u[0]**2 + dec.u[1]**2).n().sqrt())
          print("num cylinders      :", len(dec.cylinders()))
-         print("num minimal comps. :", len(dec.minimal_components()))
+         print("num minimal comps. :", len(dec.minimalComponents()))
          print("current dimension  :", new_dim)
          print("cyls. holonomies   :", holonomies)
          print("cyls. moduli       :", moduli)
