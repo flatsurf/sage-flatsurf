@@ -427,49 +427,6 @@ class Decomposition:
         """
         return cls._right_kernel_matrix(M.transpose())
 
-    def plot_completely_periodic(self):
-        from sage.plot.all import polygon2d, Graphics, point2d, text
-        O = self.orbit
-        G = []
-        u = self.u  # direction (that we put horizontal)
-        m = matrix(2, [u[1], -u[0], u[1], u[0]])
-        indices = {}
-        xmin = xmax = ymin = ymax = 0
-        for comp in self.decomposition.components():
-            H = Graphics()
-            x = O.V2._isomorphic_vector_space.zero()
-
-            pts = [x]
-            below = True
-            for p in comp.perimeter():
-                sc = p.saddleConnection()
-                y = x + m * O.V2._isomorphic_vector_space(O.V2(p.saddleConnection().vector()))
-
-                if p.vertical():
-                    if sc in indices:
-                        i = indices[sc]
-                    else:
-                        i = len(indices) // 2
-                        indices[sc] = i
-                        indices[-sc] = i
-                    if below:
-                        H += text(str(i), (x+y)/2, color='black')
-                x = y
-                xmin = min(xmin, x[0])
-                xmax = max(xmax, x[0])
-                ymin = min(ymin, x[1])
-                ymax = max(ymax, x[1])
-                pts.append(x)
-            H += polygon2d(pts, color='blue', alpha=0.3)
-            H += point2d(pts, color='red', pointsize=20)
-            G.append(H)
-        aspect_ratio = float(xmax - xmin) / float(ymax - ymin)
-        for H in G:
-            H.set_axes_range(xmin, xmax, ymin, ymax)
-            H.axes(False)
-            H.set_aspect_ratio(aspect_ratio)
-        return G
-
 class GL2ROrbitClosure:
     r"""
     Lower bound approximation to the tangent space of a GL(2,R)-orbit closure of a
