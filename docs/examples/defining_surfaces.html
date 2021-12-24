@@ -606,7 +606,7 @@ More information including pitfalls are described in <a href="http://flipper.rea
         <span class="bp">self</span><span class="o">.</span><span class="n">_inv</span> <span class="o">=</span> <span class="n">matrix</span><span class="p">(</span><span class="n">QQ</span><span class="p">,[[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">]])</span>
         
         <span class="c1"># Set the base field to QQ, the base label to be 1, and note that the surface is infinite.</span>
-        <span class="n">Surface</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">QQ</span><span class="p">,</span> <span class="n">ZZ</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">finite</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">Surface</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_ring</span><span class="o">=</span><span class="n">QQ</span><span class="p">,</span> <span class="n">base_label</span><span class="o">=</span><span class="n">ZZ</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">finite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">mutable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     
     <span class="k">def</span> <span class="nf">polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">label</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ZZ</span><span class="p">:</span>
@@ -704,9 +704,9 @@ More information including pitfalls are described in <a href="http://flipper.rea
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Traceback (most recent call last):
     File &quot;/usr/share/miniconda/envs/test/lib/python3.9/site-packages/sage/misc/sage_unittest.py&quot;, line 297, in run
       test_method(tester=tester)
-    File &quot;/usr/share/miniconda/envs/test/lib/python3.9/site-packages/flatsurf/geometry/surface.py&quot;, line 444, in _test_base_label
+    File &quot;/usr/share/miniconda/envs/test/lib/python3.9/site-packages/flatsurf/geometry/surface.py&quot;, line 524, in _test_base_label
       tester.assertTrue(isinstance(self.polygon(self.base_label()), ConvexPolygon), \
-    File &quot;/usr/share/miniconda/envs/test/lib/python3.9/unittest/case.py&quot;, line 680, in assertTrue
+    File &quot;/usr/share/miniconda/envs/test/lib/python3.9/unittest/case.py&quot;, line 688, in assertTrue
       raise self.failureException(msg)
   AssertionError: polygon(base_label) does not return a ConvexPolygon. Here base_label=1
   ------------------------------------------------------------
@@ -755,9 +755,9 @@ More information including pitfalls are described in <a href="http://flipper.rea
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Traceback (most recent call last):
     File &quot;/usr/share/miniconda/envs/test/lib/python3.9/site-packages/sage/misc/sage_unittest.py&quot;, line 297, in run
       test_method(tester=tester)
-    File &quot;/usr/share/miniconda/envs/test/lib/python3.9/site-packages/flatsurf/geometry/surface.py&quot;, line 540, in _test_polygons
+    File &quot;/usr/share/miniconda/envs/test/lib/python3.9/site-packages/flatsurf/geometry/surface.py&quot;, line 591, in _test_polygons
       tester.assertTrue(isinstance(self.polygon(label), ConvexPolygon), \
-    File &quot;/usr/share/miniconda/envs/test/lib/python3.9/unittest/case.py&quot;, line 680, in assertTrue
+    File &quot;/usr/share/miniconda/envs/test/lib/python3.9/unittest/case.py&quot;, line 688, in assertTrue
       raise self.failureException(msg)
   AssertionError: polygon(label) does not return a ConvexPolygon when label=1
   ------------------------------------------------------------
@@ -866,7 +866,7 @@ The following tests failed: _test_underlying_surface
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016-2021, Vincent Delecroix and Pat Hooper.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.1.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
     </div>
   </body>
 </html>

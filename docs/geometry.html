@@ -1786,6 +1786,52 @@ enumerated in counter-clockwise order.</p>
 </section>
 <section id="module-flatsurf.geometry.surface">
 <span id="surface-basics"></span><h2>Surface Basics<a class="headerlink" href="#module-flatsurf.geometry.surface" title="Permalink to this headline">¶</a></h2>
+<p>Data structures for surfaces built from polygons.</p>
+<p>All surfaces in sage-flatsurf are built from polygons whose sides are
+identified by similarities. This module provides data structures to describe
+such surfaces. Currently, there are two fundamental such data structures,
+namely <a class="reference internal" href="#flatsurf.geometry.surface.Surface_list" title="flatsurf.geometry.surface.Surface_list"><code class="xref py py-class docutils literal notranslate"><span class="pre">Surface_list</span></code></a> and <cite>Surface_dict</cite>. The former labels the polygons
+that make up a surface by non-negative integers and the latter can use
+arbitrary labels. Additionally, there are lots of other surface representations
+that are not really implementing data structures but essentially just wrap
+these two, e.g., a <code class="xref py py-class docutils literal notranslate"><span class="pre">MinimalTranslationCover</span></code>.</p>
+<p>All these surface implementations inherit from <a class="reference internal" href="#flatsurf.geometry.surface.Surface" title="flatsurf.geometry.surface.Surface"><code class="xref py py-class docutils literal notranslate"><span class="pre">Surface</span></code></a> which describes
+the contract that all surfaces must satisfy. As an absolute minimum, they
+implement <a class="reference internal" href="#flatsurf.geometry.surface.Surface.polygon" title="flatsurf.geometry.surface.Surface.polygon"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Surface.polygon()</span></code></a> which maps polygon labels to actual polygons,
+and <a class="reference internal" href="#flatsurf.geometry.surface.Surface.opposite_edge" title="flatsurf.geometry.surface.Surface.opposite_edge"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Surface.opposite_edge()</span></code></a> which describes the gluing of polygons.</p>
+<p>EXAMPLES:</p>
+<p>We built a torus by gluing the opposite sides of a square:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">polygons</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface</span> <span class="kn">import</span> <span class="n">Surface_list</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">Surface_list</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span><span class="n">polygons</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]))</span>
+<span class="mi">0</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">set_edge_pairing</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">set_edge_pairing</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">Polygon</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>There are two separate hierarchies of surfaces in sage-flatsurf. The underlying
+data of a surface described by the subclasses of <a class="reference internal" href="#flatsurf.geometry.surface.Surface" title="flatsurf.geometry.surface.Surface"><code class="xref py py-class docutils literal notranslate"><span class="pre">Surface</span></code></a> here and the
+<code class="xref py py-class docutils literal notranslate"><span class="pre">SimilaritySurface</span></code> and its subclasses which wrap a <a class="reference internal" href="#flatsurf.geometry.surface.Surface" title="flatsurf.geometry.surface.Surface"><code class="xref py py-class docutils literal notranslate"><span class="pre">Surface</span></code></a>.
+While a <a class="reference internal" href="#flatsurf.geometry.surface.Surface" title="flatsurf.geometry.surface.Surface"><code class="xref py py-class docutils literal notranslate"><span class="pre">Surface</span></code></a> essentially provides the raw data of a surface, a
+<code class="xref py py-class docutils literal notranslate"><span class="pre">SimilaritySurface</span></code> then adds mathematical knowledge to that data
+structure, e.g., by declaring that the data describes a
+<code class="xref py py-class docutils literal notranslate"><span class="pre">TranslationSurface</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">TranslationSurface</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">T</span> <span class="o">=</span> <span class="n">TranslationSurface</span><span class="p">(</span><span class="n">S</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We can recover the underlying surface again:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">T</span><span class="o">.</span><span class="n">underlying_surface</span><span class="p">()</span> <span class="ow">is</span> <span class="n">S</span>
+<span class="kc">True</span>
+</pre></div>
+</div>
 <dl class="py class">
 <dt class="sig sig-object py" id="flatsurf.geometry.surface.BaseRingChangedSurface">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.surface.</span></span><span class="sig-name descname"><span class="pre">BaseRingChangedSurface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">surface</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ring</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/surface.html#BaseRingChangedSurface"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface.BaseRingChangedSurface" title="Permalink to this definition">¶</a></dt>
@@ -1936,29 +1982,39 @@ the next limit many polygons.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="flatsurf.geometry.surface.Surface">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.surface.</span></span><span class="sig-name descname"><span class="pre">Surface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_ring</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">finite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mutable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/surface.html#Surface"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface.Surface" title="Permalink to this definition">¶</a></dt>
-<dd><p>An oriented surface built from a set of polygons and edges identified with
-similarities (i.e. composition of homothety, rotations and translations).</p>
-<p>Each polygon is identified with a unique key (its label). The choice of the
-label of the polygons is done at startup. If the set is finite then by
-default the labels are the first non-negative integers 0,1,…</p>
-<p>The edge are identified by a couple (polygon label, edge number).</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>This class is abstract and should not be called directly. Instead you
-can either use Surface_list or Surface_dict. Another option is to
-inherit from Surface and implement the two methods:</p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.surface.</span></span><span class="sig-name descname"><span class="pre">Surface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_ring</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">finite</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mutable</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/surface.html#Surface"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface.Surface" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract base class of all surfaces that are built from a set of polygons
+with edges identified. The identifications are compositions of homothety,
+rotations and translations, i.e., similarities that ensure that the surface
+is oriented.</p>
+<p>Concrete implementations of a surface must implement at least
+<a class="reference internal" href="#flatsurf.geometry.surface.Surface.polygon" title="flatsurf.geometry.surface.Surface.polygon"><code class="xref py py-meth docutils literal notranslate"><span class="pre">polygon()</span></code></a> and <a class="reference internal" href="#flatsurf.geometry.surface.Surface.opposite_edge" title="flatsurf.geometry.surface.Surface.opposite_edge"><code class="xref py py-meth docutils literal notranslate"><span class="pre">opposite_edge()</span></code></a>.</p>
+<p>To be able to modify a surface, subclasses should also implement
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">_change_polygon()</span></code>, <code class="xref py py-meth docutils literal notranslate"><span class="pre">_set_edge_pairing()</span></code>, <code class="xref py py-meth docutils literal notranslate"><span class="pre">_add_polygon()</span></code>,
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">_remove_polygon()</span></code>.</p>
+<p>For concrete implementations of a Surface, see, e.g., <a class="reference internal" href="#flatsurf.geometry.surface.Surface_list" title="flatsurf.geometry.surface.Surface_list"><code class="xref py py-class docutils literal notranslate"><span class="pre">Surface_list</span></code></a>
+and <a class="reference internal" href="#flatsurf.geometry.surface.Surface_dict" title="flatsurf.geometry.surface.Surface_dict"><code class="xref py py-class docutils literal notranslate"><span class="pre">Surface_dict</span></code></a>.</p>
+<p>INPUT:</p>
 <ul class="simple">
-<li><p>polygon(self, label): the polygon associated to the provided label</p></li>
-<li><p>opposite_edge(self, label, edge): a couple (<code class="docutils literal notranslate"><span class="pre">other_label</span></code>, <code class="docutils literal notranslate"><span class="pre">other_edge</span></code>)
-representing the edge being glued</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">base_ring</span></code> – the ring containing the coordinates of the vertices of
+the polygons</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">base_label</span></code> – the label of a chosen special polygon in the surface,
+see <a class="reference internal" href="#flatsurf.geometry.surface.Surface.base_label" title="flatsurf.geometry.surface.Surface.base_label"><code class="xref py py-meth docutils literal notranslate"><span class="pre">base_label()</span></code></a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">finite</span></code> – whether this is a finite surface, see <a class="reference internal" href="#flatsurf.geometry.surface.Surface.is_finite" title="flatsurf.geometry.surface.Surface.is_finite"><code class="xref py py-meth docutils literal notranslate"><span class="pre">is_finite()</span></code></a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mutable</span></code> – whether this is a mutable surface; can be changed later
+with <a class="reference internal" href="#flatsurf.geometry.surface.Surface.set_immutable" title="flatsurf.geometry.surface.Surface.set_immutable"><code class="xref py py-meth docutils literal notranslate"><span class="pre">set_immutable()</span></code></a></p></li>
 </ul>
-<p>If you want the surface to be mutable, you should override the methods:
-- _change_polygon(self, label, new_polygon, gluing_list=None)
-- _set_edge_pairing(self, label1, edge1, label2, edge2)
-- _add_polygon(self, new_polygon, gluing_list=None, label=None)
-- _remove_polygon(self, label)
-See the documentation of those methods for details.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface</span> <span class="kn">import</span> <span class="n">Surface</span><span class="p">,</span> <span class="n">Surface_list</span><span class="p">,</span> <span class="n">Surface_dict</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">Surface_list</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">Surface</span><span class="p">)</span>
+<span class="kc">True</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">Surface_dict</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">Surface</span><span class="p">)</span>
+<span class="kc">True</span>
+</pre></div>
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.surface.Surface.add_polygon">
@@ -1988,7 +2044,20 @@ from the label provided).</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.surface.Surface.base_label">
 <span class="sig-name descname"><span class="pre">base_label</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/surface.html#Surface.base_label"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface.Surface.base_label" title="Permalink to this definition">¶</a></dt>
-<dd><p>Always returns the same label.</p>
+<dd><p>Return the label of a special chosen polygon in the surface.</p>
+<p>When no specific choice was made with <code class="xref py py-meth docutils literal notranslate"><span class="pre">set_base_label()</span></code>, this
+might just be the initial polygon, i.e., the one that was first added
+in the construction of this surface.</p>
+<p>This label is for example used as the starting position when walking
+the surface in a canonical order with <a class="reference internal" href="#flatsurf.geometry.surface.Surface.walker" title="flatsurf.geometry.surface.Surface.walker"><code class="xref py py-meth docutils literal notranslate"><span class="pre">walker()</span></code></a>.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">import</span> <span class="nn">flatsurf</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">G</span> <span class="o">=</span> <span class="n">SymmetricGroup</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">flatsurf</span><span class="o">.</span><span class="n">translation_surfaces</span><span class="o">.</span><span class="n">origami</span><span class="p">(</span><span class="n">G</span><span class="p">(</span><span class="s1">&#39;(1,2,3,4)&#39;</span><span class="p">),</span> <span class="n">G</span><span class="p">(</span><span class="s1">&#39;(1,4,2,3)&#39;</span><span class="p">))</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">base_label</span><span class="p">()</span>
+<span class="mi">1</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -2072,12 +2141,16 @@ and updates the edges listed in the glue_list.</p>
 <dt class="sig sig-object py" id="flatsurf.geometry.surface.Surface.label_iterator">
 <span class="sig-name descname"><span class="pre">label_iterator</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/surface.html#Surface.label_iterator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface.Surface.label_iterator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Iterator over all polygon labels.</p>
+<p>Subclasses should consider overriding this method for increased
+performance.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.surface.Surface.label_polygon_iterator">
 <span class="sig-name descname"><span class="pre">label_polygon_iterator</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/surface.html#Surface.label_polygon_iterator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface.Surface.label_polygon_iterator" title="Permalink to this definition">¶</a></dt>
-<dd><p>Iterate over pairs (label,polygon).</p>
+<dd><p>Iterate over pairs (label, polygon).</p>
+<p>Subclasses should consider overriding this method for increased
+performance.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2095,8 +2168,13 @@ and updates the edges listed in the glue_list.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.surface.Surface.num_polygons">
 <span class="sig-name descname"><span class="pre">num_polygons</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/surface.html#Surface.num_polygons"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface.Surface.num_polygons" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the number of polygons making up the surface, or sage.rings.infinity.Infinity if the surface is infinite.</p>
-<p>This is a generic method. On a finite surface it will be linear time in the edges the first time it is run, then constant time (assuming not mutation occurs).</p>
+<dd><p>Return the number of polygons making up the surface, or
+sage.rings.infinity.Infinity if the surface is infinite.</p>
+<p>This is a generic method. On a finite surface it will be linear time in
+the edges the first time it is run, then constant time (assuming no
+mutation occurs).</p>
+<p>Subclasses should consider overriding this method for increased
+performance.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2143,10 +2221,33 @@ if the base_label is removed.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="flatsurf.geometry.surface.Surface_dict">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.surface.</span></span><span class="sig-name descname"><span class="pre">Surface_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_ring</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">surface</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mutable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/surface.html#Surface_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface.Surface_dict" title="Permalink to this definition">¶</a></dt>
-<dd><p>A mutable implementation of surface using a dictionary to store polygons and gluings. The dictionary
-implementation has the advantage that many label types are supported.</p>
-<p>The example below indicates how to construct a Surface_dict.</p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.surface.</span></span><span class="sig-name descname"><span class="pre">Surface_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_ring</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">surface</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mutable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/surface.html#Surface_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface.Surface_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>A mutable <a class="reference internal" href="#flatsurf.geometry.surface.Surface" title="flatsurf.geometry.surface.Surface"><code class="xref py py-class docutils literal notranslate"><span class="pre">Surface</span></code></a> using a dict to store polygons and gluings.</p>
+<p>Unlike <a class="reference internal" href="#flatsurf.geometry.surface.Surface_list" title="flatsurf.geometry.surface.Surface_list"><code class="xref py py-class docutils literal notranslate"><span class="pre">Surface_list</span></code></a>, this surface is not limited to integer
+labels. However, <a class="reference internal" href="#flatsurf.geometry.surface.Surface_list" title="flatsurf.geometry.surface.Surface_list"><code class="xref py py-class docutils literal notranslate"><span class="pre">Surface_list</span></code></a> is likely more efficient for most
+applications.</p>
+<p>ALGORITHM:</p>
+<p>Internally, we maintain a dict <code class="docutils literal notranslate"><span class="pre">_p</span></code> for storing polygons together with
+gluing data.</p>
+<p>Each <code class="docutils literal notranslate"><span class="pre">_p[label]</span></code> is typically a pair <code class="docutils literal notranslate"><span class="pre">(polygon,</span> <span class="pre">gluing_dict)</span></code> where
+<code class="docutils literal notranslate"><span class="pre">gluing_dict</span></code> is maps <code class="docutils literal notranslate"><span class="pre">other_label</span></code> to <code class="docutils literal notranslate"><span class="pre">other_edge</span></code> such that
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">opposite_edge(label,</span> <span class="pre">edge)()</span></code> returns <code class="docutils literal notranslate"><span class="pre">_p[label][1][edge]</span></code>.</p>
+<p>INPUT:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">base_ring</span></code> – ring or <code class="docutils literal notranslate"><span class="pre">None</span></code> (default: <code class="docutils literal notranslate"><span class="pre">None</span></code>); the ring
+containing the coordinates of the vertices of the polygons. If <code class="docutils literal notranslate"><span class="pre">None</span></code>,
+the <code class="xref py py-meth docutils literal notranslate"><span class="pre">base_ring()</span></code> will be the one of <code class="docutils literal notranslate"><span class="pre">surface</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">surface</span></code> – <a class="reference internal" href="#flatsurf.geometry.surface.Surface" title="flatsurf.geometry.surface.Surface"><code class="xref py py-class docutils literal notranslate"><span class="pre">Surface</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">SimilaritySurface</span></code>, or
+<code class="docutils literal notranslate"><span class="pre">None</span></code> (default: <code class="docutils literal notranslate"><span class="pre">None</span></code>); a surface to be copied or referenced (see
+<code class="docutils literal notranslate"><span class="pre">copy</span></code>). If <code class="docutils literal notranslate"><span class="pre">None</span></code>, the surface is initially empty.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">copy</span></code> – boolean or <code class="docutils literal notranslate"><span class="pre">None</span></code> (default: <code class="docutils literal notranslate"><span class="pre">None</span></code>); whether the data
+underlying <code class="docutils literal notranslate"><span class="pre">surface</span></code> is copied into this surface or just a reference to
+that surface is kept. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, a sensible default is chosen, namely
+<code class="docutils literal notranslate"><span class="pre">surface.is_mutable()</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mutable</span></code> – boolean or <code class="docutils literal notranslate"><span class="pre">None</span></code> (default: <code class="docutils literal notranslate"><span class="pre">None</span></code>); whether this
+surface is mutable. When <code class="docutils literal notranslate"><span class="pre">None</span></code>, the surface will be mutable iff
+<code class="docutils literal notranslate"><span class="pre">surface</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+</ul>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">p</span><span class="o">=</span><span class="n">polygons</span><span class="o">.</span><span class="n">regular_ngon</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
@@ -2188,8 +2289,30 @@ returns the pair (<code class="docutils literal notranslate"><span class="pre">p
 
 <dl class="py class">
 <dt class="sig sig-object py" id="flatsurf.geometry.surface.Surface_list">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.surface.</span></span><span class="sig-name descname"><span class="pre">Surface_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_ring</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">surface</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mutable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/surface.html#Surface_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface.Surface_list" title="Permalink to this definition">¶</a></dt>
-<dd><p>A fast mutable implementation of surface using a list to store polygons and gluings.</p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.surface.</span></span><span class="sig-name descname"><span class="pre">Surface_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_ring</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">surface</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mutable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/surface.html#Surface_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface.Surface_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>A fast mutable <a class="reference internal" href="#flatsurf.geometry.surface.Surface" title="flatsurf.geometry.surface.Surface"><code class="xref py py-class docutils literal notranslate"><span class="pre">Surface</span></code></a> using a list to store polygons and gluings.</p>
+<p>ALGORITHM:</p>
+<p>Internally, we maintain a list <code class="docutils literal notranslate"><span class="pre">_p</span></code> for storing polygons together with
+gluing data.</p>
+<p>Each <code class="docutils literal notranslate"><span class="pre">_p[label]</span></code> is typically a pair <code class="docutils literal notranslate"><span class="pre">(polygon,</span> <span class="pre">gluing_list)</span></code> where
+<code class="docutils literal notranslate"><span class="pre">gluing_list</span></code> is a list of pairs <code class="docutils literal notranslate"><span class="pre">(other_label,</span> <span class="pre">other_edge)</span></code> such that
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">opposite_edge(label,</span> <span class="pre">edge)()</span></code> returns <code class="docutils literal notranslate"><span class="pre">_p[label][1][edge]</span></code>.</p>
+<p>INPUT:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">base_ring</span></code> – ring or <code class="docutils literal notranslate"><span class="pre">None</span></code> (default: <code class="docutils literal notranslate"><span class="pre">None</span></code>); the ring
+containing the coordinates of the vertices of the polygons. If <code class="docutils literal notranslate"><span class="pre">None</span></code>,
+the <code class="xref py py-meth docutils literal notranslate"><span class="pre">base_ring()</span></code> will be the one of <code class="docutils literal notranslate"><span class="pre">surface</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">surface</span></code> – <a class="reference internal" href="#flatsurf.geometry.surface.Surface" title="flatsurf.geometry.surface.Surface"><code class="xref py py-class docutils literal notranslate"><span class="pre">Surface</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">SimilaritySurface</span></code>, or
+<code class="docutils literal notranslate"><span class="pre">None</span></code> (default: <code class="docutils literal notranslate"><span class="pre">None</span></code>); a surface to be copied or referenced (see
+<code class="docutils literal notranslate"><span class="pre">copy</span></code>). If <code class="docutils literal notranslate"><span class="pre">None</span></code>, the surface is initially empty.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">copy</span></code> – boolean or <code class="docutils literal notranslate"><span class="pre">None</span></code> (default: <code class="docutils literal notranslate"><span class="pre">None</span></code>); whether the data
+underlying <code class="docutils literal notranslate"><span class="pre">surface</span></code> is copied into this surface or just a reference to
+that surface is kept. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, a sensible default is chosen, namely
+<code class="docutils literal notranslate"><span class="pre">surface.is_mutable()</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mutable</span></code> – boolean or <code class="docutils literal notranslate"><span class="pre">None</span></code> (default: <code class="docutils literal notranslate"><span class="pre">None</span></code>); whether this
+surface is mutable. When <code class="docutils literal notranslate"><span class="pre">None</span></code>, the surface will be mutable iff
+<code class="docutils literal notranslate"><span class="pre">surface</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+</ul>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface</span> <span class="kn">import</span> <span class="n">Surface_list</span>
@@ -2203,6 +2326,60 @@ returns the pair (<code class="docutils literal notranslate"><span class="pre">p
 <span class="n">sage</span><span class="p">:</span> <span class="c1"># base label defaults to zero.</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">set_immutable</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">TestSuite</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>We surgically add a square into an infinite billiard surface:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">p</span> <span class="o">=</span> <span class="n">polygons</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),(</span><span class="mi">4</span><span class="p">,</span><span class="mi">0</span><span class="p">),(</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">)])</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">s</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">billiard</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">ts</span><span class="o">=</span><span class="n">s</span><span class="o">.</span><span class="n">minimal_cover</span><span class="p">(</span><span class="n">cover_type</span><span class="o">=</span><span class="s2">&quot;translation&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">relabel</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">mutable</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="c1"># Explore the surface a bit</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">ts</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">Polygon</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">ts</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+<span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">ts</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">Polygon</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">s</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">underlying_surface</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">l</span><span class="o">=</span><span class="n">s</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span><span class="n">polygons</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">side</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">change_edge_gluing</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">l</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">change_edge_gluing</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="n">l</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">change_edge_gluing</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">l</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Glued in label is &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">l</span><span class="p">))</span>
+<span class="n">Glued</span> <span class="ow">in</span> <span class="n">label</span> <span class="ow">is</span> <span class="mi">2</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">sage</span><span class="p">:</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">edge_iterator</span><span class="p">(</span><span class="n">gluings</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="o">....</span><span class="p">:</span>     <span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="o">....</span><span class="p">:</span>     <span class="n">count</span><span class="o">=</span><span class="n">count</span><span class="o">+</span><span class="mi">1</span>
+<span class="o">....</span><span class="p">:</span>     <span class="k">if</span> <span class="n">count</span><span class="o">&gt;</span><span class="mi">15</span><span class="p">:</span>
+<span class="o">....</span><span class="p">:</span>         <span class="k">break</span>
+<span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+<span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+<span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+<span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+<span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+<span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+<span class="p">((</span><span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+<span class="p">((</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="p">((</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+<span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+<span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">sage</span><span class="p">:</span> <span class="k">for</span> <span class="n">l</span><span class="p">,</span><span class="n">p</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">label_iterator</span><span class="p">(</span><span class="n">polygons</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="o">....</span><span class="p">:</span>     <span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">l</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot; -&gt; &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="p">))</span>
+<span class="o">....</span><span class="p">:</span>     <span class="n">count</span><span class="o">=</span><span class="n">count</span><span class="o">+</span><span class="mi">1</span>
+<span class="o">....</span><span class="p">:</span>     <span class="k">if</span> <span class="n">count</span><span class="o">&gt;</span><span class="mi">5</span><span class="p">:</span>
+<span class="o">....</span><span class="p">:</span>         <span class="k">break</span>
+<span class="mi">0</span> <span class="o">-&gt;</span> <span class="n">Polygon</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="mi">2</span> <span class="o">-&gt;</span> <span class="n">Polygon</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+<span class="mi">3</span> <span class="o">-&gt;</span> <span class="n">Polygon</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">72</span><span class="o">/</span><span class="mi">25</span><span class="p">,</span> <span class="o">-</span><span class="mi">21</span><span class="o">/</span><span class="mi">25</span><span class="p">),</span> <span class="p">(</span><span class="mi">28</span><span class="o">/</span><span class="mi">25</span><span class="p">,</span> <span class="o">-</span><span class="mi">96</span><span class="o">/</span><span class="mi">25</span><span class="p">)</span>
+<span class="mi">4</span> <span class="o">-&gt;</span> <span class="n">Polygon</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="mi">1</span> <span class="o">-&gt;</span> <span class="n">Polygon</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="mi">5</span> <span class="o">-&gt;</span> <span class="n">Polygon</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">28</span><span class="o">/</span><span class="mi">25</span><span class="p">,</span> <span class="mi">96</span><span class="o">/</span><span class="mi">25</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">72</span><span class="o">/</span><span class="mi">25</span><span class="p">,</span> <span class="o">-</span><span class="mi">21</span><span class="o">/</span><span class="mi">25</span><span class="p">)</span>
 </pre></div>
 </div>
 <dl class="py method">
@@ -4703,7 +4880,20 @@ Here matrix_function is a python function mapping labels to 2x2 matrices with po
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.mappings.MatrixListDeformedSurface.base_label">
 <span class="sig-name descname"><span class="pre">base_label</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/mappings.html#MatrixListDeformedSurface.base_label"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.mappings.MatrixListDeformedSurface.base_label" title="Permalink to this definition">¶</a></dt>
-<dd><p>Always returns the same label.</p>
+<dd><p>Return the label of a special chosen polygon in the surface.</p>
+<p>When no specific choice was made with <code class="xref py py-meth docutils literal notranslate"><span class="pre">set_base_label()</span></code>, this
+might just be the initial polygon, i.e., the one that was first added
+in the construction of this surface.</p>
+<p>This label is for example used as the starting position when walking
+the surface in a canonical order with <code class="xref py py-meth docutils literal notranslate"><span class="pre">walker()</span></code>.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">import</span> <span class="nn">flatsurf</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">G</span> <span class="o">=</span> <span class="n">SymmetricGroup</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">flatsurf</span><span class="o">.</span><span class="n">translation_surfaces</span><span class="o">.</span><span class="n">origami</span><span class="p">(</span><span class="n">G</span><span class="p">(</span><span class="s1">&#39;(1,2,3,4)&#39;</span><span class="p">),</span> <span class="n">G</span><span class="p">(</span><span class="s1">&#39;(1,4,2,3)&#39;</span><span class="p">))</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">base_label</span><span class="p">()</span>
+<span class="mi">1</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -5786,7 +5976,7 @@ represents and edge and w represents the non-zero weight assigned.</p>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016-2021, Vincent Delecroix and Pat Hooper.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.1.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
     </div>
   </body>
 </html>
