@@ -514,8 +514,19 @@ class GL2ROrbitClosure:
         sage: S = translation_surfaces.mcmullen_genus2_prototype(2, 1, 0, -1, a/4)
 
         sage: from flatsurf import GL2ROrbitClosure  # optional: pyflatsurf
-        sage: GL2ROrbitClosure(S)._U.base_ring() # optional: pyflatsurf
+        sage: O = GL2ROrbitClosure(S) # optional: pyflatsurf
+        sage: O._U.base_ring() # optional: pyflatsurf
         Number Field in a with defining polynomial x^3 - 2 with a = 1.259921049894873?
+
+    We now illustrate the projection::
+
+        sage: V = O.proj._row_ambient_module() # optional: pyflatsurf
+        sage: H = O.proj._column_ambient_module() # optional: pyflatsurf
+        sage: assert O.proj.rank() == H.dimension()
+        sage: for b in O.boundaries(): # optional: pyflatsurf
+        ....:    assert (O.proj * b).is_zero()
+        sage: for i, e in enumerate(O.spanning_set): # optional: pyflatsurf
+        ....:     assert (O.proj * V.gen(e.index())) == H.gen(i)
     """
     def __init__(self, surface):
         from flatsurf.geometry.translation_surface import TranslationSurface
