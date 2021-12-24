@@ -281,7 +281,7 @@ class ParabolaSurface(Surface):
         self._inv = matrix(QQ,[[-1,0],[0,-1]])
         
         # Set the base field to QQ, the base label to be 1, and note that the surface is infinite.
-        Surface.__init__(self, QQ, ZZ(1), finite=False)
+        Surface.__init__(self, base_ring=QQ, base_label=ZZ(1), finite=False, mutable=False)
     
     def polygon(self, label):
         if label not in ZZ:

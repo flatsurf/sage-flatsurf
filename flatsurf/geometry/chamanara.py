@@ -64,7 +64,7 @@ class ChamanaraSurface(Surface):
 
         self.rename('Chamanara surface with parameter {}'.format(alpha))
 
-        Surface.__init__(self, field, ZZ(0), finite=False)
+        super().__init__(field, ZZ(0), finite=False, mutable=False)
     
     def polygon(self, lab):
         r"""

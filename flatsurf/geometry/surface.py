@@ -1,10 +1,62 @@
 # -*- coding: utf-8 -*-
-#*********************************************************************
+r"""
+Data structures for surfaces built from polygons.
+
+All surfaces in sage-flatsurf are built from polygons whose sides are
+identified by similarities. This module provides data structures to describe
+such surfaces. Currently, there are two fundamental such data structures,
+namely :class:`Surface_list` and `Surface_dict`. The former labels the polygons
+that make up a surface by non-negative integers and the latter can use
+arbitrary labels. Additionally, there are lots of other surface representations
+that are not really implementing data structures but essentially just wrap
+these two, e.g., a :class:`MinimalTranslationCover`.
+
+All these surface implementations inherit from :class:`Surface` which describes
+the contract that all surfaces must satisfy. As an absolute minimum, they
+implement :meth:`Surface.polygon` which maps polygon labels to actual polygons,
+and :meth:`Surface.opposite_edge` which describes the gluing of polygons.
+
+EXAMPLES:
+
+We built a torus by gluing the opposite sides of a square::
+
+    sage: from flatsurf import polygons
+    sage: from flatsurf.geometry.surface import Surface_list
+
+    sage: S = Surface_list(QQ)
+    sage: S.add_polygon(polygons(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]))
+    0
+    sage: S.set_edge_pairing(0, 0, 0, 2)
+    sage: S.set_edge_pairing(0, 1, 0, 3)
+
+    sage: S.polygon(0)
+    Polygon: (0, 0), (1, 0), (1, 1), (0, 1)
+    sage: S.opposite_edge(0, 0)
+    (0, 2)
+
+There are two separate hierarchies of surfaces in sage-flatsurf. The underlying
+data of a surface described by the subclasses of :class:`Surface` here and the
+:class:`SimilaritySurface` and its subclasses which wrap a :class:`Surface`.
+While a :class:`Surface` essentially provides the raw data of a surface, a
+:class:`SimilaritySurface` then adds mathematical knowledge to that data
+structure, e.g., by declaring that the data describes a
+:class:`TranslationSurface`::
+
+    sage: from flatsurf import TranslationSurface
+    sage: T = TranslationSurface(S)
+
+We can recover the underlying surface again::
+
+    sage: T.underlying_surface() is S
+    True
+
+"""
+# ********************************************************************
 #  This file is part of sage-flatsurf.
 #
 #        Copyright (C) 2016-2020 Pat Hooper
 #                      2019-2020 Vincent Delecroix
-#                      2020      Julian Rüth
+#                      2020-2021 Julian Rüth
 #
 #  sage-flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -18,64 +70,75 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
-#*********************************************************************
+# ********************************************************************
 from __future__ import absolute_import, print_function, division
-from six.moves import range, map, filter, zip
+from six.moves import range
 from six import iteritems
+from collections import deque
 
 from sage.structure.sage_object import SageObject
-from sage.sets.family import Family
+
 
 class Surface(SageObject):
     r"""
-    An oriented surface built from a set of polygons and edges identified with
-    similarities (i.e. composition of homothety, rotations and translations).
+    Abstract base class of all surfaces that are built from a set of polygons
+    with edges identified. The identifications are compositions of homothety,
+    rotations and translations, i.e., similarities that ensure that the surface
+    is oriented.
 
-    Each polygon is identified with a unique key (its label). The choice of the
-    label of the polygons is done at startup. If the set is finite then by
-    default the labels are the first non-negative integers 0,1,...
+    Concrete implementations of a surface must implement at least
+    :meth:`polygon` and :meth:`opposite_edge`.
 
-    The edge are identified by a couple (polygon label, edge number).
+    To be able to modify a surface, subclasses should also implement
+    :meth:`_change_polygon`, :meth:`_set_edge_pairing`, :meth:`_add_polygon`,
+    :meth:`_remove_polygon`.
 
-    .. NOTE::
+    For concrete implementations of a Surface, see, e.g., :class:`Surface_list`
+    and :class:`Surface_dict`.
 
-        This class is abstract and should not be called directly. Instead you
-        can either use Surface_list or Surface_dict. Another option is to
-        inherit from Surface and implement the two methods:
+    INPUT:
 
-        - polygon(self, label): the polygon associated to the provided label
-        - opposite_edge(self, label, edge): a couple (``other_label``, ``other_edge``)
-          representing the edge being glued
+    - ``base_ring`` -- the ring containing the coordinates of the vertices of
+      the polygons
 
-        If you want the surface to be mutable, you should override the methods:
-        - _change_polygon(self, label, new_polygon, gluing_list=None)
-        - _set_edge_pairing(self, label1, edge1, label2, edge2)
-        - _add_polygon(self, new_polygon, gluing_list=None, label=None)
-        - _remove_polygon(self, label)
-        See the documentation of those methods for details.
+    - ``base_label`` -- the label of a chosen special polygon in the surface,
+      see :meth:`base_label`
+
+    - ``finite`` -- whether this is a finite surface, see :meth:`is_finite`
+
+    - ``mutable`` -- whether this is a mutable surface; can be changed later
+      with :meth:`set_immutable`
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.surface import Surface, Surface_list, Surface_dict
+
+        sage: S = Surface_list(QQ)
+        sage: isinstance(S, Surface)
+        True
+
+        sage: S = Surface_dict(QQ)
+        sage: isinstance(S, Surface)
+        True
+
     """
-    def __init__(self, base_ring, base_label, finite=None, mutable=False):
-        r"""
-        Represents a surface defined using polygons whose vertices lie
-        in the provided base_ring.
 
-        Parameters
-        ----------
-        base_ring : field
-            Field containing the vertices of the polygons.
-        base_label :
-            A preferred label for a polygon in the surface.
-        finite : boolean
-            The truth value of the statement "The surface is finite."
-        mutable : boolean
-            If mutable is true, the resulting surface will be mutable.
-        """
-        if finite is None:
+    def __init__(self, base_ring, base_label, finite, mutable):
+        if finite not in [False, True]:
             raise ValueError("finite must be either True or False")
+
+        from sage.all import Rings
+        if base_ring not in Rings():
+            raise ValueError("base_ring must be a ring")
+
+        if mutable not in [False, True]:
+            raise ValueError("mutable must be either True or False")
+
         self._base_ring = base_ring
         self._base_label = base_label
-        self._finite=finite
+        self._finite = finite
         self._mutable = mutable
+
         self._cache = {}
 
     def is_triangulated(self, limit=None):
@@ -119,43 +182,49 @@ class Surface(SageObject):
         """
         raise NotImplementedError
 
-    #
-    # If the surface can be changed, implement the following methods:
-    #
-
     def _change_polygon(self, label, new_polygon, gluing_list=None):
         r"""
         Internal method used by change_polygon(). Should not be called directly.
+
+        Mutable surfaces should implement this method.
         """
         raise NotImplementedError
 
     def _set_edge_pairing(self, label1, edge1, label2, edge2):
         r"""
         Internal method used by change_edge_gluing(). Should not be called directly.
+
+        Mutable surfaces should implement this method.
         """
         raise NotImplementedError
 
     def _add_polygon(self, new_polygon, gluing_list=None, label=None):
         r"""
         Internal method used by add_polygon(). Should not be called directly.
+
+        Mutable surfaces should implement this method.
         """
         raise NotImplementedError
 
     def _remove_polygon(self, label):
         r"""
         Internal method used by remove_polygon(). Should not be called directly.
+
+        Mutable surfaces should implement this method.
         """
         raise NotImplementedError
 
-    #
-    # generic methods: override these for speed if possible
-    #
-
     def num_polygons(self):
         r"""
-        Return the number of polygons making up the surface, or sage.rings.infinity.Infinity if the surface is infinite.
+        Return the number of polygons making up the surface, or
+        sage.rings.infinity.Infinity if the surface is infinite.
 
-        This is a generic method. On a finite surface it will be linear time in the edges the first time it is run, then constant time (assuming not mutation occurs).
+        This is a generic method. On a finite surface it will be linear time in
+        the edges the first time it is run, then constant time (assuming no
+        mutation occurs).
+
+        Subclasses should consider overriding this method for increased
+        performance.
         """
         if self.is_finite():
             lw=self.walker()
@@ -168,19 +237,21 @@ class Surface(SageObject):
     def label_iterator(self):
         r"""
         Iterator over all polygon labels.
+
+        Subclasses should consider overriding this method for increased
+        performance.
         """
         return iter(self.walker())
 
     def label_polygon_iterator(self):
         r"""
-        Iterate over pairs (label,polygon).
+        Iterate over pairs (label, polygon).
+
+        Subclasses should consider overriding this method for increased
+        performance.
         """
         for label in self.label_iterator():
             yield label, self.polygon(label)
-
-    #
-    # Methods which you probably do not want to override.
-    #
 
     def num_edges(self):
         r"""
@@ -226,10 +297,6 @@ class Surface(SageObject):
             yield (label_edge_pair, \
                 self.opposite_edge(label_edge_pair[0], label_edge_pair[1]))
 
-    #
-    # Methods which should not be overriden
-    #
-
     def base_ring(self):
         r"""
         The field on which the coordinates of ``self`` live.
@@ -240,7 +307,23 @@ class Surface(SageObject):
 
     def base_label(self):
         r"""
-        Always returns the same label.
+        Return the label of a special chosen polygon in the surface.
+
+        When no specific choice was made with :meth:`set_base_label`, this
+        might just be the initial polygon, i.e., the one that was first added
+        in the construction of this surface.
+
+        This label is for example used as the starting position when walking
+        the surface in a canonical order with :meth:`walker`.
+
+        EXAMPLES::
+
+            sage: import flatsurf
+            sage: G = SymmetricGroup(4)
+            sage: S = flatsurf.translation_surfaces.origami(G('(1,2,3,4)'), G('(1,4,2,3)'))
+            sage: S.base_label()
+            1
+
         """
         return self._base_label
 
@@ -261,7 +344,6 @@ class Surface(SageObject):
         Mark this surface as immutable.
         """
         self._mutable = False
-
 
     def make_immutable(self):
         r"""
@@ -288,7 +370,6 @@ class Surface(SageObject):
         """
         assert(self.is_mutable())
         # Remove the cache which will likely be invalidated.
-        #self._cache=CachedData()
         self._cache = {}
 
     def change_polygon(self, label, new_polygon, gluing_list=None):
@@ -324,7 +405,7 @@ class Surface(SageObject):
         self.__mutate()
         p=self.polygon(label)
         if p.num_edges() != len(glue_list):
-            raise ValueEror("len(glue_list)="+str(len(glue_list))+\
+            raise ValueError("len(glue_list)="+str(len(glue_list))+\
                 " and number of sides of polygon="+str(p.num_edges())+\
                 " should be the same.")
         for e,(pp,ee) in enumerate(glue_list):
@@ -349,7 +430,7 @@ class Surface(SageObject):
         """
         self.__mutate()
         assert gluing_list is None or new_polygon.num_edges() == len(gluing_list)
-        return self._add_polygon(new_polygon, gluing_list,label)
+        return self._add_polygon(new_polygon, gluing_list, label)
 
     def remove_polygon(self, label):
         r"""
@@ -385,7 +466,6 @@ class Surface(SageObject):
             h = h + 3*hash(edgepair)
         self._hash=h
         return h
-
 
     def __eq__(self, other):
         r"""
@@ -474,54 +554,25 @@ class Surface(SageObject):
             tester = options['tester']
         else:
             tester = self._tester(**options)
-        # Build a naive Surface.
-        from sage.rings.rational_field import QQ
-        s=Surface(QQ,0,finite=True)
 
         # Check for override:
         tester.assertNotEqual(self.polygon.__func__,
-                              s.polygon.__func__,
+                              Surface.polygon,
             "Method polygon of Surface must be overridden. The Surface is of type "+str(type(self))+".")
-        tester.assertNotEqual(self.opposite_edge.__func__, s.opposite_edge.__func__,
+        tester.assertNotEqual(self.opposite_edge.__func__, Surface.opposite_edge,
             "Method opposite_edge of Surface must be overridden. The Surface is of type "+str(type(self))+".")
-
-        # Check not overridden:
-        tester.assertEqual(self.base_ring.__func__, s.base_ring.__func__, \
-            "Method base_ring of Surface should not be overridden. The Surface is of type "+str(type(self))+".")
-        tester.assertEqual(self.base_label.__func__, s.base_label.__func__, \
-            "Method base_label of Surface should not be overridden. The Surface is of type "+str(type(self))+".")
-        tester.assertEqual(self.is_finite.__func__, s.is_finite.__func__, \
-            "Method is_finite of Surface should not be overridden. The Surface is of type "+str(type(self))+".")
-        tester.assertEqual(self.is_mutable.__func__, s.is_mutable.__func__, \
-            "Method is_mutable of Surface should not be overridden. The Surface is of type "+str(type(self))+".")
-        tester.assertEqual(self.set_immutable.__func__, s.set_immutable.__func__, \
-            "Method set_immutable of Surface should not be overridden. The Surface is of type "+str(type(self))+".")
-        tester.assertEqual(self.walker.__func__, s.walker.__func__, \
-            "Method walker of Surface should not be overridden. The Surface is of type "+str(type(self))+".")
-        tester.assertEqual(self.change_polygon.__func__, s.change_polygon.__func__, \
-            "Method change_polygon of Surface should not be overridden. The Surface is of type "+str(type(self))+".")
-        tester.assertEqual(self.change_polygon_gluings.__func__, s.change_polygon_gluings.__func__, \
-            "Method change_polygon_gluings of Surface should not be overridden. The Surface is of type "+str(type(self))+".")
-        tester.assertEqual(self.change_edge_gluing.__func__, s.change_edge_gluing.__func__, \
-            "Method change_edge_gluing of Surface should not be overridden. The Surface is of type "+str(type(self))+".")
-        tester.assertEqual(self.add_polygon.__func__, s.add_polygon.__func__, \
-            "Method add_polygon of Surface should not be overridden. The Surface is of type "+str(type(self))+".")
-        tester.assertEqual(self.remove_polygon.__func__, s.remove_polygon.__func__, \
-            "Method remove_polygon of Surface should not be overridden. The Surface is of type "+str(type(self))+".")
-        tester.assertEqual(self.change_base_label.__func__, s.change_base_label.__func__, \
-            "Method change_base_label of Surface should not be overridden. The Surface is of type "+str(type(self))+".")
 
         if self.is_mutable():
             # Check for override:
-            tester.assertNotEqual(self._change_polygon.__func__,s._change_polygon.__func__,\
+            tester.assertNotEqual(self._change_polygon.__func__, Surface._change_polygon,\
                 "Method _change_polygon of Surface must be overridden in a mutable surface. "+\
                 "The Surface is of type "+str(type(self))+".")
-            tester.assertNotEqual(self._set_edge_pairing.__func__, s._set_edge_pairing.__func__,\
+            tester.assertNotEqual(self._set_edge_pairing.__func__, Surface._set_edge_pairing,\
                 "Method _set_edge_pairing of Surface must be overridden in a mutable surface. "+\
                 "The Surface is of type "+str(type(self))+".")
-            tester.assertNotEqual(self._add_polygon.__func__,s._add_polygon.__func__,"Method _add_polygon of Surface must be overridden in a mutable surface. "+\
+            tester.assertNotEqual(self._add_polygon.__func__, Surface._add_polygon, "Method _add_polygon of Surface must be overridden in a mutable surface. "+\
                 "The Surface is of type "+str(type(self))+".")
-            tester.assertNotEqual(self._remove_polygon.__func__,s._remove_polygon.__func__,"Method _remove_polygon of Surface must be overridden in a mutable surface. "+\
+            tester.assertNotEqual(self._remove_polygon.__func__, Surface._remove_polygon, "Method _remove_polygon of Surface must be overridden in a mutable surface. "+\
                 "The Surface is of type "+str(type(self))+".")
 
     def _test_polygons(self, **options):
@@ -540,13 +591,38 @@ class Surface(SageObject):
             tester.assertTrue(isinstance(self.polygon(label), ConvexPolygon), \
                 "polygon(label) does not return a ConvexPolygon when label="+str(label))
 
-####
-#### Surface_list
-####
 
 class Surface_list(Surface):
     r"""
-    A fast mutable implementation of surface using a list to store polygons and gluings.
+    A fast mutable :class:`Surface` using a list to store polygons and gluings.
+
+    ALGORITHM:
+
+    Internally, we maintain a list ``_p`` for storing polygons together with
+    gluing data.
+
+    Each ``_p[label]`` is typically a pair ``(polygon, gluing_list)`` where
+    ``gluing_list`` is a list of pairs ``(other_label, other_edge)`` such that
+    :meth:`opposite_edge(label, edge)` returns ``_p[label][1][edge]``.
+
+    INPUT:
+
+    - ``base_ring`` -- ring or ``None`` (default: ``None``); the ring
+      containing the coordinates of the vertices of the polygons. If ``None``,
+      the :meth:`base_ring` will be the one of ``surface``.
+
+    - ``surface`` -- :class:`Surface`, :class:`SimilaritySurface`, or
+      ``None`` (default: ``None``); a surface to be copied or referenced (see
+      ``copy``). If ``None``, the surface is initially empty.
+
+    - ``copy`` -- boolean or ``None`` (default: ``None``); whether the data
+      underlying ``surface`` is copied into this surface or just a reference to
+      that surface is kept. If ``None``, a sensible default is chosen, namely
+      ``surface.is_mutable()``.
+
+    - ``mutable`` -- boolean or ``None`` (default: ``None``); whether this
+      surface is mutable. When ``None``, the surface will be mutable iff
+      ``surface`` is ``None``.
 
     EXAMPLES::
 
@@ -562,169 +638,149 @@ class Surface_list(Surface):
         sage: # base label defaults to zero.
         sage: s.set_immutable()
         sage: TestSuite(s).run()
+
+    We surgically add a square into an infinite billiard surface::
+
+        sage: p = polygons(vertices=[(0,0),(4,0),(0,3)])
+        sage: s = similarity_surfaces.billiard(p)
+        sage: ts=s.minimal_cover(cover_type="translation").copy(relabel=True, mutable=True)
+        sage: # Explore the surface a bit
+        sage: ts.polygon(0)
+        Polygon: (0, 0), (4, 0), (0, 3)
+        sage: ts.opposite_edge(0,0)
+        (1, 2)
+        sage: ts.polygon(1)
+        Polygon: (0, 0), (0, -3), (4, 0)
+        sage: s = ts.underlying_surface()
+        sage: l=s.add_polygon(polygons.square(side=4))
+        sage: s.change_edge_gluing(0,0,l,2)
+        sage: s.change_edge_gluing(1,2,l,0)
+        sage: s.change_edge_gluing(l,1,l,3)
+        sage: print("Glued in label is "+str(l))
+        Glued in label is 2
+        sage: count = 0
+        sage: for x in ts.edge_iterator(gluings=True):
+        ....:     print(x)
+        ....:     count=count+1
+        ....:     if count>15:
+        ....:         break
+        ((0, 0), (2, 2))
+        ((0, 1), (3, 1))
+        ((0, 2), (4, 0))
+        ((2, 0), (1, 2))
+        ((2, 1), (2, 3))
+        ((2, 2), (0, 0))
+        ((2, 3), (2, 1))
+        ((3, 0), (5, 2))
+        ((3, 1), (0, 1))
+        ((3, 2), (6, 0))
+        ((4, 0), (0, 2))
+        ((4, 1), (7, 1))
+        ((4, 2), (8, 0))
+        ((1, 0), (8, 2))
+        ((1, 1), (9, 1))
+        ((1, 2), (2, 0))
+        sage: count = 0
+        sage: for l,p in ts.label_iterator(polygons=True):
+        ....:     print(str(l)+" -> "+str(p))
+        ....:     count=count+1
+        ....:     if count>5:
+        ....:         break
+        0 -> Polygon: (0, 0), (4, 0), (0, 3)
+        2 -> Polygon: (0, 0), (4, 0), (4, 4), (0, 4)
+        3 -> Polygon: (0, 0), (-72/25, -21/25), (28/25, -96/25)
+        4 -> Polygon: (0, 0), (0, 3), (-4, 0)
+        1 -> Polygon: (0, 0), (0, -3), (4, 0)
+        5 -> Polygon: (0, 0), (-28/25, 96/25), (-72/25, -21/25)
+
     """
-    ###
-    ### Brief summary of internal workings.
-    ###
-    #
-    # The Surface_list maintains a list self._p for storing polygons together
-    # with gluing data.
-    #
-    # Here self._p[label] is typically a list of two elements
-    # [polygon, gluing_list]. The gluing_list is then a list of pairs
-    # (other_label, other_edge) so that typically
-    # self.opposite_edge(label, edge) returns self._p[label][1][edge].
-    #
-    # If constructed with a surface parameter which is not None and copy=False,
-    # then Surface_list stores a reference to the provided surface as
-    # self._reference_surface. (Otherwise self._reference_surface is None).
-    #
-    def __init__(self, base_ring=None, surface = None, copy=True, mutable=None):
-        r"""
-        Surface_list is a Surface implementation which uses int for labels.
-        (Internally, things are stored in a list.)
 
-        Parameters
-        ----------
-        base_ring : field or None
-            Field containing the vertices of the polygons. If left None (as default)
-            the base_ring is copied from the surface. If surface is also None
-            a ValueError will be raised.
-        surface : Surface or SimilaritySurface or None
-            A surface to be copied or referenced to obtain the initial state.
-            If surface is None (as default), the surface is initialized to be
-            empty and mutability is forced.
-        copy : boolean
-            If copy is true and surface is not None, then a copy is made of the
-            surface. This will result in an error if surface is infinite. If
-            copy is true, an reference to surface is used instead. Results of
-            querying are cached, therefore trying to store a reference of a
-            mutable surface is not allowed. The main purpose of the option
-            copy=False is to obtain a "copy" of an infinite surface. In case
-            copy=False, the labels for polygons are decided on in a lazy way.
-            In particular, you need to explore the resulting surface before
-            calling polygon(100). (You can explore the surface using any
-            of the iterators.)
-        mutable : boolean or None
-            If mutable is true, the resulting surface will be mutable. If mutable
-            is false, then the resulting surface will not be mutable. If mutable
-            is left at its default value of None, then the surface will be mutable
-            if and only if a surface is not provided.
-
-        EXAMPLES::
-
-            sage: from flatsurf import *
-            sage: print("We will surgically add a square into an infinite billiard surface")
-            We will surgically add a square into an infinite billiard surface
-            sage: p = polygons(vertices=[(0,0),(4,0),(0,3)])
-            sage: s = similarity_surfaces.billiard(p)
-            sage: ts=s.minimal_cover(cover_type="translation").copy(relabel=True, mutable=True)
-            sage: # Explore the surface a bit
-            sage: ts.polygon(0)
-            Polygon: (0, 0), (4, 0), (0, 3)
-            sage: ts.opposite_edge(0,0)
-            (1, 2)
-            sage: ts.polygon(1)
-            Polygon: (0, 0), (0, -3), (4, 0)
-            sage: s = ts.underlying_surface()
-            sage: l=s.add_polygon(polygons.square(side=4))
-            sage: s.change_edge_gluing(0,0,l,2)
-            sage: s.change_edge_gluing(1,2,l,0)
-            sage: s.change_edge_gluing(l,1,l,3)
-            sage: print("Glued in label is "+str(l))
-            Glued in label is 2
-            sage: count = 0
-            sage: for x in ts.edge_iterator(gluings=True):
-            ....:     print(x)
-            ....:     count=count+1
-            ....:     if count>15:
-            ....:         break
-            ((0, 0), (2, 2))
-            ((0, 1), (3, 1))
-            ((0, 2), (4, 0))
-            ((2, 0), (1, 2))
-            ((2, 1), (2, 3))
-            ((2, 2), (0, 0))
-            ((2, 3), (2, 1))
-            ((3, 0), (5, 2))
-            ((3, 1), (0, 1))
-            ((3, 2), (6, 0))
-            ((4, 0), (0, 2))
-            ((4, 1), (7, 1))
-            ((4, 2), (8, 0))
-            ((1, 0), (8, 2))
-            ((1, 1), (9, 1))
-            ((1, 2), (2, 0))
-            sage: count = 0
-            sage: for l,p in ts.label_iterator(polygons=True):
-            ....:     print(str(l)+" -> "+str(p))
-            ....:     count=count+1
-            ....:     if count>5:
-            ....:         break
-            0 -> Polygon: (0, 0), (4, 0), (0, 3)
-            2 -> Polygon: (0, 0), (4, 0), (4, 4), (0, 4)
-            3 -> Polygon: (0, 0), (-72/25, -21/25), (28/25, -96/25)
-            4 -> Polygon: (0, 0), (0, 3), (-4, 0)
-            1 -> Polygon: (0, 0), (0, -3), (4, 0)
-            5 -> Polygon: (0, 0), (-28/25, 96/25), (-72/25, -21/25)
-        """
-        self._p = [] # list of pairs (polygon, gluings)
-        self._reference_surface = None # Whether or not we store a reference surface
+    def __init__(self, base_ring=None, surface=None, copy=None, mutable=None):
+        self._p = []  # list of pairs (polygon, gluings)
+        self._reference_surface = None
         self._removed_labels = []
-        if surface is None:
-            if base_ring is None:
-                raise ValueError("Either surface or base_ring must be provided.")
-            if not mutable is None and not mutable:
-                raise ValueError("If no surface is provided, then mutable must be true.")
-            self._num_polygons=0
-            # default label is zero.
-            Surface.__init__(self, base_ring, 0, finite=True, mutable=True)
-        else:
-            from .similarity_surface import SimilaritySurface
-            if isinstance(surface,SimilaritySurface):
-                surface=surface.underlying_surface()
-            if not isinstance(surface,Surface):
-                raise ValueError("surface must be either a Surface or SimilaritySurface")
-            if not base_ring is None and base_ring != surface.base_ring():
-                raise ValueError("You currently can not provide both a surface and a base_ring.")
-            self._base_ring = surface.base_ring()
-            if copy==True:
-                if not surface.is_finite():
-                    raise ValueError("Can not copy an infinite surface.")
-                # Temporarily set base_label to none. Update below.
-                Surface.__init__(self, surface.base_ring(), None, finite=True, mutable=True)
-                self._num_polygons=0
-                label_dict = {}
-                p = 0
-                for label,polygon in surface.label_polygon_iterator():
-                    label_dict[label] = p
-                    p=p+1
-                    # This automatically adds one to _num_polygons:
-                    self.add_polygon(polygon)
-                for pair1,pair2 in surface.edge_gluing_iterator():
-                    l1,e1=pair1
-                    l2,e2=pair2
-                    ll1=label_dict[l1]
-                    ll2=label_dict[l2]
-                    self._p[ll1][1][e1]=(ll2,e2)
-                self.change_base_label(label_dict[surface.base_label()])
-                if mutable is None or not mutable:
-                    self.set_immutable()
+        self._num_polygons = 0
+
+        # Validate input parameters and fill in defaults
+        base_ring, surface, copy, mutable, finite = Surface_list._validate_init_parameters(base_ring=base_ring, surface=surface, copy=copy, mutable=mutable, finite=None)
+
+        Surface.__init__(self, base_ring, base_label=0, finite=finite, mutable=True)
+
+        # Initialize surface from reference surface
+        if surface is not None:
+            if copy is True:
+                reference_label_to_label = {
+                    label: self.add_polygon(polygon)
+                    for label, polygon in surface.label_polygon_iterator()
+                }
+
+                for ((label, edge), (glued_label, glued_edge)) in surface.edge_gluing_iterator():
+                    self.set_edge_pairing(reference_label_to_label[label], edge, reference_label_to_label[glued_label], glued_edge)
+
+                self.change_base_label(reference_label_to_label[surface.base_label()])
             else:
-                if surface.is_mutable():
-                    raise ValueError("Surface_list will not store reference to a mutable surface.")
                 self._reference_surface = surface
-                self._ref_to_int={}
-                self._int_to_ref=[]
-                self.__get_label(surface.base_label())
+                self._ref_to_int = {}
+                self._int_to_ref = []
+
+                self._num_polygons = surface.num_polygons()
 
                 # Cache the base polygon
-                polygon = surface.polygon(surface.base_label())
-                self._p[0]=[polygon, [None for i in range(polygon.num_edges())]]
+                self.change_base_label(self.__get_label(surface.base_label()))
+                assert self.base_label() == 0
 
-                self._num_polygons = self._reference_surface.num_polygons()
-                # Set base label to zero.
-                Surface.__init__(self, surface.base_ring(), 0, finite=surface.is_finite(), mutable=not mutable is None and mutable)
+        if not mutable:
+            self.set_immutable()
+
+    @classmethod
+    def _validate_init_parameters(cls, base_ring, surface, copy, mutable, finite):
+        r"""
+        Helper method for ``__init__`` that validates the parameters and
+        returns them in the same order with defaults filled in.
+        """
+        if surface is None and base_ring is None:
+            raise ValueError("Either surface or base_ring must be provided.")
+
+        if surface is None:
+            if copy is not None:
+                raise ValueError("Cannot copy when surface was provided.")
+
+            if mutable is None:
+                mutable = True
+
+            finite = True
+        else:
+            from .similarity_surface import SimilaritySurface
+            if isinstance(surface, SimilaritySurface):
+                surface = surface.underlying_surface()
+
+            if not isinstance(surface, Surface):
+                raise TypeError("surface must be a Surface or a SimilaritySurface")
+
+            if not surface.is_finite() and surface.is_mutable():
+                raise NotImplementedError("Cannot create surface from infinite mutable surface yet.")
+
+            if base_ring is None:
+                base_ring = surface.base_ring()
+
+            if base_ring != surface.base_ring():
+                raise NotImplementedError("Cannot provide both a surface and a base_ring yet.")
+
+            if mutable is None:
+                mutable = True
+
+            if copy is None:
+                copy = surface.is_mutable()
+
+            if copy and not surface.is_finite():
+                raise ValueError("Cannot copy infinite surface.")
+
+            if surface.is_mutable() and not copy:
+                raise ValueError("Cannot reference mutable surface.")
+
+            finite = surface.is_finite()
+
+        return base_ring, surface, copy, mutable, finite
 
     def __get_label(self, ref_label):
         r"""
@@ -734,20 +790,18 @@ class Surface_list(Surface):
             return self._ref_to_int[ref_label]
         except KeyError:
             polygon = self._reference_surface.polygon(ref_label)
-            data = [polygon,[None for i in range(polygon.num_edges())]]
-            if len(self._removed_labels)>0:
+            data = [polygon, [None for i in range(polygon.num_edges())]]
+            if len(self._removed_labels) > 0:
                 i = self._removed_labels.pop()
-                self._p[i]=data
-                self._ref_to_int[ref_label]=i
-                self._int_to_ref[i]=ref_label
+                self._p[i] = data
+                self._ref_to_int[ref_label] = i
+                self._int_to_ref[i] = ref_label
             else:
                 i = len(self._p)
-                if i!=len(self._int_to_ref):
-                    raise RuntimeError("length of self._int_to_ref is "+\
-                        str(len(self._int_to_ref))+" should be the same as "+\
-                        "i="+str(i))
+                if i != len(self._int_to_ref):
+                    raise RuntimeError("length of self._int_to_ref is " + str(len(self._int_to_ref))+" should be the same as i=" + str(i))
                 self._p.append(data)
-                self._ref_to_int[ref_label]=i
+                self._ref_to_int[ref_label] = i
                 self._int_to_ref.append(ref_label)
             return i
 
@@ -758,11 +812,21 @@ class Surface_list(Surface):
         try:
             data = self._p[lab]
         except IndexError:
-            raise ValueError("No known polygon with provided label "+str(lab)+". "+\
-                "This can be caused by failing to explore your surface. "+\
-                "See the documentation in flatsurf.geometry.surface.Surface_list.")
+            if self._reference_surface is None:
+                raise ValueError(f"No polygon with label {lab}.")
+
+            for label in self.label_iterator():
+                if label >= lab:
+                    break
+
+            if lab >= len(self._p):
+                raise ValueError(f"no polygon with label {lab}")
+
+            data = self._p[lab]
+
         if data is None:
             raise ValueError("Provided label was removed.")
+
         return data[0]
 
     def opposite_edge(self, p, e):
@@ -997,6 +1061,7 @@ class Surface_list(Surface):
                 cover.set_edge_pairing(p0, e, p1, ee)
         return cover
 
+
 def surface_list_from_polygons_and_gluings(polygons, gluings, mutable=False):
     r"""
     Take a list of polygons and gluings (given either as a list of pairs of edges, or as a dictionary),
@@ -1021,16 +1086,42 @@ def surface_list_from_polygons_and_gluings(polygons, gluings, mutable=False):
         s.set_immutable()
     return s
 
-####
-#### Surface_dict
-####
 
 class Surface_dict(Surface):
     r"""
-    A mutable implementation of surface using a dictionary to store polygons and gluings. The dictionary
-    implementation has the advantage that many label types are supported.
+    A mutable :class:`Surface` using a dict to store polygons and gluings.
 
-    The example below indicates how to construct a Surface_dict.
+    Unlike :class:`Surface_list`, this surface is not limited to integer
+    labels. However, :class:`Surface_list` is likely more efficient for most
+    applications.
+
+    ALGORITHM:
+
+    Internally, we maintain a dict ``_p`` for storing polygons together with
+    gluing data.
+
+    Each ``_p[label]`` is typically a pair ``(polygon, gluing_dict)`` where
+    ``gluing_dict`` is maps ``other_label`` to ``other_edge`` such that
+    :meth:`opposite_edge(label, edge)` returns ``_p[label][1][edge]``.
+
+    INPUT:
+
+    - ``base_ring`` -- ring or ``None`` (default: ``None``); the ring
+      containing the coordinates of the vertices of the polygons. If ``None``,
+      the :meth:`base_ring` will be the one of ``surface``.
+
+    - ``surface`` -- :class:`Surface`, :class:`SimilaritySurface`, or
+      ``None`` (default: ``None``); a surface to be copied or referenced (see
+      ``copy``). If ``None``, the surface is initially empty.
+
+    - ``copy`` -- boolean or ``None`` (default: ``None``); whether the data
+      underlying ``surface`` is copied into this surface or just a reference to
+      that surface is kept. If ``None``, a sensible default is chosen, namely
+      ``surface.is_mutable()``.
+
+    - ``mutable`` -- boolean or ``None`` (default: ``None``); whether this
+      surface is mutable. When ``None``, the surface will be mutable iff
+      ``surface`` is ``None``.
 
     EXAMPLES::
 
@@ -1044,83 +1135,35 @@ class Surface_dict(Surface):
         sage: s.set_immutable()
         sage: TestSuite(s).run()
     """
-    ###
-    ### Brief summary of internal workings.
-    ###
-    #
-    # The Surface_dict maintains a dictionary self._p for storing polygons together with gluing data.
-    # Here self._p[label] is typically a list of two elements [polygon, gluing_list].
-    # The gluing_list is then a list of pairs (other_label, other_edge) so that typically
-    # self.opposite_edge(label, edge) returns self._p[label][1][edge].
-    #
-    # If constructed with a surface parameter which is not None and copy=False, then Surface_dict
-    # stores a reference to the provided surface as self._reference_surface.
-    # (Otherwise self._reference_surface is None). If we have a reference surface, then to represent a removed
-    # polygon we set self._p[label]=None.
-    #
-    def __init__(self, base_ring=None, surface = None, copy=True, mutable=None):
-        r"""
-        Surface_list is a Surface implementation which uses int for labels.
-        (Internally, things are stored in a list.)
 
-        Parameters
-        ----------
-        base_ring : field or None
-            Field containing the vertices of the polygons. If left None (as default)
-            the base_ring is copied from the surface. If surface is also None
-            a ValueError will be raised.
-        surface : Surface or SimilaritySurface or None
-            A surface to be copied or referenced to obtain the initial state.
-            If surface is None (as default), the surface is initialized to be
-            empty and mutability is forced.
-        copy : boolean
-            If copy is true and surface is not None, then a copy is made of the
-            surface. This will result in an error if surface is infinite. If
-            copy is true, an reference to surface is used instead. Results of
-            querying are cached, therefore trying to store a reference of a
-            mutable surface is not allowed. The main purpose of the option
-            copy=False is to obtain a "copy" of an infinite surface. In case
-            copy=False, the labels for polygons are decided on in a lazy way.
-            In particular, you need to explore the resulting surface before
-            calling polygon(100). (You can explore the surface using any
-            of the iterators.)
-        mutable : boolean or None
-            If mutable is true, the resulting surface will be mutable. If mutable
-            is fals e, then the resulting surface will not be mutable. If mutable
-            is left at its default value of None, then the surface will be mutable
-            if and only if a surface is not provided.
-        """
+    def __init__(self, base_ring=None, surface=None, copy=None, mutable=None):
         self._p = {}
         self._reference_surface = None
-        if surface is None:
-            if base_ring is None:
-                raise ValueError("Either surface or base_ring must be provided.")
-            if not mutable is None and not mutable:
-                raise ValueError("If no surface is provided, then mutable must be true.")
-            Surface.__init__(self, base_ring, None, finite=True, mutable=True)
-        else:
-            from .similarity_surface import SimilaritySurface
-            if isinstance(surface,SimilaritySurface):
-                surface=surface.underlying_surface()
-            if not isinstance(surface,Surface):
-                raise ValueError("surface must be either a Surface or SimilaritySurface")
-            if not base_ring is None and base_ring != surface.base_ring():
-                raise ValueError("You currently can not provide both a surface and a base_ring.")
-            if copy==True:
-                if not surface.is_finite():
-                    raise ValueError("Can not copy an infinite surface.")
-                for label,polygon in surface.label_polygon_iterator():
-                    self._p[label]=[polygon, \
-                        [ surface.opposite_edge(label,e) for e in range(polygon.num_edges()) ] ]
-                # The only way we're mutable is if mutable=True:
-                Surface.__init__(self, surface.base_ring(), surface.base_label(), finite=True, mutable=not mutable is None and mutable)
+
+        # Validate input parameters and fill in defaults
+        base_ring, surface, copy, mutable, finite = Surface_list._validate_init_parameters(base_ring=base_ring, surface=surface, copy=copy, mutable=mutable, finite=None)
+
+        Surface.__init__(self, base_ring, base_label=None, finite=finite, mutable=True)
+
+        # Initialize surface from reference surface
+        if surface is not None:
+            if copy is True:
+                reference_label_to_label = {
+                    label: self.add_polygon(polygon, label=label)
+                    for label, polygon in surface.label_polygon_iterator()
+                }
+
+                for ((label, edge), (glued_label, glued_edge)) in surface.edge_gluing_iterator():
+                    self.set_edge_pairing(reference_label_to_label[label], edge, reference_label_to_label[glued_label], glued_edge)
+
+                self.change_base_label(reference_label_to_label[surface.base_label()])
             else:
-                if surface.is_mutable():
-                    raise ValueError("Surface_dict will not store reference to a mutable surface.")
                 self._reference_surface = surface
-                # The only way we're mutable is if mutable=True:
-                Surface.__init__(self, surface.base_ring(), surface.base_label(), \
-                    finite=surface.is_finite(), mutable=not mutable is None and mutable)
+
+                self.change_base_label(surface.base_label())
+
+        if not mutable:
+            self.set_immutable()
 
     def polygon(self, lab):
         r"""
@@ -1129,16 +1172,16 @@ class Surface_dict(Surface):
         try:
             data = self._p[lab]
         except KeyError:
-            # No label in dictionary.
             if self._reference_surface is None:
-               raise ValueError("No known polygon with provided label "+str(lab)+".")
-            else:
-                polygon = self._reference_surface.polygon(lab)
-                data = [ self._reference_surface.polygon(lab), \
-                    [ self._reference_surface.opposite_edge(lab,e) for e in range(polygon.num_edges()) ] ]
-                self._p[lab] = data
+                raise ValueError(f"No polygon with label {lab}.")
+
+            polygon = self._reference_surface.polygon(lab)
+            data = [self._reference_surface.polygon(lab),
+                    [self._reference_surface.opposite_edge(lab, e) for e in range(polygon.num_edges())]]
+            self._p[lab] = data
+
         if data is None:
-            raise ValueError("Label "+str(label)+" was removed from the surface.")
+            raise ValueError("Label "+str(lab)+" was removed from the surface.")
         return data[0]
 
     def opposite_edge(self, p, e):
@@ -1152,7 +1195,7 @@ class Surface_dict(Surface):
              self.polygon(p)
              data=self._p[p]
         if data is None:
-            raise ValueError("Label "+str(label)+" was removed from the surface.")
+            raise ValueError("Label "+str(p)+" was removed from the surface.")
         gluing_data=data[1]
         try:
             return gluing_data[e]
@@ -1314,6 +1357,7 @@ class Surface_dict(Surface):
                 # Assume on faith we are removing a polygon in the base_surface.
                 self._p[label] = None
 
+
 class BaseRingChangedSurface(Surface):
     r"""
     A surface with a different base_ring.
@@ -1331,12 +1375,6 @@ class BaseRingChangedSurface(Surface):
     def opposite_edge(self, p, e):
         return self._s.opposite_edge(p,e)
 
-
-#####
-##### LABEL WALKER
-#####
-
-from collections import deque
 
 class LabelWalker:
     r"""
@@ -1500,9 +1538,6 @@ class LabelWalker:
     def surface(self):
         return self._s
 
-######
-###### ExtraLabels
-######
 
 class ExtraLabel(SageObject):
     r"""
@@ -1536,9 +1571,6 @@ class ExtraLabel(SageObject):
     def __repr__(self):
         return "ExtraLabel("+str(self._label)+")"
 
-######
-###### LabelComparator
-######
 
 class LabelComparator(object):
     r"""
@@ -1598,4 +1630,3 @@ class LabelComparator(object):
         Return the truth value of l1 >= l2.
         r"""
         return self.lt(l2, l1) or l1 == l2
-
