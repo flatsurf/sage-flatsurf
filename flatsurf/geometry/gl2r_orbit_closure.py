@@ -479,7 +479,7 @@ class GL2ROrbitClosure:
 
         sage: V = O.proj._row_ambient_module() # optional: pyflatsurf
         sage: H = O.proj._column_ambient_module() # optional: pyflatsurf
-        sage: assert O.proj.rank() == H.dimension()
+        sage: assert O.proj.rank() == H.dimension() # optional: pyflatsurf
         sage: for b in O.boundaries(): # optional: pyflatsurf
         ....:    assert (O.proj * b).is_zero()
         sage: for i, e in enumerate(O.spanning_set): # optional: pyflatsurf
