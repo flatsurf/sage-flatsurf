@@ -1307,6 +1307,8 @@ class ConvexPolygon(Polygon):
             raise ValueError("the sum over the edges do not sum up to 0")
 
         for i in range(self.num_edges()):
+            if self.edge(i).is_zero():
+                raise ValueError("zero edge")
             if wedge_product(self.edge(i), self.edge(i+1)) < 0:
                 raise ValueError("not convex")
             if is_opposite_direction(self.edge(i), self.edge(i+1)):
