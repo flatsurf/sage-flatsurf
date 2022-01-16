@@ -163,12 +163,10 @@ def subfield_from_elements(self, alpha, name=None, polred=True, threshold=None):
         if d == self.degree():
             return (self, alpha, Hom(self, self, Fields()).identity())
         B = U.basis()
-        for i in range(d):
-            for j in range(i, d):
-                v = (self(B[i]) * self(B[j])).vector()
-                if v not in U:
-                    U += V.subspace([v])
-                    modified = True
+        new_vecs = [(self(B[i]) * self(B[j])).vector() for i in range(d) for j in range(i, d)]
+        if any(vv not in U for vv in new_vecs):
+            U = V.subspace(list(B) + new_vecs)
+            modified = True
 
     # Strict subfield, find a generator
     vgen = None
