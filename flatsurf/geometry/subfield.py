@@ -154,7 +154,7 @@ def subfield_from_elements(self, alpha, name=None, polred=True, threshold=None):
         return (self, alpha, Hom(self, self, Fields()).identity())
 
     # Saturate with multiplication
-    vecs = [a.vector() for a in alpha]
+    vecs = [(a * a.denominator()).vector() for a in alpha]
     U = V.subspace(vecs)
     modified = True
     while modified:
