@@ -145,9 +145,13 @@ def subfield_from_elements(self, alpha, name=None, polred=True, threshold=None):
     V = VectorSpace(QQ, self.degree())
     alpha = [self(a) for a in alpha]
 
-    # Rational case
+    # Rational case (degree 0)
     if all(a in QQ for a in alpha):
         return (QQ, [QQ(a) for a in alpha], self.coerce_map_from(QQ))
+
+    # Trivial maximal case (an element generating the field)
+    if any(a.minpoly().degree() == self.degree() for a in alpha):
+        return (self, alpha, Hom(self, self, Fields()).identity())
 
     # Saturate with multiplication
     vecs = [a.vector() for a in alpha]
