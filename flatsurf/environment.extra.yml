@@ -3,7 +3,6 @@
 # conda env update -f environment.extra.yml
 name: sage-flatsurf-build
 channels:
-  - flatsurf
   - conda-forge
   - defaults
 dependencies:

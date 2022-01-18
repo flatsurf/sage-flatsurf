@@ -19,7 +19,7 @@
     "scipy": [],
     "surface-dynamics>=0.4.7": []
   },
-  "conda_channels": ["flatsurf", "conda-forge", "default"],
+  "conda_channels": ["conda-forge", "default"],
   "benchmark_dir": "benchmark",
   "env_dir": ".asv/env",
   "results_dir": ".asv/results",
