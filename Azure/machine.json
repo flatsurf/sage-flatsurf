@@ -1,0 +1,8 @@
+{
+    "arch": "x86_64",
+    "cpu": "Standard_DS2_v2",
+    "machine": "Azure",
+    "os": "Linux",
+    "ram": "61830880",
+    "version": 1
+}
