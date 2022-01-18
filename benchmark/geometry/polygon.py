@@ -23,6 +23,10 @@ def time_triangle(angles):
     flatsurf.polygons.triangle(*angles)
 
 
-time_triangle.params = (
-    [[22, 23, 24], [26, 48, 75]],
-)
+time_triangle.params = ([
+    [ 3,  4,  5],
+    [22, 23, 24],
+    [23, 24, 25],
+    [24, 25, 26],
+    # [26, 48, 75], -- takes 20s in early 2022
+])
