@@ -15,7 +15,7 @@
     "pyexactreal": ["2.3.0"],
     "pyflatsurf": ["3.10.1"],
     "python": [],
-    "sagelib": ["9.3"],
+    "sagelib": ["9.4"],
     "scipy": [],
     "surface-dynamics>=0.4.7": []
   },
