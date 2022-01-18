@@ -15,7 +15,6 @@ jobs:
         shell: bash -l {0}
         run: |
           mamba env update -n test --quiet -f flatsurf/environment.yml
-          mamba env update -n test --quiet -f flatsurf/environment.extra.yml
           mamba env update -n test --quiet -f doc/environment.yml
           conda list
       - name: install sage-flatsurf

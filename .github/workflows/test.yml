@@ -39,8 +39,11 @@ jobs:
         run: |
           mamba install -n test sagelib=${{ matrix.sagelib }}
           echo "sagelib ==${{ matrix.sagelib }}" >> $CONDA_PREFIX/conda-meta/pinned
-          mamba env update -n test --quiet -f flatsurf/environment.yml
-          echo ${{ matrix.optionals }} | grep pyflatsurf && mamba env update -n test --quiet -f flatsurf/environment.extra.yml
+          while read; do
+            optional=$(echo "$REPLY" | grep -o '# optional: [^ ]*' | awk '{ print $3; }') || true
+            (test "$optional" == '' || (echo "${{ matrix.optionals }}" | grep -E '\b'"$optional"'\b') > /dev/null) && echo "$REPLY" || true
+          done < flatsurf/environment.yml > flatsurf/environment.test.yml
+          mamba env update -n test --quiet -f flatsurf/environment.test.yml
           conda list
         if: ${{ matrix.environment != 'binder' }}
       - name: Create binder environment
