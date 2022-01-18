@@ -18,7 +18,7 @@ jobs:
           - optionals: "sage,flipper,eantic,exactreal"
             sagelib: "9.1"
             python: "3.7.10"
-          - optionals: "sage,flipper,eantic,exactreal,pyflatsurf"
+          - optionals: "sage,flipper,eantic,exactreal"
             sagelib: "9.2"
             python: "3.9.5"
           - optionals: "sage,flipper,eantic,exactreal,pyflatsurf"

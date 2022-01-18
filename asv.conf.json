@@ -7,8 +7,8 @@
   "repo": ".",
   "environment_type": "conda",
   "matrix": {
-    "cppyy<2": [],
-    "cxx-compiler>=1.2": [],
+    "cppyy>=2.0.0,<3": [],
+    "cxx-compiler": [],
     "gap-defaults": [],
     "pip+flipper": [],
     "pyeantic": ["1.0.3"],

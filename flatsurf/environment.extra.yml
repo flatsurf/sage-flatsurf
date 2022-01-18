@@ -6,13 +6,8 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - pyeantic>=1.0.0,<2
-  - pyexactreal>=2.0.0,<3
+  - pyeantic>=1,<2
+  - pyexactreal>=2,<3
   - pyflatsurf>=3.6.4,<4
-  # Work around https://github.com/conda-forge/cppyy-feedstock/issues/48
-  # We cannot use cppyy 2 since there are problems in pyintervalxt, see
-  # https://bitbucket.org/wlav/cppyy/issues/364/segfault-in-clang-cxxrecorddecl
-  # - cppyy>=2.0.0,<3
-  # Instead, we use a working combination of c++ compiler and cppyy
-  - cppyy<2
-  - cxx-compiler>=1.2
+  - cppyy>=2,<3
+  - cxx-compiler
