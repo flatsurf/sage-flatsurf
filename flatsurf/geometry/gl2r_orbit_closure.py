@@ -109,13 +109,13 @@ class GL2ROrbitClosure:
         sage: T = E(R(1), R.random_element(1/4))  # optional: exactreal
         sage: S = similarity_surfaces.billiard(T)  # optional: exactreal
         sage: S = S.minimal_cover(cover_type="translation")  # optional: exactreal
-        sage: O = GL2ROrbitClosure(S); O  # optional: exactreal, pyflatsurf
+        sage: O = GL2ROrbitClosure(S); O  # optional: pyflatsurf
         GL(2,R)-orbit closure of dimension at least 4 in H_7(4^3, 0) (ambient dimension 17)
         sage: bound = E.billiard_unfolding_stratum('half-translation', marked_points=True).dimension()
-        sage: for decomposition in O.decompositions(1):  # long time, optional: exactreal, pyflatsurf
+        sage: for decomposition in O.decompositions(1):  # long time, optional: pyflatsurf
         ....:     O.update_tangent_space_from_flow_decomposition(decomposition)
         ....:     if O.dimension() == bound: break
-        sage: O  # long time, optional: exactreal, pyflatsurf
+        sage: O  # long time, optional: pyflatsurf
         GL(2,R)-orbit closure of dimension at least 8 in H_7(4^3, 0) (ambient dimension 17)
 
     TESTS::
@@ -277,15 +277,15 @@ class GL2ROrbitClosure:
             sage: T = E(R(1), R.random_element(1/4))  # optional: exactreal
             sage: S = similarity_surfaces.billiard(T)  # optional: exactreal
             sage: S = S.minimal_cover(cover_type="translation")  # optional: exactreal
-            sage: O = GL2ROrbitClosure(S); O  # optional: exactreal, pyflatsurf
+            sage: O = GL2ROrbitClosure(S); O  # optional: pyflatsurf
             GL(2,R)-orbit closure of dimension at least 4 in H_7(4^3, 0) (ambient dimension 17)
-            sage: O.field_of_definition() # optional: exactreal, pyflatsurf
+            sage: O.field_of_definition() # optional: pyflatsurf
             Number Field in c0 with defining polynomial x^2 - 2 with c0 = 1.414213562373095?
             sage: bound = E.billiard_unfolding_stratum('half-translation', marked_points=True).dimension()
-            sage: for decomposition in O.decompositions(1):  # long time, optional: exactreal, pyflatsurf
+            sage: for decomposition in O.decompositions(1):  # long time, optional: pyflatsurf
             ....:     if O.dimension() == bound: break
             ....:     O.update_tangent_space_from_flow_decomposition(decomposition)
-            sage: O.field_of_definition()  # long time, optional: exactreal, pyflatsurf
+            sage: O.field_of_definition()  # long time, optional: pyflatsurf
             Rational Field
 
             sage: E = EquiangularPolygons(1, 3, 5)
