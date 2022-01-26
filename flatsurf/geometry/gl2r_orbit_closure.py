@@ -738,11 +738,15 @@ class GL2ROrbitClosure:
             # too large orbit closure
             return False
 
+        k = self.field_of_definition()
+        if k in [ZZ, QQ]:
+            # square tiled
+            return True
+
         nv = len(self._surface.vertices())
         ne = len(self._surface.edges())
         nf = len(self._surface.faces())
         genus = (ne - nv - nf) // 2 + 1
-        k = self.field_of_definition()
         if k.degree() > genus or not k.is_totally_real():
             return False
 
