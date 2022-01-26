@@ -120,9 +120,10 @@ for i, dec in enumerate(O.decompositions(16, bfs=True)): # optional: pyflatsurf
          holonomies = [cyl.circumferenceHolonomy() for cyl in dec.cylinders()]
          areas = [cyl.area() for cyl in dec.cylinders()]
          moduli = [(v.x()*v.x() + v.y()*v.y()) / area for v, area in zip(holonomies, areas)]
+         u = dec.vertical().vertical()
          print("saddle connection number", i)
-         print("holonomy           :", dec.u)
-         print("length             :", (dec.u[0]**2 + dec.u[1]**2).n().sqrt())
+         print("holonomy           :", u)
+         print("length             :", RDF(u.x()*u.x() + u.y()*u.y()).sqrt())
          print("num cylinders      :", len(dec.cylinders()))
          print("num minimal comps. :", len(dec.minimalComponents()))
          print("current dimension  :", new_dim)
