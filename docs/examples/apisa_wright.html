@@ -195,11 +195,12 @@ consists of the <code class="docutils literal notranslate"><span class="pre">GL(
          <span class="n">holonomies</span> <span class="o">=</span> <span class="p">[</span><span class="n">cyl</span><span class="o">.</span><span class="n">circumferenceHolonomy</span><span class="p">()</span> <span class="k">for</span> <span class="n">cyl</span> <span class="ow">in</span> <span class="n">dec</span><span class="o">.</span><span class="n">cylinders</span><span class="p">()]</span>
          <span class="n">areas</span> <span class="o">=</span> <span class="p">[</span><span class="n">cyl</span><span class="o">.</span><span class="n">area</span><span class="p">()</span> <span class="k">for</span> <span class="n">cyl</span> <span class="ow">in</span> <span class="n">dec</span><span class="o">.</span><span class="n">cylinders</span><span class="p">()]</span>
          <span class="n">moduli</span> <span class="o">=</span> <span class="p">[(</span><span class="n">v</span><span class="o">.</span><span class="n">x</span><span class="p">()</span><span class="o">*</span><span class="n">v</span><span class="o">.</span><span class="n">x</span><span class="p">()</span> <span class="o">+</span> <span class="n">v</span><span class="o">.</span><span class="n">y</span><span class="p">()</span><span class="o">*</span><span class="n">v</span><span class="o">.</span><span class="n">y</span><span class="p">())</span> <span class="o">/</span> <span class="n">area</span> <span class="k">for</span> <span class="n">v</span><span class="p">,</span> <span class="n">area</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">holonomies</span><span class="p">,</span> <span class="n">areas</span><span class="p">)]</span>
+         <span class="n">u</span> <span class="o">=</span> <span class="n">dec</span><span class="o">.</span><span class="n">vertical</span><span class="p">()</span><span class="o">.</span><span class="n">vertical</span><span class="p">()</span>
          <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;saddle connection number&quot;</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
-         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;holonomy           :&quot;</span><span class="p">,</span> <span class="n">dec</span><span class="o">.</span><span class="n">u</span><span class="p">)</span>
-         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;length             :&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">dec</span><span class="o">.</span><span class="n">u</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">dec</span><span class="o">.</span><span class="n">u</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">n</span><span class="p">()</span><span class="o">.</span><span class="n">sqrt</span><span class="p">())</span>
+         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;holonomy           :&quot;</span><span class="p">,</span> <span class="n">u</span><span class="p">)</span>
+         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;length             :&quot;</span><span class="p">,</span> <span class="n">RDF</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">x</span><span class="p">()</span><span class="o">*</span><span class="n">u</span><span class="o">.</span><span class="n">x</span><span class="p">()</span> <span class="o">+</span> <span class="n">u</span><span class="o">.</span><span class="n">y</span><span class="p">()</span><span class="o">*</span><span class="n">u</span><span class="o">.</span><span class="n">y</span><span class="p">())</span><span class="o">.</span><span class="n">sqrt</span><span class="p">())</span>
          <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;num cylinders      :&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">dec</span><span class="o">.</span><span class="n">cylinders</span><span class="p">()))</span>
-         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;num minimal comps. :&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">dec</span><span class="o">.</span><span class="n">minimal_components</span><span class="p">()))</span>
+         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;num minimal comps. :&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">dec</span><span class="o">.</span><span class="n">minimalComponents</span><span class="p">()))</span>
          <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;current dimension  :&quot;</span><span class="p">,</span> <span class="n">new_dim</span><span class="p">)</span>
          <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;cyls. holonomies   :&quot;</span><span class="p">,</span> <span class="n">holonomies</span><span class="p">)</span>
          <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;cyls. moduli       :&quot;</span><span class="p">,</span> <span class="n">moduli</span><span class="p">)</span>
@@ -213,38 +214,36 @@ consists of the <code class="docutils literal notranslate"><span class="pre">GL(
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>saddle connection number 0
 holonomy           : (0, 1)
-length             : 1.00000000000000
+length             : 1.0
 num cylinders      : 2
 num minimal comps. : 2
 current dimension  : 3
 cyls. holonomies   : [(0, (2*c+5 ~ 7.8284271)), (0, (2*c+5 ~ 7.8284271))]
 cyls. moduli       : [(c+5/2 ~ 3.9142136), (c+5/2 ~ 3.9142136)]
 ------------------------------
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>saddle connection number 1
+saddle connection number 1
 holonomy           : (1, 0)
-length             : 1.00000000000000
+length             : 1.0
 num cylinders      : 6
 num minimal comps. : 0
 current dimension  : 4
 cyls. holonomies   : [(1, 0), (2, 0), (1, 0), ((4*c+2 ~ 7.6568542), 0), (2, 0), ((4*c+2 ~ 7.6568542), 0)]
 cyls. moduli       : [(1/2 ~ 0.50000000), 1, (1/2 ~ 0.50000000), (-c+3 ~ 1.5857864), 1, (-c+3 ~ 1.5857864)]
 ------------------------------
-saddle connection number 3
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>saddle connection number 3
 holonomy           : (-1, -1)
-length             : 1.41421356237310
+length             : 1.4142135623730951
 num cylinders      : 2
 num minimal comps. : 2
 current dimension  : 5
 cyls. holonomies   : [((-3*c-3 ~ -7.2426407), (-3*c-3 ~ -7.2426407)), ((-3*c-3 ~ -7.2426407), (-3*c-3 ~ -7.2426407))]
 cyls. moduli       : [(6*c+9 ~ 17.485281), (6*c+9 ~ 17.485281)]
 ------------------------------
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>saddle connection number 10
+saddle connection number 10
 holonomy           : (-3, -1)
-length             : 3.16227766016838
+length             : 3.1622776601683795
 num cylinders      : 2
 num minimal comps. : 1
 current dimension  : 6
@@ -254,8 +253,8 @@ cyls. moduli       : [5, 5]
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>saddle connection number 88
-holonomy           : (-6*c + 1, 5*c + 7)
-length             : 15.9381425083866
+holonomy           : ((-6*c+1 ~ -7.4852814), (5*c+7 ~ 14.071068))
+length             : 15.938142508386589
 num cylinders      : 2
 num minimal comps. : 1
 current dimension  : 7
