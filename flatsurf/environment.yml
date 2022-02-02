@@ -1,10 +1,9 @@
-# This file lists the minimial dependencies needed to build and test
+# This file lists the dependencies needed to build and test all of
 # sage-flatsurf. Create a conda environment with these dependencies
 # preinstalled with:
 # conda env create -f environment.yml
 name: sage-flatsurf-build
 channels:
-  - flatsurf
   - conda-forge
   - defaults
 dependencies:
@@ -17,6 +16,7 @@ dependencies:
   - sagelib>=8.8
   - scipy
   - surface-dynamics>=0.4.7
-  - pip:
-    - flipper
-
+  - pyeantic>=1,<2  # optional: eantic
+  - pyexactreal>=2,<3  # optional: exactreal
+  - pyflatsurf>=3.6.4,<4  # optional: pyflatsurf
+  - pip: [flipper]  # optional: flipper

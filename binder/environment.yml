@@ -3,7 +3,6 @@
 # binders.
 name: binder
 channels:
-  - flatsurf
   - conda-forge
 dependencies:
   - sagelib
