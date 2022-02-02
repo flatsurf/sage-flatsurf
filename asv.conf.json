@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "dvcs": "git",
+  "project": "sage-flatsurf",
+  "project_url": "https://github.com/flatsurf/sage-flatsurf",
+  "show_commit_url": "https://github.com/flatsurf/sage-flatsurf/commit/",
+  "repo": ".",
+  "environment_type": "conda",
+  "matrix": {
+    "cppyy>=2.0.0,<3": [],
+    "cxx-compiler": [],
+    "gap-defaults": [],
+    "pip+flipper": [],
+    "pyeantic": ["1.0.3"],
+    "pyexactreal": ["2.2.1"],
+    "pyflatsurf": ["3.9.3"],
+    "python": [],
+    "sagelib": ["9.4"],
+    "scipy": [],
+    "surface-dynamics>=0.4.7": []
+  },
+  "conda_channels": ["conda-forge", "default"],
+  "benchmark_dir": "benchmark",
+  "env_dir": ".asv/env",
+  "results_dir": ".asv/results",
+  "html_dir": ".asv/html"
+}

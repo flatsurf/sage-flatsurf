@@ -21,11 +21,6 @@ from .geometry.rational_cone_surface import RationalConeSurface
 from .geometry.half_translation_surface import HalfTranslationSurface
 from .geometry.translation_surface import TranslationSurface
 
-try:
-    import pyflatsurf
-except ImportError:
-    pass
-else:
-    from .geometry.gl2r_orbit_closure import GL2ROrbitClosure
+from .geometry.gl2r_orbit_closure import GL2ROrbitClosure
 
 del absolute_import, print_function

@@ -328,7 +328,7 @@ class GL2RImageSurface(Surface):
 
         self._P = ConvexPolygons(base_ring)
 
-        Surface.__init__(self, base_ring, self._s.base_label(), finite=self._s.is_finite())
+        super().__init__(base_ring, self._s.base_label(), finite=self._s.is_finite(), mutable=False)
 
     def polygon(self, lab):
         if self._det_sign==1:

@@ -42,7 +42,7 @@ Links
 Dependencies
 ------------
 
-- `surface_dynamics`_
+- `surface-dynamics`_
 - (optional) `libflatsurf`_
 
 Installing the package
@@ -103,7 +103,7 @@ Related projects
 
 There are several related projects
 
-* `surface_dynamics`_ (SageMath module): more focused on dynamics (interval
+* `surface-dynamics`_ (SageMath module): more focused on dynamics (interval
   exchanges)
 
 * `veerer`_ (Python module): to handle specific triangulations of
@@ -144,7 +144,7 @@ Acknowledgements
   Horizon 2020 European Research Infrastructures project #676541.
 
 .. _SageMath: https://www.sagemath.org
-.. _surface_dynamics: https://github.com/flatsurf/surface_dynamics
+.. _surface-dynamics: https://gitlab.com/videlec/surface-dynamics
 .. _veerer: https://gitlab.com/videlec/veerer/
 .. _libflatsurf: https://github.com/flatsurf/flatsurf
 .. _e-antic: https://github.com/flatsurf/e-antic

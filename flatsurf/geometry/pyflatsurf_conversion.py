@@ -6,7 +6,7 @@ Interface with pyflatsurf
 #  This file is part of sage-flatsurf.
 #
 #        Copyright (C) 2019      Vincent Delecroix
-#                      2019-2020 Julian Rüth
+#                      2019-2021 Julian Rüth
 #
 #  sage-flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -24,13 +24,6 @@ Interface with pyflatsurf
 
 from sage.all import QQ, AA
 
-from pyflatsurf import flatsurf
-from pyflatsurf.factory import make_surface
-from pyflatsurf.vector import Vectors
-
-from .translation_surface import TranslationSurface
-from .surface import Surface_list
-from .polygon import ConvexPolygons
 
 def _check_data(vp, fp, vec):
     r"""
@@ -89,6 +82,7 @@ def to_pyflatsurf(S):
     Given S a translation surface from sage-flatsurf return a
     flatsurf::FlatTriangulation from libflatsurf/pyflatsurf.
     """
+    from flatsurf.geometry.translation_surface import TranslationSurface
     if not isinstance(S, TranslationSurface):
         raise TypeError("S must be a translation surface")
     if not S.is_finite():
@@ -134,11 +128,16 @@ def to_pyflatsurf(S):
         from itertools import chain
         base_ring = number_field_elements_from_algebraics(list(chain(*[list(v) for v in vec])), embedded=True)[0]
 
+    from flatsurf.features import pyflatsurf_feature
+    pyflatsurf_feature.require()
+    from pyflatsurf.vector import Vectors
+
     V = Vectors(base_ring)
     vec = [V(v).vector for v in vec]
 
     _check_data(vp, fp, vec)
 
+    from pyflatsurf.factory import make_surface
     return make_surface(verts, vec)
 
 def sage_base_ring(T):
@@ -157,6 +156,8 @@ def sage_base_ring(T):
         Number Field in a with defining polynomial x^4 - 5*x^2 + 5 with a = 1.902113032590308?
 
     """
+    from flatsurf.features import cppyy_feature
+    cppyy_feature.require()
     import cppyy
 
     def maybe_type(t):
@@ -204,18 +205,24 @@ def from_pyflatsurf(T):
         TranslationSurface built from 6 polygons
 
     """
-    import cppyy
+    from flatsurf.features import pyflatsurf_feature
+    pyflatsurf_feature.require()
+    import pyflatsurf
 
     ring, to_ring = sage_base_ring(T)
 
+    from flatsurf.geometry.surface import Surface_list
     S = Surface_list(ring)
+
+    from flatsurf.geometry.polygon import ConvexPolygons
     P = ConvexPolygons(ring)
+
     V = P.module()
 
     half_edges = {}
 
     for face in T.faces():
-        a, b, c = map(cppyy.gbl.flatsurf.HalfEdge, face)
+        a, b, c = map(pyflatsurf.flatsurf.HalfEdge, face)
 
         vectors = [T.fromHalfEdge(he) for he in face]
         vectors = [V([to_ring(v.x()), to_ring(v.y())]) for v in vectors]
@@ -235,4 +242,5 @@ def from_pyflatsurf(T):
 
     S.set_immutable()
 
+    from flatsurf.geometry.translation_surface import TranslationSurface
     return TranslationSurface(S)

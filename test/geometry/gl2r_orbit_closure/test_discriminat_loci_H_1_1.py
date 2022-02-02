@@ -36,7 +36,9 @@ def test_D9_number_field():
     S = translation_surfaces.mcmullen_genus2_prototype(2,1,0,-1,a/4)
     O = GL2ROrbitClosure(S)
     for d in O.decompositions(5):
-        ncyl, nmin, nund = d.num_cylinders_minimals_undetermined()
+        ncyl = len(d.cylinders())
+        nmin = len(d.minimalComponents())
+        nund = len(d.undeterminedComponents())
         assert (nund == 0)
         assert ((nmin == 0) or (ncyl == 0 and 1 <= nmin <= 2))
         O.update_tangent_space_from_flow_decomposition(d)
@@ -54,7 +56,9 @@ def test_D9_exact_real():
     S = translation_surfaces.mcmullen_genus2_prototype(2,1,0,-1,R.random_element([0.1, 0.2]))
     O = GL2ROrbitClosure(S)
     for d in O.decompositions(5):
-        ncyl, nmin, nund = d.num_cylinders_minimals_undetermined()
+        ncyl = len(d.cylinders())
+        nmin = len(d.minimalComponents())
+        nund = len(d.undeterminedComponents())
         assert (nund == 0)
         assert ((nmin == 0) or (ncyl == 0 and 1 <= nmin <= 2))
         O.update_tangent_space_from_flow_decomposition(d)
@@ -64,7 +68,9 @@ def test_D33():
     S = translation_surfaces.mcmullen_genus2_prototype(4,2,1,1,QQ((1,4)))
     O = GL2ROrbitClosure(S)
     for d in O.decompositions(5, 100):
-        ncyl, nmin, nund = d.num_cylinders_minimals_undetermined()
+        ncyl = len(d.cylinders())
+        nmin = len(d.minimalComponents())
+        nund = len(d.undeterminedComponents())
         assert (nund == 0)
         assert ((nmin == 0) or (ncyl == 0 and nmin == 2))
         O.update_tangent_space_from_flow_decomposition(d)
