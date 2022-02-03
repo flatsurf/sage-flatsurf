@@ -9,8 +9,21 @@ References
     ISSAC 2015. Proceedings of the 2015 ACM International
     Symposium on Symbolic and Algebraic Computation.
     Pages 259--266.
-    DOI: http://dx.doi.org/10.1145/2755996.2756664
+    DOI: https://doi.org/10.1145/2755996.2756664
+
+.. [Ca2008]
+    Jack S. Calcut
+    The tangent analogues of the Chebyshev polynomials
+
+.. [WaZe1993]
+    William Watkins, Joel Zeitlin
+    The minimal polynomial of cos(2π/n)
+    The American Mathematical Monthly
+    Vol. 100, No. 5 (May, 1993)
+    Pages 471--474.
+    DOI: https://doi.org/10.2307/2324301
 """
+
 from sage.misc.misc_c import prod
 from sage.rings.all import ZZ, QQ, AA, QQbar, NumberField, polygen
 from sage.structure.element import parent
@@ -19,6 +32,7 @@ from sage.matrix.constructor import matrix
 from sage.categories.homset import Hom
 from sage.categories.fields import Fields
 from sage.rings.qqbar import do_polred
+from sage.rings.number_field.number_field import CyclotomicField
 
 def number_field_elements_from_algebraics(elts, name='a'):
     r"""
@@ -293,6 +307,28 @@ def chebyshev_T(n, c):
         T0, T1 = T1, c * T1 - T0
     return T1
 
+def tan_chebyshev_T(n, c):
+    r"""
+    Return a pair `(P, Q)`.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.subfield import tan_chebyshev_T
+
+        sage: x = polygen(ZZ)
+        sage: tan_chebyshev_T(3, x)
+        (-x^3 + 3*x, -3*x^2 + 1)
+
+        sage: P, Q = tan_chebyshev_T(3, tan(pi/7))
+        sage: bool(P / Q == tan(3*pi/7))
+        True
+    """
+    P = c
+    Q = parent(c)(1)
+    for i in range(n-1):
+        P, Q = c * Q + P, Q - c * P
+    return P, Q
+
 def cos_minpoly_odd_prime(p, var):
     r"""
     (-1)^k + (-1)^{k-1} T1 + ... + T_k
@@ -423,3 +459,65 @@ def sin_minpoly(n, var='x'):
             return p
     else:
         return cos_minpoly(n)
+
+def tan_minpoly(n):
+    r"""
+    Return the minimal polynomial of tan pi/n
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.subfield import tan_minpoly
+
+        sage: tan_minpoly(3)
+        x^2 - 3
+        sage: tan_minpoly(4)
+        x - 1
+        sage: tan_minpoly(5)
+        x^4 - 10*x^2 + 5
+        sage: tan_minpoly(6)
+        x^2 - 1/3
+
+        sage: all((QQbar.zeta(2*n).imag() / QQbar.zeta(2*n).real()).minpoly() == tan_minpoly(n) for n in range(3,15))
+        True
+    """
+    N = 2*n
+    while N % 4:
+        N *= 2
+    K = CyclotomicField(N)
+    z = K.gen() ** (N // (2*n))
+    I = K.gen() ** (N // 4)
+
+    sin = (z - z.conjugate()) / I
+    cos = (z + z.conjugate())
+    return (sin / cos).minpoly()
+
+def atan_minpoly(n):
+    r"""
+    Return the minimal polynomial of tan pi/n
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.subfield import atan_minpoly
+
+        sage: atan_minpoly(3)
+        x^2 - 1/3
+        sage: atan_minpoly(4)
+        x - 1
+        sage: atan_minpoly(5)
+        x^4 - 2*x^2 + 1/5
+        sage: atan_minpoly(6)
+        x^2 - 3
+
+        sage: all((QQbar.zeta(2*n).real() / QQbar.zeta(2*n).imag()).minpoly() == atan_minpoly(n) for n in range(3,15))
+        True
+    """
+    N = 2*n
+    while N % 4:
+        N *= 2
+    K = CyclotomicField(N)
+    z = K.gen() ** (N // (2*n))
+    I = K.gen() ** (N // 4)
+
+    sin = (z - z.conjugate()) / I
+    cos = (z + z.conjugate())
+    return (cos / sin).minpoly()
