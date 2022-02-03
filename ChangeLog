@@ -4,6 +4,21 @@ sage-flatsurf Change Log
 
 .. current developments
 
+v0.4.4
+====================
+
+**Changed:**
+
+* Got rid of the FlowDecomposition wrapper in gl2r_orbit_closure.py.
+
+**Performance:**
+
+* Improved performance of rank computations when computing orbit closures by
+  using a faster algorithm for residue fields, see
+  https://trac.sagemath.org/ticket/33273.
+
+
+
 v0.4.3
 ====================
 
