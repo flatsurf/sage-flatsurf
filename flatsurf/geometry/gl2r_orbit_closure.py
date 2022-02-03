@@ -1106,6 +1106,7 @@ class GL2ROrbitClosure:
                     self._Ubar = self._U.apply_map(phi=self._p.reduce, R=self._p.residue_field())
                     break
                 except ValueError:
+                    # The matrix _U cannot be reduced mod p because some entries have negative valuation.
                     pass
 
             p = 2**30 if self._p is None else self._p.p()
