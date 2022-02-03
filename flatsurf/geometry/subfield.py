@@ -343,14 +343,9 @@ def cos_minpoly(n, var='x'):
         x^2 - 2
         sage: cos_minpoly(5)
         x^2 - x - 1
-        sage: cos_minpoly(6)
-        x^2 - 3
-        sage: cos_minpoly(8)
-        x^4 - 4*x^2 + 2
-        sage: cos_minpoly(9)
-        x^3 - 3*x - 1
-        sage: cos_minpoly(10)
-        x^4 - 5*x^2 + 5
+
+        sage: all((2 * QQbar.zeta(2*n)).real().minpoly() == cos_minpoly(n) for n in range(1,25))
+        True
 
         sage: cos_minpoly(90)
         x^24 - 24*x^22 + 252*x^20 - 1519*x^18 + 5796*x^16 - 14553*x^14 + 24206*x^12 - 26169*x^10 + 17523*x^8 - 6623*x^6 + 1182*x^4 - 72*x^2 + 1
@@ -391,3 +386,40 @@ def cos_minpoly(n, var='x'):
         M = M(chebyshev_T(nn, var))
 
     return M
+
+def sin_minpoly(n, var='x'):
+    r"""
+    Return the minimal polynomial of 2 cos pi/n
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.subfield import sin_minpoly
+
+        sage: sin_minpoly(1)
+        x
+        sage: sin_minpoly(2)
+        x - 2
+        sage: sin_minpoly(3)
+        x^2 - 3
+        sage: sin_minpoly(4)
+        x^2 - 2
+
+        sage: all((2 * QQbar.zeta(2*n)).imag().minpoly() == sin_minpoly(n) for n in range(1,25))
+        True
+    """
+    n = ZZ(n)
+    # use sin(π/n) = cos((n-2)π/(2n))
+    if n % 2:
+        return cos_minpoly(2*n)
+    elif n % 4 == 2:
+        # n = 4k+2
+        # (n-2)/(2n) = k/(2k+1)
+        p = cos_minpoly(n//2)
+        if n % 8 == 2:
+            P = p.parent()
+            d = p.degree()
+            return P([(-1)**(i+d) * c for i, c in enumerate(p)])
+        else:
+            return p
+    else:
+        return cos_minpoly(n)
