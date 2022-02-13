@@ -20,7 +20,7 @@ jobs:
       - name: Install dependencies
         shell: bash -l {0}
         run: |
-          mamba install -n test -y pip
+          mamba install -n test -y python=3.9.10 pip
           conda list
       - name: Checkout historic performance data
         uses: actions/checkout@v2
