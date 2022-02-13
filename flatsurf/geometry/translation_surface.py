@@ -474,6 +474,62 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
             Jxy += xy
         return (Jxx, Jyy, Jxy)
 
+    def erase_marked_points(self):
+        r"""
+        Return an isometric or similar surface with a minimal number of regular
+        vertices of angle 2π.
+
+        EXAMPLES::
+
+            sage: import flatsurf
+
+            sage: G = SymmetricGroup(4)
+            sage: S = flatsurf.translation_surfaces.origami(G('(1,2,3,4)'), G('(1,4,2,3)'))
+            sage: S.stratum()
+            H_2(2, 0)
+            sage: S.erase_marked_points().stratum() # optional: pyflatsurf  # long time (1s)
+            H_2(2)
+
+            sage: for (a,b,c) in [(1,4,11), (1,4,15), (3,4,13)]: # long time (10s), optional: pyflatsurf
+            ....:     T = flatsurf.polygons.triangle(a,b,c)
+            ....:     S = flatsurf.similarity_surfaces.billiard(T)
+            ....:     S = S.minimal_cover("translation")
+            ....:     print(S.erase_marked_points().stratum())
+            H_6(10)
+            H_6(2^5)
+            H_8(12, 2)
+
+        TESTS:
+
+        Verify that https://github.com/flatsurf/flatsurf/issues/263 has been resolved::
+
+            sage: from flatsurf import EquiangularPolygons, similarity_surfaces
+            sage: E = EquiangularPolygons((10, 8, 3, 1, 1, 1))
+            sage: P = E((1, 1, 2, 4), normalized=True)
+            sage: B = similarity_surfaces.billiard(P, rational=True)
+            sage: S = B.minimal_cover(cover_type="translation")
+            sage: S = S.erase_marked_points() # long time (5s), optional: pyflatsurf
+
+        ::
+
+            sage: from flatsurf import EquiangularPolygons, similarity_surfaces
+            sage: E = EquiangularPolygons((10, 7, 2, 2, 2, 1))
+            sage: P = E((1, 1, 2, 3), normalized=True)
+            sage: B = similarity_surfaces.billiard(P, rational=True)
+            sage: S_mp = B.minimal_cover(cover_type="translation")
+            sage: S = S_mp.erase_marked_points() # long time (3s), optional: pyflatsurf
+
+        """
+        if all(a != 1 for a in self.angles()):
+            # no fake marked points
+            return self
+        from .pyflatsurf_conversion import from_pyflatsurf, to_pyflatsurf
+        S = to_pyflatsurf(self)
+        S = S.eliminateMarkedPoints().surface()
+        S.delaunay()
+        return from_pyflatsurf(S)
+
+
 class MinimalTranslationCover(Surface):
     r"""
     Do not use translation_surface.MinimalTranslationCover. Use 
@@ -637,6 +693,8 @@ class Origami(AbstractOrigami):
 
     def _repr_(self):
         return "Origami defined by r=%s and u=%s"%(self._r,self._u)
+
+
 
 class LazyStandardizedPolygonSurface(Surface):
     r"""
