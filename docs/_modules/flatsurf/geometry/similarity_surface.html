@@ -2408,59 +2408,7 @@
         <span class="k">for</span> <span class="n">edgepair</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_iterator</span><span class="p">(</span><span class="n">gluings</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
             <span class="n">h</span> <span class="o">=</span> <span class="n">h</span> <span class="o">+</span> <span class="mi">3</span><span class="o">*</span><span class="nb">hash</span><span class="p">(</span><span class="n">edgepair</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_hash</span><span class="o">=</span><span class="n">h</span>
-        <span class="k">return</span> <span class="n">h</span>
-
-<div class="viewcode-block" id="SimilaritySurface.erase_marked_points"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity_surface.SimilaritySurface.erase_marked_points">[docs]</a>    <span class="k">def</span> <span class="nf">erase_marked_points</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return an isometric or similar surface with a minimal number of regular</span>
-<span class="sd">        vertices of angle 2π.</span>
-
-<span class="sd">        EXAMPLES::</span>
-
-<span class="sd">            sage: import flatsurf</span>
-
-<span class="sd">            sage: G = SymmetricGroup(4)</span>
-<span class="sd">            sage: S = flatsurf.translation_surfaces.origami(G(&#39;(1,2,3,4)&#39;), G(&#39;(1,4,2,3)&#39;))</span>
-<span class="sd">            sage: S.stratum()</span>
-<span class="sd">            H_2(2, 0)</span>
-<span class="sd">            sage: S.erase_marked_points().stratum() # optional: pyflatsurf  # long time (1s)</span>
-<span class="sd">            H_2(2)</span>
-
-<span class="sd">            sage: for (a,b,c) in [(1,4,11), (1,4,15), (3,4,13)]: # long time (10s), optional: pyflatsurf</span>
-<span class="sd">            ....:     T = flatsurf.polygons.triangle(a,b,c)</span>
-<span class="sd">            ....:     S = flatsurf.similarity_surfaces.billiard(T)</span>
-<span class="sd">            ....:     S = S.minimal_cover(&quot;translation&quot;)</span>
-<span class="sd">            ....:     print(S.erase_marked_points().stratum())</span>
-<span class="sd">            H_6(10)</span>
-<span class="sd">            H_6(2^5)</span>
-<span class="sd">            H_8(12, 2)</span>
-
-<span class="sd">        TESTS:</span>
-
-<span class="sd">        Verify that https://github.com/flatsurf/flatsurf/issues/263 has been resolved::</span>
-
-<span class="sd">            sage: from flatsurf import EquiangularPolygons, similarity_surfaces</span>
-<span class="sd">            sage: E = EquiangularPolygons((10, 8, 3, 1, 1, 1))</span>
-<span class="sd">            sage: P = E((1, 1, 2, 4), normalized=True)</span>
-<span class="sd">            sage: B = similarity_surfaces.billiard(P, rational=True)</span>
-<span class="sd">            sage: S = B.minimal_cover(cover_type=&quot;translation&quot;)</span>
-<span class="sd">            sage: S = S.erase_marked_points() # long time (5s), optional: pyflatsurf</span>
-
-<span class="sd">        ::</span>
-
-<span class="sd">            sage: from flatsurf import EquiangularPolygons, similarity_surfaces</span>
-<span class="sd">            sage: E = EquiangularPolygons((10, 7, 2, 2, 2, 1))</span>
-<span class="sd">            sage: P = E((1, 1, 2, 3), normalized=True)</span>
-<span class="sd">            sage: B = similarity_surfaces.billiard(P, rational=True)</span>
-<span class="sd">            sage: S_mp = B.minimal_cover(cover_type=&quot;translation&quot;)</span>
-<span class="sd">            sage: S = S_mp.erase_marked_points() # long time (3s), optional: pyflatsurf</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">.pyflatsurf_conversion</span> <span class="kn">import</span> <span class="n">from_pyflatsurf</span><span class="p">,</span> <span class="n">to_pyflatsurf</span>
-        <span class="n">S</span> <span class="o">=</span> <span class="n">to_pyflatsurf</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-        <span class="n">S</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">eliminateMarkedPoints</span><span class="p">()</span><span class="o">.</span><span class="n">surface</span><span class="p">()</span>
-        <span class="n">S</span><span class="o">.</span><span class="n">delaunay</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">from_pyflatsurf</span><span class="p">(</span><span class="n">S</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="n">h</span></div>
 </pre></div>
 
             <div class="clearer"></div>
