@@ -499,6 +499,13 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
             H_6(2^5)
             H_8(12, 2)
 
+        If the surface had no marked points then it is returned unchanged by this
+        function::
+
+            sage: O = flatsurf.translation_surfaces.regular_octagon()
+            sage: O.erase_marked_points() is O
+            True
+
         TESTS:
 
         Verify that https://github.com/flatsurf/flatsurf/issues/263 has been resolved::
@@ -521,7 +528,7 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
 
         """
         if all(a != 1 for a in self.angles()):
-            # no fake marked points
+            # no 2π angle
             return self
         from .pyflatsurf_conversion import from_pyflatsurf, to_pyflatsurf
         S = to_pyflatsurf(self)
@@ -693,7 +700,6 @@ class Origami(AbstractOrigami):
 
     def _repr_(self):
         return "Origami defined by r=%s and u=%s"%(self._r,self._u)
-
 
 
 class LazyStandardizedPolygonSurface(Surface):
