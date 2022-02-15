@@ -32,8 +32,8 @@
                 "26"
             ]
         ],
-        "processes": 2,
         "repeat": 0,
+        "rounds": 2,
         "sample_time": 0.01,
         "timeout": 60.0,
         "type": "time",
