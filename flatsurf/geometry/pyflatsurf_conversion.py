@@ -2,11 +2,11 @@
 r"""
 Interface with pyflatsurf
 """
-#*********************************************************************
+# ********************************************************************
 #  This file is part of sage-flatsurf.
 #
 #        Copyright (C) 2019      Vincent Delecroix
-#                      2019-2021 Julian Rüth
+#                      2019-2022 Julian Rüth
 #
 #  sage-flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -20,9 +20,9 @@ Interface with pyflatsurf
 #
 #  You should have received a copy of the GNU General Public License
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
-#*********************************************************************
+# ********************************************************************
 
-from sage.all import QQ, AA
+from sage.all import QQ, AA, ZZ
 
 
 def _check_data(vp, fp, vec):
@@ -39,7 +39,7 @@ def _check_data(vp, fp, vec):
 
     n = len(vp) - 1
 
-    assert n%2 == 0, n
+    assert n % 2 == 0, n
     assert len(fp) == n+1
     assert len(vec) == n//2
 
@@ -61,9 +61,10 @@ def _check_data(vp, fp, vec):
         assert v.x() == 0, v.x()
         assert v.y() == 0, v.y()
 
+
 def _cycle_decomposition(p):
     n = len(p) - 1
-    assert n%2 == 0
+    assert n % 2 == 0
     cycles = []
     unseen = [True] * (n+1)
     for i in list(range(-n//2+1, 0)) + list(range(1, n//2)):
@@ -76,6 +77,7 @@ def _cycle_decomposition(p):
                 j = p[j]
             cycles.append(cycle)
     return cycles
+
 
 def to_pyflatsurf(S):
     r"""
@@ -117,7 +119,6 @@ def to_pyflatsurf(S):
         fp[e] = half_edge_labels[(t[0], j)]
         vp[fp[e]] = -e
 
-
     # convert the vp permutation into cycles
     verts = _cycle_decomposition(vp)
 
@@ -139,6 +140,7 @@ def to_pyflatsurf(S):
 
     from pyflatsurf.factory import make_surface
     return make_surface(verts, vec)
+
 
 def sage_base_ring(T):
     r"""
@@ -176,7 +178,9 @@ def sage_base_ring(T):
         from pyeantic import RealEmbeddedNumberField
         rng = RealEmbeddedNumberField(T.fromHalfEdge(1).x().parent())
         ring = rng.number_field
-        to_ring = lambda x: ring(rng(x))
+
+        def to_ring(x):
+            return ring(rng(x))
     elif coordinate is maybe_type(lambda: cppyy.gbl.exactreal.Element[cppyy.gbl.exactreal.IntegerRing]):
         from pyexactreal import ExactReals
         to_ring = ring = ExactReals(ZZ)
@@ -187,9 +191,10 @@ def sage_base_ring(T):
         from pyexactreal import ExactReals
         to_ring = ring = ExactReals(T.fromHalfEdge(1).x().module().ring().parameters)
     else:
-        raise NotImplementedError("unknown coordinate ring %s"%(coordinate,))
+        raise NotImplementedError("unknown coordinate ring %s" % (coordinate,))
 
     return ring, to_ring
+
 
 def from_pyflatsurf(T):
     r"""
