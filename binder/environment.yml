@@ -12,7 +12,7 @@ dependencies:
   - notebook
   - pyflatsurf>=3.10.1,<4
   - matplotlib-base
-  - surface-dynamics>=0.4.7
+  - surface-dynamics>=0.4.7,<0.5
   - jupytext
   - three.js
   - tachyon

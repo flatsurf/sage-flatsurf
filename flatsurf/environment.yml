@@ -15,7 +15,7 @@ dependencies:
   - pytest-xdist
   - sagelib>=8.8
   - scipy
-  - surface-dynamics>=0.4.7
+  - surface-dynamics>=0.4.7,<0.5
   - pyeantic>=1,<2  # optional: eantic
   - pyexactreal>=2,<3  # optional: exactreal
   - pyflatsurf>=3.10.1,<4  # optional: pyflatsurf
