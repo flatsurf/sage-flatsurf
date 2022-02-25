@@ -190,9 +190,9 @@ def to_sage_ring(x):
 
     exact-real coordinate types::
 
-        sage: from pyexactreal import QQModule, RealNumber  # optional: exactreal
-        sage: M = QQModule(RealNumber.random())   # optional: exactreal
-        sage: to_sage_ring(M.gen(0R)).parent()  # optional: exactreal
+        sage: from pyexactreal import QQModule, RealNumber  # optional: pyflatsurf
+        sage: M = QQModule(RealNumber.random())   # optional: pyflatsurf
+        sage: to_sage_ring(M.gen(0R)).parent()  # optional: pyflatsurf
         Real Numbers as (Rational Field)-Module
 
     """
@@ -258,10 +258,10 @@ def from_pyflatsurf(T):
         0
         sage: for i in range(5): S.set_edge_pairing(0, i, 0, 5+i)
         sage: M = TranslationSurface(S)
-        sage: X = GL2ROrbitClosure(M)
-        sage: D0 = list(X.decompositions(2))[2]
-        sage: T0 = D0.triangulation()
-        sage: from_pyflatsurf(T0)
+        sage: X = GL2ROrbitClosure(M)  # optional: pyflatsurf
+        sage: D0 = list(X.decompositions(2))[2]  # optional: pyflatsurf
+        sage: T0 = D0.triangulation()  # optional: pyflatsurf
+        sage: from_pyflatsurf(T0)  # optional: pyflatsurf
         TranslationSurface built from 8 polygons
 
     """
