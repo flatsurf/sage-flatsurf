@@ -148,8 +148,8 @@ class GL2ROrbitClosure:
             from flatsurf.geometry.pyflatsurf_conversion import to_pyflatsurf
             self._surface = to_pyflatsurf(surface)
         else:
-            from flatsurf.geometry.pyflatsurf_conversion import sage_base_ring
-            base_ring, _ = sage_base_ring(surface)
+            from flatsurf.geometry.pyflatsurf_conversion import sage_ring
+            base_ring = sage_ring(surface)
             self._surface = surface
 
         # A model of the vector space R² in libflatsurf, e.g., to represent the

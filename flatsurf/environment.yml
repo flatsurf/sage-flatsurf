@@ -18,5 +18,5 @@ dependencies:
   - surface-dynamics>=0.4.7
   - pyeantic>=1,<2  # optional: eantic
   - pyexactreal>=2,<3  # optional: exactreal
-  - pyflatsurf>=3.6.4,<4  # optional: pyflatsurf
+  - pyflatsurf>=3.10.1,<4  # optional: pyflatsurf
   - pip: [flipper]  # optional: flipper
