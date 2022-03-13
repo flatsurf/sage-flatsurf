@@ -68,3 +68,8 @@ Homology
    :members:
    :undoc-members:
 
+Orbit Closures
+==============
+.. automodule:: flatsurf.geometry.gl2r_orbit_closure
+   :members:
+   :undoc-members:
