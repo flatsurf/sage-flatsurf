@@ -515,7 +515,7 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
             sage: P = E((1, 1, 2, 4), normalized=True)
             sage: B = similarity_surfaces.billiard(P, rational=True)
             sage: S = B.minimal_cover(cover_type="translation")
-            sage: S = S.erase_marked_points() # long time (5s), optional: pyflatsurf
+            sage: S = S.erase_marked_points() # long time (3s), optional: pyflatsurf
 
         ::
 
@@ -532,6 +532,7 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
             return self
         from .pyflatsurf_conversion import from_pyflatsurf, to_pyflatsurf
         S = to_pyflatsurf(self)
+        S.delaunay()
         S = S.eliminateMarkedPoints().surface()
         S.delaunay()
         return from_pyflatsurf(S)
