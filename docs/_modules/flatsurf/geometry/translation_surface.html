@@ -559,7 +559,7 @@
 <span class="sd">            sage: P = E((1, 1, 2, 4), normalized=True)</span>
 <span class="sd">            sage: B = similarity_surfaces.billiard(P, rational=True)</span>
 <span class="sd">            sage: S = B.minimal_cover(cover_type=&quot;translation&quot;)</span>
-<span class="sd">            sage: S = S.erase_marked_points() # long time (5s), optional: pyflatsurf</span>
+<span class="sd">            sage: S = S.erase_marked_points() # long time (3s), optional: pyflatsurf</span>
 
 <span class="sd">        ::</span>
 
@@ -576,6 +576,7 @@
             <span class="k">return</span> <span class="bp">self</span>
         <span class="kn">from</span> <span class="nn">.pyflatsurf_conversion</span> <span class="kn">import</span> <span class="n">from_pyflatsurf</span><span class="p">,</span> <span class="n">to_pyflatsurf</span>
         <span class="n">S</span> <span class="o">=</span> <span class="n">to_pyflatsurf</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">S</span><span class="o">.</span><span class="n">delaunay</span><span class="p">()</span>
         <span class="n">S</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">eliminateMarkedPoints</span><span class="p">()</span><span class="o">.</span><span class="n">surface</span><span class="p">()</span>
         <span class="n">S</span><span class="o">.</span><span class="n">delaunay</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">from_pyflatsurf</span><span class="p">(</span><span class="n">S</span><span class="p">)</span></div></div>
