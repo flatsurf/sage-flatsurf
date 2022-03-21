@@ -6,7 +6,7 @@ Some tools for 2x2 matrices and planar geometry.
 #  This file is part of sage-flatsurf.
 #
 #        Copyright (C) 2016-2020 Vincent Delecroix
-#                      2020      Julian Rüth
+#                      2020-2022 Julian Rüth
 #
 #  sage-flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -22,87 +22,14 @@ Some tools for 2x2 matrices and planar geometry.
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 ######################################################################
 from __future__ import absolute_import, print_function, division
-from six.moves import range, map, filter, zip
 
-from sage.misc.cachefunc import cached_function
+from sage.rings.all import AA, QQbar, RR
 
-from sage.rings.all import ZZ, QQ, AA, QQbar, RR, CC, RDF, CDF, RIF, CIF
-from sage.rings.rational import Rational
-from sage.rings.complex_interval_field import ComplexIntervalField
-
-from math import pi as pi_float
-
-from sage.symbolic.constants import pi
 from sage.matrix.constructor import matrix, identity_matrix
 from sage.modules.free_module_element import vector
 
-def number_field_to_AA(a):
-    r"""
-    It is a mess to convert an element of a number field to the algebraic field
-    ``AA``. This is a temporary fix.
-    """
-    try:
-        return AA(a)
-    except TypeError:
-        return AA.polynomial_root(a.minpoly(), RIF(a))
 
-def is_similarity(m):
-    r"""
-    Return ``True`` if ``m`` is a similarity and ``False`` otherwise.
-
-    EXAMPLES::
-
-        sage: from flatsurf.geometry.matrix_2x2 import is_similarity
-
-        sage: is_similarity(matrix([[0,1],[1,0]]))
-        True
-        sage: is_similarity(matrix([[0,-2],[2,0]]))
-        True
-        sage: is_similarity(matrix([[1,1],[0,1]]))
-        False
-    """
-    n = m * m.transpose()
-    return n[0,1].is_zero() and n[1,0].is_zero()
-
-def homothety_rotation_decomposition(m):
-    r"""
-    Return a couple composed of the homothety and a rotation matrix.
-
-    The coefficients of the returned pair are either in the ground field of
-    ``m`` or in the algebraic field ``AA``.
-
-    EXAMPLES::
-
-        sage: from flatsurf.geometry.matrix_2x2 import homothety_rotation_decomposition
-
-        sage: R.<x> = PolynomialRing(QQ)
-        sage: K.<sqrt2> = NumberField(x^2 - 2, embedding=1.4142)
-        sage: m = matrix([[sqrt2, -sqrt2],[sqrt2,sqrt2]])
-        sage: a,rot = homothety_rotation_decomposition(m)
-        sage: a
-        2
-        sage: rot
-        [ 1/2*sqrt2 -1/2*sqrt2]
-        [ 1/2*sqrt2  1/2*sqrt2]
-    """
-    if not is_similarity(m):
-        raise ValueError("the matrix must be a similarity")
-
-    det = m.det()
-
-    if not det.is_square():
-        if not AA.has_coerce_map_from(m.base_ring()):
-            l = map(number_field_to_AA,m.list())
-            M = MatrixSpace(AA,2)
-            m = M(l)
-        else:
-            m = m.change_ring(AA)
-
-    sqrt_det = det.sqrt()
-
-    return sqrt_det, m / sqrt_det
-
-def similarity_from_vectors(u,v):
+def similarity_from_vectors(u, v):
     r"""
     Return the unique similarity matrix that maps ``u`` to ``v``.
 
@@ -183,62 +110,6 @@ def similarity_from_vectors(u,v):
     return matrix([[cos_uv, -sin_uv],[sin_uv, cos_uv]])
 
 
-def rotation_matrix_angle(r, check=False):
-    r"""
-    Return the angle of the rotation matrix ``r`` divided by ``2 pi``.
-
-    EXAMPLES::
-
-        sage: from flatsurf.geometry.matrix_2x2 import rotation_matrix_angle
-
-        sage: def rot_matrix(p, q):
-        ....:     z = QQbar.zeta(q) ** p
-        ....:     c = z.real()
-        ....:     s = z.imag()
-        ....:     return matrix(AA, 2, [c,-s,s,c])
-        sage: [rotation_matrix_angle(rot_matrix(i, 5)) for i in range(1,5)]
-        [1/5, 2/5, 3/5, 4/5]
-        sage: [rotation_matrix_angle(rot_matrix(i, 5)) for i in range(1,5)]
-        [1/5, 2/5, 3/5, 4/5]
-        sage: [rotation_matrix_angle(rot_matrix(i,7)) for i in range(1,7)]
-        [1/7, 2/7, 3/7, 4/7, 5/7, 6/7]
-
-    Some random tests::
-
-        sage: for _ in range(100):
-        ....:     r = QQ.random_element(x=0,y=500)
-        ....:     r -= r.floor()
-        ....:     m = rot_matrix(r.numerator(), r.denominator())
-        ....:     assert rotation_matrix_angle(m) == r
-
-    .. NOTE::
-
-        This is using floating point arithmetic and might be wrong.
-    """
-    e0,e1 = r.change_ring(CDF).eigenvalues()
-    m0 = (e0.log() / 2 / CDF.pi()).imag()
-    m1 = (e1.log() / 2 / CDF.pi()).imag()
-    r0 = RR(m0).nearby_rational(max_denominator=10000)
-    r1 = RR(m1).nearby_rational(max_denominator=10000)
-    if r0 != -r1:
-        raise RuntimeError
-    r0 = r0.abs()
-    if r[0][1] > 0:
-        return QQ.one() - r0
-    else:
-        return r0
-
-    if check:
-        e = r.change_ring(AA).eigenvalues()[0]
-        if e.minpoly() != ZZ['x'].cyclotomic_polynomial()(r.denominator()):
-            raise RuntimeError
-        z = QQbar.zeta(r.denominator())
-        if z**r.numerator() != e:
-            raise RuntimeError
-
-    return r
-
-
 def is_cosine_sine_of_rational(c, s):
     r"""
     Check whether the given pair is a cosine and sine of a same rational angle.
@@ -277,6 +148,7 @@ def is_cosine_sine_of_rational(c, s):
 
     """
     return (QQbar(c) + QQbar.gen() * QQbar(s)).minpoly().is_cyclotomic()
+
 
 def angle(u, v, numerical=False, assume_rational=False):
     r"""

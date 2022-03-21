@@ -6,7 +6,7 @@ Similarity surfaces.
 #  This file is part of sage-flatsurf.
 #
 #        Copyright (C) 2016-2020 Vincent Delecroix
-#                      2020-2021 Julian Rüth
+#                      2020-2022 Julian Rüth
 #
 #  sage-flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -23,35 +23,21 @@ Similarity surfaces.
 #*********************************************************************
 
 from __future__ import absolute_import, print_function, division
-from six.moves import range, map, filter, zip
+from six.moves import range
 from six import iteritems
 
-import itertools
-
-from sage.misc.cachefunc import cached_method
 from sage.misc.sage_unittest import TestSuite
 
 from sage.structure.sage_object import SageObject
 
 from sage.rings.infinity import Infinity
 
-from sage.rings.all import ZZ, QQ, AA, RIF, RR, NumberField
+from sage.rings.all import ZZ, QQ, AA, NumberField
 
 from sage.modules.free_module_element import vector
 
-from sage.matrix.constructor import matrix, identity_matrix
-from sage.modules.free_module import VectorSpace
-
-from sage.all import FreeModule
-
-from .matrix_2x2 import (is_similarity,
-                    homothety_rotation_decomposition,
-                    similarity_from_vectors,
-                    rotation_matrix_angle,
-                    is_cosine_sine_of_rational)
-
 from .similarity import SimilarityGroup
-from .polygon import ConvexPolygons, wedge_product, triangulate, build_faces
+from .polygon import ConvexPolygons, wedge_product
 
 from .surface import Surface, Surface_dict, Surface_list, LabelComparator
 from .surface_objects import Singularity, SaddleConnection, SurfacePoint
