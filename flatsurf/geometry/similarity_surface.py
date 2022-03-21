@@ -42,6 +42,7 @@ from .polygon import ConvexPolygons, wedge_product
 from .surface import Surface, Surface_dict, Surface_list, LabelComparator
 from .surface_objects import Singularity, SaddleConnection, SurfacePoint
 from .circle import Circle
+from .matrix_2x2 import similarity_from_vectors
 
 ZZ_1 = ZZ.one()
 ZZ_2 = ZZ_1 + ZZ_1
