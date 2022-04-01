@@ -585,13 +585,13 @@ class MatrixActionOnPolygons(Action):
         """
         det = g.det()
         if det > 0:
-            return x.parent()(vertices=[g*v for v in x.vertices()])
+            return x.parent()(vertices=[g*v for v in x.vertices()], check=False)
         if det < 0:
             # Note that in this case we reverse the order
             vertices = [g*x.vertex(0)]
             for i in range(x.num_edges() - 1, 0, -1):
                 vertices.append(g * x.vertex(i))
-            return x.parent()(vertices=vertices)
+            return x.parent()(vertices=vertices, check=False)
         raise ValueError("Can not act on a polygon with matrix with zero determinant")
 
 class PolygonPosition:
