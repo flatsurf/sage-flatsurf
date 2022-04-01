@@ -4,6 +4,20 @@ sage-flatsurf Change Log
 
 .. current developments
 
+v0.4.5
+====================
+
+**Fixed:**
+
+* Fix determining base ring in `from_pyflatsurf` when importing surfaces from pyflatsurf.
+* Include orbit closure module in documentation at https://flatsurf.github.io/sage-flatsurf.
+
+**Performance:**
+
+* Improved performance of erasing marked points by Delaunay triangulating first.
+
+
+
 v0.4.4
 ====================
 
