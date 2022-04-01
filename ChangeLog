@@ -4,6 +4,15 @@ sage-flatsurf Change Log
 
 .. current developments
 
+v0.4.6
+====================
+
+**Performance:**
+
+* Improved acting with a matrix on a polygon by not checking convexity of the result.
+
+
+
 v0.4.5
 ====================
 
