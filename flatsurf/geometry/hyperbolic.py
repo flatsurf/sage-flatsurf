@@ -236,8 +236,10 @@ class HyperbolicGeodesic:
     r"""
     An oriented geodesic in the hyperbolic plane.
     
+    We internally represent geodesics as the solutions to the equation `a(x^2 +
+    y^2) + bx + c = 0` for `(x, y)` in the upper half plane.
     """
-    def __init__(self, parent, center, radius_squared):
+    def __init__(self, parent, a, b, c):
         raise NotImplementedError
         
     def intersection(self, other):
