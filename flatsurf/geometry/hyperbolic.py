@@ -111,10 +111,7 @@ class HyperbolicPlane(Parent):
         """
         raise NotImplementedError
         
-    def intersection(self, other):
-        return other
 
-        
 class HyperbolicHalfPlane:
     r"""
     A closed half plane of the hyperbolic plane.
@@ -167,7 +164,7 @@ class HyperbolicPoint:
         If ``model`` is ``"half_plane"``, return projective coordinates in the
         Poincaré half plane model.
         
-        If ``model`` is ``"klein"``, return polar coordinates in the Klein model.
+        If ``model`` is ``"klein"``, return coordinates in the Klein model.
         
         If no ``ring`` has been specified, an appropriate extension of the base
         ring of the :class:`HyperbolicPlane` is chosen where these coordinates
@@ -236,8 +233,8 @@ class HyperbolicGeodesic:
     r"""
     An oriented geodesic in the hyperbolic plane.
     
-    We internally represent geodesics as the solutions to the equation `a(x^2 +
-    y^2) + bx + c = 0` for `(x, y)` in the upper half plane.
+    We internally represent geodesics as the chords satisfying the equation `a
+    + bx + cy=0` in the unit disc of the Klein model.
     """
     def __init__(self, parent, a, b, c):
         raise NotImplementedError
@@ -285,6 +282,24 @@ class HyperbolicGeodesic:
     def intersection(self, other):
         r"""
         Return the intersection of this geodesic and the convex object ``other``.
+        """
+        raise NotImplementedError
+
+    def equation(self, model):
+        r"""
+        Return an equation for this geodesic as a triple ``a``, ``b``, ``c`` such that:
+
+        - if ``model`` is ``"half_plane"``, a point `x + iy` of the upper half
+          plane is on the geodesic if it satisfies `a(x^2 + y^2) + bx + c = 0`.
+          The coefficients are such that the half plane `a(x^2 + y^2) + bx + c
+          ≥ 0` is on the left of the geodesic.
+
+        - if ``model`` is ``"klein"``, points `(x, y)` in the unit disk satisfy
+          `a + bx + cy = 0`. The sign of the coefficients is such that the half
+          plane `a + bx + cy ≥ 0` is on the left of the geodesic.
+
+        Note that the output is not unique since the coefficients can be scaled
+        by a positive scalar.
         """
         raise NotImplementedError
         
