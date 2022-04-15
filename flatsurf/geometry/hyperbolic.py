@@ -7,6 +7,8 @@ EXAMPLES::
 
     sage: H = HyperbolicPlane(QQ)
 
+    TODO: More examples.
+
 """
 ######################################################################
 #  This file is part of sage-flatsurf.
@@ -74,6 +76,18 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
     @staticmethod
     def __classcall__(cls, base_ring=None, category=None):
+        r"""
+        Create the hyperbolic plane with normalized arguments to make it a
+        unique SageMath parent.
+
+        TESTS::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+
+            sage: HyperbolicPlane() is HyperbolicPlane(QQ)
+            True
+
+        """
         from sage.all import QQ
         base_ring = base_ring or QQ
 
