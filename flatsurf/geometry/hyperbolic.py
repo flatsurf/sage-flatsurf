@@ -27,7 +27,10 @@ EXAMPLES::
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 ######################################################################
 
-class HyperbolicPlane(Parent, UniqueRepresentation):
+from sage.structure.parent import Parent
+from sage.all import QQ
+
+class HyperbolicPlane(Parent):
     r"""
     The hyperbolic plane over a base ring.
    
@@ -145,7 +148,7 @@ class HyperbolicPoint:
     A (possibly infinite) point in the :class:`HyperbolicPlane`, namely the
     unique intersection point of the geodesics ``g`` and ``h``.
     """
-    def __init__(self, parent, g, h);
+    def __init__(self, parent, g, h):
         if g == h or g == -h:
             raise ValueError("geodesics must have a unique point of intersection")
             
@@ -289,7 +292,7 @@ class HyperbolicEdge:
     An oriented (possibly infinite) segment in the hyperbolic plane such as a
     boundary edge of a :class:`HyperbolicConvexPolygon`.
     """
-    def __init__(self, geodesic, start=None, end=None)
+    def __init__(self, geodesic, start=None, end=None):
         raise NotImplementedError
         
     def intersection(self, other):
