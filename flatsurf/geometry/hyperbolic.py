@@ -237,7 +237,7 @@ class HyperbolicHalfSpace(HyperbolicConvexSubset):
     def __init__(self, geodesic):
         self._geodesic = geodesic
 
-    def __neg__(self):
+    def _neg_(self):
         raise NotImplementedError
 
 
@@ -247,6 +247,9 @@ class HyperbolicGeodesic(HyperbolicConvexSubset):
 
     Internally, we represent geodesics as the chords satisfying the equation `a
     + bx + cy=0` in the unit disc of the Klein model.
+
+    The geodesic is oriented such that the half space `a + bx + cy ≥ 0` is on
+    its left.
     """
 
     def __init__(self, parent, a, b, c):
@@ -274,8 +277,7 @@ class HyperbolicGeodesic(HyperbolicConvexSubset):
         r"""
         Return how this geodesic compares to ``other``.
 
-        Geodesics are partially ordered by their angle in [0, 1] in the Klein
-        model, see :meth:`HyperbolicPlane.chord`.
+        Geodesics are partially ordered by their slope in the Klein model.
         """
 
     def _neg_(self):
