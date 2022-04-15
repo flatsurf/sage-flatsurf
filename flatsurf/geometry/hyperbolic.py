@@ -91,14 +91,57 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         from sage.all import QQ
         base_ring = base_ring or QQ
 
-        from sage.categories.all import SetsWithPartialMaps
-        category = category or SetsWithPartialMaps()
+        from sage.categories.all import Sets
+        category = category or Sets()
 
         return super(HyperbolicPlane, cls).__classcall__(cls, base_ring=base_ring, category=category)
 
     def __init__(self, base_ring, category):
+        r"""
+        Create the hyperbolic plane over ``base_ring``.
+
+        TESTS::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+
+            sage: TestSuite(HyperbolicPlane(QQ)).run()
+            sage: TestSuite(HyperbolicPlane(AA)).run()
+
+        """
         super().__init__(category=category)
         self._base_ring = base_ring
+
+    def _an_element_(self):
+        r"""
+        Return an element of the hyperbolic plane (mostly for testing.)
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+
+            sage: HyperbolicPlane().an_element()
+            {}
+
+        """
+        return self.empty_set()
+
+    def _element_constructor_(self, x):
+        r"""
+        Return ``x`` as an element of the hyperbolic plane.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+
+            sage: H = HyperbolicPlane(QQ)
+            sage: H(H.an_element()) in H
+            True
+
+        """
+        if x.parent() is self:
+            return x
+
+        raise NotImplementedError
 
     def base_ring(self):
         r"""
@@ -180,6 +223,20 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         """
         raise NotImplementedError
 
+    def empty_set(self):
+        r"""
+        Return an empty subset of this space.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+
+            sage: HyperbolicPlane().empty_set()
+            {}
+
+        """
+        return self.__make_element_class__(HyperbolicEmptySet)(self)
+
     def _repr_(self):
         r"""
         Return a printable representation of this hyperbolic plane.
@@ -201,7 +258,8 @@ class HyperbolicConvexSubset(Element):
 
     def _equations(self, model):
         r"""
-        Return equations defining a set of half spaces such that this set is the intersection of these half spaces.
+        Return a minimal set of equations defining a set of half spaces such
+        that this set is the intersection of these half spaces.
 
         The equations are given as triples ``a``, ``b``, ``c`` such that
 
@@ -397,4 +455,24 @@ class HyperbolicEmptySet(HyperbolicConvexSubset):
     """
 
     def __init__(self, parent):
-        raise NotImplementedError
+        super().__init__(parent)
+
+    def _richcmp_(self, other, op):
+        r"""
+        Return how this set compares to ``other``.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+
+            sage: H = HyperbolicPlane()
+
+            sage: H.empty_set() == H.empty_set()
+            True
+
+        """
+        from sage.structure.richcmp import rich_to_bool
+        return rich_to_bool(op, other is HyperbolicEmptySet)
+
+    def _repr_(self):
+        return "{}"
