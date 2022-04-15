@@ -5,7 +5,8 @@ EXAMPLES::
 
     sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
 
-    sage: H2 = HyperbolicPlane(QQ)
+    sage: H = HyperbolicPlane(QQ)
+
 """
 ######################################################################
 #  This file is part of sage-flatsurf.
@@ -28,9 +29,10 @@ EXAMPLES::
 ######################################################################
 
 from sage.structure.parent import Parent
+from sage.structure.unique_representation import UniqueRepresentation
 
 
-class HyperbolicPlane(Parent):
+class HyperbolicPlane(Parent, UniqueRepresentation):
     r"""
     The hyperbolic plane over a base ring.
 
@@ -62,20 +64,46 @@ class HyperbolicPlane(Parent):
 
     EXAMPLES::
 
+        sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+
         sage: HyperbolicPlane()
+        Hyperbolic Plane over Rational Field
 
     """
 
-    def __init__(self, base_ring=None, category=None):
+    @staticmethod
+    def __classcall__(cls, base_ring=None, category=None):
+        from sage.all import QQ
+        base_ring = base_ring or QQ
+
         from sage.categories.all import SetsWithPartialMaps
-        category = category or SetsWithPartialMaps
-        raise NotImplementedError
+        category = category or SetsWithPartialMaps()
+
+        return super(HyperbolicPlane, cls).__classcall__(cls, base_ring=base_ring, category=category)
+
+    def __init__(self, base_ring, category):
+        super().__init__(category=category)
+        self._base_ring = base_ring
+
+    def base_ring(self):
+        r"""
+        Return the base ring over which objects in the plane are defined.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+
+            sage: HyperbolicPlane().base_ring()
+            Rational Field
+
+        """
+        return self._base_ring
 
     def infinity(self):
         r"""
         Return the point at infinity in the Poincaré half plane model.
         """
-        return self.projective(0, 1)
+        return self.projective(1, 0)
 
     def real(self, r):
         r"""
@@ -130,6 +158,19 @@ class HyperbolicPlane(Parent):
         Use the ``-`` operator to pass to the half plane on the right.
         """
         raise NotImplementedError
+
+    def _repr_(self):
+        r"""
+        Return a printable representation of this hyperbolic plane.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: HyperbolicPlane(AA)
+            Hyperbolic Plane over Algebraic Real Field
+
+        """
+        return f"Hyperbolic Plane over {repr(self.base_ring())}"
 
 
 class HyperbolicHalfPlane:
