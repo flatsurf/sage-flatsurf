@@ -102,7 +102,7 @@ def homothety_rotation_decomposition(m):
 
     return sqrt_det, m / sqrt_det
 
-def similarity_from_vectors(u,v):
+def similarity_from_vectors(u, v, matrix_space=None):
     r"""
     Return the unique similarity matrix that maps ``u`` to ``v``.
 
@@ -180,7 +180,11 @@ def similarity_from_vectors(u,v):
 
     cos_uv = (u[0]*v[0] + u[1]*v[1]) / sqnorm_u
     sin_uv = (u[0]*v[1] - u[1]*v[0]) / sqnorm_u
-    return matrix([[cos_uv, -sin_uv],[sin_uv, cos_uv]])
+
+    if matrix_space is None:
+        from sage.matrix.matrix_space import MatrixSpace
+        matrix_space = MatrixSpace(u.base_ring(), 2)
+    return matrix_space([cos_uv, -sin_uv, sin_uv, cos_uv])
 
 
 def rotation_matrix_angle(r, check=False):
