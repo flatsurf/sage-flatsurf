@@ -452,23 +452,23 @@ class SimilaritySurface(SageObject):
             sage: g((2,-2))
             (2, 0)
         """
-        G=SimilarityGroup(self.base_ring())
-        q=self.polygon(p)
-        a=q.vertex(e)
-        b=q.vertex(e+1)
+        G = SimilarityGroup(self.base_ring())
+        q = self.polygon(p)
+        a = q.vertex(e)
+        b = q.vertex(e+1)
         # This is the similarity carrying the origin to a and (1,0) to b:
-        g=G(b[0]-a[0],b[1]-a[1],a[0],a[1])
+        g = G(b[0] - a[0], b[1] - a[1], a[0], a[1])
 
-        pp,ee = self.opposite_edge(p,e)
-        qq=self.polygon(pp)
+        pp, ee = self.opposite_edge(p, e)
+        qq = self.polygon(pp)
         # Be careful here: opposite vertices are identified
-        aa=qq.vertex(ee+1)
-        bb=qq.vertex(ee)
+        aa = qq.vertex(ee+1)
+        bb = qq.vertex(ee)
         # This is the similarity carrying the origin to aa and (1,0) to bb:
-        gg=G(bb[0]-aa[0],bb[1]-aa[1],aa[0],aa[1])
+        gg = G(bb[0] - aa[0], bb[1] - aa[1], aa[0], aa[1])
 
         # This is the similarity carrying (a,b) to (aa,bb):
-        return gg/g
+        return gg / g
 
     def set_vertex_zero(self, label, v, in_place=False):
         r"""
