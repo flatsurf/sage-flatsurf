@@ -29,6 +29,7 @@ EXAMPLES::
 ######################################################################
 
 from sage.structure.parent import Parent
+from sage.structure.element import Element
 from sage.structure.unique_representation import UniqueRepresentation
 
 
@@ -151,11 +152,17 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         """
         raise NotImplementedError
 
-    def half_plane(self, geodesic):
+    def half_space(self, geodesic):
         r"""
         Return the closed half plane that is on the left of ``geodesic``.
 
         Use the ``-`` operator to pass to the half plane on the right.
+        """
+        raise NotImplementedError
+
+    def intersection(self, subsets):
+        r"""
+        Return the intersection of convex ``subsets``.
         """
         raise NotImplementedError
 
@@ -173,11 +180,58 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         return f"Hyperbolic Plane over {repr(self.base_ring())}"
 
 
-class HyperbolicHalfPlane:
+class HyperbolicConvexSubset(Element):
     r"""
-    A closed half plane of the hyperbolic plane.
+    Base class for convex subsets of :class:`HyperbolicPlane`.
+    """
 
-    Use :meth:`HyperbolicPlane.half_plane` to create a half plane.
+    def _equations(self, model):
+        r"""
+        Return equations defining a set of half spaces such that this set is the intersection of these half spaces.
+
+        The equations are given as triples ``a``, ``b``, ``c`` such that
+
+        - if ``model`` is ``"half_plane"``, a point `x + iy` of the upper half
+          plane is in the half space if `a(x^2 + y^2) + bx + c ≥ 0`.
+
+        - if ``model`` is ``"klein"``, points `(x, y)` in the unit disk satisfy
+          `a + bx + cy ≥ 0`.
+
+        Note that the output is not unique since the coefficients can be scaled
+        by a positive scalar.
+        """
+        raise NotImplementedError("Convex sets must implement this method.")
+
+    def is_subset(self, other):
+        r"""
+        Return whether the convex set ``other`` is a subset of this set.
+        """
+        raise NotImplementedError
+
+    def intersection(self, other):
+        r"""
+        Return the intersection with the ``other`` convex set.
+        """
+        return self.parent().intersection([self, other])
+
+    def __contains__(self, point):
+        r"""
+        Return whether ``point`` is contained in this set.
+        """
+        raise NotImplementedError
+
+    def is_finite(self):
+        r"""
+        Return whether all points in this set are finite.
+        """
+        raise NotImplementedError
+
+
+class HyperbolicHalfSpace(HyperbolicConvexSubset):
+    r"""
+    A closed half space of the hyperbolic plane.
+
+    Use :meth:`HyperbolicPlane.half_space` to create a half plane.
     """
 
     def __init__(self, geodesic):
@@ -186,112 +240,12 @@ class HyperbolicHalfPlane:
     def __neg__(self):
         raise NotImplementedError
 
-    def __contains__(self, point):
-        r"""
-        Return whether ``point`` is contained in this half plane.
-        """
-        raise NotImplementedError
 
-    def is_subset(self, half_plane):
-        r"""
-        Return whether this half plane is contained in ``half_plane``.
-        """
-        raise NotImplementedError
-
-    def intersection(self, other):
-        raise NotImplementedError
-
-
-class HyperbolicPoint:
-    r"""
-    A (possibly infinite) point in the :class:`HyperbolicPlane`, namely the
-    unique intersection point of the geodesics ``g`` and ``h``.
-    """
-
-    def __init__(self, parent, g, h):
-        if g == h or g == -h:
-            raise ValueError("geodesics must have a unique point of intersection")
-
-        raise NotImplementedError
-
-    def is_finite(self):
-        r"""
-        Return whether this is a finite point.
-        """
-        raise NotImplementedError
-
-    def coordinates(self, model="half_plane", ring=None):
-        r"""
-        Return coordinates of this point in ``ring``.
-
-        If ``model`` is ``"half_plane"``, return projective coordinates in the
-        Poincaré half plane model.
-
-        If ``model`` is ``"klein"``, return coordinates in the Klein model.
-
-        If no ``ring`` has been specified, an appropriate extension of the base
-        ring of the :class:`HyperbolicPlane` is chosen where these coordinates
-        live.
-        """
-        raise NotImplementedError
-
-    def intersection(self, other):
-        r"""
-        Return the intersection of this point and the convex object ``other``.
-        """
-        raise NotImplementedError
-
-
-class HyperbolicConvexPolygon:
-    r"""
-    A (possibly unbounded) closed polygon in the :class:`HyperbolicPlane`,
-    i.e., the intersection of a finite number of :class:`HyperbolicHalfPlane`s.
-    """
-
-    def __init__(self, parent, half_planes, assume_normalized=False):
-        raise NotImplementedError
-
-    def _normalize(self):
-        r"""
-        Normalize the internal list of half planes so that they describe the
-        :meth:`boundary`.
-        """
-        raise NotImplementedError
-
-    def intersection(self, other):
-        r"""
-        Return the intersection of this polygon with ``other`` where ``other``
-        is another polygon or a half plane.
-        """
-        raise NotImplementedError
-
-    def boundary(self):
-        r"""
-        Return the boundary of this polygon as a list of (oriented) geodesics.
-
-        The output is minimal and sorted by angle in the Klein model.
-        """
-        raise NotImplementedError
-
-    def vertices(self):
-        r"""
-        Return the vertices of this polygon, i.e., the points of intersection
-        of the :meth:`boundary` geodesics.
-        """
-        raise NotImplementedError
-
-    def __contains__(self, point):
-        r"""
-        Return whether ``point`` is contained in this closed polygon.
-        """
-        raise NotImplementedError
-
-
-class HyperbolicGeodesic:
+class HyperbolicGeodesic(HyperbolicConvexSubset):
     r"""
     An oriented geodesic in the hyperbolic plane.
 
-    We internally represent geodesics as the chords satisfying the equation `a
+    Internally, we represent geodesics as the chords satisfying the equation `a
     + bx + cy=0` in the unit disc of the Klein model.
     """
 
@@ -327,12 +281,6 @@ class HyperbolicGeodesic:
     def _neg_(self):
         raise NotImplementedError
 
-    def intersection(self, other):
-        r"""
-        Return the intersection of this geodesic and the convex object ``other``.
-        """
-        raise NotImplementedError
-
     def equation(self, model):
         r"""
         Return an equation for this geodesic as a triple ``a``, ``b``, ``c`` such that:
@@ -352,7 +300,72 @@ class HyperbolicGeodesic:
         raise NotImplementedError
 
 
-class HyperbolicEdge:
+class HyperbolicPoint(HyperbolicConvexSubset):
+    r"""
+    A (possibly infinite) point in the :class:`HyperbolicPlane`.
+
+    Internally, we represent a point as the Euclidean coordinates in the unit
+    disc of the Klein model.
+    """
+
+    def __init__(self, parent, x, y):
+        raise NotImplementedError
+
+    def coordinates(self, model="half_plane", ring=None):
+        r"""
+        Return coordinates of this point in ``ring``.
+
+        If ``model`` is ``"half_plane"``, return projective coordinates in the
+        Poincaré half plane model.
+
+        If ``model`` is ``"klein"``, return Euclidean coordinates in the Klein model.
+
+        If no ``ring`` has been specified, an appropriate extension of the base
+        ring of the :class:`HyperbolicPlane` is chosen where these coordinates
+        live.
+        """
+        raise NotImplementedError
+
+
+class HyperbolicConvexPolygon(HyperbolicConvexSubset):
+    r"""
+    A (possibly unbounded) closed polygon in the :class:`HyperbolicPlane`,
+    i.e., the intersection of a finite number of :class:`HyperbolicHalfPlane`s.
+    """
+
+    def __init__(self, parent, half_planes, assume_normalized=False):
+        raise NotImplementedError
+
+    def _normalize(self):
+        r"""
+        Normalize the internal list of half planes so that they describe the
+        :meth:`boundary`.
+        """
+        raise NotImplementedError
+
+    def equations(self):
+        r"""
+        Return the equations describing the boundary of this polygon.
+
+        The output is minimal and sorted by slope in the Klein model.
+        """
+        raise NotImplementedError
+
+    def edges(self):
+        r"""
+        Return the :class:`HyperbolicEdge`s defining this polygon.
+        """
+        raise NotImplementedError
+
+    def vertices(self):
+        r"""
+        Return the vertices of this polygon, i.e., the end points of the
+        :meth:`edges`.
+        """
+        raise NotImplementedError
+
+
+class HyperbolicEdge(HyperbolicConvexSubset):
     r"""
     An oriented (possibly infinite) segment in the hyperbolic plane such as a
     boundary edge of a :class:`HyperbolicConvexPolygon`.
@@ -361,8 +374,11 @@ class HyperbolicEdge:
     def __init__(self, geodesic, start=None, end=None):
         raise NotImplementedError
 
-    def intersection(self, other):
-        r"""
-        Return the intersection of this edge and the convex object ``other``.
-        """
+
+class HyperbolicEmptySet(HyperbolicConvexSubset):
+    r"""
+    The empty subset of the hyperbolic plane.
+    """
+
+    def __init__(self, parent):
         raise NotImplementedError
