@@ -180,10 +180,10 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
 
             sage: HyperbolicPlane().an_element()
-            {}
+            0
 
         """
-        return self.empty_set()
+        return self.real(0)
 
     def some_elements(self):
         r"""
@@ -194,7 +194,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
 
             sage: HyperbolicPlane().some_elements()
-            [{}, ∞, 0.0, 1.0, -1.0]
+            [{}, ∞, 0, 1, -1]
 
         """
         # TODO: Return more elements.
@@ -251,7 +251,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         Return the ideal point ``r`` on the real axis in the Poincaré half
         plane model.
         """
-        return self.projective(r, 1)
+        return self.projective(r, self.base_ring().one())
 
     def projective(self, p, q):
         r"""
