@@ -369,8 +369,24 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         Use the ``-`` operator to pass to the geodesic with opposite
         orientation.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: H.vertical(0)
+            {-x = 0}
+
+            sage: H.vertical(1)
+            {-x + 1 = 0}
+
+            sage: H.vertical(-1)
+            {-x - 1 = 0}
+
         """
-        raise NotImplementedError
+        # Convert the equation -x + real = 0 to the Klein model.
+        return self.__make_element_class__(HyperbolicGeodesic)(self, real, 1, -real)
 
     def chord(self, a, b):
         r"""
