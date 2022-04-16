@@ -39,10 +39,6 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
     r"""
     The hyperbolic plane over a base ring.
 
-    We do not use a fixed representation of the hyperbolic plane internally.
-    However, we mostly think of this as the upper half plane in the Poincaré
-    model.
-
     All objects in the plane must be specified over the given base ring. Note
     that, in some representations, objects might appear to live in a larger
     ring. E.g., when specifying a line by giving a midpoint and the square of
@@ -52,6 +48,70 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
     The implemented elements of the plane are convex subsets such as (finite
     and infinite) points, geodesics, closed half planes, and closed convex
     polygons.
+
+    ALGORITHM:
+
+    We do not use a fixed representation of the hyperbolic plane internally but
+    switch between the Poincaré half plane and the Klein model freely.
+
+    For the Klein model, we use a unit disc centered at (0, 0). The map from
+    the Poincaré half plane sends the imaginary unit `i` to the center at the
+    origin, and sends 0 to (0, -1), 1 to (1, 0), -1 to (-1, 0) and infinity to
+    (0, 1). In other words, the map from the Poincaré model is given by the
+    Möbius transformation
+
+    .. MATH::
+
+        z \mapsto \frac{z-i}{1 - iz}
+
+    with inverse
+
+    .. MATH::
+
+        z \mapsto \frac{z + i}{iz + 1}
+
+    When we write these maps out explicitly in Euclidean coordinates, we get
+
+    .. MATH::
+
+        (x, y) \mapsto \frac{1}{1 + 2y + x^2 + y^2}\left(2x, -1 + x^2 + y^2\right)
+
+    and
+
+    .. MATH::
+
+        (x, y) \mapsto \frac{1}{1 - 2y + x^2 + y^2}\left(2x, 1 - x^2 - y^2 \right),
+
+    respectively.
+
+    A geodesic in the Poincaré half plane is then given by an equation of the form
+
+    .. MATH::
+
+        a(x^2 + y^2) + bx + c = 0
+
+    which converts to an equation in the Klein disc as
+
+    .. MATH::
+
+        (a + c) - bx + (a - c)y = 0.
+
+    Note that the intersection of two geodesics with coefficients in a field
+    `K` therefore has coordinates in the same field `K` in either model.
+
+    Conversely, a geodesic's equation in the Klein disc
+
+    .. MATH::
+
+        a + bx + cy = 0
+
+    corresponds to the equation
+
+    .. MATH::
+
+        (a + c)(x^2 + y^2) - 2bx + (a - c) = 0
+
+    in the Poincaré half plane model.
 
     INPUT:
 
@@ -107,6 +167,8 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             sage: TestSuite(HyperbolicPlane(QQ)).run()
             sage: TestSuite(HyperbolicPlane(AA)).run()
 
+            # TODO: Implement some_elements()
+
         """
         super().__init__(category=category)
         self._base_ring = base_ring
@@ -160,6 +222,14 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
     def infinity(self):
         r"""
         Return the point at infinity in the Poincaré half plane model.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+
+            sage: HyperbolicPlane().infinity()
+            ∞
+
         """
         return self.projective(1, 0)
 
@@ -174,8 +244,40 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         r"""
         Return the ideal point with projective coordinates ``[p: q]`` in the
         Poincaré half plane model.
+
+        EXMAPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+
+            sage: H = HyperbolicPlane()
+            sage: H.projective(0, 1)
+            0
+
+            sage: H.projective(-1, 0)
+            ∞
+
+            sage: H.projective(0, 0)
+            Traceback (most recent call last):
+            ...
+            ValueError: one of p and q must not be zero
         """
-        raise NotImplementedError
+        if p == 0 and q == 0:
+            raise ValueError("one of p and q must not be zero")
+
+        if q == 0:
+            return self.point(0, 1, model="klein")
+
+        return self.point(p/q, 0, model="half_plane")
+
+    def point(self, x, y, model):
+        if model == "klein":
+            return self.__make_element_class__(HyperbolicPoint)(self, x, y)
+
+        denominator = 1 + 2*y + x*x + y*y
+        return self.point(
+            x=2*x / denominator,
+            y=(-1 + x*x + y*y) / denominator,
+            model="klein")
 
     def half_circle(self, center, radius_squared):
         r"""
@@ -383,7 +485,9 @@ class HyperbolicPoint(HyperbolicConvexSubset):
     """
 
     def __init__(self, parent, x, y):
-        raise NotImplementedError
+        super().__init__(parent)
+        self._x = x
+        self._y = y
 
     def coordinates(self, model="half_plane", ring=None):
         r"""
@@ -398,7 +502,23 @@ class HyperbolicPoint(HyperbolicConvexSubset):
         ring of the :class:`HyperbolicPlane` is chosen where these coordinates
         live.
         """
+        x, y = self._x, self._y
+
+        if model == "half_plane":
+            denominator = 1 - 2*y + x*x + y*y
+            return (2*x / denominator, (1 - x*x - y*y)/denominator)
+
         raise NotImplementedError
+
+    def _repr_(self):
+        if self._x == 0 and self._y == 1:
+            return "∞"
+
+        x, y = self.coordinates()
+        if y == 0:
+            return repr(x)
+
+        return repr(x, y)
 
 
 class HyperbolicConvexPolygon(HyperbolicConvexSubset):
