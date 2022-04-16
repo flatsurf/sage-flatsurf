@@ -306,8 +306,8 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         EXAMPLES::
 
             sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
-
             sage: H = HyperbolicPlane()
+
             sage: H.point(0, 1, model="half_plane")
             I
 
@@ -337,8 +337,29 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         Use the ``-`` operator to pass to the geodesic with opposite
         orientation.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: H.half_circle(0, 1)
+            {(x^2 + y^2) - 1 = 0}
+
+            sage: H.half_circle(1, 3)
+            {(x^2 + y^2) - 2*x - 2 = 0}
+
+            sage: H.half_circle(1/3, 1/2)
+            {18*(x^2 + y^2) - 12*x - 7 = 0}
+
         """
-        raise NotImplementedError
+        # Represent this geodesic as a(x^2 + y^2) + b*x + c = 0
+        a = 1
+        b = -2*center
+        c = center*center - radius_squared
+
+        # Convert to the Klein model.
+        return self.__make_element_class__(HyperbolicGeodesic)(self, a + c, -b, a - c)
 
     def vertical(self, real):
         r"""
@@ -477,7 +498,10 @@ class HyperbolicGeodesic(HyperbolicConvexSubset):
     """
 
     def __init__(self, parent, a, b, c):
-        raise NotImplementedError
+        super().__init__(parent)
+        self._a = a
+        self._b = b
+        self._c = c
 
     def start(self):
         r"""
@@ -524,6 +548,30 @@ class HyperbolicGeodesic(HyperbolicConvexSubset):
         by a positive scalar.
         """
         raise NotImplementedError
+
+    def _repr_(self):
+        # Convert to the Poincaré half plane model as a(x^2 + y^2) + bx + c = 0.
+        a = self._a + self._c
+        b = -2*self._b
+        c = self._a - self._c
+
+        try:
+            if self.parent().base_ring().is_exact():
+                from sage.all import gcd
+                d = gcd((a, b, c))
+                a /= d
+                b /= d
+                c /= d
+        except Exception:
+            raise
+            pass
+
+        from sage.all import PolynomialRing
+        R = PolynomialRing(self.parent().base_ring(), names="x")
+        if a != 0:
+            return "{" + repr(R([0, a]))[:-1] + "(x^2 + y^2)" + repr(R([c, b, 1]))[3:] + " = 0}"
+        else:
+            return "{" + repr(R([c, b])) + " = 0}"
 
 
 class HyperbolicPoint(HyperbolicConvexSubset):
