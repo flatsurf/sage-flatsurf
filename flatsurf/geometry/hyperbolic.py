@@ -167,8 +167,6 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             sage: TestSuite(HyperbolicPlane(QQ)).run()
             sage: TestSuite(HyperbolicPlane(AA)).run()
 
-            # TODO: Implement some_elements()
-
         """
         super().__init__(category=category)
         self._base_ring = base_ring
@@ -186,6 +184,21 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         """
         return self.empty_set()
+
+    def some_elements(self):
+        r"""
+        Return some representative convex subsets for automated testing.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+
+            sage: HyperbolicPlane().some_elements()
+            [{}, ∞, 0.0, 1.0, -1.0]
+
+        """
+        # TODO: Return more elements.
+        return [self.empty_set(), self.infinity(), self.real(0), self.real(1), self.real(-1)]
 
     def _element_constructor_(self, x):
         r"""
@@ -509,6 +522,23 @@ class HyperbolicPoint(HyperbolicConvexSubset):
             return (2*x / denominator, (1 - x*x - y*y)/denominator)
 
         raise NotImplementedError
+
+    def _richcmp_(self, other, op):
+        r"""
+        Return how this point compares to ``other``.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+
+            sage: H = HyperbolicPlane()
+
+            sage: H.infinity() == H.projective(1, 0)
+            True
+
+        """
+        from sage.structure.richcmp import rich_to_bool
+        return rich_to_bool(op, other is HyperbolicPoint and other._x == self._x and other._y == self._y)
 
     def _repr_(self):
         if self._x == 0 and self._y == 1:
