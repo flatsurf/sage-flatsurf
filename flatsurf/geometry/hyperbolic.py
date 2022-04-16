@@ -216,6 +216,10 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         if x.parent() is self:
             return x
 
+        # TODO: Accept elements that convert into the base ring.
+
+        # TODO: Change ring otherwise.
+
         raise NotImplementedError
 
     def base_ring(self):
@@ -250,6 +254,14 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         r"""
         Return the ideal point ``r`` on the real axis in the Poincaré half
         plane model.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+
+            sage: HyperbolicPlane().real(-2)
+            -2
+
         """
         return self.projective(r, self.base_ring().one())
 
@@ -273,6 +285,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             Traceback (most recent call last):
             ...
             ValueError: one of p and q must not be zero
+
         """
         if p == 0 and q == 0:
             raise ValueError("one of p and q must not be zero")
@@ -283,14 +296,38 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         return self.point(p/q, 0, model="half_plane")
 
     def point(self, x, y, model):
+        r"""
+        Return the point with coordinates (x, y) in the given model.
+
+        When ``model`` is ``"half_plane"``, return the point `x + iy` in the upper half plane.
+
+        When ``model`` is ``"klein"``, return the point (x, y) in the Klein disc.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+
+            sage: H = HyperbolicPlane()
+            sage: H.point(0, 1, model="half_plane")
+            I
+
+            sage: H.point(1, 2, model="half_plane")
+            1 + 2*I
+
+            sage: H.point(0, 1, model="klein")
+            ∞
+
+        """
         if model == "klein":
             return self.__make_element_class__(HyperbolicPoint)(self, x, y)
+        if model == "half_plane":
+            denominator = 1 + 2*y + x*x + y*y
+            return self.point(
+                x=2*x / denominator,
+                y=(-1 + x*x + y*y) / denominator,
+                model="klein")
 
-        denominator = 1 + 2*y + x*x + y*y
-        return self.point(
-            x=2*x / denominator,
-            y=(-1 + x*x + y*y) / denominator,
-            model="klein")
+        raise NotImplementedError("unsupported model")
 
     def half_circle(self, center, radius_squared):
         r"""
@@ -545,10 +582,10 @@ class HyperbolicPoint(HyperbolicConvexSubset):
             return "∞"
 
         x, y = self.coordinates()
-        if y == 0:
-            return repr(x)
 
-        return repr(x, y)
+        # We represent x + y*I in R[[I]] so we do not have to reimplement printing ourselves.
+        from sage.all import PowerSeriesRing
+        return repr(PowerSeriesRing(self.parent().base_ring(), names="I")([x, y]))
 
 
 class HyperbolicConvexPolygon(HyperbolicConvexSubset):
