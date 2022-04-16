@@ -344,7 +344,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         r"""
         Return the vertical geodesic at the ``real`` ideal point in the
         Poincaré half plane model. The geodesic is oriented such that it goes
-        towards from ``real`` to the point at infinity.
+        from ``real`` to the point at infinity.
 
         Use the ``-`` operator to pass to the geodesic with opposite
         orientation.
