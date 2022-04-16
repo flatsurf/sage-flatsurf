@@ -57,32 +57,34 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
     For the Klein model, we use a unit disc centered at (0, 0). The map from
     the Poincaré half plane sends the imaginary unit `i` to the center at the
     origin, and sends 0 to (0, -1), 1 to (1, 0), -1 to (-1, 0) and infinity to
-    (0, 1). In other words, the map from the Poincaré model is given by the
-    Möbius transformation
+    (0, 1). In other words, the map from the Poincaré model is related to the
+    the Möbius transformation
 
     .. MATH::
 
         z \mapsto \frac{z-i}{1 - iz}
 
-    with inverse
+    which goes to the Poincaré disc model composed with the map from the
+    Poincaré disc model to the Klein disc model, i.e., the map that, in polar
+    coordinates, maps
 
     .. MATH::
 
-        z \mapsto \frac{z + i}{iz + 1}
+        (\phi, r)\mapsto \left(\phi, \frac{2r}{1 + r^2}\right).
 
-    When we write these maps out explicitly in Euclidean coordinates, we get
+    When we write this map out explicitly in Euclidean coordinates, we get
 
     .. MATH::
 
-        (x, y) \mapsto \frac{1}{1 + 2y + x^2 + y^2}\left(2x, -1 + x^2 + y^2\right)
+        (x, y) \mapsto \frac{1}{1 + x^2 + y^2}\left(2x, -1 + x^2 + y^2\right)
 
     and
 
     .. MATH::
 
-        (x, y) \mapsto \frac{1}{1 - 2y + x^2 + y^2}\left(2x, 1 - x^2 - y^2 \right),
+        (x, y) \mapsto \frac{1}{1 - y}\left(x, \sqrt{1 - x^2 - y^2}\right),
 
-    respectively.
+    for its inverse.
 
     A geodesic in the Poincaré half plane is then given by an equation of the form
 
@@ -321,7 +323,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         if model == "klein":
             return self.__make_element_class__(HyperbolicPoint)(self, x, y)
         if model == "half_plane":
-            denominator = 1 + 2*y + x*x + y*y
+            denominator = 1 + x*x + y*y
             return self.point(
                 x=2*x / denominator,
                 y=(-1 + x*x + y*y) / denominator,
@@ -619,8 +621,8 @@ class HyperbolicPoint(HyperbolicConvexSubset):
         x, y = self._x, self._y
 
         if model == "half_plane":
-            denominator = 1 - 2*y + x*x + y*y
-            return (2*x / denominator, (1 - x*x - y*y)/denominator)
+            denominator = 1 - y
+            return (x / denominator, (1 - x*x - y*y).sqrt()/denominator)
 
         raise NotImplementedError
 
