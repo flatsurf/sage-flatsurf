@@ -214,15 +214,36 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             sage: H(H.an_element()) in H
             True
 
+        Base ring elements can be converted to ideal points::
+
+            sage: H(1)
+            1
+
+        The point at infinity in the half plane model can be written directly::
+
+            sage: H(oo)
+            ∞
+
+        Elements can be converted between hyperbolic planes with compatible base rings::
+
+            sage: HyperbolicPlane(AA)(H(1))
+            1
+
         """
         if x.parent() is self:
             return x
 
-        # TODO: Accept elements that convert into the base ring.
+        from sage.all import Infinity
+        if x is Infinity:
+            return self.infinity()
 
-        # TODO: Change ring otherwise.
+        if x in self.base_ring():
+            return self.real(x)
 
-        raise NotImplementedError
+        if isinstance(x, HyperbolicConvexSubset):
+            return x.change_ring(self.base_ring())
+
+        raise NotImplementedError("Cannot create a subset of the hyperbolic plane from this element yet.")
 
     def base_ring(self):
         r"""
@@ -265,7 +286,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             -2
 
         """
-        return self.projective(r, self.base_ring().one())
+        return self.projective(r, 1)
 
     def projective(self, p, q):
         r"""
@@ -295,6 +316,9 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         if q == 0:
             return self.point(0, 1, model="klein")
 
+        p = self.base_ring()(p)
+        q = self.base_ring()(q)
+
         return self.point(p/q, 0, model="half_plane")
 
     def point(self, x, y, model):
@@ -320,6 +344,9 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             ∞
 
         """
+        x = self.base_ring()(x)
+        y = self.base_ring()(y)
+
         if model == "klein":
             return self.__make_element_class__(HyperbolicPoint)(self, x, y)
         if model == "half_plane":
@@ -355,6 +382,9 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             {18*(x^2 + y^2) - 12*x - 7 = 0}
 
         """
+        center = self.base_ring()(center)
+        radius_squared = self.base_ring()(radius_squared)
+
         # Represent this geodesic as a(x^2 + y^2) + b*x + c = 0
         a = 1
         b = -2*center
@@ -387,6 +417,8 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             {-x - 1 = 0}
 
         """
+        real = self.base_ring()(real)
+
         # Convert the equation -x + real = 0 to the Klein model.
         return self.__make_element_class__(HyperbolicGeodesic)(self, real, 1, -real)
 
@@ -463,12 +495,14 @@ class HyperbolicConvexSubset(Element):
         Note that the output is not unique since the coefficients can be scaled
         by a positive scalar.
         """
+        # TODO: Check that all subclasses implement this.
         raise NotImplementedError("Convex sets must implement this method.")
 
     def is_subset(self, other):
         r"""
         Return whether the convex set ``other`` is a subset of this set.
         """
+        # TODO: Check that all subclasses implement this.
         raise NotImplementedError
 
     def intersection(self, other):
@@ -481,12 +515,21 @@ class HyperbolicConvexSubset(Element):
         r"""
         Return whether ``point`` is contained in this set.
         """
+        # TODO: Check that all subclasses implement this.
         raise NotImplementedError
 
     def is_finite(self):
         r"""
         Return whether all points in this set are finite.
         """
+        # TODO: Check that all subclasses implement this.
+        raise NotImplementedError
+
+    def change_ring(self, ring):
+        r"""
+        Return this set as an element of the hyperbolic plane over ``ring``.
+        """
+        # TODO: Check that all subclasses implement this.
         raise NotImplementedError
 
 
@@ -652,6 +695,9 @@ class HyperbolicPoint(HyperbolicConvexSubset):
         # We represent x + y*I in R[[I]] so we do not have to reimplement printing ourselves.
         from sage.all import PowerSeriesRing
         return repr(PowerSeriesRing(self.parent().base_ring(), names="I")([x, y]))
+
+    def change_ring(self, ring):
+        return HyperbolicPlane(ring).point(self._x, self._y, model="klein")
 
 
 class HyperbolicConvexPolygon(HyperbolicConvexSubset):
