@@ -41,7 +41,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
     All objects in the plane must be specified over the given base ring. Note
     that, in some representations, objects might appear to live in a larger
-    ring. E.g., when specifying a line by giving a midpoint and the square of
+    ring. E.g., when specifying a line by giving a center and the square of
     its radius in the half plane model, then the ideal endpoints of this line
     might have coordinates in the ring after adjoining a square root.
 
@@ -57,16 +57,13 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
     For the Klein model, we use a unit disc centered at (0, 0). The map from
     the Poincaré half plane sends the imaginary unit `i` to the center at the
     origin, and sends 0 to (0, -1), 1 to (1, 0), -1 to (-1, 0) and infinity to
-    (0, 1). In other words, the map from the Poincaré model is related to the
-    the Möbius transformation
+    (0, 1). The Möbius transformation
 
     .. MATH::
 
         z \mapsto \frac{z-i}{1 - iz}
 
-    which goes to the Poincaré disc model composed with the map from the
-    Poincaré disc model to the Klein disc model, i.e., the map that, in polar
-    coordinates, maps
+    maps from the half plane model to the Poincaré disc model. We then post-compose this with the map that goes from the Poincaré disc model to the Klein disc model, which in polar coordinates sends
 
     .. MATH::
 
