@@ -588,6 +588,13 @@ class HyperbolicConvexSubset(Element):
         # transform inequalities in the Klein model.
         raise NotImplementedError
 
+    def _neg_(self):
+        r"""
+        Return the convex subset obtained by taking the negatives of the half
+        spaces whose intersection define this set.
+        """
+        raise NotImplementedError
+
 
 class HyperbolicHalfSpace(HyperbolicConvexSubset):
     r"""
@@ -598,9 +605,6 @@ class HyperbolicHalfSpace(HyperbolicConvexSubset):
 
     def __init__(self, geodesic):
         self._geodesic = geodesic
-
-    def _neg_(self):
-        raise NotImplementedError
 
 
 class HyperbolicGeodesic(HyperbolicConvexSubset):
@@ -644,6 +648,7 @@ class HyperbolicGeodesic(HyperbolicConvexSubset):
 
         Geodesics are partially ordered by their slope in the Klein model.
         """
+        raise NotImplementedError
 
     def _neg_(self):
         raise NotImplementedError
@@ -872,7 +877,7 @@ class HyperbolicEmptySet(HyperbolicConvexSubset):
 
 class Vertical(GraphicPrimitive):
     r"""
-    A ray going vertically up from (x, y).
+    A graphical ray going vertically up from (x, y).
 
     Used internally to, e.g., plot a vertical geodesic in the upper half plane
     model.
