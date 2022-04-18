@@ -382,6 +382,9 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         center = self.base_ring()(center)
         radius_squared = self.base_ring()(radius_squared)
 
+        if radius_squared <= 0:
+            raise ValueError("radius must be positive")
+
         # Represent this geodesic as a(x^2 + y^2) + b*x + c = 0
         a = 1
         b = -2*center
@@ -433,7 +436,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         r"""
         Return the closed half plane that is on the left of ``geodesic``.
 
-        Use the ``-`` operator to pass to the half plane on the right.
+        Use the ``-`` operator to pass to the half space on the right.
         """
         raise NotImplementedError
 
@@ -529,6 +532,13 @@ class HyperbolicConvexSubset(Element):
         # TODO: Check that all subclasses implement this.
         raise NotImplementedError
 
+    def plot(self, model="half_plane", *kwds):
+        r"""
+        Return a plot of this subset.
+        """
+        # TODO: Check that all subclasses implement this.
+        raise NotImplementedError
+
 
 class HyperbolicHalfSpace(HyperbolicConvexSubset):
     r"""
@@ -605,13 +615,19 @@ class HyperbolicGeodesic(HyperbolicConvexSubset):
         Note that the output is not unique since the coefficients can be scaled
         by a positive scalar.
         """
-        raise NotImplementedError
+        a, b, c = self._a, self._b, self._c
+
+        if model == "klein":
+            return a, b, c
+
+        if model == "half_plane":
+            return a + c, -2*b, a - c
+
+        raise NotImplementedError("cannot determine equation for this model yet")
 
     def _repr_(self):
         # Convert to the Poincaré half plane model as a(x^2 + y^2) + bx + c = 0.
-        a = self._a + self._c
-        b = -2*self._b
-        c = self._a - self._c
+        a, b, c = self.equation(model="half_plane")
 
         try:
             if self.parent().base_ring().is_exact():
@@ -630,6 +646,40 @@ class HyperbolicGeodesic(HyperbolicConvexSubset):
             return "{" + repr(R([0, a]))[:-1] + "(x^2 + y^2)" + repr(R([c, b, 1]))[3:] + " = 0}"
         else:
             return "{" + repr(R([c, b])) + " = 0}"
+
+    def plot(self, model="half_plane", **kwds):
+        r"""
+        Create a plot of this geodesic in the hyperbolic ``model``.
+
+        Additional arguments are passed on to the underlying SageMath plotting methods.
+
+        EXAMPLES::
+        """
+        a, b, c = self.equation(model=model)
+
+        if model == "half_plane":
+            if a == 0:
+                # This is a vertical in the half plane model.
+                x = -c/b
+
+                # TODO: We should use an infinite ray instead.
+                from sage.plot.all import line
+                from sage.all import RR
+                return line([(RR(x), 0), (RR(x), 1)])
+
+            else:
+                # This is a half-circle in the half plane model.
+                center = -(b/a)/2
+                radius_squared = center*center - (c/a)
+
+                from sage.plot.all import arc
+                from sage.all import RR, pi
+                return arc((RR(center), 0), RR(radius_squared).sqrt(), sector=(0, pi), **kwds)
+
+        if model == "klein":
+            raise NotImplementedError
+
+        raise NotImplementedError("plotting not supported in this hyperbolic model")
 
 
 class HyperbolicPoint(HyperbolicConvexSubset):
