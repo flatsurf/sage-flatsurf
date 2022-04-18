@@ -573,6 +573,19 @@ class HyperbolicConvexSubset(Element):
         # TODO: Check that all subclasses implement this.
         raise NotImplementedError
 
+    def apply_isometry(self, isometry):
+        r"""
+        Return the image of this set under the isometry.
+
+        INPUT:
+
+        - ``isometry`` -- a matrix in `PGL(2,\mathbb{R})`
+
+        """
+        # TODO: Understand how isometries transform geodesics so we can
+        # transform inequalities in the Klein model.
+        raise NotImplementedError
+
 
 class HyperbolicHalfSpace(HyperbolicConvexSubset):
     r"""
