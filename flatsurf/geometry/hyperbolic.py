@@ -436,17 +436,35 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         real = self.base_ring()(real)
 
         # Convert the equation -x + real = 0 to the Klein model.
-        return self.__make_element_class__(HyperbolicGeodesic)(self, real, 1, -real)
+        return self.__make_element_class__(HyperbolicGeodesic)(self, real, -1, -real)
 
-    def chord(self, a, b):
+    def geodesic(self, a, b):
         r"""
-        Return the geodesic from the point on the unit circle whose argument is
-        `a` to the point whose argument is `b` in the Klein model.
+        Return the geodesic from `a` to `b`.
 
-        Both `a` and `b` are understood as rational multiples of 2π, i.e., they
-        are taken mod 1.
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: H.geodesic(-1, 1)
+            {(x^2 + y^2) - 1 = 0}
+
+            sage: H.geodesic(0, I)
+            {-x = 0}
+
+            sage: H.geodesic(-1, I + 1)
+            {2*(x^2 + y^2) - x - 3 = 0}
+
         """
-        raise NotImplementedError
+        a = self(a)
+        b = self(b)
+
+        C = b._x - a._x
+        B = a._y - b._y
+        A = -(B * a._x + C * a._y)
+
+        return self.__make_element_class__(HyperbolicGeodesic)(self, A, B, C)
 
     def half_space(self, geodesic):
         r"""
@@ -766,7 +784,7 @@ class HyperbolicPoint(HyperbolicConvexSubset):
 class HyperbolicConvexPolygon(HyperbolicConvexSubset):
     r"""
     A (possibly unbounded) closed polygon in the :class:`HyperbolicPlane`,
-    i.e., the intersection of a finite number of :class:`HyperbolicHalfPlane`s.
+    i.e., the intersection of a finite number of :class:`HyperbolicHalfSpace`s.
     """
 
     def __init__(self, parent, half_planes, assume_normalized=False):
