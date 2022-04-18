@@ -93,7 +93,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
     .. MATH::
 
-        (a + c) - bx + (a - c)y = 0.
+        (a + c) + bx + (a - c)y = 0.
 
     Note that the intersection of two geodesics with coefficients in a field
     `K` therefore has coordinates in the same field `K` in either model.
@@ -108,7 +108,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
     .. MATH::
 
-        (a + c)(x^2 + y^2) - 2bx + (a - c) = 0
+        (a + c)(x^2 + y^2) + 2bx + (a - c) = 0
 
     in the Poincaré half plane model.
 
@@ -391,7 +391,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         c = center*center - radius_squared
 
         # Convert to the Klein model.
-        return self.__make_element_class__(HyperbolicGeodesic)(self, a + c, -b, a - c)
+        return self.__make_element_class__(HyperbolicGeodesic)(self, a + c, b, a - c)
 
     def vertical(self, real):
         r"""
@@ -621,7 +621,7 @@ class HyperbolicGeodesic(HyperbolicConvexSubset):
             return a, b, c
 
         if model == "half_plane":
-            return a + c, -2*b, a - c
+            return a + c, 2*b, a - c
 
         raise NotImplementedError("cannot determine equation for this model yet")
 
