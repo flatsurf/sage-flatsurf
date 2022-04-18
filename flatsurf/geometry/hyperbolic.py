@@ -97,9 +97,6 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         (a + c) + bx + (a - c)y = 0.
 
-    Note that the intersection of two geodesics with coefficients in a field
-    `K` therefore has coordinates in the same field `K` in either model.
-
     Conversely, a geodesic's equation in the Klein disc
 
     .. MATH::
@@ -113,6 +110,10 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         (a + c)(x^2 + y^2) + 2bx + (a - c) = 0
 
     in the Poincaré half plane model.
+
+    Note that the intersection of two geodesics defined by coefficients in a
+    field `K` in the Klein model has coordinates in `K` in the Klein model.
+    This is not true of the Poincaré half plane model.
 
     INPUT:
 
