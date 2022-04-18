@@ -538,7 +538,6 @@ class HyperbolicConvexSubset(Element):
         r"""
         Return whether the convex set ``other`` is a subset of this set.
         """
-        # TODO: Check that all subclasses implement this.
         raise NotImplementedError
 
     def intersection(self, other):
@@ -551,14 +550,12 @@ class HyperbolicConvexSubset(Element):
         r"""
         Return whether ``point`` is contained in this set.
         """
-        # TODO: Check that all subclasses implement this.
         raise NotImplementedError
 
     def is_finite(self):
         r"""
         Return whether all points in this set are finite.
         """
-        # TODO: Check that all subclasses implement this.
         raise NotImplementedError
 
     def change_ring(self, ring):
