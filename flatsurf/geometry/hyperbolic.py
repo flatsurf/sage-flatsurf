@@ -33,6 +33,8 @@ EXAMPLES::
 from sage.structure.parent import Parent
 from sage.structure.element import Element
 from sage.structure.unique_representation import UniqueRepresentation
+from sage.misc.decorators import options, rename_keyword
+from sage.plot.primitive import GraphicPrimitive
 
 
 class HyperbolicPlane(Parent, UniqueRepresentation):
@@ -709,10 +711,7 @@ class HyperbolicGeodesic(HyperbolicConvexSubset):
                 # This is a vertical in the half plane model.
                 x = -c/b
 
-                # TODO: We should use an infinite ray instead.
-                from sage.plot.all import line
-                from sage.all import RR
-                return line([(RR(x), 0), (RR(x), 1)])
+                return vertical(x, **kwds)
 
             else:
                 # This is a half-circle in the half plane model.
@@ -869,3 +868,154 @@ class HyperbolicEmptySet(HyperbolicConvexSubset):
 
     def _repr_(self):
         return "{}"
+
+
+class Vertical(GraphicPrimitive):
+    r"""
+    A ray going vertically up from (x, y).
+
+    Used internally to, e.g., plot a vertical geodesic in the upper half plane
+    model.
+
+    This object should not be created directly (even inside this module) but by
+    calling :meth:`vertical` below.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.hyperbolic import Vertical
+        sage: Vertical(0, 0)
+        Vertical at (0, 0)
+
+
+    """
+
+    def __init__(self, x, y=0, options={}):
+        valid_options = self._allowed_options()
+        for option in options:
+            if option not in valid_options:
+                raise RuntimeError("Error in line(): option '%s' not valid." % option)
+
+        self._x = x
+        self._y = y
+        super().__init__(options)
+
+    def _allowed_options(self):
+        r"""
+        Return the options that are supported by a vertical.
+
+        We support all the options that are understood by a SageMath line.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import Vertical
+            sage: Vertical(0, 0)._allowed_options()
+            {'alpha': 'How transparent the line is.',
+             'hue': 'The color given as a hue.',
+             'legend_color': 'The color of the legend text.',
+             'legend_label': 'The label for this item in the legend.',
+             'linestyle': "The style of the line, which is one of '--' (dashed), '-.' (dash dot), '-' (solid), 'steps', ':' (dotted).",
+             'marker': 'the marker symbol (see documentation for line2d for details)',
+             'markeredgecolor': 'the color of the marker edge',
+             'markeredgewidth': 'the size of the marker edge in points',
+             'markerfacecolor': 'the color of the marker face',
+             'markersize': 'the size of the marker in points',
+             'rgbcolor': 'The color as an RGB tuple.',
+             'thickness': 'How thick the line is.',
+             'zorder': 'The layer level in which to draw'}
+
+        """
+        from sage.plot.line import Line
+        return Line([], [], {})._allowed_options()
+
+    def __repr__(self):
+        r"""
+        Return a printable representation of this graphical primitive.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import Vertical
+            sage: Vertical(0, 0)
+            Vertical at (0, 0)
+
+        """
+        return f"Vertical at ({self._x}, {self._y})"
+
+    def _render_on_subplot(self, subplot):
+        r"""
+        Render this vertical on the subplot.
+
+        Matplotlib was not really made to draw things that extend to infinity.
+        The trick here is to register a callback that redraws the vertical
+        whenever the viewbox of the plot changes, e.g., as more objects are
+        added to the plot.
+        """
+        # Rewrite options to only contain matplotlib compatible entries
+        matplotlib_options = {
+            key: value for (key, value) in self.options().items()
+            if key not in {'alpha', 'legend_color', 'legend_label', 'linestyle', 'rgbcolor', 'thickness'}
+        }
+
+        from matplotlib.lines import Line2D
+        line = Line2D([self._x, self._x], [self._y, self._y], **matplotlib_options)
+        subplot.add_line(line)
+
+        # Translate SageMath options to matplotlib style.
+        options = self.options()
+        line.set_alpha(float(options['alpha']))
+        line.set_linewidth(float(options['thickness']))
+        from sage.plot.colors import to_mpl_color
+        line.set_color(to_mpl_color(options['rgbcolor']))
+        line.set_label(options['legend_label'])
+
+        def redraw(_=None):
+            r"""
+            Redraw the vertical after the viewport has been rescaled to
+            make sure it reaches the top of the viewport.
+            """
+            ylim = max(self._y, subplot.axes.get_ylim()[1])
+            line.set_ydata((self._y, ylim))
+
+        subplot.axes.callbacks.connect('ylim_changed', redraw)
+        redraw()
+
+    def get_minmax_data(self):
+        r"""
+        Return the bounding box of this vertical.
+
+        This box is used to make sure that the viewbox of the plot is zoomed
+        such that the vertical is visible.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import Vertical
+            sage: Vertical(1, 2).get_minmax_data()
+            {'xmax': 1, 'xmin': 1, 'ymax': 2, 'ymin': 2}
+
+        """
+        from sage.plot.plot import minmax_data
+        return minmax_data([self._x, self._x], [self._y, self._y], dict=True)
+
+
+@rename_keyword(color='rgbcolor')
+@options(alpha=1, rgbcolor=(0, 0, 1), thickness=1, legend_label=None, legend_color=None, aspect_ratio='automatic')
+def vertical(x, y=0, **options):
+    r"""
+    Create a SageMath graphics object that describe a vertical ray going up
+    from the coordinates ``x``, ``y``.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.hyperbolic import vertical
+        sage: vertical(1, 2)
+        Graphics object contsisting of 1 graphics primitive
+
+
+    """
+    from sage.plot.all import Graphics
+    g = Graphics()
+    g._set_extra_kwds(Graphics._extract_kwds_for_show(options))
+    g.add_primitive(Vertical(x, y, options))
+    if options['legend_label']:
+        g.legend(True)
+        g._legend_colors = [options['legend_color']]
+    return g

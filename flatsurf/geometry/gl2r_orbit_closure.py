@@ -1110,7 +1110,7 @@ class GL2ROrbitClosure:
                     pass
 
             p = 2**30 if self._p is None else self._p.p()
-            
+
             from sage.all import next_prime
             self._p = ZZ.valuation(next_prime(p)).extensions(self._U.base_ring())[0]
 
@@ -1148,7 +1148,7 @@ class GL2ROrbitClosure:
             sage: S = S.minimal_cover(cover_type="translation")
             sage: GL2ROrbitClosure(S) == GL2ROrbitClosure(S) # optional: pyflatsurf
             True
-            
+
         """
         return self._surface == other._surface
 
@@ -1167,7 +1167,7 @@ class GL2ROrbitClosure:
             sage: S = S.minimal_cover(cover_type="translation")
             sage: GL2ROrbitClosure(S) != GL2ROrbitClosure(S) # optional: pyflatsurf
             False
-            
+
         """
         return not (self == other)
 
