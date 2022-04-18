@@ -221,6 +221,12 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             sage: H(oo)
             ∞
 
+        Complex numbers in the upper half plane can be converted to points in
+        the hyperbolic plane::
+
+            sage: H(I)
+            I
+
         Elements can be converted between hyperbolic planes with compatible base rings::
 
             sage: HyperbolicPlane(AA)(H(1))
@@ -240,7 +246,17 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         if isinstance(x, HyperbolicConvexSubset):
             return x.change_ring(self.base_ring())
 
-        raise NotImplementedError("Cannot create a subset of the hyperbolic plane from this element yet.")
+        from sage.categories.all import NumberFields
+        if x.parent() in NumberFields():
+            K = x.parent()
+
+            from sage.all import I
+            if I not in K:
+                raise NotImplementedError("cannot create a hyperbolic point from an element in a number field that does not contain the imaginary unit")
+
+            return self.point(x.real(), x.imag(), model="half_plane")
+
+        raise NotImplementedError("cannot create a subset of the hyperbolic plane from this element yet.")
 
     def base_ring(self):
         r"""
