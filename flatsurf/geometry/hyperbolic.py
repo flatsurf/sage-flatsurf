@@ -614,6 +614,21 @@ class HyperbolicGeodesic(HyperbolicConvexSubset):
 
     The geodesic is oriented such that the half space `a + bx + cy ≥ 0` is on
     its left.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+        sage: H = HyperbolicPlane(QQ)
+
+        sage: H.vertical(0)
+        {-x = 0}
+
+        sage: H.half_circle(0, 1)
+        {(x^2 + y^2) - 1 = 0}
+
+        sage: H.geodesic(H(I), 0)
+        {x = 0}
+
     """
 
     def __init__(self, parent, a, b, c):
@@ -626,17 +641,70 @@ class HyperbolicGeodesic(HyperbolicConvexSubset):
         r"""
         Return the ideal starting point of this geodesic.
 
-        Note that this is only possible if the radius of this geodesic is a
-        square in the base ring of the :class:`HyperbolicPlane`.
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(QQ)
+
+            sage: H.vertical(0).start()
+            0
+
+        The coordinates of the end points of the half circle of radius
+        `\sqrt{2}` around 0 can not be written down in the rationals::
+
+            sage: H.half_circle(0, 2).start()
+            Traceback (most recent call last):
+            ...
+            ValueError: square root of 32 not a rational number
+
+        Passing to a bigger field, the coordinates can be represented::
+
+            sage: H.half_circle(0, 2).change_ring(AA).start()
+            1.414...
+
         """
-        raise NotImplementedError
+        a, b, c = self.equation(model="half_plane")
+
+        if a == 0:
+            if b > 0:
+                return self.parent().infinity()
+            return self.parent().real(-c/b)
+
+        discriminant = (b*b - 4*a*c)
+        root = discriminant.sqrt(extend=False)
+
+        endpoints = ((-b - root) / (2*a), (-b + root) / (2*a))
+
+        if a > 0:
+            return max(endpoints)
+        else:
+            return min(endpoints)
 
     def end(self):
         r"""
         Return the ideal end point of this geodesic.
 
-        Note that this is only possible if the radius of this geodesic is a
-        square in the base ring of the :class:`HyperbolicPlane`.
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(QQ)
+
+            sage: H.vertical(0).end()
+            ∞
+
+        The coordinates of the end points of the half circle of radius
+        `\sqrt{2}` around 0 can not be written down in the rationals::
+
+            sage: H.half_circle(0, 2).end()
+            Traceback (most recent call last):
+            ...
+            ValueError: square root of 32 not a rational number
+
+        Passing to a bigger field, the coordinates can be represented::
+
+            sage: H.half_circle(0, 2).change_ring(AA).end()
+            -1.414...
+
         """
         return (-self).start()
 
@@ -816,6 +884,27 @@ class HyperbolicGeodesic(HyperbolicConvexSubset):
             raise NotImplementedError
 
         raise NotImplementedError("plotting not supported in this hyperbolic model")
+
+    def change_ring(self, ring):
+        r"""
+        Return this geodesic in the Hyperbolic plane over ``ring``.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(AA)
+
+            sage: H.vertical(1).change_ring(QQ)
+            {-x + 1 = 0}
+
+            sage: H.vertical(AA(2).sqrt()).change_ring(QQ)
+            Traceback (most recent call last):
+            ...
+            ValueError: Cannot coerce irrational Algebraic Real ... to Rational
+
+        """
+        H = HyperbolicPlane(ring)
+        return H.__make_element_class__(HyperbolicGeodesic)(H, ring(self._a), ring(self._b), ring(self._c))
 
 
 class HyperbolicPoint(HyperbolicConvexSubset):
