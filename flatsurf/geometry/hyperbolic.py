@@ -563,8 +563,22 @@ class HyperbolicConvexSubset(Element):
         r"""
         Return this set as an element of the hyperbolic plane over ``ring``.
         """
-        # TODO: Check that all subclasses implement this.
         raise NotImplementedError
+
+    def _test_change_ring(self, **options):
+        r"""
+        Verify that this set implements :meth:`change_ring`.
+
+        TESTS::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(QQ)
+
+            sage: H.an_element()._test_change_ring()
+
+        """
+        tester = self._tester(**options)
+        tester.assertEqual(self, self.change_ring(self.parent().base_ring()))
 
     def plot(self, model="half_plane", *kwds):
         r"""
