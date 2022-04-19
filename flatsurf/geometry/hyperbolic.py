@@ -1010,7 +1010,7 @@ def vertical(x, y=0, **options):
 
         sage: from flatsurf.geometry.hyperbolic import vertical
         sage: vertical(1, 2)
-        Graphics object contsisting of 1 graphics primitive
+        Graphics object consisting of 1 graphics primitive
 
 
     """
