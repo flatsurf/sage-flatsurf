@@ -455,7 +455,40 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
     def geodesic(self, a, b, c=None, model=None):
         r"""
-        Return the geodesic from `a` to `b`.
+        Return a geodesic in the hyperbolic plane.
+
+        If only ``a`` and ``b`` are given, return the geodesic going through the points
+        ``a`` and then ``b``.
+
+        If ``c`` is specified and ``model`` is ``"half_plane"``, return the
+        geodesic given by the half circle
+
+        .. MATH::
+
+            a(x^2 + y^2) + bx + c = 0
+
+        oriented such that the half plane
+
+        .. MATH::
+
+            a(x^2 + y^2) + bx + c \ge 0
+
+        is to its left.
+
+        If ``c`` is specified and ``model`` is ``"klein"``, return the
+        geodesic given by the chord with the equation
+
+        .. MATH::
+
+            a + bx + cy = 0
+
+        oriented such that the half plane
+
+        .. MATH::
+
+            a + bx + cy \ge 0
+
+        is to its left.
 
         EXAMPLES::
 
@@ -471,10 +504,26 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             sage: H.geodesic(-1, I + 1)
             {2*(x^2 + y^2) - x - 3 = 0}
 
+            sage: H.geodesic(2, -1, -3, model="half_plane")
+            {2*(x^2 + y^2) - x - 3 = 0}
+
+            sage: H.geodesic(-1, -1, 5, model="half_plane")
+            {2*(x^2 + y^2) - x - 3 = 0}
+
+        TESTS::
+
+            sage: H.geodesic(0, 0)
+            Traceback (most recent call last):
+            ...
+            ValueError: points specifying a geodesic must be distinct
+
         """
         if c is None:
             a = self(a)
             b = self(b)
+
+            if a == b:
+                raise ValueError("points specifying a geodesic must be distinct")
 
             C = b._x - a._x
             B = a._y - b._y
@@ -674,6 +723,9 @@ class HyperbolicGeodesic(HyperbolicConvexSubset):
     """
 
     def __init__(self, parent, a, b, c):
+        if a == 0 and b == 0:
+            raise ValueError("equation does not define a geodesic")
+
         super().__init__(parent)
         self._a = a
         self._b = b
