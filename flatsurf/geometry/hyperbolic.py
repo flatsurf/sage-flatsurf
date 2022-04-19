@@ -196,11 +196,11 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
 
             sage: HyperbolicPlane().some_elements()
-            [{}, ∞, 0, 1, -1]
+            [{}, ∞, 0, 1, -1, ...]
 
         """
         # TODO: Return more elements.
-        return [self.empty_set(), self.infinity(), self.real(0), self.real(1), self.real(-1)]
+        return [self.empty_set(), self.infinity(), self.real(0), self.real(1), self.real(-1), self.vertical(1), self.half_circle(0, 1), self.half_circle(1, 3)]
 
     def _element_constructor_(self, x):
         r"""
@@ -644,12 +644,99 @@ class HyperbolicGeodesic(HyperbolicConvexSubset):
         r"""
         Return how this geodesic compares to ``other``.
 
-        Geodesics are partially ordered by their slope in the Klein model.
+        Geodesics are partially ordered by their slope in
+        the Klein model. Geodesics of equal slope are
+        ordered such that a g < h if g is left of h.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(QQ)
+
+            sage: H.vertical(0) == H.vertical(0)
+            True
+            sage: H.vertical(-1) != H.vertical(1)
+            True
+
+            sage: H.vertical(0) < H.vertical(1)
+            True
+            sage: H.half_circle(0, 1) < H.vertical(1)
+            True
+
+            sage: -H.vertical(0) < H.vertical(0)
+            True
+
+            sage: H.half_circle(-1, 1) < H.vertical(1)
+            True
+            sage: H.half_circle(-1, 1) > -H.vertical(1)
+            True
+            sage: -H.half_circle(-1, 1) > H.vertical(1)
+            True
+            sage: -H.half_circle(-1, 1) > -H.vertical(1)
+            True
+
+            sage: H.vertical(1/2) > H.half_circle(-1, 1)
+            True
+            sage: H.vertical(1/2) > -H.half_circle(-1, 1)
+            True
+            sage: -H.vertical(1/2) < H.half_circle(-1, 1)
+            True
+            sage: -H.vertical(1/2) < -H.half_circle(-1, 1)
+            True
+
         """
-        raise NotImplementedError
+        from sage.structure.richcmp import rich_to_bool, op_EQ, op_NE
+
+        if op == op_NE:
+            return not self._richcmp_(other, op_EQ)
+
+        if not isinstance(other, HyperbolicGeodesic):
+            if op == op_EQ:
+                return False
+            raise NotImplementedError("cannot order convex subsets")
+
+        # Group geodesics by their normal vector.
+        def top(geodesic):
+            return geodesic._c < 0 or (geodesic._c == 0 and geodesic._b < 0)
+
+        cmp = None
+
+        if top(self) != top(other):
+            if not top(self):
+                cmp = -1
+            else:
+                cmp = 1
+        elif self._c * other._c > 0:
+            cmp = (self._b * other._c - self._c * other._b).sign()
+        elif self._c * other._c < 0:
+            cmp = -(self._b * other._c - self._c * other._b).sign()
+        else:
+            if self._c == other._c:
+                cmp = 0
+            elif self._c == 0:
+                cmp = -1
+            else:
+                cmp = 1
+
+        if cmp != 0:
+            return rich_to_bool(op, cmp)
+        else:
+            return rich_to_bool(op, (self._a - other._a).sign())
 
     def _neg_(self):
-        raise NotImplementedError
+        r"""
+        Return the reversed geodesic.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(QQ)
+
+            sage: -H.vertical(0)
+            {x = 0}
+
+        """
+        return self.parent().__make_element_class__(HyperbolicGeodesic)(self.parent(), -self._a, -self._b, -self._c)
 
     def equation(self, model):
         r"""
@@ -779,8 +866,17 @@ class HyperbolicPoint(HyperbolicConvexSubset):
             True
 
         """
-        from sage.structure.richcmp import rich_to_bool
-        return rich_to_bool(op, other is HyperbolicPoint and other._x == self._x and other._y == self._y)
+        from sage.structure.richcmp import op_EQ, op_NE
+
+        if op == op_NE:
+            return not self._richcmp_(other, op_EQ)
+
+        if op == op_EQ:
+            if not isinstance(other, HyperbolicPoint):
+                return False
+            return self._x == other._x and self._y == other._y
+
+        raise NotImplementedError("cannot compare these subsets")
 
     def _repr_(self):
         if self._x == 0 and self._y == 1:
@@ -866,8 +962,15 @@ class HyperbolicEmptySet(HyperbolicConvexSubset):
             True
 
         """
-        from sage.structure.richcmp import rich_to_bool
-        return rich_to_bool(op, other is HyperbolicEmptySet)
+        from sage.structure.richcmp import op_EQ, op_NE
+
+        if op == op_NE:
+            return not self._richcmp_(other, op_EQ)
+
+        if op == op_EQ:
+            return isinstance(other, HyperbolicEmptySet)
+
+        raise NotImplementedError("cannot order these subsets")
 
     def _repr_(self):
         return "{}"
