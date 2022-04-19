@@ -200,7 +200,20 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         """
         # TODO: Return more elements.
-        return [self.empty_set(), self.infinity(), self.real(0), self.real(1), self.real(-1), self.vertical(1), self.half_circle(0, 1), self.half_circle(1, 3)]
+        return [self.empty_set(),
+                # Points
+                self.infinity(),
+                self.real(0),
+                self.real(1),
+                self.real(-1),
+                # Geodesics
+                self.vertical(1),
+                self.half_circle(0, 1),
+                self.half_circle(1, 3),
+                # Half spaces
+                # self.vertical(0).left(),
+                # self.half_circle(0, 2)).left(),
+                ]
 
     def _element_constructor_(self, x):
         r"""
@@ -409,8 +422,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         b = -2*center
         c = center*center - radius_squared
 
-        # Convert to the Klein model.
-        return self.__make_element_class__(HyperbolicGeodesic)(self, a + c, b, a - c)
+        return self.geodesic(a, b, c, model="half_plane")
 
     def vertical(self, real):
         r"""
@@ -439,9 +451,9 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         real = self.base_ring()(real)
 
         # Convert the equation -x + real = 0 to the Klein model.
-        return self.__make_element_class__(HyperbolicGeodesic)(self, real, -1, -real)
+        return self.geodesic(real, -1, -real, model="klein")
 
-    def geodesic(self, a, b):
+    def geodesic(self, a, b, c=None, model=None):
         r"""
         Return the geodesic from `a` to `b`.
 
@@ -460,16 +472,32 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             {2*(x^2 + y^2) - x - 3 = 0}
 
         """
-        a = self(a)
-        b = self(b)
+        if c is None:
+            a = self(a)
+            b = self(b)
 
-        C = b._x - a._x
-        B = a._y - b._y
-        A = -(B * a._x + C * a._y)
+            C = b._x - a._x
+            B = a._y - b._y
+            A = -(B * a._x + C * a._y)
 
-        return self.__make_element_class__(HyperbolicGeodesic)(self, A, B, C)
+            return self.geodesic(A, B, C, model="klein")
 
-    def half_space(self, geodesic):
+        if model is None:
+            raise ValueError("a model must be specified when specifying a geodesic with coefficients")
+
+        if model == "half_plane":
+            # Convert to the Klein model.
+            return self.geodesic(a + c, b, a - c, model="klein")
+
+        if model == "klein":
+            a = self.base_ring()(a)
+            b = self.base_ring()(b)
+            c = self.base_ring()(c)
+            return self.__make_element_class__(HyperbolicGeodesic)(self, a, b, c)
+
+        raise NotImplementedError("cannot create geodesic from coefficients in this model")
+
+    def half_space(self, a, b, c, model):
         r"""
         Return the closed half plane that is on the left of ``geodesic``.
 
@@ -818,7 +846,7 @@ class HyperbolicGeodesic(HyperbolicConvexSubset):
             {x = 0}
 
         """
-        return self.parent().__make_element_class__(HyperbolicGeodesic)(self.parent(), -self._a, -self._b, -self._c)
+        return self.parent().geodesic(-self._a, -self._b, -self._c, model="klein")
 
     def equation(self, model):
         r"""
@@ -917,8 +945,7 @@ class HyperbolicGeodesic(HyperbolicConvexSubset):
             ValueError: Cannot coerce irrational Algebraic Real ... to Rational
 
         """
-        H = HyperbolicPlane(ring)
-        return H.__make_element_class__(HyperbolicGeodesic)(H, ring(self._a), ring(self._b), ring(self._c))
+        return HyperbolicPlane(ring).geodesic(self._a, self._b, self._c, model="klein")
 
 
 class HyperbolicPoint(HyperbolicConvexSubset):
