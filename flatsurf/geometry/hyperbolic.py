@@ -615,7 +615,7 @@ class HyperbolicConvexSubset(Element):
         # TODO: Check that all subclasses implement this.
         raise NotImplementedError
 
-    def apply_isometry(self, isometry):
+    def apply_isometry(self, isometry, model="half_plane"):
         r"""
         Return the image of this set under the isometry.
 
@@ -1021,6 +1021,50 @@ class HyperbolicPoint(HyperbolicConvexSubset):
     def change_ring(self, ring):
         return HyperbolicPlane(ring).point(self._x, self._y, model="klein")
 
+    def apply_isometry(self, isometry, model="half_plane"):
+        r"""
+        Return the image of this point under the isometry.
+
+        INPUT:
+
+        - ``isometry`` -- a matrix in `PGL(2,\mathbb{R})` or `SO(1, 2)`
+
+        - ``model`` -- either ``"half_plane"`` or ``"klein"``
+
+        TESTS::
+
+            sage: H = HyperbolicPlane(QQ)
+            sage: for (a, b, c, d) in [(2, 1, 1, 1), (1, 1, 0, 1), (1, 0, 1, 1), (2, 0, 0 , 1)]:
+            ....:     m = matrix(2, [a, b, c, d])
+            ....:     assert H(0).apply_isometry(m) == H(b / d if d else oo)
+            ....:     assert H(1).apply_isometry(m) == H((a + b) / (c + d) if c+d else oo)
+            ....:     assert H(oo).apply_isometry(m) == H(a / c if c else oo)
+        """
+        R = self.parent().base_ring()
+
+        if model == "half_plane":
+            isometry = sl2_to_so12(isometry)
+            model = "klein"
+
+        if model == "klein":
+            from sage.matrix.special import diagonal_matrix
+            from sage.modules.free_module_element import vector
+
+            # TODO: check that isometry is actually a matrix?
+            if isometry.nrows() != 3 or isometry.ncols() != 3 or not R.has_coerce_map_from(isometry.base_ring()):
+                raise ValueError('invalid isometry')
+            D = isometry.transpose() * diagonal_matrix([1, 1, -1]) * isometry
+            if D[0, 1] or D[0, 2] or D[1, 0] or D[1, 2] or D[2, 0] or D[2, 1]:
+                raise ValueError('invalid isometry')
+            if D[0, 0].is_zero() or D[1, 1].is_zero() or D[2, 2].is_zero():
+                raise ValueError('invalid isometry')
+            if D[0, 0] != D[1, 1] or D[0, 0] != - D[2, 2]:
+                raise ValueError('invalid isometry')
+            x, y, z = isometry * vector(R, [self._x, self._y, 1])
+            return self.parent().point(x / z, y / z, model="klein")
+
+        raise NotImplementedError("applying isometry not supported in this hyperbolic model")
+
 
 class HyperbolicConvexPolygon(HyperbolicConvexSubset):
     r"""
@@ -1105,6 +1149,18 @@ class HyperbolicEmptySet(HyperbolicConvexSubset):
     def _repr_(self):
         return "{}"
 
+def sl2_to_so12(m):
+    r"""
+    Return the lift of the 2x2 matrix ``m`` inside ``SO(1,2)``.
+    """
+    from sage.matrix.constructor import matrix
+
+    if m.nrows() != 2 or m.ncols() != 2:
+        raise ValueError('invalid matrix')
+    a, b, c, d = m.list()
+    return matrix(3, [a*d + b*c, a*c - b*d, a*c + b*d,
+                      a*b - c*d, (a**2 - b**2 - c**2 + d**2) / 2, (a**2 + b**2 - c**2 - d**2) / 2,
+                      a*b + c*d, (a**2 - b**2 + c**2 - d**2) / 2, (a**2 + b**2 + c**2 + d**2) / 2])
 
 class Vertical(GraphicPrimitive):
     r"""
