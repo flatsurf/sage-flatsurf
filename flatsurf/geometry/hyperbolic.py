@@ -15,6 +15,7 @@ EXAMPLES::
 #
 #        Copyright (C) 2022 Julian Rüth
 #                      2022 Sam Freedman
+#                      2022 Vincent Delecroix
 #
 #  sage-flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
