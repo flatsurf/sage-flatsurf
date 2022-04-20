@@ -221,8 +221,8 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
                 self.half_circle(0, 1),
                 self.half_circle(1, 3),
                 # Half spaces
-                # self.vertical(0).left(),
-                # self.half_circle(0, 2)).left(),
+                self.vertical(0).left_half_space(),
+                self.half_circle(0, 2).left_half_space(),
                 ]
 
     def _element_constructor_(self, x):
@@ -420,6 +420,23 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             sage: H.half_circle(1/3, 1/2)
             {18*(x^2 + y^2) - 12*x - 7 = 0}
 
+        TESTS::
+
+            sage: H.half_circle(0, 0)
+            Traceback (most recent call last):
+            ...
+            ValueError: radius must be positive
+
+            sage: H.half_circle(0, -1)
+            Traceback (most recent call last):
+            ...
+            ValueError: radius must be positive
+
+            sage: H.half_circle(oo, 1)
+            Traceback (most recent call last):
+            ...
+            TypeError: unable to convert +Infinity to a rational
+
         """
         center = self.base_ring()(center)
         radius_squared = self.base_ring()(radius_squared)
@@ -517,7 +534,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             sage: H.geodesic(2, -1, -3, model="half_plane")
             {2*(x^2 + y^2) - x - 3 = 0}
 
-            sage: H.geodesic(-1, -1, 5, model="half_plane")
+            sage: H.geodesic(-1, -1, 5, model="klein")
             {2*(x^2 + y^2) - x - 3 = 0}
 
         TESTS::
@@ -558,11 +575,44 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
     def half_space(self, a, b, c, model):
         r"""
-        Return the closed half plane that is on the left of ``geodesic``.
+        Return a closed half space from its equation in ``model``.
 
-        Use the ``-`` operator to pass to the half space on the right.
+        If ``model`` is ``"half_plane"``, return the half space
+
+        .. MATH::
+
+            a(x^2 + y^2) + bx + c \ge 0
+
+        in the upper half plane.
+
+        If ``model`` is ``"klein"``, return the half space
+
+        .. MATH::
+
+            a + bx + cy \ge 0
+
+        in the Klein model.
+
+        ..SEEALSO::
+
+            :meth:`HperbolicGeodesic.left_half_space`
+            :meth:`HperbolicGeodesic.right_half_space`
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: H.half_space(0, -1, 0, model="half_plane")
+            {x ≤ 0}
+
+        It is often easier to construct a half space as the space bounded by a geodesic::
+
+            sage: H.vertical(0).left_half_space()
+            {x ≤ 0}
+
         """
-        raise NotImplementedError
+        return self.__make_element_class__(HyperbolicHalfSpace)(self, self.geodesic(a, b, c, model=model))
 
     def intersection(self, subsets):
         r"""
@@ -598,26 +648,31 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         return f"Hyperbolic Plane over {repr(self.base_ring())}"
 
 
+# TODO: Rename to HperbolicConvexSet?
 class HyperbolicConvexSubset(Element):
     r"""
     Base class for convex subsets of :class:`HyperbolicPlane`.
     """
 
-    def _equations(self, model):
+    def _half_spaces(self):
         r"""
-        Return a minimal set of equations defining a set of half spaces such
-        that this set is the intersection of these half spaces.
+        Return a minimal set of half spaces whose intersection is this convex set.
 
-        The equations are given as triples ``a``, ``b``, ``c`` such that
+        EXAMPLES::
 
-        - if ``model`` is ``"half_plane"``, a point `x + iy` of the upper half
-          plane is in the half space if `a(x^2 + y^2) + bx + c ≥ 0`.
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(QQ)
 
-        - if ``model`` is ``"klein"``, points `(x, y)` in the unit disk satisfy
-          `a + bx + cy ≥ 0`.
+            sage: H.vertical(0).left_half_space()._half_spaces()
+            [{x ≤ 0}]
 
-        Note that the output is not unique since the coefficients can be scaled
-        by a positive scalar.
+            sage: H.vertical(0)._half_spaces()
+            [{x ≤ 0}, {x ≥ 0}]
+
+            sage: H(0)._half_spaces()
+            [{x ≥ 0}, {(x^2 + y^2) + x ≤ 0}]
+
+
         """
         # TODO: Check that all subclasses implement this.
         raise NotImplementedError("Convex sets must implement this method.")
@@ -689,21 +744,131 @@ class HyperbolicConvexSubset(Element):
 
     def _neg_(self):
         r"""
-        Return the convex subset obtained by taking the negatives of the half
-        spaces whose intersection define this set.
+        Return the convex subset obtained by taking the (closed) complements of
+        the half spaces whose intersection define this set.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(QQ)
+
+            sage: -H.vertical(0).left_half_space()
+            {x ≥ 0}
+
         """
-        raise NotImplementedError
+        return self.parent().intersection([-half_space for half_space in self._half_spaces()])
 
 
 class HyperbolicHalfSpace(HyperbolicConvexSubset):
     r"""
     A closed half space of the hyperbolic plane.
 
-    Use :meth:`HyperbolicPlane.half_space` to create a half plane.
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+        sage: H = HyperbolicPlane(QQ)
+
+        sage: H.half_circle(0, 1).left_half_space()
+        {(x^2 + y^2) - 1 ≥ 0}
+
     """
 
-    def __init__(self, geodesic):
+    def __init__(self, parent, geodesic):
+        super().__init__(parent)
+
         self._geodesic = geodesic
+
+    def equation(self, model):
+        r"""
+        Return an inequality for this half space as a triple ``a``, ``b``, ``c`` such that:
+
+        - if ``model`` is ``"half_plane"``, a point `x + iy` of the upper half
+          plane is in the half space if it satisfies `a(x^2 + y^2) + bx + c \ge 0`.
+
+        - if ``model`` is ``"klein"``, points `(x, y)` in the unit disk satisfy
+          `a + bx + cy \ge 0`.
+
+        Note that the output is not unique since the coefficients can be scaled
+        by a positive scalar.
+        """
+        return self._geodesic.equation(model=model)
+
+    def __repr__(self):
+        r"""
+        Return a printable representation of this surface.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(QQ)
+
+            sage: S = H.half_circle(0, 1).right_half_space()
+
+            sage: S
+            {(x^2 + y^2) - 1 ≤ 0}
+
+            sage: -S
+            {(x^2 + y^2) - 1 ≥ 0}
+
+        """
+        # Convert to the Poincaré half plane model as a(x^2 + y^2) + bx + c ≥ 0.
+        a, b, c = self.equation(model="half_plane")
+
+        try:
+            from sage.all import gcd
+            d = gcd((a, b, c))
+            a /= d
+            b /= d
+            c /= d
+        except Exception:
+            pass
+
+        # Remove any trailing - signs in the output.
+        cmp = "≥"
+        if a < 0 or (a == 0 and b < 0):
+            a *= -1
+            b *= -1
+            c *= -1
+            cmp = "≤"
+
+        from sage.all import PolynomialRing
+        R = PolynomialRing(self.parent().base_ring(), names="x")
+        if a != 0:
+            return f"{{{repr(R([0, a]))[:-1]}(x^2 + y^2){repr(R([c, b, 1]))[3:]} {cmp} 0}}"
+        else:
+            return f"{{{repr(R([c, b]))} {cmp} 0}}"
+
+    def _half_spaces(self):
+        r"""
+        Implements :meth:`HyperbolicConvexSubset._half_spaces`.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(QQ)
+
+            sage: S = H.vertical(0).left_half_space()
+            sage: [S] == S._half_spaces()
+            True
+
+        """
+        return [self]
+
+    def _neg_(self):
+        r"""
+        Return the closure of the complement of this half space.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(QQ)
+
+            sage: S = H.half_circle(0, 1).left_half_space()
+            sage: -S
+            {(x^2 + y^2) - 1 ≤ 0}
+
+        """
+        return self._geodesic.right_half_space()
 
 
 class HyperbolicGeodesic(HyperbolicConvexSubset):
@@ -733,13 +898,29 @@ class HyperbolicGeodesic(HyperbolicConvexSubset):
     """
 
     def __init__(self, parent, a, b, c):
-        if a == 0 and b == 0:
-            raise ValueError("equation does not define a geodesic")
+        if b*b + c*c <= a*a:
+            # The line a + bx + cy = 0 does not intersect S¹ (or is not a line.)
+            raise ValueError(f"equation {a} + ({b})*x + ({c})*y = 0 does not define a chord")
 
         super().__init__(parent)
         self._a = a
         self._b = b
         self._c = c
+
+    def _half_spaces(self):
+        r"""
+        Implements :meth:`HyperbolicConvexSubset._half_spaces`.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(QQ)
+
+            sage: H.vertical(0)._half_spaces()
+            [{x ≤ 0}, {x ≥ 0}]
+
+        """
+        return [self.left_half_space(), self.right_half_space()]
 
     def start(self):
         r"""
@@ -774,7 +955,7 @@ class HyperbolicGeodesic(HyperbolicConvexSubset):
                 return self.parent().infinity()
             return self.parent().real(-c/b)
 
-        discriminant = (b*b - 4*a*c)
+        discriminant = b*b - 4*a*c
         root = discriminant.sqrt(extend=False)
 
         endpoints = ((-b - root) / (2*a), (-b + root) / (2*a))
@@ -952,9 +1133,9 @@ class HyperbolicGeodesic(HyperbolicConvexSubset):
         from sage.all import PolynomialRing
         R = PolynomialRing(self.parent().base_ring(), names="x")
         if a != 0:
-            return "{" + repr(R([0, a]))[:-1] + "(x^2 + y^2)" + repr(R([c, b, 1]))[3:] + " = 0}"
+            return f"{{{repr(R([0, a]))[:-1]}(x^2 + y^2){repr(R([c, b, 1]))[3:]} = 0}}"
         else:
-            return "{" + repr(R([c, b])) + " = 0}"
+            return f"{{{repr(R([c, b]))} = 0}}"
 
     def plot(self, model="half_plane", **kwds):
         r"""
@@ -1007,6 +1188,36 @@ class HyperbolicGeodesic(HyperbolicConvexSubset):
         """
         return HyperbolicPlane(ring).geodesic(self._a, self._b, self._c, model="klein")
 
+    def left_half_space(self):
+        r"""
+        Return the closed half space to the left of this (oriented) geodesic.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(AA)
+
+            sage: H.vertical(0).left_half_space()
+            {x ≤ 0}
+
+        """
+        return self.parent().half_space(self._a, self._b, self._c, model="klein")
+
+    def right_half_space(self):
+        r"""
+        Return the closed half space to the right of this (oriented) geodesic.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(AA)
+
+            sage: H.vertical(0).right_half_space()
+            {x ≥ 0}
+
+        """
+        return (-self).left_half_space()
+
 
 class HyperbolicPoint(HyperbolicConvexSubset):
     r"""
@@ -1020,6 +1231,67 @@ class HyperbolicPoint(HyperbolicConvexSubset):
         super().__init__(parent)
         self._x = x
         self._y = y
+
+    def _half_spaces(self):
+        r"""
+        Implements :meth:`HyperbolicConvexSubset._half_spaces`.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(QQ)
+
+            sage: H(I)._half_spaces()
+            [{x ≥ 0}, {(x^2 + y^2) - 1 ≥ 0}, {(x^2 + y^2) + 2*x - 1 ≤ 0}]
+
+            sage: H(I + 1)._half_spaces()
+            [{(x^2 + y^2) - 3*x + 1 ≤ 0}, {(x^2 + y^2) - 2 ≥ 0}, {x - 1 ≤ 0}]
+
+            sage: H.infinity()._half_spaces()
+            [{x ≤ 0}, {x - 1 ≥ 0}]
+
+            sage: H(0)._half_spaces()
+            [{x ≥ 0}, {(x^2 + y^2) + x ≤ 0}]
+
+            sage: H(-1)._half_spaces()
+            [{(x^2 + y^2) - 1 ≤ 0}, {x + 1 ≤ 0}]
+
+            sage: H(1)._half_spaces()
+            [{(x^2 + y^2) - 1 ≥ 0}, {(x^2 + y^2) - x ≤ 0}]
+
+            sage: H(2)._half_spaces()
+            [{2*(x^2 + y^2) - 3*x - 2 ≥ 0}, {3*(x^2 + y^2) - 7*x + 2 ≤ 0}]
+
+            sage: H(-2)._half_spaces()
+            [{2*(x^2 + y^2) + 3*x - 2 ≤ 0}, {(x^2 + y^2) - x - 6 ≥ 0}]
+
+            sage: H(1/2)._half_spaces()
+            [{2*(x^2 + y^2) + 3*x - 2 ≥ 0}, {6*(x^2 + y^2) - x - 1 ≤ 0}]
+
+            sage: H(-1/2)._half_spaces()
+            [{2*(x^2 + y^2) - 3*x - 2 ≤ 0}, {2*(x^2 + y^2) + 7*x + 3 ≤ 0}]
+
+        """
+        x0 = self._x
+        y0 = self._y
+
+        if self.is_finite():
+            return [
+                # x ≥ x0
+                self.parent().half_space(-x0, 1, 0, model="klein"),
+                # y ≥ y0
+                self.parent().half_space(-y0, 0, 1, model="klein"),
+                # x + y ≤ x0 + y0
+                self.parent().half_space(x0 + y0, -1, -1, model="klein")]
+        else:
+            return [
+                # left of the line from (0, 0) to this point
+                self.parent().half_space(0, -y0, x0, model="klein"),
+                # right of a line to this point with a starting point right of (0, 0)
+                self.parent().half_space(-x0*x0 - y0*y0, y0 + x0, y0 - x0, model="klein")]
+
+    def is_finite(self):
+        return self._x * self._x + self._y * self._y < 1
 
     def coordinates(self, model="half_plane", ring=None):
         r"""
