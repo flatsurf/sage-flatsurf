@@ -170,6 +170,16 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             sage: TestSuite(HyperbolicPlane(AA)).run()
 
         """
+        if not base_ring.is_exact():
+            # Much of the implementation might work over ineaxct rings,
+            # * we did not really worry about precision issues here so unit
+            #   tests should be added to check that everything works.
+            # * if +infinity is in the base ring, then there might be problems
+            #   in the upper half plane model.
+            # * if NaN can be represented in the base ring, then there might be
+            #   problems in many places where we do not expect this to show up.
+            raise NotImplementedError("hyperbolic plane only implemented over exact rings")
+
         super().__init__(category=category)
         self._base_ring = base_ring
 
@@ -931,14 +941,12 @@ class HyperbolicGeodesic(HyperbolicConvexSubset):
         a, b, c = self.equation(model="half_plane")
 
         try:
-            if self.parent().base_ring().is_exact():
-                from sage.all import gcd
-                d = gcd((a, b, c))
-                a /= d
-                b /= d
-                c /= d
+            from sage.all import gcd
+            d = gcd((a, b, c))
+            a /= d
+            b /= d
+            c /= d
         except Exception:
-            raise
             pass
 
         from sage.all import PolynomialRing
