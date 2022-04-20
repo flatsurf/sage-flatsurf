@@ -271,7 +271,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         if x in self.base_ring():
             return self.real(x)
 
-        if isinstance(x, HyperbolicConvexSubset):
+        if isinstance(x, HyperbolicConvexSet):
             return x.change_ring(self.base_ring())
 
         from sage.categories.all import NumberFields
@@ -650,8 +650,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         return f"Hyperbolic Plane over {repr(self.base_ring())}"
 
 
-# TODO: Rename to HperbolicConvexSet?
-class HyperbolicConvexSubset(Element):
+class HyperbolicConvexSet(Element):
     r"""
     Base class for convex subsets of :class:`HyperbolicPlane`.
     """
@@ -761,7 +760,7 @@ class HyperbolicConvexSubset(Element):
         return self.parent().intersection([-half_space for half_space in self._half_spaces()])
 
 
-class HyperbolicHalfSpace(HyperbolicConvexSubset):
+class HyperbolicHalfSpace(HyperbolicConvexSet):
     r"""
     A closed half space of the hyperbolic plane.
 
@@ -842,7 +841,7 @@ class HyperbolicHalfSpace(HyperbolicConvexSubset):
 
     def _half_spaces(self):
         r"""
-        Implements :meth:`HyperbolicConvexSubset._half_spaces`.
+        Implements :meth:`HyperbolicConvexSet._half_spaces`.
 
         EXAMPLES::
 
@@ -873,7 +872,7 @@ class HyperbolicHalfSpace(HyperbolicConvexSubset):
         return self._geodesic.right_half_space()
 
 
-class HyperbolicGeodesic(HyperbolicConvexSubset):
+class HyperbolicGeodesic(HyperbolicConvexSet):
     r"""
     An oriented geodesic in the hyperbolic plane.
 
@@ -911,7 +910,7 @@ class HyperbolicGeodesic(HyperbolicConvexSubset):
 
     def _half_spaces(self):
         r"""
-        Implements :meth:`HyperbolicConvexSubset._half_spaces`.
+        Implements :meth:`HyperbolicConvexSet._half_spaces`.
 
         EXAMPLES::
 
@@ -1221,7 +1220,7 @@ class HyperbolicGeodesic(HyperbolicConvexSubset):
         return (-self).left_half_space()
 
 
-class HyperbolicPoint(HyperbolicConvexSubset):
+class HyperbolicPoint(HyperbolicConvexSet):
     r"""
     A (possibly infinite) point in the :class:`HyperbolicPlane`.
 
@@ -1236,7 +1235,7 @@ class HyperbolicPoint(HyperbolicConvexSubset):
 
     def _half_spaces(self):
         r"""
-        Implements :meth:`HyperbolicConvexSubset._half_spaces`.
+        Implements :meth:`HyperbolicConvexSet._half_spaces`.
 
         EXAMPLES::
 
@@ -1400,7 +1399,7 @@ class HyperbolicPoint(HyperbolicConvexSubset):
         raise NotImplementedError("applying isometry not supported in this hyperbolic model")
 
 
-class HyperbolicConvexPolygon(HyperbolicConvexSubset):
+class HyperbolicConvexPolygon(HyperbolicConvexSet):
     r"""
     A (possibly unbounded) closed polygon in the :class:`HyperbolicPlane`,
     i.e., the intersection of a finite number of :class:`HyperbolicHalfSpace`s.
@@ -1438,7 +1437,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSubset):
         raise NotImplementedError
 
 
-class HyperbolicEdge(HyperbolicConvexSubset):
+class HyperbolicEdge(HyperbolicConvexSet):
     r"""
     An oriented (possibly infinite) segment in the hyperbolic plane such as a
     boundary edge of a :class:`HyperbolicConvexPolygon`.
@@ -1448,7 +1447,7 @@ class HyperbolicEdge(HyperbolicConvexSubset):
         raise NotImplementedError
 
 
-class HyperbolicEmptySet(HyperbolicConvexSubset):
+class HyperbolicEmptySet(HyperbolicConvexSet):
     r"""
     The empty subset of the hyperbolic plane.
     """
