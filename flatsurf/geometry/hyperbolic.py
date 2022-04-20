@@ -65,7 +65,9 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         z \mapsto \frac{z-i}{1 - iz}
 
-    maps from the half plane model to the Poincaré disc model. We then post-compose this with the map that goes from the Poincaré disc model to the Klein disc model, which in polar coordinates sends
+    maps from the half plane model to the Poincaré disc model. We then
+    post-compose this with the map that goes from the Poincaré disc model to
+    the Klein disc model, which in polar coordinates sends
 
     .. MATH::
 
