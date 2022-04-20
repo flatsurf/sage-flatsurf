@@ -731,18 +731,42 @@ class HyperbolicConvexSet(Element):
         # TODO: Check that all subclasses implement this.
         raise NotImplementedError
 
+    def _check_isometry_klein(self, isometry):
+        from sage.matrix.special import diagonal_matrix
+
+        # TODO: check that isometry is actually a matrix?
+        if isometry.nrows() != 3 or isometry.ncols() != 3 or not self.parent().base_ring().has_coerce_map_from(isometry.base_ring()):
+            raise ValueError('invalid isometry')
+        D = isometry.transpose() * diagonal_matrix([1, 1, -1]) * isometry
+        if D[0, 1] or D[0, 2] or D[1, 0] or D[1, 2] or D[2, 0] or D[2, 1]:
+            raise ValueError('invalid isometry')
+        if D[0, 0].is_zero() or D[1, 1].is_zero() or D[2, 2].is_zero():
+            raise ValueError('invalid isometry')
+        if D[0, 0] != D[1, 1] or D[0, 0] != - D[2, 2]:
+            raise ValueError('invalid isometry')
+
+    def _apply_isometry_klein(self, isometry):
+        raise NotImplementedError
+
     def apply_isometry(self, isometry, model="half_plane"):
         r"""
         Return the image of this set under the isometry.
 
         INPUT:
 
-        - ``isometry`` -- a matrix in `PGL(2,\mathbb{R})`
+        - ``isometry`` -- a 2x2 matrix in `PGL(2,\mathbb{R})` or a 3x3 matrix in `SO(1, 2)`
 
+        - ``model`` -- either ``"half_plane"`` or ``"klein"``
         """
-        # TODO: Understand how isometries transform geodesics so we can
-        # transform inequalities in the Klein model.
-        raise NotImplementedError
+        if model == "half_plane":
+            isometry = sl2_to_so12(isometry)
+            model = "klein"
+
+        if model == "klein":
+            self._check_isometry_klein(isometry)
+            return self._apply_isometry_klein(isometry)
+
+        raise NotImplementedError("applying isometry not supported in this hyperbolic model")
 
     def _neg_(self):
         r"""
@@ -1039,6 +1063,8 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
             sage: -H.vertical(1/2) < -H.half_circle(-1, 1)
             True
 
+            sage: H.geodesic(5, -5, -1, model="half_plane") == H.geodesic(5/2, -5/2, -1/2, model="half_plane") # known bug
+            True
         """
         from sage.structure.richcmp import rich_to_bool, op_EQ, op_NE
 
@@ -1220,6 +1246,32 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
         """
         return (-self).left_half_space()
 
+    def _apply_isometry_klein(self, isometry):
+        r"""
+        TESTS::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(QQ)
+            sage: p0 = H(0)
+            sage: p1 = H(1)
+            sage: p2 = H(oo)
+            sage: for (a, b, c, d) in [(2, 1, 1, 1), (1, 1, 0, 1), (1, 0, 1, 1), (2, 0, 0 , 1)]:
+            ....:     m = matrix(2, [a, b, c, d])
+            ....:     q0 = p0.apply_isometry(m)
+            ....:     q1 = p1.apply_isometry(m)
+            ....:     q2 = p2.apply_isometry(m)
+            ....:     assert H.geodesic(p0, p1).apply_isometry(m) == H.geodesic(q0, q1)
+            ....:     assert H.geodesic(p1, p0).apply_isometry(m) == H.geodesic(q1, q0)
+            ....:     assert H.geodesic(p1, p2).apply_isometry(m) == H.geodesic(q1, q2)
+            ....:     assert H.geodesic(p2, p1).apply_isometry(m) == H.geodesic(q2, q1)
+            ....:     assert H.geodesic(p2, p0).apply_isometry(m) == H.geodesic(q2, q0)
+            ....:     assert H.geodesic(p0, p2).apply_isometry(m) == H.geodesic(q0, q2)
+        """
+        from sage.modules.free_module_element import vector
+
+        b, c, a = vector(self.parent().base_ring(), [self._b, self._c, self._a]) * isometry.inverse()
+        return self.parent().geodesic(a, b, c, model="klein")
+
 
 class HyperbolicPoint(HyperbolicConvexSet):
     r"""
@@ -1355,18 +1407,11 @@ class HyperbolicPoint(HyperbolicConvexSet):
     def change_ring(self, ring):
         return HyperbolicPlane(ring).point(self._x, self._y, model="klein")
 
-    def apply_isometry(self, isometry, model="half_plane"):
+    def _apply_isometry_klein(self, isometry):
         r"""
-        Return the image of this point under the isometry.
-
-        INPUT:
-
-        - ``isometry`` -- a matrix in `PGL(2,\mathbb{R})` or `SO(1, 2)`
-
-        - ``model`` -- either ``"half_plane"`` or ``"klein"``
-
         TESTS::
 
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
             sage: H = HyperbolicPlane(QQ)
             sage: for (a, b, c, d) in [(2, 1, 1, 1), (1, 1, 0, 1), (1, 0, 1, 1), (2, 0, 0 , 1)]:
             ....:     m = matrix(2, [a, b, c, d])
@@ -1374,30 +1419,10 @@ class HyperbolicPoint(HyperbolicConvexSet):
             ....:     assert H(1).apply_isometry(m) == H((a + b) / (c + d) if c+d else oo)
             ....:     assert H(oo).apply_isometry(m) == H(a / c if c else oo)
         """
-        R = self.parent().base_ring()
+        from sage.modules.free_module_element import vector
 
-        if model == "half_plane":
-            isometry = sl2_to_so12(isometry)
-            model = "klein"
-
-        if model == "klein":
-            from sage.matrix.special import diagonal_matrix
-            from sage.modules.free_module_element import vector
-
-            # TODO: check that isometry is actually a matrix?
-            if isometry.nrows() != 3 or isometry.ncols() != 3 or not R.has_coerce_map_from(isometry.base_ring()):
-                raise ValueError('invalid isometry')
-            D = isometry.transpose() * diagonal_matrix([1, 1, -1]) * isometry
-            if D[0, 1] or D[0, 2] or D[1, 0] or D[1, 2] or D[2, 0] or D[2, 1]:
-                raise ValueError('invalid isometry')
-            if D[0, 0].is_zero() or D[1, 1].is_zero() or D[2, 2].is_zero():
-                raise ValueError('invalid isometry')
-            if D[0, 0] != D[1, 1] or D[0, 0] != - D[2, 2]:
-                raise ValueError('invalid isometry')
-            x, y, z = isometry * vector(R, [self._x, self._y, 1])
-            return self.parent().point(x / z, y / z, model="klein")
-
-        raise NotImplementedError("applying isometry not supported in this hyperbolic model")
+        x, y, z = isometry * vector(self.parent().base_ring(), [self._x, self._y, 1])
+        return self.parent().point(x / z, y / z, model="klein")
 
 
 class HyperbolicConvexPolygon(HyperbolicConvexSet):
@@ -1482,6 +1507,17 @@ class HyperbolicEmptySet(HyperbolicConvexSet):
 
     def _repr_(self):
         return "{}"
+
+    def _apply_isometry_klein(self, isometry):
+        r"""
+        TESTS::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: S = HyperbolicPlane(QQ).empty_set()
+            sage: S.apply_isometry(matrix(2, [2, 1, 1, 1])) is S
+            True
+        """
+        return self
 
 def sl2_to_so12(m):
     r"""
