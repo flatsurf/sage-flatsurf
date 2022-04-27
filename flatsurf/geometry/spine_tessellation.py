@@ -1,3 +1,13 @@
+r"""
+EXAMPLES::
+
+    sage: from flatsurf import translation_surfaces
+    sage: from flatsurf.geometry.spine_tessellation import SpineTessellation
+    sage: s = translation_surfaces.mcmullen_L(1, 1, 1, 1)
+    sage: SpineTessellation(s)
+    Spine Tessellation of TranslationSurface built from 3 polygons
+
+"""
 #*********************************************************************
 #  This file is part of sage-flatsurf.
 #
@@ -17,18 +27,21 @@
 #  You should have received a copy of the GNU General Public License
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 #*********************************************************************
-class SpineTessellation:
+from sage.structure.parent import Parent
+class SpineTessellation(Parent):
     r"""
     A HyperbolicPlaneTessellation + more data
     """
-    def __init__(self, translation_surface):
-        r"""
-        
-        """
+    def __init__(self, surface):
+        self._surface = surface
         # Move to a vertex canonically.
         # We'll explore the spine tree from there.
+
+    def _repr_(self):
+        return f"Spine Tessellation of {self._surface}"
+
         
-    def explore(self, limit=None, translation_surface=None):
+    def explore(self, limit=None, surface=None):
         r"""
         Explore the spine tree up to the combinatorial ``limit`` starting from
         ``translation_surface`` (moving it as in :meth:`__init__`).
