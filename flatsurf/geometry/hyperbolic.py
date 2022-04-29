@@ -363,7 +363,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         return self.point(p/q, 0, model="half_plane")
 
-    def point(self, x, y, model):
+    def point(self, x, y, model, check=True):
         r"""
         Return the point with coordinates (x, y) in the given model.
 
@@ -390,7 +390,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         y = self.base_ring()(y)
 
         if model == "klein":
-            return self.__make_element_class__(HyperbolicPoint)(self, x, y)
+            return self.__make_element_class__(HyperbolicPoint)(self, x, y, check=check)
         if model == "half_plane":
             denominator = 1 + x*x + y*y
             return self.point(
@@ -483,7 +483,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         # Convert the equation -x + real = 0 to the Klein model.
         return self.geodesic(real, -1, -real, model="klein")
 
-    def geodesic(self, a, b, c=None, model=None):
+    def geodesic(self, a, b, c=None, model=None, check=True):
         r"""
         Return a geodesic in the hyperbolic plane.
 
@@ -559,7 +559,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             B = a._y - b._y
             A = -(B * a._x + C * a._y)
 
-            return self.geodesic(A, B, C, model="klein")
+            return self.geodesic(A, B, C, model="klein", check=check)
 
         if model is None:
             raise ValueError("a model must be specified when specifying a geodesic with coefficients")
@@ -572,11 +572,11 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             a = self.base_ring()(a)
             b = self.base_ring()(b)
             c = self.base_ring()(c)
-            return self.__make_element_class__(HyperbolicGeodesic)(self, a, b, c)
+            return self.__make_element_class__(HyperbolicGeodesic)(self, a, b, c, check=check)
 
         raise NotImplementedError("cannot create geodesic from coefficients in this model")
 
-    def half_space(self, a, b, c, model):
+    def half_space(self, a, b, c, model, check=True):
         r"""
         Return a closed half space from its equation in ``model``.
 
@@ -615,13 +615,838 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             {x ≤ 0}
 
         """
-        return self.__make_element_class__(HyperbolicHalfSpace)(self, self.geodesic(a, b, c, model=model))
+        return self.__make_element_class__(HyperbolicHalfSpace)(self, self.geodesic(a, b, c, model=model, check=check))
 
-    def intersection(self, subsets):
+    def segment(self, geodesic, start=None, end=None, check=True):
+        return self.__make_element_class__(HyperbolicEdge)(self, geodesic, start, end, check=check)
+
+    def intersection(self, *subsets):
         r"""
         Return the intersection of convex ``subsets``.
+
+        ALGORITHM:
+
+        We compute the intersection of the
+        :meth:`HyperbolicConvexSet._half_spaces` that make up the ``subsets``.
+        That intersection can be computed in the Klein model where we can
+        essentially reduce this problem to the intersection of half spaces in
+        the Euclidean plane.
+
+        The Euclidean intersection problem can be solved in time linear in the
+        number of half spaces assuming that the half spaces are already sorted
+        in a certain way. In particular, this is the case if there is only a
+        constant number of ``subsets``. Otherwise, the algorithm is
+        quasi-linear in the number of half spaces due to the added complexity
+        of sorting.
+
+        See :meth:`_reduce` for more algorithmic details.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: H.intersection(H.vertical(0).left_half_space())
+            {x ≤ 0}
+
+            sage: H.intersection(H.vertical(0).left_half_space(), H.vertical(0).right_half_space())
+            {x = 0}
+
         """
-        raise NotImplementedError
+        subsets = [self.coerce(subset) for subset in subsets]
+
+        half_spaces = [subset._half_spaces() for subset in subsets]
+
+        half_spaces = HyperbolicPlane._merge_sort(*half_spaces)
+
+        return self._reduce(half_spaces)
+
+    @classmethod
+    def _merge_sort(cls, *half_spaces):
+        r"""
+        Return the merge of lists of ``half_spaces``.
+
+        The lists are assumed to be sorted by
+        :meth:`HyperbolicHalfSpace._normal_lt` and are merged into a single
+        list with that sorting.
+
+        Naturally, when there are a lot of short lists, such a merge sort takes
+        quasi-linear time. However, when there are only a few lists, this runs
+        in linear time.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: HyperbolicPlane._merge_sort()
+            []
+
+            sage: HyperbolicPlane._merge_sort(H.real(0)._half_spaces())
+            [{(x^2 + y^2) + x ≤ 0}, {x ≥ 0}]
+
+            sage: HyperbolicPlane._merge_sort(H.real(0)._half_spaces(), H.real(0)._half_spaces())
+            [{(x^2 + y^2) + x ≤ 0}, {(x^2 + y^2) + x ≤ 0}, {x ≥ 0}, {x ≥ 0}]
+
+            sage: HyperbolicPlane._merge_sort(*[[half_space] for half_space in H.real(0)._half_spaces() * 2])
+            [{(x^2 + y^2) + x ≤ 0}, {(x^2 + y^2) + x ≤ 0}, {x ≥ 0}, {x ≥ 0}]
+
+        """
+        count = len(half_spaces)
+
+        if count == 0:
+            return []
+
+        if count == 1:
+            return half_spaces[0]
+
+        # The non-trivial base case.
+        if count == 2:
+            A = half_spaces[0]
+            B = half_spaces[1]
+            merged = []
+
+            while A and B:
+                if HyperbolicHalfSpace._normal_lt(A[-1], B[-1]):
+                    merged.append(B.pop())
+                else:
+                    merged.append(A.pop())
+
+            merged.reverse()
+
+            return A + B + merged
+
+        # Divide & Conquer recursively.
+        return HyperbolicPlane._merge_sort(*(
+            HyperbolicPlane._merge_sort(*half_spaces[: count // 2]),
+            HyperbolicPlane._merge_sort(*half_spaces[count // 2:])
+            ))
+
+    # TODO: Move everything related to _reduce to HyperbolicConvexPolygon.
+    # TODO: Add examples.
+    def _reduce(self, half_spaces):
+        r"""
+        Return a convex set describing the intersection of ``half_spaces``.
+
+        The ``half_spaces`` are assumed to be sorted by :meth:`HyperbolicHalfSpace._normal_lt`.
+
+        ALGORITHM:
+
+        We compute the intersection of the half spaces in the Klein model in several steps:
+
+        * Drop trivially redundant half spaces, e.g., repeated ones.
+        * Handle the case that the intersection is empty or a single point, see :meth:`_reduce_euclidean_non_empty`.
+        * Compute the intersection of the corresponding half spaces in the Euclidean plane, see :meth:`_reduce_euclidean`.
+        * Remove redundant half spaces that make no contribution for the unit disk of the Klein model, see :meth:`_reduce_unit_disk`.
+        * Determine of which nature (point, segment, line, polygon) the intersection of half spaces is and return the resulting set.
+
+        """
+        half_spaces = self._reduce_trivially_redundant(half_spaces)
+
+        if not half_spaces:
+            raise NotImplementedError("cannot model intersection of no half spaces yet")
+
+        # Find a segment on the boundary of the intersection.
+        boundary = self._reduce_euclidean_non_empty(half_spaces, assume_sorted=True)
+
+        if not isinstance(boundary, HyperbolicHalfSpace):
+            # When there was no such segment, i.e., the intersection is empty
+            # or just a point, we are done.
+            return boundary
+
+        # Compute a minimal subset of the half spaces that defines the intersection in the Euclidean plane.
+        half_spaces = self._reduce_euclidean(half_spaces, boundary, assume_sorted=True)
+
+        # Remove half spaces that make no contribution when restricting to the unit disk of the Klein model.
+        half_spaces = self._reduce_unit_disk(half_spaces, assume_sorted=True)
+
+        if isinstance(half_spaces, HyperbolicConvexSet):
+            return half_spaces
+
+        # Return the intersection as a proper hyperbolic convex set.
+        return self._intersection(half_spaces, assume_non_empty=True, assume_sorted=True, assume_no_point=True, assume_minimal=True)
+
+    # TODO: Move reduce methods to specific subsets.
+    def _reduce_trivially_redundant(self, half_spaces):
+        r"""
+        Return a sublist of ``half_spaces`` without changing their intersection
+        by removing some trivially redundant half spaces.
+
+        The ``half_spaces`` are assumed to be sorted consistent with :meth:`_normal_lt`.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+        Repeated half spaces are removed::
+
+            sage: H._reduce_trivially_redundant([H.vertical(0).left_half_space(), H.vertical(0).left_half_space()])
+            [{x ≤ 0}]
+
+        Inclusions of half spaces are simplified::
+
+            sage: H._reduce_trivially_redundant([H.vertical(0).left_half_space(), H.geodesic(1/2, 2).left_half_space()])
+            [{x ≤ 0}]
+
+        But only if the inclusion is already present when extending the half
+        space from the Klein disk to the entire Euclidean plane::
+
+            sage: H._reduce_trivially_redundant([H.vertical(0).left_half_space(), H.vertical(1).left_half_space()])
+            [{x ≤ 0}, {x - 1 ≤ 0}]
+
+        """
+        reduced = []
+
+        for half_space in half_spaces:
+            if reduced:
+                a, b, c = half_space.equation(model="klein")
+                A, B, C = reduced[-1].equation(model="klein")
+
+                if c * B == C * b and b.sign() == B.sign() and c.sign() == C.sign():
+                    # The half spaces are parallel in the Euclidean plane. Since we
+                    # assume spaces to be sorted by inclusion, we can drop this
+                    # space.
+                    continue
+
+            reduced.append(half_space)
+
+        return reduced
+
+    def _reduce_euclidean_non_empty(self, half_spaces, assume_sorted=False):
+        r"""
+        Return a half space whose (Euclidean) boundary intersects the boundary
+        of the intersection of ``half_spaces`` in more than a point.
+
+        Consider the half spaces in the Klein model. Ignoring the unit disk,
+        they also describe half spaces in the Euclidean plane.
+
+        If their intersection contains a segment it must be on the boundary of
+        one of the ``half_spaces`` which is returned by this method.
+
+        If this is not the case, and the intersection is empty in the
+        hyperbolic plane, return the :meth:`empty_set`. Otherwise, if the
+        intersection is a point in the hyperbolic plane, return that point.
+
+        The ``half_spaces`` must be sorted with respect to
+        :meth:`HyperbolicHalfSpace._normal_lt`.
+
+        ALGORITHM:
+
+        We initially ignore the hyperbolic structure and just consider the half
+        spaces of the Klein model as Euclidean half spaces.
+
+        We use a relatively standard randomized optimization approach to find a
+        point in the intersection: we randomly shuffle the half spaces and then
+        optimize a segment on some boundary of the half spaces. The
+        randomization makes this a linear time algorithm, see e.g.,
+        https://www2.cs.arizona.edu/classes/cs437/fall07/Lecture4.prn.pdf
+
+        If the only segment we can construct is a point, then the intersection
+        is a single point in the Euclidean plane. The interesction in the
+        hyperbolic plane might be a single point or empty.
+
+        If not even a point exists, the intersection is empty in the Euclidean
+        plane and therefore empty in the hyperbolic plane.
+
+        Note that the segment returned might not be within the unit disk.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+        Make the following randomized tests reproducible::
+
+            sage: from random import seed
+            sage: seed(0R)
+
+        An intersection that is already empty in the Euclidean plane::
+
+            sage: H._reduce_euclidean_non_empty([
+            ....:     H.geodesic(2, 1/2).left_half_space(),
+            ....:     H.geodesic(-1/2, -2).left_half_space()
+            ....: ])
+            {}
+
+        An intersection which in the Euclidean plane is a single point but
+        outside the unit disk::
+
+            sage: H._reduce_euclidean_non_empty([
+            ....:     H.half_space(0, 1, 0, model="klein"),
+            ....:     H.half_space(0, -1, 0, model="klein"),
+            ....:     H.half_space(2, 2, -1, model="klein"),
+            ....:     H.half_space(-2, -2, 1, model="klein"),
+            ....: ])
+            {}
+
+        An intersection which is a single point inside the unit disk::
+
+            sage: H._reduce_euclidean_non_empty(H(I)._half_spaces())
+            I
+
+        An intersection which is a single point on the boundary of the unit
+        disk::
+
+            sage: H._reduce_euclidean_non_empty(H.infinity()._half_spaces())
+            {x - 1 ≥ 0}
+
+        An intersection which is a segment outside of the unit disk::
+
+            sage: H._reduce_euclidean_non_empty([
+            ....:     H.vertical(0).left_half_space(),
+            ....:     H.vertical(0).right_half_space(),
+            ....:     H.half_space(-2, -2, 1, model="klein"),
+            ....:     H.half_space(17/8, 2, -1, model="klein"),
+            ....: ])
+            {x ≤ 0}
+
+        An intersection which is a polygon outside of the unit disk::
+
+            sage: H._reduce_euclidean_non_empty([
+            ....:     H.half_space(0, 1, 0, model="klein"),
+            ....:     H.half_space(1, -2, 0, model="klein"),
+            ....:     H.half_space(-2, -2, 1, model="klein"),
+            ....:     H.half_space(17/8, 2, -1, model="klein"),
+            ....: ])
+            {(x^2 + y^2) - 4*x + 1 ≥ 0}
+
+        An intersection which is an (unbounded) polygon touching the unit disk::
+
+            sage: H._reduce_euclidean_non_empty([
+            ....:     H.vertical(-1).left_half_space(),
+            ....:     H.vertical(1).right_half_space(),
+            ....: ])
+            {x - 1 ≥ 0}
+
+        An intersection which is a segment touching the unit disk::
+
+            sage: H._reduce_euclidean_non_empty([
+            ....:     H.vertical(0).left_half_space(),
+            ....:     H.vertical(0).right_half_space(),
+            ....:     H.vertical(-1).left_half_space(),
+            ....:     H.geodesic(-1, -2).right_half_space(),
+            ....: ])
+            {x ≥ 0}
+
+        An intersection which is a polygon inside the unit disk::
+
+            sage: H._reduce_euclidean_non_empty([
+            ....:     H.vertical(1).left_half_space(),
+            ....:     H.vertical(-1).right_half_space(),
+            ....:     H.geodesic(0, -1).right_half_space(),
+            ....:     H.geodesic(0, 1).left_half_space(),
+            ....: ])
+            {(x^2 + y^2) + x ≥ 0}
+
+        A polygon which has no vertices inside the unit disk but intersects the unit disk::
+
+            sage: H._reduce_euclidean_non_empty([
+            ....:     H.geodesic(2, 3).left_half_space(),
+            ....:     H.geodesic(-3, -2).left_half_space(),
+            ....:     H.geodesic(-1/2, -1/3).left_half_space(),
+            ....:     H.geodesic(1/3, 1/2).left_half_space(),
+            ....: ])
+            {6*(x^2 + y^2) - 5*x + 1 ≥ 0}
+
+        A single half plane::
+
+            sage: H._reduce_euclidean_non_empty([
+            ....:     H.vertical(0).left_half_space()
+            ....: ])
+            {x ≤ 0}
+
+        A pair of anti-parallel half planes::
+
+            sage: H._reduce_euclidean_non_empty([
+            ....:     H.geodesic(1/2, 2).left_half_space(),
+            ....:     H.geodesic(-1/2, -2).right_half_space(),
+            ....: ])
+            {2*(x^2 + y^2) - 5*x + 2 ≥ 0}
+
+        """
+        if len(half_spaces) == 0:
+            raise ValueError("list of half spaces must not be empty")
+
+        if len(half_spaces) == 1:
+            return half_spaces[0]
+
+        # Randomly shuffle the half spaces so the loop below runs in expected linear time.
+        from random import shuffle
+        random_half_spaces = half_spaces[:]
+        shuffle(random_half_spaces)
+
+        # Move from the random starting point to a point that is contained in all half spaces.
+        point = random_half_spaces[0].boundary().an_element()
+
+        for half_space in random_half_spaces:
+            if point in half_space:
+                continue
+            else:
+                # The point is not in this half space. Find a point on the
+                # boundary of half_space that is contained in all the half
+                # spaces we have seen so far.
+                boundary = half_space.boundary()
+
+                # We parametrize the boundary points of half space, i.e., the
+                # points that satisfy a + bx + cy = 0 by picking a base point B
+                # and then writing points as (x, y) = B + λ(c, -b).
+
+                # Each half space constrains the possible values of λ, starting
+                # from (-∞,∞) to a smaller closed interval.
+                from sage.all import RealSet
+                interval = RealSet.real_line()
+
+                for constraining in random_half_spaces:
+                    if constraining is half_space:
+                        break
+
+                    intersection = boundary._intersection(constraining.boundary())
+
+                    if intersection is None:
+                        # constraining is anti-parallel to half_space
+                        if boundary.parametrize(0, model="euclidean", check=False) not in constraining:
+                            return self.empty_set()
+
+                        # The intersection is non-empty, so this adds no further constraints.
+                        continue
+
+                    λ = boundary.parametrize(intersection, model="euclidean", check=False)
+
+                    # Determine whether this half space constrains to (-∞, λ] or [λ, ∞).
+                    if boundary.parametrize(λ + 1, model="euclidean", check=False) in constraining:
+                        constraint = RealSet.unbounded_above_closed(λ)
+                    else:
+                        constraint = RealSet.unbounded_below_closed(λ)
+
+                    interval = interval.intersection(constraint)
+
+                    if interval.is_empty():
+                        # The constraints leave no possibility for λ.
+                        return self.empty_set()
+
+                # Construct a point from any of the λ in interval.
+                λ = interval.an_element()
+
+                point = boundary.parametrize(λ, model="euclidean", check=False)
+
+        if not assume_sorted:
+            half_spaces = HyperbolicPlane._merge_sort(*[[half_space] for half_space in half_spaces])
+
+        # Extend the point to a segment
+        for (i, half_space) in enumerate(half_spaces):
+            if point not in half_space.boundary():
+                continue
+
+            following = half_spaces[(i + 1) % len(half_spaces)]
+            if half_space.boundary().parametrize(
+                  half_space.boundary().parametrize(point, model="euclidean", check=False) + 1,
+                  model="euclidean",
+                  check=False) in following:
+                return half_space
+
+            intersection = half_space.boundary()._intersection(following.boundary())
+
+            assert intersection is not None, "The boundaries do not intersect so they must be anti-parallel. However, the previous check found that the half spaces do not contain the same points."
+
+            if intersection == point:
+                continue
+
+            for constraining in random_half_spaces:
+                if intersection not in constraining:
+                    break
+            else:
+                return half_space
+
+        # The point is the only point in the intersection.
+        x, y = point.coordinates(model="klein")
+
+        if x*x + y*y > 1:
+            # The point is only ultra ideal, there is no actual intersection.
+            return self.empty_set()
+
+        return point
+
+    def _reduce_euclidean(self, half_spaces, boundary, assume_sorted=False):
+        r"""
+        Return a minimal sublist of ``half_spaces`` that describe their
+        intersection as half spaces of the Euclidean plane.
+
+        Consider the half spaces in the Klein model. Ignoring the unit disk,
+        they also describe half spaces in the Euclidean plane.
+
+        The half space ``boundary`` must be one of the ``half_spaces`` that
+        defines a boundary edge of the intersection polygon in the Euclidean
+        plane.
+
+        ALGORITHM:
+
+        We use an approach similar to gift-wrapping (but from the inside) to remove
+        redundant half spaces from the input list. We start from the
+        ``boundary`` which is one of the minimal half spaces and extend to the
+        full intersection by walking the sorted half spaces.
+
+        Since we visit each half space once, this reduction runs in linear time
+        in the number of half spaces.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+        An intersection which is a single point on the boundary of the unit
+        disk::
+
+            sage: H._reduce_euclidean(
+            ....:     half_spaces=H.infinity()._half_spaces(),
+            ....:     boundary=H.vertical(1).right_half_space())
+            [{x - 1 ≥ 0}, {x ≤ 0}]
+
+        An intersection which is a segment outside of the unit disk::
+
+            sage: H._reduce_euclidean([
+            ....:     H.vertical(0).left_half_space(),
+            ....:     H.vertical(0).right_half_space(),
+            ....:     H.half_space(-2, -2, 1, model="klein"),
+            ....:     H.half_space(17/8, 2, -1, model="klein"),
+            ....: ], boundary=H.vertical(0).left_half_space())
+            [{x ≤ 0},
+             {9*(x^2 + y^2) + 32*x + 25 ≥ 0},
+             {x ≥ 0},
+             {(x^2 + y^2) + 4*x + 3 ≤ 0}]
+
+        An intersection which is a polygon outside of the unit disk::
+
+            sage: H._reduce_euclidean([
+            ....:     H.half_space(0, 1, 0, model="klein"),
+            ....:     H.half_space(1, -2, 0, model="klein"),
+            ....:     H.half_space(-2, -2, 1, model="klein"),
+            ....:     H.half_space(17/8, 2, -1, model="klein"),
+            ....: ], boundary=H.half_space(17/8, 2, -1, model="klein"))
+            [{9*(x^2 + y^2) + 32*x + 25 ≥ 0},
+             {x ≥ 0},
+             {(x^2 + y^2) + 4*x + 3 ≤ 0},
+             {(x^2 + y^2) - 4*x + 1 ≥ 0}]
+
+        An intersection which is an (unbounded) polygon touching the unit disk::
+
+            sage: H._reduce_euclidean([
+            ....:     H.vertical(-1).left_half_space(),
+            ....:     H.vertical(1).right_half_space(),
+            ....: ], boundary=H.vertical(1).right_half_space())
+            [{x - 1 ≥ 0}, {x + 1 ≤ 0}]
+
+        An intersection which is a segment touching the unit disk::
+
+            sage: H._reduce_euclidean([
+            ....:     H.vertical(0).left_half_space(),
+            ....:     H.vertical(0).right_half_space(),
+            ....:     H.vertical(-1).left_half_space(),
+            ....:     H.geodesic(-1, -2).right_half_space(),
+            ....: ], boundary=H.vertical(0).left_half_space())
+            [{x ≤ 0}, {(x^2 + y^2) + 3*x + 2 ≥ 0}, {x ≥ 0}, {x + 1 ≤ 0}]
+
+        An intersection which is a polygon inside the unit disk::
+
+            sage: H._reduce_euclidean([
+            ....:     H.vertical(1).left_half_space(),
+            ....:     H.vertical(-1).right_half_space(),
+            ....:     H.geodesic(0, -1).right_half_space(),
+            ....:     H.geodesic(0, 1).left_half_space(),
+            ....: ], boundary=H.geodesic(0, 1).left_half_space())
+            [{(x^2 + y^2) - x ≥ 0}, {x - 1 ≤ 0}, {x + 1 ≥ 0}, {(x^2 + y^2) + x ≥ 0}]
+
+        A polygon which has no vertices inside the unit disk but intersects the unit disk::
+
+            sage: H._reduce_euclidean([
+            ....:     H.geodesic(2, 3).left_half_space(),
+            ....:     H.geodesic(-3, -2).left_half_space(),
+            ....:     H.geodesic(-1/2, -1/3).left_half_space(),
+            ....:     H.geodesic(1/3, 1/2).left_half_space(),
+            ....: ], boundary=H.geodesic(1/3, 1/2).left_half_space())
+            [{6*(x^2 + y^2) - 5*x + 1 ≥ 0},
+             {(x^2 + y^2) - 5*x + 6 ≥ 0},
+             {(x^2 + y^2) + 5*x + 6 ≥ 0},
+             {6*(x^2 + y^2) + 5*x + 1 ≥ 0}]
+
+        A single half plane::
+
+            sage: H._reduce_euclidean([
+            ....:     H.vertical(0).left_half_space()
+            ....: ], boundary=H.vertical(0).left_half_space())
+            [{x ≤ 0}]
+
+        A pair of anti-parallel half planes::
+
+            sage: H._reduce_euclidean([
+            ....:     H.geodesic(1/2, 2).left_half_space(),
+            ....:     H.geodesic(-1/2, -2).right_half_space(),
+            ....: ], boundary=H.geodesic(-1/2, -2).right_half_space())
+            [{2*(x^2 + y^2) + 5*x + 2 ≥ 0}, {2*(x^2 + y^2) - 5*x + 2 ≥ 0}]
+
+        A segment in the unit disk with several superfluous half planes at infinity::
+
+            sage: H._reduce_euclidean([
+            ....:     H.vertical(0).left_half_space(),
+            ....:     H.vertical(0).right_half_space(),
+            ....:     H.vertical(1).left_half_space(),
+            ....:     H.vertical(1/2).left_half_space(),
+            ....:     H.vertical(1/3).left_half_space(),
+            ....:     H.vertical(1/4).left_half_space(),
+            ....:     H.vertical(-1).right_half_space(),
+            ....:     H.vertical(-1/2).right_half_space(),
+            ....:     H.vertical(-1/3).right_half_space(),
+            ....:     H.vertical(-1/4).right_half_space(),
+            ....: ], boundary=H.vertical(0).left_half_space())
+            [{x ≤ 0}, {4*x + 1 ≥ 0}, {x ≥ 0}]
+
+        A polygon in the unit disk with several superfluous half planes::
+
+            sage: H._reduce_euclidean([
+            ....:     H.vertical(1).left_half_space(),
+            ....:     H.vertical(-1).right_half_space(),
+            ....:     H.geodesic(0, 1).left_half_space(),
+            ....:     H.geodesic(0, -1).right_half_space(),
+            ....:     H.vertical(2).left_half_space(),
+            ....:     H.vertical(-2).right_half_space(),
+            ....:     H.geodesic(0, 1/2).left_half_space(),
+            ....:     H.geodesic(0, -1/2).right_half_space(),
+            ....:     H.vertical(3).left_half_space(),
+            ....:     H.vertical(-3).right_half_space(),
+            ....:     H.geodesic(0, 1/3).left_half_space(),
+            ....:     H.geodesic(0, -1/3).right_half_space(),
+            ....: ], boundary=H.vertical(1).left_half_space())
+            [{x - 1 ≤ 0}, {x + 1 ≥ 0}, {(x^2 + y^2) + x ≥ 0}, {(x^2 + y^2) - x ≥ 0}]
+
+        """
+        # TODO: Make all other assumptions clear in the interface.
+
+        if not assume_sorted:
+            half_spaces = HyperbolicPlane._merge_sort(*[[half_space] for half_space in half_spaces])
+
+        half_spaces = half_spaces[half_spaces.index(boundary):] + half_spaces[:half_spaces.index(boundary)]
+        half_spaces.reverse()
+
+        required_half_spaces = [half_spaces.pop()]
+
+        while half_spaces:
+            A = required_half_spaces[-1]
+            B = half_spaces.pop()
+            C = half_spaces[-1] if half_spaces else required_half_spaces[0]
+
+            # Determine whether B is redundant, i.e., whether the intersection
+            # A, B, C and A, C are the same.
+            # Since we know that A is required and the space non-empty, the
+            # question here is whether C blocks the line of sight from A to B.
+
+            # We distinguish cases, depending of the nature of the intersection of A and B.
+            AB = A.boundary()._configuration(B.boundary())
+            BC = B.boundary()._configuration(C.boundary())
+            AC = A.boundary()._configuration(C.boundary())
+
+            if AB == "convex":
+                if BC == "concave":
+                    assert AC in ["equal", "concave"]
+                    required_half_spaces.append(B)
+
+                elif BC == "convex":
+                    BC = B.boundary()._intersection(C.boundary())
+                    if AC == "negative" or (BC in A and BC not in A.boundary()):
+                        required_half_spaces.append(B)
+
+                elif BC == "negative":
+                    required_half_spaces.append(B)
+
+                else:
+                    raise NotImplementedError(f"B and C are in unsupported configuration: {BC}")
+
+            elif AB == "negative":
+                required_half_spaces.append(B)
+
+            elif AB == "anti-parallel":
+                required_half_spaces.append(B)
+
+            else:
+                raise NotImplementedError(f"A and B are in unsupported configuration: {AB}")
+
+        return required_half_spaces
+
+    def _reduce_unit_disk(self, half_spaces, assume_sorted=False):
+        r"""
+        Return the intersection of the Euclidean ``half_spaces`` with the unit
+        disk.
+
+        The ``half_spaces`` must be minimal to describe their intersection in
+        the Euclidean plane. If that intersection does not intersect the unit
+        disk, then return the :meth:`empty_set`.
+
+        Otherwise, return a minimal sublist of ``half_spaces`` that describes
+        the intersection inside the unit disk.
+
+        ALGORITHM:
+
+        When passing to the Klein disk, i.e., intersecting the polygon with the
+        unit disk, some of the edges of the (possibly unbounded) polygon
+        described by the ``half_spaces`` are unnecessary because they are not
+        intersecting the unit disk.
+
+        If none of the edges intersect the unit disk, then the polygon has
+        empty intersection with the unit disk.
+
+        Otherwise, we can drop the half spaces describing the edges that do not
+        intersect the unit disk.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+        An intersection which is a single point on the boundary of the unit
+        disk::
+
+            sage: H._reduce_unit_disk(half_spaces=H.infinity()._half_spaces())
+            ∞
+
+        An intersection which is a segment outside of the unit disk::
+
+            sage: H._reduce_unit_disk([
+            ....:     H.vertical(0).left_half_space(),
+            ....:     H.vertical(0).right_half_space(),
+            ....:     H.half_space(-2, -2, 1, model="klein"),
+            ....:     H.half_space(17/8, 2, -1, model="klein"),
+            ....: ])
+            {}
+
+        An intersection which is a polygon outside of the unit disk::
+
+            sage: H._reduce_unit_disk([
+            ....:     H.half_space(0, 1, 0, model="klein"),
+            ....:     H.half_space(1, -2, 0, model="klein"),
+            ....:     H.half_space(-2, -2, 1, model="klein"),
+            ....:     H.half_space(17/8, 2, -1, model="klein"),
+            ....: ])
+            {}
+
+        An intersection which is an (unbounded) polygon touching the unit disk::
+
+            sage: H._reduce_unit_disk([
+            ....:     H.vertical(-1).left_half_space(),
+            ....:     H.vertical(1).right_half_space()])
+            ∞
+
+        An intersection which is a segment touching the unit disk::
+
+            sage: H._reduce_unit_disk([
+            ....:     H.vertical(0).left_half_space(),
+            ....:     H.vertical(0).right_half_space(),
+            ....:     H.vertical(-1).left_half_space(),
+            ....:     H.geodesic(-1, -2).right_half_space()])
+            ∞
+
+        An intersection which is a polygon inside the unit disk::
+
+            sage: H._reduce_unit_disk([
+            ....:     H.vertical(1).left_half_space(),
+            ....:     H.vertical(-1).right_half_space(),
+            ....:     H.geodesic(0, -1).right_half_space(),
+            ....:     H.geodesic(0, 1).left_half_space()])
+            {(x^2 + y^2) - x ≥ 0} ∩ {x - 1 ≤ 0} ∩ {x + 1 ≥ 0} ∩ {(x^2 + y^2) + x ≥ 0}
+
+        A polygon which has no vertices inside the unit disk but intersects the unit disk::
+
+            sage: H._reduce_unit_disk([
+            ....:     H.geodesic(2, 3).left_half_space(),
+            ....:     H.geodesic(-3, -2).left_half_space(),
+            ....:     H.geodesic(-1/2, -1/3).left_half_space(),
+            ....:     H.geodesic(1/3, 1/2).left_half_space()])
+            {6*(x^2 + y^2) - 5*x + 1 ≥ 0} ∩ {(x^2 + y^2) - 5*x + 6 ≥ 0} ∩ {(x^2 + y^2) + 5*x + 6 ≥ 0} ∩ {6*(x^2 + y^2) + 5*x + 1 ≥ 0}
+
+        A single half plane::
+
+            sage: H._reduce_unit_disk([H.vertical(0).left_half_space()])
+            {x ≤ 0}
+
+        A pair of anti-parallel half planes::
+
+            sage: H._reduce_unit_disk([
+            ....:     H.geodesic(1/2, 2).left_half_space(),
+            ....:     H.geodesic(-1/2, -2).right_half_space()])
+            {2*(x^2 + y^2) - 5*x + 2 ≥ 0} ∩ {2*(x^2 + y^2) + 5*x + 2 ≥ 0}
+
+        A segment in the unit disk with a superfluous half plane at infinity::
+
+            sage: H._reduce_unit_disk([
+            ....:     H.vertical(0).left_half_space(),
+            ....:     H.vertical(0).right_half_space(),
+            ....:     H.vertical(1).left_half_space()])
+            {x = 0}
+
+        A polygon in the unit disk with several superfluous half planes::
+
+            sage: H._reduce_unit_disk([
+            ....:     H.vertical(1).left_half_space(),
+            ....:     H.vertical(-1).right_half_space(),
+            ....:     H.geodesic(0, 1).left_half_space(),
+            ....:     H.geodesic(0, -1).right_half_space(),
+            ....:     H.vertical(2).left_half_space(),
+            ....:     H.geodesic(0, 1/2).left_half_space()])
+            {(x^2 + y^2) - x ≥ 0} ∩ {x - 1 ≤ 0} ∩ {x + 1 ≥ 0} ∩ {(x^2 + y^2) + x ≥ 0}
+
+        """
+        # TODO: Make all assumptions clear in the interface.
+
+        if not assume_sorted:
+            half_spaces = HyperbolicPlane._merge_sort(*[[half_space] for half_space in half_spaces])
+
+        required_half_spaces = []
+
+        is_empty = True
+        is_point = True
+        is_segment = True
+
+        for i in range(len(half_spaces)):
+            A = half_spaces[(i + len(half_spaces) - 1) % len(half_spaces)]
+            B = half_spaces[i]
+            C = half_spaces[(i + 1) % len(half_spaces)]
+
+            AB = A.boundary()._intersection(B.boundary())
+            BC = B.boundary()._intersection(C.boundary())
+
+            segment = self.segment(B.boundary(), AB, BC, check=False)._restrict_to_disk()
+
+            if isinstance(segment, HyperbolicEmptySet):
+                pass
+            elif isinstance(segment, HyperbolicPoint):
+                is_empty = False
+                if is_point:
+                    assert is_point is True or is_point == segment, (is_point, segment)
+                    is_point = segment
+            else:
+                is_empty = False
+                is_point = False
+
+                if is_segment is True:
+                    is_segment = segment
+                elif is_segment == -segment:
+                    return segment
+                else:
+                    is_segment = False
+
+                required_half_spaces.append(B)
+
+        if is_empty:
+            return self.empty_set()
+
+        if is_point:
+            return is_point
+
+        if len(required_half_spaces) == 0:
+            raise NotImplementedError("there is no convex set to represent the full space yet")
+
+        if len(required_half_spaces) == 1:
+            return required_half_spaces[0]
+
+        return self.__make_element_class__(HyperbolicConvexPolygon)(self, required_half_spaces, assume_normalized=True, assume_sorted=True, check=False)
 
     def empty_set(self):
         r"""
@@ -651,6 +1476,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         return f"Hyperbolic Plane over {repr(self.base_ring())}"
 
 
+# TODO: Change richcmp to compare according to the subset relation.
 class HyperbolicConvexSet(Element):
     r"""
     Base class for convex subsets of :class:`HyperbolicPlane`.
@@ -659,6 +1485,8 @@ class HyperbolicConvexSet(Element):
     def _half_spaces(self):
         r"""
         Return a minimal set of half spaces whose intersection is this convex set.
+
+        The half spaces are ordered by :meth:`HyperbolicGeodesic._normal_key`.
 
         EXAMPLES::
 
@@ -672,18 +1500,11 @@ class HyperbolicConvexSet(Element):
             [{x ≤ 0}, {x ≥ 0}]
 
             sage: H(0)._half_spaces()
-            [{x ≥ 0}, {(x^2 + y^2) + x ≤ 0}]
-
+            [{(x^2 + y^2) + x ≤ 0}, {x ≥ 0}]
 
         """
         # TODO: Check that all subclasses implement this.
         raise NotImplementedError("Convex sets must implement this method.")
-
-    def is_subset(self, other):
-        r"""
-        Return whether the convex set ``other`` is a subset of this set.
-        """
-        raise NotImplementedError
 
     def intersection(self, other):
         r"""
@@ -758,7 +1579,13 @@ class HyperbolicConvexSet(Element):
             {x ≥ 0}
 
         """
-        return self.parent().intersection([-half_space for half_space in self._half_spaces()])
+        return self.parent().intersection(*[-half_space for half_space in self._half_spaces()])
+
+    # TODO: Test that _richcmp_ can compare all kinds of sets by inclusion.
+
+    def an_element(self):
+        # TODO: Test that everything implements an_element().
+        raise NotImplementedError
 
 
 class HyperbolicHalfSpace(HyperbolicConvexSet):
@@ -872,6 +1699,147 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
         """
         return self._geodesic.right_half_space()
 
+    def _normal_lt(self, other):
+        r"""
+        Return whether this half space is smaller than ``other`` in a cyclic
+        ordering of normal vectors, i.e., in an ordering that half spaces
+        whether their normal points to the left/right, the slope of the
+        geodesic, and finally by containment.
+
+        This ordering is such that :meth:`HyperbolicPlane.intersection` can be
+        computed in linear time for two hyperbolic convex sets.
+
+        TESTS::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicHalfSpace
+            sage: H = HyperbolicPlane(QQ)
+
+            sage: lt = HyperbolicHalfSpace._normal_lt
+
+        A half space is equal to itself::
+
+            sage: lt(H.vertical(0).left_half_space(), H.vertical(0).left_half_space())
+            False
+
+        A half space whose normal in the Klein model points to the left is
+        smaller than one whose normal points to the right::
+
+            sage: lt(H.vertical(1).left_half_space(), H.half_circle(0, 1).left_half_space())
+            True
+            sage: lt(H.vertical(0).left_half_space(), -H.vertical(0).left_half_space())
+            True
+            sage: lt(-H.half_circle(-1, 1).left_half_space(), -H.vertical(1).left_half_space())
+            True
+            sage: lt(-H.half_circle(-1, 1).left_half_space(), -H.vertical(1/2).left_half_space())
+            True
+            sage: lt(H.vertical(1).left_half_space(), H.half_circle(-1, 1).left_half_space())
+            True
+            sage: lt(H.vertical(1/2).left_half_space(), H.half_circle(-1, 1).left_half_space())
+            True
+
+        Half spaces are ordered by the slope of their normal in the Klein model::
+
+            sage: lt(H.vertical(-1).left_half_space(), H.vertical(1).left_half_space())
+            True
+            sage: lt(-H.half_circle(-1, 1).left_half_space(), H.vertical(1).left_half_space())
+            True
+            sage: lt(H.half_circle(-1, 1).left_half_space(), -H.vertical(1).left_half_space())
+            True
+            sage: lt(H.vertical(0).left_half_space(), H.vertical(1).left_half_space())
+            True
+
+        Parallel half spaces in the Klein model are ordered by inclusion::
+
+            sage: lt(H.vertical(1/2).left_half_space(), -H.half_circle(-1, 1).left_half_space())
+            True
+            sage: lt(-H.vertical(1/2).left_half_space(), H.half_circle(-1, 1).left_half_space())
+            True
+
+        Verify that comparisons are projective::
+
+            sage: lt(H.geodesic(5, -5, -1, model="half_plane").left_half_space(), H.geodesic(5/13, -5/13, -1/13, model="half_plane").left_half_space())
+            False
+            sage: lt(H.geodesic(5/13, -5/13, -1/13, model="half_plane").left_half_space(), H.geodesic(5, -5, -1, model="half_plane").left_half_space())
+            False
+
+        """
+        a, b, c = self._geodesic._a, self._geodesic._b, self._geodesic._c
+        A, B, C = other._geodesic._a, other._geodesic._b, other._geodesic._c
+
+        def normal_points_left(b, c):
+            return b < 0 or (b == 0 and c < 0)
+
+        if normal_points_left(b, c) != normal_points_left(B, C):
+            # The normal vectors of the half spaces in the Klein disk are in
+            # different half planes, one is pointing left, one is pointing
+            # right.
+            return normal_points_left(b, c)
+
+        # The normal vectors of the half spaces in the Klein disk are in the
+        # same half plane, so we order them by slope.
+        if b * B == 0:
+            if b == B:
+                # The normals are vertical and in the same half plane, so
+                # they must be equal. We will order the half spaces by
+                # inclusion later.
+                cmp = 0
+            else:
+                # Exactly one of the normals is vertical; we order half spaces
+                # such that that one is bigger.
+                return B == 0
+        else:
+            # Order by the slope of the normal.
+            cmp = (b * B).sign() * (c * B - C * b).sign()
+
+        if cmp == 0:
+            # The half spaces are parallel in the Klein model. We order them by
+            # inclusion, i.e., by the offset in direction of the normal.
+            if c * C:
+                cmp = (c * C).sign() * (a * C - A * c).sign()
+            else:
+                assert b * B
+                cmp = (b * B).sign() * (a * B - A * b).sign()
+
+        return cmp < 0
+
+    def boundary(self):
+        r"""
+        Return a geodesic on the boundary of this half space, oriented such that the half space is on its left.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(QQ)
+
+            sage: S = H.vertical(0).left_half_space()
+            sage: S.boundary()
+            {-x = 0}
+
+        """
+        return self._geodesic
+
+    def __contains__(self, point):
+        point = self.parent()(point)
+
+        if not isinstance(point, HyperbolicPoint):
+            raise TypeError("point must be a point in the hyperbolic plane")
+
+        x, y = point.coordinates(model="klein")
+        a, b, c = self.equation(model="klein")
+
+        return a + b * x + c * y >= 0
+
+    def _richcmp_(self, other, op):
+        from sage.structure.richcmp import op_EQ, op_NE
+
+        if op == op_NE:
+            return not self._richcmp_(other, op_EQ)
+
+        if op == op_EQ:
+            if not isinstance(other, HyperbolicHalfSpace):
+                return False
+            return self._geodesic._richcmp_(other._geodesic, op)
+
 
 class HyperbolicGeodesic(HyperbolicConvexSet):
     r"""
@@ -899,15 +1867,18 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
 
     """
 
-    def __init__(self, parent, a, b, c):
-        if b*b + c*c <= a*a:
-            # The line a + bx + cy = 0 does not intersect S¹ (or is not a line.)
-            raise ValueError(f"equation {a} + ({b})*x + ({c})*y = 0 does not define a chord")
-
+    def __init__(self, parent, a, b, c, check=True):
         super().__init__(parent)
         self._a = a
         self._b = b
         self._c = c
+
+        if check and not self._is_valid():
+            # The line a + bx + cy = 0 does not intersect S¹ (or is not a line.)
+            raise ValueError(f"equation {a} + ({b})*x + ({c})*y = 0 does not define a chord")
+
+    def _is_valid(self):
+        return self._b*self._b + self._c*self._c > self._a*self._a
 
     def _half_spaces(self):
         r"""
@@ -922,7 +1893,7 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
             [{x ≤ 0}, {x ≥ 0}]
 
         """
-        return [self.left_half_space(), self.right_half_space()]
+        return HyperbolicPlane._merge_sort([self.left_half_space()], [self.right_half_space()])
 
     def start(self):
         r"""
@@ -994,89 +1965,6 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
 
         """
         return (-self).start()
-
-    def _richcmp_(self, other, op):
-        r"""
-        Return how this geodesic compares to ``other``.
-
-        Geodesics are partially ordered by their slope in
-        the Klein model. Geodesics of equal slope are
-        ordered such that a g < h if g is left of h.
-
-        EXAMPLES::
-
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
-            sage: H = HyperbolicPlane(QQ)
-
-            sage: H.vertical(0) == H.vertical(0)
-            True
-            sage: H.vertical(-1) != H.vertical(1)
-            True
-
-            sage: H.vertical(0) < H.vertical(1)
-            True
-            sage: H.half_circle(0, 1) < H.vertical(1)
-            True
-
-            sage: -H.vertical(0) < H.vertical(0)
-            True
-
-            sage: H.half_circle(-1, 1) < H.vertical(1)
-            True
-            sage: H.half_circle(-1, 1) > -H.vertical(1)
-            True
-            sage: -H.half_circle(-1, 1) > H.vertical(1)
-            True
-            sage: -H.half_circle(-1, 1) > -H.vertical(1)
-            True
-
-            sage: H.vertical(1/2) > H.half_circle(-1, 1)
-            True
-            sage: H.vertical(1/2) > -H.half_circle(-1, 1)
-            True
-            sage: -H.vertical(1/2) < H.half_circle(-1, 1)
-            True
-            sage: -H.vertical(1/2) < -H.half_circle(-1, 1)
-            True
-
-        """
-        from sage.structure.richcmp import rich_to_bool, op_EQ, op_NE
-
-        if op == op_NE:
-            return not self._richcmp_(other, op_EQ)
-
-        if not isinstance(other, HyperbolicGeodesic):
-            if op == op_EQ:
-                return False
-            raise NotImplementedError("cannot order convex subsets")
-
-        # Group geodesics by their normal vector.
-        def top(geodesic):
-            return geodesic._c < 0 or (geodesic._c == 0 and geodesic._b < 0)
-
-        cmp = None
-
-        if top(self) != top(other):
-            if not top(self):
-                cmp = -1
-            else:
-                cmp = 1
-        elif self._c * other._c > 0:
-            cmp = (self._b * other._c - self._c * other._b).sign()
-        elif self._c * other._c < 0:
-            cmp = -(self._b * other._c - self._c * other._b).sign()
-        else:
-            if self._c == other._c:
-                cmp = 0
-            elif self._c == 0:
-                cmp = -1
-            else:
-                cmp = 1
-
-        if cmp != 0:
-            return rich_to_bool(op, cmp)
-        else:
-            return rich_to_bool(op, (self._a - other._a).sign())
 
     def _neg_(self):
         r"""
@@ -1220,6 +2108,143 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
         """
         return (-self).left_half_space()
 
+    def an_element(self):
+        a, b, c = self.equation(model="klein")
+
+        return self.parent().geodesic(0, -c, b, model="klein", check=False)._intersection(self)
+
+    def _configuration(self, other):
+        r"""
+        Return a classification of the angle between this
+        geodesic and ``other`` in the Klein model.
+
+        """
+        intersection = self._intersection(other)
+
+        if intersection is None:
+            orientation = (self._b * other._b + self._c * other._c).sign()
+
+            assert orientation != 0
+
+            if self == other:
+                assert orientation > 0
+                return "equal"
+
+            if self == -other:
+                assert orientation < 0
+                return "negative"
+
+            if orientation > 0:
+                return "parallel"
+
+            return "anti-parallel"
+
+        tangent = (self._c, -self._b)
+        orientation = (-tangent[0] * other._b  - tangent[1] * other._c).sign()
+
+        assert orientation != 0
+
+        # TODO: Is convex/concave the right term?
+        if orientation > 0:
+            return "convex"
+
+        return "concave"
+
+    def _intersection(self, other):
+        r"""
+        Return the intersection of this geodesic and ``other`` in the Klein
+        model or in the Euclidean plane if the intersection point is ultra
+        ideal, i.e., not in the unit disk.
+
+        Returns ``None`` if the lines do not intersect in a point.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(AA)
+
+        ::
+
+            sage: A = -H.vertical(0)
+            sage: B = H.vertical(-1)
+            sage: C = H.vertical(0)
+            sage: A._intersection(B)
+            ∞
+            sage: A._intersection(C)
+            sage: B._intersection(A)
+            ∞
+            sage: B._intersection(C)
+            ∞
+            sage: C._intersection(A)
+            sage: C._intersection(B)
+            ∞
+
+        """
+        if not isinstance(other, HyperbolicGeodesic):
+            raise TypeError("can only intersect with another geodesic")
+
+        from sage.all import matrix, vector
+
+        A = matrix([[self._b, self._c], [other._b, other._c]])
+
+        if A.rank() < 2:
+            return None
+
+        v = vector([-self._a, -other._a])
+        x, y = A.solve_right(v)
+
+        return self.parent().point(x, y, model="klein", check=False)
+
+    def __contains__(self, point):
+        point = self.parent()(point)
+
+        if not isinstance(point, HyperbolicPoint):
+            raise TypeError("point must be a point in the hyperbolic plane")
+
+        x, y = point.coordinates(model="klein")
+        a, b, c = self.equation(model="klein")
+
+        return a + b * x + c * y == 0
+
+    def parametrize(self, point, model, check=True):
+        if isinstance(point, HyperbolicPoint):
+            if check and point not in self:
+                raise ValueError("point must be on geodesic to be parametrized")
+
+        if model == "euclidean":
+            base = self.an_element().coordinates(model="klein")
+            tangent = (self._c, -self._b)
+
+            if isinstance(point, HyperbolicPoint):
+                coordinate = 0 if tangent[0] else 1
+                return (point.coordinates(model="klein")[coordinate] - base[coordinate]) / tangent[coordinate]
+
+            λ = self.parent().base_ring()(point)
+
+            return self.parent().point(
+                x=base[0] + λ * tangent[0],
+                y=base[1] + λ * tangent[1],
+                model="klein",
+                check=check)
+
+        raise NotImplementedError("cannot parametrize a geodesic over this model yet")
+
+    def _richcmp_(self, other, op):
+        from sage.structure.richcmp import op_EQ, op_NE
+
+        if op == op_NE:
+            return not self._richcmp_(other, op_EQ)
+
+        if op == op_EQ:
+            if not isinstance(other, HyperbolicGeodesic):
+                return False
+            if self._b:
+                return self._b.sign() == other._b.sign() and self._a * other._b == other._a * self._b and self._c * other._b == other._c * self._b
+            else:
+                return self._c.sign() == other._c.sign() and self._a * other._c == other._a * self._c and self._b * other._c == other._b * self._c
+
+        super()._richcmp_(other, op)
+
 
 class HyperbolicPoint(HyperbolicConvexSet):
     r"""
@@ -1229,10 +2254,16 @@ class HyperbolicPoint(HyperbolicConvexSet):
     disc of the Klein model.
     """
 
-    def __init__(self, parent, x, y):
+    def __init__(self, parent, x, y, check=True):
         super().__init__(parent)
         self._x = x
         self._y = y
+
+        if check and not self._is_valid():
+            raise ValueError("point is not in the unit disk in the Klein model")
+
+    def _is_valid(self):
+        return self._x*self._x + self._y*self._y <= 1
 
     def _half_spaces(self):
         r"""
@@ -1244,53 +2275,53 @@ class HyperbolicPoint(HyperbolicConvexSet):
             sage: H = HyperbolicPlane(QQ)
 
             sage: H(I)._half_spaces()
-            [{x ≥ 0}, {(x^2 + y^2) - 1 ≥ 0}, {(x^2 + y^2) + 2*x - 1 ≤ 0}]
+            [{(x^2 + y^2) + 2*x - 1 ≤ 0}, {x ≥ 0}, {(x^2 + y^2) - 1 ≥ 0}]
 
             sage: H(I + 1)._half_spaces()
-            [{(x^2 + y^2) - 3*x + 1 ≤ 0}, {(x^2 + y^2) - 2 ≥ 0}, {x - 1 ≤ 0}]
+            [{x - 1 ≤ 0}, {(x^2 + y^2) - 3*x + 1 ≤ 0}, {(x^2 + y^2) - 2 ≥ 0}]
 
             sage: H.infinity()._half_spaces()
             [{x ≤ 0}, {x - 1 ≥ 0}]
 
             sage: H(0)._half_spaces()
-            [{x ≥ 0}, {(x^2 + y^2) + x ≤ 0}]
+            [{(x^2 + y^2) + x ≤ 0}, {x ≥ 0}]
 
             sage: H(-1)._half_spaces()
-            [{(x^2 + y^2) - 1 ≤ 0}, {x + 1 ≤ 0}]
+            [{x + 1 ≤ 0}, {(x^2 + y^2) - 1 ≤ 0}]
 
             sage: H(1)._half_spaces()
-            [{(x^2 + y^2) - 1 ≥ 0}, {(x^2 + y^2) - x ≤ 0}]
+            [{(x^2 + y^2) - x ≤ 0}, {(x^2 + y^2) - 1 ≥ 0}]
 
             sage: H(2)._half_spaces()
             [{2*(x^2 + y^2) - 3*x - 2 ≥ 0}, {3*(x^2 + y^2) - 7*x + 2 ≤ 0}]
 
             sage: H(-2)._half_spaces()
-            [{2*(x^2 + y^2) + 3*x - 2 ≤ 0}, {(x^2 + y^2) - x - 6 ≥ 0}]
+            [{(x^2 + y^2) - x - 6 ≥ 0}, {2*(x^2 + y^2) + 3*x - 2 ≤ 0}]
 
             sage: H(1/2)._half_spaces()
-            [{2*(x^2 + y^2) + 3*x - 2 ≥ 0}, {6*(x^2 + y^2) - x - 1 ≤ 0}]
+            [{6*(x^2 + y^2) - x - 1 ≤ 0}, {2*(x^2 + y^2) + 3*x - 2 ≥ 0}]
 
             sage: H(-1/2)._half_spaces()
-            [{2*(x^2 + y^2) - 3*x - 2 ≤ 0}, {2*(x^2 + y^2) + 7*x + 3 ≤ 0}]
+            [{2*(x^2 + y^2) + 7*x + 3 ≤ 0}, {2*(x^2 + y^2) - 3*x - 2 ≤ 0}]
 
         """
         x0 = self._x
         y0 = self._y
 
         if self.is_finite():
-            return [
+            return HyperbolicPlane._merge_sort(
                 # x ≥ x0
-                self.parent().half_space(-x0, 1, 0, model="klein"),
+                [self.parent().half_space(-x0, 1, 0, model="klein")],
                 # y ≥ y0
-                self.parent().half_space(-y0, 0, 1, model="klein"),
+                [self.parent().half_space(-y0, 0, 1, model="klein")],
                 # x + y ≤ x0 + y0
-                self.parent().half_space(x0 + y0, -1, -1, model="klein")]
+                [self.parent().half_space(x0 + y0, -1, -1, model="klein")])
         else:
-            return [
+            return HyperbolicPlane._merge_sort(
                 # left of the line from (0, 0) to this point
-                self.parent().half_space(0, -y0, x0, model="klein"),
+                [self.parent().half_space(0, -y0, x0, model="klein")],
                 # right of a line to this point with a starting point right of (0, 0)
-                self.parent().half_space(-x0*x0 - y0*y0, y0 + x0, y0 - x0, model="klein")]
+                [self.parent().half_space(-x0*x0 - y0*y0, y0 + x0, y0 - x0, model="klein")])
 
     def is_finite(self):
         return self._x * self._x + self._y * self._y < 1
@@ -1310,15 +2341,21 @@ class HyperbolicPoint(HyperbolicConvexSet):
         """
         x, y = self._x, self._y
 
+        # TODO: Implement ring
+
         if model == "half_plane":
             denominator = 1 - y
             return (x / denominator, (1 - x*x - y*y).sqrt()/denominator)
+
+        if model == "klein":
+            return (x, y)
 
         raise NotImplementedError
 
     def _richcmp_(self, other, op):
         r"""
-        Return how this point compares to ``other``.
+        Return how this point compares to ``other``, see
+        :meth:`HyperbolicConvexSet._richcmp_`.
 
         EXAMPLES::
 
@@ -1340,7 +2377,7 @@ class HyperbolicPoint(HyperbolicConvexSet):
                 return False
             return self._x == other._x and self._y == other._y
 
-        raise NotImplementedError("cannot compare these subsets")
+        super()._richcmp_(other, op)
 
     def _repr_(self):
         if self._x == 0 and self._y == 1:
@@ -1349,6 +2386,11 @@ class HyperbolicPoint(HyperbolicConvexSet):
         x, y = self.coordinates()
 
         # We represent x + y*I in R[[I]] so we do not have to reimplement printing ourselves.
+        if x not in self.parent().base_ring() or y not in self.parent().base_ring():
+            x, y = self.coordinates(model="klein")
+            return f"({repr(x)}, {repr(y)})"
+
+        # TODO: This does not work when the coordinates are not in the base_ring.
         from sage.all import PowerSeriesRing
         return repr(PowerSeriesRing(self.parent().base_ring(), names="I")([x, y]))
 
@@ -1367,7 +2409,9 @@ class HyperbolicPoint(HyperbolicConvexSet):
 
         TESTS::
 
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
             sage: H = HyperbolicPlane(QQ)
+
             sage: for (a, b, c, d) in [(2, 1, 1, 1), (1, 1, 0, 1), (1, 0, 1, 1), (2, 0, 0 , 1)]:
             ....:     m = matrix(2, [a, b, c, d])
             ....:     assert H(0).apply_isometry(m) == H(b / d if d else oo)
@@ -1406,8 +2450,20 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
     i.e., the intersection of a finite number of :class:`HyperbolicHalfSpace`s.
     """
 
-    def __init__(self, parent, half_planes, assume_normalized=False):
-        raise NotImplementedError
+    def __init__(self, parent, half_spaces, assume_normalized=False, assume_sorted=False, check=True):
+        if check:
+            # TODO
+            raise NotImplementedError
+
+        if not assume_normalized:
+            # TODO
+            raise NotImplementedError
+
+        if not assume_sorted:
+            # TODO
+            raise NotImplementedError
+
+        self._half_spaces = half_spaces
 
     def _normalize(self):
         r"""
@@ -1437,6 +2493,12 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
         """
         raise NotImplementedError
 
+    def _half_spaces(self):
+        return self._half_spaces
+
+    def _repr_(self):
+        return " ∩ ".join([repr(half_space) for half_space in self._half_spaces])
+
 
 class HyperbolicEdge(HyperbolicConvexSet):
     r"""
@@ -1444,8 +2506,155 @@ class HyperbolicEdge(HyperbolicConvexSet):
     boundary edge of a :class:`HyperbolicConvexPolygon`.
     """
 
-    def __init__(self, geodesic, start=None, end=None):
-        raise NotImplementedError
+    def __init__(self, parent, geodesic, start=None, end=None, check=True):
+        super().__init__(parent)
+
+        # TODO: Add such type checks everywhere.
+        if not isinstance(geodesic, HyperbolicGeodesic):
+            raise TypeError("geodesic must be a hyperbolic geodesic")
+
+        if start is not None and not isinstance(start, HyperbolicPoint):
+            raise TypeError("start must be a hyperbolic point")
+
+        if end is not None and not isinstance(end, HyperbolicPoint):
+            raise TypeError("start must be a hyperbolic point")
+
+        self._geodesic = geodesic
+        self._start = start
+        self._end = end
+
+        # TODO: Properly report errors.
+        if check and not self._is_valid():
+            raise ValueError
+
+    def _is_valid(self):
+        if not self._geodesic._is_valid():
+            return False
+
+        if self._start is not None:
+            if not self._start._is_valid():
+                return False
+
+            if self._start not in self._geodesic:
+                return False
+
+        if self._end is not None:
+            if not self._end._is_valid():
+                return False
+
+            if self._end not in self._geodesic:
+                return False
+
+        if self._start is not None and self._end is not None:
+            if self._start == self._end:
+                return False
+
+        # TODO: Check that the endpoints are ordered correctly.
+
+        return True
+
+    def _restrict_to_disk(self):
+        r"""
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(QQ)
+
+        ::
+
+            sage: H.segment(H.vertical(-1), start=H.infinity(), end=H.infinity(), check=False)._restrict_to_disk()
+            ∞
+
+        ::
+
+            sage: H.segment(H.vertical(0), start=H.infinity(), end=None, check=False)._restrict_to_disk()
+            ∞
+
+        ::
+
+            sage: H.segment(-H.vertical(0), start=H.infinity(), end=None, check=False)._restrict_to_disk()
+            {x = 0}
+
+        ::
+
+            sage: H.segment(-H.vertical(0), start=None, end=H.infinity(), check=False)._restrict_to_disk()
+            ∞
+
+        """
+        if not self._geodesic._is_valid():
+            return self.parent().empty_set()
+
+        start = self._start
+        end = self._end
+
+        if start is not None:
+            λ_start = self._geodesic.parametrize(start, model="euclidean")
+
+        if end is not None:
+            λ_end = self._geodesic.parametrize(end, model="euclidean")
+
+        if start is not None and end is not None:
+            if λ_end < λ_start:
+                end = None
+            elif λ_start == λ_end:
+                return start if start._is_valid() else self.parent().empty_set()
+
+        if start is not None:
+            if not start._is_valid():
+                if λ_start > 0:
+                    return self.parent().empty_set()
+                start = None
+            elif not start.is_finite():
+                if λ_start > 0:
+                    return start
+                start = None
+
+        if end is not None:
+            if not end._is_valid():
+                if λ_end < 0:
+                    return self.parent().empty_set()
+                end = None
+            elif not end.is_finite():
+                if λ_end < 0:
+                    return end
+                end = None
+
+        if start is None and end is None:
+            return self._geodesic
+
+        assert (start is None or start._is_valid()) and (end is None or end._is_valid())
+
+        return self.parent().segment(self._geodesic, start=start, end=end)
+
+    def _half_spaces(self):
+        half_spaces = self._geodesic._half_spaces()
+
+        if self._start is not None:
+            x, y = self._start.coordinates(model="klein")
+            b, c = (self._geodesic._c, -self._geodesic._b)
+            half_spaces.append(self.parent().half_space(-b * x -c * y, b, c, model="klein"))
+
+        if self._end is not None:
+            x, y = self._end.coordinates(model="klein")
+            b, c = (-self._geodesic._c, self._geodesic._b)
+            half_spaces.append(self.parent().half_space(-b * x -c * y, b, c, model="klein"))
+
+        return half_spaces
+
+    def _repr_(self):
+        half_spaces = self._half_spaces()
+
+        geodesic = repr(self._geodesic)
+        start = ""
+        end = ""
+
+        if self._start is not None:
+            start = f" from {repr(half_spaces[2])}"
+
+        if self._end is not None:
+            end = f" to {repr(half_spaces[-1])}"
+
+        return f"{geodesic}{start}{end}"
 
 
 class HyperbolicEmptySet(HyperbolicConvexSet):
@@ -1460,6 +2669,8 @@ class HyperbolicEmptySet(HyperbolicConvexSet):
         r"""
         Return how this set compares to ``other``.
 
+        See :meth:`HyperbolicConvexSet._richcmp_`.
+
         EXAMPLES::
 
             sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
@@ -1470,15 +2681,12 @@ class HyperbolicEmptySet(HyperbolicConvexSet):
             True
 
         """
-        from sage.structure.richcmp import op_EQ, op_NE
+        from sage.structure.richcmp import rich_to_bool
 
-        if op == op_NE:
-            return not self._richcmp_(other, op_EQ)
+        if isinstance(other, HyperbolicEmptySet):
+            return rich_to_bool(op, 0)
 
-        if op == op_EQ:
-            return isinstance(other, HyperbolicEmptySet)
-
-        raise NotImplementedError("cannot order these subsets")
+        return rich_to_bool(op, -1)
 
     def _repr_(self):
         return "{}"
@@ -1495,6 +2703,7 @@ def sl2_to_so12(m):
     return matrix(3, [a*d + b*c, a*c - b*d, a*c + b*d,
                       a*b - c*d, (a**2 - b**2 - c**2 + d**2) / 2, (a**2 + b**2 - c**2 - d**2) / 2,
                       a*b + c*d, (a**2 - b**2 + c**2 - d**2) / 2, (a**2 + b**2 + c**2 + d**2) / 2])
+
 
 class Vertical(GraphicPrimitive):
     r"""
