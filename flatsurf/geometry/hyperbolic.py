@@ -78,7 +78,8 @@ The intersection of two geodesics might be an ideal point::
     ∞
 
 General convex subsets of the hyperbolic plane can be constructed by
-intersecting half spaces::
+intersecting half spaces; this way we can construct (possibly unbounded) convex
+polygons::
 
     sage: P = H.intersection(
     ....:   H.vertical(-1).right_half_space(),
@@ -88,7 +89,7 @@ intersecting half spaces::
     sage: P
     {x - 1 ≤ 0} ∩ {x + 1 ≥ 0} ∩ {(x^2 + y^2) - 2 ≥ 0}
 
-We can also intersect with objects that are not half spaces::
+We can also intersect objects that are not half spaces::
 
     sage: P.intersection(H.vertical(0))
     {x = 0} ∩ {(x^2 + y^2) - 2 ≥ 0}
@@ -144,7 +145,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
     computations without having to extend the base ring and we can also rely on
     starndard algorithms for geometry in the Euclidean plane.
 
-    For the Klein model, we use a unit disc centered at (0, 0). The map from
+    For the Klein model, we use a unit disk centered at (0, 0). The map from
     the Poincaré half plane sends the imaginary unit `i` to the center at the
     origin, and sends 0 to (0, -1), 1 to (1, 0), -1 to (-1, 0) and infinity to
     (0, 1). The Möbius transformation
@@ -153,9 +154,9 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         z \mapsto \frac{z-i}{1 - iz}
 
-    maps from the half plane model to the Poincaré disc model. We then
-    post-compose this with the map that goes from the Poincaré disc model to
-    the Klein disc model, which in polar coordinates sends
+    maps from the half plane model to the Poincaré disk model. We then
+    post-compose this with the map that goes from the Poincaré disk model to
+    the Klein model, which in polar coordinates sends
 
     .. MATH::
 
@@ -181,13 +182,13 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         a(x^2 + y^2) + bx + c = 0
 
-    which converts to an equation in the Klein disc as
+    which converts to an equation in the Klein model as
 
     .. MATH::
 
         (a + c) + bx + (a - c)y = 0.
 
-    Conversely, a geodesic's equation in the Klein disc
+    Conversely, a geodesic's equation in the Klein model
 
     .. MATH::
 
@@ -465,7 +466,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         When ``model`` is ``"half_plane"``, return the point `x + iy` in the upper half plane.
 
-        When ``model`` is ``"klein"``, return the point (x, y) in the Klein disc.
+        When ``model`` is ``"klein"``, return the point (x, y) in the Klein model.
 
         EXAMPLES::
 
@@ -889,7 +890,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             [{x ≤ 0}]
 
         But only if the inclusion is already present when extending the half
-        space from the Klein disk to the entire Euclidean plane::
+        space from the Klein model to the entire Euclidean plane::
 
             sage: H._reduce_trivially_redundant([H.vertical(0).left_half_space(), H.vertical(1).left_half_space()])
             [{x ≤ 0}, {x - 1 ≤ 0}]
@@ -1399,7 +1400,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         ALGORITHM:
 
-        When passing to the Klein disk, i.e., intersecting the polygon with the
+        When passing to the Klein model, i.e., intersecting the polygon with the
         unit disk, some of the edges of the (possibly unbounded) polygon
         described by the ``half_spaces`` are unnecessary because they are not
         intersecting the unit disk.
@@ -1922,12 +1923,12 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
             return b < 0 or (b == 0 and c < 0)
 
         if normal_points_left(b, c) != normal_points_left(B, C):
-            # The normal vectors of the half spaces in the Klein disk are in
+            # The normal vectors of the half spaces in the Klein model are in
             # different half planes, one is pointing left, one is pointing
             # right.
             return normal_points_left(b, c)
 
-        # The normal vectors of the half spaces in the Klein disk are in the
+        # The normal vectors of the half spaces in the Klein model are in the
         # same half plane, so we order them by slope.
         if b * B == 0:
             if b == B:
@@ -1998,7 +1999,7 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
     An oriented geodesic in the hyperbolic plane.
 
     Internally, we represent geodesics as the chords satisfying the equation `a
-    + bx + cy=0` in the unit disc of the Klein model.
+    + bx + cy=0` in the unit disk of the Klein model.
 
     The geodesic is oriented such that the half space `a + bx + cy ≥ 0` is on
     its left.
@@ -2429,7 +2430,7 @@ class HyperbolicPoint(HyperbolicConvexSet):
     A (possibly infinite) point in the :class:`HyperbolicPlane`.
 
     Internally, we represent a point as the Euclidean coordinates in the unit
-    disc of the Klein model.
+    disk of the Klein model.
     """
 
     def __init__(self, parent, x, y, check=True):
