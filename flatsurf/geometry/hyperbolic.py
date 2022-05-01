@@ -5,9 +5,78 @@ EXAMPLES::
 
     sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
 
-    sage: H = HyperbolicPlane(QQ)
+    sage: H = HyperbolicPlane()
 
-    TODO: More examples.
+Points in the hyperbolic plane can be specified directly with coordinates
+in the upper (complex) half plane::
+
+    sage: H(1 + I)
+    1 + I
+
+The hyperbolic plane is defined over a fixed base ring; the rationals if no
+base has been specified explicitly::
+
+    sage: H(sqrt(2) + I)
+    Traceback (most recent call last):
+    ...
+    TypeError: unable to convert sqrt(2) to a rational
+
+We can use a bigger (exact) field instead::
+
+    sage: HAA = HyperbolicPlane(AA)
+    sage: HAA(sqrt(2) + I)
+    1.414213562373095? + 1.000000000000000?*I
+
+Given two points in the hyperbolic plane, we can form the geodesic they lay on::
+
+    sage: a = H(I)
+    sage: b = H(2*I)
+    sage: H.geodesic(a, b)
+    {-x = 0}
+
+Note that such a geodesic is oriented. The orientation is such that when we
+replace the ``=`` in the above representation with a ``≥``, we obtain the half
+space on its left::
+
+    sage: H.geodesic(a, b).left_half_space()
+    {x ≤ 0}
+
+A vertical can also be specified directly::
+
+    sage: H.vertical(0)
+    {-x = 0}
+
+We can also create ideal, i.e., infinite, points in the hyperbolic plane and
+construct the geodesic that connects them::
+
+    sage: H(1)
+    1
+
+    sage: H(oo)
+    ∞
+
+    sage: H.geodesic(-1, 1)
+    {(x^2 + y^2) - 1 = 0}
+
+Again, the geodesic that is given by a half circle in the upper half plane can
+be created directly by providing its midpoint and the square of its radius::
+
+    sage: H.half_circle(0, 1)
+    {(x^2 + y^2) - 1 = 0}
+
+Geodesics can be interescted::
+
+    sage: H.half_circle(0, 1).intersection(H.vertical(0))
+    I
+
+    sage: H.half_circle(0, 1).intersection(H.half_circle(0, 2))
+    {}
+
+The intersection of two geodesics might be an ideal point::
+
+    sage: H.vertical(-1).intersection(H.vertical(1))
+    ∞
+
 
 """
 ######################################################################
@@ -40,7 +109,7 @@ from sage.plot.primitive import GraphicPrimitive
 
 class HyperbolicPlane(Parent, UniqueRepresentation):
     r"""
-    The hyperbolic plane over a base ring.
+    The hyperbolic plane.
 
     All objects in the plane must be specified over the given base ring. Note
     that, in some representations, objects might appear to live in a larger
@@ -54,8 +123,11 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
     ALGORITHM:
 
-    We do not use a fixed representation of the hyperbolic plane internally but
-    switch between the Poincaré half plane and the Klein model freely.
+    We usually display objects as if they were defined in the Poincaré half
+    plane model. However, internally, we store most objects in a representation
+    in the Klein model. In that model it tends to be easier to perform
+    computations without having to extend the base ring and we can also rely on
+    starndard algorithms for geometry in the Euclidean plane.
 
     For the Klein model, we use a unit disc centered at (0, 0). The map from
     the Poincaré half plane sends the imaginary unit `i` to the center at the
@@ -136,6 +208,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         sage: HyperbolicPlane()
         Hyperbolic Plane over Rational Field
+
 
     """
 
@@ -284,6 +357,14 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
                 raise NotImplementedError("cannot create a hyperbolic point from an element in a number field that does not contain the imaginary unit")
 
             return self.point(x.real(), x.imag(), model="half_plane")
+
+        from sage.all import SR
+        if x.parent() is SR:
+            return self.point(x.real(), x.imag(), model="half_plane")
+
+        from sage.categories.all import Rings
+        if x.parent() in Rings():
+            raise ValueError(f"cannot convert this element in {x.parent()} to the hyperbolic plane over {self.base_ring()}")
 
         raise NotImplementedError("cannot create a subset of the hyperbolic plane from this element yet.")
 
@@ -659,7 +740,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         half_spaces = HyperbolicPlane._merge_sort(*half_spaces)
 
-        return self._reduce(half_spaces)
+        return self._reduce(half_spaces, assume_sorted=True)
 
     @classmethod
     def _merge_sort(cls, *half_spaces):
@@ -724,7 +805,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
     # TODO: Move everything related to _reduce to HyperbolicConvexPolygon.
     # TODO: Add examples.
-    def _reduce(self, half_spaces):
+    def _reduce(self, half_spaces, assume_sorted=False):
         r"""
         Return a convex set describing the intersection of ``half_spaces``.
 
@@ -741,7 +822,10 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         * Determine of which nature (point, segment, line, polygon) the intersection of half spaces is and return the resulting set.
 
         """
-        half_spaces = self._reduce_trivially_redundant(half_spaces)
+        if not assume_sorted:
+            half_spaces = HyperbolicPlane._merge_sort(*[[half_space] for half_space in half_spaces])
+
+        half_spaces = self._reduce_trivially_redundant(half_spaces, assume_sorted=True)
 
         if not half_spaces:
             raise NotImplementedError("cannot model intersection of no half spaces yet")
@@ -767,7 +851,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         return self._intersection(half_spaces, assume_non_empty=True, assume_sorted=True, assume_no_point=True, assume_minimal=True)
 
     # TODO: Move reduce methods to specific subsets.
-    def _reduce_trivially_redundant(self, half_spaces):
+    def _reduce_trivially_redundant(self, half_spaces, assume_sorted=False):
         r"""
         Return a sublist of ``half_spaces`` without changing their intersection
         by removing some trivially redundant half spaces.
@@ -795,7 +879,17 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             sage: H._reduce_trivially_redundant([H.vertical(0).left_half_space(), H.vertical(1).left_half_space()])
             [{x ≤ 0}, {x - 1 ≤ 0}]
 
+        TESTS:
+
+        The intersection of two half circles centered at 0::
+
+            sage: H._reduce_trivially_redundant(H.half_circle(0, 1)._half_spaces() + H.half_circle(0, 2)._half_spaces())
+            [{(x^2 + y^2) - 1 ≤ 0}, {(x^2 + y^2) - 2 ≥ 0}]
+
         """
+        if not assume_sorted:
+            half_spaces = HyperbolicPlane._merge_sort(*[[half_space] for half_space in half_spaces])
+
         reduced = []
 
         for half_space in half_spaces:
@@ -1510,7 +1604,7 @@ class HyperbolicConvexSet(Element):
         r"""
         Return the intersection with the ``other`` convex set.
         """
-        return self.parent().intersection([self, other])
+        return self.parent().intersection(self, other)
 
     def __contains__(self, point):
         r"""
@@ -1774,9 +1868,13 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
 
         Parallel half spaces in the Klein model are ordered by inclusion::
 
-            sage: lt(H.vertical(1/2).left_half_space(), -H.half_circle(-1, 1).left_half_space())
+            sage: lt(-H.half_circle(-1, 1).left_half_space(), H.vertical(1/2).left_half_space())
             True
             sage: lt(-H.vertical(1/2).left_half_space(), H.half_circle(-1, 1).left_half_space())
+            True
+            sage: lt(H.half_circle(0, 2).left_half_space(), H.half_circle(0, 1).left_half_space())
+            True
+            sage: lt(H.half_circle(0, 1).right_half_space(), H.half_circle(0, 2).right_half_space())
             True
 
         Verify that comparisons are projective::
@@ -1819,10 +1917,10 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
             # The half spaces are parallel in the Klein model. We order them by
             # inclusion, i.e., by the offset in direction of the normal.
             if c * C:
-                cmp = (c * C).sign() * (a * C - A * c).sign()
+                cmp = c.sign() * (a * C - A * c).sign()
             else:
                 assert b * B
-                cmp = (b * B).sign() * (a * B - A * b).sign()
+                cmp = b.sign() * (a * B - A * b).sign()
 
         return cmp < 0
 
