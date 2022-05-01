@@ -91,7 +91,7 @@ intersecting half spaces::
 We can also intersect with objects that are not half spaces::
 
     sage: P.intersection(H.vertical(0))
-    {x = 0} to {(x^2 + y^2) - 2 ≥ 0}
+    {x = 0} ∩ {(x^2 + y^2) - 2 ≥ 0}
 
 """
 ######################################################################
@@ -1514,7 +1514,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             ....:   H.vertical(0).left_half_space(),
             ....:   H.vertical(0).right_half_space(),
             ....: ])
-            {x = 0} to {(x^2 + y^2) - 2 ≥ 0}
+            {x = 0} ∩ {(x^2 + y^2) - 2 ≥ 0}
 
         """
         # TODO: Make all assumptions clear in the interface.
@@ -2734,10 +2734,10 @@ class HyperbolicEdge(HyperbolicConvexSet):
         ::
 
             sage: H.segment(H.vertical(0), start=I, end=H.infinity(), check=False)._restrict_to_disk()
-            {-x = 0} from {(x^2 + y^2) - 1 ≥ 0}
+            {-x = 0} ∩ {(x^2 + y^2) - 1 ≥ 0}
 
             sage: H.segment(-H.vertical(0), start=H.infinity(), end=I, check=False)._restrict_to_disk()
-            {x = 0} to {(x^2 + y^2) - 1 ≥ 0}
+            {x = 0} ∩ {(x^2 + y^2) - 1 ≥ 0}
 
         """
         if not self._geodesic._is_valid():
@@ -2801,19 +2801,15 @@ class HyperbolicEdge(HyperbolicConvexSet):
         return half_spaces
 
     def _repr_(self):
-        half_spaces = self._half_spaces()
-
-        geodesic = repr(self._geodesic)
-        start = ""
-        end = ""
+        bounds = [repr(self._geodesic)]
 
         if self._start is not None:
-            start = f" from {repr(half_spaces[2])}"
+            bounds.append(repr(self._half_spaces()[2]))
 
         if self._end is not None:
-            end = f" to {repr(half_spaces[-1])}"
+            bounds.append(repr(self._half_spaces()[-1]))
 
-        return f"{geodesic}{start}{end}"
+        return " ∩ ".join(bounds)
 
     def _neg_(self):
         return self.parent().segment(-self._geodesic, self._end, self._start, check=False)
