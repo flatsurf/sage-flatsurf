@@ -77,6 +77,21 @@ The intersection of two geodesics might be an ideal point::
     sage: H.vertical(-1).intersection(H.vertical(1))
     ∞
 
+General convex subsets of the hyperbolic plane can be constructed by
+intersecting half spaces::
+
+    sage: P = H.intersection(
+    ....:   H.vertical(-1).right_half_space(),
+    ....:   H.vertical(1).left_half_space(),
+    ....:   H.half_circle(0, 2).left_half_space())
+
+    sage: P
+    {x - 1 ≤ 0} ∩ {x + 1 ≥ 0} ∩ {(x^2 + y^2) - 2 ≥ 0}
+
+We can also intersect with objects that are not half spaces::
+
+    sage: P.intersection(H.vertical(0))
+    {x = 0} to {(x^2 + y^2) - 2 ≥ 0}
 
 """
 ######################################################################
@@ -699,7 +714,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         return self.__make_element_class__(HyperbolicHalfSpace)(self, self.geodesic(a, b, c, model=model, check=check))
 
     def segment(self, geodesic, start=None, end=None, check=True):
-        return self.__make_element_class__(HyperbolicEdge)(self, geodesic, start, end, check=check)
+        return self.__make_element_class__(HyperbolicEdge)(self, self(geodesic), None if start is None else self(start), None if end is None else self(end), check=check)
 
     def intersection(self, *subsets):
         r"""
@@ -1194,7 +1209,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             sage: H._reduce_euclidean(
             ....:     half_spaces=H.infinity()._half_spaces(),
             ....:     boundary=H.vertical(1).right_half_space())
-            [{x - 1 ≥ 0}, {x ≤ 0}]
+            [{x ≤ 0}, {x - 1 ≥ 0}]
 
         An intersection which is a segment outside of the unit disk::
 
@@ -1204,10 +1219,10 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             ....:     H.half_space(-2, -2, 1, model="klein"),
             ....:     H.half_space(17/8, 2, -1, model="klein"),
             ....: ], boundary=H.vertical(0).left_half_space())
-            [{x ≤ 0},
+            [{(x^2 + y^2) + 4*x + 3 ≤ 0},
+             {x ≤ 0},
              {9*(x^2 + y^2) + 32*x + 25 ≥ 0},
-             {x ≥ 0},
-             {(x^2 + y^2) + 4*x + 3 ≤ 0}]
+             {x ≥ 0}]
 
         An intersection which is a polygon outside of the unit disk::
 
@@ -1217,10 +1232,10 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             ....:     H.half_space(-2, -2, 1, model="klein"),
             ....:     H.half_space(17/8, 2, -1, model="klein"),
             ....: ], boundary=H.half_space(17/8, 2, -1, model="klein"))
-            [{9*(x^2 + y^2) + 32*x + 25 ≥ 0},
-             {x ≥ 0},
-             {(x^2 + y^2) + 4*x + 3 ≤ 0},
-             {(x^2 + y^2) - 4*x + 1 ≥ 0}]
+            [{(x^2 + y^2) + 4*x + 3 ≤ 0},
+             {(x^2 + y^2) - 4*x + 1 ≥ 0},
+             {9*(x^2 + y^2) + 32*x + 25 ≥ 0},
+             {x ≥ 0}]
 
         An intersection which is an (unbounded) polygon touching the unit disk::
 
@@ -1228,7 +1243,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             ....:     H.vertical(-1).left_half_space(),
             ....:     H.vertical(1).right_half_space(),
             ....: ], boundary=H.vertical(1).right_half_space())
-            [{x - 1 ≥ 0}, {x + 1 ≤ 0}]
+            [{x + 1 ≤ 0}, {x - 1 ≥ 0}]
 
         An intersection which is a segment touching the unit disk::
 
@@ -1238,7 +1253,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             ....:     H.vertical(-1).left_half_space(),
             ....:     H.geodesic(-1, -2).right_half_space(),
             ....: ], boundary=H.vertical(0).left_half_space())
-            [{x ≤ 0}, {(x^2 + y^2) + 3*x + 2 ≥ 0}, {x ≥ 0}, {x + 1 ≤ 0}]
+            [{x + 1 ≤ 0}, {x ≤ 0}, {(x^2 + y^2) + 3*x + 2 ≥ 0}, {x ≥ 0}]
 
         An intersection which is a polygon inside the unit disk::
 
@@ -1276,7 +1291,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             ....:     H.geodesic(1/2, 2).left_half_space(),
             ....:     H.geodesic(-1/2, -2).right_half_space(),
             ....: ], boundary=H.geodesic(-1/2, -2).right_half_space())
-            [{2*(x^2 + y^2) + 5*x + 2 ≥ 0}, {2*(x^2 + y^2) - 5*x + 2 ≥ 0}]
+            [{2*(x^2 + y^2) - 5*x + 2 ≥ 0}, {2*(x^2 + y^2) + 5*x + 2 ≥ 0}]
 
         A segment in the unit disk with several superfluous half planes at infinity::
 
@@ -1310,7 +1325,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             ....:     H.geodesic(0, 1/3).left_half_space(),
             ....:     H.geodesic(0, -1/3).right_half_space(),
             ....: ], boundary=H.vertical(1).left_half_space())
-            [{x - 1 ≤ 0}, {x + 1 ≥ 0}, {(x^2 + y^2) + x ≥ 0}, {(x^2 + y^2) - x ≥ 0}]
+            [{(x^2 + y^2) - x ≥ 0}, {x - 1 ≤ 0}, {x + 1 ≥ 0}, {(x^2 + y^2) + x ≥ 0}]
 
         """
         # TODO: Make all other assumptions clear in the interface.
@@ -1363,7 +1378,12 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             else:
                 raise NotImplementedError(f"A and B are in unsupported configuration: {AB}")
 
-        return required_half_spaces
+        min = 0
+        for i, half_space in enumerate(required_half_spaces):
+            if HyperbolicHalfSpace._normal_lt(half_space, required_half_spaces[min]):
+                min = i
+
+        return required_half_spaces[min:] + required_half_spaces[:min]
 
     def _reduce_unit_disk(self, half_spaces, assume_sorted=False):
         r"""
@@ -1485,6 +1505,16 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             ....:     H.vertical(2).left_half_space(),
             ....:     H.geodesic(0, 1/2).left_half_space()])
             {(x^2 + y^2) - x ≥ 0} ∩ {x - 1 ≤ 0} ∩ {x + 1 ≥ 0} ∩ {(x^2 + y^2) + x ≥ 0}
+
+        A segment touching the inside of the unit disk::
+
+            sage: H._reduce_unit_disk([
+            ....:   H.vertical(1).left_half_space(),
+            ....:   H.half_circle(0, 2).left_half_space(),
+            ....:   H.vertical(0).left_half_space(),
+            ....:   H.vertical(0).right_half_space(),
+            ....: ])
+            {x = 0} to {(x^2 + y^2) - 2 ≥ 0}
 
         """
         # TODO: Make all assumptions clear in the interface.
@@ -2583,7 +2613,9 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
             # TODO
             raise NotImplementedError
 
-        self._half_spaces = half_spaces
+        super().__init__(parent)
+
+        self._halfspaces = half_spaces
 
     def _normalize(self):
         r"""
@@ -2614,10 +2646,10 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
         raise NotImplementedError
 
     def _half_spaces(self):
-        return self._half_spaces
+        return self._halfspaces
 
     def _repr_(self):
-        return " ∩ ".join([repr(half_space) for half_space in self._half_spaces])
+        return " ∩ ".join([repr(half_space) for half_space in self._halfspaces])
 
 
 class HyperbolicEdge(HyperbolicConvexSet):
@@ -2680,7 +2712,7 @@ class HyperbolicEdge(HyperbolicConvexSet):
             sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
             sage: H = HyperbolicPlane(QQ)
 
-        ::
+        TESTS::
 
             sage: H.segment(H.vertical(-1), start=H.infinity(), end=H.infinity(), check=False)._restrict_to_disk()
             ∞
@@ -2690,15 +2722,22 @@ class HyperbolicEdge(HyperbolicConvexSet):
             sage: H.segment(H.vertical(0), start=H.infinity(), end=None, check=False)._restrict_to_disk()
             ∞
 
-        ::
+            sage: H.segment(H.vertical(0), start=None, end=H.infinity(), check=False)._restrict_to_disk()
+            {-x = 0}
 
             sage: H.segment(-H.vertical(0), start=H.infinity(), end=None, check=False)._restrict_to_disk()
             {x = 0}
 
-        ::
-
             sage: H.segment(-H.vertical(0), start=None, end=H.infinity(), check=False)._restrict_to_disk()
             ∞
+
+        ::
+
+            sage: H.segment(H.vertical(0), start=I, end=H.infinity(), check=False)._restrict_to_disk()
+            {-x = 0} from {(x^2 + y^2) - 1 ≥ 0}
+
+            sage: H.segment(-H.vertical(0), start=H.infinity(), end=I, check=False)._restrict_to_disk()
+            {x = 0} to {(x^2 + y^2) - 1 ≥ 0}
 
         """
         if not self._geodesic._is_valid():
@@ -2775,6 +2814,20 @@ class HyperbolicEdge(HyperbolicConvexSet):
             end = f" to {repr(half_spaces[-1])}"
 
         return f"{geodesic}{start}{end}"
+
+    def _neg_(self):
+        return self.parent().segment(-self._geodesic, self._end, self._start, check=False)
+
+    def _richcmp_(self, other, op):
+        from sage.structure.richcmp import op_EQ, op_NE
+
+        if op == op_NE:
+            return not self._richcmp_(other, op_EQ)
+
+        if op == op_EQ:
+            if not isinstance(other, HyperbolicEdge):
+                return False
+            return self._geodesic == other._geodesic and self._start == other._start and self._end == other._end
 
 
 class HyperbolicEmptySet(HyperbolicConvexSet):
