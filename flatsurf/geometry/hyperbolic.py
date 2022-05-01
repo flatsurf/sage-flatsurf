@@ -925,6 +925,8 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
     def _reduce_euclidean_non_empty(self, half_spaces, assume_sorted=False):
         r"""
+        TODO: This documentation is not entirely accurate anymore.
+
         Return a half space whose (Euclidean) boundary intersects the boundary
         of the intersection of ``half_spaces`` in more than a point.
 
@@ -999,7 +1001,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         disk::
 
             sage: H._reduce_euclidean_non_empty(H.infinity()._half_spaces())
-            {x - 1 ≥ 0}
+            {x ≤ 0}
 
         An intersection which is a segment outside of the unit disk::
 
@@ -1009,7 +1011,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             ....:     H.half_space(-2, -2, 1, model="klein"),
             ....:     H.half_space(17/8, 2, -1, model="klein"),
             ....: ])
-            {x ≤ 0}
+            {x ≥ 0}
 
         An intersection which is a polygon outside of the unit disk::
 
@@ -1019,7 +1021,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             ....:     H.half_space(-2, -2, 1, model="klein"),
             ....:     H.half_space(17/8, 2, -1, model="klein"),
             ....: ])
-            {(x^2 + y^2) - 4*x + 1 ≥ 0}
+            {x ≥ 0}
 
         An intersection which is an (unbounded) polygon touching the unit disk::
 
@@ -1037,7 +1039,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             ....:     H.vertical(-1).left_half_space(),
             ....:     H.geodesic(-1, -2).right_half_space(),
             ....: ])
-            {x ≥ 0}
+            {x ≤ 0}
 
         An intersection which is a polygon inside the unit disk::
 
@@ -1047,7 +1049,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             ....:     H.geodesic(0, -1).right_half_space(),
             ....:     H.geodesic(0, 1).left_half_space(),
             ....: ])
-            {(x^2 + y^2) + x ≥ 0}
+            {x + 1 ≥ 0}
 
         A polygon which has no vertices inside the unit disk but intersects the unit disk::
 
@@ -1072,7 +1074,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             ....:     H.geodesic(1/2, 2).left_half_space(),
             ....:     H.geodesic(-1/2, -2).right_half_space(),
             ....: ])
-            {2*(x^2 + y^2) - 5*x + 2 ≥ 0}
+            {2*(x^2 + y^2) + 5*x + 2 ≥ 0}
 
         """
         if len(half_spaces) == 0:
@@ -1140,8 +1142,16 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
                 point = boundary.parametrize(λ, model="euclidean", check=False)
 
+        return self._reduce_extend_segment(half_spaces, point, assume_sorted=assume_sorted)
+
+    def _reduce_extend_segment(self, half_spaces, point, assume_sorted=False):
         if not assume_sorted:
             half_spaces = HyperbolicPlane._merge_sort(*[[half_space] for half_space in half_spaces])
+
+        # Randomly shuffle the half spaces so the loop below runs in expected linear time. (TODO: Is this true?)
+        from random import shuffle
+        random_half_spaces = half_spaces[:]
+        shuffle(random_half_spaces)
 
         # Extend the point to a segment
         for (i, half_space) in enumerate(half_spaces):
@@ -1168,10 +1178,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             else:
                 return half_space
 
-        # The point is the only point in the intersection.
-        x, y = point.coordinates(model="klein")
-
-        if x*x + y*y > 1:
+        if not point._is_valid():
             # The point is only ultra ideal, there is no actual intersection.
             return self.empty_set()
 
@@ -2293,7 +2300,7 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
             return "anti-parallel"
 
         tangent = (self._c, -self._b)
-        orientation = (-tangent[0] * other._b  - tangent[1] * other._c).sign()
+        orientation = (-tangent[0] * other._b - tangent[1] * other._c).sign()
 
         assert orientation != 0
 
@@ -2753,30 +2760,20 @@ class HyperbolicEdge(HyperbolicConvexSet):
         if end is not None:
             λ_end = self._geodesic.parametrize(end, model="euclidean")
 
-        if start is not None and end is not None:
-            if λ_end < λ_start:
+            if start is not None and λ_end < λ_start:
                 end = None
-            elif λ_start == λ_end:
-                return start if start._is_valid() else self.parent().empty_set()
+                del λ_end
 
         if start is not None:
-            if not start._is_valid():
+            if not start.is_finite():
                 if λ_start > 0:
-                    return self.parent().empty_set()
-                start = None
-            elif not start.is_finite():
-                if λ_start > 0:
-                    return start
+                    return self.parent().empty_set() if not start._is_valid() else start
                 start = None
 
         if end is not None:
-            if not end._is_valid():
+            if not end.is_finite():
                 if λ_end < 0:
-                    return self.parent().empty_set()
-                end = None
-            elif not end.is_finite():
-                if λ_end < 0:
-                    return end
+                    return self.parent().empty_set() if not end._is_valid() else end
                 end = None
 
         if start is None and end is None:
@@ -2792,12 +2789,12 @@ class HyperbolicEdge(HyperbolicConvexSet):
         if self._start is not None:
             x, y = self._start.coordinates(model="klein")
             b, c = (self._geodesic._c, -self._geodesic._b)
-            half_spaces.append(self.parent().half_space(-b * x -c * y, b, c, model="klein"))
+            half_spaces.append(self.parent().half_space(-b * x - c * y, b, c, model="klein"))
 
         if self._end is not None:
             x, y = self._end.coordinates(model="klein")
             b, c = (-self._geodesic._c, self._geodesic._b)
-            half_spaces.append(self.parent().half_space(-b * x -c * y, b, c, model="klein"))
+            half_spaces.append(self.parent().half_space(-b * x - c * y, b, c, model="klein"))
 
         return half_spaces
 
@@ -2871,6 +2868,7 @@ class HyperbolicEmptySet(HyperbolicConvexSet):
             True
         """
         return self
+
 
 def sl2_to_so12(m):
     r"""
