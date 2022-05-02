@@ -213,10 +213,9 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
       specified.
 
     - ``category`` -- the category for this object; if not specified, defaults
-      to sets with partial maps. Note that we do not use metric spaces here
-      since the elements of this space are convex subsets of the hyperbolic
-      plane and not just points so the elements do not satisfy the assumptions
-      of a metric space.
+      to sets. Note that we do not use metric spaces here since the elements of
+      this space are convex subsets of the hyperbolic plane and not just points
+      so the elements do not satisfy the assumptions of a metric space.
 
     EXAMPLES::
 
@@ -224,7 +223,6 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         sage: HyperbolicPlane()
         Hyperbolic Plane over Rational Field
-
 
     """
 
@@ -301,7 +299,8 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             [{}, ∞, 0, 1, -1, ...]
 
         """
-        # TODO: Return more elements.
+        from sage.all import ZZ
+
         return [self.empty_set(),
                 # Points
                 self.infinity(),
@@ -315,6 +314,16 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
                 # Half spaces
                 self.vertical(0).left_half_space(),
                 self.half_circle(0, 2).left_half_space(),
+                # An unbounded polygon
+                self.vertical(1).left_half_space().intersection(self.vertical(-1).right_half_space()),
+                # An unbounded polygon which is bounded in the Euclidean plane
+                self.vertical(1).left_half_space().intersection(self.vertical(-1).right_half_space()).intersection(self.geodesic(0, 1).left_half_space()).intersection(self.geodesic(0, -1).right_half_space()),
+                # A bounded polygon
+                self.geodesic(-ZZ(1)/3, 2).left_half_space().intersection(self.geodesic(ZZ(1)/3, -2).right_half_space()).intersection(self.geodesic(-ZZ(2)/3, 3).right_half_space()).intersection(self.geodesic(ZZ(2)/3, -3).left_half_space()),
+                # An unbounded segment
+                self.vertical(0).intersection(self.geodesic(-1, 1).left_half_space()),
+                # A bounded segment
+                self.vertical(0).intersection(self.geodesic(-2, 2).right_half_space()).intersection(self.geodesic(-ZZ(1)/2, ZZ(1)/2).left_half_space()),
                 ]
 
     def _element_constructor_(self, x):
@@ -351,7 +360,10 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             1
 
         """
-        if x.parent() is self:
+        from sage.all import parent
+        parent = parent(x)
+
+        if parent is self:
             return x
 
         from sage.all import Infinity
@@ -365,8 +377,8 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             return x.change_ring(self.base_ring())
 
         from sage.categories.all import NumberFields
-        if x.parent() in NumberFields():
-            K = x.parent()
+        if parent in NumberFields():
+            K = parent
 
             from sage.all import I
             if I not in K:
@@ -375,12 +387,12 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             return self.point(x.real(), x.imag(), model="half_plane")
 
         from sage.all import SR
-        if x.parent() is SR:
+        if parent is SR:
             return self.point(x.real(), x.imag(), model="half_plane")
 
         from sage.categories.all import Rings
-        if x.parent() in Rings():
-            raise ValueError(f"cannot convert this element in {x.parent()} to the hyperbolic plane over {self.base_ring()}")
+        if parent in Rings():
+            raise ValueError(f"cannot convert this element in {parent} to the hyperbolic plane over {self.base_ring()}")
 
         raise NotImplementedError("cannot create a subset of the hyperbolic plane from this element yet.")
 
@@ -1301,6 +1313,20 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             ....: ], boundary=H.geodesic(-1/2, -2).right_half_space())
             [{2*(x^2 + y^2) - 5*x + 2 ≥ 0}, {2*(x^2 + y^2) + 5*x + 2 ≥ 0}]
 
+        A pair of anti-parallel half planes in the upper half plane::
+
+            sage: H._reduce_euclidean([
+            ....:     H.vertical(1).left_half_space(),
+            ....:     H.vertical(-1).right_half_space(),
+            ....: ], boundary=H.vertical(1).left_half_space())
+            [{x - 1 ≤ 0}, {x + 1 ≥ 0}]
+
+            sage: H._reduce_euclidean([
+            ....:     H.vertical(1).left_half_space(),
+            ....:     H.vertical(-1).right_half_space(),
+            ....: ], boundary=H.vertical(-1).right_half_space())
+            [{x - 1 ≤ 0}, {x + 1 ≥ 0}]
+
         A segment in the unit disk with several superfluous half planes at infinity::
 
             sage: H._reduce_euclidean([
@@ -1374,6 +1400,9 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
                 elif BC == "negative":
                     required_half_spaces.append(B)
 
+                elif BC == "anti-parallel":
+                    required_half_spaces.append(B)
+
                 else:
                     raise NotImplementedError(f"B and C are in unsupported configuration: {BC}")
 
@@ -1381,6 +1410,9 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
                 required_half_spaces.append(B)
 
             elif AB == "anti-parallel":
+                required_half_spaces.append(B)
+
+            elif AB == "concave":
                 required_half_spaces.append(B)
 
             else:
@@ -1524,6 +1556,24 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             ....: ])
             {x = 0} ∩ {(x^2 + y^2) - 2 ≥ 0}
 
+        An unbounded polygon touching the unit disk from the inside::
+
+            sage: H._reduce_unit_disk([
+            ....:     H.vertical(1).left_half_space(),
+            ....:     H.vertical(-1).right_half_space(),
+            ....: ])
+            {x - 1 ≤ 0} ∩ {x + 1 ≥ 0}
+
+        A segment inside the unit disk::
+
+            sage: H._reduce_unit_disk([
+            ....:     H.vertical(0).right_half_space(),
+            ....:     H.vertical(0).left_half_space(),
+            ....:     H.geodesic(-2, 2).right_half_space(),
+            ....:     H.geodesic(-1/2, 1/2).left_half_space(),
+            ....: ])
+            {x = 0} ∩ {(x^2 + y^2) - 4 ≤ 0} ∩ {4*(x^2 + y^2) - 1 ≥ 0}
+
         """
         # TODO: Make all assumptions clear in the interface.
 
@@ -1541,8 +1591,8 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             B = half_spaces[i]
             C = half_spaces[(i + 1) % len(half_spaces)]
 
-            AB = A.boundary()._intersection(B.boundary())
-            BC = B.boundary()._intersection(C.boundary())
+            AB = None if A.boundary()._configuration(B.boundary()) == "concave" else A.boundary()._intersection(B.boundary())
+            BC = None if B.boundary()._configuration(C.boundary()) == "concave" else B.boundary()._intersection(C.boundary())
 
             segment = self.segment(B.boundary(), AB, BC, check=False)._restrict_to_disk()
 
@@ -2781,31 +2831,40 @@ class HyperbolicEdge(HyperbolicConvexSet):
 
         assert (start is None or start._is_valid()) and (end is None or end._is_valid())
 
+        if start == end:
+            return start
+
         return self.parent().segment(self._geodesic, start=start, end=end)
 
     def _half_spaces(self):
         half_spaces = self._geodesic._half_spaces()
 
         if self._start is not None:
-            x, y = self._start.coordinates(model="klein")
-            b, c = (self._geodesic._c, -self._geodesic._b)
-            half_spaces.append(self.parent().half_space(-b * x - c * y, b, c, model="klein"))
+            half_spaces.append(self._start_half_space())
 
         if self._end is not None:
-            x, y = self._end.coordinates(model="klein")
-            b, c = (-self._geodesic._c, self._geodesic._b)
-            half_spaces.append(self.parent().half_space(-b * x - c * y, b, c, model="klein"))
+            half_spaces.append(self._end_half_space())
 
-        return half_spaces
+        return HyperbolicPlane._merge_sort(*[[half_space] for half_space in half_spaces])
+
+    def _start_half_space(self):
+        x, y = self._start.coordinates(model="klein")
+        b, c = (self._geodesic._c, -self._geodesic._b)
+        return self.parent().half_space(-b * x - c * y, b, c, model="klein")
+
+    def _end_half_space(self):
+        x, y = self._end.coordinates(model="klein")
+        b, c = (-self._geodesic._c, self._geodesic._b)
+        return self.parent().half_space(-b * x - c * y, b, c, model="klein")
 
     def _repr_(self):
         bounds = [repr(self._geodesic)]
 
         if self._start is not None:
-            bounds.append(repr(self._half_spaces()[2]))
+            bounds.append(repr(self._start_half_space()))
 
         if self._end is not None:
-            bounds.append(repr(self._half_spaces()[-1]))
+            bounds.append(repr(self._end_half_space()))
 
         return " ∩ ".join(bounds)
 
