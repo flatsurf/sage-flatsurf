@@ -812,7 +812,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             if not isinstance(end, HyperbolicPoint):
                 raise TypeError("end must be a point")
 
-        segment = self.__make_element_class__(HyperbolicEdge)(self, geodesic, start, end)
+        segment = self.__make_element_class__(HyperbolicSegment)(self, geodesic, start, end)
 
         if check:
             segment._check(require_normalized=False)
@@ -858,70 +858,9 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         half_spaces = [subset._half_spaces() for subset in subsets]
 
-        half_spaces = HyperbolicPlane._merge_sort(*half_spaces)
+        half_spaces = HyperbolicHalfSpace._merge_sorted(*half_spaces)
 
         return self._reduce(half_spaces, assume_sorted=True)
-
-    @classmethod
-    def _merge_sort(cls, *half_spaces):
-        r"""
-        Return the merge of lists of ``half_spaces``.
-
-        The lists are assumed to be sorted by
-        :meth:`HyperbolicHalfSpace._normal_lt` and are merged into a single
-        list with that sorting.
-
-        Naturally, when there are a lot of short lists, such a merge sort takes
-        quasi-linear time. However, when there are only a few lists, this runs
-        in linear time.
-
-        EXAMPLES::
-
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
-            sage: H = HyperbolicPlane()
-
-            sage: HyperbolicPlane._merge_sort()
-            []
-
-            sage: HyperbolicPlane._merge_sort(H.real(0)._half_spaces())
-            [{(x^2 + y^2) + x ≤ 0}, {x ≥ 0}]
-
-            sage: HyperbolicPlane._merge_sort(H.real(0)._half_spaces(), H.real(0)._half_spaces())
-            [{(x^2 + y^2) + x ≤ 0}, {(x^2 + y^2) + x ≤ 0}, {x ≥ 0}, {x ≥ 0}]
-
-            sage: HyperbolicPlane._merge_sort(*[[half_space] for half_space in H.real(0)._half_spaces() * 2])
-            [{(x^2 + y^2) + x ≤ 0}, {(x^2 + y^2) + x ≤ 0}, {x ≥ 0}, {x ≥ 0}]
-
-        """
-        count = len(half_spaces)
-
-        if count == 0:
-            return []
-
-        if count == 1:
-            return half_spaces[0]
-
-        # The non-trivial base case.
-        if count == 2:
-            A = half_spaces[0]
-            B = half_spaces[1]
-            merged = []
-
-            while A and B:
-                if HyperbolicHalfSpace._normal_lt(A[-1], B[-1]):
-                    merged.append(B.pop())
-                else:
-                    merged.append(A.pop())
-
-            merged.reverse()
-
-            return A + B + merged
-
-        # Divide & Conquer recursively.
-        return HyperbolicPlane._merge_sort(*(
-            HyperbolicPlane._merge_sort(*half_spaces[: count // 2]),
-            HyperbolicPlane._merge_sort(*half_spaces[count // 2:])
-            ))
 
     # TODO: Move everything related to _reduce to HyperbolicConvexPolygon.
     # TODO: Add examples.
@@ -929,7 +868,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         r"""
         Return a convex set describing the intersection of ``half_spaces``.
 
-        The ``half_spaces`` are assumed to be sorted by :meth:`HyperbolicHalfSpace._normal_lt`.
+        The ``half_spaces`` are assumed to be sorted by :meth:`HyperbolicHalfSpace._less_than`.
 
         ALGORITHM:
 
@@ -943,7 +882,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         """
         if not assume_sorted:
-            half_spaces = HyperbolicPlane._merge_sort(*[[half_space] for half_space in half_spaces])
+            half_spaces = HyperbolicHalfSpace._merge_sorted(*[[half_space] for half_space in half_spaces])
 
         half_spaces = self._reduce_trivially_redundant(half_spaces, assume_sorted=True)
 
@@ -976,7 +915,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         Return a sublist of ``half_spaces`` without changing their intersection
         by removing some trivially redundant half spaces.
 
-        The ``half_spaces`` are assumed to be sorted consistent with :meth:`_normal_lt`.
+        The ``half_spaces`` are assumed to be sorted consistent with :meth:`HyperbolicHalfSpace._less_than`.
 
         EXAMPLES::
 
@@ -1008,7 +947,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         """
         if not assume_sorted:
-            half_spaces = HyperbolicPlane._merge_sort(*[[half_space] for half_space in half_spaces])
+            half_spaces = HyperbolicHalfSpace._merge_sorted(*[[half_space] for half_space in half_spaces])
 
         reduced = []
 
@@ -1045,7 +984,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         intersection is a point in the hyperbolic plane, return that point.
 
         The ``half_spaces`` must be sorted with respect to
-        :meth:`HyperbolicHalfSpace._normal_lt`.
+        :meth:`HyperbolicHalfSpace._less_than`.
 
         ALGORITHM:
 
@@ -1250,7 +1189,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
     def _reduce_extend_segment(self, half_spaces, point, assume_sorted=False):
         if not assume_sorted:
-            half_spaces = HyperbolicPlane._merge_sort(*[[half_space] for half_space in half_spaces])
+            half_spaces = HyperbolicHalfSpace._merge_sorted(*[[half_space] for half_space in half_spaces])
 
         # Randomly shuffle the half spaces so the loop below runs in expected linear time. (TODO: Is this true?)
         from random import shuffle
@@ -1457,7 +1396,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         # TODO: Make all other assumptions clear in the interface.
 
         if not assume_sorted:
-            half_spaces = HyperbolicPlane._merge_sort(*[[half_space] for half_space in half_spaces])
+            half_spaces = HyperbolicHalfSpace._merge_sorted(*[[half_space] for half_space in half_spaces])
 
         half_spaces = half_spaces[half_spaces.index(boundary):] + half_spaces[:half_spaces.index(boundary)]
         half_spaces.reverse()
@@ -1512,7 +1451,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         min = 0
         for i, half_space in enumerate(required_half_spaces):
-            if HyperbolicHalfSpace._normal_lt(half_space, required_half_spaces[min]):
+            if HyperbolicHalfSpace._less_than(half_space, required_half_spaces[min]):
                 min = i
 
         return required_half_spaces[min:] + required_half_spaces[:min]
@@ -1670,7 +1609,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         # TODO: Make all assumptions clear in the interface.
 
         if not assume_sorted:
-            half_spaces = HyperbolicPlane._merge_sort(*[[half_space] for half_space in half_spaces])
+            half_spaces = HyperbolicHalfSpace._merge_sorted(*[[half_space] for half_space in half_spaces])
 
         required_half_spaces = []
 
@@ -1755,13 +1694,45 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 class HyperbolicConvexSet(Element):
     r"""
     Base class for convex subsets of :class:`HyperbolicPlane`.
+
+    .. NOTE::
+
+        Concrete subclasses should apply the following rules.
+
+        There should only be a single type to describe a certain subset:
+        normally, a certain subset, say a point, should only described by a
+        single class, namely :class:`HyperbolicPoint`. Of course, one could
+        describe a point as a polygon delimited by some edges that all
+        intersect in that single point, such objects should be avoided. Namely,
+        the methods that create a subset, say :meth:`HyperbolicPlane.polygon`
+        take care of this by calling a sets
+        :meth:`HyperbolicConvexSet._normalize` to rewrite a set in its most
+        natural representation. To get the denormalized representation, we can
+        always set `check=False` when creating the object. For this to work,
+        the `__init__` should not take care of any such normalization and
+        accept any input that can possibly be made sense of.
+
+        Comparison with :meth:`_richcmp_` should compare by inclusion of sets:
+        Care has to be taken when implementing hashing here since it must be
+        consistent with that partial ordering. In particular, we cannot assume
+        that all objects are normalized, i.e., an object must return the hash
+        of its normalization.
+
+    TESTS::
+
+        sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicConvexSet
+        sage: H = HyperbolicPlane()
+
+        sage: isinstance(H(0), HyperbolicConvexSet)
+        True
+
     """
 
     def _half_spaces(self):
         r"""
         Return a minimal set of half spaces whose intersection is this convex set.
 
-        The half spaces are ordered by :meth:`HyperbolicGeodesic._normal_key`.
+        The half spaces are ordered by :meth:`HyperbolicHalfSpace._less_than`.
 
         EXAMPLES::
 
@@ -1787,7 +1758,7 @@ class HyperbolicConvexSet(Element):
 
         If ``require_normalized``, we also check that the object has the
         correct implementation class, e.g., that a point is a
-        :class:`HyperbolicPoint` and not say a :class:`HyperbolicEdge` of
+        :class:`HyperbolicPoint` and not say a :class:`HyperbolicSegment` of
         length zero.
         """
         pass
@@ -1798,7 +1769,7 @@ class HyperbolicConvexSet(Element):
 
         This method is only relevant for sets created with ``check=False``.
         Such sets might have been created in a non-canonical way, e.g., when
-        creating a :class:`HyperbolicEdge` whose start and end point are ideal,
+        creating a :class:`HyperbolicSegment` whose start and end point are ideal,
         then this is actually a geodesic and it shuold be described as such.
         """
         return self
@@ -2024,9 +1995,73 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
         """
         return self._geodesic.right_half_space()
 
-    def _normal_lt(self, other):
+    @staticmethod
+    def _merge_sorted(*half_spaces):
         r"""
-        Return whether this half space is smaller than ``other`` in a cyclic
+        Return the merge of lists of ``half_spaces``.
+
+        The lists are assumed to be sorted by
+        :meth:`HyperbolicHalfSpace._less_than` and are merged into a single
+        list with that sorting.
+
+        Naturally, when there are a lot of short lists, such a merge sort takes
+        quasi-linear time. However, when there are only a few lists, this runs
+        in linear time.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicHalfSpace
+            sage: H = HyperbolicPlane()
+
+            sage: HyperbolicHalfSpace._merge_sorted()
+            []
+
+            sage: HyperbolicHalfSpace._merge_sorted(H.real(0)._half_spaces())
+            [{(x^2 + y^2) + x ≤ 0}, {x ≥ 0}]
+
+            sage: HyperbolicHalfSpace._merge_sorted(H.real(0)._half_spaces(), H.real(0)._half_spaces())
+            [{(x^2 + y^2) + x ≤ 0}, {(x^2 + y^2) + x ≤ 0}, {x ≥ 0}, {x ≥ 0}]
+
+            sage: HyperbolicHalfSpace._merge_sorted(*[[half_space] for half_space in H.real(0)._half_spaces() * 2])
+            [{(x^2 + y^2) + x ≤ 0}, {(x^2 + y^2) + x ≤ 0}, {x ≥ 0}, {x ≥ 0}]
+
+        """
+
+        # A standard merge-sort implementation.
+        count = len(half_spaces)
+
+        if count == 0:
+            return []
+
+        if count == 1:
+            return half_spaces[0]
+
+        # The non-trivial base case.
+        if count == 2:
+            A = half_spaces[0]
+            B = half_spaces[1]
+            merged = []
+
+            while A and B:
+                if HyperbolicHalfSpace._less_than(A[-1], B[-1]):
+                    merged.append(B.pop())
+                else:
+                    merged.append(A.pop())
+
+            merged.reverse()
+
+            return A + B + merged
+
+        # Divide & Conquer recursively.
+        return HyperbolicHalfSpace._merge_sorted(*(
+            HyperbolicHalfSpace._merge_sorted(*half_spaces[: count // 2]),
+            HyperbolicHalfSpace._merge_sorted(*half_spaces[count // 2:])
+            ))
+
+    @staticmethod
+    def _less_than(lhs, rhs):
+        r"""
+        Return whether the half space ``lhs`` is smaller than ``rhs`` in a cyclic
         ordering of normal vectors, i.e., in an ordering that half spaces
         whether their normal points to the left/right, the slope of the
         geodesic, and finally by containment.
@@ -2039,66 +2074,64 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
             sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicHalfSpace
             sage: H = HyperbolicPlane(QQ)
 
-            sage: lt = HyperbolicHalfSpace._normal_lt
-
         A half space is equal to itself::
 
-            sage: lt(H.vertical(0).left_half_space(), H.vertical(0).left_half_space())
+            sage: HyperbolicHalfSpace._less_than(H.vertical(0).left_half_space(), H.vertical(0).left_half_space())
             False
 
         A half space whose normal in the Klein model points to the left is
         smaller than one whose normal points to the right::
 
-            sage: lt(H.vertical(1).left_half_space(), H.half_circle(0, 1).left_half_space())
+            sage: HyperbolicHalfSpace._less_than(H.vertical(1).left_half_space(), H.half_circle(0, 1).left_half_space())
             True
-            sage: lt(H.vertical(0).left_half_space(), -H.vertical(0).left_half_space())
+            sage: HyperbolicHalfSpace._less_than(H.vertical(0).left_half_space(), -H.vertical(0).left_half_space())
             True
-            sage: lt(-H.half_circle(-1, 1).left_half_space(), -H.vertical(1).left_half_space())
+            sage: HyperbolicHalfSpace._less_than(-H.half_circle(-1, 1).left_half_space(), -H.vertical(1).left_half_space())
             True
-            sage: lt(-H.half_circle(-1, 1).left_half_space(), -H.vertical(1/2).left_half_space())
+            sage: HyperbolicHalfSpace._less_than(-H.half_circle(-1, 1).left_half_space(), -H.vertical(1/2).left_half_space())
             True
-            sage: lt(H.vertical(1).left_half_space(), H.half_circle(-1, 1).left_half_space())
+            sage: HyperbolicHalfSpace._less_than(H.vertical(1).left_half_space(), H.half_circle(-1, 1).left_half_space())
             True
-            sage: lt(H.vertical(1/2).left_half_space(), H.half_circle(-1, 1).left_half_space())
+            sage: HyperbolicHalfSpace._less_than(H.vertical(1/2).left_half_space(), H.half_circle(-1, 1).left_half_space())
             True
 
         Half spaces are ordered by the slope of their normal in the Klein model::
 
-            sage: lt(H.vertical(-1).left_half_space(), H.vertical(1).left_half_space())
+            sage: HyperbolicHalfSpace._less_than(H.vertical(-1).left_half_space(), H.vertical(1).left_half_space())
             True
-            sage: lt(-H.half_circle(-1, 1).left_half_space(), H.vertical(1).left_half_space())
+            sage: HyperbolicHalfSpace._less_than(-H.half_circle(-1, 1).left_half_space(), H.vertical(1).left_half_space())
             True
-            sage: lt(H.half_circle(-1, 1).left_half_space(), -H.vertical(1).left_half_space())
+            sage: HyperbolicHalfSpace._less_than(H.half_circle(-1, 1).left_half_space(), -H.vertical(1).left_half_space())
             True
-            sage: lt(H.vertical(0).left_half_space(), H.vertical(1).left_half_space())
+            sage: HyperbolicHalfSpace._less_than(H.vertical(0).left_half_space(), H.vertical(1).left_half_space())
             True
 
         Parallel half spaces in the Klein model are ordered by inclusion::
 
-            sage: lt(-H.half_circle(-1, 1).left_half_space(), H.vertical(1/2).left_half_space())
+            sage: HyperbolicHalfSpace._less_than(-H.half_circle(-1, 1).left_half_space(), H.vertical(1/2).left_half_space())
             True
-            sage: lt(-H.vertical(1/2).left_half_space(), H.half_circle(-1, 1).left_half_space())
+            sage: HyperbolicHalfSpace._less_than(-H.vertical(1/2).left_half_space(), H.half_circle(-1, 1).left_half_space())
             True
-            sage: lt(H.half_circle(0, 2).left_half_space(), H.half_circle(0, 1).left_half_space())
+            sage: HyperbolicHalfSpace._less_than(H.half_circle(0, 2).left_half_space(), H.half_circle(0, 1).left_half_space())
             True
-            sage: lt(H.half_circle(0, 1).right_half_space(), H.half_circle(0, 2).right_half_space())
+            sage: HyperbolicHalfSpace._less_than(H.half_circle(0, 1).right_half_space(), H.half_circle(0, 2).right_half_space())
             True
 
         Verify that comparisons are projective::
 
-            sage: lt(H.geodesic(5, -5, -1, model="half_plane").left_half_space(), H.geodesic(5/13, -5/13, -1/13, model="half_plane").left_half_space())
+            sage: HyperbolicHalfSpace._less_than(H.geodesic(5, -5, -1, model="half_plane").left_half_space(), H.geodesic(5/13, -5/13, -1/13, model="half_plane").left_half_space())
             False
-            sage: lt(H.geodesic(5/13, -5/13, -1/13, model="half_plane").left_half_space(), H.geodesic(5, -5, -1, model="half_plane").left_half_space())
+            sage: HyperbolicHalfSpace._less_than(H.geodesic(5/13, -5/13, -1/13, model="half_plane").left_half_space(), H.geodesic(5, -5, -1, model="half_plane").left_half_space())
             False
 
         """
-        a, b, c = self._geodesic._a, self._geodesic._b, self._geodesic._c
-        A, B, C = other._geodesic._a, other._geodesic._b, other._geodesic._c
+        a, b, c = lhs.equation(model="klein")
+        aa, bb, cc = rhs.equation(model="klein")
 
         def normal_points_left(b, c):
             return b < 0 or (b == 0 and c < 0)
 
-        if normal_points_left(b, c) != normal_points_left(B, C):
+        if normal_points_left(b, c) != normal_points_left(bb, cc):
             # The normal vectors of the half spaces in the Klein model are in
             # different half planes, one is pointing left, one is pointing
             # right.
@@ -2106,8 +2139,8 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
 
         # The normal vectors of the half spaces in the Klein model are in the
         # same half plane, so we order them by slope.
-        if b * B == 0:
-            if b == B:
+        if b * bb == 0:
+            if b == bb:
                 # The normals are vertical and in the same half plane, so
                 # they must be equal. We will order the half spaces by
                 # inclusion later.
@@ -2115,19 +2148,19 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
             else:
                 # Exactly one of the normals is vertical; we order half spaces
                 # such that that one is bigger.
-                return B == 0
+                return bb == 0
         else:
             # Order by the slope of the normal.
-            cmp = (b * B).sign() * (c * B - C * b).sign()
+            cmp = (b * bb).sign() * (c * bb - cc * b).sign()
 
         if cmp == 0:
             # The half spaces are parallel in the Klein model. We order them by
             # inclusion, i.e., by the offset in direction of the normal.
-            if c * C:
-                cmp = c.sign() * (a * C - A * c).sign()
+            if c * cc:
+                cmp = c.sign() * (a * cc - aa * c).sign()
             else:
-                assert b * B
-                cmp = b.sign() * (a * B - A * b).sign()
+                assert b * bb
+                cmp = b.sign() * (a * bb - aa * b).sign()
 
         return cmp < 0
 
@@ -2230,7 +2263,7 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
             [{x ≤ 0}, {x ≥ 0}]
 
         """
-        return HyperbolicPlane._merge_sort([self.left_half_space()], [self.right_half_space()])
+        return HyperbolicHalfSpace._merge_sorted([self.left_half_space()], [self.right_half_space()])
 
     def start(self):
         r"""
@@ -2681,7 +2714,7 @@ class HyperbolicPoint(HyperbolicConvexSet):
         y0 = self._y
 
         if self.is_finite():
-            return HyperbolicPlane._merge_sort(
+            return HyperbolicHalfSpace._merge_sorted(
                 # x ≥ x0
                 [self.parent().half_space(-x0, 1, 0, model="klein")],
                 # y ≥ y0
@@ -2689,7 +2722,7 @@ class HyperbolicPoint(HyperbolicConvexSet):
                 # x + y ≤ x0 + y0
                 [self.parent().half_space(x0 + y0, -1, -1, model="klein")])
         else:
-            return HyperbolicPlane._merge_sort(
+            return HyperbolicHalfSpace._merge_sorted(
                 # left of the line from (0, 0) to this point
                 [self.parent().half_space(0, -y0, x0, model="klein")],
                 # right of a line to this point with a starting point right of (0, 0)
@@ -2832,7 +2865,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
 
     def edges(self):
         r"""
-        Return the :class:`HyperbolicEdge`s defining this polygon.
+        Return the :class:`HyperbolicSegment`s and :class:`HyperbolicGeodesic`s defining this polygon.
         """
         raise NotImplementedError
 
@@ -2850,7 +2883,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
         return " ∩ ".join([repr(half_space) for half_space in self._halfspaces])
 
 
-class HyperbolicEdge(HyperbolicConvexSet):
+class HyperbolicSegment(HyperbolicConvexSet):
     r"""
     An oriented (possibly infinite) segment in the hyperbolic plane such as a
     boundary edge of a :class:`HyperbolicConvexPolygon`.
@@ -3015,7 +3048,7 @@ class HyperbolicEdge(HyperbolicConvexSet):
         if self._end is not None:
             half_spaces.append(self._end_half_space())
 
-        return HyperbolicPlane._merge_sort(*[[half_space] for half_space in half_spaces])
+        return HyperbolicHalfSpace._merge_sorted(*[[half_space] for half_space in half_spaces])
 
     def _start_half_space(self):
         x, y = self._start.coordinates(model="klein")
@@ -3048,7 +3081,7 @@ class HyperbolicEdge(HyperbolicConvexSet):
             return not self._richcmp_(other, op_EQ)
 
         if op == op_EQ:
-            if not isinstance(other, HyperbolicEdge):
+            if not isinstance(other, HyperbolicSegment):
                 return False
             return self._geodesic == other._geodesic and self._start == other._start and self._end == other._end
 
