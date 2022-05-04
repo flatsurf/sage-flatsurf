@@ -266,7 +266,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         """
         if not base_ring.is_exact():
-            # Much of the implementation might work over ineaxct rings,
+            # Much of the implementation might work over inexact rings,
             # * we did not really worry about precision issues here so unit
             #   tests should be added to check that everything works.
             # * if +infinity is in the base ring, then there might be problems
@@ -2363,6 +2363,7 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
         if orientation > 0:
             return "convex"
 
+        # TODO: Use the bounding-box trick to get mostly rid of concave cases.
         return "concave"
 
     def _intersection(self, other):
