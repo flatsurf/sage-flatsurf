@@ -224,6 +224,11 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         sage: HyperbolicPlane()
         Hyperbolic Plane over Rational Field
 
+    ::
+
+        sage: HyperbolicPlane(AA)
+        Hyperbolic Plane over Algebraic Real Field
+
     """
 
     @staticmethod
