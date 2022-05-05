@@ -822,6 +822,130 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         return segment
 
     def polygon(self, half_spaces, check=True, assume_sorted=False, assume_minimal=False):
+        r"""
+        Return the convex polygon obtained by intersecting ``half_spaces``.
+
+        See :meth:`intersection` for algorithmic details.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+        A finite convex polygon::
+
+            sage: H.polygon([
+            ....:   H.vertical(1).left_half_space(),
+            ....:   H.vertical(-1).right_half_space(),
+            ....:   H.half_circle(0, 2).left_half_space(),
+            ....:   H.half_circle(0, 4).right_half_space(),
+            ....: ])
+            {x - 1 ≤ 0} ∩ {(x^2 + y^2) - 4 ≤ 0} ∩ {x + 1 ≥ 0} ∩ {(x^2 + y^2) - 2 ≥ 0}
+
+        Redundant half spaces are removed from the final representation::
+
+            sage: H.polygon([
+            ....:   H.vertical(1).left_half_space(),
+            ....:   H.vertical(-1).right_half_space(),
+            ....:   H.half_circle(0, 2).left_half_space(),
+            ....:   H.half_circle(0, 4).right_half_space(),
+            ....:   H.half_circle(0, 6).right_half_space(),
+            ....: ])
+            {x - 1 ≤ 0} ∩ {(x^2 + y^2) - 4 ≤ 0} ∩ {x + 1 ≥ 0} ∩ {(x^2 + y^2) - 2 ≥ 0}
+
+        The vertices of the polygon can be at ideal points; this polygon has
+        vertices at -1 and 1::
+
+            sage: H.polygon([
+            ....:   H.vertical(1).left_half_space(),
+            ....:   H.vertical(-1).right_half_space(),
+            ....:   H.half_circle(0, 1).left_half_space(),
+            ....:   H.half_circle(0, 4).right_half_space(),
+            ....: ])
+            {x - 1 ≤ 0} ∩ {(x^2 + y^2) - 4 ≤ 0} ∩ {x + 1 ≥ 0} ∩ {(x^2 + y^2) - 1 ≥ 0}
+
+        Any set of half spaces defines a polygon, even if the edges do not even
+        meed at ideal points::
+
+            sage: H.polygon([
+            ....:   H.half_circle(0, 1).left_half_space(),
+            ....:   H.half_circle(0, 2).right_half_space(),
+            ....: ])
+            {(x^2 + y^2) - 2 ≤ 0} ∩ {(x^2 + y^2) - 1 ≥ 0}
+
+        However, when the resulting set is point, the result is not represented
+        as a polygon anymore::
+
+            sage: H.polygon([
+            ....:   H.vertical(-1).left_half_space(),
+            ....:   H.vertical(1).right_half_space(),
+            ....: ])
+            ∞
+
+        We can force the creation of this set as a polygon which might be
+        beneficial in some algorithmic applications::
+
+            sage: H.polygon([
+            ....:   H.vertical(-1).left_half_space(),
+            ....:   H.vertical(1).right_half_space(),
+            ....: ], check=False, assume_minimal=True)
+            {x + 1 ≤ 0} ∩ {x - 1 ≥ 0}
+
+        Note that forcing this mode does not remove redundant half spaces from
+        the representation; we usually assume that the representation is
+        minimal, so such a polygon might not behave correctly::
+
+            sage: H.polygon([
+            ....:   H.vertical(-1).left_half_space(),
+            ....:   H.vertical(1).right_half_space(),
+            ....:   H.vertical(2).right_half_space(),
+            ....: ], check=False, assume_minimal=True)
+            {x + 1 ≤ 0} ∩ {x - 1 ≥ 0} ∩ {x - 2 ≥ 0}
+
+        We could manually pass to a minimal representation by rewriting the
+        point as half spaces again::
+
+            sage: minimal = H.polygon([
+            ....:   H.vertical(-1).left_half_space(),
+            ....:   H.vertical(1).right_half_space(),
+            ....:   H.vertical(2).right_half_space(),
+            ....: ])
+            sage: H.polygon(minimal._half_spaces(), check=False, assume_minimal=True)
+            {x ≤ 0} ∩ {x - 1 ≥ 0}
+
+        Note that this chose half spaces not in the original set; you might
+        also want to have a look at :meth:`HyperbolicConvexPolygon._normalize`
+        for some ideas how to manually reduce the half spaces that are used in
+        a polygon.
+
+        Note that the same applies if the intersection of half spaces is empty
+        or just a single half space::
+
+            sage: empty = H.polygon([
+            ....:   H.half_circle(0, 1).right_half_space(),
+            ....:   H.half_circle(0, 2).left_half_space(),
+            ....: ])
+            sage: type(empty)
+            <class 'flatsurf.geometry.hyperbolic.HyperbolicEmptySet_with_category'>
+
+        ::
+
+            sage: half_space = H.polygon([
+            ....:   H.half_circle(0, 1).right_half_space(),
+            ....: ])
+            sage: type(half_space)
+            <class 'flatsurf.geometry.hyperbolic.HyperbolicHalfSpace_with_category'>
+
+        The intersection of the half spaces is computed in time quasi-linear in
+        the number of half spaces. The limiting factor is sorting the half
+        spaces by :meth:`HyperbolicHalfSpace._less_than`. If we know that the
+        half spaces are already sorted like that, we can make the process run
+        in linear time by setting ``assume_sorted``.
+
+            sage: H.polygon(H.infinity()._half_spaces(), assume_sorted=True)
+            ∞
+
+        """
         half_spaces = [self.coerce(half_space) for half_space in half_spaces]
 
         if not assume_sorted:
@@ -1093,6 +1217,7 @@ class HyperbolicConvexSet(Element):
         return self.parent().intersection(*[-half_space for half_space in self._half_spaces()])
 
     # TODO: Test that _richcmp_ can compare all kinds of sets by inclusion.
+    # TODO: Provide hashing.
 
     def an_element(self):
         # TODO: Test that everything implements an_element().
@@ -3287,3 +3412,5 @@ def vertical(x, y=0, **options):
         g.legend(True)
         g._legend_colors = [options['legend_color']]
     return g
+
+## TODO: Ensure that every method has an INPUT section.
