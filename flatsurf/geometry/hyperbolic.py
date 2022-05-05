@@ -859,7 +859,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         quasi-linear in the number of half spaces due to the added complexity
         of sorting.
 
-        See :meth:`_reduce` for more algorithmic details.
+        See :meth:`HyperbolicConvexPolygon._normalize` for more algorithmic details.
 
         EXAMPLES::
 
