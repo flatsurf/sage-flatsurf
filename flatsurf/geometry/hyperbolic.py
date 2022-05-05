@@ -881,440 +881,6 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         return self.polygon(half_spaces, assume_sorted=True, assume_minimal=False, check=False)
 
-    def _reduce_euclidean(self, half_spaces, boundary, assume_sorted=False):
-        r"""
-        Return a minimal sublist of ``half_spaces`` that describe their
-        intersection as half spaces of the Euclidean plane.
-
-        Consider the half spaces in the Klein model. Ignoring the unit disk,
-        they also describe half spaces in the Euclidean plane.
-
-        The half space ``boundary`` must be one of the ``half_spaces`` that
-        defines a boundary edge of the intersection polygon in the Euclidean
-        plane.
-
-        ALGORITHM:
-
-        We use an approach similar to gift-wrapping (but from the inside) to remove
-        redundant half spaces from the input list. We start from the
-        ``boundary`` which is one of the minimal half spaces and extend to the
-        full intersection by walking the sorted half spaces.
-
-        Since we visit each half space once, this reduction runs in linear time
-        in the number of half spaces.
-
-        EXAMPLES::
-
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
-            sage: H = HyperbolicPlane()
-
-        An intersection which is a single point on the boundary of the unit
-        disk::
-
-            sage: H._reduce_euclidean(
-            ....:     half_spaces=H.infinity()._half_spaces(),
-            ....:     boundary=H.vertical(1).right_half_space())
-            [{x ≤ 0}, {x - 1 ≥ 0}]
-
-        An intersection which is a segment outside of the unit disk::
-
-            sage: H._reduce_euclidean([
-            ....:     H.vertical(0).left_half_space(),
-            ....:     H.vertical(0).right_half_space(),
-            ....:     H.half_space(-2, -2, 1, model="klein"),
-            ....:     H.half_space(17/8, 2, -1, model="klein"),
-            ....: ], boundary=H.vertical(0).left_half_space())
-            [{(x^2 + y^2) + 4*x + 3 ≤ 0},
-             {x ≤ 0},
-             {9*(x^2 + y^2) + 32*x + 25 ≥ 0},
-             {x ≥ 0}]
-
-        An intersection which is a polygon outside of the unit disk::
-
-            sage: H._reduce_euclidean([
-            ....:     H.half_space(0, 1, 0, model="klein"),
-            ....:     H.half_space(1, -2, 0, model="klein"),
-            ....:     H.half_space(-2, -2, 1, model="klein"),
-            ....:     H.half_space(17/8, 2, -1, model="klein"),
-            ....: ], boundary=H.half_space(17/8, 2, -1, model="klein"))
-            [{(x^2 + y^2) + 4*x + 3 ≤ 0},
-             {(x^2 + y^2) - 4*x + 1 ≥ 0},
-             {9*(x^2 + y^2) + 32*x + 25 ≥ 0},
-             {x ≥ 0}]
-
-        An intersection which is an (unbounded) polygon touching the unit disk::
-
-            sage: H._reduce_euclidean([
-            ....:     H.vertical(-1).left_half_space(),
-            ....:     H.vertical(1).right_half_space(),
-            ....: ], boundary=H.vertical(1).right_half_space())
-            [{x + 1 ≤ 0}, {x - 1 ≥ 0}]
-
-        An intersection which is a segment touching the unit disk::
-
-            sage: H._reduce_euclidean([
-            ....:     H.vertical(0).left_half_space(),
-            ....:     H.vertical(0).right_half_space(),
-            ....:     H.vertical(-1).left_half_space(),
-            ....:     H.geodesic(-1, -2).right_half_space(),
-            ....: ], boundary=H.vertical(0).left_half_space())
-            [{x + 1 ≤ 0}, {x ≤ 0}, {(x^2 + y^2) + 3*x + 2 ≥ 0}, {x ≥ 0}]
-
-        An intersection which is a polygon inside the unit disk::
-
-            sage: H._reduce_euclidean([
-            ....:     H.vertical(1).left_half_space(),
-            ....:     H.vertical(-1).right_half_space(),
-            ....:     H.geodesic(0, -1).right_half_space(),
-            ....:     H.geodesic(0, 1).left_half_space(),
-            ....: ], boundary=H.geodesic(0, 1).left_half_space())
-            [{(x^2 + y^2) - x ≥ 0}, {x - 1 ≤ 0}, {x + 1 ≥ 0}, {(x^2 + y^2) + x ≥ 0}]
-
-        A polygon which has no vertices inside the unit disk but intersects the unit disk::
-
-            sage: H._reduce_euclidean([
-            ....:     H.geodesic(2, 3).left_half_space(),
-            ....:     H.geodesic(-3, -2).left_half_space(),
-            ....:     H.geodesic(-1/2, -1/3).left_half_space(),
-            ....:     H.geodesic(1/3, 1/2).left_half_space(),
-            ....: ], boundary=H.geodesic(1/3, 1/2).left_half_space())
-            [{6*(x^2 + y^2) - 5*x + 1 ≥ 0},
-             {(x^2 + y^2) - 5*x + 6 ≥ 0},
-             {(x^2 + y^2) + 5*x + 6 ≥ 0},
-             {6*(x^2 + y^2) + 5*x + 1 ≥ 0}]
-
-        A single half plane::
-
-            sage: H._reduce_euclidean([
-            ....:     H.vertical(0).left_half_space()
-            ....: ], boundary=H.vertical(0).left_half_space())
-            [{x ≤ 0}]
-
-        A pair of anti-parallel half planes::
-
-            sage: H._reduce_euclidean([
-            ....:     H.geodesic(1/2, 2).left_half_space(),
-            ....:     H.geodesic(-1/2, -2).right_half_space(),
-            ....: ], boundary=H.geodesic(-1/2, -2).right_half_space())
-            [{2*(x^2 + y^2) - 5*x + 2 ≥ 0}, {2*(x^2 + y^2) + 5*x + 2 ≥ 0}]
-
-        A pair of anti-parallel half planes in the upper half plane::
-
-            sage: H._reduce_euclidean([
-            ....:     H.vertical(1).left_half_space(),
-            ....:     H.vertical(-1).right_half_space(),
-            ....: ], boundary=H.vertical(1).left_half_space())
-            [{x - 1 ≤ 0}, {x + 1 ≥ 0}]
-
-            sage: H._reduce_euclidean([
-            ....:     H.vertical(1).left_half_space(),
-            ....:     H.vertical(-1).right_half_space(),
-            ....: ], boundary=H.vertical(-1).right_half_space())
-            [{x - 1 ≤ 0}, {x + 1 ≥ 0}]
-
-        A segment in the unit disk with several superfluous half planes at infinity::
-
-            sage: H._reduce_euclidean([
-            ....:     H.vertical(0).left_half_space(),
-            ....:     H.vertical(0).right_half_space(),
-            ....:     H.vertical(1).left_half_space(),
-            ....:     H.vertical(1/2).left_half_space(),
-            ....:     H.vertical(1/3).left_half_space(),
-            ....:     H.vertical(1/4).left_half_space(),
-            ....:     H.vertical(-1).right_half_space(),
-            ....:     H.vertical(-1/2).right_half_space(),
-            ....:     H.vertical(-1/3).right_half_space(),
-            ....:     H.vertical(-1/4).right_half_space(),
-            ....: ], boundary=H.vertical(0).left_half_space())
-            [{x ≤ 0}, {4*x + 1 ≥ 0}, {x ≥ 0}]
-
-        A polygon in the unit disk with several superfluous half planes::
-
-            sage: H._reduce_euclidean([
-            ....:     H.vertical(1).left_half_space(),
-            ....:     H.vertical(-1).right_half_space(),
-            ....:     H.geodesic(0, 1).left_half_space(),
-            ....:     H.geodesic(0, -1).right_half_space(),
-            ....:     H.vertical(2).left_half_space(),
-            ....:     H.vertical(-2).right_half_space(),
-            ....:     H.geodesic(0, 1/2).left_half_space(),
-            ....:     H.geodesic(0, -1/2).right_half_space(),
-            ....:     H.vertical(3).left_half_space(),
-            ....:     H.vertical(-3).right_half_space(),
-            ....:     H.geodesic(0, 1/3).left_half_space(),
-            ....:     H.geodesic(0, -1/3).right_half_space(),
-            ....: ], boundary=H.vertical(1).left_half_space())
-            [{(x^2 + y^2) - x ≥ 0}, {x - 1 ≤ 0}, {x + 1 ≥ 0}, {(x^2 + y^2) + x ≥ 0}]
-
-        """
-        # TODO: Make all other assumptions clear in the interface.
-
-        if not assume_sorted:
-            half_spaces = HyperbolicHalfSpace._merge_sorted(*[[half_space] for half_space in half_spaces])
-
-        half_spaces = half_spaces[half_spaces.index(boundary):] + half_spaces[:half_spaces.index(boundary)]
-        half_spaces.reverse()
-
-        required_half_spaces = [half_spaces.pop()]
-
-        while half_spaces:
-            A = required_half_spaces[-1]
-            B = half_spaces.pop()
-            C = half_spaces[-1] if half_spaces else required_half_spaces[0]
-
-            # Determine whether B is redundant, i.e., whether the intersection
-            # A, B, C and A, C are the same.
-            # Since we know that A is required and the space non-empty, the
-            # question here is whether C blocks the line of sight from A to B.
-
-            # We distinguish cases, depending of the nature of the intersection of A and B.
-            AB = A.boundary()._configuration(B.boundary())
-            BC = B.boundary()._configuration(C.boundary())
-            AC = A.boundary()._configuration(C.boundary())
-
-            if AB == "convex":
-                if BC == "concave":
-                    assert AC in ["equal", "concave"]
-                    required_half_spaces.append(B)
-
-                elif BC == "convex":
-                    BC = B.boundary()._intersection(C.boundary())
-                    if AC == "negative" or (BC in A and BC not in A.boundary()):
-                        required_half_spaces.append(B)
-
-                elif BC == "negative":
-                    required_half_spaces.append(B)
-
-                elif BC == "anti-parallel":
-                    required_half_spaces.append(B)
-
-                else:
-                    raise NotImplementedError(f"B and C are in unsupported configuration: {BC}")
-
-            elif AB == "negative":
-                required_half_spaces.append(B)
-
-            elif AB == "anti-parallel":
-                required_half_spaces.append(B)
-
-            elif AB == "concave":
-                required_half_spaces.append(B)
-
-            else:
-                raise NotImplementedError(f"A and B are in unsupported configuration: {AB}")
-
-        min = 0
-        for i, half_space in enumerate(required_half_spaces):
-            if HyperbolicHalfSpace._less_than(half_space, required_half_spaces[min]):
-                min = i
-
-        return required_half_spaces[min:] + required_half_spaces[:min]
-
-    def _reduce_unit_disk(self, half_spaces, assume_sorted=False):
-        r"""
-        Return the intersection of the Euclidean ``half_spaces`` with the unit
-        disk.
-
-        The ``half_spaces`` must be minimal to describe their intersection in
-        the Euclidean plane. If that intersection does not intersect the unit
-        disk, then return the :meth:`empty_set`.
-
-        Otherwise, return a minimal sublist of ``half_spaces`` that describes
-        the intersection inside the unit disk.
-
-        ALGORITHM:
-
-        When passing to the Klein model, i.e., intersecting the polygon with the
-        unit disk, some of the edges of the (possibly unbounded) polygon
-        described by the ``half_spaces`` are unnecessary because they are not
-        intersecting the unit disk.
-
-        If none of the edges intersect the unit disk, then the polygon has
-        empty intersection with the unit disk.
-
-        Otherwise, we can drop the half spaces describing the edges that do not
-        intersect the unit disk.
-
-        EXAMPLES::
-
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
-            sage: H = HyperbolicPlane()
-
-        An intersection which is a single point on the boundary of the unit
-        disk::
-
-            sage: H._reduce_unit_disk(half_spaces=H.infinity()._half_spaces())
-            ∞
-
-        An intersection which is a segment outside of the unit disk::
-
-            sage: H._reduce_unit_disk([
-            ....:     H.vertical(0).left_half_space(),
-            ....:     H.vertical(0).right_half_space(),
-            ....:     H.half_space(-2, -2, 1, model="klein"),
-            ....:     H.half_space(17/8, 2, -1, model="klein"),
-            ....: ])
-            {}
-
-        An intersection which is a polygon outside of the unit disk::
-
-            sage: H._reduce_unit_disk([
-            ....:     H.half_space(0, 1, 0, model="klein"),
-            ....:     H.half_space(1, -2, 0, model="klein"),
-            ....:     H.half_space(-2, -2, 1, model="klein"),
-            ....:     H.half_space(17/8, 2, -1, model="klein"),
-            ....: ])
-            {}
-
-        An intersection which is an (unbounded) polygon touching the unit disk::
-
-            sage: H._reduce_unit_disk([
-            ....:     H.vertical(-1).left_half_space(),
-            ....:     H.vertical(1).right_half_space()])
-            ∞
-
-        An intersection which is a segment touching the unit disk::
-
-            sage: H._reduce_unit_disk([
-            ....:     H.vertical(0).left_half_space(),
-            ....:     H.vertical(0).right_half_space(),
-            ....:     H.vertical(-1).left_half_space(),
-            ....:     H.geodesic(-1, -2).right_half_space()])
-            ∞
-
-        An intersection which is a polygon inside the unit disk::
-
-            sage: H._reduce_unit_disk([
-            ....:     H.vertical(1).left_half_space(),
-            ....:     H.vertical(-1).right_half_space(),
-            ....:     H.geodesic(0, -1).right_half_space(),
-            ....:     H.geodesic(0, 1).left_half_space()])
-            {(x^2 + y^2) - x ≥ 0} ∩ {x - 1 ≤ 0} ∩ {x + 1 ≥ 0} ∩ {(x^2 + y^2) + x ≥ 0}
-
-        A polygon which has no vertices inside the unit disk but intersects the unit disk::
-
-            sage: H._reduce_unit_disk([
-            ....:     H.geodesic(2, 3).left_half_space(),
-            ....:     H.geodesic(-3, -2).left_half_space(),
-            ....:     H.geodesic(-1/2, -1/3).left_half_space(),
-            ....:     H.geodesic(1/3, 1/2).left_half_space()])
-            {6*(x^2 + y^2) - 5*x + 1 ≥ 0} ∩ {(x^2 + y^2) - 5*x + 6 ≥ 0} ∩ {(x^2 + y^2) + 5*x + 6 ≥ 0} ∩ {6*(x^2 + y^2) + 5*x + 1 ≥ 0}
-
-        A single half plane::
-
-            sage: H._reduce_unit_disk([H.vertical(0).left_half_space()])
-            {x ≤ 0}
-
-        A pair of anti-parallel half planes::
-
-            sage: H._reduce_unit_disk([
-            ....:     H.geodesic(1/2, 2).left_half_space(),
-            ....:     H.geodesic(-1/2, -2).right_half_space()])
-            {2*(x^2 + y^2) - 5*x + 2 ≥ 0} ∩ {2*(x^2 + y^2) + 5*x + 2 ≥ 0}
-
-        A segment in the unit disk with a superfluous half plane at infinity::
-
-            sage: H._reduce_unit_disk([
-            ....:     H.vertical(0).left_half_space(),
-            ....:     H.vertical(0).right_half_space(),
-            ....:     H.vertical(1).left_half_space()])
-            {x = 0}
-
-        A polygon in the unit disk with several superfluous half planes::
-
-            sage: H._reduce_unit_disk([
-            ....:     H.vertical(1).left_half_space(),
-            ....:     H.vertical(-1).right_half_space(),
-            ....:     H.geodesic(0, 1).left_half_space(),
-            ....:     H.geodesic(0, -1).right_half_space(),
-            ....:     H.vertical(2).left_half_space(),
-            ....:     H.geodesic(0, 1/2).left_half_space()])
-            {(x^2 + y^2) - x ≥ 0} ∩ {x - 1 ≤ 0} ∩ {x + 1 ≥ 0} ∩ {(x^2 + y^2) + x ≥ 0}
-
-        A segment touching the inside of the unit disk::
-
-            sage: H._reduce_unit_disk([
-            ....:   H.vertical(1).left_half_space(),
-            ....:   H.half_circle(0, 2).left_half_space(),
-            ....:   H.vertical(0).left_half_space(),
-            ....:   H.vertical(0).right_half_space(),
-            ....: ])
-            {x = 0} ∩ {(x^2 + y^2) - 2 ≥ 0}
-
-        An unbounded polygon touching the unit disk from the inside::
-
-            sage: H._reduce_unit_disk([
-            ....:     H.vertical(1).left_half_space(),
-            ....:     H.vertical(-1).right_half_space(),
-            ....: ])
-            {x - 1 ≤ 0} ∩ {x + 1 ≥ 0}
-
-        A segment inside the unit disk::
-
-            sage: H._reduce_unit_disk([
-            ....:     H.vertical(0).right_half_space(),
-            ....:     H.vertical(0).left_half_space(),
-            ....:     H.geodesic(-2, 2).right_half_space(),
-            ....:     H.geodesic(-1/2, 1/2).left_half_space(),
-            ....: ])
-            {x = 0} ∩ {(x^2 + y^2) - 4 ≤ 0} ∩ {4*(x^2 + y^2) - 1 ≥ 0}
-
-        """
-        # TODO: Make all assumptions clear in the interface.
-
-        if not assume_sorted:
-            half_spaces = HyperbolicHalfSpace._merge_sorted(*[[half_space] for half_space in half_spaces])
-
-        required_half_spaces = []
-
-        is_empty = True
-        is_point = True
-        is_segment = True
-
-        for i in range(len(half_spaces)):
-            A = half_spaces[(i + len(half_spaces) - 1) % len(half_spaces)]
-            B = half_spaces[i]
-            C = half_spaces[(i + 1) % len(half_spaces)]
-
-            AB = None if A.boundary()._configuration(B.boundary()) == "concave" else A.boundary()._intersection(B.boundary())
-            BC = None if B.boundary()._configuration(C.boundary()) == "concave" else B.boundary()._intersection(C.boundary())
-
-            segment = self.segment(B.boundary(), AB, BC, check=False)._normalize()
-
-            if isinstance(segment, HyperbolicEmptySet):
-                pass
-            elif isinstance(segment, HyperbolicPoint):
-                is_empty = False
-                if is_point:
-                    assert is_point is True or is_point == segment, (is_point, segment)
-                    is_point = segment
-            else:
-                is_empty = False
-                is_point = False
-
-                if is_segment is True:
-                    is_segment = segment
-                elif is_segment == -segment:
-                    return segment
-                else:
-                    is_segment = False
-
-                required_half_spaces.append(B)
-
-        if is_empty:
-            return self.empty_set()
-
-        if is_point:
-            return is_point
-
-        if len(required_half_spaces) == 0:
-            raise NotImplementedError("there is no convex set to represent the full space yet")
-
-        if len(required_half_spaces) == 1:
-            return required_half_spaces[0]
-
-        return self.polygon(required_half_spaces, check=False, assume_sorted=True, assume_minimal=True)
-
     def empty_set(self):
         r"""
         Return an empty subset of this space.
@@ -2492,9 +2058,9 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
         # TODO
         pass
 
-    # TODO: Move everything related to _normalize to HyperbolicConvexPolygon.
     # TODO: Add examples.
     def _normalize(self):
+        # TODO: Check docstring.
         r"""
         Return a convex set describing the intersection of the half spaces underlying this polygon.
 
@@ -2506,8 +2072,8 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
 
         * Drop trivially redundant half spaces, e.g., repeated ones.
         * Handle the case that the intersection is empty or a single point, see :meth:`_euclidean_boundary`.
-        * Compute the intersection of the corresponding half spaces in the Euclidean plane, see :meth:`_reduce_euclidean`.
-        * Remove redundant half spaces that make no contribution for the unit disk of the Klein model, see :meth:`_reduce_unit_disk`.
+        * Compute the intersection of the corresponding half spaces in the Euclidean plane, see :meth:`_normalize_drop_euclidean_redundant`.
+        * Remove redundant half spaces that make no contribution for the unit disk of the Klein model, see :meth:`_normalize_drop_unit_disk_redundant`.
         * Determine of which nature (point, segment, line, polygon) the intersection of half spaces is and return the resulting set.
 
         """
@@ -2525,18 +2091,13 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
             return boundary
 
         # Compute a minimal subset of the half spaces that defines the intersection in the Euclidean plane.
-        half_spaces = self.parent()._reduce_euclidean(self._halfspaces, boundary, assume_sorted=True)
+        self = self._normalize_drop_euclidean_redundant(boundary)
 
         # Remove half spaces that make no contribution when restricting to the unit disk of the Klein model.
-        half_spaces = self.parent()._reduce_unit_disk(half_spaces, assume_sorted=True)
-
-        if isinstance(half_spaces, HyperbolicConvexSet):
-            return half_spaces
-
-        # Return the intersection as a proper hyperbolic convex set.
-        return self.parent()._intersection(half_spaces, assume_non_empty=True, assume_sorted=True, assume_no_point=True, assume_minimal=True)
+        return self._normalize_drop_unit_disk_redundant()
 
     def _normalize_drop_trivially_redundant(self):
+        # TODO: Check docstring.
         r"""
         Return a sublist of ``half_spaces`` without changing their intersection
         by removing some trivially redundant half spaces.
@@ -2592,6 +2153,437 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
             reduced.append(half_space)
 
         return self.parent().polygon(reduced, check=False, assume_sorted=True, assume_minimal=True)
+
+    def _normalize_drop_euclidean_redundant(self, boundary):
+        # TODO: Check docstring.
+        # TODO: Should we remove boundary from the interface?
+        r"""
+        Return a minimal sublist of ``half_spaces`` that describe their
+        intersection as half spaces of the Euclidean plane.
+
+        Consider the half spaces in the Klein model. Ignoring the unit disk,
+        they also describe half spaces in the Euclidean plane.
+
+        The half space ``boundary`` must be one of the ``half_spaces`` that
+        defines a boundary edge of the intersection polygon in the Euclidean
+        plane.
+
+        ALGORITHM:
+
+        We use an approach similar to gift-wrapping (but from the inside) to remove
+        redundant half spaces from the input list. We start from the
+        ``boundary`` which is one of the minimal half spaces and extend to the
+        full intersection by walking the sorted half spaces.
+
+        Since we visit each half space once, this reduction runs in linear time
+        in the number of half spaces.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+        A helper to create non-normalized polygons for testing::
+
+            sage: polygon = lambda *half_spaces: H.polygon(half_spaces, check=False, assume_sorted=False, assume_minimal=True)
+
+        An intersection which is a single point on the boundary of the unit
+        disk::
+
+            sage: polygon(*H.infinity()._half_spaces())._normalize_drop_euclidean_redundant(
+            ....:     boundary=H.vertical(1).right_half_space())
+            {x ≤ 0} ∩ {x - 1 ≥ 0}
+
+        An intersection which is a segment outside of the unit disk::
+
+            sage: polygon(
+            ....:     H.vertical(0).left_half_space(),
+            ....:     H.vertical(0).right_half_space(),
+            ....:     H.half_space(-2, -2, 1, model="klein"),
+            ....:     H.half_space(17/8, 2, -1, model="klein"),
+            ....: )._normalize_drop_euclidean_redundant(boundary=H.vertical(0).left_half_space())
+            {(x^2 + y^2) + 4*x + 3 ≤ 0} ∩ {x ≤ 0} ∩ {9*(x^2 + y^2) + 32*x + 25 ≥ 0} ∩ {x ≥ 0}
+
+        An intersection which is a polygon outside of the unit disk::
+
+            sage: polygon(
+            ....:     H.half_space(0, 1, 0, model="klein"),
+            ....:     H.half_space(1, -2, 0, model="klein"),
+            ....:     H.half_space(-2, -2, 1, model="klein"),
+            ....:     H.half_space(17/8, 2, -1, model="klein"),
+            ....: )._normalize_drop_euclidean_redundant(boundary=H.half_space(17/8, 2, -1, model="klein"))
+            {(x^2 + y^2) + 4*x + 3 ≤ 0} ∩ {(x^2 + y^2) - 4*x + 1 ≥ 0} ∩ {9*(x^2 + y^2) + 32*x + 25 ≥ 0} ∩ {x ≥ 0}
+
+        An intersection which is an (unbounded) polygon touching the unit disk::
+
+            sage: polygon(
+            ....:     H.vertical(-1).left_half_space(),
+            ....:     H.vertical(1).right_half_space(),
+            ....: )._normalize_drop_euclidean_redundant(boundary=H.vertical(1).right_half_space())
+            {x + 1 ≤ 0} ∩ {x - 1 ≥ 0}
+
+        An intersection which is a segment touching the unit disk::
+
+            sage: polygon(
+            ....:     H.vertical(0).left_half_space(),
+            ....:     H.vertical(0).right_half_space(),
+            ....:     H.vertical(-1).left_half_space(),
+            ....:     H.geodesic(-1, -2).right_half_space(),
+            ....: )._normalize_drop_euclidean_redundant(boundary=H.vertical(0).left_half_space())
+            {x + 1 ≤ 0} ∩  {x ≤ 0} ∩ {(x^2 + y^2) + 3*x + 2 ≥ 0} ∩ {x ≥ 0}
+
+        An intersection which is a polygon inside the unit disk::
+
+            sage: polygon(
+            ....:     H.vertical(1).left_half_space(),
+            ....:     H.vertical(-1).right_half_space(),
+            ....:     H.geodesic(0, -1).right_half_space(),
+            ....:     H.geodesic(0, 1).left_half_space(),
+            ....: )._normalize_drop_euclidean_redundant(boundary=H.geodesic(0, 1).left_half_space())
+            {(x^2 + y^2) - x ≥ 0} ∩ {x - 1 ≤ 0} ∩ {x + 1 ≥ 0} ∩ {(x^2 + y^2) + x ≥ 0}
+
+        A polygon which has no vertices inside the unit disk but intersects the unit disk::
+
+            sage: polygon(
+            ....:     H.geodesic(2, 3).left_half_space(),
+            ....:     H.geodesic(-3, -2).left_half_space(),
+            ....:     H.geodesic(-1/2, -1/3).left_half_space(),
+            ....:     H.geodesic(1/3, 1/2).left_half_space(),
+            ....: )._normalize_drop_euclidean_redundant(boundary=H.geodesic(1/3, 1/2).left_half_space())
+            {6*(x^2 + y^2) - 5*x + 1 ≥ 0} ∩ {(x^2 + y^2) - 5*x + 6 ≥ 0} ∩ {(x^2 + y^2) + 5*x + 6 ≥ 0} ∩ {6*(x^2 + y^2) + 5*x + 1 ≥ 0}
+
+        A single half plane::
+
+            sage: polygon(
+            ....:     H.vertical(0).left_half_space()
+            ....: )._normalize_drop_euclidean_redundant(boundary=H.vertical(0).left_half_space())
+            {x ≤ 0}
+
+        A pair of anti-parallel half planes::
+
+            sage: polygon(
+            ....:     H.geodesic(1/2, 2).left_half_space(),
+            ....:     H.geodesic(-1/2, -2).right_half_space(),
+            ....: )._normalize_drop_euclidean_redundant(boundary=H.geodesic(-1/2, -2).right_half_space())
+            {2*(x^2 + y^2) - 5*x + 2 ≥ 0} ∩ {2*(x^2 + y^2) + 5*x + 2 ≥ 0}
+
+        A pair of anti-parallel half planes in the upper half plane::
+
+            sage: polygon(
+            ....:     H.vertical(1).left_half_space(),
+            ....:     H.vertical(-1).right_half_space(),
+            ....: )._normalize_drop_euclidean_redundant(boundary=H.vertical(1).left_half_space())
+            {x - 1 ≤ 0} ∩ {x + 1 ≥ 0}
+
+            sage: polygon(
+            ....:     H.vertical(1).left_half_space(),
+            ....:     H.vertical(-1).right_half_space(),
+            ....: )._normalize_drop_euclidean_redundant(boundary=H.vertical(-1).right_half_space())
+            {x - 1 ≤ 0} ∩ {x + 1 ≥ 0}
+
+        A segment in the unit disk with several superfluous half planes at infinity::
+
+            sage: polygon(
+            ....:     H.vertical(0).left_half_space(),
+            ....:     H.vertical(0).right_half_space(),
+            ....:     H.vertical(1).left_half_space(),
+            ....:     H.vertical(1/2).left_half_space(),
+            ....:     H.vertical(1/3).left_half_space(),
+            ....:     H.vertical(1/4).left_half_space(),
+            ....:     H.vertical(-1).right_half_space(),
+            ....:     H.vertical(-1/2).right_half_space(),
+            ....:     H.vertical(-1/3).right_half_space(),
+            ....:     H.vertical(-1/4).right_half_space(),
+            ....: )._normalize_drop_euclidean_redundant(boundary=H.vertical(0).left_half_space())
+            {x ≤ 0} ∩ {4*x + 1 ≥ 0} ∩ {x ≥ 0}
+
+        A polygon in the unit disk with several superfluous half planes::
+
+            sage: polygon(
+            ....:     H.vertical(1).left_half_space(),
+            ....:     H.vertical(-1).right_half_space(),
+            ....:     H.geodesic(0, 1).left_half_space(),
+            ....:     H.geodesic(0, -1).right_half_space(),
+            ....:     H.vertical(2).left_half_space(),
+            ....:     H.vertical(-2).right_half_space(),
+            ....:     H.geodesic(0, 1/2).left_half_space(),
+            ....:     H.geodesic(0, -1/2).right_half_space(),
+            ....:     H.vertical(3).left_half_space(),
+            ....:     H.vertical(-3).right_half_space(),
+            ....:     H.geodesic(0, 1/3).left_half_space(),
+            ....:     H.geodesic(0, -1/3).right_half_space(),
+            ....: )._normalize_drop_euclidean_redundant(boundary=H.vertical(1).left_half_space())
+            {(x^2 + y^2) - x ≥ 0} ∩ {x - 1 ≤ 0} ∩ {x + 1 ≥ 0} ∩ {(x^2 + y^2) + x ≥ 0}
+
+        """
+        # TODO: Make all other assumptions clear in the interface.
+
+        half_spaces = self._halfspaces
+
+        half_spaces = half_spaces[half_spaces.index(boundary):] + half_spaces[:half_spaces.index(boundary)]
+        half_spaces.reverse()
+
+        required_half_spaces = [half_spaces.pop()]
+
+        while half_spaces:
+            A = required_half_spaces[-1]
+            B = half_spaces.pop()
+            C = half_spaces[-1] if half_spaces else required_half_spaces[0]
+
+            # Determine whether B is redundant, i.e., whether the intersection
+            # A, B, C and A, C are the same.
+            # Since we know that A is required and the space non-empty, the
+            # question here is whether C blocks the line of sight from A to B.
+
+            # We distinguish cases, depending of the nature of the intersection of A and B.
+            AB = A.boundary()._configuration(B.boundary())
+            BC = B.boundary()._configuration(C.boundary())
+            AC = A.boundary()._configuration(C.boundary())
+
+            if AB == "convex":
+                if BC == "concave":
+                    assert AC in ["equal", "concave"]
+                    required_half_spaces.append(B)
+
+                elif BC == "convex":
+                    BC = B.boundary()._intersection(C.boundary())
+                    if AC == "negative" or (BC in A and BC not in A.boundary()):
+                        required_half_spaces.append(B)
+
+                elif BC == "negative":
+                    required_half_spaces.append(B)
+
+                elif BC == "anti-parallel":
+                    required_half_spaces.append(B)
+
+                else:
+                    raise NotImplementedError(f"B and C are in unsupported configuration: {BC}")
+
+            elif AB == "negative":
+                required_half_spaces.append(B)
+
+            elif AB == "anti-parallel":
+                required_half_spaces.append(B)
+
+            elif AB == "concave":
+                required_half_spaces.append(B)
+
+            else:
+                raise NotImplementedError(f"A and B are in unsupported configuration: {AB}")
+
+        min = 0
+        for i, half_space in enumerate(required_half_spaces):
+            if HyperbolicHalfSpace._less_than(half_space, required_half_spaces[min]):
+                min = i
+
+        return self.parent().polygon(required_half_spaces[min:] + required_half_spaces[:min], check=False, assume_sorted=True, assume_minimal=True)
+
+    def _normalize_drop_unit_disk_redundant(self):
+        # TODO: Check docstring.
+        r"""
+        Return the intersection of the Euclidean ``half_spaces`` with the unit
+        disk.
+
+        The ``half_spaces`` must be minimal to describe their intersection in
+        the Euclidean plane. If that intersection does not intersect the unit
+        disk, then return the :meth:`empty_set`.
+
+        Otherwise, return a minimal sublist of ``half_spaces`` that describes
+        the intersection inside the unit disk.
+
+        ALGORITHM:
+
+        When passing to the Klein model, i.e., intersecting the polygon with the
+        unit disk, some of the edges of the (possibly unbounded) polygon
+        described by the ``half_spaces`` are unnecessary because they are not
+        intersecting the unit disk.
+
+        If none of the edges intersect the unit disk, then the polygon has
+        empty intersection with the unit disk.
+
+        Otherwise, we can drop the half spaces describing the edges that do not
+        intersect the unit disk.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+        A helper to create non-normalized polygons for testing::
+
+            sage: polygon = lambda *half_spaces: H.polygon(half_spaces, check=False, assume_sorted=False, assume_minimal=True)
+
+        An intersection which is a single point on the boundary of the unit
+        disk::
+
+            sage: polygon(*H.infinity()._half_spaces())._normalize_drop_unit_disk_redundant()
+            ∞
+
+        An intersection which is a segment outside of the unit disk::
+
+            sage: polygon(
+            ....:     H.vertical(0).left_half_space(),
+            ....:     H.vertical(0).right_half_space(),
+            ....:     H.half_space(-2, -2, 1, model="klein"),
+            ....:     H.half_space(17/8, 2, -1, model="klein"),
+            ....: )._normalize_drop_unit_disk_redundant()
+            {}
+
+        An intersection which is a polygon outside of the unit disk::
+
+            sage: polygon(
+            ....:     H.half_space(0, 1, 0, model="klein"),
+            ....:     H.half_space(1, -2, 0, model="klein"),
+            ....:     H.half_space(-2, -2, 1, model="klein"),
+            ....:     H.half_space(17/8, 2, -1, model="klein"),
+            ....: )._normalize_drop_unit_disk_redundant()
+            {}
+
+        An intersection which is an (unbounded) polygon touching the unit disk::
+
+            sage: polygon(
+            ....:     H.vertical(-1).left_half_space(),
+            ....:     H.vertical(1).right_half_space())._normalize_drop_unit_disk_redundant()
+            ∞
+
+        An intersection which is a segment touching the unit disk::
+
+            sage: polygon(
+            ....:     H.vertical(0).left_half_space(),
+            ....:     H.vertical(0).right_half_space(),
+            ....:     H.vertical(-1).left_half_space(),
+            ....:     H.geodesic(-1, -2).right_half_space())._normalize_drop_unit_disk_redundant()
+            ∞
+
+        An intersection which is a polygon inside the unit disk::
+
+            sage: polygon(
+            ....:     H.vertical(1).left_half_space(),
+            ....:     H.vertical(-1).right_half_space(),
+            ....:     H.geodesic(0, -1).right_half_space(),
+            ....:     H.geodesic(0, 1).left_half_space())._normalize_drop_unit_disk_redundant()
+            {(x^2 + y^2) - x ≥ 0} ∩ {x - 1 ≤ 0} ∩ {x + 1 ≥ 0} ∩ {(x^2 + y^2) + x ≥ 0}
+
+        A polygon which has no vertices inside the unit disk but intersects the unit disk::
+
+            sage: polygon(
+            ....:     H.geodesic(2, 3).left_half_space(),
+            ....:     H.geodesic(-3, -2).left_half_space(),
+            ....:     H.geodesic(-1/2, -1/3).left_half_space(),
+            ....:     H.geodesic(1/3, 1/2).left_half_space())._normalize_drop_unit_disk_redundant()
+            {6*(x^2 + y^2) - 5*x + 1 ≥ 0} ∩ {(x^2 + y^2) - 5*x + 6 ≥ 0} ∩ {(x^2 + y^2) + 5*x + 6 ≥ 0} ∩ {6*(x^2 + y^2) + 5*x + 1 ≥ 0}
+
+        A single half plane::
+
+            sage: polygon(H.vertical(0).left_half_space())._normalize_drop_unit_disk_redundant()
+            {x ≤ 0}
+
+        A pair of anti-parallel half planes::
+
+            sage: polygon(
+            ....:     H.geodesic(1/2, 2).left_half_space(),
+            ....:     H.geodesic(-1/2, -2).right_half_space())._normalize_drop_unit_disk_redundant()
+            {2*(x^2 + y^2) - 5*x + 2 ≥ 0} ∩ {2*(x^2 + y^2) + 5*x + 2 ≥ 0}
+
+        A segment in the unit disk with a superfluous half plane at infinity::
+
+            sage: polygon(
+            ....:     H.vertical(0).left_half_space(),
+            ....:     H.vertical(0).right_half_space(),
+            ....:     H.vertical(1).left_half_space())._normalize_drop_unit_disk_redundant()
+            {x = 0}
+
+        A polygon in the unit disk with several superfluous half planes::
+
+            sage: polygon(
+            ....:     H.vertical(1).left_half_space(),
+            ....:     H.vertical(-1).right_half_space(),
+            ....:     H.geodesic(0, 1).left_half_space(),
+            ....:     H.geodesic(0, -1).right_half_space(),
+            ....:     H.vertical(2).left_half_space(),
+            ....:     H.geodesic(0, 1/2).left_half_space())._normalize_drop_unit_disk_redundant()
+            {(x^2 + y^2) - x ≥ 0} ∩ {x - 1 ≤ 0} ∩ {x + 1 ≥ 0} ∩ {(x^2 + y^2) + x ≥ 0}
+
+        A segment touching the inside of the unit disk::
+
+            sage: polygon(
+            ....:   H.vertical(1).left_half_space(),
+            ....:   H.half_circle(0, 2).left_half_space(),
+            ....:   H.vertical(0).left_half_space(),
+            ....:   H.vertical(0).right_half_space(),
+            ....: )._normalize_drop_unit_disk_redundant()
+            {x = 0} ∩ {(x^2 + y^2) - 2 ≥ 0}
+
+        An unbounded polygon touching the unit disk from the inside::
+
+            sage: polygon(
+            ....:     H.vertical(1).left_half_space(),
+            ....:     H.vertical(-1).right_half_space(),
+            ....: )._normalize_drop_unit_disk_redundant()
+            {x - 1 ≤ 0} ∩ {x + 1 ≥ 0}
+
+        A segment inside the unit disk::
+
+            sage: polygon(
+            ....:     H.vertical(0).right_half_space(),
+            ....:     H.vertical(0).left_half_space(),
+            ....:     H.geodesic(-2, 2).right_half_space(),
+            ....:     H.geodesic(-1/2, 1/2).left_half_space(),
+            ....: )._normalize_drop_unit_disk_redundant()
+            {x = 0} ∩ {(x^2 + y^2) - 4 ≤ 0} ∩ {4*(x^2 + y^2) - 1 ≥ 0}
+
+        """
+        # TODO: Make all assumptions clear in the interface.
+
+        required_half_spaces = []
+
+        is_empty = True
+        is_point = True
+        is_segment = True
+
+        for i in range(len(self._halfspaces)):
+            A = self._halfspaces[(i + len(self._halfspaces) - 1) % len(self._halfspaces)]
+            B = self._halfspaces[i]
+            C = self._halfspaces[(i + 1) % len(self._halfspaces)]
+
+            AB = None if A.boundary()._configuration(B.boundary()) == "concave" else A.boundary()._intersection(B.boundary())
+            BC = None if B.boundary()._configuration(C.boundary()) == "concave" else B.boundary()._intersection(C.boundary())
+
+            segment = self.parent().segment(B.boundary(), AB, BC, check=False)._normalize()
+
+            if isinstance(segment, HyperbolicEmptySet):
+                pass
+            elif isinstance(segment, HyperbolicPoint):
+                is_empty = False
+                if is_point:
+                    assert is_point is True or is_point == segment, (is_point, segment)
+                    is_point = segment
+            else:
+                is_empty = False
+                is_point = False
+
+                if is_segment is True:
+                    is_segment = segment
+                elif is_segment == -segment:
+                    return segment
+                else:
+                    is_segment = False
+
+                required_half_spaces.append(B)
+
+        if is_empty:
+            return self.parent().empty_set()
+
+        if is_point:
+            return is_point
+
+        if len(required_half_spaces) == 0:
+            raise NotImplementedError("there is no convex set to represent the full space yet")
+
+        if len(required_half_spaces) == 1:
+            return required_half_spaces[0]
+
+        return self.parent().polygon(required_half_spaces, check=False, assume_sorted=True, assume_minimal=True)
 
     def _euclidean_boundary(self):
         r"""
