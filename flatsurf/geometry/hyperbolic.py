@@ -2011,15 +2011,14 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
         if not isinstance(other, HyperbolicGeodesic):
             raise TypeError("can only intersect with another geodesic")
 
-        from sage.all import matrix, vector
+        # TODO: Reference the trac ticket that says that solving for 2×2 matrices is very slow.
+        det = self._b * other._c - self._c * other._b
 
-        A = matrix([[self._b, self._c], [other._b, other._c]])
-
-        if A.rank() < 2:
+        if det == 0:
             return None
 
-        v = vector([-self._a, -other._a])
-        x, y = A.solve_right(v)
+        x = (-other._c * self._a + self._c * other._a) / det
+        y = (other._b * self._a - self._b * other._a) / det
 
         return self.parent().point(x, y, model="klein", check=False)
 
