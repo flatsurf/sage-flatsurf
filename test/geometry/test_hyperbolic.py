@@ -55,7 +55,7 @@ def test_intersection_point():
             break
 
     from sage.all import randint
-    half_spaces = random_half_spaces(H, randint(1, 64), lambda half_space: inside in half_space and outside not in half_space)
+    half_spaces = random_half_spaces(H, randint(1, 8), lambda half_space: inside in half_space and outside not in half_space)
 
     intersection = H.polygon(half_spaces)
 
