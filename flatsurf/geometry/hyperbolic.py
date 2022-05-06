@@ -2325,6 +2325,30 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
         * Remove redundant half spaces that make no contribution for the unit disk of the Klein model, see :meth:`_normalize_drop_unit_disk_redundant`.
         * Determine of which nature (point, segment, line, polygon) the intersection of half spaces is and return the resulting set.
 
+        TESTS::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(QQ)
+
+        A helper to create non-normalized polygons for testing::
+
+            sage: polygon = lambda *half_spaces: H.polygon(half_spaces, check=False, assume_sorted=False, assume_minimal=True)
+
+        An instance that caused problems at some point:
+
+            sage: P = polygon(
+            ....:   H.geodesic(7, -4, -3, model="half_plane").left_half_space(),
+            ....:   H.geodesic(1, -1, 0, model="half_plane").left_half_space(),
+            ....:   H.vertical(1/2).right_half_space(),
+            ....:   H.vertical(1).right_half_space(),
+            ....:   H.vertical(1).right_half_space(),
+            ....:   H.geodesic(1, 4, -5, model="half_plane").left_half_space(),
+            ....:   H.geodesic(50, 57, -43, model="half_plane").left_half_space(),
+            ....:   H.geodesic(3, 2, -3, model="half_plane").left_half_space()
+            ....: )
+            sage: P._normalize()
+            {x - 1 ≥ 0}
+
         """
         self = self._normalize_drop_trivially_redundant()
 
@@ -2564,6 +2588,22 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
             ....: )._normalize_drop_euclidean_redundant(boundary=H.vertical(1).left_half_space())
             {(x^2 + y^2) - x ≥ 0} ∩ {x - 1 ≤ 0} ∩ {x + 1 ≥ 0} ∩ {(x^2 + y^2) + x ≥ 0}
 
+        TESTS:
+
+        An example that caused trouble at some point::
+
+            sage: P = polygon(
+            ....:   H.geodesic(7, -4, -3, model="half_plane").left_half_space(),
+            ....:   H.geodesic(1, -1, 0, model="half_plane").left_half_space(),
+            ....:   H.vertical(1/2).right_half_space(),
+            ....:   H.vertical(1).right_half_space(),
+            ....:   H.geodesic(1, 4, -5, model="half_plane").left_half_space(),
+            ....:   H.geodesic(50, 57, -43, model="half_plane").left_half_space(),
+            ....:   H.geodesic(3, 2, -3, model="half_plane").left_half_space()
+            ....: )
+            sage: P._normalize_drop_euclidean_redundant(boundary=P._euclidean_boundary())
+            {(x^2 + y^2) - x ≥ 0} ∩ {2*x - 1 ≥ 0} ∩ {x - 1 ≥ 0}
+
         """
         # TODO: Make all other assumptions clear in the interface.
 
@@ -2589,36 +2629,42 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
             BC = B.boundary()._configuration(C.boundary())
             AC = A.boundary()._configuration(C.boundary())
 
+            required = False
+
             if AB == "convex":
                 if BC == "concave":
                     assert AC in ["equal", "concave"]
-                    required_half_spaces.append(B)
+                    required = True
 
                 elif BC == "convex":
                     BC = B.boundary()._intersection(C.boundary())
-                    if AC == "negative" or (BC in A and BC not in A.boundary()):
-                        required_half_spaces.append(B)
+                    required = AC == "negative" or (BC in A and BC not in A.boundary())
 
                 elif BC == "negative":
-                    required_half_spaces.append(B)
+                    required = True
 
                 elif BC == "anti-parallel":
-                    required_half_spaces.append(B)
+                    required = True
 
                 else:
                     raise NotImplementedError(f"B and C are in unsupported configuration: {BC}")
 
             elif AB == "negative":
-                required_half_spaces.append(B)
+                required = True
 
             elif AB == "anti-parallel":
-                required_half_spaces.append(B)
+                required = True
 
             elif AB == "concave":
-                required_half_spaces.append(B)
+                required = True
 
             else:
                 raise NotImplementedError(f"A and B are in unsupported configuration: {AB}")
+
+            if required:
+                required_half_spaces.append(B)
+            elif len(required_half_spaces) > 1:
+                half_spaces.append(required_half_spaces.pop())
 
         min = 0
         for i, half_space in enumerate(required_half_spaces):
@@ -2786,9 +2832,9 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
 
         required_half_spaces = []
 
-        is_empty = True
-        is_point = True
-        is_segment = True
+        maybe_empty = True
+        maybe_point = True
+        maybe_segment = True
 
         for i in range(len(self._halfspaces)):
             A = self._halfspaces[(i + len(self._halfspaces) - 1) % len(self._halfspaces)]
@@ -2803,28 +2849,38 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
             if isinstance(segment, HyperbolicEmptySet):
                 pass
             elif isinstance(segment, HyperbolicPoint):
-                is_empty = False
-                if is_point:
-                    assert is_point is True or is_point == segment, (is_point, segment)
-                    is_point = segment
-            else:
-                is_empty = False
-                is_point = False
+                maybe_empty = False
 
-                if is_segment is True:
-                    is_segment = segment
-                elif is_segment == -segment:
+                if not maybe_point:
+                    continue
+
+                if maybe_point is True:
+                    maybe_point = segment
+                elif maybe_point != segment:
+                    assert not maybe_point.is_finite()
+                    assert not segment.is_finite()
+
+                    maybe_point = False
+            else:
+                maybe_empty = False
+                maybe_point = False
+
+                if maybe_segment is True:
+                    maybe_segment = segment
+                elif maybe_segment == -segment:
+                    # For the intersection to be only segment, we must see the
+                    # segment twice, once from both sides.
                     return segment
                 else:
-                    is_segment = False
+                    maybe_segment = False
 
                 required_half_spaces.append(B)
 
-        if is_empty:
+        if maybe_empty:
             return self.parent().empty_set()
 
-        if is_point:
-            return is_point
+        if maybe_point:
+            return maybe_point
 
         if len(required_half_spaces) == 0:
             raise NotImplementedError("there is no convex set to represent the full space yet")
