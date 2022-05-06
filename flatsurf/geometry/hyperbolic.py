@@ -1881,7 +1881,7 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
         if model == "klein":
             from sage.all import line, AA
             # TODO: Do not assume embedding into AA?
-            return line([self.change_ring(AA).start().coordinates(model="klein"), self.change_ring(AA).end().coordinates(model="klein")])
+            return line([self.change_ring(AA).start().coordinates(model="klein"), self.change_ring(AA).end().coordinates(model="klein")], **kwds)
 
         raise NotImplementedError("plotting not supported in this hyperbolic model")
 
@@ -3127,6 +3127,10 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
 
     def _repr_(self):
         return " ∩ ".join([repr(half_space) for half_space in self._halfspaces])
+
+    def plot(self, **kwds):
+        # TODO: Implement proper rendering
+        return sum(half_space.plot(**kwds) for half_space in self._halfspaces)
 
 
 class HyperbolicSegment(HyperbolicConvexSet):
