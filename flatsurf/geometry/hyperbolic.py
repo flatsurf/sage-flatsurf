@@ -1225,7 +1225,11 @@ class HyperbolicConvexSet(Element):
         r"""
         Return whether ``point`` is contained in this set.
         """
-        raise NotImplementedError
+        for half_space in self._half_spaces():
+            if point not in half_space:
+                return False
+
+        return True
 
     def is_finite(self):
         r"""
@@ -1254,7 +1258,7 @@ class HyperbolicConvexSet(Element):
         tester = self._tester(**options)
         tester.assertEqual(self, self.change_ring(self.parent().base_ring()))
 
-    def plot(self, model="half_plane", *kwds):
+    def plot(self, model="half_plane", **kwds):
         r"""
         Return a plot of this subset.
         """
@@ -1644,6 +1648,13 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
                 return False
             return self._geodesic._richcmp_(other._geodesic, op)
 
+    def plot(self, model="half_plane", **kwds):
+        # TODO: Implement proper plotting
+        return self._geodesic.plot(model=model, **kwds)
+
+    def change_ring(self, ring):
+        return self._geodesic.change_ring(ring).left_half_space()
+
 
 class HyperbolicGeodesic(HyperbolicConvexSet):
     r"""
@@ -1746,9 +1757,9 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
         endpoints = ((-b - root) / (2*a), (-b + root) / (2*a))
 
         if a > 0:
-            return max(endpoints)
+            return self.parent().real(max(endpoints))
         else:
-            return min(endpoints)
+            return self.parent().real(min(endpoints))
 
     def end(self):
         r"""
@@ -1867,7 +1878,9 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
                 return arc((RR(center), 0), RR(radius_squared).sqrt(), sector=(0, pi), **kwds)
 
         if model == "klein":
-            raise NotImplementedError
+            from sage.all import line, AA
+            # TODO: Do not assume embedding into AA?
+            return line([self.change_ring(AA).start().coordinates(model="klein"), self.change_ring(AA).end().coordinates(model="klein")])
 
         raise NotImplementedError("plotting not supported in this hyperbolic model")
 
@@ -2237,6 +2250,8 @@ class HyperbolicPoint(HyperbolicConvexSet):
             x, y = self.coordinates(model="klein")
             return f"({repr(x)}, {repr(y)})"
 
+        # TODO: Map the ultra-ideal points to the negative half plane.
+
         # TODO: This does not work when the coordinates are not in the base_ring.
         from sage.all import PowerSeriesRing
         return repr(PowerSeriesRing(self.parent().base_ring(), names="I")([x, y]))
@@ -2261,6 +2276,17 @@ class HyperbolicPoint(HyperbolicConvexSet):
 
         x, y, z = isometry * vector(self.parent().base_ring(), [self._x, self._y, 1])
         return self.parent().point(x / z, y / z, model="klein")
+
+    def plot(self, model="half_plane", **kwds):
+        if model == "half_plane":
+            from sage.all import point
+            return point(self.coordinates(model="half_plane"), **kwds)
+
+        if model == "klein":
+            from sage.all import point
+            return point(self.coordinates(model="klein"), **kwds)
+
+        raise NotImplementedError
 
 
 class HyperbolicConvexPolygon(HyperbolicConvexSet):
@@ -2899,7 +2925,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
             ....:     H.half_space(-2, -2, 1, model="klein"),
             ....:     H.half_space(17/8, 2, -1, model="klein"),
             ....: )._euclidean_boundary()
-            {x ≥ 0}
+            {x ≤ 0}
 
         An intersection which is a polygon outside of the unit disk::
 
@@ -2909,7 +2935,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
             ....:     H.half_space(-2, -2, 1, model="klein"),
             ....:     H.half_space(17/8, 2, -1, model="klein"),
             ....: )._euclidean_boundary()
-            {x ≥ 0}
+            {9*(x^2 + y^2) + 32*x + 25 ≥ 0}
 
         An intersection which is an (unbounded) polygon touching the unit disk::
 
@@ -2917,7 +2943,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
             ....:     H.vertical(-1).left_half_space(),
             ....:     H.vertical(1).right_half_space(),
             ....: )._euclidean_boundary()
-            {x + 1 ≤ 0}
+            {x - 1 ≥ 0}
 
         An intersection which is a segment touching the unit disk::
 
@@ -2937,7 +2963,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
             ....:     H.geodesic(0, -1).right_half_space(),
             ....:     H.geodesic(0, 1).left_half_space(),
             ....: )._euclidean_boundary()
-            {x - 1 ≤ 0}
+            {(x^2 + y^2) - x ≥ 0}
 
         A polygon which has no vertices inside the unit disk but intersects the unit disk::
 
@@ -2963,6 +2989,19 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
             ....:     H.geodesic(-1/2, -2).right_half_space(),
             ....: )._euclidean_boundary()
             {2*(x^2 + y^2) - 5*x + 2 ≥ 0}
+
+        TESTS:
+
+        A case that caused problems at some point::
+
+            sage: set_random_seed(1)
+
+            sage: polygon(
+            ....:    H.geodesic(300, 3389, -1166, model="half_plane").right_half_space(),
+            ....:    H.geodesic(5, -24, -5, model="half_plane").left_half_space(),
+            ....:    H.geodesic(182, -1135, 522, model="half_plane").left_half_space(),
+            ....: )._euclidean_boundary()
+            {5*(x^2 + y^2) - 24*x - 5 ≥ 0}
 
         """
         if len(self._halfspaces) == 0:
@@ -3033,35 +3072,27 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
         return self._extend_to_euclidean_boundary(point)
 
     def _extend_to_euclidean_boundary(self, point):
-        # Randomly shuffle the half spaces so the loop below runs in expected linear time. (TODO: Is this true?)
-        from sage.all import shuffle
-        random_half_spaces = self._halfspaces[:]
-        shuffle(random_half_spaces)
+        half_spaces = [half_space for half_space in self._halfspaces if point in half_space.boundary()]
 
-        # Extend the point to a segment
-        for (i, half_space) in enumerate(self._halfspaces):
-            if point not in half_space.boundary():
+        if len(half_spaces) == 0:
+            raise ValueError("point must be on the boundary of a defining half space")
+
+        if len(half_spaces) < 3:
+            return half_spaces[0]
+
+        for (i, half_space) in enumerate(half_spaces):
+            following = half_spaces[(i + 1) % len(half_spaces)]
+            configuration = half_space.boundary()._configuration(following.boundary())
+
+            if configuration == "convex":
                 continue
-
-            following = self._halfspaces[(i + 1) % len(self._halfspaces)]
-            if half_space.boundary().parametrize(
-                  half_space.boundary().parametrize(point, model="euclidean", check=False) + 1,
-                  model="euclidean",
-                  check=False) in following:
+            if configuration == "negative":
                 return half_space
 
-            intersection = half_space.boundary()._intersection(following.boundary())
-
-            assert intersection is not None, "The boundaries do not intersect so they must be anti-parallel. However, the previous check found that the half spaces do not contain the same points."
-
-            if intersection == point:
-                continue
-
-            for constraining in random_half_spaces:
-                if intersection not in constraining:
-                    break
-            else:
+            if configuration == "concave":
                 return half_space
+
+            raise NotImplementedError(f"cannot extend point to segment when half spaces are in configuration {configuration}")
 
         if point.is_ultra_ideal():
             # There is no actual intersection in the hyperbolic plane.
