@@ -378,7 +378,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             return self.empty_set()
 
         if kind == "point":
-            return self.point(self.base_ring().random_element(), self.base_ring().random_element().abs(), model="half_plane")
+            return self.point(self.base_ring().random_element(), self.base_ring().random_element().abs(), model="half_plane", check=False)
 
         if kind == "geodesic":
             a = self.random_element("point")
@@ -608,7 +608,8 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             return self.point(
                 x=2*x / denominator,
                 y=(-1 + x*x + y*y) / denominator,
-                model="klein")
+                model="klein",
+                check=check)
         else:
             raise NotImplementedError("unsupported model")
 
