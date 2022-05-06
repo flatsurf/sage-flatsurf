@@ -382,10 +382,9 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         if kind == "geodesic":
             a = self.random_element("point")
-            while True:
+            b = self.random_element("point")
+            while b == a:
                 b = self.random_element("point")
-                if b != a:
-                    break
 
             return self.geodesic(a, b)
 
@@ -394,10 +393,9 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         if kind == "segment":
             a = self.random_element("point")
-            while True:
+            b = self.random_element("point")
+            while a == b or (not a.is_finite() and not b.is_finite()):
                 b = self.random_element("point")
-                if a != b and (a.is_finite() or b.is_finite()):
-                    break
 
             return self.segment(self.geodesic(a, b), start=a, end=b)
 
