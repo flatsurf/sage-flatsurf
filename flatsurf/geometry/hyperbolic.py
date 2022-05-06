@@ -331,6 +331,105 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
                 self.vertical(0).intersection(self.geodesic(-2, 2).right_half_space()).intersection(self.geodesic(-ZZ(1)/2, ZZ(1)/2).left_half_space()),
                 ]
 
+    def random_element(self, kind=None):
+        r"""
+        Return a random convex subset of this hyperbolic plane.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+
+            sage: H = HyperbolicPlane(QQ)
+
+        Make the following randomized tests reproducible::
+
+            sage: set_random_seed(0)
+
+        ::
+
+            sage: H.random_element()
+            {}
+
+        Specific types of random subsets can be requested::
+
+            sage: H.random_element("point")
+            -1/2 + 1/95*I
+
+            sage: H.random_element("geodesic")
+            {-12*(x^2 + y^2) + 1144*x + 1159 = 0}
+
+            sage: H.random_element("half_space")
+            {648*(x^2 + y^2) + 1654*x + 85 ≤ 0}
+
+            sage: H.random_element("segment")
+            {3*(x^2 + y^2) - 5*x - 1 = 0} ∩ {21*(x^2 + y^2) + 88*x - 89 ≥ 0} ∩ {(x^2 + y^2) + 12*x - 14 ≤ 0}
+
+            sage: H.random_element("polygon")
+            {545260*(x^2 + y^2) + 2579907*x + 65638 ≤ 0} ∩ {144*(x^2 + y^2) - 455*x - 2677 ≤ 0} ∩ {18*(x^2 + y^2) + 91*x + 109 ≥ 0}
+
+        """
+        kinds = ["empty_set", "point", "geodesic", "half_space", "segment", "polygon"]
+
+        if kind is None:
+            from sage.all import randint
+            kind = kinds[randint(0, len(kinds) - 1)]
+
+        if kind == "empty_set":
+            return self.empty_set()
+
+        if kind == "point":
+            return self.point(self.base_ring().random_element(), self.base_ring().random_element().abs(), model="half_plane")
+
+        if kind == "geodesic":
+            a = self.random_element("point")
+            while True:
+                b = self.random_element("point")
+                if b != a:
+                    break
+
+            return self.geodesic(a, b)
+
+        if kind == "half_space":
+            return self.random_element("geodesic").left_half_space()
+
+        if kind == "segment":
+            a = self.random_element("point")
+            while True:
+                b = self.random_element("point")
+                if a != b and (a.is_finite() or b.is_finite()):
+                    break
+
+            return self.segment(self.geodesic(a, b), start=a, end=b)
+
+        if kind == "polygon":
+            from sage.all import ZZ
+            interior_points = [self.random_element("point") for i in range(ZZ.random_element().abs() + 3)]
+
+            half_spaces = []
+
+            while len(half_spaces) < len(interior_points):
+                half_space = self.random_element("half_space")
+
+                for p in interior_points:
+                    if p in half_space:
+                        continue
+
+                    a, b, c = half_space.equation(model="klein")
+
+                    x, y = p.coordinates(model="klein")
+
+                    a = -(b*x + c*y)
+
+                    half_space = self.half_space(a, b, c, model="klein")
+
+                    assert p in half_space
+
+                half_spaces.append(half_space)
+
+            return self.polygon(half_spaces)
+
+        raise ValueError(f"kind must be one of {kinds}")
+
     def _element_constructor_(self, x):
         r"""
         Return ``x`` as an element of the hyperbolic plane.
@@ -340,6 +439,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
 
             sage: H = HyperbolicPlane(QQ)
+
             sage: H(H.an_element()) in H
             True
 
@@ -2761,8 +2861,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
 
         Make the following randomized tests reproducible::
 
-            sage: from random import seed
-            sage: seed(0R)
+            sage: set_random_seed(0)
 
         An intersection that is already empty in the Euclidean plane::
 
@@ -2792,7 +2891,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
         disk::
 
             sage: polygon(*H.infinity()._half_spaces())._euclidean_boundary()
-            {x ≤ 0}
+            {x - 1 ≥ 0}
 
         An intersection which is a segment outside of the unit disk::
 
@@ -2802,7 +2901,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
             ....:     H.half_space(-2, -2, 1, model="klein"),
             ....:     H.half_space(17/8, 2, -1, model="klein"),
             ....: )._euclidean_boundary()
-            {x ≤ 0}
+            {x ≥ 0}
 
         An intersection which is a polygon outside of the unit disk::
 
@@ -2812,7 +2911,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
             ....:     H.half_space(-2, -2, 1, model="klein"),
             ....:     H.half_space(17/8, 2, -1, model="klein"),
             ....: )._euclidean_boundary()
-            {(x^2 + y^2) + 4*x + 3 ≤ 0}
+            {x ≥ 0}
 
         An intersection which is an (unbounded) polygon touching the unit disk::
 
@@ -2820,7 +2919,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
             ....:     H.vertical(-1).left_half_space(),
             ....:     H.vertical(1).right_half_space(),
             ....: )._euclidean_boundary()
-            {x - 1 ≥ 0}
+            {x + 1 ≤ 0}
 
         An intersection which is a segment touching the unit disk::
 
@@ -2830,7 +2929,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
             ....:     H.vertical(-1).left_half_space(),
             ....:     H.geodesic(-1, -2).right_half_space(),
             ....: )._euclidean_boundary()
-            {x ≤ 0}
+            {x ≥ 0}
 
         An intersection which is a polygon inside the unit disk::
 
@@ -2850,7 +2949,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
             ....:     H.geodesic(-1/2, -1/3).left_half_space(),
             ....:     H.geodesic(1/3, 1/2).left_half_space(),
             ....: )._euclidean_boundary()
-            {6*(x^2 + y^2) + 5*x + 1 ≥ 0}
+            {6*(x^2 + y^2) - 5*x + 1 ≥ 0}
 
         A single half plane::
 
@@ -2865,7 +2964,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
             ....:     H.geodesic(1/2, 2).left_half_space(),
             ....:     H.geodesic(-1/2, -2).right_half_space(),
             ....: )._euclidean_boundary()
-            {2*(x^2 + y^2) + 5*x + 2 ≥ 0}
+            {2*(x^2 + y^2) - 5*x + 2 ≥ 0}
 
         """
         if len(self._halfspaces) == 0:
@@ -2875,7 +2974,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
             return self._halfspaces[0]
 
         # Randomly shuffle the half spaces so the loop below runs in expected linear time.
-        from random import shuffle
+        from sage.all import shuffle
         random_half_spaces = self._halfspaces[:]
         shuffle(random_half_spaces)
 
@@ -2937,7 +3036,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
 
     def _extend_to_euclidean_boundary(self, point):
         # Randomly shuffle the half spaces so the loop below runs in expected linear time. (TODO: Is this true?)
-        from random import shuffle
+        from sage.all import shuffle
         random_half_spaces = self._halfspaces[:]
         shuffle(random_half_spaces)
 
@@ -3413,4 +3512,4 @@ def vertical(x, y=0, **options):
         g._legend_colors = [options['legend_color']]
     return g
 
-## TODO: Ensure that every method has an INPUT section.
+# TODO: Ensure that every method has an INPUT section.
