@@ -38,7 +38,7 @@ def random_half_spaces(H, count, predicate=lambda half_space: True):
     return half_spaces
 
 
-@pytest.mark.repeat(128)
+@pytest.mark.repeat(1024)
 def test_intersection_point():
     r"""
     Intersect random half spaces that contain a certain point and do not
