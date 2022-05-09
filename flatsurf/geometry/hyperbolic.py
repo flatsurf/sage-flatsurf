@@ -1393,6 +1393,14 @@ class HyperbolicConvexSet(Element):
         # TODO: Test that everything implements an_element().
         raise NotImplementedError
 
+    @classmethod
+    def _enhance_plot(self, plot, model):
+        if model == "klein":
+            from sage.all import circle
+            plot = circle([0, 0], 1, fill=False, color='#d1d1d1', zorder=-1) + plot
+
+        return plot
+
 
 class HyperbolicHalfSpace(HyperbolicConvexSet):
     r"""
@@ -2310,6 +2318,8 @@ class HyperbolicPoint(HyperbolicConvexSet):
                     intersection = self._coordinates._intersection(other._coordinates)
                     if intersection is None or intersection.is_ultra_ideal():
                         return False
+                    if intersection.is_finite():
+                        return False
                     return self._coordinates.parametrize(intersection, model="euclidean") < 0 and other._coordinates.parametrize(intersection, model="euclidean") < 0
                 if other.is_finite():
                     return False
@@ -2373,13 +2383,14 @@ class HyperbolicPoint(HyperbolicConvexSet):
     def plot(self, model="half_plane", **kwds):
         if model == "half_plane":
             from sage.all import point
-            return point(self.coordinates(model="half_plane"), **kwds)
-
-        if model == "klein":
+            plot = point(self.coordinates(model="half_plane"), **kwds)
+        elif model == "klein":
             from sage.all import point
-            return point(self.coordinates(model="klein"), **kwds)
+            plot = point(self.coordinates(model="klein"), **kwds)
+        else:
+            raise NotImplementedError
 
-        raise NotImplementedError
+        return self._enhance_plot(plot, model=model)
 
 
 class HyperbolicConvexPolygon(HyperbolicConvexSet):
@@ -3329,13 +3340,14 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
         for edge in edges:
             if edge.start() != pos:
                 commands.append(BezierPath.Command("MOVETO", [edge.start()]))
+
             commands.append(BezierPath.Command("LINETO", [edge.end()]))
             pos = edge.end()
 
         if pos != edges[0].start():
             commands.append(BezierPath.Command("MOVETO", [edges[0].start()]))
 
-        return hyperbolic_path(commands, model=model, **kwds)
+        return self._enhance_plot(hyperbolic_path(commands, model=model, **kwds), model=model)
 
     def change_ring(self, ring):
         return HyperbolicPlane(ring).polygon([half_space.change_ring(ring) for half_space in self._halfspaces], check=False, assume_sorted=True, assume_minimal=True)
@@ -3583,7 +3595,9 @@ class HyperbolicSegment(HyperbolicConvexSet):
         from sage.all import RR
 
         self = self.change_ring(RR)
-        return hyperbolic_path([BezierPath.Command("MOVETO", [self.start()]), BezierPath.Command("LINETO", [self.end()])], model=model, **kwds)
+        plot = hyperbolic_path([BezierPath.Command("MOVETO", [self.start()]), BezierPath.Command("LINETO", [self.end()])], model=model, **kwds)
+
+        return self._enhance_plot(plot, model=model)
 
     def configuration(self, other):
         if self._geodesic == other._geodesic:
@@ -3668,9 +3682,9 @@ class HyperbolicEmptySet(HyperbolicConvexSet):
         """
         return self
 
-    def plot(self, **kwds):
+    def plot(self, model="half_plane", **kwds):
         from sage.all import Graphics
-        return Graphics()
+        return self._enhance_plot(Graphics(), model=model)
 
     def change_ring(self, ring):
         return HyperbolicPlane(ring).empty_set()
@@ -3929,12 +3943,6 @@ class BezierPath(GraphicPrimitive):
 
             from sage.plot.plot import minmax_data
 
-            # TODO: Drop debug.
-            # bbox=Bbox([
-            #     [-20, -20],
-            #     [20, 20],
-            # ])
-
             return minmax_data(bbox.intervalx, bbox.intervaly, dict=True)
         except Exception as e:
             raise RuntimeError(e)
@@ -4012,10 +4020,10 @@ class BezierPath(GraphicPrimitive):
                         BezierPath.Command("MOVETOINFINITY", [end.coordinates(), (0, 1)]),
                         BezierPath.Command("LINETO", [end.coordinates()])]
 
-            if end == end.parent().infinity():
-                return [BezierPath.Command("LINETOINFINITY", [start.coordinates(model="half_plane"), (0, 1)])]
-
             from sage.all import RR
+            if end == end.parent().infinity():
+                return [BezierPath.Command("LINETOINFINITY", [start.change_ring(RR).coordinates(model="half_plane"), (0, 1)])]
+
             p = start.change_ring(RR).coordinates(model="half_plane")
             q = end.change_ring(RR).coordinates(model="half_plane")
 
@@ -4066,6 +4074,7 @@ class BezierPath(GraphicPrimitive):
 
             raise NotImplementedError(f"cannot move from {start} to {end} in half plane model")
         elif model == "klein":
+            # TODO: The actual arc should not be visible.
             from sage.all import RR
             return [BezierPath.Command("ARCTO", [end.change_ring(RR).coordinates(model="klein"), (0, 0)])]
         else:
