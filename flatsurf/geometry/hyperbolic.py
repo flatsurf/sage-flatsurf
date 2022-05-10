@@ -3193,8 +3193,9 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
 
                 # Each half space constrains the possible values of λ, starting
                 # from (-∞,∞) to a smaller closed interval.
-                from sage.all import RealSet
-                interval = RealSet.real_line()
+                from sage.all import RealSet, oo
+                # Note that RealSet.real_line() would require SageMath 9.4
+                interval = RealSet(-oo, oo)
 
                 for constraining in random_half_spaces:
                     if constraining is half_space:
