@@ -28,8 +28,7 @@ from sage.rings.all import AA, QQbar, RR
 from sage.matrix.constructor import matrix, identity_matrix
 from sage.modules.free_module_element import vector
 
-
-def similarity_from_vectors(u, v):
+def similarity_from_vectors(u, v, matrix_space=None):
     r"""
     Return the unique similarity matrix that maps ``u`` to ``v``.
 
@@ -84,30 +83,20 @@ def similarity_from_vectors(u, v):
     """
     assert u.parent() is v.parent()
 
+    if matrix_space is None:
+        from sage.matrix.matrix_space import MatrixSpace
+        matrix_space = MatrixSpace(u.base_ring(), 2)
+
     if u == v:
-        return identity_matrix(u.base_ring(), n=2)
+        return matrix_space.one()
 
     sqnorm_u = u[0]*u[0] + u[1]*u[1]
-    # Editted by Pat to remove worry about subfield...
-    #sqnorm_v = v[0]*v[0] + v[1]*v[1]
-
-    #if sqnorm_u != sqnorm_v:
-    #    r = sqnorm_u / sqnorm_v
-    #    if not r.is_square():
-    #        raise ValueError("there is no similarity in the ground field; consider a suitable field extension. Note: u="+str(u)+" and v="+str(v)+".")
-    #    sqrt_r = r.sqrt()
-    #else:
-    #    sqrt_r = 1
-
-    #vv = sqrt_r * v
-
-    #cos_uv = (u[0]*vv[0] + u[1]*vv[1]) / sqnorm_u
-    #sin_uv = (u[0]*vv[1] - u[1]*vv[0]) / sqnorm_u
-    # return 1/sqrt_r * matrix([[cos_uv, -sin_uv],[sin_uv, cos_uv]])
-
     cos_uv = (u[0]*v[0] + u[1]*v[1]) / sqnorm_u
     sin_uv = (u[0]*v[1] - u[1]*v[0]) / sqnorm_u
-    return matrix([[cos_uv, -sin_uv],[sin_uv, cos_uv]])
+
+    m = matrix_space([cos_uv, -sin_uv, sin_uv, cos_uv])
+    m.set_immutable()
+    return m
 
 
 def is_cosine_sine_of_rational(c, s):
