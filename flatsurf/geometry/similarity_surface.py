@@ -171,6 +171,11 @@ class SimilaritySurface(SageObject):
         else:
             raise TypeError("invalid argument surface={} to build a similarity surface".format(surface))
 
+    @cached_method
+    def _matrix_space(self):
+        from sage.matrix.matrix_space import MatrixSpace
+        return MatrixSpace(self.base_ring(), 2)
+
     def underlying_surface(self):
         r"""
         Return the surface underlying this SimilaritySurface.
@@ -399,6 +404,7 @@ class SimilaritySurface(SageObject):
 
         return "{} built from {} polygon{}".format(self.__class__.__name__, num, end)
 
+    @cached_method
     def edge_matrix(self, p, e=None):
         r"""
         Returns the 2x2 matrix representing a similarity which when applied to the polygon with label `p`
@@ -424,13 +430,15 @@ class SimilaritySurface(SageObject):
             True
         """
         if e is None:
-            p,e = p
+            import warning
+            warning.warn('edge_matrix will now only take two arguments')
+            p, e = p
         u = self.polygon(p).edge(e)
-        pp,ee = self.opposite_edge(p,e)
+        pp, ee = self.opposite_edge(p, e)
         v = self.polygon(pp).edge(ee)
 
         # be careful, because of the orientation, it is -v and not v
-        return similarity_from_vectors(u,-v)
+        return similarity_from_vectors(u, -v, self._matrix_space())
 
     def edge_transformation(self, p, e):
         r"""
@@ -452,23 +460,23 @@ class SimilaritySurface(SageObject):
             sage: g((2,-2))
             (2, 0)
         """
-        G=SimilarityGroup(self.base_ring())
-        q=self.polygon(p)
-        a=q.vertex(e)
-        b=q.vertex(e+1)
+        G = SimilarityGroup(self.base_ring())
+        q = self.polygon(p)
+        a = q.vertex(e)
+        b = q.vertex(e+1)
         # This is the similarity carrying the origin to a and (1,0) to b:
-        g=G(b[0]-a[0],b[1]-a[1],a[0],a[1])
+        g = G(b[0] - a[0], b[1] - a[1], a[0], a[1])
 
-        pp,ee = self.opposite_edge(p,e)
-        qq=self.polygon(pp)
+        pp, ee = self.opposite_edge(p, e)
+        qq = self.polygon(pp)
         # Be careful here: opposite vertices are identified
-        aa=qq.vertex(ee+1)
-        bb=qq.vertex(ee)
+        aa = qq.vertex(ee+1)
+        bb = qq.vertex(ee)
         # This is the similarity carrying the origin to aa and (1,0) to bb:
-        gg=G(bb[0]-aa[0],bb[1]-aa[1],aa[0],aa[1])
+        gg = G(bb[0] - aa[0], bb[1] - aa[1], aa[0], aa[1])
 
         # This is the similarity carrying (a,b) to (aa,bb):
-        return gg/g
+        return gg / g
 
     def set_vertex_zero(self, label, v, in_place=False):
         r"""
