@@ -16,6 +16,9 @@
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
     <script src="_static/togglebutton.js"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     
@@ -2721,10 +2724,11 @@ pairs of edges ((l,e),(ll,ee)) where edge (l,e) is glued to (ll,ee).</p>
 </div>
 </dd></dl>
 
-<dl class="py method">
+<dl class="py attribute">
 <dt class="sig sig-object py" id="flatsurf.geometry.similarity_surface.SimilaritySurface.edge_matrix">
-<span class="sig-name descname"><span class="pre">edge_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/similarity_surface.html#SimilaritySurface.edge_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.edge_matrix" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the 2x2 matrix representing a similarity which when applied to the polygon with label <cite>p</cite>
+<span class="sig-name descname"><span class="pre">edge_matrix</span></span><a class="reference internal" href="_modules/flatsurf/geometry/similarity_surface.html#SimilaritySurface.edge_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.edge_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>File: /home/runner/work/sage-flatsurf/sage-flatsurf/flatsurf/geometry/similarity_surface.py (starting at line 407)</p>
+<p>Returns the 2x2 matrix representing a similarity which when applied to the polygon with label <cite>p</cite>
 makes it so the edge <cite>e</cite> can be glued to its opposite edge by translation.</p>
 <p>If <cite>e</cite> is not provided, then <cite>p</cite> should be a pair consisting of a polygon label and an edge.</p>
 <p>EXAMPLES:</p>
@@ -3767,7 +3771,8 @@ respecting the polygons and the base_labels.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.translation_surface.TranslationSurface.edge_matrix">
 <span class="sig-name descname"><span class="pre">edge_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/translation_surface.html#TranslationSurface.edge_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.translation_surface.TranslationSurface.edge_matrix" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the 2x2 matrix representing a similarity which when applied to the polygon with label <cite>p</cite>
+<dd><p>File: /home/runner/work/sage-flatsurf/sage-flatsurf/flatsurf/geometry/similarity_surface.py (starting at line 407)</p>
+<p>Returns the 2x2 matrix representing a similarity which when applied to the polygon with label <cite>p</cite>
 makes it so the edge <cite>e</cite> can be glued to its opposite edge by translation.</p>
 <p>If <cite>e</cite> is not provided, then <cite>p</cite> should be a pair consisting of a polygon label and an edge.</p>
 <p>EXAMPLES:</p>
@@ -4151,7 +4156,7 @@ True
 
 <dl class="py function">
 <dt class="sig sig-object py" id="flatsurf.geometry.matrix_2x2.similarity_from_vectors">
-<span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.matrix_2x2.</span></span><span class="sig-name descname"><span class="pre">similarity_from_vectors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">u</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/matrix_2x2.html#similarity_from_vectors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.matrix_2x2.similarity_from_vectors" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.matrix_2x2.</span></span><span class="sig-name descname"><span class="pre">similarity_from_vectors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">u</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">matrix_space</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/matrix_2x2.html#similarity_from_vectors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.matrix_2x2.similarity_from_vectors" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the unique similarity matrix that maps <code class="docutils literal notranslate"><span class="pre">u</span></code> to <code class="docutils literal notranslate"><span class="pre">v</span></code>.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.matrix_2x2</span> <span class="kn">import</span> <span class="n">similarity_from_vectors</span>

@@ -15,6 +15,9 @@
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
     <script src="../../../_static/togglebutton.js"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     
@@ -146,7 +149,7 @@
 
     <span class="k">return</span> <span class="n">sqrt_det</span><span class="p">,</span> <span class="n">m</span> <span class="o">/</span> <span class="n">sqrt_det</span></div>
 
-<div class="viewcode-block" id="similarity_from_vectors"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.matrix_2x2.similarity_from_vectors">[docs]</a><span class="k">def</span> <span class="nf">similarity_from_vectors</span><span class="p">(</span><span class="n">u</span><span class="p">,</span><span class="n">v</span><span class="p">):</span>
+<div class="viewcode-block" id="similarity_from_vectors"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.matrix_2x2.similarity_from_vectors">[docs]</a><span class="k">def</span> <span class="nf">similarity_from_vectors</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">matrix_space</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the unique similarity matrix that maps ``u`` to ``v``.</span>
 
@@ -201,30 +204,20 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">assert</span> <span class="n">u</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span> <span class="ow">is</span> <span class="n">v</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span>
 
+    <span class="k">if</span> <span class="n">matrix_space</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">sage.matrix.matrix_space</span> <span class="kn">import</span> <span class="n">MatrixSpace</span>
+        <span class="n">matrix_space</span> <span class="o">=</span> <span class="n">MatrixSpace</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span> <span class="mi">2</span><span class="p">)</span>
+
     <span class="k">if</span> <span class="n">u</span> <span class="o">==</span> <span class="n">v</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">identity_matrix</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span> <span class="n">n</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">matrix_space</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
 
     <span class="n">sqnorm_u</span> <span class="o">=</span> <span class="n">u</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">u</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">u</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">u</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-    <span class="c1"># Editted by Pat to remove worry about subfield...</span>
-    <span class="c1">#sqnorm_v = v[0]*v[0] + v[1]*v[1]</span>
-
-    <span class="c1">#if sqnorm_u != sqnorm_v:</span>
-    <span class="c1">#    r = sqnorm_u / sqnorm_v</span>
-    <span class="c1">#    if not r.is_square():</span>
-    <span class="c1">#        raise ValueError(&quot;there is no similarity in the ground field; consider a suitable field extension. Note: u=&quot;+str(u)+&quot; and v=&quot;+str(v)+&quot;.&quot;)</span>
-    <span class="c1">#    sqrt_r = r.sqrt()</span>
-    <span class="c1">#else:</span>
-    <span class="c1">#    sqrt_r = 1</span>
-
-    <span class="c1">#vv = sqrt_r * v</span>
-
-    <span class="c1">#cos_uv = (u[0]*vv[0] + u[1]*vv[1]) / sqnorm_u</span>
-    <span class="c1">#sin_uv = (u[0]*vv[1] - u[1]*vv[0]) / sqnorm_u</span>
-    <span class="c1"># return 1/sqrt_r * matrix([[cos_uv, -sin_uv],[sin_uv, cos_uv]])</span>
-
     <span class="n">cos_uv</span> <span class="o">=</span> <span class="p">(</span><span class="n">u</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">u</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="n">sqnorm_u</span>
     <span class="n">sin_uv</span> <span class="o">=</span> <span class="p">(</span><span class="n">u</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">u</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="n">sqnorm_u</span>
-    <span class="k">return</span> <span class="n">matrix</span><span class="p">([[</span><span class="n">cos_uv</span><span class="p">,</span> <span class="o">-</span><span class="n">sin_uv</span><span class="p">],[</span><span class="n">sin_uv</span><span class="p">,</span> <span class="n">cos_uv</span><span class="p">]])</span></div>
+
+    <span class="n">m</span> <span class="o">=</span> <span class="n">matrix_space</span><span class="p">([</span><span class="n">cos_uv</span><span class="p">,</span> <span class="o">-</span><span class="n">sin_uv</span><span class="p">,</span> <span class="n">sin_uv</span><span class="p">,</span> <span class="n">cos_uv</span><span class="p">])</span>
+    <span class="n">m</span><span class="o">.</span><span class="n">set_immutable</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">m</span></div>
 
 
 <div class="viewcode-block" id="rotation_matrix_angle"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.matrix_2x2.rotation_matrix_angle">[docs]</a><span class="k">def</span> <span class="nf">rotation_matrix_angle</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
