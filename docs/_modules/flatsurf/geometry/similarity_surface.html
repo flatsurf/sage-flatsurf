@@ -53,7 +53,7 @@
 <span class="c1">#  This file is part of sage-flatsurf.</span>
 <span class="c1">#</span>
 <span class="c1">#        Copyright (C) 2016-2020 Vincent Delecroix</span>
-<span class="c1">#                      2020-2021 Julian Rüth</span>
+<span class="c1">#                      2020-2022 Julian Rüth</span>
 <span class="c1">#</span>
 <span class="c1">#  sage-flatsurf is free software: you can redistribute it and/or modify</span>
 <span class="c1">#  it under the terms of the GNU General Public License as published by</span>
@@ -70,10 +70,8 @@
 <span class="c1">#*********************************************************************</span>
 
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span><span class="p">,</span> <span class="n">print_function</span><span class="p">,</span> <span class="n">division</span>
-<span class="kn">from</span> <span class="nn">six.moves</span> <span class="kn">import</span> <span class="nb">range</span><span class="p">,</span> <span class="nb">map</span><span class="p">,</span> <span class="nb">filter</span><span class="p">,</span> <span class="nb">zip</span>
+<span class="kn">from</span> <span class="nn">six.moves</span> <span class="kn">import</span> <span class="nb">range</span>
 <span class="kn">from</span> <span class="nn">six</span> <span class="kn">import</span> <span class="n">iteritems</span>
-
-<span class="kn">import</span> <span class="nn">itertools</span>
 
 <span class="kn">from</span> <span class="nn">sage.misc.cachefunc</span> <span class="kn">import</span> <span class="n">cached_method</span>
 <span class="kn">from</span> <span class="nn">sage.misc.sage_unittest</span> <span class="kn">import</span> <span class="n">TestSuite</span>
@@ -82,27 +80,17 @@
 
 <span class="kn">from</span> <span class="nn">sage.rings.infinity</span> <span class="kn">import</span> <span class="n">Infinity</span>
 
-<span class="kn">from</span> <span class="nn">sage.rings.all</span> <span class="kn">import</span> <span class="n">ZZ</span><span class="p">,</span> <span class="n">QQ</span><span class="p">,</span> <span class="n">AA</span><span class="p">,</span> <span class="n">RIF</span><span class="p">,</span> <span class="n">RR</span><span class="p">,</span> <span class="n">NumberField</span>
+<span class="kn">from</span> <span class="nn">sage.rings.all</span> <span class="kn">import</span> <span class="n">ZZ</span><span class="p">,</span> <span class="n">QQ</span><span class="p">,</span> <span class="n">AA</span><span class="p">,</span> <span class="n">NumberField</span>
 
 <span class="kn">from</span> <span class="nn">sage.modules.free_module_element</span> <span class="kn">import</span> <span class="n">vector</span>
 
-<span class="kn">from</span> <span class="nn">sage.matrix.constructor</span> <span class="kn">import</span> <span class="n">matrix</span><span class="p">,</span> <span class="n">identity_matrix</span>
-<span class="kn">from</span> <span class="nn">sage.modules.free_module</span> <span class="kn">import</span> <span class="n">VectorSpace</span>
-
-<span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">FreeModule</span>
-
-<span class="kn">from</span> <span class="nn">.matrix_2x2</span> <span class="kn">import</span> <span class="p">(</span><span class="n">is_similarity</span><span class="p">,</span>
-                    <span class="n">homothety_rotation_decomposition</span><span class="p">,</span>
-                    <span class="n">similarity_from_vectors</span><span class="p">,</span>
-                    <span class="n">rotation_matrix_angle</span><span class="p">,</span>
-                    <span class="n">is_cosine_sine_of_rational</span><span class="p">)</span>
-
 <span class="kn">from</span> <span class="nn">.similarity</span> <span class="kn">import</span> <span class="n">SimilarityGroup</span>
-<span class="kn">from</span> <span class="nn">.polygon</span> <span class="kn">import</span> <span class="n">ConvexPolygons</span><span class="p">,</span> <span class="n">wedge_product</span><span class="p">,</span> <span class="n">triangulate</span><span class="p">,</span> <span class="n">build_faces</span>
+<span class="kn">from</span> <span class="nn">.polygon</span> <span class="kn">import</span> <span class="n">ConvexPolygons</span><span class="p">,</span> <span class="n">wedge_product</span>
 
 <span class="kn">from</span> <span class="nn">.surface</span> <span class="kn">import</span> <span class="n">Surface</span><span class="p">,</span> <span class="n">Surface_dict</span><span class="p">,</span> <span class="n">Surface_list</span><span class="p">,</span> <span class="n">LabelComparator</span>
 <span class="kn">from</span> <span class="nn">.surface_objects</span> <span class="kn">import</span> <span class="n">Singularity</span><span class="p">,</span> <span class="n">SaddleConnection</span><span class="p">,</span> <span class="n">SurfacePoint</span>
 <span class="kn">from</span> <span class="nn">.circle</span> <span class="kn">import</span> <span class="n">Circle</span>
+<span class="kn">from</span> <span class="nn">.matrix_2x2</span> <span class="kn">import</span> <span class="n">similarity_from_vectors</span>
 
 <span class="n">ZZ_1</span> <span class="o">=</span> <span class="n">ZZ</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
 <span class="n">ZZ_2</span> <span class="o">=</span> <span class="n">ZZ_1</span> <span class="o">+</span> <span class="n">ZZ_1</span>

@@ -2727,7 +2727,7 @@ pairs of edges ((l,e),(ll,ee)) where edge (l,e) is glued to (ll,ee).</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="flatsurf.geometry.similarity_surface.SimilaritySurface.edge_matrix">
 <span class="sig-name descname"><span class="pre">edge_matrix</span></span><a class="reference internal" href="_modules/flatsurf/geometry/similarity_surface.html#SimilaritySurface.edge_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.edge_matrix" title="Permalink to this definition">¶</a></dt>
-<dd><p>File: /home/runner/work/sage-flatsurf/sage-flatsurf/flatsurf/geometry/similarity_surface.py (starting at line 407)</p>
+<dd><p>File: /home/runner/work/sage-flatsurf/sage-flatsurf/flatsurf/geometry/similarity_surface.py (starting at line 395)</p>
 <p>Returns the 2x2 matrix representing a similarity which when applied to the polygon with label <cite>p</cite>
 makes it so the edge <cite>e</cite> can be glued to its opposite edge by translation.</p>
 <p>If <cite>e</cite> is not provided, then <cite>p</cite> should be a pair consisting of a polygon label and an edge.</p>
@@ -3771,7 +3771,7 @@ respecting the polygons and the base_labels.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.translation_surface.TranslationSurface.edge_matrix">
 <span class="sig-name descname"><span class="pre">edge_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/translation_surface.html#TranslationSurface.edge_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.translation_surface.TranslationSurface.edge_matrix" title="Permalink to this definition">¶</a></dt>
-<dd><p>File: /home/runner/work/sage-flatsurf/sage-flatsurf/flatsurf/geometry/similarity_surface.py (starting at line 407)</p>
+<dd><p>File: /home/runner/work/sage-flatsurf/sage-flatsurf/flatsurf/geometry/similarity_surface.py (starting at line 395)</p>
 <p>Returns the 2x2 matrix representing a similarity which when applied to the polygon with label <cite>p</cite>
 makes it so the edge <cite>e</cite> can be glued to its opposite edge by translation.</p>
 <p>If <cite>e</cite> is not provided, then <cite>p</cite> should be a pair consisting of a polygon label and an edge.</p>
@@ -4037,28 +4037,6 @@ sage: v / v.norm()
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="flatsurf.geometry.matrix_2x2.homothety_rotation_decomposition">
-<span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.matrix_2x2.</span></span><span class="sig-name descname"><span class="pre">homothety_rotation_decomposition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/matrix_2x2.html#homothety_rotation_decomposition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.matrix_2x2.homothety_rotation_decomposition" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a couple composed of the homothety and a rotation matrix.</p>
-<p>The coefficients of the returned pair are either in the ground field of
-<code class="docutils literal notranslate"><span class="pre">m</span></code> or in the algebraic field <code class="docutils literal notranslate"><span class="pre">AA</span></code>.</p>
-<p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.matrix_2x2</span> <span class="kn">import</span> <span class="n">homothety_rotation_decomposition</span>
-
-<span class="n">sage</span><span class="p">:</span> <span class="n">R</span><span class="o">.&lt;</span><span class="n">x</span><span class="o">&gt;</span> <span class="o">=</span> <span class="n">PolynomialRing</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">K</span><span class="o">.&lt;</span><span class="n">sqrt2</span><span class="o">&gt;</span> <span class="o">=</span> <span class="n">NumberField</span><span class="p">(</span><span class="n">x</span><span class="o">^</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">2</span><span class="p">,</span> <span class="n">embedding</span><span class="o">=</span><span class="mf">1.4142</span><span class="p">)</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">m</span> <span class="o">=</span> <span class="n">matrix</span><span class="p">([[</span><span class="n">sqrt2</span><span class="p">,</span> <span class="o">-</span><span class="n">sqrt2</span><span class="p">],[</span><span class="n">sqrt2</span><span class="p">,</span><span class="n">sqrt2</span><span class="p">]])</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">a</span><span class="p">,</span><span class="n">rot</span> <span class="o">=</span> <span class="n">homothety_rotation_decomposition</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">a</span>
-<span class="mi">2</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">rot</span>
-<span class="p">[</span> <span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">sqrt2</span> <span class="o">-</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">sqrt2</span><span class="p">]</span>
-<span class="p">[</span> <span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">sqrt2</span>  <span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">sqrt2</span><span class="p">]</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="py function">
 <dt class="sig sig-object py" id="flatsurf.geometry.matrix_2x2.is_cosine_sine_of_rational">
 <span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.matrix_2x2.</span></span><span class="sig-name descname"><span class="pre">is_cosine_sine_of_rational</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">c</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/matrix_2x2.html#is_cosine_sine_of_rational"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.matrix_2x2.is_cosine_sine_of_rational" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check whether the given pair is a cosine and sine of a same rational angle.</p>
@@ -4093,64 +4071,6 @@ True
 <span class="n">sage</span><span class="p">:</span> <span class="n">is_cosine_sine_of_rational</span><span class="p">(</span><span class="n">R</span><span class="o">.</span><span class="n">one</span><span class="p">(),</span> <span class="n">R</span><span class="o">.</span><span class="n">zero</span><span class="p">())</span> <span class="c1"># optional: exactreal</span>
 <span class="kc">True</span>
 </pre></div>
-</div>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="flatsurf.geometry.matrix_2x2.is_similarity">
-<span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.matrix_2x2.</span></span><span class="sig-name descname"><span class="pre">is_similarity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/matrix_2x2.html#is_similarity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.matrix_2x2.is_similarity" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return <code class="docutils literal notranslate"><span class="pre">True</span></code> if <code class="docutils literal notranslate"><span class="pre">m</span></code> is a similarity and <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p>
-<p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.matrix_2x2</span> <span class="kn">import</span> <span class="n">is_similarity</span>
-
-<span class="n">sage</span><span class="p">:</span> <span class="n">is_similarity</span><span class="p">(</span><span class="n">matrix</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]]))</span>
-<span class="kc">True</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">is_similarity</span><span class="p">(</span><span class="n">matrix</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">2</span><span class="p">],[</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">]]))</span>
-<span class="kc">True</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">is_similarity</span><span class="p">(</span><span class="n">matrix</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]]))</span>
-<span class="kc">False</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="flatsurf.geometry.matrix_2x2.number_field_to_AA">
-<span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.matrix_2x2.</span></span><span class="sig-name descname"><span class="pre">number_field_to_AA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/matrix_2x2.html#number_field_to_AA"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.matrix_2x2.number_field_to_AA" title="Permalink to this definition">¶</a></dt>
-<dd><p>It is a mess to convert an element of a number field to the algebraic field
-<code class="docutils literal notranslate"><span class="pre">AA</span></code>. This is a temporary fix.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="flatsurf.geometry.matrix_2x2.rotation_matrix_angle">
-<span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.matrix_2x2.</span></span><span class="sig-name descname"><span class="pre">rotation_matrix_angle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/matrix_2x2.html#rotation_matrix_angle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.matrix_2x2.rotation_matrix_angle" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the angle of the rotation matrix <code class="docutils literal notranslate"><span class="pre">r</span></code> divided by <code class="docutils literal notranslate"><span class="pre">2</span> <span class="pre">pi</span></code>.</p>
-<p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.matrix_2x2</span> <span class="kn">import</span> <span class="n">rotation_matrix_angle</span>
-
-<span class="n">sage</span><span class="p">:</span> <span class="k">def</span> <span class="nf">rot_matrix</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
-<span class="o">....</span><span class="p">:</span>     <span class="n">z</span> <span class="o">=</span> <span class="n">QQbar</span><span class="o">.</span><span class="n">zeta</span><span class="p">(</span><span class="n">q</span><span class="p">)</span> <span class="o">**</span> <span class="n">p</span>
-<span class="o">....</span><span class="p">:</span>     <span class="n">c</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">real</span><span class="p">()</span>
-<span class="o">....</span><span class="p">:</span>     <span class="n">s</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">imag</span><span class="p">()</span>
-<span class="o">....</span><span class="p">:</span>     <span class="k">return</span> <span class="n">matrix</span><span class="p">(</span><span class="n">AA</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="p">[</span><span class="n">c</span><span class="p">,</span><span class="o">-</span><span class="n">s</span><span class="p">,</span><span class="n">s</span><span class="p">,</span><span class="n">c</span><span class="p">])</span>
-<span class="n">sage</span><span class="p">:</span> <span class="p">[</span><span class="n">rotation_matrix_angle</span><span class="p">(</span><span class="n">rot_matrix</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">)]</span>
-<span class="p">[</span><span class="mi">1</span><span class="o">/</span><span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="o">/</span><span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="o">/</span><span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="o">/</span><span class="mi">5</span><span class="p">]</span>
-<span class="n">sage</span><span class="p">:</span> <span class="p">[</span><span class="n">rotation_matrix_angle</span><span class="p">(</span><span class="n">rot_matrix</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">)]</span>
-<span class="p">[</span><span class="mi">1</span><span class="o">/</span><span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="o">/</span><span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="o">/</span><span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="o">/</span><span class="mi">5</span><span class="p">]</span>
-<span class="n">sage</span><span class="p">:</span> <span class="p">[</span><span class="n">rotation_matrix_angle</span><span class="p">(</span><span class="n">rot_matrix</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="mi">7</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">7</span><span class="p">)]</span>
-<span class="p">[</span><span class="mi">1</span><span class="o">/</span><span class="mi">7</span><span class="p">,</span> <span class="mi">2</span><span class="o">/</span><span class="mi">7</span><span class="p">,</span> <span class="mi">3</span><span class="o">/</span><span class="mi">7</span><span class="p">,</span> <span class="mi">4</span><span class="o">/</span><span class="mi">7</span><span class="p">,</span> <span class="mi">5</span><span class="o">/</span><span class="mi">7</span><span class="p">,</span> <span class="mi">6</span><span class="o">/</span><span class="mi">7</span><span class="p">]</span>
-</pre></div>
-</div>
-<p>Some random tests:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
-<span class="o">....</span><span class="p">:</span>     <span class="n">r</span> <span class="o">=</span> <span class="n">QQ</span><span class="o">.</span><span class="n">random_element</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">y</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
-<span class="o">....</span><span class="p">:</span>     <span class="n">r</span> <span class="o">-=</span> <span class="n">r</span><span class="o">.</span><span class="n">floor</span><span class="p">()</span>
-<span class="o">....</span><span class="p">:</span>     <span class="n">m</span> <span class="o">=</span> <span class="n">rot_matrix</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">numerator</span><span class="p">(),</span> <span class="n">r</span><span class="o">.</span><span class="n">denominator</span><span class="p">())</span>
-<span class="o">....</span><span class="p">:</span>     <span class="k">assert</span> <span class="n">rotation_matrix_angle</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="o">==</span> <span class="n">r</span>
-</pre></div>
-</div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>This is using floating point arithmetic and might be wrong.</p>
 </div>
 </dd></dl>
 
