@@ -21,7 +21,7 @@ base has been specified explicitly::
     ...
     TypeError: unable to convert sqrt(2) to a rational
 
-We can use a bigger (exact) field instead::
+We can use a bigger field instead::
 
     sage: HAA = HyperbolicPlane(AA)
     sage: HAA(sqrt(2) + I)
@@ -55,16 +55,16 @@ construct the geodesic that connects them::
     sage: H(oo)
     ∞
 
-    sage: H.geodesic(-1, 1)
-    {(x^2 + y^2) - 1 = 0}
+    sage: H.geodesic(1, oo)
+    {-x + 1 = 0}
 
-Again, the geodesic that is given by a half circle in the upper half plane can
-be created directly by providing its midpoint and the square of its radius::
+The geodesic that is given by a half circle in the upper half plane can be
+created directly by providing its midpoint and the square of its radius::
 
     sage: H.half_circle(0, 1)
     {(x^2 + y^2) - 1 = 0}
 
-Geodesics can be interescted::
+Geodesics can be intersected::
 
     sage: H.half_circle(0, 1).intersection(H.vertical(0))
     I
@@ -124,9 +124,6 @@ from sage.structure.unique_representation import UniqueRepresentation
 from sage.misc.decorators import options, rename_keyword
 from sage.plot.primitive import GraphicPrimitive
 
-# TODO: Update documentation: we now can talk about ideal points whose coordinates live in a quadratic extension.
-
-
 class HyperbolicPlane(Parent, UniqueRepresentation):
     r"""
     The hyperbolic plane.
@@ -147,7 +144,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
     plane model. However, internally, we store most objects in a representation
     in the Klein model. In that model it tends to be easier to perform
     computations without having to extend the base ring and we can also rely on
-    starndard algorithms for geometry in the Euclidean plane.
+    standard algorithms for geometry in the Euclidean plane.
 
     For the Klein model, we use a unit disk centered at (0, 0). The map from
     the Poincaré half plane sends the imaginary unit `i` to the center at the
@@ -166,7 +163,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         (\phi, r)\mapsto \left(\phi, \frac{2r}{1 + r^2}\right).
 
-    When we write this map out explicitly in Euclidean coordinates, we get
+    When we write out the full map explicitly in Euclidean coordinates, we get
 
     .. MATH::
 
@@ -180,7 +177,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
     for its inverse.
 
-    A geodesic in the Poincaré half plane is then given by an equation of the form
+    A geodesic in the Poincaré half plane is given by an equation of the form
 
     .. MATH::
 
@@ -208,7 +205,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
     Note that the intersection of two geodesics defined by coefficients in a
     field `K` in the Klein model has coordinates in `K` in the Klein model.
-    This is not true of the Poincaré half plane model.
+    The corresponding statement is not true for the Poincaré half plane model.
 
     INPUT:
 
@@ -234,6 +231,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         Hyperbolic Plane over Algebraic Real Field
 
     """
+    # TODO: Update documentation from here: we now can talk about ideal points whose coordinates live in a quadratic extension.
 
     @staticmethod
     def __classcall__(cls, base_ring=None, category=None):
