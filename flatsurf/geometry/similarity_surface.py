@@ -26,6 +26,7 @@ from __future__ import absolute_import, print_function, division
 from six.moves import range
 from six import iteritems
 
+from sage.misc.cachefunc import cached_method
 from sage.misc.sage_unittest import TestSuite
 
 from sage.structure.sage_object import SageObject
