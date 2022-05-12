@@ -1399,6 +1399,19 @@ class HyperbolicConvexSet(Element):
 
         return plot
 
+    def is_empty(self):
+        return self.dimension() < 0
+
+    def __bool__(self):
+        return not self.is_empty()
+
+    def dimension(self):
+        # TODO: Test that this is an ZZ integer.
+        raise NotImplementedError(f"{type(self)} does not implement dimension() yet")
+
+    def is_point(self):
+        return self.dimension() == 0
+
 
 class HyperbolicHalfSpace(HyperbolicConvexSet):
     r"""
@@ -1728,6 +1741,10 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
 
     def change_ring(self, ring):
         return self._geodesic.change_ring(ring).left_half_space()
+
+    def dimension(self):
+        from sage.all import ZZ
+        return 2
 
 
 class HyperbolicGeodesic(HyperbolicConvexSet):
@@ -2134,6 +2151,10 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
         b, c, a = vector(self.parent().base_ring(), [self._b, self._c, self._a]) * isometry.inverse()
         return self.parent().geodesic(a, b, c, model="klein")
 
+    def dimension(self):
+        from sage.all import ZZ
+        return ZZ(1)
+
 
 class HyperbolicPoint(HyperbolicConvexSet):
     r"""
@@ -2389,6 +2410,10 @@ class HyperbolicPoint(HyperbolicConvexSet):
             raise NotImplementedError
 
         return self._enhance_plot(plot, model=model)
+
+    def dimension(self):
+        from sage.all import ZZ
+        return ZZ.zero()
 
 
 class HyperbolicConvexPolygon(HyperbolicConvexSet):
@@ -3687,6 +3712,10 @@ class HyperbolicEmptySet(HyperbolicConvexSet):
 
     def change_ring(self, ring):
         return HyperbolicPlane(ring).empty_set()
+
+    def dimension(self):
+        from sage.all import ZZ
+        return ZZ(-1)
 
 
 def sl2_to_so12(m):
