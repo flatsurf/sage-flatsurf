@@ -124,6 +124,7 @@ from sage.structure.unique_representation import UniqueRepresentation
 from sage.misc.decorators import options, rename_keyword
 from sage.plot.primitive import GraphicPrimitive
 
+
 class HyperbolicPlane(Parent, UniqueRepresentation):
     r"""
     The hyperbolic plane.
@@ -1744,7 +1745,7 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
 
     def dimension(self):
         from sage.all import ZZ
-        return 2
+        return ZZ(2)
 
 
 class HyperbolicGeodesic(HyperbolicConvexSet):
@@ -3640,9 +3641,8 @@ class HyperbolicSegment(HyperbolicConvexSet):
             raise NotImplementedError("cannot determine configuration of segments that do not intersect")
 
         if intersection.is_finite():
-            if intersection == self.end(finite=True):
-                if intersection == other.start(finite=True):
-                    return "join"
+            if intersection == self.end(finite=True) and intersection == other.start(finite=True):
+                return "join"
 
             raise NotImplementedError("cannot determine configuration of segments that intersect in a finite point")
 
@@ -3887,9 +3887,8 @@ class BezierPath(GraphicPrimitive):
             if command.code == "LINETO":
                 target, = command.args
 
-                if direction is not None:
-                    if pos != target:
-                        raise ValueError(f"Cannot execute LINETO from infinite point at {pos} + λ {direction} when going to {target}")
+                if direction is not None and pos != target:
+                    raise ValueError(f"Cannot execute LINETO from infinite point at {pos} + λ {direction} when going to {target}")
 
                 direction = None
                 pos = target
