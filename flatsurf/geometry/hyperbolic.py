@@ -232,8 +232,6 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         Hyperbolic Plane over Algebraic Real Field
 
     """
-    # TODO: Update documentation from here: we now can talk about ideal points whose coordinates live in a quadratic extension.
-
     @staticmethod
     def __classcall__(cls, base_ring=None, category=None):
         r"""
@@ -316,6 +314,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
                 self.real(0),
                 self.real(1),
                 self.real(-1),
+                self.geodesic(0, 2).start(),
                 # Geodesics
                 self.vertical(1),
                 self.half_circle(0, 1),
@@ -799,6 +798,14 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             ...
             ValueError: points specifying a geodesic must be distinct
 
+        Geodesics cannot be defined from points whose coordinates are over a
+        quadratic field extension::
+
+            sage: H.geodesic(H.half_circle(0, 2).start(), H.half_circle(0, 2).end())
+            Traceback (most recent call last):
+            ...
+            ValueError: square root of 32 not a rational number
+
         """
         if c is None:
             a = self(a)
@@ -928,6 +935,13 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
             sage: H.segment(H.vertical(0), start=I, end=I)
             I
+
+        The endpoints must have coordinates over the base ring::
+
+            sage: H.segment(H.half_circle(0, 2), H.half_circle(0, 2).start(), H.half_circle(0, 2).end())
+            Traceback (most recent call last):
+            ...
+            ValueError: square root of 32 not a rational number
 
         """
         geodesic = self(geodesic)
@@ -1811,8 +1825,6 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
         return HyperbolicHalfSpace._merge_sorted([self.left_half_space()], [self.right_half_space()])
 
     def start(self):
-        # TODO: Maybe we should return a special quadratic-extension point here
-        # so we can always safely call start() and end().
         r"""
         Return the ideal starting point of this geodesic.
 
@@ -1827,15 +1839,20 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
         The coordinates of the end points of the half circle of radius
         `\sqrt{2}` around 0 can not be written down in the rationals::
 
-        ## TODO: Maybe adapt this doctest.
+            sage: p = H.half_circle(0, 2).start()
+            sage: p
+            -1.41421356237310
 
-            sage: H.half_circle(0, 2).start()
+            sage: p.coordinates()
+            Traceback (most recent call last):
             ...
+            ValueError: square root of 32 not a rational number
 
         Passing to a bigger field, the coordinates can be represented::
 
-            sage: H.half_circle(0, 2).change_ring(AA).start()
-            -1.414...
+            sage: K.<a> = QQ.extension(x^2 - 2, embedding=1.4)
+            sage: H.half_circle(0, 2).change_ring(K).start()
+            -a
 
         """
         return self.parent().point(x=self, y=None, model=None, check=False)
@@ -1855,15 +1872,20 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
         The coordinates of the end points of the half circle of radius
         `\sqrt{2}` around 0 can not be written down in the rationals::
 
-        ## TODO: Maybe adapt this doctest.
+            sage: p = H.half_circle(0, 2).end()
+            sage: p
+            1.41421356237310
 
-            sage: H.half_circle(0, 2).end()
+            sage: p.coordinates()
+            Traceback (most recent call last):
             ...
+            ValueError: square root of 32 not a rational number
 
         Passing to a bigger field, the coordinates can be represented::
 
-            sage: H.half_circle(0, 2).change_ring(AA).end()
-            1.414...
+            sage: K.<a> = QQ.extension(x^2 - 2, embedding=1.4)
+            sage: H.half_circle(0, 2).change_ring(K).end()
+            a
 
         """
         return (-self).start()
@@ -2161,8 +2183,11 @@ class HyperbolicPoint(HyperbolicConvexSet):
     r"""
     A (possibly infinite) point in the :class:`HyperbolicPlane`.
 
-    Internally, we represent a point as the Euclidean coordinates in the unit
-    disk of the Klein model.
+    Internally, we typically represent a point as the Euclidean coordinates in
+    the unit disk of the Klein model.
+
+    Additionally, we allow points that are the (ideal) endpoints of geodesics
+    even if these only have coordinates over a quadratic extension.
     """
 
     def __init__(self, parent, x, y):
@@ -2227,6 +2252,15 @@ class HyperbolicPoint(HyperbolicConvexSet):
 
             sage: H(-1/2)._half_spaces()
             [{2*(x^2 + y^2) + 7*x + 3 ≤ 0}, {2*(x^2 + y^2) - 3*x - 2 ≤ 0}]
+
+        For ideal endpoints of geodesics that do not have coordinates over the
+        base ring, we cannot produce defining half spaces since these would
+        require equations over a quadratic extension as well::
+
+            sage: H.half_circle(0, 2).start()._half_spaces()
+            Traceback (most recent call last):
+            ...
+            ValueError: square root of 32 not a rational number
 
         """
         x0, y0 = self.coordinates(model="klein")
@@ -2318,6 +2352,23 @@ class HyperbolicPoint(HyperbolicConvexSet):
             sage: H = HyperbolicPlane()
 
             sage: H.infinity() == H.projective(1, 0)
+            True
+
+        TESTS:
+
+        We can compare points even though their coordinates are only defined
+        over a quadratic extension::
+
+            sage: H.half_circle(0, 2).start() == H.half_circle(0, 2).start()
+            True
+
+            sage: H.half_circle(0, 2).start() == H.half_circle(0, 2).end()
+            False
+
+            sage: H.half_circle(0, 2).start() == H(0)
+            False
+
+            sage: H.half_circle(0, 1).end() == H(1)
             True
 
         """
