@@ -94,6 +94,21 @@ We can also intersect objects that are not half spaces::
     sage: P.intersection(H.vertical(0))
     {x = 0} ∩ {(x^2 + y^2) - 2 ≥ 0}
 
+.. WARNING::
+
+    Our implementation was not conceived with inexact rings in mind. We do allow
+    inexact base rings but many operations have not been tuned for numerical
+    stability. We try to err on the safe side and rather raise a
+    NotImplementedError than returning an incorrect result.
+
+    Also, note that we might not handle NaN and infinity values correctly in
+    inexact rings.
+
+::
+
+    sage: HyperbolicPlane(RR)
+    Hyperbolic Plane over Real Field with 53 bits of precision
+
 """
 ######################################################################
 #  This file is part of sage-flatsurf.
@@ -264,18 +279,14 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
             sage: TestSuite(HyperbolicPlane(QQ)).run()
             sage: TestSuite(HyperbolicPlane(AA)).run()
+            sage: TestSuite(HyperbolicPlane(RR)).run()
 
         """
-        # TODO: What should we do about this? We need HyperbolicPlane(RR) internally, but we do not really trust that it's fully functional.
-        # if not base_ring.is_exact():
-        #     # Much of the implementation might work over inexact rings,
-        #     # * we did not really worry about precision issues here so unit
-        #     #   tests should be added to check that everything works.
-        #     # * if +infinity is in the base ring, then there might be problems
-        #     #   in the upper half plane model.
-        #     # * if NaN can be represented in the base ring, then there might be
-        #     #   problems in many places where we do not expect this to show up.
-        #     raise NotImplementedError("hyperbolic plane only implemented over exact rings")
+        from sage.all import RR
+
+        if not RR.has_coerce_map_from(base_ring):
+            # We should check that the coercion is an embedding but this is not possible currently.
+            raise ValueError("base ring must embed into the reals")
 
         super().__init__(category=category)
         self._base_ring = base_ring
@@ -308,20 +319,24 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         """
         from sage.all import ZZ
 
-        return [self.empty_set(),
-                # Points
-                self.infinity(),
-                self.real(0),
-                self.real(1),
-                self.real(-1),
-                self.geodesic(0, 2).start(),
-                # Geodesics
-                self.vertical(1),
-                self.half_circle(0, 1),
-                self.half_circle(1, 3),
-                # Half spaces
-                self.vertical(0).left_half_space(),
-                self.half_circle(0, 2).left_half_space(),
+        elements = [self.empty_set(),
+                    # Points
+                    self.infinity(),
+                    self.real(0),
+                    self.real(1),
+                    self.real(-1),
+                    self.geodesic(0, 2).start(),
+                    # Geodesics
+                    self.vertical(1),
+                    self.half_circle(0, 1),
+                    self.half_circle(1, 3),
+                    # Half spaces
+                    self.vertical(0).left_half_space(),
+                    self.half_circle(0, 2).left_half_space()]
+
+        if self.base_ring().is_exact():
+            # The intersection algorithm is only implemented over exact rings.
+            elements += [
                 # An unbounded polygon
                 self.vertical(1).left_half_space().intersection(self.vertical(-1).right_half_space()),
                 # An unbounded polygon which is bounded in the Euclidean plane
@@ -333,6 +348,8 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
                 # A bounded segment
                 self.vertical(0).intersection(self.geodesic(-2, 2).right_half_space()).intersection(self.geodesic(-ZZ(1)/2, ZZ(1)/2).left_half_space()),
                 ]
+
+        return elements
 
     def _test_some_subsets(self, tester=None, **options):
         r"""
@@ -1278,6 +1295,9 @@ class HyperbolicConvexSet(Element):
         r"""
         Return whether ``point`` is contained in this set.
         """
+        if not self.parent().base_ring().is_exact() and self.dimension() in [0, 1]:
+            raise NotImplementedError("cannot decide containment for null sets")
+
         for half_space in self._half_spaces():
             if point not in half_space:
                 return False
@@ -1807,6 +1827,9 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
             raise ValueError(f"equation {self._a} + ({self._b})*x + ({self._c})*y = 0 does not define a chord in the Klein model")
 
     def is_ultra_ideal(self):
+        if not self.parent().base_ring().is_exact():
+            raise NotImplementedError("cannot decide finiteness over inexact rings")
+
         return self._b*self._b + self._c*self._c <= self._a*self._a
 
     def _half_spaces(self):
@@ -2104,6 +2127,9 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
         if not isinstance(point, HyperbolicPoint):
             raise TypeError("point must be a point in the hyperbolic plane")
 
+        if not self.parent().base_ring().is_exact() and self.dimension() in [0, 1]:
+            raise NotImplementedError("cannot decide containment for null sets")
+
         x, y = point.coordinates(model="klein")
         a, b, c = self.equation(model="klein")
 
@@ -2198,6 +2224,7 @@ class HyperbolicPoint(HyperbolicConvexSet):
                 raise TypeError("x must be a geodesic")
 
             self._coordinates = x
+            self.coordinates(model="klein", ring="try")
         else:
             if x.parent() is not parent.base_ring():
                 raise TypeError("x must be an element of the base ring")
@@ -2281,6 +2308,9 @@ class HyperbolicPoint(HyperbolicConvexSet):
                 [self.parent().half_space(-x0*x0 - y0*y0, y0 + x0, y0 - x0, model="klein")])
 
     def is_finite(self):
+        if not self.parent().base_ring().is_exact():
+            raise NotImplementedError("cannot decide finiteness over inexact rings")
+
         if isinstance(self._coordinates, HyperbolicGeodesic):
             return False
 
@@ -2300,7 +2330,8 @@ class HyperbolicPoint(HyperbolicConvexSet):
         ring of the :class:`HyperbolicPlane` is chosen where these coordinates
         live.
         """
-        # TODO: Implement ring
+        # TODO: Implement ring.
+        # TODO: Fix documentation.
 
         if model == "half_plane":
             x, y = self.coordinates(model="klein")
@@ -2314,7 +2345,15 @@ class HyperbolicPoint(HyperbolicConvexSet):
             if (1 - x*x - y*y).abs() < 1e-6:
                 return (x / denominator, self.parent().base_ring().zero())
 
-            return (x / denominator, (1 - x*x - y*y).sqrt(extend=False)/denominator)
+            square = 1 - x*x - y*y
+            try:
+                sqrt = square.sqrt(extend=False)
+            except ValueError:
+                if ring == "try":
+                    return None
+                raise
+
+            return (x / denominator, sqrt/denominator)
 
         if model == "klein":
             if isinstance(self._coordinates, HyperbolicGeodesic):
@@ -2327,7 +2366,12 @@ class HyperbolicPoint(HyperbolicConvexSet):
                         self._coordinates = self.parent().real(-c/b)._coordinates
                 else:
                     discriminant = b*b - 4*a*c
-                    root = discriminant.sqrt(extend=False)
+                    try:
+                        root = discriminant.sqrt(extend=False)
+                    except ValueError:
+                        if ring == "try":
+                            return None
+                        raise
 
                     endpoints = ((-b - root) / (2*a), (-b + root) / (2*a))
 
@@ -2378,23 +2422,28 @@ class HyperbolicPoint(HyperbolicConvexSet):
             return not self._richcmp_(other, op_EQ)
 
         if op == op_EQ:
+            # TODO: Taking square roots is probably very cheap most of the
+            # time. It's probably beneficial not to pass store such points as
+            # geodesics unless absolutely necessary.
             if not isinstance(other, HyperbolicPoint):
                 return False
             if isinstance(self._coordinates, HyperbolicGeodesic):
+                geodesic = self._coordinates
                 if isinstance(other._coordinates, HyperbolicGeodesic):
-                    if self._coordinates == other._coordinates:
+                    geodesic_ = other._coordinates
+                    if geodesic == geodesic_:
                         return True
-                    if self._coordinates == -other._coordinates:
+                    if geodesic == -geodesic_:
                         return False
-                    intersection = self._coordinates._intersection(other._coordinates)
+                    intersection = geodesic._intersection(geodesic_)
                     if intersection is None or intersection.is_ultra_ideal():
                         return False
                     if intersection.is_finite():
                         return False
-                    return self._coordinates.parametrize(intersection, model="euclidean") < 0 and other._coordinates.parametrize(intersection, model="euclidean") < 0
+                    return geodesic.parametrize(intersection, model="euclidean") < 0 and geodesic_.parametrize(intersection, model="euclidean") < 0
                 if other.is_finite():
                     return False
-                if other in self._coordinates and self._coordinates.parametrize(other, model="euclidean") < 0:
+                if other in geodesic and geodesic.parametrize(other, model="euclidean") < 0:
                     return True
                 return False
             elif isinstance(other._coordinates, HyperbolicGeodesic):
@@ -3527,10 +3576,10 @@ class HyperbolicSegment(HyperbolicConvexSet):
         end = self._end
 
         if start is not None:
-            λ_start = self._geodesic.parametrize(start, model="euclidean")
+            λ_start = self._geodesic.parametrize(start, model="euclidean", check=False)
 
         if end is not None:
-            λ_end = self._geodesic.parametrize(end, model="euclidean")
+            λ_end = self._geodesic.parametrize(end, model="euclidean", check=False)
 
         if start is not None:
             if not start.is_finite():
@@ -4157,42 +4206,6 @@ class BezierPath(GraphicPrimitive):
             return [BezierPath.Command("ARCTO", [end.change_ring(RR).coordinates(model="klein"), (0, 0)])]
         else:
             raise NotImplementedError("cannot move in this model")
-
-    # def half_plane_segment(p, q):
-    #     if p == p.parent().infinity():
-    #         return reversed(half_plane_segment(q, p))
-
-    #     if q == q.parent().infinity():
-    #         from sage.all import infinity
-    #         return [p, p, (infinity, 0, 1), (infinity, 0, 1)]
-
-    #     p = p.coordinates(model="half_plane")
-    #     q = q.coordinates(model="half_plane")
-
-    #     if ((p[0] - q[0]) / (p[1] - q[1])).abs() < 1e-6:
-    #         # This segment is (almost) vertical. We plot it as if it were
-    #         # vertical to avoid numeric issus.
-    #         return [p, q, p, q]
-
-    #     raise NotImplementedError("cannot plot arcs yet")
-
-    # def klein_segment(p, q):
-    #     raise NotImplementedError
-
-    # for p, q in zip(points, points[1:] + points[:1]):
-    #     if p == q:
-    #         raise ValueError("path must not contain repeated points")
-
-    #     if model == "half_plane":
-    #         control_points.extend(half_plane_segment(p, q))
-
-    #     elif model == "klein":
-    #         control_points.extend(klein_segment(p, q))
-
-    #     else:
-    #         raise NotImplementedError("cannot plot path in this model yet")
-
-    # return bezier_path(control_points, **kwds)
 
 
 @rename_keyword(color='rgbcolor')
