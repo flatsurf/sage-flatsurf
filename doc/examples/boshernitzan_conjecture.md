@@ -62,7 +62,7 @@ We unfold this triangle and obtain a translation surface.
 ```{code-cell} ipython3
 from flatsurf import similarity_surfaces
 S = similarity_surfaces.billiard(Δ).minimal_cover(cover_type="translation")
-S.plot()
+S.plot(edge_labels=False, polygon_labels=False)
 ```
 
 Currently, the builtin plot is not terribly useful here. We can visualize this unfolding if [ipyvue-flatsurf](https://github.com/flatsurf/ipyvue-flatsurf) is available.
