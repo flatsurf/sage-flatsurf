@@ -28,6 +28,7 @@ EXAMPLES::
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # *********************************************************************
 from sage.structure.parent import Parent
+from flatsurf.geometry.hyperbolic import HyperbolicPlane
 
 
 class SpineTessellation(Parent):
@@ -47,8 +48,10 @@ class SpineTessellation(Parent):
             raise NotImplementedError("move along edge to a vertex")
         assert len(shortest_periods) >= 3
 
+        self._hyperbolic_plane = HyperbolicPlane(surface.base_ring())
+
     def _repr_(self):
-        return f"Spine Tessellation of {self._surface}"
+        return f"Spine Tessellation of {self._surface_original}"
 
     def explore(self, limit=None, surface=None):
         r"""
@@ -64,6 +67,16 @@ class SpineTessellation(Parent):
     def root(self):
         r"""
         Return the vertex from which we started to build the spine tree.
+        """
+        return self._hyperbolic_plane.point(0, 1)
+
+    def point(self, surface):
+        r"""
+        Return the point in the :class:`HyperbolicPlane` corresponding to ``surface``.
+
+        INPUT:
+
+        - ``surface`` -- A surface in the SL(2, R)-orbit of the defining surface
         """
 
     def edge(self, translation_surface):
@@ -82,7 +95,7 @@ class SpineTessellation(Parent):
 
     def shortest_periods(self, point_or_surface, check=True):
         r"""
-        Return the shortest periods for the vertex ``translation_surface``.
+        Return the shortest periods for the vertex ``translation_surface``, sorted by slope.
 
         EXAMPLES::
 
@@ -91,23 +104,32 @@ class SpineTessellation(Parent):
             sage: s = translation_surfaces.mcmullen_L(1, 1, 1, 1)
             sage: t = s.delaunay_triangulation()
             sage: SpineTessellation(s).shortest_periods(t)
-            [(0, 1), (0, 2), (1, 1), (1, 2), (2, 1), (2, 2)] 
+            [(3, 1), (4, 1), (5, 1), (3, 2), (4, 2), (5, 2)]
 
         TODO:: Should computing shortest period be a method for translation surfaces?
 
 
         """
+        def slope(v):
+            from sage.all import oo
+            # TODO: Requires ring has division (do we want to implement for ExactReal?)
+            return v[1]/v[0] if v[0] else oo
+
         if check and not point_or_surface.is_delaunay_triangulated():
             raise ValueError("surface must be Delaunay triangulated")
 
         vectors = {(i, j): point_or_surface.polygon(i).edge(j)
-                   for (i, j), other in point_or_surface.edge_iterator(gluings=True)
-                   if (i, j) < other}
+                   for (i, j), _ in point_or_surface.edge_iterator(gluings=True)}
+        vectors = {key: value for key, value in vectors.items()
+                   if value[0] > 0 or value[0] == 0 and value[1] > 0}
 
         minimum_length = min(v[0]**2 + v[1]**2 for v in vectors.values())
 
-        return [edge for edge, v in vectors.items()
-                if v[0]**2 + v[1]**2 == minimum_length]
+        shortest_periods = [edge for edge, v in vectors.items()
+                            if v[0]**2 + v[1]**2 == minimum_length]
+        
+        return sorted(shortest_periods,
+            key=lambda edge: slope(point_or_surface.polygon(edge[0]).edge(edge[1])))
 
     def standard_form_surface(self, edge):
         r"""
@@ -146,7 +168,23 @@ class SpineTessellation(Parent):
         Return the new vertex of the enriched spine that is connected to ``vertex``
         in the direction of ``edge_initial``.
         """
-        # Compute half-planes for when hinges in ``vertex`` will flip, and for when two vectors in ``vertex`` become same length
-        # Compute the geodesic that begins flowing along the edge
-        # If a half-plane flips first, change the triangulation (and compute new halfplanes?)
-        # If an edge ties first, change the set of systoles
+
+    def geodesics(self, vertex):
+        r"""
+        Return the geodesics through ``vertex``.
+        Each geodesic consists of surfaces where two periods of ``vertex`` are the shortest.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: from flatsurf.geometry.spine_tessellation import SpineTessellation
+            sage: s = translation_surfaces.mcmullen_L(1, 1, 1, 1)
+            sage: T = SpineTessellation(s)
+            sage: T.geodesics(T.root())
+        """
+        
+
+    def segments(self, vertex):
+        r"""
+
+        """   
