@@ -171,18 +171,15 @@ class SpineTessellation(Parent):
         """
         raise NotImplementedError
 
-    def other_endpoint(self, vertex, edge_initial):
-        r"""
-        Return the new vertex of the enriched spine that is connected to ``vertex``
-        in the direction of ``edge_initial``.
-        """
-        raise NotImplementedError
-
     def geodesics(self, vertex):
         r"""
         Return the geodesics through ``vertex``.
 
         These are the geodesics underlying the :meth:`segments`, with end points removed.
+
+        a, b are saddle connection periods on a starting surface M_0
+        {x + iy : |A_z a|^2 = |A_z b|^2, where A_z := [1 x | 0 y]}
+        = gamma((b_x - a_x)/(a_y - b_y), -(b_x + a_x)/(a_y + b_y))
 
         EXAMPLES::
 
@@ -192,7 +189,20 @@ class SpineTessellation(Parent):
             sage: T = SpineTessellation(s)
             sage: T.geodesics(T.root())
         """
-        raise NotImplementedError
+        from sage.all import oo
+
+        # TODO: assert that the vertex is a point
+        shortest_periods = self.shortest_periods(vertex)
+        geodesics = []
+        for (ax, ay), (bx, by) in zip(shortest_periods, shortest_periods[1:] + shortest_periods[:1]):
+            # TODO: determine correct orientation
+            endpoint0 = (bx - ax)/(ay - by) if ay != by else oo
+            endpoint1 = -(bx + ax)/(ay + by) if ay != -by else oo
+            geodesic = self._hyperbolic_plane.geodesic(endpoint0, endpoint1)
+            assert vertex in geodesic
+            geodesics.append(geodesic)
+        
+        return geodesics
 
     def segments(self, vertex):
         r"""
