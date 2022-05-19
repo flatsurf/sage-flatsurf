@@ -6,7 +6,7 @@ Similarity surfaces.
 #  This file is part of sage-flatsurf.
 #
 #        Copyright (C) 2016-2020 Vincent Delecroix
-#                      2020-2021 Julian Rüth
+#                      2020-2022 Julian Rüth
 #
 #  sage-flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -23,10 +23,8 @@ Similarity surfaces.
 #*********************************************************************
 
 from __future__ import absolute_import, print_function, division
-from six.moves import range, map, filter, zip
+from six.moves import range
 from six import iteritems
-
-import itertools
 
 from sage.misc.cachefunc import cached_method
 from sage.misc.sage_unittest import TestSuite
@@ -35,27 +33,17 @@ from sage.structure.sage_object import SageObject
 
 from sage.rings.infinity import Infinity
 
-from sage.rings.all import ZZ, QQ, AA, RIF, RR, NumberField
+from sage.rings.all import ZZ, QQ, AA, NumberField
 
 from sage.modules.free_module_element import vector
 
-from sage.matrix.constructor import matrix, identity_matrix
-from sage.modules.free_module import VectorSpace
-
-from sage.all import FreeModule
-
-from .matrix_2x2 import (is_similarity,
-                    homothety_rotation_decomposition,
-                    similarity_from_vectors,
-                    rotation_matrix_angle,
-                    is_cosine_sine_of_rational)
-
 from .similarity import SimilarityGroup
-from .polygon import ConvexPolygons, wedge_product, triangulate, build_faces
+from .polygon import ConvexPolygons, wedge_product
 
 from .surface import Surface, Surface_dict, Surface_list, LabelComparator
 from .surface_objects import Singularity, SaddleConnection, SurfacePoint
 from .circle import Circle
+from .matrix_2x2 import similarity_from_vectors
 
 ZZ_1 = ZZ.one()
 ZZ_2 = ZZ_1 + ZZ_1
@@ -170,6 +158,11 @@ class SimilaritySurface(SageObject):
             self._s = surface
         else:
             raise TypeError("invalid argument surface={} to build a similarity surface".format(surface))
+
+    @cached_method
+    def _matrix_space(self):
+        from sage.matrix.matrix_space import MatrixSpace
+        return MatrixSpace(self.base_ring(), 2)
 
     def underlying_surface(self):
         r"""
@@ -399,6 +392,7 @@ class SimilaritySurface(SageObject):
 
         return "{} built from {} polygon{}".format(self.__class__.__name__, num, end)
 
+    @cached_method
     def edge_matrix(self, p, e=None):
         r"""
         Returns the 2x2 matrix representing a similarity which when applied to the polygon with label `p`
@@ -424,13 +418,15 @@ class SimilaritySurface(SageObject):
             True
         """
         if e is None:
-            p,e = p
+            import warning
+            warning.warn('edge_matrix will now only take two arguments')
+            p, e = p
         u = self.polygon(p).edge(e)
-        pp,ee = self.opposite_edge(p,e)
+        pp, ee = self.opposite_edge(p, e)
         v = self.polygon(pp).edge(ee)
 
         # be careful, because of the orientation, it is -v and not v
-        return similarity_from_vectors(u,-v)
+        return similarity_from_vectors(u, -v, self._matrix_space())
 
     def edge_transformation(self, p, e):
         r"""
@@ -452,23 +448,23 @@ class SimilaritySurface(SageObject):
             sage: g((2,-2))
             (2, 0)
         """
-        G=SimilarityGroup(self.base_ring())
-        q=self.polygon(p)
-        a=q.vertex(e)
-        b=q.vertex(e+1)
+        G = SimilarityGroup(self.base_ring())
+        q = self.polygon(p)
+        a = q.vertex(e)
+        b = q.vertex(e+1)
         # This is the similarity carrying the origin to a and (1,0) to b:
-        g=G(b[0]-a[0],b[1]-a[1],a[0],a[1])
+        g = G(b[0] - a[0], b[1] - a[1], a[0], a[1])
 
-        pp,ee = self.opposite_edge(p,e)
-        qq=self.polygon(pp)
+        pp, ee = self.opposite_edge(p, e)
+        qq = self.polygon(pp)
         # Be careful here: opposite vertices are identified
-        aa=qq.vertex(ee+1)
-        bb=qq.vertex(ee)
+        aa = qq.vertex(ee+1)
+        bb = qq.vertex(ee)
         # This is the similarity carrying the origin to aa and (1,0) to bb:
-        gg=G(bb[0]-aa[0],bb[1]-aa[1],aa[0],aa[1])
+        gg = G(bb[0] - aa[0], bb[1] - aa[1], aa[0], aa[1])
 
         # This is the similarity carrying (a,b) to (aa,bb):
-        return gg/g
+        return gg / g
 
     def set_vertex_zero(self, label, v, in_place=False):
         r"""

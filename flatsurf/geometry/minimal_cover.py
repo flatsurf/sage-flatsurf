@@ -43,7 +43,7 @@ class MinimalTranslationCover(Surface):
     def __init__(self, similarity_surface):
         if similarity_surface.underlying_surface().is_mutable():
             if similarity_surface.is_finite():
-                self._ss=similarity_surface.copy()
+                self._ss = similarity_surface.copy()
             else:
                 raise ValueError("Can not construct MinimalTranslationCover of a surface that is mutable and infinite.")
         else:
@@ -61,11 +61,10 @@ class MinimalTranslationCover(Surface):
                     rcs = RationalConeSurface(ss_copy)
                     rcs._test_edge_matrix()
                 except AssertionError:
-                    # print("Warning: Could be indicating infinite surface falsely.")
                     finite = False
 
         self._F = self._ss.base_ring()
-        base_label=(self._ss.base_label(), self._F.one(), self._F.zero())
+        base_label = (self._ss.base_label(), self._F.one(), self._F.zero())
 
         Surface.__init__(self, self._ss.base_ring(), base_label, finite=finite, mutable=False)
 
@@ -76,12 +75,13 @@ class MinimalTranslationCover(Surface):
         return matrix([[lab[1], -lab[2]],[lab[2],lab[1]]]) * self._ss.polygon(lab[0])
 
     def opposite_edge(self, p, e):
-        pp,a,b = p  # this is the polygon m * ss.polygon(p)
-        p2,e2 = self._ss.opposite_edge(pp,e)
-        m = self._ss.edge_matrix(p2,e2)
-        aa = a*m[0][0] - b*m[1][0]
-        bb = b*m[0][0] + a*m[1][0]
-        return ((p2,aa,bb),e2)
+        pp, a, b = p  # this is the polygon m * ss.polygon(p)
+        p2, e2 = self._ss.opposite_edge(pp, e)
+        m = self._ss.edge_matrix(p2, e2)
+        aa = a * m[0][0] - b * m[1][0]
+        bb = b * m[0][0] + a * m[1][0]
+        return ((p2, aa, bb), e2)
+
 
 class MinimalHalfTranslationCover(Surface):
     r"""
@@ -119,7 +119,7 @@ class MinimalHalfTranslationCover(Surface):
     def __init__(self, similarity_surface):
         if similarity_surface.underlying_surface().is_mutable():
             if similarity_surface.is_finite():
-                self._ss=similarity_surface.copy()
+                self._ss = similarity_surface.copy()
             else:
                 raise ValueError("Can not construct MinimalTranslationCover of a surface that is mutable and infinite.")
         else:
@@ -153,14 +153,14 @@ class MinimalHalfTranslationCover(Surface):
 
     def opposite_edge(self, p, e):
         pp,a,b = p  # this is the polygon m * ss.polygon(p)
-        p2,e2 = self._ss.opposite_edge(pp,e)
-        m = self._ss.edge_matrix(pp,e)
-        aa = a*m[0][0] + b*m[1][0]
-        bb = b*m[0][0] - a*m[1][0]
-        if aa > 0 or aa==0 and bb>0:
-            return ((p2,aa,bb),e2)
+        p2,e2 = self._ss.opposite_edge(pp, e)
+        m = self._ss.edge_matrix(pp, e)
+        aa = a * m[0][0] + b * m[1][0]
+        bb = b * m[0][0] - a * m[1][0]
+        if aa > 0 or (aa == 0 and bb > 0):
+            return ((p2, aa, bb), e2)
         else:
-            return ((p2,-aa,-bb),e2)
+            return ((p2, -aa, -bb), e2)
 
 class MinimalPlanarCover(Surface):
     r"""
@@ -216,8 +216,8 @@ class MinimalPlanarCover(Surface):
         return lab[1](self._ss.polygon(lab[0]))
 
     def opposite_edge(self, p, e):
-        pp,m = p  # this is the polygon m * ss.polygon(p)
-        p2,e2 = self._ss.opposite_edge(pp,e)
+        pp, m = p  # this is the polygon m * ss.polygon(p)
+        p2, e2 = self._ss.opposite_edge(pp,e)
         me = self._ss.edge_transformation(pp,e)
-        mm = m*~me
-        return ((p2,mm),e2)
+        mm = m * ~me
+        return ((p2, mm), e2)
