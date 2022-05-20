@@ -1823,8 +1823,9 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
         self._c = c
 
     def _check(self, require_normalized=True):
-        if self.is_ultra_ideal():
-            raise ValueError(f"equation {self._a} + ({self._b})*x + ({self._c})*y = 0 does not define a chord in the Klein model")
+        if self.parent().base_ring().is_exact():
+            if self.is_ultra_ideal():
+                raise ValueError(f"equation {self._a} + ({self._b})*x + ({self._c})*y = 0 does not define a chord in the Klein model")
 
     def is_ultra_ideal(self):
         if not self.parent().base_ring().is_exact():
@@ -1926,7 +1927,7 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
             {x = 0}
 
         """
-        return self.parent().geodesic(-self._a, -self._b, -self._c, model="klein")
+        return self.parent().geodesic(-self._a, -self._b, -self._c, model="klein", check=False)
 
     def equation(self, model):
         r"""
@@ -2001,7 +2002,7 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
             ValueError: Cannot coerce irrational Algebraic Real ... to Rational
 
         """
-        return HyperbolicPlane(ring).geodesic(self._a, self._b, self._c, model="klein")
+        return HyperbolicPlane(ring).geodesic(self._a, self._b, self._c, model="klein", check=False)
 
     def left_half_space(self):
         r"""
@@ -4159,7 +4160,7 @@ class BezierPath(GraphicPrimitive):
                 # vertical to avoid numeric issus.
                 return [BezierPath.Command("LINETO", [q])]
 
-            geodesic = start.change_ring(RR).parent().geodesic(start, end)
+            geodesic = start.change_ring(RR).parent().geodesic(start, end, check=False)
             center = ((geodesic.start().coordinates()[0] + geodesic.end().coordinates()[0])/2, 0)
 
             return [BezierPath.Command("RARCTO" if p[0] < q[0] else "ARCTO", [q, center])]
@@ -4174,8 +4175,11 @@ class BezierPath(GraphicPrimitive):
         if start == end:
             raise ValueError("cannot move from point to itself")
 
-        if start.is_finite() or end.is_finite():
-            raise ValueError("endpoints of move must be ideal")
+        if start.parent().base_ring().is_exact() and start.is_finite():
+            raise ValueError("starting point of move must be ideal")
+
+        if end.parent().base_ring().is_exact() and end.is_finite():
+            raise ValueError("end of move must be ideal")
 
         if model == "half_plane":
             if start == start.parent().infinity():
