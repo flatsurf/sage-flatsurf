@@ -3,9 +3,9 @@ EXAMPLES::
 
     sage: from flatsurf import translation_surfaces
     sage: from flatsurf.geometry.spine_tessellation import SpineTessellation
-    sage: s = translation_surfaces.mcmullen_L(1, 1, 1, 1)
+    sage: s = translation_surfaces.veech_double_n_gon(5)
     sage: SpineTessellation(s)
-    Spine Tessellation of TranslationSurface built from 3 polygons
+    Spine Tessellation of TranslationSurface built from 2 polygons
 
 """
 # *********************************************************************
@@ -39,17 +39,15 @@ class SpineTessellation(Parent):
 
     def __init__(self, surface):
         self._surface_original = surface
-
         self._surface = self._surface_original.delaunay_triangulation()
-
-        shortest_periods = self.shortest_periods(self._surface)
-        if len(shortest_periods) == 1:
-            raise NotImplementedError("deformation retract onto spine")
-        if len(shortest_periods) == 2:
-            raise NotImplementedError("move along edge to a vertex")
-        assert len(shortest_periods) >= 3
-
         self._hyperbolic_plane = HyperbolicPlane(surface.base_ring())
+
+        shortest_directions = self.shortest_directions(self._surface)
+        if len(shortest_directions) == 1:
+            raise NotImplementedError("deformation retract onto spine")
+        if len(shortest_directions) == 2:
+            raise NotImplementedError("move along edge to a vertex")
+        assert len(shortest_directions) >= 3
 
     def _repr_(self):
         return f"Spine Tessellation of {self._surface_original}"
@@ -71,7 +69,7 @@ class SpineTessellation(Parent):
         r"""
         Return the vertex from which we started to build the spine tree.
         """
-        return self._hyperbolic_plane.point(0, 1)
+        return self._hyperbolic_plane.point(0, 1, model="half_plane")
 
     def point(self, surface):
         r"""
@@ -103,14 +101,18 @@ class SpineTessellation(Parent):
         r"""
         Return the shortest periods for the vertex ``translation_surface``, sorted by slope.
 
+        INPUT:
+        - ``check`` -- check whether ``point_or_surface`` is Delaunay triangulated
+
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
             sage: from flatsurf.geometry.spine_tessellation import SpineTessellation
-            sage: s = translation_surfaces.mcmullen_L(1, 1, 1, 1)
+            sage: s = translation_surfaces.veech_double_n_gon(5)
             sage: t = s.delaunay_triangulation()
             sage: SpineTessellation(s).shortest_periods(t)
-            [(3, 1), (4, 1), (5, 1), (3, 2), (4, 2), (5, 2)]
+            [(0, 2), (5, 2), (2, 1), (1, 1), (2, 2)]
+
 
         TODO:: Should computing shortest period be a method for translation surfaces?
 
@@ -118,8 +120,15 @@ class SpineTessellation(Parent):
         """
         def slope(v):
             from sage.all import oo
-            # TODO: Requires ring has division (do we want to implement for ExactReal?)
+            # TODO: Requires ring has division (implement for ExactReal?)
             return v[1]/v[0] if v[0] else oo
+
+        from sage.all import matrix
+
+        if point_or_surface in self._hyperbolic_plane:
+            x, y = point_or_surface.coordinates(model="half_plane")
+            point_or_surface = self._surface.apply_matrix(
+                matrix([[1, x], [0, y]]))
 
         if check and not point_or_surface.is_delaunay_triangulated():
             raise ValueError("surface must be Delaunay triangulated")
@@ -136,6 +145,12 @@ class SpineTessellation(Parent):
 
         return sorted(shortest_periods,
                       key=lambda edge: slope(point_or_surface.polygon(edge[0]).edge(edge[1])))
+
+    def shortest_directions(self, point_or_surface, check=True):
+        shortest_periods = self.shortest_periods(point_or_surface, check=check)
+        shortest_directions = {tuple(point_or_surface.polygon(t).edge(e)): (t, e)
+                               for t, e in shortest_periods}
+        return list(shortest_directions.values())
 
     def standard_form_surface(self, edge):
         r"""
@@ -185,23 +200,35 @@ class SpineTessellation(Parent):
 
             sage: from flatsurf import translation_surfaces
             sage: from flatsurf.geometry.spine_tessellation import SpineTessellation
-            sage: s = translation_surfaces.mcmullen_L(1, 1, 1, 1)
+            sage: s = translation_surfaces.veech_double_n_gon(5)
             sage: T = SpineTessellation(s)
             sage: T.geodesics(T.root())
         """
-        from sage.all import oo
+        from sage.all import oo, matrix, vector
 
-        # TODO: assert that the vertex is a point
+        # vertex = A * M_0, gamma(t) = sigma(A)^-1 * Rot * (e^{-2t} i)
+        # t -> oo: sigma(A)^-1 * Rot * 0
+        # t -> -oo: sigma(A)^-1 * Rot * oo
+        # sigma([a b | c d])^{-1} = [d b | c a]
+        # v, w are the shortest periods on A * M_0
+        # [Rot90Clockwise(v + w) | v + w]^T
+
         shortest_periods = self.shortest_periods(vertex)
+        x, y = vertex.coordinates(model="half_plane")
         geodesics = []
-        for (ax, ay), (bx, by) in zip(shortest_periods, shortest_periods[1:] + shortest_periods[:1]):
-            # TODO: determine correct orientation
-            endpoint0 = (bx - ax)/(ay - by) if ay != by else oo
-            endpoint1 = -(bx + ax)/(ay + by) if ay != -by else oo
-            geodesic = self._hyperbolic_plane.geodesic(endpoint0, endpoint1)
+        for (t0, e0), (t1, e1) in zip(shortest_periods, shortest_periods[1:] + shortest_periods[:1]):
+            v = self._surface.polygon(t0).edge(e0)
+            w = self._surface.polygon(t1).edge(e1)
+            def rotation90clockwise(v): return vector([v[1], -v[0]])
+            rotation = matrix([rotation90clockwise(v + w), v + w]).transpose()
+            sigmaAinv = matrix([[y, x], [0, 1]])
+            [[a, b], [c, d]] = sigmaAinv * rotation
+            start = a/c if c != 0 else oo
+            end = b/d if d != 0 else oo
+            geodesic = self._hyperbolic_plane.geodesic(start, end)
             assert vertex in geodesic
             geodesics.append(geodesic)
-        
+
         return geodesics
 
     def segments(self, vertex):
