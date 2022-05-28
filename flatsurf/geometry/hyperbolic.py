@@ -933,13 +933,10 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         return self.__make_element_class__(HyperbolicHalfSpace)(self, geodesic)
 
-    # TODO: Change to segment(start=None, end=None, geodesic=None) and only
-    # require a geodesic if start is None or end is None.
     # TODO: Look into orientation. When there is start & end then the result is
     # oriented. When there is only start or end, then geodesic must be oriented
     # an the result is oriented. If there is neither start nor end, we also
     # require geodesic to be oriented.
-    # TODO: Add Geodesic.segment(start, end) as another way to call this.
     def segment(self, geodesic, start=None, end=None, oriented=None, check=True, assume_normalized=False):
         r"""
         Return the segment on the ``geodesic`` bounded by ``start`` and ``end``.
@@ -996,6 +993,10 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             Traceback (most recent call last):
             ...
             ValueError: square root of 32 not a rational number
+
+        .. SEEALSO::
+
+            :meth:`HyperbolicPoint.segment`
 
         """
         geodesic = self(geodesic)
@@ -2701,6 +2702,21 @@ class HyperbolicPoint(HyperbolicConvexSet):
 
         x, y, z = isometry * vector(self.parent().base_ring(), [x, y, 1])
         return self.parent().point(x / z, y / z, model="klein")
+
+    def segment(self, end, check=True, assume_normalized=False):
+        r"""
+        Return the oriented segment from this point to ``end``.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(QQ)
+
+            sage: H(0).segment(I)
+            {-x = 0} ∩ {(x^2 + y^2) - 1 ≤ 0}
+
+        """
+        return self.parent().segment(self.parent().geodesic(self, end), start=self, end=end, check=check, assume_normalized=assume_normalized)
 
     def plot(self, model="half_plane", **kwds):
         if model == "half_plane":
