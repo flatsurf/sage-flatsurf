@@ -119,7 +119,23 @@ We can also intersect objects that are not half spaces::
     right associated half spaces.
 
     Sometimes it can be beneficial to treat each subset as a convex polygon. In
-    such case, one can explicitly create polygons from subsets by setting ...
+    such a case, one can explicitly create polygons from subsets::
+
+    sage: g = H.vertical(0)
+    sage: P = H.polygon(g.half_spaces(), check=False, assume_minimal=True)
+    sage: P
+    {x ≤ 0} ∩ {x ≥ 0}
+
+    Note that such an object might not be fully functional since some methods
+    might assume that the object is an actual polygon::
+
+    sage: P.dimension()
+    2
+
+    Similarly, a geodesic can be treated as a segment without endpoints::
+
+    sage: H.segment(g, start=None, end=None, check=False, assume_normalized=True)
+    {-x = 0}
 
 ::
 
@@ -127,10 +143,6 @@ We can also intersect objects that are not half spaces::
     Hyperbolic Plane over Real Field with 53 bits of precision
 
 """
-# TODO: Document the last part of the NOTE
-
-# TODO: Link to the appropriate methods in this note
-
 ######################################################################
 #  This file is part of sage-flatsurf.
 #
@@ -1120,7 +1132,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             ....:   H.vertical(1).right_half_space(),
             ....:   H.vertical(2).right_half_space(),
             ....: ])
-            sage: H.polygon(minimal._half_spaces(), check=False, assume_minimal=True)
+            sage: H.polygon(minimal.half_spaces(), check=False, assume_minimal=True)
             {x ≤ 0} ∩ {x - 1 ≥ 0}
 
         Note that this chose half spaces not in the original set; you might
@@ -1152,7 +1164,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         half spaces are already sorted like that, we can make the process run
         in linear time by setting ``assume_sorted``.
 
-            sage: H.polygon(H.infinity()._half_spaces(), assume_sorted=True)
+            sage: H.polygon(H.infinity().half_spaces(), assume_sorted=True)
             ∞
 
         """
@@ -1181,7 +1193,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         ALGORITHM:
 
         We compute the intersection of the
-        :meth:`HyperbolicConvexSet._half_spaces` that make up the ``subsets``.
+        :meth:`HyperbolicConvexSet.half_spaces` that make up the ``subsets``.
         That intersection can be computed in the Klein model where we can
         essentially reduce this problem to the intersection of half spaces in
         the Euclidean plane.
@@ -1222,7 +1234,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             # intersection.
             raise NotImplementedError("intersection of convex sets not supported over inexact rings")
 
-        half_spaces = [subset._half_spaces() for subset in subsets]
+        half_spaces = [subset.half_spaces() for subset in subsets]
 
         half_spaces = HyperbolicHalfSpace._merge_sorted(*half_spaces)
 
@@ -1296,7 +1308,7 @@ class HyperbolicConvexSet(Element):
 
     """
 
-    def _half_spaces(self):
+    def half_spaces(self):
         r"""
         Return a minimal set of half spaces whose intersection is this convex set.
 
@@ -1307,21 +1319,21 @@ class HyperbolicConvexSet(Element):
             sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
             sage: H = HyperbolicPlane(QQ)
 
-            sage: H.vertical(0).left_half_space()._half_spaces()
+            sage: H.vertical(0).left_half_space().half_spaces()
             [{x ≤ 0}]
 
-            sage: H.vertical(0)._half_spaces()
+            sage: H.vertical(0).half_spaces()
             [{x ≤ 0}, {x ≥ 0}]
 
-            sage: H(0)._half_spaces()
+            sage: H(0).half_spaces()
             [{(x^2 + y^2) + x ≤ 0}, {x ≥ 0}]
 
         """
-        raise NotImplementedError(f"{type(self)} does not implement _half_spaces()")
+        raise NotImplementedError(f"{type(self)} does not implement half_spaces()")
 
     def _test_half_spaces(self, **options):
         r"""
-        Verify that this convex set implements :meth:`_half_spaces` correctly.
+        Verify that this convex set implements :meth:`half_spaces` correctly.
 
         TESTS::
 
@@ -1333,7 +1345,7 @@ class HyperbolicConvexSet(Element):
         """
         tester = self._tester(**options)
 
-        half_spaces = self._half_spaces()
+        half_spaces = self.half_spaces()
 
         if self.parent().base_ring().is_exact():
             tester.assertEqual(self.parent().intersection(*half_spaces), self.unoriented())
@@ -1413,7 +1425,7 @@ class HyperbolicConvexSet(Element):
         if not self.parent().base_ring().is_exact() and self.dimension() in [0, 1]:
             raise NotImplementedError("cannot decide containment for null sets")
 
-        for half_space in self._half_spaces():
+        for half_space in self.half_spaces():
             if point not in half_space:
                 return False
 
@@ -1532,7 +1544,7 @@ class HyperbolicConvexSet(Element):
             {x ≥ 0}
 
         """
-        return self.parent().intersection(*[-half_space for half_space in self._half_spaces()])
+        return self.parent().intersection(*[-half_space for half_space in self.half_spaces()])
 
     # TODO: Test that _richcmp_ can compare all kinds of sets by inclusion.
     # TODO: Provide hashing.
@@ -1636,9 +1648,9 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
         else:
             return f"{{{repr(R([c, b]))} {cmp} 0}}"
 
-    def _half_spaces(self):
+    def half_spaces(self):
         r"""
-        Implements :meth:`HyperbolicConvexSet._half_spaces`.
+        Implements :meth:`HyperbolicConvexSet.half_spaces`.
 
         EXAMPLES::
 
@@ -1646,7 +1658,7 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
             sage: H = HyperbolicPlane(QQ)
 
             sage: S = H.vertical(0).left_half_space()
-            sage: [S] == S._half_spaces()
+            sage: [S] == S.half_spaces()
             True
 
         """
@@ -1689,13 +1701,13 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
             sage: HyperbolicHalfSpace._merge_sorted()
             []
 
-            sage: HyperbolicHalfSpace._merge_sorted(H.real(0)._half_spaces())
+            sage: HyperbolicHalfSpace._merge_sorted(H.real(0).half_spaces())
             [{(x^2 + y^2) + x ≤ 0}, {x ≥ 0}]
 
-            sage: HyperbolicHalfSpace._merge_sorted(H.real(0)._half_spaces(), H.real(0)._half_spaces())
+            sage: HyperbolicHalfSpace._merge_sorted(H.real(0).half_spaces(), H.real(0).half_spaces())
             [{(x^2 + y^2) + x ≤ 0}, {(x^2 + y^2) + x ≤ 0}, {x ≥ 0}, {x ≥ 0}]
 
-            sage: HyperbolicHalfSpace._merge_sorted(*[[half_space] for half_space in H.real(0)._half_spaces() * 2])
+            sage: HyperbolicHalfSpace._merge_sorted(*[[half_space] for half_space in H.real(0).half_spaces() * 2])
             [{(x^2 + y^2) + x ≤ 0}, {(x^2 + y^2) + x ≤ 0}, {x ≥ 0}, {x ≥ 0}]
 
         """
@@ -1991,16 +2003,16 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
 
         return a, b, c
 
-    def _half_spaces(self):
+    def half_spaces(self):
         r"""
-        Implements :meth:`HyperbolicConvexSet._half_spaces`.
+        Implements :meth:`HyperbolicConvexSet.half_spaces`.
 
         EXAMPLES::
 
             sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
             sage: H = HyperbolicPlane(QQ)
 
-            sage: H.vertical(0)._half_spaces()
+            sage: H.vertical(0).half_spaces()
             [{x ≤ 0}, {x ≥ 0}]
 
         """
@@ -2431,50 +2443,50 @@ class HyperbolicPoint(HyperbolicConvexSet):
         x, y = self.coordinates(model="klein")
         return x*x + y*y > 1
 
-    def _half_spaces(self):
+    def half_spaces(self):
         r"""
-        Implements :meth:`HyperbolicConvexSet._half_spaces`.
+        Implements :meth:`HyperbolicConvexSet.half_spaces`.
 
         EXAMPLES::
 
             sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
             sage: H = HyperbolicPlane(QQ)
 
-            sage: H(I)._half_spaces()
+            sage: H(I).half_spaces()
             [{(x^2 + y^2) + 2*x - 1 ≤ 0}, {x ≥ 0}, {(x^2 + y^2) - 1 ≥ 0}]
 
-            sage: H(I + 1)._half_spaces()
+            sage: H(I + 1).half_spaces()
             [{x - 1 ≤ 0}, {(x^2 + y^2) - 3*x + 1 ≤ 0}, {(x^2 + y^2) - 2 ≥ 0}]
 
-            sage: H.infinity()._half_spaces()
+            sage: H.infinity().half_spaces()
             [{x ≤ 0}, {x - 1 ≥ 0}]
 
-            sage: H(0)._half_spaces()
+            sage: H(0).half_spaces()
             [{(x^2 + y^2) + x ≤ 0}, {x ≥ 0}]
 
-            sage: H(-1)._half_spaces()
+            sage: H(-1).half_spaces()
             [{x + 1 ≤ 0}, {(x^2 + y^2) - 1 ≤ 0}]
 
-            sage: H(1)._half_spaces()
+            sage: H(1).half_spaces()
             [{(x^2 + y^2) - x ≤ 0}, {(x^2 + y^2) - 1 ≥ 0}]
 
-            sage: H(2)._half_spaces()
+            sage: H(2).half_spaces()
             [{2*(x^2 + y^2) - 3*x - 2 ≥ 0}, {3*(x^2 + y^2) - 7*x + 2 ≤ 0}]
 
-            sage: H(-2)._half_spaces()
+            sage: H(-2).half_spaces()
             [{(x^2 + y^2) - x - 6 ≥ 0}, {2*(x^2 + y^2) + 3*x - 2 ≤ 0}]
 
-            sage: H(1/2)._half_spaces()
+            sage: H(1/2).half_spaces()
             [{6*(x^2 + y^2) - x - 1 ≤ 0}, {2*(x^2 + y^2) + 3*x - 2 ≥ 0}]
 
-            sage: H(-1/2)._half_spaces()
+            sage: H(-1/2).half_spaces()
             [{2*(x^2 + y^2) + 7*x + 3 ≤ 0}, {2*(x^2 + y^2) - 3*x - 2 ≤ 0}]
 
         For ideal endpoints of geodesics that do not have coordinates over the
         base ring, we cannot produce defining half spaces since these would
         require equations over a quadratic extension as well::
 
-            sage: H.half_circle(0, 2).start()._half_spaces()
+            sage: H.half_circle(0, 2).start().half_spaces()
             Traceback (most recent call last):
             ...
             ValueError: square root of 32 not a rational number
@@ -2484,12 +2496,12 @@ class HyperbolicPoint(HyperbolicConvexSet):
 
             sage: H = HyperbolicPlane(RR)
 
-            sage: H(I)._half_spaces()
+            sage: H(I).half_spaces()
             [{(x^2 + y^2) + 2.00000000000000*x - 1.00000000000000 ≤ 0},
              {x ≥ 0},
              {(x^2 + y^2) - 1.00000000000000 ≥ 0}]
 
-            sage: H(0)._half_spaces()
+            sage: H(0).half_spaces()
             [{(x^2 + y^2) + x ≤ 0}, {x ≥ 0}, {(x^2 + y^2) ≥ 0}]
 
         """
@@ -2747,7 +2759,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
         if not isinstance(half_spaces, list):
             raise TypeError("half_spaces must be a list of half spaces")
 
-        self._halfspaces = half_spaces
+        self._half_spaces = half_spaces
 
     def _check(self, require_normalized=True):
         # TODO
@@ -2798,7 +2810,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
         """
         self = self._normalize_drop_trivially_redundant()
 
-        if not self._halfspaces:
+        if not self._half_spaces:
             raise NotImplementedError("cannot model intersection of no half spaces yet")
 
         # Find a segment on the boundary of the intersection.
@@ -2852,13 +2864,13 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
 
         The intersection of two half circles centered at 0::
 
-            sage: polygon(*(H.half_circle(0, 1)._half_spaces() + H.half_circle(0, 2)._half_spaces()))._normalize_drop_trivially_redundant()
+            sage: polygon(*(H.half_circle(0, 1).half_spaces() + H.half_circle(0, 2).half_spaces()))._normalize_drop_trivially_redundant()
             {(x^2 + y^2) - 1 ≤ 0} ∩ {(x^2 + y^2) - 2 ≥ 0}
 
         """
         reduced = []
 
-        for half_space in self._halfspaces:
+        for half_space in self._half_spaces:
             if reduced:
                 a, b, c = half_space.equation(model="klein")
                 A, B, C = reduced[-1].equation(model="klein")
@@ -2909,7 +2921,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
         An intersection which is a single point on the boundary of the unit
         disk::
 
-            sage: polygon(*H.infinity()._half_spaces())._normalize_drop_euclidean_redundant(
+            sage: polygon(*H.infinity().half_spaces())._normalize_drop_euclidean_redundant(
             ....:     boundary=H.vertical(1).right_half_space())
             {x ≤ 0} ∩ {x - 1 ≥ 0}
 
@@ -3053,7 +3065,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
         """
         # TODO: Make all other assumptions clear in the interface.
 
-        half_spaces = self._halfspaces
+        half_spaces = self._half_spaces
 
         half_spaces = half_spaces[half_spaces.index(boundary):] + half_spaces[:half_spaces.index(boundary)]
         half_spaces.reverse()
@@ -3157,7 +3169,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
         An intersection which is a single point on the boundary of the unit
         disk::
 
-            sage: polygon(*H.infinity()._half_spaces())._normalize_drop_unit_disk_redundant()
+            sage: polygon(*H.infinity().half_spaces())._normalize_drop_unit_disk_redundant()
             ∞
 
         An intersection which is a segment outside of the unit disk::
@@ -3282,10 +3294,10 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
         maybe_point = True
         maybe_segment = True
 
-        for i in range(len(self._halfspaces)):
-            A = self._halfspaces[i - 1]
-            B = self._halfspaces[i]
-            C = self._halfspaces[(i + 1) % len(self._halfspaces)]
+        for i in range(len(self._half_spaces)):
+            A = self._half_spaces[i - 1]
+            B = self._half_spaces[i]
+            C = self._half_spaces[(i + 1) % len(self._half_spaces)]
 
             AB = None if A.boundary()._configuration(B.boundary()) == "concave" else A.boundary()._intersection(B.boundary())
             BC = None if B.boundary()._configuration(C.boundary()) == "concave" else B.boundary()._intersection(C.boundary())
@@ -3410,13 +3422,13 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
 
         An intersection which is a single point inside the unit disk::
 
-            sage: polygon(*H(I)._half_spaces())._euclidean_boundary()
+            sage: polygon(*H(I).half_spaces())._euclidean_boundary()
             I
 
         An intersection which is a single point on the boundary of the unit
         disk::
 
-            sage: polygon(*H.infinity()._half_spaces())._euclidean_boundary()
+            sage: polygon(*H.infinity().half_spaces())._euclidean_boundary()
             {x - 1 ≥ 0}
 
         An intersection which is a segment outside of the unit disk::
@@ -3506,15 +3518,15 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
             {5*(x^2 + y^2) - 24*x - 5 ≥ 0}
 
         """
-        if len(self._halfspaces) == 0:
+        if len(self._half_spaces) == 0:
             raise ValueError("list of half spaces must not be empty")
 
-        if len(self._halfspaces) == 1:
-            return self._halfspaces[0]
+        if len(self._half_spaces) == 1:
+            return self._half_spaces[0]
 
         # Randomly shuffle the half spaces so the loop below runs in expected linear time.
         from sage.all import shuffle
-        random_half_spaces = self._halfspaces[:]
+        random_half_spaces = self._half_spaces[:]
         shuffle(random_half_spaces)
 
         # Move from the random starting point to a point that is contained in all half spaces.
@@ -3575,7 +3587,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
         return self._extend_to_euclidean_boundary(point)
 
     def _extend_to_euclidean_boundary(self, point):
-        half_spaces = [half_space for half_space in self._halfspaces if point in half_space.boundary()]
+        half_spaces = [half_space for half_space in self._half_spaces if point in half_space.boundary()]
 
         if len(half_spaces) == 0:
             raise ValueError("point must be on the boundary of a defining half space")
@@ -3622,7 +3634,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
         """
         edges = []
 
-        boundaries = [half_space.boundary() for half_space in self._halfspaces]
+        boundaries = [half_space.boundary() for half_space in self._half_spaces]
 
         if len(boundaries) <= 1:
             return boundaries
@@ -3666,17 +3678,17 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
         """
         raise NotImplementedError
 
-    def _half_spaces(self):
-        return self._halfspaces
+    def half_spaces(self):
+        return self._half_spaces
 
     def _repr_(self):
-        return " ∩ ".join([repr(half_space) for half_space in self._halfspaces])
+        return " ∩ ".join([repr(half_space) for half_space in self._half_spaces])
 
     def plot(self, model="half_plane", **kwds):
         kwds.setdefault("color", "#efffff")
         kwds.setdefault("edgecolor", "#d1d1d1")
 
-        if len(self._halfspaces) == 0:
+        if len(self._half_spaces) == 0:
             raise NotImplementedError("cannot plot full space")
 
         edges = self.edges(as_segments=True)
@@ -3698,7 +3710,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
         return self._enhance_plot(hyperbolic_path(commands, model=model, **kwds), model=model)
 
     def change_ring(self, ring):
-        return HyperbolicPlane(ring).polygon([half_space.change_ring(ring) for half_space in self._halfspaces], check=False, assume_sorted=True, assume_minimal=True)
+        return HyperbolicPlane(ring).polygon([half_space.change_ring(ring) for half_space in self._half_spaces], check=False, assume_sorted=True, assume_minimal=True)
 
     def _richcmp_(self, other, op):
         # TODO: Pass to normalization
@@ -3710,7 +3722,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
         if op == op_EQ:
             if not isinstance(other, HyperbolicConvexPolygon):
                 return False
-            return self._halfspaces == other._halfspaces
+            return self._half_spaces == other._half_spaces
 
 
 class HyperbolicSegment(HyperbolicConvexSet):
@@ -3768,8 +3780,8 @@ class HyperbolicSegment(HyperbolicConvexSet):
 
         return " ∩ ".join(bounds)
 
-    def _half_spaces(self):
-        half_spaces = self._geodesic._half_spaces()
+    def half_spaces(self):
+        half_spaces = self._geodesic.half_spaces()
 
         half_spaces.extend(self._endpoint_half_spaces())
 
@@ -4096,7 +4108,7 @@ class HyperbolicEmptySet(HyperbolicConvexSet):
         from sage.all import ZZ
         return ZZ(-1)
 
-    def _half_spaces(self):
+    def half_spaces(self):
         return [self.parent().half_circle(-2, 1).right_half_space(), self.parent().half_circle(2, 1).right_half_space()]
 
 
@@ -4518,3 +4530,5 @@ def hyperbolic_path(commands, model="half_plane", **options):
     return g
 
 # TODO: Ensure that every method has an INPUT section.
+
+# TODO: Ensure that methods have SEEALSO and actual links to other methods.
