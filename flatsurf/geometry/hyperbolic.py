@@ -164,8 +164,6 @@ We can also intersect objects that are not half spaces::
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 ######################################################################
 
-# TODO: Add real() and imag() for a hyperbolic point
-
 # TODO: Implement acting with a matrix on a point (Möbius transformation)
 
 # TODO: Geodesics should not be filled.
@@ -2598,6 +2596,40 @@ class HyperbolicPoint(HyperbolicConvexSet):
             return self._coordinates
 
         raise NotImplementedError
+
+    def real(self):
+        r"""
+        Return the real part of this point in the upper half plane model.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+
+            sage: H = HyperbolicPlane()
+
+            sage: p = H(I + 2)
+            sage: p.real()
+            2
+
+        """
+        return self.coordinates(model="half_plane")[0]
+
+    def imag(self):
+        r"""
+        Return the imaginary part of this point in the upper half plane model.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+
+            sage: H = HyperbolicPlane()
+
+            sage: p = H(I + 2)
+            sage: p.imag()
+            1
+
+        """
+        return self.coordinates(model="half_plane")[1]
 
     def _richcmp_(self, other, op):
         r"""
