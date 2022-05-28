@@ -3762,6 +3762,8 @@ class HyperbolicSegment(HyperbolicConvexSet):
     def plot(self, model="half_plane", **kwds):
         from sage.all import RR
 
+        kwds["fill"] = False
+
         self = self.change_ring(RR)
         plot = hyperbolic_path([BezierPath.Command("MOVETO", [self.start()]), BezierPath.Command("LINETO", [self.end()])], model=model, **kwds)
 
