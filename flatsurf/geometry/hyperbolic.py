@@ -104,12 +104,33 @@ We can also intersect objects that are not half spaces::
     Also, note that we might not handle NaN and infinity values correctly in
     inexact rings.
 
+.. NOTE::
+
+    This module implements different kinds of convex subsets as different
+    classes. The alternative would have been to represent all subsets as
+    collections of (in)equalities in some hyperbolic model. There is for
+    example a :class:`HyperbolicUnorientedSegment` and a
+    :class:`HyperbolicConvexPolygon` even though the former could in principle
+    be expressed as the latter. The advantage of this approach is that we can
+    provide a more natural user interface, e.g., a segment has a single
+    underlying geodesic whereas the corresponding convex polygon would have
+    four (or three.) Similarly, an oriented geodesic (which cannot really be
+    expressed as a convex polygon due to the orientation) has a left and a
+    right associated half spaces.
+
+    Sometimes it can be beneficial to treat each subset as a convex polygon. In
+    such case, one can explicitly create polygons from subsets by setting ...
+
 ::
 
     sage: HyperbolicPlane(RR)
     Hyperbolic Plane over Real Field with 53 bits of precision
 
 """
+# TODO: Document the last part of the NOTE
+
+# TODO: Link to the appropriate methods in this note
+
 ######################################################################
 #  This file is part of sage-flatsurf.
 #
@@ -1234,7 +1255,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         return f"Hyperbolic Plane over {repr(self.base_ring())}"
 
 
-# TODO: Change richcmp to check whether two sets are indistinguishable and implement is_subset().
+# TODO: Change richcmp to match the description below.
 class HyperbolicConvexSet(Element):
     r"""
     Base class for convex subsets of :class:`HyperbolicPlane`.
@@ -1244,7 +1265,7 @@ class HyperbolicConvexSet(Element):
         Concrete subclasses should apply the following rules.
 
         There should only be a single type to describe a certain subset:
-        normally, a certain subset, say a point, should only described by a
+        normally, a certain subset, say a point, should only be described by a
         single class, namely :class:`HyperbolicPoint`. Of course, one could
         describe a point as a polygon delimited by some edges that all
         intersect in that single point, such objects should be avoided. Namely,
@@ -1256,11 +1277,13 @@ class HyperbolicConvexSet(Element):
         the `__init__` should not take care of any such normalization and
         accept any input that can possibly be made sense of.
 
-        Comparison with :meth:`_richcmp_` should compare by inclusion of sets:
-        Care has to be taken when implementing hashing here since it must be
-        consistent with that partial ordering. In particular, we cannot assume
-        that all objects are normalized, i.e., an object must return the hash
-        of its normalization.
+        Comparison with ``==`` should mean "is essentially indistinguishable from":
+        Implementing == to mean anything else would get us into trouble in the long run. In
+        particular we cannot implement <= to mean "is subset of" since then an
+        oriented and an unoriented geodesic would be `==`. So, objects of a
+        different type are never equal. We do, however, treat objects as equal
+        that only differ in their exact representation such as the geodesic x =
+        1 and the geodesic 2x = 2.
 
     TESTS::
 
