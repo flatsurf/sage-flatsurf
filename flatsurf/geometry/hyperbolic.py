@@ -131,6 +131,12 @@ We can also intersect objects that are not half spaces::
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 ######################################################################
 
+# TODO: Add real() and imag() for a hyperbolic point
+
+# TODO: Implement acting with a matrix on a point (Möbius transformation)
+
+# TODO: Geodesics should not be filled.
+
 from dataclasses import dataclass
 
 from sage.structure.parent import Parent
@@ -319,6 +325,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         """
         from sage.all import ZZ
 
+        # TODO: Add unoriented sets.
         elements = [self.empty_set(),
                     # Points
                     self.infinity(),
@@ -640,7 +647,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         """
         if model is None:
-            if isinstance(x, HyperbolicGeodesic):
+            if isinstance(x, HyperbolicOrientedGeodesic):
                 if y is not None:
                     raise ValueError("y must be none when x is a geodesic")
 
@@ -751,7 +758,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         # Convert the equation -x + real = 0 to the Klein model.
         return self.geodesic(real, -1, -real, model="klein")
 
-    def geodesic(self, a, b, c=None, model=None, check=True):
+    def geodesic(self, a, b, c=None, model=None, oriented=True, check=True):
         r"""
         Return a geodesic in the hyperbolic plane.
 
@@ -838,20 +845,21 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             B = ay - by
             A = -(B * ax + C * ay)
 
-            return self.geodesic(A, B, C, model="klein", check=check)
+            return self.geodesic(A, B, C, model="klein", oriented=oriented, check=check)
 
         if model is None:
             raise ValueError("a model must be specified when specifying a geodesic with coefficients")
 
         if model == "half_plane":
             # Convert to the Klein model.
-            return self.geodesic(a + c, b, a - c, model="klein", check=check)
+            return self.geodesic(a + c, b, a - c, model="klein", oriented=oriented, check=check)
 
         if model == "klein":
             a = self.base_ring()(a)
             b = self.base_ring()(b)
             c = self.base_ring()(c)
-            geodesic = self.__make_element_class__(HyperbolicGeodesic)(self, a, b, c)
+
+            geodesic = self.__make_element_class__(HyperbolicOrientedGeodesic if oriented else HyperbolicUnorientedGeodesic)(self, a, b, c)
 
             if check:
                 geodesic = geodesic._normalize()
@@ -904,7 +912,14 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         return self.__make_element_class__(HyperbolicHalfSpace)(self, geodesic)
 
-    def segment(self, geodesic, start=None, end=None, check=True, assume_normalized=False):
+    # TODO: Change to segment(start=None, end=None, geodesic=None) and only
+    # require a geodesic if start is None or end is None.
+    # TODO: Look into orientation. When there is start & end then the result is
+    # oriented. When there is only start or end, then geodesic must be oriented
+    # an the result is oriented. If there is neither start nor end, we also
+    # require geodesic to be oriented.
+    # TODO: Add Geodesic.segment(start, end) as another way to call this.
+    def segment(self, geodesic, start=None, end=None, oriented=None, check=True, assume_normalized=False):
         r"""
         Return the segment on the ``geodesic`` bounded by ``start`` and ``end``.
 
@@ -913,9 +928,10 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         - ``geodesic`` -- a :meth:`geodesic` in this space.
 
         - ``start`` -- ``None`` or a :meth:`point` on the ``geodesic``, e.g.,
-          obtained from the :meth:`HyperbolicGeodesic.intersection` of
+          obtained from the :meth:`HyperbolicOrientedGeodesic.intersection` of
           ``geodesic`` with another geodesic. If ``None``, the segment starts
-          at the infinite :meth:`HyperbolicGeodesic.start` point of the geodesic.
+          at the infinite :meth:`HyperbolicOrientedGeodesic.start` point of the
+          geodesic.
 
         - ``end`` -- ``None`` or a :meth:`point` on the ``geodesic``, same as
           ``start``; must be later on ``geodesic`` than ``start``.
@@ -963,8 +979,8 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         """
         geodesic = self(geodesic)
 
-        if not isinstance(geodesic, HyperbolicGeodesic):
-            raise TypeError("geodesic must be a geodesic")
+        if not isinstance(geodesic, HyperbolicOrientedGeodesic):
+            raise TypeError("geodesic must be an oriented geodesic")
 
         if start is not None:
             start = self(start)
@@ -976,7 +992,11 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             if not isinstance(end, HyperbolicPoint):
                 raise TypeError("end must be a point")
 
-        segment = self.__make_element_class__(HyperbolicSegment)(self, geodesic, start, end)
+        if oriented is None:
+            # TODO: Implement something smarter.
+            oriented = True
+
+        segment = self.__make_element_class__(HyperbolicOrientedSegment if oriented else HyperbolicUnorientedSegment)(self, geodesic, start, end)
 
         if check:
             segment._check(require_normalized=False)
@@ -1167,11 +1187,24 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         """
         subsets = [self.coerce(subset) for subset in subsets]
 
+        if len(subsets) == 0:
+            raise NotImplementedError("the full hyperbolic space cannot be created as an intersection")
+
+        if len(subsets) == 1:
+            return subsets[0].unoriented()
+
+        if not self.base_ring().is_exact():
+            # Intersecting convex sets is tricky numerically and of course the
+            # answer is often not well-defined. Since our implementation is not
+            # meant for such a use case, we refuse to try to compute an
+            # intersection.
+            raise NotImplementedError("intersection of convex sets not supported over inexact rings")
+
         half_spaces = [subset._half_spaces() for subset in subsets]
 
         half_spaces = HyperbolicHalfSpace._merge_sorted(*half_spaces)
 
-        return self.polygon(half_spaces, assume_sorted=True, assume_minimal=False, check=False)
+        return self.polygon(half_spaces, assume_sorted=True, assume_minimal=False, check=False).unoriented()
 
     def empty_set(self):
         r"""
@@ -1201,7 +1234,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         return f"Hyperbolic Plane over {repr(self.base_ring())}"
 
 
-# TODO: Change richcmp to compare according to the subset relation.
+# TODO: Change richcmp to check whether two sets are indistinguishable and implement is_subset().
 class HyperbolicConvexSet(Element):
     r"""
     Base class for convex subsets of :class:`HyperbolicPlane`.
@@ -1260,8 +1293,29 @@ class HyperbolicConvexSet(Element):
             [{(x^2 + y^2) + x ≤ 0}, {x ≥ 0}]
 
         """
-        # TODO: Check that all subclasses implement this.
-        raise NotImplementedError("Convex sets must implement this method.")
+        raise NotImplementedError(f"{type(self)} does not implement _half_spaces()")
+
+    def _test_half_spaces(self, **options):
+        r"""
+        Verify that this convex set implements :meth:`_half_spaces` correctly.
+
+        TESTS::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(QQ)
+
+            sage: H.an_element()._test_half_spaces()
+
+        """
+        tester = self._tester(**options)
+
+        half_spaces = self._half_spaces()
+
+        if self.parent().base_ring().is_exact():
+            tester.assertEqual(self.parent().intersection(*half_spaces), self.unoriented())
+
+        for a, b in zip(half_spaces, half_spaces[1:]):
+            tester.assertTrue(HyperbolicHalfSpace._less_than(a, b))
 
     def _check(self, require_normalized=True):
         r"""
@@ -1269,8 +1323,8 @@ class HyperbolicConvexSet(Element):
 
         If ``require_normalized``, we also check that the object has the
         correct implementation class, e.g., that a point is a
-        :class:`HyperbolicPoint` and not say a :class:`HyperbolicSegment` of
-        length zero.
+        :class:`HyperbolicPoint` and not say a
+        :class:`HyperbolicOrientedSegment` of length zero.
         """
         pass
 
@@ -1280,10 +1334,47 @@ class HyperbolicConvexSet(Element):
 
         This method is only relevant for sets created with ``check=False``.
         Such sets might have been created in a non-canonical way, e.g., when
-        creating a :class:`HyperbolicSegment` whose start and end point are ideal,
+        creating a :class:`HyperbolicOrientedSegment` whose start and end point are ideal,
         then this is actually a geodesic and it shuold be described as such.
         """
         return self
+
+    def unoriented(self):
+        r"""
+        Return the non-oriented version of this set.
+
+        Some sets such as geodesics and segments can have an explicit
+        orientation. This method returns the underlying set without any
+        explicit orientation.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(QQ)
+            sage: H.vertical(0).unoriented()
+            {x = 0}
+
+        """
+        if self.dimension() == 1:
+            raise NotImplementedError(f"{type(self)} does not implement unoriented()")
+
+        return self
+
+    def _test_unoriented(self, **options):
+        r"""
+        Verify that :meth:`unoriented` is implemented correctly.
+
+        TESTS::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(QQ)
+
+            sage: H.an_element()._test_unoriented()
+
+        """
+        tester = self._tester(**options)
+
+        tester.assertEqual(self.unoriented(), self.unoriented().unoriented())
 
     def intersection(self, other):
         r"""
@@ -1465,12 +1556,12 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
     def __init__(self, parent, geodesic):
         super().__init__(parent)
 
-        if not isinstance(geodesic, HyperbolicGeodesic):
-            raise TypeError("geodesic must be a geodesic")
+        if not isinstance(geodesic, HyperbolicOrientedGeodesic):
+            raise TypeError("geodesic must be an oriented geodesic")
 
         self._geodesic = geodesic
 
-    def equation(self, model):
+    def equation(self, model, gcd=False):
         r"""
         Return an inequality for this half space as a triple ``a``, ``b``, ``c`` such that:
 
@@ -1483,7 +1574,7 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
         Note that the output is not unique since the coefficients can be scaled
         by a positive scalar.
         """
-        return self._geodesic.equation(model=model)
+        return self._geodesic.equation(model=model, gcd=gcd)
 
     def _repr_(self):
         r"""
@@ -1504,17 +1595,7 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
 
         """
         # Convert to the Poincaré half plane model as a(x^2 + y^2) + bx + c ≥ 0.
-        a, b, c = self.equation(model="half_plane")
-
-        try:
-            from sage.all import gcd
-            d = gcd((a, b, c))
-            assert d > 0
-            a /= d
-            b /= d
-            c /= d
-        except Exception:
-            pass
+        a, b, c = self.equation(model="half_plane", gcd=None)
 
         # Remove any trailing - signs in the output.
         cmp = "≥"
@@ -1784,6 +1865,171 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
 
 class HyperbolicGeodesic(HyperbolicConvexSet):
     r"""
+    A geodesic in the hyperbolic plane.
+
+    This is the abstract base class of :class:`HyperbolicUnorientedGeodesic`
+    and :class:`HyperbolicOrientedGeodesic`.
+
+    TESTS::
+
+        sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicGeodesic
+        sage: H = HyperbolicPlane()
+
+        sage: geodesic = H.vertical(0)
+
+        sage: isinstance(geodesic, HyperbolicGeodesic)
+        True
+
+        sage: isinstance(geodesic.unoriented(), HyperbolicGeodesic)
+        True
+
+    """
+
+    def __init__(self, parent, a, b, c):
+        super().__init__(parent)
+
+        if not isinstance(a, Element) or a.parent() is not parent.base_ring():
+            raise TypeError("a must be an element of the base ring")
+        if not isinstance(b, Element) or b.parent() is not parent.base_ring():
+            raise TypeError("b must be an element of the base ring")
+        if not isinstance(c, Element) or c.parent() is not parent.base_ring():
+            raise TypeError("c must be an element of the base ring")
+
+        self._a = a
+        self._b = b
+        self._c = c
+
+    def _repr_(self):
+        # Convert to the Poincaré half plane model as a(x^2 + y^2) + bx + c = 0.
+        a, b, c = self.equation(model="half_plane", gcd=None)
+
+        from sage.all import PolynomialRing
+        R = PolynomialRing(self.parent().base_ring(), names="x")
+        if a != 0:
+            return f"{{{repr(R([0, a]))[:-1]}(x^2 + y^2){repr(R([c, b, 1]))[3:]} = 0}}"
+        else:
+            return f"{{{repr(R([c, b]))} = 0}}"
+
+    def equation(self, model, gcd=False, oriented=True):
+        r"""
+        Return an equation for this geodesic as a triple ``a``, ``b``, ``c`` such that:
+
+        - if ``model`` is ``"half_plane"``, a point `x + iy` of the upper half
+          plane is on the geodesic if it satisfies `a(x^2 + y^2) + bx + c = 0`.
+
+        - if ``model`` is ``"klein"``, points `(x, y)` in the unit disk satisfy
+          `a + bx + cy = 0`.
+
+        INPUT:
+
+        - ``model`` -- the model in which this equation holds, either
+          ``"half_plane"`` or ``"klein"``
+
+        - ``gcd`` -- whether to divide the coefficients in the equation by
+          their gcd. If ``None``, such a division is attempted but errors are
+          silently ignored.
+
+        - ``oriented`` -- whether the sign of the coefficients is chosen to
+          encode the orientation of this geodesic (if it is oriented.) The
+          sign is such that the half plane obtained by replacing ``=`` with
+          ``≥`` in above equationsis on the left of the geodesic.
+
+        Note that the output does not uniquely describe the geodesic since the
+        coefficients are only unique up to scaling.
+
+        """
+        a, b, c = self._a, self._b, self._c
+
+        if model == "klein":
+            a, b, c = a, b, c
+        elif model == "half_plane":
+            a, b, c = a + c, 2*b, a - c
+        else:
+            raise NotImplementedError("cannot determine equation for this model yet")
+
+        if gcd is not False:
+            try:
+                from sage.all import gcd as gcd_
+                d = gcd_((a, b, c))
+                assert d > 0
+                a /= d
+                b /= d
+                c /= d
+            except Exception:
+                if gcd:
+                    raise
+
+        if not oriented:
+            if a < 0 or (a == 0 and b < 0) or (a == 0 and b == 0 and c < 0):
+                a *= -1
+                b *= -1
+                c *= -1
+
+        return a, b, c
+
+    def _half_spaces(self):
+        r"""
+        Implements :meth:`HyperbolicConvexSet._half_spaces`.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(QQ)
+
+            sage: H.vertical(0)._half_spaces()
+            [{x ≤ 0}, {x ≥ 0}]
+
+        """
+        return HyperbolicHalfSpace._merge_sorted([self.left_half_space()], [self.right_half_space()])
+
+    def plot(self, model="half_plane", **kwds):
+        r"""
+        Create a plot of this geodesic in the hyperbolic ``model``.
+
+        Additional arguments are passed on to the underlying SageMath plotting methods.
+        """
+        return self.parent().segment(self, start=None, end=None, check=False, assume_normalized=True).plot(model=model, **kwds)
+
+
+class HyperbolicUnorientedGeodesic(HyperbolicGeodesic):
+    r"""
+    An unoriented geodesic in the hyperbolic plane.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+        sage: H = HyperbolicPlane()
+
+        sage: H.vertical(0).unoriented()
+        {x = 0}
+
+    """
+
+    def unoriented(self):
+        return self
+
+    def equation(self, model, gcd=False, oriented=False):
+        return super().equation(model=model, gcd=gcd, oriented=oriented)
+
+    def _richcmp_(self, other, op):
+        from sage.structure.richcmp import op_EQ, op_NE
+
+        if op == op_NE:
+            return not self._richcmp_(other, op_EQ)
+
+        if op == op_EQ:
+            if not isinstance(other, HyperbolicUnorientedGeodesic):
+                return False
+            if self._b:
+                return self._a * other._b == other._a * self._b and self._c * other._b == other._c * self._b
+            else:
+                return self._a * other._c == other._a * self._c and self._b * other._c == other._b * self._c
+
+        super()._richcmp_(other, op)
+
+
+class HyperbolicOrientedGeodesic(HyperbolicGeodesic):
+    r"""
     An oriented geodesic in the hyperbolic plane.
 
     Internally, we represent geodesics as the chords satisfying the equation `a
@@ -1808,45 +2054,19 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
 
     """
 
-    def __init__(self, parent, a, b, c):
-        super().__init__(parent)
-
-        if not isinstance(a, Element) or a.parent() is not parent.base_ring():
-            raise TypeError("a must be an element of the base ring")
-        if not isinstance(b, Element) or b.parent() is not parent.base_ring():
-            raise TypeError("b must be an element of the base ring")
-        if not isinstance(c, Element) or c.parent() is not parent.base_ring():
-            raise TypeError("c must be an element of the base ring")
-
-        self._a = a
-        self._b = b
-        self._c = c
-
     def _check(self, require_normalized=True):
         if self.parent().base_ring().is_exact():
             if self.is_ultra_ideal():
                 raise ValueError(f"equation {self._a} + ({self._b})*x + ({self._c})*y = 0 does not define a chord in the Klein model")
+
+    def unoriented(self):
+        return self.parent().geodesic(self._a, self._b, self._c, model="klein", oriented=False, check=False)
 
     def is_ultra_ideal(self):
         if not self.parent().base_ring().is_exact():
             raise NotImplementedError("cannot decide finiteness over inexact rings")
 
         return self._b*self._b + self._c*self._c <= self._a*self._a
-
-    def _half_spaces(self):
-        r"""
-        Implements :meth:`HyperbolicConvexSet._half_spaces`.
-
-        EXAMPLES::
-
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
-            sage: H = HyperbolicPlane(QQ)
-
-            sage: H.vertical(0)._half_spaces()
-            [{x ≤ 0}, {x ≥ 0}]
-
-        """
-        return HyperbolicHalfSpace._merge_sorted([self.left_half_space()], [self.right_half_space()])
 
     def start(self):
         r"""
@@ -1928,61 +2148,6 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
 
         """
         return self.parent().geodesic(-self._a, -self._b, -self._c, model="klein", check=False)
-
-    def equation(self, model):
-        r"""
-        Return an equation for this geodesic as a triple ``a``, ``b``, ``c`` such that:
-
-        - if ``model`` is ``"half_plane"``, a point `x + iy` of the upper half
-          plane is on the geodesic if it satisfies `a(x^2 + y^2) + bx + c = 0`.
-          The coefficients are such that the half plane `a(x^2 + y^2) + bx + c
-          ≥ 0` is on the left of the geodesic.
-
-        - if ``model`` is ``"klein"``, points `(x, y)` in the unit disk satisfy
-          `a + bx + cy = 0`. The sign of the coefficients is such that the half
-          plane `a + bx + cy ≥ 0` is on the left of the geodesic.
-
-        Note that the output is not unique since the coefficients can be scaled
-        by a positive scalar.
-        """
-        a, b, c = self._a, self._b, self._c
-
-        if model == "klein":
-            return a, b, c
-
-        if model == "half_plane":
-            return a + c, 2*b, a - c
-
-        raise NotImplementedError("cannot determine equation for this model yet")
-
-    def _repr_(self):
-        # Convert to the Poincaré half plane model as a(x^2 + y^2) + bx + c = 0.
-        a, b, c = self.equation(model="half_plane")
-
-        try:
-            from sage.all import gcd
-            d = gcd((a, b, c))
-            assert d > 0
-            a /= d
-            b /= d
-            c /= d
-        except Exception:
-            pass
-
-        from sage.all import PolynomialRing
-        R = PolynomialRing(self.parent().base_ring(), names="x")
-        if a != 0:
-            return f"{{{repr(R([0, a]))[:-1]}(x^2 + y^2){repr(R([c, b, 1]))[3:]} = 0}}"
-        else:
-            return f"{{{repr(R([c, b]))} = 0}}"
-
-    def plot(self, model="half_plane", **kwds):
-        r"""
-        Create a plot of this geodesic in the hyperbolic ``model``.
-
-        Additional arguments are passed on to the underlying SageMath plotting methods.
-        """
-        return self.parent().segment(self, start=None, end=None, check=False, assume_normalized=True).plot(model=model, **kwds)
 
     def change_ring(self, ring):
         r"""
@@ -2108,8 +2273,8 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
             ∞
 
         """
-        if not isinstance(other, HyperbolicGeodesic):
-            raise TypeError("can only intersect with another geodesic")
+        if not isinstance(other, HyperbolicOrientedGeodesic):
+            raise TypeError("can only intersect with another oriented geodesic")
 
         # TODO: Reference the trac ticket that says that solving for 2×2 matrices is very slow.
         det = self._b * other._c - self._c * other._b
@@ -2166,7 +2331,7 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
             return not self._richcmp_(other, op_EQ)
 
         if op == op_EQ:
-            if not isinstance(other, HyperbolicGeodesic):
+            if not isinstance(other, HyperbolicOrientedGeodesic):
                 return False
             if self._b:
                 return self._b.sign() == other._b.sign() and self._a * other._b == other._a * self._b and self._c * other._b == other._c * self._b
@@ -2221,8 +2386,8 @@ class HyperbolicPoint(HyperbolicConvexSet):
         super().__init__(parent)
 
         if y is None:
-            if not isinstance(x, HyperbolicGeodesic):
-                raise TypeError("x must be a geodesic")
+            if not isinstance(x, HyperbolicOrientedGeodesic):
+                raise TypeError("x must be an oriented geodesic")
 
             self._coordinates = x
             self.coordinates(model="klein", ring="try")
@@ -2290,10 +2455,23 @@ class HyperbolicPoint(HyperbolicConvexSet):
             ...
             ValueError: square root of 32 not a rational number
 
+        Over an inexact ring, the number of half spaces might not be minimal
+        since we cannot decide the finiteness of a point::
+
+            sage: H = HyperbolicPlane(RR)
+
+            sage: H(I)._half_spaces()
+            [{(x^2 + y^2) + 2.00000000000000*x - 1.00000000000000 ≤ 0},
+             {x ≥ 0},
+             {(x^2 + y^2) - 1.00000000000000 ≥ 0}]
+
+            sage: H(0)._half_spaces()
+            [{(x^2 + y^2) + x ≤ 0}, {x ≥ 0}, {(x^2 + y^2) ≥ 0}]
+
         """
         x0, y0 = self.coordinates(model="klein")
 
-        if self.is_finite():
+        if not self.parent().base_ring().is_exact() or self.is_finite():
             return HyperbolicHalfSpace._merge_sorted(
                 # x ≥ x0
                 [self.parent().half_space(-x0, 1, 0, model="klein")],
@@ -2312,7 +2490,7 @@ class HyperbolicPoint(HyperbolicConvexSet):
         if not self.parent().base_ring().is_exact():
             raise NotImplementedError("cannot decide finiteness over inexact rings")
 
-        if isinstance(self._coordinates, HyperbolicGeodesic):
+        if isinstance(self._coordinates, HyperbolicOrientedGeodesic):
             return False
 
         x, y = self.coordinates(model="klein")
@@ -2357,7 +2535,7 @@ class HyperbolicPoint(HyperbolicConvexSet):
             return (x / denominator, sqrt/denominator)
 
         if model == "klein":
-            if isinstance(self._coordinates, HyperbolicGeodesic):
+            if isinstance(self._coordinates, HyperbolicOrientedGeodesic):
                 a, b, c = self._coordinates.equation(model="half_plane")
 
                 if a == 0:
@@ -2428,9 +2606,9 @@ class HyperbolicPoint(HyperbolicConvexSet):
             # geodesics unless absolutely necessary.
             if not isinstance(other, HyperbolicPoint):
                 return False
-            if isinstance(self._coordinates, HyperbolicGeodesic):
+            if isinstance(self._coordinates, HyperbolicOrientedGeodesic):
                 geodesic = self._coordinates
-                if isinstance(other._coordinates, HyperbolicGeodesic):
+                if isinstance(other._coordinates, HyperbolicOrientedGeodesic):
                     geodesic_ = other._coordinates
                     if geodesic == geodesic_:
                         return True
@@ -2447,7 +2625,7 @@ class HyperbolicPoint(HyperbolicConvexSet):
                 if other in geodesic and geodesic.parametrize(other, model="euclidean") < 0:
                     return True
                 return False
-            elif isinstance(other._coordinates, HyperbolicGeodesic):
+            elif isinstance(other._coordinates, HyperbolicOrientedGeodesic):
                 return other == self
             return self.coordinates(model="klein") == other.coordinates(model="klein")
 
@@ -2476,7 +2654,7 @@ class HyperbolicPoint(HyperbolicConvexSet):
         return repr(PowerSeriesRing(self.parent().base_ring(), names="I")([x, y]))
 
     def change_ring(self, ring):
-        if isinstance(self._coordinates, HyperbolicGeodesic):
+        if isinstance(self._coordinates, HyperbolicOrientedGeodesic):
             return HyperbolicPlane(ring).point(self._coordinates, y=None, model=None, check=False)
 
         return HyperbolicPlane(ring).point(*self._coordinates, model="klein", check=False)
@@ -3386,6 +3564,10 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
 
         return point
 
+    def dimension(self):
+        from sage.all import ZZ
+        return ZZ(2)
+
     def equations(self):
         r"""
         Return the equations describing the boundary of this polygon.
@@ -3396,7 +3578,8 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
 
     def edges(self, as_segments=False):
         r"""
-        Return the :class:`HyperbolicSegment`s and :class:`HyperbolicGeodesic`s defining this polygon.
+        Return the :class:`HyperbolicOrientedSegment`s and
+        :class:`HyperbolicOrientedGeodesic`s defining this polygon.
         """
         edges = []
 
@@ -3493,25 +3676,126 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
 
 class HyperbolicSegment(HyperbolicConvexSet):
     r"""
-    An oriented (possibly infinite) segment in the hyperbolic plane such as a
-    boundary edge of a :class:`HyperbolicConvexPolygon`.
+    A segment (possibly infinite) in the hyperbolic plane.
+
+    This is an abstract base class of :class:`HyperbolicOrientedSegmented` and
+    :class:`HyperbolicUnorientedSegment`.
+
+    TESTS::
+
+        sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicSegment
+        sage: H = HyperbolicPlane()
+
+        sage: segment = H.segment(H.vertical(0), start=I)
+
+        sage: isinstance(segment, HyperbolicSegment)
+        True
+
+        sage: isinstance(segment.unoriented(), HyperbolicSegment)
+        True
+
     """
 
     def __init__(self, parent, geodesic, start=None, end=None):
         super().__init__(parent)
 
-        if not isinstance(geodesic, HyperbolicGeodesic):
-            raise TypeError("geodesic must be a hyperbolic geodesic")
+        if not isinstance(geodesic, HyperbolicOrientedGeodesic):
+            raise TypeError("geodesic must be an oriented hyperbolic geodesic")
 
         if start is not None and not isinstance(start, HyperbolicPoint):
             raise TypeError("start must be a hyperbolic point")
 
         if end is not None and not isinstance(end, HyperbolicPoint):
-            raise TypeError("start must be a hyperbolic point")
+            raise TypeError("end must be a hyperbolic point")
 
         self._geodesic = geodesic
         self._start = start
         self._end = end
+
+    def _endpoint_half_spaces(self):
+        a, b, c = self._geodesic.equation(model="klein")
+
+        if self._start is not None:
+            x, y = self._start.coordinates(model="klein")
+            yield self.parent().half_space(-c * x + b * y, c, -b, model="klein", check=False)
+
+        if self._end is not None:
+            x, y = self._end.coordinates(model="klein")
+            yield self.parent().half_space(c * x - b * y, -c, b, model="klein", check=False)
+
+    def _repr_(self):
+        bounds = [repr(self._geodesic)]
+        bounds.extend(repr(half_space) for half_space in self._endpoint_half_spaces())
+
+        return " ∩ ".join(bounds)
+
+    def _half_spaces(self):
+        half_spaces = self._geodesic._half_spaces()
+
+        half_spaces.extend(self._endpoint_half_spaces())
+
+        return HyperbolicHalfSpace._merge_sorted(*[[half_space] for half_space in half_spaces])
+
+    def plot(self, model="half_plane", **kwds):
+        from sage.all import RR
+
+        self = self.change_ring(RR)
+        plot = hyperbolic_path([BezierPath.Command("MOVETO", [self.start()]), BezierPath.Command("LINETO", [self.end()])], model=model, **kwds)
+
+        return self._enhance_plot(plot, model=model)
+
+    def start(self, finite=False):
+        if self._start is not None:
+            return self._start
+
+        return self._geodesic.start()
+
+    def end(self, finite=False):
+        if self._end is not None:
+            return self._end
+
+        return self._geodesic.end()
+
+
+class HyperbolicUnorientedSegment(HyperbolicSegment):
+    r"""
+    An unoriented (possibly infinity) segment in the hyperbolic plane.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+        sage: H = HyperbolicPlane()
+
+        sage: segment = H.segment(H.vertical(0), start=I).unoriented()
+
+    """
+
+    def unoriented(self):
+        return self
+
+    def _richcmp_(self, other, op):
+        from sage.structure.richcmp import op_EQ, op_NE
+
+        if op == op_NE:
+            return not self._richcmp_(other, op_EQ)
+
+        if op == op_EQ:
+            if not isinstance(other, HyperbolicUnorientedSegment):
+                return False
+            return (self._geodesic == other._geodesic and self._start == other._start and self._end == other._end) or (self._geodesic == -other._geodesic and self._start == other._end and self._end == other._start)
+
+    def change_ring(self, ring):
+        start = self._start.change_ring(ring) if self._start is not None else None
+        end = self._end.change_ring(ring) if self._end is not None else None
+
+        return HyperbolicPlane(ring).segment(self._geodesic.change_ring(ring), start=start, end=end, check=False, assume_normalized=True, oriented=False)
+
+
+class HyperbolicOrientedSegment(HyperbolicSegment):
+    r"""
+    An oriented (possibly infinite) segment in the hyperbolic plane such as a
+    boundary edge of a :class:`HyperbolicConvexPolygon`.
+    """
 
     def _check(self, require_normalized=True):
         start = self._start
@@ -3525,7 +3809,9 @@ class HyperbolicSegment(HyperbolicConvexSet):
             if end not in self._geodesic:
                 raise ValueError("end point must be on the geodesic")
 
-        # TODO: Check end >= start and end > start if required_normalized.
+        # TODO: Check end >= start and end > start if require_normalized.
+
+        # TODO: Check that end > start even if unoriented since otherwise the printing is wrong.
 
         # TODO: Check start & end finite if require_normalized.
 
@@ -3604,6 +3890,9 @@ class HyperbolicSegment(HyperbolicConvexSet):
 
         return self.parent().segment(self._geodesic, start=start, end=end, check=False, assume_normalized=True)
 
+    def unoriented(self):
+        return self.parent().segment(geodesic=self._geodesic, start=self._start, end=self._end, check=False, assume_normalized=False, oriented=False)
+
     @classmethod
     def _normalize_start(cls, geodesic, start, end):
         if start is None:
@@ -3653,38 +3942,6 @@ class HyperbolicSegment(HyperbolicConvexSet):
 
         return True
 
-    def _half_spaces(self):
-        half_spaces = self._geodesic._half_spaces()
-
-        if self._start is not None:
-            half_spaces.append(self._start_half_space())
-
-        if self._end is not None:
-            half_spaces.append(self._end_half_space())
-
-        return HyperbolicHalfSpace._merge_sorted(*[[half_space] for half_space in half_spaces])
-
-    def _start_half_space(self):
-        x, y = self._start.coordinates(model="klein")
-        b, c = (self._geodesic._c, -self._geodesic._b)
-        return self.parent().half_space(-b * x - c * y, b, c, model="klein", check=False)
-
-    def _end_half_space(self):
-        x, y = self._end.coordinates(model="klein")
-        b, c = (-self._geodesic._c, self._geodesic._b)
-        return self.parent().half_space(-b * x - c * y, b, c, model="klein", check=False)
-
-    def _repr_(self):
-        bounds = [repr(self._geodesic)]
-
-        if self._start is not None:
-            bounds.append(repr(self._start_half_space()))
-
-        if self._end is not None:
-            bounds.append(repr(self._end_half_space()))
-
-        return " ∩ ".join(bounds)
-
     def _neg_(self):
         return self.parent().segment(-self._geodesic, self._end, self._start, check=False, assume_normalized=True)
 
@@ -3695,7 +3952,7 @@ class HyperbolicSegment(HyperbolicConvexSet):
             return not self._richcmp_(other, op_EQ)
 
         if op == op_EQ:
-            if not isinstance(other, HyperbolicSegment):
+            if not isinstance(other, HyperbolicOrientedSegment):
                 return False
             return self._geodesic == other._geodesic and self._start == other._start and self._end == other._end
 
@@ -3703,27 +3960,7 @@ class HyperbolicSegment(HyperbolicConvexSet):
         start = self._start.change_ring(ring) if self._start is not None else None
         end = self._end.change_ring(ring) if self._end is not None else None
 
-        return HyperbolicPlane(ring).segment(self._geodesic.change_ring(ring), start=start, end=end, check=False, assume_normalized=True)
-
-    def start(self, finite=False):
-        if self._start is not None:
-            return self._start
-
-        return self._geodesic.start()
-
-    def end(self, finite=False):
-        if self._end is not None:
-            return self._end
-
-        return self._geodesic.end()
-
-    def plot(self, model="half_plane", **kwds):
-        from sage.all import RR
-
-        self = self.change_ring(RR)
-        plot = hyperbolic_path([BezierPath.Command("MOVETO", [self.start()]), BezierPath.Command("LINETO", [self.end()])], model=model, **kwds)
-
-        return self._enhance_plot(plot, model=model)
+        return HyperbolicPlane(ring).segment(self._geodesic.change_ring(ring), start=start, end=end, check=False, assume_normalized=True, oriented=True)
 
     def configuration(self, other):
         if self._geodesic == other._geodesic:
@@ -3817,6 +4054,9 @@ class HyperbolicEmptySet(HyperbolicConvexSet):
     def dimension(self):
         from sage.all import ZZ
         return ZZ(-1)
+
+    def _half_spaces(self):
+        return [self.parent().half_circle(-2, 1).right_half_space(), self.parent().half_circle(2, 1).right_half_space()]
 
 
 def sl2_to_so12(m):
