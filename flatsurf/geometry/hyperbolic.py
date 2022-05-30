@@ -166,8 +166,6 @@ We can also intersect objects that are not half spaces::
 
 # TODO: Implement acting with a matrix on a point (Möbius transformation)
 
-# TODO: Geodesics should not be filled.
-
 from dataclasses import dataclass
 
 from sage.structure.parent import Parent
