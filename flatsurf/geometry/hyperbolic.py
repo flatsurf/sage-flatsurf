@@ -1387,10 +1387,7 @@ class HyperbolicConvexSet(Element):
             {x = 0}
 
         """
-        if self.dimension() == 1:
-            raise NotImplementedError(f"{type(self)} does not implement unoriented()")
-
-        return self
+        return self.change(oriented=False)
 
     def _test_unoriented(self, **options):
         r"""
@@ -1431,13 +1428,14 @@ class HyperbolicConvexSet(Element):
         r"""
         Return whether all points in this set are finite.
         """
+        # TODO: This could be implemented generically.
         raise NotImplementedError(f"this {type(self)} does not support checking finiteness")
 
     def change_ring(self, ring):
         r"""
         Return this set as an element of the hyperbolic plane over ``ring``.
         """
-        raise NotImplementedError(f"this {type(self)} does not support changing the base ring")
+        return self.change(ring=ring)
 
     def _test_change_ring(self, **options):
         r"""
@@ -1454,6 +1452,50 @@ class HyperbolicConvexSet(Element):
         tester = self._tester(**options)
         tester.assertEqual(self, self.change_ring(self.parent().base_ring()))
 
+    def change(self, ring=None):
+        r"""
+        Return a modified copy of this set.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(QQ)
+
+            sage: geodesic = H.geodesic(0, 1)
+
+        We can change the base ring over which this set is defined::
+
+            sage: geodesic.change(ring=AA)
+
+        We can drop the explicit orientation of a set::
+
+            sage: geodesic.change(oriented=False)
+
+        """
+        raise NotImplementedError(f"this {type(self)} does not implement change()")
+
+    def _test_change(self, **options):
+        r"""
+        Verify that the full interface of :meth:`change` has been implemented.
+
+        TESTS::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(QQ)
+
+            sage: H.an_element()._test_change()
+
+        """
+        tester = self._tester(**options)
+
+        # The ring parameter is supported
+        tester.assertEqual(self, self.change(ring=self.parent().base_ring()))
+
+        # The oriented parameter is supported
+        tester.assertEqual(self.change(oriented=False), self.change(oriented=False).change(oriented=False))
+        if self != self.change(oriented=False):
+            tester.assertEqual(self, self.change(oriented=True))
+
     def plot(self, model="half_plane", **kwds):
         r"""
         Return a plot of this subset.
@@ -1467,6 +1509,7 @@ class HyperbolicConvexSet(Element):
             Graphics object consisting of 1 graphics primitive
 
         """
+        # TODO: This could be implemented generically.
         raise NotImplementedError(f"this {type(self)} does not support plotting")
 
     def _test_plot(self, **options):
@@ -1504,6 +1547,7 @@ class HyperbolicConvexSet(Element):
             raise ValueError('invalid isometry')
 
     def _apply_isometry_klein(self, isometry):
+        # TODO: This can be implemented generically.
         raise NotImplementedError
 
     def apply_isometry(self, isometry, model="half_plane"):
@@ -1526,28 +1570,13 @@ class HyperbolicConvexSet(Element):
 
         raise NotImplementedError("applying isometry not supported in this hyperbolic model")
 
-    def _neg_(self):
-        r"""
-        Return the convex subset obtained by taking the (closed) complements of
-        the half spaces whose intersection define this set.
+    # TODO: Test that is_subset can compare all kinds of sets by inclusion.
 
-        EXAMPLES::
-
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
-            sage: H = HyperbolicPlane(QQ)
-
-            sage: -H.vertical(0).left_half_space()
-            {x ≥ 0}
-
-        """
-        return self.parent().intersection(*[-half_space for half_space in self.half_spaces()])
-
-    # TODO: Test that _richcmp_ can compare all kinds of sets by inclusion.
     # TODO: Provide hashing.
 
     def an_element(self):
         # TODO: Test that everything implements an_element().
-        raise NotImplementedError
+        return next(iter(self.vertices()))
 
     @classmethod
     def _enhance_plot(self, plot, model):
@@ -1564,11 +1593,28 @@ class HyperbolicConvexSet(Element):
         return not self.is_empty()
 
     def dimension(self):
-        # TODO: Test that this is an ZZ integer.
+        # TODO: Test that this is a ZZ integer.
         raise NotImplementedError(f"{type(self)} does not implement dimension() yet")
 
     def is_point(self):
         return self.dimension() == 0
+
+    def is_oriented(self):
+        # TODO: Test that oriented sets implement _neg_ correctly.
+        return isinstance(self, HyperbolicOrientedConvexSet)
+
+    def vertices(self):
+        return self.parent().polygon(self.half_spaces(), check=False, assume_sorted=True, assume_minimal=True).vertices()
+
+    def edges(self):
+        # TODO: Implement by iterating vertices.
+        # TODO: Test that other implementation are consistent with vertices()
+        raise NotImplementedError
+
+
+class HyperbolicOrientedConvexSet(HyperbolicConvexSet):
+    def _neg_(self):
+        raise NotImplementedError
 
 
 class HyperbolicHalfSpace(HyperbolicConvexSet):
@@ -1887,8 +1933,11 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
     def plot(self, model="half_plane", **kwds):
         return self.parent().polygon([self], check=False, assume_minimal=True).plot(model=model, **kwds)
 
-    def change_ring(self, ring):
-        return self._geodesic.change_ring(ring).left_half_space()
+    def change(self, ring=None):
+        if ring is not None:
+            self = self._geodesic.change_ring(ring).left_half_space()
+
+        return self
 
     def dimension(self):
         from sage.all import ZZ
@@ -1942,7 +1991,7 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
         else:
             return f"{{{repr(R([c, b]))} = 0}}"
 
-    def equation(self, model, gcd=False, oriented=True):
+    def equation(self, model, gcd=False):
         r"""
         Return an equation for this geodesic as a triple ``a``, ``b``, ``c`` such that:
 
@@ -1961,10 +2010,10 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
           their gcd. If ``None``, such a division is attempted but errors are
           silently ignored.
 
-        - ``oriented`` -- whether the sign of the coefficients is chosen to
-          encode the orientation of this geodesic (if it is oriented.) The
-          sign is such that the half plane obtained by replacing ``=`` with
-          ``≥`` in above equationsis on the left of the geodesic.
+        If this geodesic :meth;`is_oriented`, then the sign of the coefficients
+        is chosen to encode the orientation of this geodesic. The sign is such
+        that the half plane obtained by replacing ``=`` with ``≥`` in above
+        equationsis on the left of the geodesic.
 
         Note that the output does not uniquely describe the geodesic since the
         coefficients are only unique up to scaling.
@@ -1991,7 +2040,7 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
                 if gcd:
                     raise
 
-        if not oriented:
+        if not self.is_oriented():
             if a < 0 or (a == 0 and b < 0) or (a == 0 and b == 0 and c < 0):
                 a *= -1
                 b *= -1
@@ -2022,6 +2071,40 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
         """
         return self.parent().segment(self, start=None, end=None, check=False, assume_normalized=True).plot(model=model, **kwds)
 
+    def _richcmp_(self, other, op):
+        from sage.structure.richcmp import op_EQ, op_NE
+
+        if op == op_NE:
+            return not self._richcmp_(other, op_EQ)
+
+        if op == op_EQ:
+            if type(self) is not type(other):
+                return False
+            if self._b:
+                return (not self.is_oriented() or self._b.sign() == other._b.sign()) and self._a * other._b == other._a * self._b and self._c * other._b == other._c * self._b
+            else:
+                return (not self.is_oriented() or self._c.sign() == other._c.sign()) and self._a * other._c == other._a * self._c and self._b * other._c == other._b * self._c
+
+        super()._richcmp_(other, op)
+
+    def __contains__(self, point):
+        point = self.parent()(point)
+
+        if not isinstance(point, HyperbolicPoint):
+            raise TypeError("point must be a point in the hyperbolic plane")
+
+        if not self.parent().base_ring().is_exact() and self.dimension() in [0, 1]:
+            raise NotImplementedError("cannot decide containment for null sets")
+
+        x, y = point.coordinates(model="klein")
+        a, b, c = self.equation(model="klein")
+
+        return a + b * x + c * y == 0
+
+    def dimension(self):
+        from sage.all import ZZ
+        return ZZ(1)
+
 
 class HyperbolicUnorientedGeodesic(HyperbolicGeodesic):
     r"""
@@ -2037,30 +2120,8 @@ class HyperbolicUnorientedGeodesic(HyperbolicGeodesic):
 
     """
 
-    def unoriented(self):
-        return self
 
-    def equation(self, model, gcd=False, oriented=False):
-        return super().equation(model=model, gcd=gcd, oriented=oriented)
-
-    def _richcmp_(self, other, op):
-        from sage.structure.richcmp import op_EQ, op_NE
-
-        if op == op_NE:
-            return not self._richcmp_(other, op_EQ)
-
-        if op == op_EQ:
-            if not isinstance(other, HyperbolicUnorientedGeodesic):
-                return False
-            if self._b:
-                return self._a * other._b == other._a * self._b and self._c * other._b == other._c * self._b
-            else:
-                return self._a * other._c == other._a * self._c and self._b * other._c == other._b * self._c
-
-        super()._richcmp_(other, op)
-
-
-class HyperbolicOrientedGeodesic(HyperbolicGeodesic):
+class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet):
     r"""
     An oriented geodesic in the hyperbolic plane.
 
@@ -2086,21 +2147,36 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic):
 
     """
 
+    def _neg_(self):
+        r"""
+        Return the reversed geodesic.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(QQ)
+
+            sage: -H.vertical(0)
+            {x = 0}
+
+        """
+        return self.parent().geodesic(-self._a, -self._b, -self._c, model="klein", check=False)
+
     def _check(self, require_normalized=True):
+        # TODO: Should this be in the oriented class? Should there be an equivalent in the unoriented class?
         if self.parent().base_ring().is_exact():
             if self.is_ultra_ideal():
                 raise ValueError(f"equation {self._a} + ({self._b})*x + ({self._c})*y = 0 does not define a chord in the Klein model")
 
-    def unoriented(self):
-        return self.parent().geodesic(self._a, self._b, self._c, model="klein", oriented=False, check=False)
-
     def is_ultra_ideal(self):
+        # TODO: Should this be in the oriented class? Should there be an equivalent in the unoriented class?
         if not self.parent().base_ring().is_exact():
             raise NotImplementedError("cannot decide finiteness over inexact rings")
 
         return self._b*self._b + self._c*self._c <= self._a*self._a
 
     def start(self):
+        # TODO: Should this be in the oriented class? Should there be an equivalent in the unoriented class?
         r"""
         Return the ideal starting point of this geodesic.
 
@@ -2134,6 +2210,7 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic):
         return self.parent().point(x=self, y=None, model=None, check=False)
 
     def end(self):
+        # TODO: Should this be in the oriented class? Should there be an equivalent in the unoriented class?
         r"""
         Return the ideal end point of this geodesic.
 
@@ -2166,26 +2243,14 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic):
         """
         return (-self).start()
 
-    def _neg_(self):
+    def change(self, *, ring=None):
+        # TODO: Should this be in the oriented class? Should there be an equivalent in the unoriented class?
         r"""
-        Return the reversed geodesic.
+        Return a modified copy of this geodesic.
 
-        EXAMPLES::
+        EXAMPLES:
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
-            sage: H = HyperbolicPlane(QQ)
-
-            sage: -H.vertical(0)
-            {x = 0}
-
-        """
-        return self.parent().geodesic(-self._a, -self._b, -self._c, model="klein", check=False)
-
-    def change_ring(self, ring):
-        r"""
-        Return this geodesic in the Hyperbolic plane over ``ring``.
-
-        EXAMPLES::
+        The base ring over which this geodesic is defined can be changed::
 
             sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
             sage: H = HyperbolicPlane(AA)
@@ -2193,15 +2258,19 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic):
             sage: H.vertical(1).change_ring(QQ)
             {-x + 1 = 0}
 
-            sage: H.vertical(AA(2).sqrt()).change_ring(QQ)
+            sage: H.vertical(AA(2).sqrt()).change(ring=QQ)
             Traceback (most recent call last):
             ...
             ValueError: Cannot coerce irrational Algebraic Real ... to Rational
 
         """
-        return HyperbolicPlane(ring).geodesic(self._a, self._b, self._c, model="klein", check=False)
+        if ring is not None:
+            self = HyperbolicPlane(ring).geodesic(self._a, self._b, self._c, model="klein", check=False)
+
+        return self
 
     def left_half_space(self):
+        # TODO: Should this be in the oriented class? Should there be an equivalent in the unoriented class?
         r"""
         Return the closed half space to the left of this (oriented) geodesic.
 
@@ -2217,6 +2286,7 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic):
         return self.parent().half_space(self._a, self._b, self._c, model="klein")
 
     def right_half_space(self):
+        # TODO: Should this be in the oriented class? Should there be an equivalent in the unoriented class?
         r"""
         Return the closed half space to the right of this (oriented) geodesic.
 
@@ -2231,12 +2301,8 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic):
         """
         return (-self).left_half_space()
 
-    def an_element(self):
-        a, b, c = self.equation(model="klein")
-
-        return self.parent().geodesic(0, -c, b, model="klein", check=False)._intersection(self)
-
     def _configuration(self, other):
+        # TODO: Should this be in the oriented class? Should there be an equivalent in the unoriented class?
         r"""
         Return a classification of the angle between this
         geodesic and ``other`` in the Klein model.
@@ -2276,6 +2342,7 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic):
         return "concave"
 
     def _intersection(self, other):
+        # TODO: Should this be in the oriented class? Should there be an equivalent in the unoriented class?
         r"""
         Return the intersection of this geodesic and ``other`` in the Klein
         model or in the Euclidean plane if the intersection point is ultra
@@ -2319,21 +2386,8 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic):
 
         return self.parent().point(x, y, model="klein", check=False)
 
-    def __contains__(self, point):
-        point = self.parent()(point)
-
-        if not isinstance(point, HyperbolicPoint):
-            raise TypeError("point must be a point in the hyperbolic plane")
-
-        if not self.parent().base_ring().is_exact() and self.dimension() in [0, 1]:
-            raise NotImplementedError("cannot decide containment for null sets")
-
-        x, y = point.coordinates(model="klein")
-        a, b, c = self.equation(model="klein")
-
-        return a + b * x + c * y == 0
-
     def parametrize(self, point, model, check=True):
+        # TODO: Should this be in the oriented class? Should there be an equivalent in the unoriented class?
         if isinstance(point, HyperbolicPoint):
             if check and point not in self:
                 raise ValueError("point must be on geodesic to be parametrized")
@@ -2356,23 +2410,8 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic):
 
         raise NotImplementedError("cannot parametrize a geodesic over this model yet")
 
-    def _richcmp_(self, other, op):
-        from sage.structure.richcmp import op_EQ, op_NE
-
-        if op == op_NE:
-            return not self._richcmp_(other, op_EQ)
-
-        if op == op_EQ:
-            if not isinstance(other, HyperbolicOrientedGeodesic):
-                return False
-            if self._b:
-                return self._b.sign() == other._b.sign() and self._a * other._b == other._a * self._b and self._c * other._b == other._c * self._b
-            else:
-                return self._c.sign() == other._c.sign() and self._a * other._c == other._a * self._c and self._b * other._c == other._b * self._c
-
-        super()._richcmp_(other, op)
-
     def _apply_isometry_klein(self, isometry):
+        # TODO: Should this be in the oriented class? Should there be an equivalent in the unoriented class?
         r"""
         TESTS::
 
@@ -2397,10 +2436,6 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic):
 
         b, c, a = vector(self.parent().base_ring(), [self._b, self._c, self._a]) * isometry.inverse()
         return self.parent().geodesic(a, b, c, model="klein")
-
-    def dimension(self):
-        from sage.all import ZZ
-        return ZZ(1)
 
 
 class HyperbolicPoint(HyperbolicConvexSet):
@@ -2719,11 +2754,16 @@ class HyperbolicPoint(HyperbolicConvexSet):
         from sage.all import PowerSeriesRing
         return repr(PowerSeriesRing(self.parent().base_ring(), names="I")([x, y]))
 
-    def change_ring(self, ring):
-        if isinstance(self._coordinates, HyperbolicOrientedGeodesic):
-            return HyperbolicPlane(ring).point(self._coordinates, y=None, model=None, check=False)
+    def change(self, ring=None):
+        def coordinates(self):
+            if isinstance(self._coordinates, HyperbolicOrientedGeodesic):
+                return (self._coordinates, None)
+            return self._coordinates
 
-        return HyperbolicPlane(ring).point(*self._coordinates, model="klein", check=False)
+        if ring is not None:
+            return HyperbolicPlane(ring).point(*coordinates(self), model=None, check=False)
+
+        return self
 
     def _apply_isometry_klein(self, isometry):
         r"""
@@ -3658,6 +3698,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
         raise NotImplementedError
 
     def edges(self, as_segments=False):
+        # TODO: Define in HyperbolicConvexSet
         r"""
         Return the :class:`HyperbolicOrientedSegment`s and
         :class:`HyperbolicOrientedGeodesic`s defining this polygon.
@@ -3702,6 +3743,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
         return edges
 
     def vertices(self):
+        # TODO: Define in HyperbolicConvexSet
         r"""
         Return the vertices of this polygon, i.e., the end points of the
         :meth:`edges`, in counterclockwise order.
@@ -3739,8 +3781,11 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
 
         return self._enhance_plot(hyperbolic_path(commands, model=model, **kwds), model=model)
 
-    def change_ring(self, ring):
-        return HyperbolicPlane(ring).polygon([half_space.change_ring(ring) for half_space in self._half_spaces], check=False, assume_sorted=True, assume_minimal=True)
+    def change(self, ring=None):
+        if ring is not None:
+            self = HyperbolicPlane(ring).polygon([half_space.change_ring(ring) for half_space in self._half_spaces], check=False, assume_sorted=True, assume_minimal=True)
+
+        return self
 
     def _richcmp_(self, other, op):
         # TODO: Pass to normalization
@@ -3839,6 +3884,26 @@ class HyperbolicSegment(HyperbolicConvexSet):
 
         return self._geodesic.end()
 
+    def _richcmp_(self, other, op):
+        from sage.structure.richcmp import op_EQ, op_NE
+
+        if op == op_NE:
+            return not self._richcmp_(other, op_EQ)
+
+        if op == op_EQ:
+            if type(self) is not type(other):
+                return False
+            return self.geodesic() == other.geodesic() and self.vertices() == other.vertices()
+
+    def change(self, ring=None):
+        if ring is not None:
+            start = self._start.change_ring(ring) if self._start is not None else None
+            end = self._end.change_ring(ring) if self._end is not None else None
+
+            self = HyperbolicPlane(ring).segment(self._geodesic.change_ring(ring), start=start, end=end, check=False, assume_normalized=True, oriented=self.is_oriented())
+
+        return self
+
 
 class HyperbolicUnorientedSegment(HyperbolicSegment):
     r"""
@@ -3853,34 +3918,18 @@ class HyperbolicUnorientedSegment(HyperbolicSegment):
 
     """
 
-    def unoriented(self):
-        return self
 
-    def _richcmp_(self, other, op):
-        from sage.structure.richcmp import op_EQ, op_NE
-
-        if op == op_NE:
-            return not self._richcmp_(other, op_EQ)
-
-        if op == op_EQ:
-            if not isinstance(other, HyperbolicUnorientedSegment):
-                return False
-            return (self._geodesic == other._geodesic and self._start == other._start and self._end == other._end) or (self._geodesic == -other._geodesic and self._start == other._end and self._end == other._start)
-
-    def change_ring(self, ring):
-        start = self._start.change_ring(ring) if self._start is not None else None
-        end = self._end.change_ring(ring) if self._end is not None else None
-
-        return HyperbolicPlane(ring).segment(self._geodesic.change_ring(ring), start=start, end=end, check=False, assume_normalized=True, oriented=False)
-
-
-class HyperbolicOrientedSegment(HyperbolicSegment):
+class HyperbolicOrientedSegment(HyperbolicSegment, HyperbolicOrientedConvexSet):
     r"""
     An oriented (possibly infinite) segment in the hyperbolic plane such as a
     boundary edge of a :class:`HyperbolicConvexPolygon`.
     """
 
+    def _neg_(self):
+        return self.parent().segment(-self._geodesic, self._end, self._start, check=False, assume_normalized=True)
+
     def _check(self, require_normalized=True):
+        # TODO: Should this be in the oriented class? Should there be an equivalent in the unoriented class?
         start = self._start
         end = self._end
 
@@ -3899,6 +3948,7 @@ class HyperbolicOrientedSegment(HyperbolicSegment):
         # TODO: Check start & end finite if require_normalized.
 
     def _normalize(self):
+        # TODO: Should this be in the oriented class? Should there be an equivalent in the unoriented class?
         r"""
         EXAMPLES::
 
@@ -3973,11 +4023,9 @@ class HyperbolicOrientedSegment(HyperbolicSegment):
 
         return self.parent().segment(self._geodesic, start=start, end=end, check=False, assume_normalized=True)
 
-    def unoriented(self):
-        return self.parent().segment(geodesic=self._geodesic, start=self._start, end=self._end, check=False, assume_normalized=False, oriented=False)
-
     @classmethod
     def _normalize_start(cls, geodesic, start, end):
+        # TODO: Should this be in the oriented class? Should there be an equivalent in the unoriented class?
         if start is None:
             return None, end
 
@@ -4000,6 +4048,7 @@ class HyperbolicOrientedSegment(HyperbolicSegment):
         return start, end
 
     def _is_valid(self):
+        # TODO: Should this be in the oriented class? Should there be an equivalent in the unoriented class?
         if not self._geodesic._is_valid():
             return False
 
@@ -4025,27 +4074,8 @@ class HyperbolicOrientedSegment(HyperbolicSegment):
 
         return True
 
-    def _neg_(self):
-        return self.parent().segment(-self._geodesic, self._end, self._start, check=False, assume_normalized=True)
-
-    def _richcmp_(self, other, op):
-        from sage.structure.richcmp import op_EQ, op_NE
-
-        if op == op_NE:
-            return not self._richcmp_(other, op_EQ)
-
-        if op == op_EQ:
-            if not isinstance(other, HyperbolicOrientedSegment):
-                return False
-            return self._geodesic == other._geodesic and self._start == other._start and self._end == other._end
-
-    def change_ring(self, ring):
-        start = self._start.change_ring(ring) if self._start is not None else None
-        end = self._end.change_ring(ring) if self._end is not None else None
-
-        return HyperbolicPlane(ring).segment(self._geodesic.change_ring(ring), start=start, end=end, check=False, assume_normalized=True, oriented=True)
-
     def configuration(self, other):
+        # TODO: Should this be in the oriented class? Should there be an equivalent in the unoriented class?
         if self._geodesic == other._geodesic:
             if self == other:
                 return "equal"
