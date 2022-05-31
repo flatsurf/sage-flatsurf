@@ -682,7 +682,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
                 point = self.__make_element_class__(HyperbolicPoint)(self, self(x), None)
             else:
-                raise NotImplementedError("unsupported coordinates for implicit model")
+                raise NotImplementedError(f"unsupported coordinates of type {type(x)} for implicit model")
         else:
             x = self.base_ring()(x)
             y = self.base_ring()(y)
@@ -1452,7 +1452,7 @@ class HyperbolicConvexSet(Element):
         tester = self._tester(**options)
         tester.assertEqual(self, self.change_ring(self.parent().base_ring()))
 
-    def change(self, ring=None):
+    def change(self, ring=None, oriented=None):
         r"""
         Return a modified copy of this set.
 
@@ -1466,10 +1466,12 @@ class HyperbolicConvexSet(Element):
         We can change the base ring over which this set is defined::
 
             sage: geodesic.change(ring=AA)
+            {(x^2 + y^2) - x = 0}
 
         We can drop the explicit orientation of a set::
 
             sage: geodesic.change(oriented=False)
+            {(x^2 + y^2) - x = 0}
 
         """
         raise NotImplementedError(f"this {type(self)} does not implement change()")
@@ -1933,9 +1935,15 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
     def plot(self, model="half_plane", **kwds):
         return self.parent().polygon([self], check=False, assume_minimal=True).plot(model=model, **kwds)
 
-    def change(self, ring=None):
+    def change(self, ring=None, oriented=None):
         if ring is not None:
             self = self._geodesic.change_ring(ring).left_half_space()
+
+        if oriented is None:
+            oriented = self.is_oriented()
+
+        if oriented != self.is_oriented():
+            raise NotImplementedError("cannot change orientation of half space")
 
         return self
 
@@ -2105,6 +2113,41 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
         from sage.all import ZZ
         return ZZ(1)
 
+    def change(self, *, ring=None, oriented=None):
+        # TODO: Should this be in the oriented class? Should there be an equivalent in the unoriented class?
+        r"""
+        Return a modified copy of this geodesic.
+
+        EXAMPLES:
+
+        The base ring over which this geodesic is defined can be changed::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(AA)
+
+            sage: H.vertical(1).change_ring(QQ)
+            {-x + 1 = 0}
+
+            sage: H.vertical(AA(2).sqrt()).change(ring=QQ)
+            Traceback (most recent call last):
+            ...
+            ValueError: Cannot coerce irrational Algebraic Real ... to Rational
+
+        """
+        if ring is not None:
+            self = HyperbolicPlane(ring).geodesic(self._a, self._b, self._c, model="klein", check=False)
+
+        if oriented is None:
+            oriented = self.is_oriented()
+
+        if oriented != self.is_oriented():
+            if not self.is_oriented():
+                raise NotImplementedError("cannot set orientation of geodesic")
+
+            self = self.parent().geodesic(self._a, self._b, self._c, model="klein", check=False, oriented=oriented)
+
+        return self
+
 
 class HyperbolicUnorientedGeodesic(HyperbolicGeodesic):
     r"""
@@ -2243,32 +2286,6 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
         """
         return (-self).start()
 
-    def change(self, *, ring=None):
-        # TODO: Should this be in the oriented class? Should there be an equivalent in the unoriented class?
-        r"""
-        Return a modified copy of this geodesic.
-
-        EXAMPLES:
-
-        The base ring over which this geodesic is defined can be changed::
-
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
-            sage: H = HyperbolicPlane(AA)
-
-            sage: H.vertical(1).change_ring(QQ)
-            {-x + 1 = 0}
-
-            sage: H.vertical(AA(2).sqrt()).change(ring=QQ)
-            Traceback (most recent call last):
-            ...
-            ValueError: Cannot coerce irrational Algebraic Real ... to Rational
-
-        """
-        if ring is not None:
-            self = HyperbolicPlane(ring).geodesic(self._a, self._b, self._c, model="klein", check=False)
-
-        return self
-
     def left_half_space(self):
         # TODO: Should this be in the oriented class? Should there be an equivalent in the unoriented class?
         r"""
@@ -2385,6 +2402,9 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
         y = (other._b * self._a - self._b * other._a) / det
 
         return self.parent().point(x, y, model="klein", check=False)
+
+    def an_element(self):
+        return self.parent().geodesic(0, -self._c, self._b, model="klein", check=False)._intersection(self)
 
     def parametrize(self, point, model, check=True):
         # TODO: Should this be in the oriented class? Should there be an equivalent in the unoriented class?
@@ -2754,14 +2774,20 @@ class HyperbolicPoint(HyperbolicConvexSet):
         from sage.all import PowerSeriesRing
         return repr(PowerSeriesRing(self.parent().base_ring(), names="I")([x, y]))
 
-    def change(self, ring=None):
-        def coordinates(self):
+    def change(self, ring=None, oriented=None):
+        def point(parent):
             if isinstance(self._coordinates, HyperbolicOrientedGeodesic):
-                return (self._coordinates, None)
-            return self._coordinates
+                return parent.point(self._coordinates, None, model=None, check=False)
+            return parent.point(*self._coordinates, model="klein", check=False)
 
         if ring is not None:
-            return HyperbolicPlane(ring).point(*coordinates(self), model=None, check=False)
+            return point(HyperbolicPlane(ring))
+
+        if oriented is None:
+            oriented = self.is_oriented()
+
+        if oriented != self.is_oriented():
+            raise NotImplementedError("cannot change orientation of a point")
 
         return self
 
@@ -3726,6 +3752,8 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
                     start = None
             elif AB == "concave":
                 pass
+            elif AB == "negative":
+                start = None
             else:
                 raise NotImplementedError(f"cannot determine edges when boundaries are in configuration {AB}")
 
@@ -3735,6 +3763,8 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
                     end = None
             elif BC == "concave":
                 pass
+            elif BC == "negative":
+                end = None
             else:
                 raise NotImplementedError(f"cannot determine edges when boundaries are in configuration {BC}")
 
@@ -3745,10 +3775,18 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
     def vertices(self):
         # TODO: Define in HyperbolicConvexSet
         r"""
-        Return the vertices of this polygon, i.e., the end points of the
-        :meth:`edges`, in counterclockwise order.
+        Return the vertices of this polygon, i.e., the (possibly ideal) end
+        points of the :meth:`edges`, in counterclockwise order.
         """
-        raise NotImplementedError
+        vertex = None
+        for edge in self.edges():
+            start = edge.start()
+            if vertex is not None and start != vertex:
+                yield start
+
+            end = edge.end()
+            yield end
+            vertex = end
 
     def half_spaces(self):
         return self._half_spaces
@@ -3781,9 +3819,15 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
 
         return self._enhance_plot(hyperbolic_path(commands, model=model, **kwds), model=model)
 
-    def change(self, ring=None):
+    def change(self, ring=None, oriented=None):
         if ring is not None:
             self = HyperbolicPlane(ring).polygon([half_space.change_ring(ring) for half_space in self._half_spaces], check=False, assume_sorted=True, assume_minimal=True)
+
+        if oriented is None:
+            oriented = self.is_oriented()
+
+        if oriented != self.is_oriented():
+            raise NotImplementedError("cannot change orientation of a polygon")
 
         return self
 
@@ -3895,14 +3939,29 @@ class HyperbolicSegment(HyperbolicConvexSet):
                 return False
             return self.geodesic() == other.geodesic() and self.vertices() == other.vertices()
 
-    def change(self, ring=None):
+    def change(self, ring=None, oriented=None):
         if ring is not None:
             start = self._start.change_ring(ring) if self._start is not None else None
             end = self._end.change_ring(ring) if self._end is not None else None
 
             self = HyperbolicPlane(ring).segment(self._geodesic.change_ring(ring), start=start, end=end, check=False, assume_normalized=True, oriented=self.is_oriented())
 
+        if oriented is None:
+            oriented = self.is_oriented()
+
+        if oriented != self.is_oriented():
+            if not self.is_oriented():
+                raise NotImplementedError("cannot orient unoriented segment")
+
+            self = self.parent().segment(self._geodesic, start=self._start, end=self._end, check=False, assume_normalized=True, oriented=oriented)
+
         return self
+
+    def geodesic(self):
+        geodesic = self._geodesic
+        if not self.is_oriented():
+            geodesic = geodesic.unoriented()
+        return geodesic
 
 
 class HyperbolicUnorientedSegment(HyperbolicSegment):
@@ -4170,6 +4229,18 @@ class HyperbolicEmptySet(HyperbolicConvexSet):
 
     def half_spaces(self):
         return [self.parent().half_circle(-2, 1).right_half_space(), self.parent().half_circle(2, 1).right_half_space()]
+
+    def change(self, ring=None, oriented=None):
+        if ring is not None:
+            self = HyperbolicPlane(ring).empty_set()
+
+        if oriented is None:
+            oriented = self.is_oriented()
+
+        if oriented != self.is_oriented():
+            raise NotImplementedError("cannot change orientation of empty set")
+
+        return self
 
 
 def sl2_to_so12(m):
