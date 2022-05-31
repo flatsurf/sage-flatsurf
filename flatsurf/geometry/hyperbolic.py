@@ -1605,9 +1605,6 @@ class HyperbolicConvexSet(Element):
         # TODO: Test that oriented sets implement _neg_ correctly.
         return isinstance(self, HyperbolicOrientedConvexSet)
 
-    def vertices(self):
-        return self.parent().polygon(self.half_spaces(), check=False, assume_sorted=True, assume_minimal=True).vertices()
-
     def edges(self):
         # TODO: Implement by iterating vertices.
         # TODO: Test that other implementation are consistent with vertices()
@@ -1951,6 +1948,9 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
         from sage.all import ZZ
         return ZZ(2)
 
+    def vertices(self):
+        return self.boundary().vertices()
+
 
 class HyperbolicGeodesic(HyperbolicConvexSet):
     r"""
@@ -2147,6 +2147,11 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
             self = self.parent().geodesic(self._a, self._b, self._c, model="klein", check=False, oriented=oriented)
 
         return self
+
+    def vertices(self):
+        # TODO: Ideally, vertices(), half_spaces(), edges() would return circularly sorted lists, i.e., [a,b,c] == [b,c,a].
+        # With that approach it would be safe to compare the vertices of sets.
+        return [self.start(), self.end()]
 
 
 class HyperbolicUnorientedGeodesic(HyperbolicGeodesic):
@@ -3962,6 +3967,11 @@ class HyperbolicSegment(HyperbolicConvexSet):
         if not self.is_oriented():
             geodesic = geodesic.unoriented()
         return geodesic
+
+    def vertices(self):
+        # TODO: Ideally, vertices(), half_spaces(), edges() would return circularly sorted lists, i.e., [a,b,c] == [b,c,a].
+        # With that approach it would be safe to compare the vertices of sets.
+        return [self.start(), self.end()]
 
 
 class HyperbolicUnorientedSegment(HyperbolicSegment):
