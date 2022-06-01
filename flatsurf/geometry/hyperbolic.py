@@ -164,8 +164,6 @@ We can also intersect objects that are not half spaces::
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 ######################################################################
 
-# TODO: Implement acting with a matrix on a point (Möbius transformation)
-
 from dataclasses import dataclass
 
 from sage.structure.parent import Parent
@@ -1572,6 +1570,23 @@ class HyperbolicConvexSet(Element):
             return self._apply_isometry_klein(isometry)
 
         raise NotImplementedError("applying isometry not supported in this hyperbolic model")
+
+    def _acted_upon_(self, x, self_on_left):
+        r"""
+        Return the result of acting upon this set with ``x``.
+
+        EXAMPLES:
+
+        The Möbius transformation that sends `z` to `(1 + 2z)/(3 + 4z)`::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(QQ)
+            sage: p = H(I)
+            sage: matrix([[1, 2], [3, 4]]) * p
+            11/25 + 2/25*I
+
+        """
+        return self.apply_isometry(x)
 
     # TODO: Test that is_subset can compare all kinds of sets by inclusion.
 
