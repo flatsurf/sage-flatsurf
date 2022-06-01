@@ -1541,12 +1541,13 @@ class HyperbolicConvexSet(Element):
         if isometry.nrows() != 3 or isometry.ncols() != 3 or not self.parent().base_ring().has_coerce_map_from(isometry.base_ring()):
             raise ValueError('invalid isometry')
         D = isometry.transpose() * diagonal_matrix([1, 1, -1]) * isometry
-        if D[0, 1] or D[0, 2] or D[1, 0] or D[1, 2] or D[2, 0] or D[2, 1]:
-            raise ValueError('invalid isometry')
-        if D[0, 0].is_zero() or D[1, 1].is_zero() or D[2, 2].is_zero():
-            raise ValueError('invalid isometry')
-        if D[0, 0] != D[1, 1] or D[0, 0] != - D[2, 2]:
-            raise ValueError('invalid isometry')
+        if self.parent().base_ring().is_exact():
+            if D[0, 1] or D[0, 2] or D[1, 0] or D[1, 2] or D[2, 0] or D[2, 1]:
+                raise ValueError('invalid isometry')
+            if D[0, 0].is_zero() or D[1, 1].is_zero() or D[2, 2].is_zero():
+                raise ValueError('invalid isometry')
+            if D[0, 0] != D[1, 1] or D[0, 0] != - D[2, 2]:
+                raise ValueError('invalid isometry')
 
     def _apply_isometry_klein(self, isometry):
         # TODO: This can be implemented generically.
