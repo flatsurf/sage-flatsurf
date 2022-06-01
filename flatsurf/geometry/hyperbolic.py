@@ -352,7 +352,6 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         """
         from sage.all import ZZ
 
-        # TODO: Add unoriented sets.
         elements = [self.empty_set(),
                     # Points
                     self.infinity(),
@@ -360,10 +359,13 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
                     self.real(1),
                     self.real(-1),
                     self.geodesic(0, 2).start(),
-                    # Geodesics
+                    # Oriented Geodesics
                     self.vertical(1),
                     self.half_circle(0, 1),
                     self.half_circle(1, 3),
+                    # Unoriented Geodesics
+                    self.vertical(-1).unoriented(),
+                    self.half_circle(-1, 2).unoriented(),
                     # Half spaces
                     self.vertical(0).left_half_space(),
                     self.half_circle(0, 2).left_half_space()]
@@ -377,10 +379,14 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
                 self.vertical(1).left_half_space().intersection(self.vertical(-1).right_half_space()).intersection(self.geodesic(0, 1).left_half_space()).intersection(self.geodesic(0, -1).right_half_space()),
                 # A bounded polygon
                 self.geodesic(-ZZ(1)/3, 2).left_half_space().intersection(self.geodesic(ZZ(1)/3, -2).right_half_space()).intersection(self.geodesic(-ZZ(2)/3, 3).right_half_space()).intersection(self.geodesic(ZZ(2)/3, -3).left_half_space()),
-                # An unbounded segment
+                # An unbounded oriented segment
                 self.vertical(0).intersection(self.geodesic(-1, 1).left_half_space()),
-                # A bounded segment
+                # A bounded oriented segment
                 self.vertical(0).intersection(self.geodesic(-2, 2).right_half_space()).intersection(self.geodesic(-ZZ(1)/2, ZZ(1)/2).left_half_space()),
+                # An unbounded unoriented segment
+                self.vertical(0).intersection(self.geodesic(-1, 1).left_half_space()).unoriented(),
+                # A bounded unoriented segment
+                self.vertical(0).intersection(self.geodesic(-2, 2).right_half_space()).intersection(self.geodesic(-ZZ(1)/2, ZZ(1)/2).left_half_space()).unoriented(),
                 ]
 
         return elements
@@ -2085,6 +2091,7 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
             [{x ≤ 0}, {x ≥ 0}]
 
         """
+        self = self.change(oriented=True)
         return HyperbolicHalfSpace._merge_sorted([self.left_half_space()], [self.right_half_space()])
 
     def plot(self, model="half_plane", **kwds):
@@ -2093,7 +2100,7 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
 
         Additional arguments are passed on to the underlying SageMath plotting methods.
         """
-        return self.parent().segment(self, start=None, end=None, check=False, assume_normalized=True).plot(model=model, **kwds)
+        return self.parent().segment(self.change(oriented=True), start=None, end=None, check=False, assume_normalized=True).plot(model=model, **kwds)
 
     def _richcmp_(self, other, op):
         from sage.structure.richcmp import op_EQ, op_NE
@@ -2130,7 +2137,6 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
         return ZZ(1)
 
     def change(self, *, ring=None, oriented=None):
-        # TODO: Should this be in the oriented class? Should there be an equivalent in the unoriented class?
         r"""
         Return a modified copy of this geodesic.
 
@@ -2149,17 +2155,29 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
             ...
             ValueError: Cannot coerce irrational Algebraic Real ... to Rational
 
+        We can forget the orientation of a geodesic::
+
+            sage: v = H.vertical(0)
+            sage: v.is_oriented()
+            True
+            sage: v = v.change(oriented=False)
+            sage: v.is_oriented()
+            False
+
+        We can (somewhat randomly) pick the orientation of a geodesic::
+
+            sage: v = v.change(oriented=True)
+            sage: v.is_oriented()
+            True
+
         """
         if ring is not None:
-            self = HyperbolicPlane(ring).geodesic(self._a, self._b, self._c, model="klein", check=False)
+            self = HyperbolicPlane(ring).geodesic(self._a, self._b, self._c, model="klein", check=False, oriented=self.is_oriented())
 
         if oriented is None:
             oriented = self.is_oriented()
 
         if oriented != self.is_oriented():
-            if not self.is_oriented():
-                raise NotImplementedError("cannot set orientation of geodesic")
-
             self = self.parent().geodesic(self._a, self._b, self._c, model="klein", check=False, oriented=oriented)
 
         return self
