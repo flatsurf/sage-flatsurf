@@ -2647,10 +2647,7 @@ class HyperbolicPoint(HyperbolicConvexSet):
 
                     endpoints = ((-b - root) / (2*a), (-b + root) / (2*a))
 
-                    if a > 0:
-                        self._coordinates = self.parent().real(min(endpoints))._coordinates
-                    else:
-                        self._coordinates = self.parent().real(max(endpoints))._coordinates
+                    self._coordinates = self.parent().real((min if a > 0 else max)(endpoints))._coordinates
 
             return self._coordinates
 
