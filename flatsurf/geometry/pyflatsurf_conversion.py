@@ -127,7 +127,10 @@ def to_pyflatsurf(S):
     if base_ring is AA:
         from sage.rings.qqbar import number_field_elements_from_algebraics
         from itertools import chain
+        # TODO: Why [0]? And not [0].parent()?
         base_ring = number_field_elements_from_algebraics(list(chain(*[list(v) for v in vec])), embedded=True)[0]
+        from sage.all import NumberField, RR
+        base_ring = NumberField(base_ring.defining_polynomial(), names="c", check=False, embedding=RR(base_ring.gen()))
 
     from flatsurf.features import pyflatsurf_feature
     pyflatsurf_feature.require()
