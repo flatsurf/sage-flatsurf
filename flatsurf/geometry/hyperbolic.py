@@ -648,11 +648,16 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         if p == 0 and q == 0:
             raise ValueError("one of p and q must not be zero")
 
-        if q == 0:
-            return self.point(0, 1, model="klein")
-
         p = self.base_ring()(p)
         q = self.base_ring()(q)
+
+        if not self.base_ring().is_exact():
+            if q == 0:
+                return self.point(-self.vertical(0), None, model=None)
+            return self.point(self.vertical(p/q), None, model=None)
+
+        if q == 0:
+            return self.point(0, 1, model="klein")
 
         return self.point(p/q, 0, model="half_plane", check=False)
 
@@ -679,6 +684,8 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             ∞
 
         """
+        # TODO: Document that ideal points over inexact rings are not going to be detected if they are created from coordinates.
+
         if model is None:
             if isinstance(x, HyperbolicOrientedGeodesic):
                 if y is not None:
@@ -692,8 +699,20 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             y = self.base_ring()(y)
 
             if model == "klein":
+                if check and not self.base_ring().is_exact() and x == 0 and y == 1:
+                    raise ValueError # TODO: Remove
+                if check and not self.base_ring().is_exact() and x == -1 and y == 0:
+                    raise ValueError # TODO: Remove
+                if check and not self.base_ring().is_exact() and x == 1 and y == 0:
+                    raise ValueError # TODO: Remove
+                if check and not self.base_ring().is_exact() and x == 0 and y == -1:
+                    raise ValueError # TODO: Remove
+
                 point = self.__make_element_class__(HyperbolicPoint)(self, x, y)
             elif model == "half_plane":
+                if check and not self.base_ring().is_exact() and y == 0:
+                    raise ValueError # TODO: Remove
+
                 denominator = 1 + x*x + y*y
                 return self.point(
                     x=2*x / denominator,
@@ -2428,6 +2447,9 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
             ∞
 
         """
+        if not self.parent().base_ring().is_exact():
+            raise NotImplementedError(f"cannot intersect geodesics {self} and {other} over inexact rings")
+
         if not isinstance(other, HyperbolicOrientedGeodesic):
             raise TypeError("can only intersect with another oriented geodesic")
 
@@ -2516,7 +2538,8 @@ class HyperbolicPoint(HyperbolicConvexSet):
                 raise TypeError("x must be an oriented geodesic")
 
             self._coordinates = x
-            self.coordinates(model="klein", ring="try")
+            if parent.base_ring().is_exact():
+                self.coordinates(model="klein", ring="try")
         else:
             if x.parent() is not parent.base_ring():
                 raise TypeError("x must be an element of the base ring")
@@ -2530,6 +2553,9 @@ class HyperbolicPoint(HyperbolicConvexSet):
             raise ValueError(f"point {self} is not in the unit disk in the Klein model")
 
     def is_ultra_ideal(self):
+        if isinstance(self._coordinates, HyperbolicOrientedGeodesic):
+            return False
+
         x, y = self.coordinates(model="klein")
         return x*x + y*y > 1
 
@@ -2613,11 +2639,14 @@ class HyperbolicPoint(HyperbolicConvexSet):
                 [self.parent().half_space(-x0*x0 - y0*y0, y0 + x0, y0 - x0, model="klein")])
 
     def is_finite(self):
-        if not self.parent().base_ring().is_exact():
-            raise NotImplementedError("cannot decide finiteness over inexact rings")
-
         if isinstance(self._coordinates, HyperbolicOrientedGeodesic):
             return False
+
+        if not self.parent().base_ring().is_exact():
+            # TODO: Document that we assume that finite points have coordinates
+            # and infinite points are encoded as geodesics.
+            # TODO: But it could be ultra-ideal.
+            return True
 
         x, y = self.coordinates(model="klein")
         return x*x + y*y < 1
@@ -2642,12 +2671,11 @@ class HyperbolicPoint(HyperbolicConvexSet):
             x, y = self.coordinates(model="klein")
 
             if x == 0 and y == 1:
-                raise ValueError(f"{self} has no coordinates in the upper half plane")
+                raise ValueError("point has no coordinates in the upper half plane")
 
             denominator = 1 - y
 
-            # TODO: Do something better here
-            if (1 - x*x - y*y).abs() < 1e-6:
+            if not self.is_finite():
                 return (x / denominator, self.parent().base_ring().zero())
 
             square = 1 - x*x - y*y
@@ -2661,14 +2689,16 @@ class HyperbolicPoint(HyperbolicConvexSet):
             return (x / denominator, sqrt/denominator)
 
         if model == "klein":
-            if isinstance(self._coordinates, HyperbolicOrientedGeodesic):
-                a, b, c = self._coordinates.equation(model="half_plane")
+            coordinates = self._coordinates
+
+            if isinstance(coordinates, HyperbolicOrientedGeodesic):
+                a, b, c = coordinates.equation(model="half_plane")
 
                 if a == 0:
                     if b > 0:
-                        self._coordinates = self.parent().infinity()._coordinates
+                        coordinates = self.parent().point(0, 1, model="klein", check=False)._coordinates
                     else:
-                        self._coordinates = self.parent().real(-c/b)._coordinates
+                        coordinates = self.parent().point(-c/b, 0, model="half_plane", check=False)._coordinates
                 else:
                     discriminant = b*b - 4*a*c
                     try:
@@ -2680,9 +2710,12 @@ class HyperbolicPoint(HyperbolicConvexSet):
 
                     endpoints = ((-b - root) / (2*a), (-b + root) / (2*a))
 
-                    self._coordinates = self.parent().real((min if a > 0 else max)(endpoints))._coordinates
+                    coordinates = self.parent().point((min if a > 0 else max)(endpoints), 0, model="half_plane", check=False)._coordinates
 
-            return self._coordinates
+                if self.parent().base_ring().is_exact():
+                    self._coordinates = coordinates
+
+            return coordinates
 
         raise NotImplementedError
 
@@ -2771,6 +2804,11 @@ class HyperbolicPoint(HyperbolicConvexSet):
                         return True
                     if geodesic == -geodesic_:
                         return False
+
+                    if not self.parent().base_ring().is_exact():
+                        # TODO: This is wrong. But what can we do?
+                        return self.coordinates(model="klein") == other.coordinates(model="klein")
+
                     intersection = geodesic._intersection(geodesic_)
                     if intersection is None or intersection.is_ultra_ideal():
                         return False
@@ -2797,6 +2835,8 @@ class HyperbolicPoint(HyperbolicConvexSet):
         except ValueError:
             # Implement better printing.
             from sage.all import RR
+            if self.parent().base_ring() is RR:
+                raise RuntimeError(f"cannot print point given by {self._coordinates}")
             return repr(self.change_ring(RR))
 
         # We represent x + y*I in R[[I]] so we do not have to reimplement printing ourselves.
@@ -2814,6 +2854,10 @@ class HyperbolicPoint(HyperbolicConvexSet):
         def point(parent):
             if isinstance(self._coordinates, HyperbolicOrientedGeodesic):
                 return parent.point(self._coordinates, None, model=None, check=False)
+            if self.parent().base_ring().is_exact() and not parent.base_ring().is_exact() and not self.is_finite() and not self.is_ultra_ideal():
+                if self == self.parent().infinity():
+                    return parent.infinity()
+                return parent.real(self.coordinates(model="half_plane")[0])
             return parent.point(*self._coordinates, model="klein", check=False)
 
         if ring is not None:
