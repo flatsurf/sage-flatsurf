@@ -97,9 +97,9 @@ class SpineTessellation(Parent):
         """
         raise NotImplementedError
 
-    def shortest_periods(self, point_or_surface, check=True):
+    def shortest_edges(self, point_or_surface, check=True):
         r"""
-        Return the shortest periods for the vertex ``translation_surface``, sorted by slope.
+        Return the shortest periods for the vertex ``translation_surface``, sorted by slope. There is only one representative of each unoriented edge.
 
         INPUT:
         - ``check`` -- check whether ``point_or_surface`` is Delaunay triangulated
@@ -110,7 +110,7 @@ class SpineTessellation(Parent):
             sage: from flatsurf.geometry.spine_tessellation import SpineTessellation
             sage: s = translation_surfaces.veech_double_n_gon(5)
             sage: t = s.delaunay_triangulation()
-            sage: SpineTessellation(s).shortest_periods(t)
+            sage: SpineTessellation(s).shortest_edges(t)
             [(0, 2), (5, 2), (2, 1), (1, 1), (2, 2)]
 
 
@@ -123,12 +123,9 @@ class SpineTessellation(Parent):
             # TODO: Requires ring has division (implement for ExactReal?)
             return v[1]/v[0] if v[0] else oo
 
-        from sage.all import matrix
 
         if point_or_surface in self._hyperbolic_plane:
-            x, y = point_or_surface.coordinates(model="half_plane")
-            point_or_surface = self._surface.apply_matrix(
-                matrix([[1, x], [0, y]]))
+            point_or_surface = self.surface(point_or_surface)
 
         if check and not point_or_surface.is_delaunay_triangulated():
             raise ValueError("surface must be Delaunay triangulated")
@@ -140,17 +137,20 @@ class SpineTessellation(Parent):
 
         minimum_length = min(v[0]**2 + v[1]**2 for v in vectors.values())
 
-        shortest_periods = [edge for edge, v in vectors.items()
+        shortest_edges = [edge for edge, v in vectors.items()
                             if v[0]**2 + v[1]**2 == minimum_length]
 
-        return sorted(shortest_periods,
+        return sorted(shortest_edges,
                       key=lambda edge: slope(point_or_surface.polygon(edge[0]).edge(edge[1])))
 
     def shortest_directions(self, point_or_surface, check=True):
-        shortest_periods = self.shortest_periods(point_or_surface, check=check)
-        shortest_directions = {tuple(point_or_surface.polygon(t).edge(e)): (t, e)
-                               for t, e in shortest_periods}
-        return list(shortest_directions.values())
+        from sage.all import vector
+
+        if point_or_surface in self._hyperbolic_plane:
+            point_or_surface = self.surface(point_or_surface)
+        shortest_edges = self.shortest_edges(point_or_surface, check=check)
+        shortest_directions = {vector(point_or_surface.polygon(t).edge(e), immutable=True): (t, e) for t, e in shortest_edges}
+        return list(shortest_directions.keys())
 
     def standard_form_surface(self, edge):
         r"""
@@ -165,7 +165,10 @@ class SpineTessellation(Parent):
         hyperbolic plane.
         """
         # This should be shared with the IDR code.
-        raise NotImplementedError
+        from sage.all import matrix
+
+        x, y = point.coordinates(model="half_plane")
+        return self._surface.apply_matrix(matrix([[1, x], [0, y]]))
 
     def fundamental_domain(self):
         r"""
@@ -203,6 +206,11 @@ class SpineTessellation(Parent):
             sage: s = translation_surfaces.veech_double_n_gon(5)
             sage: T = SpineTessellation(s)
             sage: T.geodesics(T.root())
+            [{-a*(x^2 + y^2) + (2*a^2 - 6)*x + a = 0},
+             {(-a^3 + 3*a)*(x^2 + y^2) + (-2*a^2 + 4)*x + a^3 - 3*a = 0},
+             {(a^3 - 3*a)*(x^2 + y^2) + (-2*a^2 + 4)*x - a^3 + 3*a = 0},
+             {a*(x^2 + y^2) + (2*a^2 - 6)*x - a = 0},
+             {4*x = 0}]
         """
         from sage.all import oo, matrix, vector
 
@@ -213,12 +221,10 @@ class SpineTessellation(Parent):
         # v, w are the shortest periods on A * M_0
         # [Rot90Clockwise(v + w) | v + w]^T
 
-        shortest_periods = self.shortest_periods(vertex)
+        shortest_directions = self.shortest_directions(vertex)
         x, y = vertex.coordinates(model="half_plane")
         geodesics = []
-        for (t0, e0), (t1, e1) in zip(shortest_periods, shortest_periods[1:] + shortest_periods[:1]):
-            v = self._surface.polygon(t0).edge(e0)
-            w = self._surface.polygon(t1).edge(e1)
+        for v, w in zip(shortest_directions, shortest_directions[1:] + [-shortest_directions[0]]):
             def rotation90clockwise(v): return vector([v[1], -v[0]])
             rotation = matrix([rotation90clockwise(v + w), v + w]).transpose()
             sigmaAinv = matrix([[y, x], [0, 1]])
@@ -231,11 +237,32 @@ class SpineTessellation(Parent):
 
         return geodesics
 
-    def segments(self, vertex):
+    def segments(self, vertex, geodesic=None):
         r"""
         Return the segments starting at ``vertex``.
 
         Each segment consists of surfaces where two periods of ``vertex`` are the shortest.
 
         """
+        r"""
+        (g_t*R) * (A * M_0)
+        (g_t*R)v0 = (g_t*R)v
+
+        g_t * i = e^(2t) i , t->oo get oo, t->-oo get 0, 
+        """
+        if geodesic is None:
+            return [self.segments(vertex, g) for g in self.geodesics(vertex)]
+
+        
+
+        shortest_directions = self.shortest_directions(vertex)
+        x, y = vertex.coordinates(model="half_plane")
+        segments = []
+        for v, w in zip(shortest_directions, shortest_directions[1:] + [-shortest_directions[0]]):
+            def rotation90clockwise(v): return vector([v[1], -v[0]])
+            rotation = matrix([rotation90clockwise(v + w), v + w]).transpose()
+            
+
+        return geodesics
+
         raise NotImplementedError
