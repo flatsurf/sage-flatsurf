@@ -79,9 +79,9 @@ base_cover = base.cover(["(0, 2, 1)", "()", "(0, 2, 1)"], as_tuple=True)
 ray_list_raw = base.suspension_cone().rays_list()
 hor_lengths = [ExactReals().random_element() for j in ray_list_raw[0]]
 hor_lengths[-1] = ExactReals().one()
-S_raw_1 = base_cover.masur_polygon(hor_lengths, sum_vectors(ray_list_raw))
-S_raw_2 = to_pyflatsurf(S_raw_1)
-S = S_raw_2.eliminateMarkedPoints().surface()
+S = base_cover.masur_polygon(hor_lengths, sum_vectors(ray_list_raw))
+S = S.erase_marked_points()
+S = to_pyflatsurf(S)
 
 bound = 20
 area_list_plus_max = construct_cyl_area_list(S, bound)
