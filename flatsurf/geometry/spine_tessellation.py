@@ -237,11 +237,19 @@ class SpineTessellation(Parent):
 
         return geodesics
 
-    def segments(self, vertex, geodesic=None):
+    def segment(self, vertex, geodesic):
+        r"""
+        Return the segment starting at ``vertex`` in direction of the oriented ``geodesic``.
+
+        The segment consists of surfaces where exactly two periods of ``vertex`` are the shortest.
+        """
+        raise NotImplementedError
+
+    def segments(self, vertex):
         r"""
         Return the segments starting at ``vertex``.
 
-        Each segment consists of surfaces where two periods of ``vertex`` are the shortest.
+        Each segment consists of surfaces where exactly two periods of ``vertex`` are the shortest.
 
         """
         r"""
@@ -250,19 +258,4 @@ class SpineTessellation(Parent):
 
         g_t * i = e^(2t) i , t->oo get oo, t->-oo get 0, 
         """
-        if geodesic is None:
-            return [self.segments(vertex, g) for g in self.geodesics(vertex)]
-
-        
-
-        shortest_directions = self.shortest_directions(vertex)
-        x, y = vertex.coordinates(model="half_plane")
-        segments = []
-        for v, w in zip(shortest_directions, shortest_directions[1:] + [-shortest_directions[0]]):
-            def rotation90clockwise(v): return vector([v[1], -v[0]])
-            rotation = matrix([rotation90clockwise(v + w), v + w]).transpose()
-            
-
-        return geodesics
-
-        raise NotImplementedError
+        return [self.segment(vertex, geodesic) for geodesic in self.geodesics(vertex)]
