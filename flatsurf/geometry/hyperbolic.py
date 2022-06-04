@@ -96,15 +96,40 @@ We can also intersect objects that are not half spaces::
 
 .. WARNING::
 
-    Our implementation was not conceived with inexact rings in mind. We do allow
-    inexact base rings but many operations have not been tuned for numerical
-    stability. We try to err on the safe side and rather raise a
-    NotImplementedError than returning an incorrect result.
+    Our implementation was not conceived with inexact rings in mind. Due to
+    popular request, we do allow inexact base rings but many operations have
+    not been tuned for numerical stability, yet.
 
-    Also, note that we might not handle NaN and infinity values correctly in
-    inexact rings.
+    To make our implementation work for a variety of (inexact) base rings, we
+    delegate some numerically critical bits to a separate "geometry" class that
+    can be specified when creating a hyperbolic plane. For exact base rings,
+    this defaults to the :class:`HyperbolicExactGeometry` which uses exact text
+    book algorithms.
 
-TODO: Explain how inexact rings work now.
+    Over inexact rings, we implement a :class:`HyperbolicEpsilonGeometry` which
+    considers two numbers two be equal if they differ only by a small
+    (relative) error. This should work reasonably well for inexact base rings
+    that have no denormalized numbers, i.e., it will work well for ``RR`` and
+    general ``RealField``.
+
+    sage: HyperbolicPlane(RR)
+    Hyperbolic Plane over Real Field with 53 bits of precision
+
+    There is currently no implementation that works well with ``RDF`` it
+    should be easy to adapt :class:`HyperbolicEpsilonGeometry` for that
+    purpose to take into account denormalized numbers::
+
+    sage: HyperbolicPlane(RDF)
+    Traceback (most recent call last):
+    ...
+    ValueError: geometry must be specified for HyperbolicPlane over inexact rings
+
+    There is currently no implementation that works for ball arithmetic::
+
+    sage: HyperbolicPlane(RBF)
+    Traceback (most recent call last):
+    ...
+    ValueError: geometry must be specified for HyperbolicPlane over inexact rings
 
 .. NOTE::
 
@@ -138,11 +163,6 @@ TODO: Explain how inexact rings work now.
 
     sage: H.segment(g, start=None, end=None, check=False, assume_normalized=True)
     {-x = 0}
-
-::
-
-    sage: HyperbolicPlane(RR)
-    Hyperbolic Plane over Real Field with 53 bits of precision
 
 """
 ######################################################################
