@@ -104,6 +104,8 @@ We can also intersect objects that are not half spaces::
     Also, note that we might not handle NaN and infinity values correctly in
     inexact rings.
 
+TODO: Explain how inexact rings work now.
+
 .. NOTE::
 
     This module implements different kinds of convex subsets as different
@@ -282,7 +284,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
     """
 
     @staticmethod
-    def __classcall__(cls, base_ring=None, category=None):
+    def __classcall__(cls, base_ring=None, geometry=None, category=None):
         r"""
         Create the hyperbolic plane with normalized arguments to make it a
         unique SageMath parent.
@@ -299,15 +301,24 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         base_ring = base_ring or QQ
 
+        if geometry is None:
+            from sage.all import RR
+            if base_ring is RR:
+                geometry = HyperbolicEpsilonGeometry(base_ring, 1e-6)
+            elif base_ring.is_exact():
+                geometry = HyperbolicExactGeometry(base_ring)
+            else:
+                raise ValueError("geometry must be specified for HyperbolicPlane over inexact rings")
+
         from sage.categories.all import Sets
 
         category = category or Sets()
 
         return super(HyperbolicPlane, cls).__classcall__(
-            cls, base_ring=base_ring, category=category
+            cls, base_ring=base_ring, geometry=geometry, category=category
         )
 
-    def __init__(self, base_ring, category):
+    def __init__(self, base_ring, geometry, category):
         r"""
         Create the hyperbolic plane over ``base_ring``.
 
@@ -322,18 +333,13 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         """
         from sage.all import RR
 
-        # TODO: Use predicates from the arguments.
-        if base_ring is RR:
-            self._predicates = RRPredicates()
-        else:
-            self._predicates = Predicates()
-
         if not RR.has_coerce_map_from(base_ring):
             # We should check that the coercion is an embedding but this is not possible currently.
             raise ValueError("base ring must embed into the reals")
 
         super().__init__(category=category)
         self._base_ring = base_ring
+        self.geometry = geometry
 
     def _an_element_(self):
         r"""
@@ -704,10 +710,10 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         p = self.base_ring()(p)
         q = self.base_ring()(q)
 
-        if self._predicates.zero(p) and self._predicates.zero(q):
+        if self.geometry.zero(p) and self.geometry.zero(q):
             raise ValueError("one of p and q must not be zero")
 
-        if self._predicates.zero(q):
+        if self.geometry.zero(q):
             return self.point(0, 1, model="klein")
 
         return self.point(p / q, 0, model="half_plane", check=False)
@@ -813,7 +819,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         center = self.base_ring()(center)
         radius_squared = self.base_ring()(radius_squared)
 
-        if self._predicates.sgn(radius_squared) <= 0:
+        if self.geometry.sgn(radius_squared) <= 0:
             raise ValueError("radius must be positive")
 
         # Represent this geodesic as a(x^2 + y^2) + b*x + c = 0
@@ -1372,7 +1378,10 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
 
 # TODO: Define more "hyperbolic" predicates instead.
-class Predicates:
+class HyperbolicExactGeometry(UniqueRepresentation):
+    def __init__(self, ring):
+        self._ring = ring
+
     def zero(self, x):
         return self.cmp(x, 0) == 0
 
@@ -1399,10 +1408,12 @@ class Predicates:
         return self.cmp(x, 0)
 
 
-class RRPredicates(Predicates):
+class HyperbolicEpsilonGeometry(HyperbolicExactGeometry):
     from sage.all import RR
 
-    EPSILON = 1e-6
+    def __init__(self, ring, epsilon):
+        super().__init__(ring)
+        self._epsilon = ring(epsilon)
 
     def _equal(self, x, y):
         # see https://floating-point-gui.de/errors/comparison/ but we do not
@@ -1410,9 +1421,9 @@ class RRPredicates(Predicates):
         # exponent can get arbitrarily large there.
         # TODO: Test that this really does what we want it to do.
         if x == 0 or y == 0:
-            return abs(x - y) < self.EPSILON
+            return abs(x - y) < self._epsilon
 
-        return abs(x - y) <= (abs(x) + abs(y)) * self.EPSILON
+        return abs(x - y) <= (abs(x) + abs(y)) * self._epsilon
 
 
 # TODO: Change richcmp to match the description below.
@@ -1689,7 +1700,7 @@ class HyperbolicConvexSet(Element):
         tester.assertIsInstance(self.plot(model="klein"), Graphics)
 
     def _check_isometry_klein(self, isometry):
-        predicates = self.parent()._predicates
+        predicates = self.parent().geometry
 
         # TODO: check that isometry is actually a matrix over the right ring?
         if (
@@ -1855,7 +1866,7 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
             {(x^2 + y^2) - 1 ≥ 0}
 
         """
-        sgn = self.parent()._predicates.sgn
+        sgn = self.parent().geometry.sgn
 
         # Convert to the Poincaré half plane model as a(x^2 + y^2) + bx + c ≥ 0.
         a, b, c = self.equation(model="half_plane", gcd=None)
@@ -1927,7 +1938,7 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
         return self._geodesic
 
     def __contains__(self, point):
-        sgn = self.parent()._predicates.sgn
+        sgn = self.parent().geometry.sgn
 
         point = self.parent()(point)
 
@@ -2021,7 +2032,7 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
         from sage.all import PolynomialRing
 
         R = PolynomialRing(self.parent().base_ring(), names="x")
-        sgn = self.parent()._predicates.sgn
+        sgn = self.parent().geometry.sgn
         if sgn(a) != 0:
             return f"{{{repr(R([0, a]))[:-1]}(x^2 + y^2){repr(R([c, b, 1]))[3:]} = 0}}"
         else:
@@ -2078,7 +2089,7 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
                     raise
 
         if not self.is_oriented():
-            sgn = self.parent()._predicates.sgn
+            sgn = self.parent().geometry.sgn
             if (
                 sgn(a) < 0
                 or (sgn(a) == 0 and b < 0)
@@ -2131,8 +2142,8 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
             return not self._richcmp_(other, op_EQ)
 
         if op == op_EQ:
-            equal = self.parent()._predicates.equal
-            sgn = self.parent()._predicates.sgn
+            equal = self.parent().geometry.equal
+            sgn = self.parent().geometry.sgn
             if type(self) is not type(other):
                 return False
             if sgn(self._b):
@@ -2159,7 +2170,7 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
         x, y = point.coordinates(model="klein")
         a, b, c = self.equation(model="klein")
 
-        zero = self.parent()._predicates.zero
+        zero = self.parent().geometry.zero
         return zero(a + b * x + c * y)
 
     def dimension(self):
@@ -2293,7 +2304,7 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
 
     def is_ultra_ideal(self):
         # TODO: Should this be in the oriented class? Should there be an equivalent in the unoriented class?
-        cmp = self.parent()._predicates.cmp
+        cmp = self.parent().geometry.cmp
         return cmp(self._b * self._b + self._c * self._c, self._a * self._a) <= 0
 
     def start(self):
@@ -2407,7 +2418,7 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
         intersection = self._intersection(other)
 
         if intersection is None:
-            sgn = self.parent()._predicates.sgn
+            sgn = self.parent().geometry.sgn
             orientation = sgn(self._b * other._b + self._c * other._c)
 
             assert orientation != 0
@@ -2473,7 +2484,7 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
 
         # TODO: Reference the trac ticket that says that solving for 2×2 matrices is very slow.
         det = self._b * other._c - self._c * other._b
-        zero = self.parent()._predicates.zero
+        zero = self.parent().geometry.zero
 
         if zero(det):
             return None
@@ -2501,7 +2512,7 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
             tangent = (self._c, -self._b)
 
             if isinstance(point, HyperbolicPoint):
-                zero = self.parent()._predicates.zero
+                zero = self.parent().geometry.zero
                 coordinate = 0 if not zero(tangent[0]) else 1
                 return (
                     point.coordinates(model="klein")[coordinate] - base[coordinate]
@@ -2679,7 +2690,7 @@ class HyperbolicPoint(HyperbolicConvexSet):
             return False
 
         x, y = self.coordinates(model="klein")
-        cmp = self.parent()._predicates.cmp
+        cmp = self.parent().geometry.cmp
         return cmp(x * x + y * y, 1) < 0
 
     def coordinates(self, model="half_plane", ring=None):
@@ -2700,8 +2711,8 @@ class HyperbolicPoint(HyperbolicConvexSet):
 
         if model == "half_plane":
             x, y = self.coordinates(model="klein")
-            zero = self.parent()._predicates.zero
-            equal = self.parent()._predicates.equal
+            zero = self.parent().geometry.zero
+            equal = self.parent().geometry.equal
 
             if zero(x) and equal(y, 1):
                 raise ValueError("point has no coordinates in the upper half plane")
@@ -2727,8 +2738,8 @@ class HyperbolicPoint(HyperbolicConvexSet):
             if isinstance(coordinates, HyperbolicOrientedGeodesic):
                 a, b, c = coordinates.equation(model="half_plane")
 
-                zero = self.parent()._predicates.zero
-                sgn = self.parent()._predicates.sgn
+                zero = self.parent().geometry.zero
+                sgn = self.parent().geometry.sgn
 
                 if zero(a):
                     if sgn(b) > 0:
@@ -2877,7 +2888,7 @@ class HyperbolicPoint(HyperbolicConvexSet):
             elif isinstance(other._coordinates, HyperbolicOrientedGeodesic):
                 return other == self
 
-            equal = self.parent()._predicates.equal
+            equal = self.parent().geometry.equal
             return equal(
                 self.coordinates(model="klein"), other.coordinates(model="klein")
             )
@@ -3116,8 +3127,8 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
                 a, b, c = half_space.equation(model="klein")
                 A, B, C = reduced[-1].equation(model="klein")
 
-                equal = self.parent()._predicates.equal
-                sgn = self.parent()._predicates.sgn
+                equal = self.parent().geometry.equal
+                sgn = self.parent().geometry.sgn
                 if equal(c * B, C * b) and sgn(b) == sgn(B) and sgn(c) == sgn(C):
                     # The half spaces are parallel in the Euclidean plane. Since we
                     # assume spaces to be sorted by inclusion, we can drop this
@@ -4314,7 +4325,7 @@ class HyperbolicOrientedSegment(HyperbolicSegment, HyperbolicOrientedConvexSet):
 
         if start is not None:
             if not start.is_finite():
-                sgn = self.parent()._predicates.sgn
+                sgn = self.parent().geometry.sgn
                 if sgn(λ_start) > 0:
                     return (
                         self.parent().empty_set() if start.is_ultra_ideal() else start
@@ -4323,7 +4334,7 @@ class HyperbolicOrientedSegment(HyperbolicSegment, HyperbolicOrientedConvexSet):
 
         if end is not None:
             if not end.is_finite():
-                sgn = self.parent()._predicates.sgn
+                sgn = self.parent().geometry.sgn
                 if sgn(λ_end) < 0:
                     return self.parent().empty_set() if end.is_ultra_ideal() else end
                 end = None
