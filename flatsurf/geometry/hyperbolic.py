@@ -31,22 +31,22 @@ Given two points in the hyperbolic plane, we can form the geodesic they lay on::
 
     sage: a = H(I)
     sage: b = H(2*I)
-    sage: H.geodesic(a, b)
+    sage: ab = H.geodesic(a, b)
+    sage: ab
     {-x = 0}
 
 Note that such a geodesic is oriented. The orientation is such that when we
 replace the ``=`` in the above representation with a ``≥``, we obtain the half
 space on its left::
 
-    sage: ab = H.geodesic(a, b).left_half_space()
-    sage: ab
+    sage: H.geodesic(a, b).left_half_space()
     {x ≤ 0}
 
 We can pass explicitly to the unoriented geodesic. Note that the oriented and
 the unoriented version of a geodesic are not considered equal::
 
     sage: ab.unoriented()
-    {x ≤ 0}
+    {x = 0}
     sage: ab == ab.unoriented()
     False
     sage: ab.is_subset(ab.unoriented())
@@ -2025,6 +2025,43 @@ class HyperbolicConvexSet(Element):
         """
         return self.apply_isometry(x)
 
+    def is_subset(self, other):
+        r"""
+        Return whether this set is a subset of ``other``.
+
+        INPUT:
+
+        - ``other`` -- another hyperbolic convex set
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(QQ)
+            sage: H(I).is_subset(H.vertical(0))
+            True
+            sage: H.vertical(0).is_subset(H(I))
+            False
+
+        """
+        if self.is_empty():
+            return True
+
+        other = self.parent()(other)
+
+        if self.dimension() > other.dimension():
+            return False
+
+        vertices = self.vertices()
+
+        for vertex in vertices:
+            if vertex not in other:
+                return False
+
+        if self.dimension() > 1:
+            raise NotImplementedError("cannot decide subset relation for this two-dimensional set")
+
+        return True
+
     # TODO: Test that is_subset can compare all kinds of sets by inclusion.
 
     # TODO: Provide hashing.
@@ -2624,13 +2661,6 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
 
         return self
 
-    def vertices(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        return HyperbolicVertices([self.start(), self.end()])
-
 
 class HyperbolicUnorientedGeodesic(HyperbolicGeodesic):
     # TODO: Check documentation
@@ -2649,6 +2679,13 @@ class HyperbolicUnorientedGeodesic(HyperbolicGeodesic):
         {x = 0}
 
     """
+
+    def vertices(self):
+        # TODO: Check documentation.
+        # TODO: Check INPUT
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        return self.change(oriented=True).vertices()
 
 
 class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet):
@@ -3009,6 +3046,13 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
             * isometry.inverse()
         )
         return self.parent().geodesic(a, b, c, model="klein")
+
+    def vertices(self):
+        # TODO: Check documentation.
+        # TODO: Check INPUT
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        return HyperbolicVertices([self.start(), self.end()])
 
 
 class HyperbolicPoint(HyperbolicConvexSet):
@@ -3516,6 +3560,13 @@ class HyperbolicPoint(HyperbolicConvexSet):
         from sage.all import ZZ
 
         return ZZ.zero()
+
+    def vertices(self):
+        # TODO: Check documentation.
+        # TODO: Check INPUT
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        return HyperbolicVertices([self])
 
 
 class HyperbolicConvexPolygon(HyperbolicConvexSet):
