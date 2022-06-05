@@ -377,10 +377,6 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         )
 
     def __init__(self, base_ring, geometry, category):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
         r"""
         Create the hyperbolic plane over ``base_ring``.
 
@@ -404,10 +400,6 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         self.geometry = geometry
 
     def _an_element_(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
         r"""
         Return an element of the hyperbolic plane (mostly for testing.)
 
@@ -422,10 +414,6 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         return self.real(0)
 
     def some_elements(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
         r"""
         Return some representative convex subsets for automated testing.
 
@@ -497,10 +485,6 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         return elements
 
     def _test_some_subsets(self, tester=None, **options):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
         r"""
         Run test suite on some representative convex subsets.
 
