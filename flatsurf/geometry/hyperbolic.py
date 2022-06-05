@@ -340,19 +340,18 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
     @staticmethod
     def __classcall__(cls, base_ring=None, geometry=None, category=None):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
         r"""
         Create the hyperbolic plane with normalized arguments to make it a
         unique SageMath parent.
 
         TESTS::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicExactGeometry
 
             sage: HyperbolicPlane() is HyperbolicPlane(QQ)
+            True
+
+            sage: HyperbolicPlane() is HyperbolicPlane(geometry=HyperbolicExactGeometry(QQ))
             True
 
         """
