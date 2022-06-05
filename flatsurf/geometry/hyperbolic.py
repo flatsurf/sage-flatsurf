@@ -178,6 +178,15 @@ We can also intersect objects that are not half spaces::
     sage: H.segment(g, start=None, end=None, check=False, assume_normalized=True)
     {-x = 0}
 
+.. NOTE::
+
+    This implementation is an alternative to the one that comes with SageMath.
+    The one in SageMath has a number of issues, see e.g.
+    https://trac.sagemath.org/ticket/32400. The implementation here tries very
+    hard to perform all operations over the same base ring, have the best
+    complexities possible, keep all objects in the same (Klein) model, is not
+    using any symbolic expressions, and tries to produce better plots.
+
 """
 ######################################################################
 #  This file is part of sage-flatsurf.
