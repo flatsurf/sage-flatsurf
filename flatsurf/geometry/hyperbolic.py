@@ -362,7 +362,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         if geometry is None:
             from sage.all import RR
             if base_ring is RR:
-                geometry = HyperbolicEpsilonGeometry(base_ring, 1e-6)
+                geometry = HyperbolicExactGeometry(QQ).change_ring(base_ring)
             elif base_ring.is_exact():
                 geometry = HyperbolicExactGeometry(base_ring)
             else:
@@ -391,13 +391,74 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         """
         from sage.all import RR
 
-        if not RR.has_coerce_map_from(base_ring):
+        if geometry.base_ring() is not base_ring:
+            raise ValueError(f"geometry base ring must be base ring of hyperbolic plane but {geometry.base_ring()} is not {base_ring}")
+
+        if not RR.has_coerce_map_from(geometry.base_ring()):
             # We should check that the coercion is an embedding but this is not possible currently.
             raise ValueError("base ring must embed into the reals")
 
         super().__init__(category=category)
-        self._base_ring = base_ring
+        self._base_ring = geometry.base_ring()
         self.geometry = geometry
+
+    def change_ring(self, ring, geometry=None):
+        r"""
+        Return the hyperbolic plane over a different base ``ring``.
+
+        INPUT:
+
+        - ``ring`` -- a ring or ``None``; if ``None``, uses the current
+          :meth:`base_ring`.
+
+        - ``geometry`` -- a geometry or ``None``; if ``None``, tries to convert
+          the existing geometry to ``ring``.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+
+            sage: HyperbolicPlane(QQ).change_ring(AA) is HyperbolicPlane(AA)
+            True
+
+        When changing to the ring ``RR`` and no geometry has been specified
+        explicitly, the :class:`HyperbolicExactGeometry` changes to the
+        :class:`HyperbolicEpsilonGeometry`, see
+        :meth:`HyperbolicExactGeometry.change_ring`::
+
+            sage: HyperbolicPlane(QQ).change_ring(RR) is HyperbolicPlane(RR)
+            True
+
+        In the opposite direction, the geometry cannot be determined automatically::
+
+            sage: HyperbolicPlane(RR).change_ring(QQ)
+            Traceback (most recent call last):
+            ...
+            ValueError: cannot change_ring() to an exact ring
+
+        So the geometry has to be specified explicitly::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicExactGeometry
+            sage: HyperbolicPlane(RR).change_ring(QQ, geometry=HyperbolicExactGeometry(QQ)) is HyperbolicPlane(QQ)
+            True
+
+        .. SEEALSO::
+
+            :meth:`HyperbolicConvexSet.change_ring` or more generally
+            :meth:`HyperbolicConvexSet.change` to change the ring and geometry
+            a set is defined over.
+
+        """
+        if ring is None and geometry is None:
+            return self
+
+        if ring is None:
+            ring = self.base_ring()
+
+        if geometry is None:
+            geometry = self.geometry.change_ring(ring)
+
+        return HyperbolicPlane(ring, geometry)
 
     def _an_element_(self):
         r"""
@@ -636,10 +697,6 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         return set
 
     def _element_constructor_(self, x):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
         r"""
         Return ``x`` as an element of the hyperbolic plane.
 
@@ -672,6 +729,13 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
             sage: HyperbolicPlane(AA)(H(1))
             1
+
+        TESTS::
+
+            sage: H(-I)
+            Traceback (most recent call last):
+            ...
+            ValueError: point (0, -1) not in the upper half plane
 
         """
         from sage.all import parent
@@ -736,6 +800,10 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
             sage: HyperbolicPlane().base_ring()
             Rational Field
+
+        .. SEEALSO::
+
+            :meth:`HyperbolicConvexSet.change_ring` to change the ring a set is defined over
 
         """
         return self._base_ring
@@ -860,6 +928,9 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             if model == "klein":
                 point = self.__make_element_class__(HyperbolicPoint)(self, x, y)
             elif model == "half_plane":
+                if self.geometry.sgn(y) < 0:
+                    raise ValueError(f"point {x, y} not in the upper half plane")
+
                 denominator = 1 + x * x + y * y
                 return self.point(
                     x=2 * x / denominator,
@@ -1514,7 +1585,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
 
 # TODO: Define more "hyperbolic" predicates instead.
-class HyperbolicExactGeometry(UniqueRepresentation):
+class HyperbolicGeometry:
     # TODO: Check documentation
     # TODO: Check INPUTS
     # TODO: Check SEEALSO
@@ -1526,19 +1597,19 @@ class HyperbolicExactGeometry(UniqueRepresentation):
         # TODO: Check for doctests
         self._ring = ring
 
+    def base_ring(self):
+        # TODO: Check documentation.
+        # TODO: Check INPUT
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        return self._ring
+
     def zero(self, x):
         # TODO: Check documentation.
         # TODO: Check INPUT
         # TODO: Check SEEALSO
         # TODO: Check for doctests
         return self.cmp(x, 0) == 0
-
-    def _equal(self, x, y):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        return x == y
 
     # TODO: Do not mix the vector case into this.
     def equal(self, x, y):
@@ -1571,14 +1642,50 @@ class HyperbolicExactGeometry(UniqueRepresentation):
         # TODO: Check for doctests
         return self.cmp(x, 0)
 
+    def _equal(self, x, y):
+        # TODO: Check documentation.
+        # TODO: Check INPUT
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        raise NotImplementedError
 
-class HyperbolicEpsilonGeometry(HyperbolicExactGeometry):
+    def change_ring(ring):
+        # TODO: Check documentation.
+        # TODO: Check INPUT
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        raise NotImplementedError
+
+
+class HyperbolicExactGeometry(UniqueRepresentation, HyperbolicGeometry):
+
+    def _equal(self, x, y):
+        # TODO: Check documentation.
+        # TODO: Check INPUT
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        return x == y
+
+    def change_ring(self, ring):
+        # TODO: Check documentation.
+        # TODO: Check INPUT
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        from sage.all import RR
+        if ring is RR:
+            return HyperbolicEpsilonGeometry(ring, 1e-6)
+
+        if not ring.is_exact():
+            raise ValueError("cannot change_ring() to an inexact ring")
+
+        return HyperbolicExactGeometry(ring)
+
+
+class HyperbolicEpsilonGeometry(UniqueRepresentation, HyperbolicGeometry):
     # TODO: Check documentation
     # TODO: Check INPUTS
     # TODO: Check SEEALSO
     # TODO: Check for doctests
-    from sage.all import RR
-
     def __init__(self, ring, epsilon):
         # TODO: Check documentation.
         # TODO: Check INPUT
@@ -1600,6 +1707,16 @@ class HyperbolicEpsilonGeometry(HyperbolicExactGeometry):
             return abs(x - y) < self._epsilon
 
         return abs(x - y) <= (abs(x) + abs(y)) * self._epsilon
+
+    def change_ring(self, ring):
+        # TODO: Check documentation.
+        # TODO: Check INPUT
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        if ring.is_exact():
+            raise ValueError("cannot change_ring() to an exact ring")
+
+        return HyperbolicEpsilonGeometry(ring, self._epsilon)
 
 
 # TODO: Change richcmp to match the description below.
@@ -1838,7 +1955,7 @@ class HyperbolicConvexSet(Element):
         tester = self._tester(**options)
         tester.assertEqual(self, self.change_ring(self.parent().base_ring()))
 
-    def change(self, ring=None, oriented=None):
+    def change(self, ring=None, geometry=None, oriented=None):
         # TODO: Check documentation.
         # TODO: Check INPUT
         # TODO: Check SEEALSO
@@ -2341,13 +2458,13 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
             .plot(model=model, **kwds)
         )
 
-    def change(self, ring=None, oriented=None):
+    def change(self, ring=None, geometry=None, oriented=None):
         # TODO: Check documentation.
         # TODO: Check INPUT
         # TODO: Check SEEALSO
         # TODO: Check for doctests
-        if ring is not None:
-            self = self._geodesic.change_ring(ring).left_half_space()
+        if ring is not None or geometry is not None:
+            self = self._geodesic.change(ring=ring, geometry=geometry).left_half_space()
 
         if oriented is None:
             oriented = self.is_oriented()
@@ -2599,7 +2716,7 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
 
         return ZZ(1)
 
-    def change(self, *, ring=None, oriented=None):
+    def change(self, *, ring=None, geometry=None, oriented=None):
         # TODO: Check documentation.
         # TODO: Check INPUT
         # TODO: Check SEEALSO
@@ -2638,8 +2755,8 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
             True
 
         """
-        if ring is not None:
-            self = HyperbolicPlane(ring).geodesic(
+        if ring is not None or geometry is not None:
+            self = self.parent().change_ring(ring, geometry=geometry).geodesic(
                 self._a,
                 self._b,
                 self._c,
@@ -3457,7 +3574,7 @@ class HyperbolicPoint(HyperbolicConvexSet):
 
         return repr(PowerSeriesRing(self.parent().base_ring(), names="I")([x, y]))
 
-    def change(self, ring=None, oriented=None):
+    def change(self, ring=None, geometry=None, oriented=None):
         # TODO: Check documentation.
         # TODO: Check INPUT
         # TODO: Check SEEALSO
@@ -3471,8 +3588,8 @@ class HyperbolicPoint(HyperbolicConvexSet):
                 return parent.point(self._coordinates, None, model=None, check=False)
             return parent.point(*self._coordinates, model="klein", check=False)
 
-        if ring is not None:
-            return point(HyperbolicPlane(ring))
+        if ring is not None or geometry is not None:
+            return point(self.parent().change_ring(ring, geometry=geometry))
 
         if oriented is None:
             oriented = self.is_oriented()
@@ -4658,14 +4775,14 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
             hyperbolic_path(commands, model=model, **kwds), model=model
         )
 
-    def change(self, ring=None, oriented=None):
+    def change(self, ring=None, geometry=None, oriented=None):
         # TODO: Check documentation.
         # TODO: Check INPUT
         # TODO: Check SEEALSO
         # TODO: Check for doctests
-        if ring is not None:
-            self = HyperbolicPlane(ring).polygon(
-                [half_space.change_ring(ring) for half_space in self._half_spaces],
+        if ring is not None or geometry is not None:
+            self = self.parent().change_ring(ring, geometry=geometry).polygon(
+                [half_space.change(ring=ring, geometry=geometry) for half_space in self._half_spaces],
                 check=False,
                 assume_sorted=True,
                 assume_minimal=True,
@@ -4858,17 +4975,17 @@ class HyperbolicSegment(HyperbolicConvexSet):
                 and self.vertices() == other.vertices()
             )
 
-    def change(self, ring=None, oriented=None):
+    def change(self, ring=None, geometry=None, oriented=None):
         # TODO: Check documentation.
         # TODO: Check INPUT
         # TODO: Check SEEALSO
         # TODO: Check for doctests
-        if ring is not None:
-            start = self._start.change_ring(ring) if self._start is not None else None
-            end = self._end.change_ring(ring) if self._end is not None else None
+        if ring is not None or geometry is not None:
+            start = self._start.change(ring=ring, geometry=geometry) if self._start is not None else None
+            end = self._end.change(ring=ring, geometry=geometry) if self._end is not None else None
 
-            self = HyperbolicPlane(ring).segment(
-                self._geodesic.change_ring(ring),
+            self = self.parent().change_ring(ring=ring, geometry=geometry).segment(
+                self._geodesic.change(ring=ring, geometry=geometry),
                 start=start,
                 end=end,
                 check=False,
@@ -5247,13 +5364,13 @@ class HyperbolicEmptySet(HyperbolicConvexSet):
             ]
         )
 
-    def change(self, ring=None, oriented=None):
+    def change(self, ring=None, geometry=None, oriented=None):
         # TODO: Check documentation.
         # TODO: Check INPUT
         # TODO: Check SEEALSO
         # TODO: Check for doctests
         if ring is not None:
-            self = HyperbolicPlane(ring).empty_set()
+            self = self.parent().change_ring(ring, geometry=geometry).empty_set()
 
         if oriented is None:
             oriented = self.is_oriented()
