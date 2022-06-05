@@ -38,8 +38,21 @@ Note that such a geodesic is oriented. The orientation is such that when we
 replace the ``=`` in the above representation with a ``≥``, we obtain the half
 space on its left::
 
-    sage: H.geodesic(a, b).left_half_space()
+    sage: ab = H.geodesic(a, b).left_half_space()
+    sage: ab
     {x ≤ 0}
+
+We can pass explicitly to the unoriented geodesic. Note that the oriented and
+the unoriented version of a geodesic are not considered equal::
+
+    sage: ab.unoriented()
+    {x ≤ 0}
+    sage: ab == ab.unoriented()
+    False
+    sage: ab.is_subset(ab.unoriented())
+    True
+    sage: ab.unoriented().is_subset(ab)
+    True
 
 A vertical can also be specified directly::
 
@@ -97,7 +110,7 @@ We can also intersect objects that are not half spaces::
 .. WARNING::
 
     Our implementation was not conceived with inexact rings in mind. Due to
-    popular request, we do allow inexact base rings but many operations have
+    popular demand, we do allow inexact base rings but many operations have
     not been tuned for numerical stability, yet.
 
     To make our implementation work for a variety of (inexact) base rings, we
@@ -115,9 +128,9 @@ We can also intersect objects that are not half spaces::
     sage: HyperbolicPlane(RR)
     Hyperbolic Plane over Real Field with 53 bits of precision
 
-    There is currently no implementation that works well with ``RDF`` it
-    should be easy to adapt :class:`HyperbolicEpsilonGeometry` for that
-    purpose to take into account denormalized numbers::
+    There is currently no implementation that works well with ``RDF``. It
+    should be easy to adapt :class:`HyperbolicEpsilonGeometry` for that purpose
+    to take into account denormalized numbers::
 
     sage: HyperbolicPlane(RDF)
     Traceback (most recent call last):
@@ -145,8 +158,9 @@ We can also intersect objects that are not half spaces::
     expressed as a convex polygon due to the orientation) has a left and a
     right associated half spaces.
 
-    Sometimes it can be beneficial to treat each subset as a convex polygon. In
-    such a case, one can explicitly create polygons from subsets::
+    Sometimes it can, however, be beneficial to treat each subset as a convex
+    polygon. In such a case, one can explicitly create polygons from subsets by
+    intersecting their :meth:`HyperbolicConvexSet.half_spaces`::
 
     sage: g = H.vertical(0)
     sage: P = H.polygon(g.half_spaces(), check=False, assume_minimal=True)
@@ -154,7 +168,7 @@ We can also intersect objects that are not half spaces::
     {x ≤ 0} ∩ {x ≥ 0}
 
     Note that such an object might not be fully functional since some methods
-    might assume that the object is an actual polygon::
+    may assume that the object is an actual polygon::
 
     sage: P.dimension()
     2
