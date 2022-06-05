@@ -511,12 +511,16 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             tester.info(tester._prefix + " ", newline=False)
 
     def random_element(self, kind=None):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
         r"""
         Return a random convex subset of this hyperbolic plane.
+
+        INPUT:
+
+        - ``kind`` -- one of ``"empty_set"```, ``"point"```, ``"oriented geodesic"```,
+          ``"unoriented geodesic"```, ``"half_space"```, ``"oriented segment"``,
+          ``"unoriented segment"``, ``"polygon"``; the kind of set to produce.
+          If not specified, the kind of set is chosen
+          randomly.
 
         EXAMPLES::
 
@@ -538,20 +542,30 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             sage: H.random_element("point")
             -1/2 + 1/95*I
 
-            sage: H.random_element("geodesic")
+            sage: H.random_element("oriented geodesic")
             {-12*(x^2 + y^2) + 1144*x + 1159 = 0}
 
-            sage: H.random_element("half_space")
-            {648*(x^2 + y^2) + 1654*x + 85 ≤ 0}
+            sage: H.random_element("unoriented geodesic")
+            {648*(x^2 + y^2) + 1654*x + 85 = 0}
 
-            sage: H.random_element("segment")
-            {3*(x^2 + y^2) - 5*x - 1 = 0} ∩ {21*(x^2 + y^2) + 88*x - 89 ≥ 0} ∩ {(x^2 + y^2) + 12*x - 14 ≤ 0}
+            sage: H.random_element("half_space")
+            {3*(x^2 + y^2) - 5*x - 1 ≥ 0}
+
+            sage: H.random_element("oriented segment")
+            {-3*(x^2 + y^2) + x + 3 = 0} ∩ {9*(x^2 + y^2) - 114*x + 28 ≥ 0} ∩ {(x^2 + y^2) + 12*x - 1 ≥ 0}
+
+            sage: H.random_element("unoriented segment")
+            {16*(x^2 + y^2) - x - 16 = 0} ∩ {(x^2 + y^2) + 64*x - 1 ≥ 0} ∩ {496*(x^2 + y^2) - 1056*x + 529 ≥ 0}
 
             sage: H.random_element("polygon")
-            {545260*(x^2 + y^2) + 2579907*x + 65638 ≤ 0} ∩ {144*(x^2 + y^2) - 455*x - 2677 ≤ 0} ∩ {18*(x^2 + y^2) + 91*x + 109 ≥ 0}
+            {56766100*(x^2 + y^2) - 244977117*x + 57459343 ≥ 0} ∩ {822002048*(x^2 + y^2) - 3988505279*x + 2596487836 ≥ 0} ∩ {464*(x^2 + y^2) + 9760*x + 11359 ≥ 0} ∩ {4*(x^2 + y^2) + 45*x + 49 ≥ 0}
+
+        .. SEEALSO::
+
+            :meth:`some_elements` for a curated list of representative subsets.
 
         """
-        kinds = ["empty_set", "point", "geodesic", "half_space", "segment", "polygon"]
+        kinds = ["empty_set", "point", "oriented geodesic", "unoriented geodesic", "half_space", "oriented segment", "unoriented segment", "polygon"]
 
         if kind is None:
             from sage.all import randint
@@ -559,36 +573,31 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             kind = kinds[randint(0, len(kinds) - 1)]
 
         if kind == "empty_set":
-            return self.empty_set()
-
-        if kind == "point":
-            return self.point(
+            set = self.empty_set()
+        elif kind == "point":
+            set = self.point(
                 self.base_ring().random_element(),
                 self.base_ring().random_element().abs(),
                 model="half_plane",
                 check=False,
             )
-
-        if kind == "geodesic":
+        elif "geodesic" in kind:
             a = self.random_element("point")
             b = self.random_element("point")
             while b == a:
                 b = self.random_element("point")
 
-            return self.geodesic(a, b)
-
-        if kind == "half_space":
-            return self.random_element("geodesic").left_half_space()
-
-        if kind == "segment":
+            set = self.geodesic(a, b)
+        elif kind == "half_space":
+            set = self.random_element("geodesic").left_half_space()
+        elif "segment" in kind:
             a = self.random_element("point")
             b = self.random_element("point")
             while a == b or (not a.is_finite() and not b.is_finite()):
                 b = self.random_element("point")
 
-            return self.segment(self.geodesic(a, b), start=a, end=b)
-
-        if kind == "polygon":
+            set = self.segment(self.geodesic(a, b), start=a, end=b)
+        elif kind == "polygon":
             from sage.all import ZZ
 
             interior_points = [
@@ -617,9 +626,14 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
                 half_spaces.append(half_space)
 
-            return self.polygon(half_spaces)
+            set = self.polygon(half_spaces)
+        else:
+            raise ValueError(f"kind must be one of {kinds}")
 
-        raise ValueError(f"kind must be one of {kinds}")
+        if "unoriented" in kind:
+            set = set.unoriented()
+
+        return set
 
     def _element_constructor_(self, x):
         # TODO: Check documentation.
