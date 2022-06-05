@@ -219,10 +219,6 @@ from sage.plot.primitive import GraphicPrimitive
 
 
 class HyperbolicPlane(Parent, UniqueRepresentation):
-    # TODO: Check documentation
-    # TODO: Check INPUTS
-    # TODO: Check SEEALSO
-    # TODO: Check for doctests
     r"""
     The hyperbolic plane.
 
@@ -311,10 +307,17 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
       of geodesics in the plane; defaults to the rational field if not
       specified.
 
+    - ``geometry`` -- an implementation of the geometric primitives specified
+      by :class:`HyperbolicExactGeometry`. If the ``base_ring`` is exact, this
+      defaults to :class:`HyperbolicExactGeometry` over that base ring. If the
+      base ring is ``RR`` or ``RealField``, this defaults to the
+      :class:`HyperbolicEpsilonGeometry` over that ring. For other rings, a
+      geometry must be explicitly provided.
+
     - ``category`` -- the category for this object; if not specified, defaults
-      to sets. Note that we do not use metric spaces here since the elements of
-      this space are convex subsets of the hyperbolic plane and not just points
-      so the elements do not satisfy the assumptions of a metric space.
+      to sets. Note that we do not use metric spaces here since the elements
+      are convex subsets of the hyperbolic plane and not just points and do
+      therefore not satisfy the assumptions of a metric space.
 
     EXAMPLES::
 
@@ -327,6 +330,11 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         sage: HyperbolicPlane(AA)
         Hyperbolic Plane over Algebraic Real Field
+
+    ::
+
+        sage: HyperbolicPlane(RR)
+        Hyperbolic Plane over Real Field with 53 bits of precision
 
     """
 
