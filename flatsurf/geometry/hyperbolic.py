@@ -787,12 +787,14 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         )
 
     def base_ring(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
         r"""
         Return the base ring over which objects in the plane are defined.
+
+        More specifically, all geodesics must have an equation `a + bx + cy =
+        0` in the Klein model with coefficients in this ring, and all points
+        must have coordinates in this ring when written in the Klein model, or
+        be the end point of a geodesic. All other objects are built from these
+        primitives.
 
         EXAMPLES::
 
@@ -809,10 +811,6 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         return self._base_ring
 
     def infinity(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
         r"""
         Return the point at infinity in the Poincaré half plane model.
 
@@ -820,39 +818,66 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
             sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
 
-            sage: HyperbolicPlane().infinity()
+            sage: H = HyperbolicPlane()
+            sage: p = H.infinity()
+            sage: p
             ∞
+
+            sage: p == H(oo)
+            True
+            sage: p.is_ideal()
+            True
+
+        .. SEEALSO::
+
+            :meth:`point` to create points in general.
 
         """
         return self.projective(1, 0)
 
     def real(self, r):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
         r"""
         Return the ideal point ``r`` on the real axis in the Poincaré half
         plane model.
+
+        INPUT:
+
+        - ``r`` -- an element of the :meth:`base_ring`
 
         EXAMPLES::
 
             sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
 
-            sage: HyperbolicPlane().real(-2)
+            sage: H = HyperbolicPlane()
+            sage: p = H.real(-2)
+            sage: p
             -2
+
+            sage: p == H(-2)
+            True
+            sage: p.is_ideal()
+            True
+
+        .. SEEALSO::
+
+            :meth:`point` to create points in general.
 
         """
         return self.projective(r, 1)
 
     def projective(self, p, q):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
+        # TODO: Address
+        # https://github.com/flatsurf/sage-flatsurf/pull/158#discussion_r854154745
+        # (or maybe we do not need to address it.)
         r"""
         Return the ideal point with projective coordinates ``[p: q]`` in the
-        Poincaré half plane model.
+        upper half plane model.
+
+        INPUT:
+
+        - ``p`` -- an element of the :meth:`base_ring`.
+
+        - ``q`` -- an element of the :meth:`base_ring`.
 
         EXMAPLES::
 
@@ -870,6 +895,10 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             ...
             ValueError: one of p and q must not be zero
 
+        .. SEEALSO::
+
+            :meth:`point` to create points in general.
+
         """
         p = self.base_ring()(p)
         q = self.base_ring()(q)
@@ -878,7 +907,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             raise ValueError("one of p and q must not be zero")
 
         if self.geometry.zero(q):
-            return self.point(0, 1, model="klein")
+            return self.point(0, 1, model="klein", check=False)
 
         return self.point(p / q, 0, model="half_plane", check=False)
 
@@ -894,6 +923,18 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         When ``model`` is ``"klein"``, return the point (x, y) in the Klein model.
 
+        INPUT:
+
+        - ``x`` -- an element of the :meth:`base_ring`
+
+        - ``y`` -- an element of the :meth:`base_ring`
+
+        - ``model`` -- one of ``"half_plane"`` or ``"klein"``
+
+        - ``check`` -- whether to validate the inputs (default: ``True``); set
+          this to ``False``, to create an ultra-ideal point, i.e., a point
+          outside the unit circle in the Klein model.
+
         EXAMPLES::
 
             sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
@@ -908,7 +949,18 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             sage: H.point(0, 1, model="klein")
             ∞
 
+        An ultra-ideal point::
+
+            sage: H.point(2, 3, model="klein")
+            Traceback (most recent call last):
+            ...
+            ValueError: point (2, 3) is not in the unit disk in the Klein model
+
+            sage: H.point(2, 3, model="klein", check=False)
+            (2, 3)
+
         """
+        # TODO: Move this elsewhere.
         if model is None:
             if isinstance(x, HyperbolicOrientedGeodesic):
                 if y is not None:
@@ -2496,6 +2548,16 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
     # TODO: Check INPUTS
     # TODO: Check SEEALSO
     # TODO: Check for doctests
+    # TODO: Change representation:
+    # I would prefer geodesics to be encoded as dual to the quadratic form.
+    # That is v = (a, b, c) should represent the half space {x in R^3 :  B(v,
+    # x) >= 0} where B is the bilinear form associated to Q. This encoding
+    # makes a much smoother transition between points, ideal points and
+    # geodesics : they are all represented by elements of R^3 (points are Q >
+    # 0, ideal points are Q = 0 and geodesics are Q < 0 (ultra-ideal points)).
+    # See
+    # https://sagemath.zulipchat.com/#narrow/stream/271193-polygon/topic/hyperbolic.20geometry/near/284722650
+    # and implement what's written there.
     r"""
     A geodesic in the hyperbolic plane.
 
@@ -3211,7 +3273,18 @@ class HyperbolicPoint(HyperbolicConvexSet):
         # TODO: Check SEEALSO
         # TODO: Check for doctests
         if self.is_ultra_ideal():
-            raise ValueError(f"point {self} is not in the unit disk in the Klein model")
+            raise ValueError(f"point {self.coordinates(model='klein')} is not in the unit disk in the Klein model")
+
+    def is_ideal(self):
+        # TODO: Check documentation.
+        # TODO: Check INPUT
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        if isinstance(self._coordinates, HyperbolicOrientedGeodesic):
+            return False
+
+        x, y = self.coordinates(model="klein")
+        return self.parent().geometry.cmp(x * x + y * y, 1) == 0
 
     def is_ultra_ideal(self):
         # TODO: Check documentation.
@@ -3222,7 +3295,7 @@ class HyperbolicPoint(HyperbolicConvexSet):
             return False
 
         x, y = self.coordinates(model="klein")
-        return x * x + y * y > 1
+        return self.parent().geometry.cmp(x * x + y * y, 1) > 0
 
     def half_spaces(self):
         # TODO: Check documentation.
@@ -3351,7 +3424,7 @@ class HyperbolicPoint(HyperbolicConvexSet):
             zero = self.parent().geometry.zero
             equal = self.parent().geometry.equal
 
-            if zero(x) and equal(y, 1):
+            if self == self.parent().infinity() or self.is_ultra_ideal():
                 raise ValueError("point has no coordinates in the upper half plane")
 
             denominator = 1 - y
@@ -3553,25 +3626,22 @@ class HyperbolicPoint(HyperbolicConvexSet):
             return "∞"
 
         try:
-            x, y = self.coordinates()
+            x, y = self.coordinates(model="half_plane")
         except ValueError:
-            # Implement better printing.
-            from sage.all import RR
+            try:
+                return repr(self.coordinates(model="klein"))
+            except ValueError:
+                from sage.all import RR
+                if self.parent().base_ring() is RR:
+                    raise RuntimeError(f"cannot print point given by {self._coordinates}")
 
-            if self.parent().base_ring() is RR:
-                raise RuntimeError(f"cannot print point given by {self._coordinates}")
-            return repr(self.change_ring(RR))
-
-        # We represent x + y*I in R[[I]] so we do not have to reimplement printing ourselves.
-        if x not in self.parent().base_ring() or y not in self.parent().base_ring():
-            x, y = self.coordinates(model="klein")
-            return f"({repr(x)}, {repr(y)})"
-
-        # TODO: Map the ultra-ideal points to the negative half plane.
+                # TODO: Implement better printing. (Should not be necessary if coordinates extends the base ring.)
+                return repr(self.change_ring(RR))
 
         # TODO: This does not work when the coordinates are not in the base_ring.
         from sage.all import PowerSeriesRing
 
+        # We represent x + y*I in R[[I]] so we do not have to reimplement printing ourselves.
         return repr(PowerSeriesRing(self.parent().base_ring(), names="I")([x, y]))
 
     def change(self, ring=None, geometry=None, oriented=None):
