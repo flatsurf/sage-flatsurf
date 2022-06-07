@@ -118,6 +118,20 @@ class GL2ROrbitClosure:
         sage: O  # long time, optional: pyflatsurf
         GL(2,R)-orbit closure of dimension at least 8 in H_7(4^3, 0) (ambient dimension 17)
 
+    Computing the orbit closure of a pentagon with an angle greater than 2π::
+
+        sage: E = EquiangularPolygons(14, 1, 1, 1, 1)
+        sage: P = E.an_element()
+        sage: S = similarity_surfaces.billiard(P, comb_edges=[(0, 2), (0, 3)])
+        sage: S = S.minimal_cover(cover_type="translation")
+        sage: O = GL2ROrbitClosure(S); O  # optional: pyflatsurf
+        GL(2,R)-orbit closure of dimension at least 2 in H_7(6^2, 0^4) (ambient dimension 19)
+        sage: bound = E.billiard_unfolding_stratum('half-translation', marked_points=True).dimension()
+        sage: for decomposition in O.decompositions(1):  # long time, optional: pyflatsurf
+        ....:     O.update_tangent_space_from_flow_decomposition(decomposition)
+        ....:     if O.dimension() == bound: break
+        sage: O  # long time, optional: pyflatsurf
+
     TESTS::
 
         sage: from flatsurf import translation_surfaces

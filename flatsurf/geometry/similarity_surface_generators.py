@@ -440,7 +440,7 @@ class SimilaritySurfaceGenerators:
         return HalfTranslationSurface(s)
 
     @staticmethod
-    def billiard(P, rational=False):
+    def billiard(P, rational=False, comb_edges=None):
         r"""
         Return the ConeSurface associated to the billiard in the polygon ``P``.
 
@@ -498,6 +498,12 @@ class SimilaritySurfaceGenerators:
             ConeSurface built from 2 polygons
             sage: TestSuite(S).run() # long time (6s), optional: exactreal
 
+        Unfolding a pentagon with an angle greater than 2π:
+
+            sage: E = EquiangularPolygons(14, 1, 1, 1, 1)
+            sage: P = E.an_element()
+            sage: S = similarity_surfaces.billiard(P, comb_edges=[(0, 2), (0, 3)])
+
         """
         if not isinstance(P, Polygon):
             raise TypeError("invalid input")
@@ -508,7 +514,7 @@ class SimilaritySurfaceGenerators:
             # triangulate non-convex ones
             base_ring = P.base_ring()
             C = ConvexPolygons(base_ring)
-            comb_edges = P.triangulation()
+            comb_edges = comb_edges or P.triangulation()
             vertices = P.vertices()
             comb_triangles = build_faces(len(vertices), comb_edges)
             triangles = []

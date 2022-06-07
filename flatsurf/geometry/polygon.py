@@ -386,8 +386,8 @@ def triangulate(vertices):
     r"""
     Return a triangulation of the list of vectors ``vertices``.
 
-    This function assumes that ``vertices`` form the vertices of a polygon
-    enumerated in counter-clockwise order.
+    This function assumes that ``vertices`` form the vertices of a simple
+    polygon enumerated in counter-clockwise order.
 
     EXAMPLES::
 
@@ -671,7 +671,7 @@ class Polygon(Element):
         self._v = tuple(map(V, vertices))
         for vv in self._v: vv.set_immutable()
         if check:
-            self._non_intersection_check()
+            # self._non_intersection_check()
             self._inside_outside_check()
 
     def _inside_outside_check(self):
@@ -695,10 +695,7 @@ class Polygon(Element):
 
             sage: from flatsurf import Polygons
             sage: P = Polygons(QQ)
-            sage: P(vertices=[(0,0),(2,0),(1,1),(1,-1)])
-            Traceback (most recent call last):
-            ...
-            ValueError: edge 0 (= ((0, 0), (2, 0))) and edge 2 (= ((1, 1), (1, -1))) intersect
+
         """
         n = len(self._v)
         for i in range(n-1):
@@ -1999,6 +1996,13 @@ class EquiangularPolygons:
         sage: E = EquiangularPolygons(1, 1, 1, 1, 1)
         sage: E(1, 1, 1, 1, 1, normalized=True)
         Polygon: (0, 0), (1, 0), (1/2*c^2 - 1/2, 1/2*c), (1/2, 1/2*c^3 - c), (-1/2*c^2 + 3/2, 1/2*c)
+
+    A pentagon with an angle greater than 2π::
+
+        sage: E = EquiangularPolygons(14, 1, 1, 1, 1)
+        sage: E.an_element()
+        Polygon: (0, 0), (13, 0), (-6*c - 2, 5*c + 6), (c + 2, c - 15), (c + 2, 2*c + 3)
+
     """
     def __init__(self, *angles, **kwds):
         if 'number_field' in kwds:
@@ -2021,8 +2025,6 @@ class EquiangularPolygons:
         # Store each angle as a multiple of 2π, i.e., normalize them such their sum is (n - 2)/2.
         angles = [a / sum(angles) for a in angles]
         angles = [a * ZZ(n - 2) / 2 for a in angles]
-        if any(angle <= 0 or angle >= 1 for angle in angles):
-            raise ValueError("each angle must be > 0 and < 2 pi")
         self._angles = angles
         assert sum(self._angles) == ZZ(n - 2) / 2
 
