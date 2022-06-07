@@ -215,6 +215,7 @@ from sage.structure.parent import Parent
 from sage.structure.element import Element
 from sage.structure.unique_representation import UniqueRepresentation
 from sage.misc.decorators import options, rename_keyword
+from sage.misc.cachefunc import cached_method
 from sage.plot.primitive import GraphicPrimitive
 
 
@@ -911,11 +912,56 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         return self.point(p / q, 0, model="half_plane", check=False)
 
+    def start(self, geodesic):
+        r"""
+        Return the ideal starting point of ``geodesic``.
+
+        INPUT:
+
+        - ``geodesic`` -- an oriented geodesic
+
+        .. NOTE::
+
+            This method exists to keep all the methods that actually create
+            hyperbolic sets on the lowest level in the
+            :class:`HyperbolicPlane`. It is otherwise identical to
+            :meth:`HyperbolicOrientedGeodesic.start`.
+
+        EXAMPLES:
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: p = H.start(H.vertical(0))
+            sage: p
+            0
+
+            sage: H.vertical(0).start() == p
+            True
+
+        Points created this way might have coordinates that cannot be
+        represented in the base ring::
+
+            sage: p = H.half_circle(0, 2).start()
+            sage: p.coordinates(model="klein")
+            Traceback (most recent call last):
+            ...
+            ValueError: square root of 32 not a rational number
+
+            sage: p.coordinates(model="half_plane")
+            Traceback (most recent call last):
+            ...
+            ValueError: square root of 32 not a rational number
+
+        """
+        geodesic = self(geodesic)
+
+        if not isinstance(geodesic, HyperbolicOrientedGeodesic):
+            raise TypeError("geodesic must be an oriented geodesic")
+
+        return self.__make_element_class__(HyperbolicPointFromGeodesic)(self, geodesic)
+
     def point(self, x, y, model, check=True):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
         r"""
         Return the point with coordinates (x, y) in the given model.
 
@@ -959,39 +1005,33 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             sage: H.point(2, 3, model="klein", check=False)
             (2, 3)
 
+        .. SEEALSO::
+
+            :meth:`HyperbolicOrientedGeodesic.start` and
+            :meth:`HyperbolicOrientedGeodesic.end` to generate points that do
+            not have coordinates over the base ring.
+            :meth:`infinity`, :meth:`real`, and :meth:`projective` as shortcuts
+            to generate ideal ponits.
+
         """
-        # TODO: Move this elsewhere.
-        if model is None:
-            if isinstance(x, HyperbolicOrientedGeodesic):
-                if y is not None:
-                    raise ValueError("y must be none when x is a geodesic")
+        x = self.base_ring()(x)
+        y = self.base_ring()(y)
 
-                point = self.__make_element_class__(HyperbolicPoint)(
-                    self, self(x), None
-                )
-            else:
-                raise NotImplementedError(
-                    f"unsupported coordinates of type {type(x)} for implicit model"
-                )
+        if model == "klein":
+            point = self.__make_element_class__(HyperbolicPointFromCoordinates)(self, x, y)
+        elif model == "half_plane":
+            if self.geometry.sgn(y) < 0:
+                raise ValueError(f"point {x, y} not in the upper half plane")
+
+            denominator = 1 + x * x + y * y
+            return self.point(
+                x=2 * x / denominator,
+                y=(-1 + x * x + y * y) / denominator,
+                model="klein",
+                check=check,
+            )
         else:
-            x = self.base_ring()(x)
-            y = self.base_ring()(y)
-
-            if model == "klein":
-                point = self.__make_element_class__(HyperbolicPoint)(self, x, y)
-            elif model == "half_plane":
-                if self.geometry.sgn(y) < 0:
-                    raise ValueError(f"point {x, y} not in the upper half plane")
-
-                denominator = 1 + x * x + y * y
-                return self.point(
-                    x=2 * x / denominator,
-                    y=(-1 + x * x + y * y) / denominator,
-                    model="klein",
-                    check=check,
-                )
-            else:
-                raise NotImplementedError("unsupported model")
+            raise NotImplementedError("unsupported model")
 
         if check:
             point._check()
@@ -2971,7 +3011,7 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
             -a
 
         """
-        return self.parent().point(x=self, y=None, model=None, check=False)
+        return self.parent().start(self)
 
     def end(self):
         # TODO: Check documentation.
@@ -3246,27 +3286,6 @@ class HyperbolicPoint(HyperbolicConvexSet):
     even if these only have coordinates over a quadratic extension.
     """
 
-    def __init__(self, parent, x, y):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        super().__init__(parent)
-
-        if y is None:
-            if not isinstance(x, HyperbolicOrientedGeodesic):
-                raise TypeError("x must be an oriented geodesic")
-
-            self._coordinates = x
-            self.coordinates(model="klein", ring="try")
-        else:
-            if x.parent() is not parent.base_ring():
-                raise TypeError("x must be an element of the base ring")
-            if y.parent() is not parent.base_ring():
-                raise TypeError("y must be an element of the base ring")
-
-            self._coordinates = (x, y)
-
     def _check(self, require_normalized=True):
         # TODO: Check documentation.
         # TODO: Check INPUT
@@ -3280,9 +3299,6 @@ class HyperbolicPoint(HyperbolicConvexSet):
         # TODO: Check INPUT
         # TODO: Check SEEALSO
         # TODO: Check for doctests
-        if isinstance(self._coordinates, HyperbolicOrientedGeodesic):
-            return False
-
         x, y = self.coordinates(model="klein")
         return self.parent().geometry.cmp(x * x + y * y, 1) == 0
 
@@ -3291,11 +3307,17 @@ class HyperbolicPoint(HyperbolicConvexSet):
         # TODO: Check INPUT
         # TODO: Check SEEALSO
         # TODO: Check for doctests
-        if isinstance(self._coordinates, HyperbolicOrientedGeodesic):
-            return False
-
         x, y = self.coordinates(model="klein")
         return self.parent().geometry.cmp(x * x + y * y, 1) > 0
+
+    def is_finite(self):
+        # TODO: Check documentation.
+        # TODO: Check INPUT
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        x, y = self.coordinates(model="klein")
+        cmp = self.parent().geometry.cmp
+        return cmp(x * x + y * y, 1) < 0
 
     def half_spaces(self):
         # TODO: Check documentation.
@@ -3387,18 +3409,6 @@ class HyperbolicPoint(HyperbolicConvexSet):
                 ]
             )
 
-    def is_finite(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        if isinstance(self._coordinates, HyperbolicOrientedGeodesic):
-            return False
-
-        x, y = self.coordinates(model="klein")
-        cmp = self.parent().geometry.cmp
-        return cmp(x * x + y * y, 1) < 0
-
     def coordinates(self, model="half_plane", ring=None):
         # TODO: Check documentation.
         # TODO: Check INPUT
@@ -3420,9 +3430,11 @@ class HyperbolicPoint(HyperbolicConvexSet):
         # TODO: Fix documentation.
 
         if model == "half_plane":
-            x, y = self.coordinates(model="klein")
-            zero = self.parent().geometry.zero
-            equal = self.parent().geometry.equal
+            coordinates = self.coordinates(model="klein", ring=ring)
+            if coordinates is None:
+                return None
+
+            x, y = coordinates
 
             if self == self.parent().infinity() or self.is_ultra_ideal():
                 raise ValueError("point has no coordinates in the upper half plane")
@@ -3441,54 +3453,6 @@ class HyperbolicPoint(HyperbolicConvexSet):
                 raise
 
             return (x / denominator, sqrt / denominator)
-
-        if model == "klein":
-            coordinates = self._coordinates
-
-            if isinstance(coordinates, HyperbolicOrientedGeodesic):
-                a, b, c = coordinates.equation(model="half_plane")
-
-                zero = self.parent().geometry.zero
-                sgn = self.parent().geometry.sgn
-
-                if zero(a):
-                    if sgn(b) > 0:
-                        coordinates = (
-                            self.parent()
-                            .point(0, 1, model="klein", check=False)
-                            ._coordinates
-                        )
-                    else:
-                        coordinates = (
-                            self.parent()
-                            .point(-c / b, 0, model="half_plane", check=False)
-                            ._coordinates
-                        )
-                else:
-                    discriminant = b * b - 4 * a * c
-                    try:
-                        root = discriminant.sqrt(extend=False)
-                    except ValueError:
-                        if ring == "try":
-                            return None
-                        raise
-
-                    endpoints = ((-b - root) / (2 * a), (-b + root) / (2 * a))
-
-                    coordinates = (
-                        self.parent()
-                        .point(
-                            (min if sgn(a) > 0 else max)(endpoints),
-                            0,
-                            model="half_plane",
-                            check=False,
-                        )
-                        ._coordinates
-                    )
-
-                self._coordinates = coordinates
-
-            return coordinates
 
         raise NotImplementedError
 
@@ -3533,141 +3497,6 @@ class HyperbolicPoint(HyperbolicConvexSet):
 
         """
         return self.coordinates(model="half_plane")[1]
-
-    def _richcmp_(self, other, op):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        r"""
-        Return how this point compares to ``other``, see
-        :meth:`HyperbolicConvexSet._richcmp_`.
-
-        EXAMPLES::
-
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
-
-            sage: H = HyperbolicPlane()
-
-            sage: H.infinity() == H.projective(1, 0)
-            True
-
-        TESTS:
-
-        We can compare points even though their coordinates are only defined
-        over a quadratic extension::
-
-            sage: H.half_circle(0, 2).start() == H.half_circle(0, 2).start()
-            True
-
-            sage: H.half_circle(0, 2).start() == H.half_circle(0, 2).end()
-            False
-
-            sage: H.half_circle(0, 2).start() == H(0)
-            False
-
-            sage: H.half_circle(0, 1).end() == H(1)
-            True
-
-        """
-        from sage.structure.richcmp import op_EQ, op_NE
-
-        if op == op_NE:
-            return not self._richcmp_(other, op_EQ)
-
-        if op == op_EQ:
-            # TODO: Taking square roots is probably very cheap most of the
-            # time. It's probably beneficial not to pass store such points as
-            # geodesics unless absolutely necessary.
-            if not isinstance(other, HyperbolicPoint):
-                return False
-            if isinstance(self._coordinates, HyperbolicOrientedGeodesic):
-                geodesic = self._coordinates
-                if isinstance(other._coordinates, HyperbolicOrientedGeodesic):
-                    geodesic_ = other._coordinates
-                    if geodesic == geodesic_:
-                        return True
-                    if geodesic == -geodesic_:
-                        return False
-
-                    intersection = geodesic._intersection(geodesic_)
-                    if intersection is None or intersection.is_ultra_ideal():
-                        return False
-                    if intersection.is_finite():
-                        return False
-                    return (
-                        geodesic.parametrize(intersection, model="euclidean") < 0
-                        and geodesic_.parametrize(intersection, model="euclidean") < 0
-                    )
-                if other.is_finite():
-                    return False
-                if (
-                    other in geodesic
-                    and geodesic.parametrize(other, model="euclidean") < 0
-                ):
-                    return True
-                return False
-            elif isinstance(other._coordinates, HyperbolicOrientedGeodesic):
-                return other == self
-
-            equal = self.parent().geometry.equal
-            return equal(
-                self.coordinates(model="klein"), other.coordinates(model="klein")
-            )
-
-        super()._richcmp_(other, op)
-
-    def _repr_(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        if self == self.parent().infinity():
-            return "∞"
-
-        try:
-            x, y = self.coordinates(model="half_plane")
-        except ValueError:
-            try:
-                return repr(self.coordinates(model="klein"))
-            except ValueError:
-                from sage.all import RR
-                if self.parent().base_ring() is RR:
-                    raise RuntimeError(f"cannot print point given by {self._coordinates}")
-
-                # TODO: Implement better printing. (Should not be necessary if coordinates extends the base ring.)
-                return repr(self.change_ring(RR))
-
-        # TODO: This does not work when the coordinates are not in the base_ring.
-        from sage.all import PowerSeriesRing
-
-        # We represent x + y*I in R[[I]] so we do not have to reimplement printing ourselves.
-        return repr(PowerSeriesRing(self.parent().base_ring(), names="I")([x, y]))
-
-    def change(self, ring=None, geometry=None, oriented=None):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        def point(parent):
-            # TODO: Check documentation.
-            # TODO: Check INPUT
-            # TODO: Check SEEALSO
-            # TODO: Check for doctests
-            if isinstance(self._coordinates, HyperbolicOrientedGeodesic):
-                return parent.point(self._coordinates, None, model=None, check=False)
-            return parent.point(*self._coordinates, model="klein", check=False)
-
-        if ring is not None or geometry is not None:
-            return point(self.parent().change_ring(ring, geometry=geometry))
-
-        if oriented is None:
-            oriented = self.is_oriented()
-
-        if oriented != self.is_oriented():
-            raise NotImplementedError("cannot change orientation of a point")
-
-        return self
 
     def _apply_isometry_klein(self, isometry):
         # TODO: Check documentation.
@@ -3751,6 +3580,322 @@ class HyperbolicPoint(HyperbolicConvexSet):
         # TODO: Check SEEALSO
         # TODO: Check for doctests
         return HyperbolicVertices([self])
+
+
+class HyperbolicPointFromCoordinates(HyperbolicPoint):
+    # TODO: Check documentation
+    # TODO: Check INPUTS
+    # TODO: Check SEEALSO
+    # TODO: Check for doctests
+    def __init__(self, parent, x, y):
+        # TODO: Check documentation
+        # TODO: Check INPUTS
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        super().__init__(parent)
+
+        if x.parent() is not parent.base_ring():
+            raise TypeError("x must be an element of the base ring")
+        if y.parent() is not parent.base_ring():
+            raise TypeError("y must be an element of the base ring")
+
+        self._coordinates = (x, y)
+
+    def coordinates(self, model="half_plane", ring=None):
+        # TODO: Check documentation.
+        # TODO: Check INPUT
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        r"""
+        Return coordinates of this point in ``ring``.
+
+        If ``model`` is ``"half_plane"``, return projective coordinates in the
+        Poincaré half plane model.
+
+        If ``model`` is ``"klein"``, return Euclidean coordinates in the Klein model.
+
+        If no ``ring`` has been specified, an appropriate extension of the base
+        ring of the :class:`HyperbolicPlane` is chosen where these coordinates
+        live.
+        """
+        # TODO: Implement ring.
+        # TODO: Fix documentation.
+        if model == "klein":
+            return self._coordinates
+
+        return super().coordinates(model=model, ring=ring)
+
+    def _richcmp_(self, other, op):
+        # TODO: Check documentation.
+        # TODO: Check INPUT
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        r"""
+        Return how this point compares to ``other``, see
+        :meth:`HyperbolicConvexSet._richcmp_`.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+
+            sage: H = HyperbolicPlane()
+
+            sage: H.infinity() == H.projective(1, 0)
+            True
+
+        TESTS:
+
+        We can compare points even though their coordinates are only defined
+        over a quadratic extension::
+
+            sage: H.half_circle(0, 2).start() == H.half_circle(0, 2).start()
+            True
+
+            sage: H.half_circle(0, 2).start() == H.half_circle(0, 2).end()
+            False
+
+            sage: H.half_circle(0, 2).start() == H(0)
+            False
+
+            sage: H.half_circle(0, 1).end() == H(1)
+            True
+
+        """
+        from sage.structure.richcmp import op_EQ, op_NE
+
+        if op == op_NE:
+            return not self._richcmp_(other, op_EQ)
+
+        if op == op_EQ:
+            if not isinstance(other, HyperbolicPoint):
+                return False
+
+            if isinstance(other, HyperbolicPointFromGeodesic):
+                return other == self
+
+            equal = self.parent().geometry.equal
+            return equal(
+                self.coordinates(model="klein"), other.coordinates(model="klein")
+            )
+
+        super()._richcmp_(other, op)
+
+    def _repr_(self):
+        # TODO: Check documentation.
+        # TODO: Check INPUT
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        if self == self.parent().infinity():
+            return "∞"
+
+        if self.is_ultra_ideal():
+            return repr(self.coordinates(model="klein"))
+
+        x, y = self.coordinates(model="half_plane")
+
+        from sage.all import PowerSeriesRing
+
+        # We represent x + y*I in R[[I]] so we do not have to reimplement printing ourselves.
+        return repr(PowerSeriesRing(self.parent().base_ring(), names="I")([x, y]))
+
+    def change(self, ring=None, geometry=None, oriented=None):
+        # TODO: Check documentation.
+        # TODO: Check INPUT
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        def point(parent):
+            return parent.point(*self._coordinates, model="klein", check=False)
+
+        if oriented is None:
+            oriented = self.is_oriented()
+
+        if oriented != self.is_oriented():
+            raise NotImplementedError("cannot change orientation of a point")
+
+        if ring is not None or geometry is not None:
+            self = self.parent().change_ring(ring, geometry=geometry).point(*self._coordinates, model="klein", check=False)
+
+        return self
+
+
+class HyperbolicPointFromGeodesic(HyperbolicPoint):
+    # TODO: Check documentation
+    # TODO: Check INPUTS
+    # TODO: Check SEEALSO
+    # TODO: Check for doctests
+    def __init__(self, parent, geodesic):
+        # TODO: Check documentation
+        # TODO: Check INPUTS
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        super().__init__(parent)
+
+        if not isinstance(geodesic, HyperbolicOrientedGeodesic):
+            raise TypeError("x must be an oriented geodesic")
+
+        self._geodesic = geodesic
+
+    def is_ideal(self):
+        # TODO: Check documentation.
+        # TODO: Check INPUT
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        return True
+
+    def is_ultra_ideal(self):
+        # TODO: Check documentation.
+        # TODO: Check INPUT
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        return False
+
+    def is_finite(self):
+        # TODO: Check documentation.
+        # TODO: Check INPUT
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        return False
+
+    @cached_method
+    def coordinates(self, model="half_plane", ring=None):
+        # TODO: Check documentation.
+        # TODO: Check INPUT
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        # TODO: Did we implement ring?
+        if model == "klein":
+            a, b, c = self._geodesic.equation(model="half_plane")
+
+            zero = self.parent().geometry.zero
+            sgn = self.parent().geometry.sgn
+
+            if zero(a):
+                point = None
+                if sgn(b) > 0:
+                    point = self.parent().point(0, 1, model="klein", check=False)
+                else:
+                    point = self.parent().point(-c / b, 0, model="half_plane", check=False)
+
+                return point.coordinates(model=model, ring=ring)
+            else:
+                discriminant = b * b - 4 * a * c
+                try:
+                    root = discriminant.sqrt(extend=False)
+                except ValueError:
+                    if ring == "try":
+                        return None
+                    raise
+
+                endpoints = ((-b - root) / (2 * a), (-b + root) / (2 * a))
+
+                return self.parent().point(
+                        (min if sgn(a) > 0 else max)(endpoints),
+                        0,
+                        model="half_plane",
+                        check=False,
+                    ).coordinates(model=model, ring=ring)
+
+        return super().coordinates(model=model, ring=ring)
+
+    def _richcmp_(self, other, op):
+        # TODO: Check documentation.
+        # TODO: Check INPUT
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        r"""
+        Return how this point compares to ``other``, see
+        :meth:`HyperbolicConvexSet._richcmp_`.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+
+            sage: H = HyperbolicPlane()
+
+            sage: H.infinity() == H.projective(1, 0)
+            True
+
+        TESTS:
+
+        We can compare points even though their coordinates are only defined
+        over a quadratic extension::
+
+            sage: H.half_circle(0, 2).start() == H.half_circle(0, 2).start()
+            True
+
+            sage: H.half_circle(0, 2).start() == H.half_circle(0, 2).end()
+            False
+
+            sage: H.half_circle(0, 2).start() == H(0)
+            False
+
+            sage: H.half_circle(0, 1).end() == H(1)
+            True
+
+        """
+        from sage.structure.richcmp import op_EQ, op_NE
+
+        if op == op_NE:
+            return not self._richcmp_(other, op_EQ)
+
+        if op == op_EQ:
+            if not isinstance(other, HyperbolicPoint):
+                return False
+
+            if isinstance(other, HyperbolicPointFromGeodesic):
+                if self._geodesic == other._geodesic:
+                    return True
+                if self._geodesic == -other._geodesic:
+                    return False
+
+                intersection = self._geodesic._intersection(other._geodesic)
+
+                return self == intersection and other == intersection
+
+            if not other.is_ideal():
+                return False
+
+            return other in self._geodesic and self._geodesic.parametrize(other, model="euclidean") < 0
+
+        super()._richcmp_(other, op)
+
+    def _repr_(self):
+        # TODO: Check documentation.
+        # TODO: Check INPUT
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        if self == self.parent().infinity():
+            return "∞"
+
+        if not self.is_ultra_ideal():
+            coordinates = self.coordinates(model="half_plane", ring="try")
+
+            if coordinates is not None:
+                return repr(self.parent().point(*coordinates, model="half_plane", check=False))
+
+        coordinates = self.coordinates(model="klein", ring="try")
+
+        if coordinates is not None:
+            return repr(coordinates)
+
+        from sage.all import RR
+        return repr(self.change_ring(RR))
+
+    def change(self, ring=None, geometry=None, oriented=None):
+        # TODO: Check documentation.
+        # TODO: Check INPUT
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        if oriented is None:
+            oriented = self.is_oriented()
+
+        if oriented != self.is_oriented():
+            raise NotImplementedError("cannot change orientation of a point")
+
+        if ring is not None or geometry is not None:
+            self = self._geodesic.change(ring=ring, geometry=geometry).start()
+
+        return self
 
 
 class HyperbolicConvexPolygon(HyperbolicConvexSet):
@@ -6285,7 +6430,7 @@ class BezierPath(GraphicPrimitive):
         # TODO: Check SEEALSO
         # TODO: Check for doctests
         if start == end:
-            raise ValueError("cannot draw segment from point to itself")
+            raise ValueError(f"cannot draw segment from point {start} to itself ({end})")
 
         if model == "half_plane":
             if start == start.parent().infinity():
