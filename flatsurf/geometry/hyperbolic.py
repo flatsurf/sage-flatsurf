@@ -945,12 +945,12 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             sage: p.coordinates(model="klein")
             Traceback (most recent call last):
             ...
-            ValueError: square root of 32 not a rational number
+            ValueError: square root of 32 ...
 
             sage: p.coordinates(model="half_plane")
             Traceback (most recent call last):
             ...
-            ValueError: square root of 32 not a rational number
+            ValueError: square root of 32 ...
 
         """
         geodesic = self(geodesic)
@@ -1216,7 +1216,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             sage: H.geodesic(H.half_circle(0, 2).start(), H.half_circle(0, 2).end())
             Traceback (most recent call last):
             ...
-            ValueError: square root of 32 not a rational number
+            ValueError: square root of 32 ...
 
         """
         if c is None:
@@ -1388,7 +1388,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             sage: H.segment(H.half_circle(0, 2), H.half_circle(0, 2).start(), H.half_circle(0, 2).end())
             Traceback (most recent call last):
             ...
-            ValueError: square root of 32 not a rational number
+            ValueError: square root of 32 ...
 
         The produced segment is oriented if the ``geodesic`` is oriented::
 
@@ -3023,7 +3023,7 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
             sage: p.coordinates()
             Traceback (most recent call last):
             ...
-            ValueError: square root of 32 not a rational number
+            ValueError: square root of 32 ...
 
         Passing to a bigger field, the coordinates can be represented::
 
@@ -3061,7 +3061,7 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
             sage: p.coordinates()
             Traceback (most recent call last):
             ...
-            ValueError: square root of 32 not a rational number
+            ValueError: square root of 32 ...
 
         Passing to a bigger field, the coordinates can be represented::
 
@@ -3395,7 +3395,7 @@ class HyperbolicPoint(HyperbolicConvexSet):
             sage: H.half_circle(0, 2).start().half_spaces()
             Traceback (most recent call last):
             ...
-            ValueError: square root of 32 not a rational number
+            ValueError: square root of 32 ...
 
         ::
 
@@ -3472,7 +3472,9 @@ class HyperbolicPoint(HyperbolicConvexSet):
 
             square = 1 - x * x - y * y
             try:
-                sqrt = square.sqrt(extend=False)
+                sqrt = square.sqrt()
+                if sqrt not in self.parent().base_ring():
+                    raise ValueError(f"square root of {square} not in {self.parent().base_ring()}")
             except ValueError:
                 if ring == "try":
                     return None
@@ -3808,13 +3810,15 @@ class HyperbolicPointFromGeodesic(HyperbolicPoint):
             else:
                 discriminant = b * b - 4 * a * c
                 try:
-                    root = discriminant.sqrt(extend=False)
+                    sqrt = discriminant.sqrt()
+                    if sqrt not in self.parent().base_ring():
+                        raise ValueError(f"square root of {discriminant} not in {self.parent().base_ring()}")
                 except ValueError:
                     if ring == "try":
                         return None
                     raise
 
-                endpoints = ((-b - root) / (2 * a), (-b + root) / (2 * a))
+                endpoints = ((-b - sqrt) / (2 * a), (-b + sqrt) / (2 * a))
 
                 return self.parent().point(
                         (min if sgn(a) > 0 else max)(endpoints),
