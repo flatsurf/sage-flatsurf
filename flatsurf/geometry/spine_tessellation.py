@@ -212,18 +212,18 @@ class SpineTessellation(Parent):
              {a*(x^2 + y^2) + (2*a^2 - 6)*x - a = 0},
              {4*x = 0}]
         """
-        from sage.all import oo, matrix, vector
 
-        # vertex = A * M_0, gamma(t) = sigma(A)^-1 * Rot * (e^{-2t} i)
-        # t -> oo: sigma(A)^-1 * Rot * 0
-        # t -> -oo: sigma(A)^-1 * Rot * oo
-        # sigma([a b | c d])^{-1} = [d b | c a]
-        # v, w are the shortest periods on A * M_0
-        # [Rot90Clockwise(v + w) | v + w]^T
+        return list(self._geodesic_to_periods(vertex).keys())
+
+    def _geodesic_to_periods(self, vertex):
+        r"""
+        Return a dictionary assigning to each geodesic through ``vertex`` the shortest periods of ``vertex`` generating it.
+        """
+        from sage.all import oo, matrix, vector
 
         shortest_directions = self.shortest_directions(vertex)
         x, y = vertex.coordinates(model="half_plane")
-        geodesics = []
+        geodesics = {}
         for v, w in zip(shortest_directions, shortest_directions[1:] + [-shortest_directions[0]]):
             def rotation90clockwise(v): return vector([v[1], -v[0]])
             rotation = matrix([rotation90clockwise(v + w), v + w]).transpose()
@@ -233,7 +233,7 @@ class SpineTessellation(Parent):
             end = b/d if d != 0 else oo
             geodesic = self._hyperbolic_plane.geodesic(start, end)
             assert vertex in geodesic
-            geodesics.append(geodesic)
+            geodesics[geodesic] = (v, w)
 
         return geodesics
 
@@ -243,6 +243,36 @@ class SpineTessellation(Parent):
 
         The segment consists of surfaces where exactly two periods of ``vertex`` are the shortest.
         """
+        v, w = self._geodesic_to_periods(vertex)[geodesic]
+
+        r"""
+        TyingTime: Find "t" for which |A(t) * v|^2 = |A(t) * u|^2
+        CocircularTime: Find "t" for which A(t) * hinge becomes cocircular
+
+        TyingTime(u) for u in vertex.periods()
+        CocircularTime(h) for h in vertex.flippable_hinges()
+
+        if some u wins with time t_min, then apply A(t_min) to vertex for other endpoint
+        otherwise, flip hinge and then apply A(t_min), repeat
+        
+
+        (v, w) -> (v', w')
+        A(t) := [1 0 | 0 t] (0 < t < 1)
+        s = -(vx + wx), c = vy + wy
+        |A(t)*v|^2 = ( vx)^2 + (t vy )^2
+        |A(t)*u|^2 = ( ux )^2 + (t uy)^2
+
+        At^2 + B = 0
+        t^2 = -B/A
+
+        InCircleDet(u, v, w) = [ux uy ux^2 + uy^2 | vx vy vx^2 + vy^2 | wx wy wx^2 + wy^2] = M1 + M2
+        InCircleDet(A(t)u, A(t)v, A(t)w) = t det([ux uy ux^2 + t^2 uy^2 | vx vy vx^2 + t^2 vy^2 | wx wy wx^2 + t^2 wy^2]) = t(M1 + t^2 M2)
+
+        """
+        def rotation90clockwise(v): return vector([v[1], -v[0]])
+        rotation = matrix([rotation90clockwise(v + w), v + w]).transpose()
+
+
         raise NotImplementedError
 
     def segments(self, vertex):
