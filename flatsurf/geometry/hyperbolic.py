@@ -1646,7 +1646,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             return subsets[0].unoriented()
 
         half_spaces = sum(
-            [subset.half_spaces() for subset in subsets], start=HyperbolicHalfSpaces([])
+            [subset.half_spaces() for subset in subsets], HyperbolicHalfSpaces([])
         )
 
         return self.polygon(
