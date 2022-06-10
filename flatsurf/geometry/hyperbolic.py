@@ -2653,6 +2653,23 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
         self._b = b
         self._c = c
 
+    def __hash__(self):
+        # TODO: Check documentation.
+        # TODO: Check INPUT
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        r"""
+        TESTS::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicGeodesic
+            sage: H = HyperbolicPlane()
+
+            sage: hash(H.vertical(0)) == hash(H.vertical(0))
+            True
+
+        """
+        return hash((self._a, self._b, self._c))
+
     def _repr_(self):
         # TODO: Check documentation.
         # TODO: Check INPUT
