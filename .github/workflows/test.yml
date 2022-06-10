@@ -28,6 +28,12 @@ jobs:
             sagelib: "9.4"
             python: "3.9.10"
           - optionals: "sage,flipper,eantic,exactreal,pyflatsurf"
+            sagelib: "9.5"
+            python: "3.9.10"
+          - optionals: "sage,flipper,eantic,exactreal,pyflatsurf"
+            sagelib: "9.6"
+            python: "3.9.10"
+          - optionals: "sage,flipper,eantic,exactreal,pyflatsurf"
             environment: "binder"
             # Default Python version for binder:
             # https://github.com/jupyterhub/repo2docker/blob/master/repo2docker/buildpacks/conda/environment.yml

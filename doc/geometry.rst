@@ -73,3 +73,9 @@ Orbit Closures
 .. automodule:: flatsurf.geometry.gl2r_orbit_closure
    :members:
    :undoc-members:
+
+Hyperbolic Geometry
+===================
+.. automodule:: flatsurf.geometry.hyperbolic
+   :members:
+   :undoc-members:
