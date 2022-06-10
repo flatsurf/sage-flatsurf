@@ -867,9 +867,6 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         return self.projective(r, 1)
 
     def projective(self, p, q):
-        # TODO: Address
-        # https://github.com/flatsurf/sage-flatsurf/pull/158#discussion_r854154745
-        # (or maybe we do not need to address it.)
         r"""
         Return the ideal point with projective coordinates ``[p: q]`` in the
         upper half plane model.
