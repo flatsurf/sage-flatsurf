@@ -2658,6 +2658,7 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
         # TODO: Check INPUT
         # TODO: Check SEEALSO
         # TODO: Check for doctests
+        # TODO: This is wrong when there is a GCD. What about inexact rings?
         r"""
         TESTS::
 
