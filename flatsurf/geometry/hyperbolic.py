@@ -2653,6 +2653,13 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
         self._b = b
         self._c = c
 
+    def __hash__(self):
+        # TODO: Check documentation.
+        # TODO: Check INPUT
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        return hash((self._a, self._b, self._c))
+
     def _repr_(self):
         # TODO: Check documentation.
         # TODO: Check INPUT
