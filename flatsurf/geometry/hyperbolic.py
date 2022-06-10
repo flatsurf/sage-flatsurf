@@ -132,17 +132,17 @@ We can also intersect objects that are not half spaces::
     should be easy to adapt :class:`HyperbolicEpsilonGeometry` for that purpose
     to take into account denormalized numbers::
 
-    sage: HyperbolicPlane(RDF)
-    Traceback (most recent call last):
-    ...
-    ValueError: geometry must be specified for HyperbolicPlane over inexact rings
+        sage: HyperbolicPlane(RDF)
+        Traceback (most recent call last):
+        ...
+        ValueError: geometry must be specified for HyperbolicPlane over inexact rings
 
     There is currently no implementation that works for ball arithmetic::
 
-    sage: HyperbolicPlane(RBF)
-    Traceback (most recent call last):
-    ...
-    ValueError: geometry must be specified for HyperbolicPlane over inexact rings
+        sage: HyperbolicPlane(RBF)
+        Traceback (most recent call last):
+        ...
+        ValueError: geometry must be specified for HyperbolicPlane over inexact rings
 
 .. NOTE::
 
@@ -162,21 +162,21 @@ We can also intersect objects that are not half spaces::
     polygon. In such a case, one can explicitly create polygons from subsets by
     intersecting their :meth:`HyperbolicConvexSet.half_spaces`::
 
-    sage: g = H.vertical(0)
-    sage: P = H.polygon(g.half_spaces(), check=False, assume_minimal=True)
-    sage: P
-    {x ≤ 0} ∩ {x ≥ 0}
+        sage: g = H.vertical(0)
+        sage: P = H.polygon(g.half_spaces(), check=False, assume_minimal=True)
+        sage: P
+        {x ≤ 0} ∩ {x ≥ 0}
 
     Note that such an object might not be fully functional since some methods
     may assume that the object is an actual polygon::
 
-    sage: P.dimension()
-    2
+        sage: P.dimension()
+        2
 
     Similarly, a geodesic can be treated as a segment without endpoints::
 
-    sage: H.segment(g, start=None, end=None, check=False, assume_normalized=True)
-    {-x = 0}
+        sage: H.segment(g, start=None, end=None, check=False, assume_normalized=True)
+        {-x = 0}
 
 .. NOTE::
 
@@ -3933,7 +3933,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
     # TODO: Check for doctests
     r"""
     A (possibly unbounded) closed polygon in the :class:`HyperbolicPlane`,
-    i.e., the intersection of a finite number of :class:`HyperbolicHalfSpace`s.
+    i.e., the intersection of a finite number of :class:`half spaces <HyperbolicHalfSpace>`.
     """
 
     def __init__(self, parent, half_spaces):
@@ -4896,8 +4896,8 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
         # TODO: Check for doctests
         # TODO: Define in HyperbolicConvexSet
         r"""
-        Return the :class:`HyperbolicOrientedSegment`s and
-        :class:`HyperbolicOrientedGeodesic`s defining this polygon.
+        Return the :class:`segments <HyperbolicOrientedSegment>` and
+        :class:`geodesics <HyperbolicOrientedGeodesic>` defining this polygon.
         """
         edges = []
 
