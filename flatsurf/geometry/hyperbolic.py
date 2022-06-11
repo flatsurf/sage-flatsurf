@@ -901,15 +901,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         p = self.base_ring()(p)
         q = self.base_ring()(q)
 
-        # TODO: Turn this into a proper predicate.
-        if self.geometry.zero(p) and self.geometry.zero(q):
-            raise ValueError("one of p and q must not be zero")
-
-        # TODO: Turn this into a proper predicate.
-        if self.geometry.zero(q):
-            return self.point(0, 1, model="klein", check=False)
-
-        return self.point(p / q, 0, model="half_plane", check=False)
+        return self.geometry.projective(p, q, self.point)
 
     def start(self, geodesic):
         r"""
@@ -1760,6 +1752,38 @@ class HyperbolicGeometry:
         # TODO: Check SEEALSO
         # TODO: Check for doctests
         raise NotImplementedError
+
+    def projective(self, p, q, point):
+        r"""
+        Return the ideal point with projective coordinates ``[p: q]`` in the
+        upper half plane model.
+
+        INPUT:
+
+        - ``p`` -- an element of the :meth:`base_ring`.
+
+        - ``q`` -- an element of the :meth:`base_ring`.
+
+        - ``point`` -- the :meth:`HyperbolicPlane.point` to create points.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: H.geometry.projective(1, 0, H.point)
+            ∞
+            sage: H.geometry.projective(0, 1, H.point)
+            0
+
+        """
+        if self.zero(p) and self.zero(q):
+            raise ValueError("one of p and q must not be zero")
+
+        if self.zero(q):
+            return point(0, 1, model="klein", check=False)
+
+        return point(p / q, 0, model="half_plane", check=False)
 
 
 class HyperbolicExactGeometry(UniqueRepresentation, HyperbolicGeometry):
