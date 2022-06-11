@@ -1119,8 +1119,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         """
         real = self.base_ring()(real)
 
-        # Convert the equation -x + real = 0 to the Klein model.
-        return self.geodesic(real, -1, -real, model="klein")
+        return self.geometry.vertical(real, self.geodesic)
 
     def geodesic(self, a, b, c=None, model=None, oriented=True, check=True):
         # TODO: Check documentation.
@@ -1809,6 +1808,30 @@ class HyperbolicGeometry:
         c = center * center - radius_squared
 
         return geodesic(a, b, c, model="half_plane")
+
+    def vertical(self, real, geodesic):
+        r"""
+        Return the vertical geodesic at the ``real`` ideal point in the
+        Poincaré half plane model.
+
+        INPUT:
+
+        - ``real`` -- an element of the :meth:`base_ring`
+
+        - ``geodesic`` -- the :meth:`HyperbolicPlane.geodesic` to create geodesics
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: H.geometry.vertical(0, H.geodesic)
+            {-x = 0}
+
+        """
+        # TODO: Epsilon geometry should override this to allow very big real.
+        # Convert the equation -x + real = 0 to the Klein model.
+        return geodesic(real, -1, -real, model="klein")
 
     def classify(self, x, y, model):
         r"""
