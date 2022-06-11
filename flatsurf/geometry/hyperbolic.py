@@ -1080,7 +1080,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         .. SEEALSO::
 
             :meth:`vertical` to get an oriented vertical in the
-            half plane model and :meth:`geodesic` for the most general
+            half plane model and :meth:`geodesic` for the general
             interface, producing a geodesic from an equation.
 
         """
@@ -1090,10 +1090,6 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         return self.geometry.half_circle(center, radius_squared, self.geodesic)
 
     def vertical(self, real):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
         r"""
         Return the vertical geodesic at the ``real`` ideal point in the
         upper half plane model. The geodesic is oriented such that it goes
@@ -1101,6 +1097,10 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         Use the ``-`` operator to pass to the geodesic with opposite
         orientation.
+
+        INPUT:
+
+        - ``real`` -- an element of the :meth:`base_ring`
 
         EXAMPLES::
 
@@ -1115,6 +1115,12 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
             sage: H.vertical(-1)
             {-x - 1 = 0}
+
+        .. SEEALSO::
+
+            :meth:`half_circle` to get an oriented geodesic that is not a
+            vertical and :meth:`geodesic` for the general interface, producing
+            a geodesic from an equation.
 
         """
         real = self.base_ring()(real)
