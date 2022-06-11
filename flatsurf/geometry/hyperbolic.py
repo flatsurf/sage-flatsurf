@@ -235,14 +235,14 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
     ALGORITHM:
 
-    We usually display objects as if they were defined in the Poincaré half
-    plane model. However, internally, we store most objects in a representation
-    in the Klein model. In that model it tends to be easier to perform
+    We usually display objects as if they were defined in the upper half plane
+    model. However, internally, we store most objects in a representation in
+    the Klein model. In that model it tends to be easier to perform
     computations without having to extend the base ring and we can also rely on
     standard algorithms for geometry in the Euclidean plane.
 
     For the Klein model, we use a unit disk centered at (0, 0). The map from
-    the Poincaré half plane sends the imaginary unit `i` to the center at the
+    the upper half plane sends the imaginary unit `i` to the center at the
     origin, and sends 0 to (0, -1), 1 to (1, 0), -1 to (-1, 0) and infinity to
     (0, 1). The Möbius transformation
 
@@ -272,7 +272,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
     for its inverse.
 
-    A geodesic in the Poincaré half plane is given by an equation of the form
+    A geodesic in the upper half plane is given by an equation of the form
 
     .. MATH::
 
@@ -296,11 +296,11 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         (a + c)(x^2 + y^2) + 2bx + (a - c) = 0
 
-    in the Poincaré half plane model.
+    in the upper half plane model.
 
     Note that the intersection of two geodesics defined by coefficients in a
     field `K` in the Klein model has coordinates in `K` in the Klein model.
-    The corresponding statement is not true for the Poincaré half plane model.
+    The corresponding statement is not true for the upper half plane model.
 
     INPUT:
 
@@ -813,7 +813,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
     def infinity(self):
         r"""
-        Return the point at infinity in the Poincaré half plane model.
+        Return the point at infinity in the upper half plane model.
 
         EXAMPLES::
 
@@ -838,7 +838,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
     def real(self, r):
         r"""
-        Return the ideal point ``r`` on the real axis in the Poincaré half
+        Return the ideal point ``r`` on the real axis in the upper half
         plane model.
 
         INPUT:
@@ -1032,7 +1032,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
     def half_circle(self, center, radius_squared):
         r"""
         Return the geodesic centered around the real ``center`` and with
-        ``radius_squared`` in the Poincaré half plane model. The geodesic is
+        ``radius_squared`` in the upper half plane model. The geodesic is
         oriented such that the point at infinity is to its left.
 
         Use the ``-`` operator to pass to the geodesic with opposite
@@ -1096,7 +1096,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         # TODO: Check for doctests
         r"""
         Return the vertical geodesic at the ``real`` ideal point in the
-        Poincaré half plane model. The geodesic is oriented such that it goes
+        upper half plane model. The geodesic is oriented such that it goes
         from ``real`` to the point at infinity.
 
         Use the ``-`` operator to pass to the geodesic with opposite
@@ -1811,8 +1811,8 @@ class HyperbolicGeometry:
 
     def vertical(self, real, geodesic):
         r"""
-        Return the vertical geodesic at the ``real`` ideal point in the
-        Poincaré half plane model.
+        Return the vertical geodesic at the ``real`` ideal point in the upper
+        half plane model.
 
         INPUT:
 
@@ -2551,7 +2551,7 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
         # TODO: Turn this into a proper predicate.
         sgn = self.parent().geometry.sgn
 
-        # Convert to the Poincaré half plane model as a(x^2 + y^2) + bx + c ≥ 0.
+        # Convert to the upper half plane model as a(x^2 + y^2) + bx + c ≥ 0.
         a, b, c = self.equation(model="half_plane", gcd=None)
 
         # Remove any trailing - signs in the output.
@@ -2786,7 +2786,7 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
         # TODO: Check INPUT
         # TODO: Check SEEALSO
         # TODO: Check for doctests
-        # Convert to the Poincaré half plane model as a(x^2 + y^2) + bx + c = 0.
+        # Convert to the upper half plane model as a(x^2 + y^2) + bx + c = 0.
         a, b, c = self.equation(model="half_plane", gcd=None)
 
         from sage.all import PolynomialRing
@@ -3572,7 +3572,7 @@ class HyperbolicPoint(HyperbolicConvexSet):
         Return coordinates of this point in ``ring``.
 
         If ``model`` is ``"half_plane"``, return projective coordinates in the
-        Poincaré half plane model.
+        upper half plane model.
 
         If ``model`` is ``"klein"``, return Euclidean coordinates in the Klein model.
 
@@ -3766,7 +3766,7 @@ class HyperbolicPointFromCoordinates(HyperbolicPoint):
         Return coordinates of this point in ``ring``.
 
         If ``model`` is ``"half_plane"``, return projective coordinates in the
-        Poincaré half plane model.
+        upper half plane model.
 
         If ``model`` is ``"klein"``, return Euclidean coordinates in the Klein model.
 
