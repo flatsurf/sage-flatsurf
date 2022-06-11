@@ -1030,8 +1030,6 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         return point
 
     def half_circle(self, center, radius_squared):
-        # TODO: Check documentation.
-        # TODO: Check for doctests
         r"""
         Return the geodesic centered around the real ``center`` and with
         ``radius_squared`` in the Poincaré half plane model. The geodesic is
@@ -1089,16 +1087,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         center = self.base_ring()(center)
         radius_squared = self.base_ring()(radius_squared)
 
-        # TODO: Turn this into a proper predicate.
-        if self.geometry.sgn(radius_squared) <= 0:
-            raise ValueError("radius must be positive")
-
-        # Represent this geodesic as a(x^2 + y^2) + b*x + c = 0
-        a = 1
-        b = -2 * center
-        c = center * center - radius_squared
-
-        return self.geodesic(a, b, c, model="half_plane")
+        return self.geometry.half_circle(center, radius_squared, self.geodesic)
 
     def vertical(self, real):
         # TODO: Check documentation.
@@ -1784,6 +1773,42 @@ class HyperbolicGeometry:
             return point(0, 1, model="klein", check=False)
 
         return point(p / q, 0, model="half_plane", check=False)
+
+    def half_circle(self, center, radius_squared, geodesic):
+        r"""
+        Return the geodesic around the real ``center`` and with
+        ``radius_squared`` in the upper half plane.
+
+        INPUT:
+
+        - ``center`` -- an element of the :meth:`base_ring`, the center of the
+          half circle on the real axis
+
+        - ``radius_squared`` -- a positive element of the :meth:`base_ring`,
+          the square of the radius of the half circle
+
+        - ``geodesic`` -- the :meth:`HyperbolicPlane.geodesic` to create geodesics
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: H.geometry.half_circle(0, 1, H.geodesic)
+            {(x^2 + y^2) - 1 = 0}
+
+        """
+        # TODO: Epsilon Geometry could override this to be able to create half circles with small radius.
+
+        if self.sgn(radius_squared) <= 0:
+            raise ValueError("radius must be positive")
+
+        # Represent this geodesic as a(x^2 + y^2) + b*x + c = 0
+        a = 1
+        b = -2 * center
+        c = center * center - radius_squared
+
+        return geodesic(a, b, c, model="half_plane")
 
     def classify(self, x, y, model):
         r"""
