@@ -1011,8 +1011,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         if model == "klein":
             point = self.__make_element_class__(HyperbolicPointFromCoordinates)(self, x, y)
         elif model == "half_plane":
-            # TODO: Turn this into a proper predicate.
-            if self.geometry.sgn(y) < 0:
+            if self.geometry.classify(x, y, model="half_plane") < 0:
                 raise ValueError(f"point {x, y} not in the upper half plane")
 
             denominator = 1 + x * x + y * y
@@ -1760,11 +1759,11 @@ class HyperbolicGeometry:
 
         INPUT:
 
-        - ``p`` -- an element of the :meth:`base_ring`.
+        - ``p`` -- an element of the :meth:`base_ring`
 
-        - ``q`` -- an element of the :meth:`base_ring`.
+        - ``q`` -- an element of the :meth:`base_ring`
 
-        - ``point`` -- the :meth:`HyperbolicPlane.point` to create points.
+        - ``point`` -- the :meth:`HyperbolicPlane.point` to create points
 
         EXAMPLES::
 
@@ -1777,6 +1776,7 @@ class HyperbolicGeometry:
             0
 
         """
+        # TODO: Epsilon Gemetry should override this.
         if self.zero(p) and self.zero(q):
             raise ValueError("one of p and q must not be zero")
 
@@ -1784,6 +1784,44 @@ class HyperbolicGeometry:
             return point(0, 1, model="klein", check=False)
 
         return point(p / q, 0, model="half_plane", check=False)
+
+    def classify(self, x, y, model):
+        r"""
+        Return whether the point ``(x, y)`` is finite, ideal, or ultra-ideal.
+
+        INPUT:
+
+        - ``x`` -- an element of the :meth:`base_ring`
+
+        - ``y`` -- an element of the :meth:`base_ring`
+
+        - ``model`` -- a supported model, either ``"half_plane"`` or
+          ``"klein"``
+
+        OUTPUT: ``1`` if the point is finite, ``0`` if the point is ideal, ``-1`` if the point is neither of the two.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: H.geometry.classify(0, 1, model="half_plane")
+            1
+            sage: H.geometry.classify(0, 0, model="half_plane")
+            0
+            sage: H.geometry.classify(0, -1, model="half_plane")
+            -1
+
+        """
+        if model == "half_plane":
+            # TODO: Epsilon Gemetry should override this.
+            return self.sgn(y)
+
+        if model == "klein":
+            # TODO: Implement me. Add tests.
+            raise NotImplementedError
+
+        raise NotImplementedError("unsupported model")
 
 
 class HyperbolicExactGeometry(UniqueRepresentation, HyperbolicGeometry):
