@@ -45,8 +45,8 @@ jobs:
           while read; do
             optional=$(echo "$REPLY" | grep -o '# optional: [^ ]*' | awk '{ print $3; }') || true
             (test "$optional" == '' || (echo "${{ matrix.optionals }}" | grep -E '\b'"$optional"'\b') > /dev/null) && echo "$REPLY" || true
-          done < flatsurf/environment.yml > flatsurf/environment.test.yml
-          mamba env update -n test --quiet -f flatsurf/environment.test.yml
+          done < environment.yml > environment.test.yml
+          mamba env update -n test --quiet -f environment.test.yml
           conda list
         if: ${{ matrix.environment != 'binder' }}
       - name: Create binder environment
