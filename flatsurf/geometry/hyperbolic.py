@@ -1133,9 +1133,6 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         return self.geometry.vertical(real, self.geodesic)
 
     def geodesic(self, a, b, c=None, model=None, oriented=True, check=True):
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
         r"""
         Return a geodesic in the hyperbolic plane.
 
@@ -1245,6 +1242,10 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             Traceback (most recent call last):
             ...
             ValueError: points specifying a geodesic must be distinct
+
+        ..SEEALSO::
+
+            :meth:`half_circle` and :meth:`vertical`
 
         """
         if c is None:
