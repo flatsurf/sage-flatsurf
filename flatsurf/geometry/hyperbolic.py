@@ -903,13 +903,15 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         return self.geometry.projective(p, q, self.point)
 
-    def start(self, geodesic):
+    def start(self, geodesic, check=True):
         r"""
         Return the ideal starting point of ``geodesic``.
 
         INPUT:
 
         - ``geodesic`` -- an oriented geodesic
+
+        - ``check`` -- whether to verify that ``geodesic`` is valid
 
         .. NOTE::
 
@@ -949,6 +951,9 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         if not isinstance(geodesic, HyperbolicOrientedGeodesic):
             raise TypeError("geodesic must be an oriented geodesic")
+
+        if check and geodesic.is_ultra_ideal():
+            raise ValueError("geodesic does not intersect the Klein disk")
 
         return self.__make_element_class__(HyperbolicPointFromGeodesic)(self, geodesic)
 
@@ -1128,7 +1133,6 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         return self.geometry.vertical(real, self.geodesic)
 
     def geodesic(self, a, b, c=None, model=None, oriented=True, check=True):
-        # TODO: Check documentation.
         # TODO: Check INPUT
         # TODO: Check SEEALSO
         # TODO: Check for doctests
@@ -1168,6 +1172,23 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         is to its left.
 
+        INPUT:
+
+        - ``a`` -- a point in the hyperbolic plane or an element of the :meth:`base_ring`
+
+        - ``b`` -- a point in the hyperbolic plane or an element of the :meth:`base_ring`
+
+        - ``c`` -- ``None`` or an element of the :meth:`base_ring` (default: ``None``)
+
+        - ``model`` -- ``None``, ``"half_plane"``, or ``"klein"`` (default:
+          ``None``); when ``a``, ``b`` and ``c`` are elements of the
+          :meth:`base_ring`, in which model they should be interpreted.
+
+        - ``oriented`` -- whether the returned geodesic is oriented (default: ``True``)
+
+        - ``check`` -- whether to verify that the arguments define a geodesic
+          in the hyperbolic plane (default: ``True``)
+
         EXAMPLES::
 
             sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
@@ -1188,13 +1209,6 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             sage: H.geodesic(-1, -1, 5, model="klein")
             {2*(x^2 + y^2) - x - 3 = 0}
 
-        TESTS::
-
-            sage: H.geodesic(0, 0)
-            Traceback (most recent call last):
-            ...
-            ValueError: points specifying a geodesic must be distinct
-
         Geodesics cannot be defined from points whose coordinates are over a
         quadratic field extension::
 
@@ -1202,6 +1216,35 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             Traceback (most recent call last):
             ...
             ValueError: square root of 32 ...
+
+        Disabling the ``check``, lets us define geodesics in the Klein model
+        that lie outside the unit circle::
+
+            sage: H.geodesic(2, 1, 0, model="klein")
+            Traceback (most recent call last):
+            ...
+            ValueError: ...
+
+            sage: geodesic = H.geodesic(2, 1, 0, model="klein", check=False)
+            sage: geodesic
+            {2 + x = 0}
+
+            sage: geodesic.start()
+            Traceback (most recent call last):
+            ...
+            ValueError: geodesic does not intersect the Klein disk
+
+            sage: geodesic.end()
+            Traceback (most recent call last):
+            ...
+            ValueError: geodesic does not intersect the Klein disk
+
+        TESTS::
+
+            sage: H.geodesic(0, 0)
+            Traceback (most recent call last):
+            ...
+            ValueError: points specifying a geodesic must be distinct
 
         """
         if c is None:
@@ -2554,6 +2597,7 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
             {(x^2 + y^2) - 1 ≥ 0}
 
         """
+        # TODO: Use geodesic printing instead.
         # TODO: Turn this into a proper predicate.
         sgn = self.parent().geometry.sgn
 
@@ -2787,29 +2831,63 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
         """
         return hash((self._a, self._b, self._c))
 
-    def _repr_(self):
+    def is_ultra_ideal(self):
         # TODO: Check documentation.
         # TODO: Check INPUT
         # TODO: Check SEEALSO
         # TODO: Check for doctests
-        # Convert to the upper half plane model as a(x^2 + y^2) + bx + c = 0.
-        a, b, c = self.equation(model="half_plane", gcd=None)
-
-        from sage.all import PolynomialRing
-
-        R = PolynomialRing(self.parent().base_ring(), names="x")
+        # TODO: Should this be in the oriented class? Should there be an equivalent in the unoriented class?
         # TODO: Turn this into a proper predicate.
-        sgn = self.parent().geometry.sgn
-        if sgn(a) != 0:
-            return f"{{{repr(R([0, a]))[:-1]}(x^2 + y^2){repr(R([c, b, 1]))[3:]} = 0}}"
-        else:
-            return f"{{{repr(R([c, b]))} = 0}}"
+        # TODO: Make sure that all sets have is_finite, is_ideal, is_ultra_ideal.
+        # TODO: Check that this also catches geodesics that touch the Klein disk.
+        cmp = self.parent().geometry.cmp
+        return cmp(self._b * self._b + self._c * self._c, self._a * self._a) <= 0
+
+    def _repr_(self, model=None):
+        # TODO: Check documentation.
+        # TODO: Check INPUT
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+
+        if model is None:
+            model = "klein" if self.is_ultra_ideal() else "half_plane"
+
+        if model == "half_plane":
+            # Convert to the upper half plane model as a(x^2 + y^2) + bx + c = 0.
+            a, b, c = self.equation(model="half_plane", gcd=None)
+
+            from sage.all import PolynomialRing
+
+            R = PolynomialRing(self.parent().base_ring(), names="x")
+            # TODO: Turn this into a proper predicate.
+            sgn = self.parent().geometry.sgn
+            if sgn(a) != 0:
+                return f"{{{repr(R([0, a]))[:-1]}(x^2 + y^2){repr(R([c, b, 1]))[3:]} = 0}}"
+            else:
+                return f"{{{repr(R([c, b]))} = 0}}"
+
+        if model == "klein":
+            a, b, c = self.equation(model="klein", gcd=None)
+
+            from sage.all import PolynomialRing
+
+            R = PolynomialRing(self.parent().base_ring(), names=["x", "y"])
+            polynomial_part = R({(1, 0): b, (0, 1): c})
+            # TODO: Turn this into a proper predicate.
+            sgn = self.parent().geometry.sgn
+            if sgn(a) != 0:
+                return f"{{{repr(a)} + {repr(polynomial_part)} = 0}}"
+            else:
+                return f"{{{repr(polynomial_part)} = 0}}"
+
+        raise NotImplementedError("printing not supported in this model")
 
     def equation(self, model, gcd=False):
         # TODO: Check documentation.
         # TODO: Check INPUT
         # TODO: Check SEEALSO
         # TODO: Check for doctests
+        # TODO: Explain limitations when ultra ideal (and model=half_plane)
         r"""
         Return an equation for this geodesic as a triple ``a``, ``b``, ``c`` such that:
 
@@ -3119,16 +3197,6 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
             raise ValueError(
                 f"equation {self._a} + ({self._b})*x + ({self._c})*y = 0 does not define a chord in the Klein model"
             )
-
-    def is_ultra_ideal(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Should this be in the oriented class? Should there be an equivalent in the unoriented class?
-        # TODO: Turn this into a proper predicate.
-        cmp = self.parent().geometry.cmp
-        return cmp(self._b * self._b + self._c * self._c, self._a * self._a) <= 0
 
     def start(self):
         # TODO: Check documentation.
