@@ -1,4 +1,3 @@
-<!-- TODO: Fix URL before merging -->
 <p align="center">
     <img alt="logo" src="https://github.com/saraedum/sage-flatsurf/raw/flatsurf-stack/doc/logo.svg?sanitize=true" width="300px">
 </p>
