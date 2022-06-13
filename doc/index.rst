@@ -1,26 +1,21 @@
-.. sage-flatsurf documentation master file, created by
-   sphinx-quickstart on Wed Mar 16 13:04:55 2016.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+sage-flatsurf: Flat Surfaces in SageMath
+========================================
 
-Documentation for sage-flatsurf
-*******************************
+sage-flatsurf is a Python package for working with flat surfaces in `SageMath
+<https://sagemath.org>`.
 
-Contents:
+We aim for sage-flatsurf to support the investigation of geometric, algebraic
+and dynamical questions related to flat surfaces. By flat surface we mean a
+surface modeled on the plane with monodromy given by similarities of the plane,
+though current efforts are focused on `translation surfaces
+<https://en.wikipedia.org/wiki/Translation_surface>`_ and `half-translation
+surfaces
+<https://en.wikipedia.org/wiki/Translation_surface#Half-translation_surfaces>`_.
 
 .. toctree::
-   :maxdepth: 2
+   :hidden:
 
    walk_through
    geometry
    graphical
    examples
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
-
