@@ -11,7 +11,7 @@ We aim for sage-flatsurf to support the investigation of geometric, algebraic
 and dynamical questions related to flat surfaces. By flat surface we mean a
 surface modeled on the plane with monodromy given by similarities of the plane,
 though current efforts are focused on [translation
-surfaces](https://en.wikipedia.org/wiki/Translation_surface>) and
+surfaces](https://en.wikipedia.org/wiki/Translation_surface) and
 [half-translation
 surfaces](https://en.wikipedia.org/wiki/Translation_surface#Half-translation_surfaces).
 
@@ -54,7 +54,7 @@ We welcome others to [contribute](https://flatsurf.github.io#contact).
 ## How to Cite This Project
 
 If you have used this project, please cite us as described [on our
-zenodo website](https://zenodo.org/badge/latestdoi/13970050>).
+zenodo website](https://zenodo.org/badge/latestdoi/13970050).
 
 ## Acknowledgements
 
