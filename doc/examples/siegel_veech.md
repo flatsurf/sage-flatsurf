@@ -14,7 +14,7 @@ kernelspec:
 
 # Siegel-Veech Constants
 
-We count the number of cylinders of circumference at most $L$ in a surface a
+We count the number of cylinders of circumference at most $L$ in a surface as a
 step in a potential computation of Siegel-Veech constants that David Aulicino
 was interested in.
 
