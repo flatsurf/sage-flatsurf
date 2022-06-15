@@ -59,7 +59,7 @@ zenodo website](https://zenodo.org/badge/latestdoi/13970050).
 ## Acknowledgements
 
 * sage-flatsurf was started during a thematic semester at
-  [ICERM](https://icerm.brown.edu>).
+  [ICERM](https://icerm.brown.edu).
 * Vincent Delecroix's contribution to the project has been supported by
   OpenDreamKit, Horizon 2020 European Research Infrastructures project #676541.
 * Pat Hooper's contribution to the project has been supported by the National
