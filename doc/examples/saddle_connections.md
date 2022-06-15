@@ -10,13 +10,12 @@ kernelspec:
   display_name: SageMath 9.2
   language: sage
   name: sagemath
+author: Pat Hooper <whooper@ccny.cuny.edu>
 ---
 
 +++ {"deletable": true, "editable": true}
 
-# Saddle Connection Demo
-
-Initial version by Pat Hooper <whooper@ccny.cuny.edu> on Dec. 16, 2017.
+# Working with Saddle Connections
 
 ```{code-cell} ipython3
 ---

@@ -14,7 +14,12 @@ kernelspec:
 
 # Siegel-Veech Constants
 
-We count the number of cylinders of circumference at most $L$ in a surface.
+We count the number of cylinders of circumference at most $L$ in a surface a
+step in a potential computation of Siegel-Veech constants that David Aulicino
+was interested in.
+
+Note that parts of this code use the C++ library libflatsurf. Please consult
+our installation instructions if this library is not available on your system.
 
 We start by creating a surface with [sage-flatsurf](https://github.com/flatsurf/sage-flatsurf).
 
