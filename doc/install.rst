@@ -107,6 +107,10 @@ some computations might fail in this setup::
 
         sage -pip install sage-flatsurf
 
+To uninstall sage-flatsurf again later::
+
+        sage -pip uninstall sage-flatsurf
+
 .. _installation-pip:
 
 Install from PyPI
@@ -118,3 +122,7 @@ Python package. Again, this does not come with the optional dependencies of
 sage-flatsurf, so some computations might fail in this setup::
 
         pip install --user sage-flatsurf
+
+To uninstall sage-flatsurf again later::
+
+        pip uninstall --user sage-flatsurf
