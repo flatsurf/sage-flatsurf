@@ -51,5 +51,5 @@ Note that you can use ``mamba upgrade -n sage-flatsurf-build --all`` to update a
         conda activate sage-flatsurf-build
 
 This should cover the very basics of development but there are certainly lots
-of problems that we missed, so don't hesitate to `contact us
-<https://flatsurf.github.io>`_ if anything does not work out right away.
+of things that we missed here, so don't hesitate to `contact us
+<https://flatsurf.github.io>`_ if anything does not work out right away :)
