@@ -43,7 +43,7 @@ build sage-flatsurf from source. For this, please have a look at our
 A Tour of sage-flatsurf
 =======================
 
-The following presents some of the capabilities of sage-flatsurf.
+Demos of some of the capabilities of sage-flatsurf:
 
 .. toctree::
    :maxdepth: 1
