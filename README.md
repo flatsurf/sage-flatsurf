@@ -38,7 +38,7 @@ take a long time for this environment to start:
 ## Developing sage-flatsurf
 
 Please consult our [Developer's
-Guide](https://flatsurf.github.io/sage-flatsurf/development.html) to build
+Guide](https://flatsurf.github.io/sage-flatsurf/developer.html) to build
 sage-flaturf from source and to run our test suite.
 
 ## Contributors
