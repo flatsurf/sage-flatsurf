@@ -19,7 +19,7 @@ step in a potential computation of Siegel-Veech constants that David Aulicino
 was interested in.
 
 Note that parts of this code use the C++ library libflatsurf. Please consult
-our installation instructions if this library is not available on your system.
+our installation instructions if this library is not available on your system yet.
 
 We start by creating a surface with [sage-flatsurf](https://github.com/flatsurf/sage-flatsurf).
 
