@@ -1,7 +1,7 @@
 import setuptools
 from distutils.core import setup
 
-with open('README.rst') as f:
+with open('README.md') as f:
     long_description = f.read()
 
 setup(name='sage_flatsurf',
