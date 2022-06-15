@@ -2,7 +2,7 @@ sage-flatsurf: Flat Surfaces in SageMath
 ========================================
 
 sage-flatsurf is a Python package for working with flat surfaces in `SageMath
-<https://sagemath.org>`.
+<https://sagemath.org>`_.
 
 We aim for sage-flatsurf to support the investigation of geometric, algebraic
 and dynamical questions related to flat surfaces. By flat surface we mean a
@@ -18,10 +18,10 @@ Installation
 The preferred way to install software should be to use your package manager
 (e.g. `apt-get` on Debian or Ubuntu, `pacman` on Arch Linux, `brew` on MacOS,
 etc). However, as of this writing sage-flatsurf has not been picked up by `any
-of the major distributions yet <https://repology.org/project/sage-flatsurf/packages>`.
+of the major distributions yet <https://repology.org/project/sage-flatsurf/packages>`_.
 
 We therefore recommend to install sage-flatsurf with the `Mamba
-<https://github.com/mamba-org/mamba>` package manager.
+<https://github.com/mamba-org/mamba>`_ package manager.
 
 Detailed installation instructions:
 
@@ -33,6 +33,12 @@ Detailed installation instructions:
 If you are planning to work on the sage-flatsurf source code, you can also
 build sage-flatsurf from source. For this, please have a look at our
 :ref:`Developer's Guide <developers-guide>`.
+
+.. toctree::
+   :hidden:
+
+   install
+   developer
 
 A Tour of sage-flatsurf
 =======================

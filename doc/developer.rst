@@ -17,7 +17,7 @@ that is the easiest way to make sure that all optional dependencies of
 sage-flatsurf are satisfied.
 
 To setup a conda environment, it's maybe best to first install sage-flatsurf
-with mamba, as explained in our `installation guide <installation-mamba>`.
+with mamba, as explained in our `installation guide <installation-mamba>`_.
 
 If that worked, you should create a separate environment to work on
 sage-flatsurf::
