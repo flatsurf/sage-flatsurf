@@ -45,6 +45,7 @@ $VERSION_BUMP_PATTERNS = [
     ('setup.py', r"    version=", r"    version='$VERSION',"),
     ('flatsurf.yml', r"  - sage-flatsurf=", r"  - sage-flatsurf=$VERSION"),
     ('README.md', r'\[!\[Binder\]', r'[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/flatsurf/sage-flatsurf/$VERSION?filepath=doc%2Fexamples)'),
+    ('doc/index.rst', r' :target: https://mybinder.org/v2/gh/flatsurf/sage-flatsurf', r' :target: https://mybinder.org/v2/gh/flatsurf/sage-flatsurf/$VERSION?filepath=doc%2Fexamples'),
 ]
 
 $CHANGELOG_FILENAME = 'ChangeLog'

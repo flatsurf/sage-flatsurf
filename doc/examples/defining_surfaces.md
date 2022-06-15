@@ -13,7 +13,7 @@ kernelspec:
 author: Pat Hooper <whooper@ccny.cuny.edu>
 ---
 
-# Defining Surfaces in sage-flatsurf
+# Defining Surfaces
 
 ```{code-cell} ipython3
 from flatsurf import *

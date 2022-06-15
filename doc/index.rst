@@ -37,7 +37,7 @@ build sage-flatsurf from source. For this, please have a look at our
 A Tour of sage-flatsurf
 =======================
 
-TODO: Mention binder.
+The following presents some of the capabilities of sage-flatsurf.
 
 .. toctree::
    :maxdepth: 1
@@ -51,11 +51,16 @@ TODO: Mention binder.
    examples/straight_line_flow
    examples/warwick-2017
 
+These examples can also be explored interactively by clicking |binder|_. The interactive session might take a moment to start. Once ready, press Shift + Enter to execute the cells, starting from the top.
+
+.. |binder| image:: https://mybinder.org/badge_logo.svg
+.. _binder: https://mybinder.org/v2/gh/flatsurf/sage-flatsurf/0.4.6?filepath=doc%2Fexamples
+
 Reference Manual
 ================
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
 
    geometry
    graphical
