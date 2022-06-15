@@ -25,7 +25,7 @@ sage-flatsurf::
         mamba env create -n sage-flatsurf-build -f https://github.com/flatsurf/sage-flatsurf/raw/master/environment.yml
 
 This environment has all the dependencies of sage-flatsurf installed, but not
-sage-flatsurf itsealf::
+sage-flatsurf itself::
 
         conda activate sage-flatsurf-build
 
@@ -34,7 +34,7 @@ repository::
 
         git clone https://github.com/flatsurf/sage-flatsurf.git
 
-You can now install an editable version of sage-flatsurf inside the `sage-flatsurf-build` environment, so any changes you make to `sage-flatsurf/` are going to be available immediately in this environment::
+You can now install an editable version of sage-flatsurf inside the ``sage-flatsurf-build`` environment, so any changes you make to ``sage-flatsurf/`` are going to be available immediately in this environment::
 
         pip install -e ./sage-flatsurf
 
@@ -43,7 +43,7 @@ You can now run our doctests, and run our test suite::
         sage -tp --initial --optional=sage,flipper,eantic,exactreal,pyflatsurf flatsurf doc
         pytest -n auto
 
-Note that you can use `mamba upgrade -n sage-flatsurf-build --all` to update all of sage-flatsurf's dependencies. You can also recreate the environment to make sure that it's identical to the one that is used in our automated tests::
+Note that you can use ``mamba upgrade -n sage-flatsurf-build --all`` to update all of sage-flatsurf's dependencies. You can also recreate the environment to make sure that it's identical to the one that is used in our automated tests::
 
         conda deactivate
         mamba uninstall -n sage-flatsurf-build --all
