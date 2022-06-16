@@ -1352,10 +1352,6 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         return self.__make_element_class__(HyperbolicHalfSpace)(self, geodesic)
 
-    # TODO: Look into orientation. When there is start & end then the result is
-    # oriented. When there is only start or end, then geodesic must be oriented
-    # an the result is oriented. If there is neither start nor end, we also
-    # require geodesic to be oriented.
     def segment(
         self,
         geodesic,
@@ -1365,10 +1361,6 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         check=True,
         assume_normalized=False,
     ):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
         r"""
         Return the segment on the ``geodesic`` bounded by ``start`` and ``end``.
 
@@ -1382,8 +1374,9 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
           at the infinite :meth:`HyperbolicOrientedGeodesic.start` point of the
           geodesic.
 
-        - ``end`` -- ``None`` or a :meth:`point` on the ``geodesic``, same as
-          ``start``; must be later on ``geodesic`` than ``start``.
+        - ``end`` -- ``None`` or a :meth:`point` on the ``geodesic``, as for
+          ``start``; must be later on ``geodesic`` than ``start`` if the
+          geodesic is oriented.
 
         - ``oriented`` -- whether to produce an oriented segment or an
           unoriented segment. The default (``None``) is to produce an oriented
@@ -1392,6 +1385,11 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         - ``check`` -- boolean (default: ``True``), whether validation is
           performed on the arguments.
+
+        - ``assume_normalized`` -- boolean (default: ``False``), if not set,
+          the returned segment is normalized, i.e., if it is actually a
+          geodesic, a :class:`HyperbolicGeodesic` is returned, if it is
+          actually a point, a :class:`HyperbolicPoint` is returned.
 
         EXAMPLES::
 
@@ -1444,8 +1442,68 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             True
             sage: H.segment(H.vertical(0).unoriented(), start=2*I, end=I).is_oriented()
             True
-            sage: H.segment(H.vertical(0).unoriented(), start=I) != H.segment(H.vertical(0).unoriented(), end=I)
+            sage: H.segment(H.vertical(0), start=I) != H.segment(H.vertical(0), end=I)
             True
+
+        TESTS:
+
+        When only a ``start`` point is provided, we cannot deduce the orientation of the geodesic::
+
+            sage: H.segment(H.vertical(0).unoriented(), start=0, oriented=False)
+            Traceback (most recent call last):
+            ...
+            ValueError: cannot deduce segment from single endpoint on an unoriented geodesic
+
+            sage: H.segment(H.vertical(0).unoriented(), start=0, oriented=True)
+            Traceback (most recent call last):
+            ...
+            ValueError: cannot deduce segment from single endpoint on an unoriented geodesic
+
+            sage: H.segment(H.vertical(0).unoriented(), start=I, oriented=True)
+            Traceback (most recent call last):
+            ...
+            ValueError: cannot deduce segment from single endpoint on an unoriented geodesic
+
+        When only an ``end`` point is provided, we cannot deduce the orientation of the geodesic::
+
+            sage: H.segment(H.vertical(0).unoriented(), end=0, oriented=False)
+            Traceback (most recent call last):
+            ...
+            ValueError: cannot deduce segment from single endpoint on an unoriented geodesic
+
+            sage: H.segment(H.vertical(0).unoriented(), end=0, oriented=True)
+            Traceback (most recent call last):
+            ...
+            ValueError: cannot deduce segment from single endpoint on an unoriented geodesic
+
+            sage: H.segment(H.vertical(0).unoriented(), end=I, oriented=True)
+            Traceback (most recent call last):
+            ...
+            ValueError: cannot deduce segment from single endpoint on an unoriented geodesic
+
+        When ``start`` and ``end`` are given, they must be ordered correctly::
+
+            sage: H.segment(H.vertical(0), start=0, end=oo)
+            {-x = 0}
+
+            sage: H.segment(H.vertical(0).unoriented(), start=oo, end=0)
+            {x = 0}
+
+            sage: H.segment(H.vertical(0), start=oo, end=0)
+            Traceback (most recent call last):
+            ...
+            ValueError: end point of segment must be after start point on the underlying geodesic
+
+            sage: H.segment(H.vertical(0), start=I, end=2*I)
+            {-x = 0} ∩ {(x^2 + y^2) - 1 ≥ 0} ∩ {(x^2 + y^2) - 4 ≤ 0}
+
+            sage: H.segment(H.vertical(0).unoriented(), start=2*I, end=I)
+            {x = 0} ∩ {(x^2 + y^2) - 4 ≤ 0} ∩ {(x^2 + y^2) - 1 ≥ 0}
+
+            sage: H.segment(H.vertical(0), start=2*I, end=I)
+            Traceback (most recent call last):
+            ...
+            ValueError: end point of segment must be after start point on the underlying geodesic
 
         .. SEEALSO::
 
@@ -1472,6 +1530,14 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         if not geodesic.is_oriented():
             geodesic = geodesic.change(oriented=True)
+
+            if start is None and end is None:
+                # any orientation of the geodesic will do
+                pass
+            elif start is None or end is None or start == end:
+                raise ValueError("cannot deduce segment from single endpoint on an unoriented geodesic")
+            elif geodesic.parametrize(start, model="euclidean", check=False) > geodesic.parametrize(end, model="euclidean", check=False):
+                geodesic = -geodesic
 
         segment = self.__make_element_class__(
             HyperbolicOrientedSegment if oriented else HyperbolicUnorientedSegment
@@ -5321,6 +5387,126 @@ class HyperbolicSegment(HyperbolicConvexSet):
         self._start = start
         self._end = end
 
+    def _check(self, require_normalized=True):
+        # TODO: Check documentation.
+        # TODO: Check INPUT
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        # TODO: Should this be in the oriented class? Should there be an equivalent in the unoriented class?
+        start = self._start
+        end = self._end
+
+        if start is not None:
+            if start not in self._geodesic:
+                raise ValueError("start point must be on the geodesic")
+
+        if end is not None:
+            if end not in self._geodesic:
+                raise ValueError("end point must be on the geodesic")
+
+        # TODO: Check end >= start and end > start if require_normalized.
+
+        # TODO: Check that end > start even if unoriented since otherwise the printing is wrong.
+
+        # TODO: Check start & end finite if require_normalized.
+
+    def _normalize(self):
+        # TODO: Check documentation.
+        # TODO: Check INPUT
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        # TODO: Should this be in the oriented class? Should there be an equivalent in the unoriented class?
+        r"""
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(QQ)
+
+        TESTS:
+
+        We define a helper method for easier testing::
+
+            sage: segment = lambda *args, **kwds: H.segment(*args, **kwds, check=False, assume_normalized=True)
+
+        ::
+
+            sage: segment(H.vertical(-1), start=H.infinity(), end=H.infinity())._normalize()
+            ∞
+
+        ::
+
+            sage: segment(H.vertical(0), start=H.infinity(), end=None)._normalize()
+            ∞
+
+            sage: segment(H.vertical(0), start=None, end=H.infinity())._normalize()
+            {-x = 0}
+
+            sage: segment(-H.vertical(0), start=H.infinity(), end=None)._normalize()
+            {x = 0}
+
+            sage: segment(-H.vertical(0), start=None, end=H.infinity())._normalize()
+            ∞
+
+        ::
+
+            sage: segment(H.vertical(0), start=I, end=H.infinity())._normalize()
+            {-x = 0} ∩ {(x^2 + y^2) - 1 ≥ 0}
+
+            sage: segment(-H.vertical(0), start=H.infinity(), end=I)._normalize()
+            {x = 0} ∩ {(x^2 + y^2) - 1 ≥ 0}
+
+        """
+        if self._geodesic.is_ultra_ideal():
+            return self.parent().empty_set()
+
+        start = self._start
+        end = self._end
+
+        if start is not None:
+            λ_start = self._geodesic.parametrize(start, model="euclidean", check=False)
+
+        if end is not None:
+            λ_end = self._geodesic.parametrize(end, model="euclidean", check=False)
+
+        if start is not None and end is not None:
+            if λ_start > λ_end:
+                raise ValueError("end point of segment must be after start point on the underlying geodesic")
+
+        if start is not None:
+            if not start.is_finite():
+                # TODO: Turn this into a proper predicate.
+                sgn = self.parent().geometry.sgn
+                if sgn(λ_start) > 0:
+                    return (
+                        self.parent().empty_set() if start.is_ultra_ideal() else start
+                    )
+                start = None
+
+        if end is not None:
+            if not end.is_finite():
+                # TODO: Turn this into a proper predicate.
+                sgn = self.parent().geometry.sgn
+                if sgn(λ_end) < 0:
+                    return self.parent().empty_set() if end.is_ultra_ideal() else end
+                end = None
+
+        if start is None and end is None:
+            segment = self._geodesic
+            if not self.is_oriented():
+                segment = segment.unoriented()
+            return segment
+
+        assert (start is None or not start.is_ultra_ideal()) and (
+            end is None or not end.is_ultra_ideal()
+        )
+
+        if start == end:
+            return start
+
+        return self.parent().segment(
+            self._geodesic, start=start, end=end, check=False, assume_normalized=True, oriented=self.is_oriented()
+        )
+
     def _endpoint_half_spaces(self):
         # TODO: Check documentation.
         # TODO: Check INPUT
@@ -5526,119 +5712,6 @@ class HyperbolicOrientedSegment(HyperbolicSegment, HyperbolicOrientedConvexSet):
         # TODO: Check for doctests
         return self.parent().segment(
             -self._geodesic, self._end, self._start, check=False, assume_normalized=True
-        )
-
-    def _check(self, require_normalized=True):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Should this be in the oriented class? Should there be an equivalent in the unoriented class?
-        start = self._start
-        end = self._end
-
-        if start is not None:
-            if start not in self._geodesic:
-                raise ValueError("start point must be on the geodesic")
-
-        if end is not None:
-            if end not in self._geodesic:
-                raise ValueError("end point must be on the geodesic")
-
-        # TODO: Check end >= start and end > start if require_normalized.
-
-        # TODO: Check that end > start even if unoriented since otherwise the printing is wrong.
-
-        # TODO: Check start & end finite if require_normalized.
-
-    def _normalize(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Should this be in the oriented class? Should there be an equivalent in the unoriented class?
-        r"""
-        EXAMPLES::
-
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
-            sage: H = HyperbolicPlane(QQ)
-
-        TESTS:
-
-        We define a helper method for easier testing::
-
-            sage: segment = lambda *args, **kwds: H.segment(*args, **kwds, check=False, assume_normalized=True)
-
-        ::
-
-            sage: segment(H.vertical(-1), start=H.infinity(), end=H.infinity())._normalize()
-            ∞
-
-        ::
-
-            sage: segment(H.vertical(0), start=H.infinity(), end=None)._normalize()
-            ∞
-
-            sage: segment(H.vertical(0), start=None, end=H.infinity())._normalize()
-            {-x = 0}
-
-            sage: segment(-H.vertical(0), start=H.infinity(), end=None)._normalize()
-            {x = 0}
-
-            sage: segment(-H.vertical(0), start=None, end=H.infinity())._normalize()
-            ∞
-
-        ::
-
-            sage: segment(H.vertical(0), start=I, end=H.infinity())._normalize()
-            {-x = 0} ∩ {(x^2 + y^2) - 1 ≥ 0}
-
-            sage: segment(-H.vertical(0), start=H.infinity(), end=I)._normalize()
-            {x = 0} ∩ {(x^2 + y^2) - 1 ≥ 0}
-
-        """
-        if self._geodesic.is_ultra_ideal():
-            return self.parent().empty_set()
-
-        start = self._start
-        end = self._end
-
-        if start is not None:
-            λ_start = self._geodesic.parametrize(start, model="euclidean", check=False)
-
-        if end is not None:
-            λ_end = self._geodesic.parametrize(end, model="euclidean", check=False)
-
-        if start is not None:
-            if not start.is_finite():
-                # TODO: Turn this into a proper predicate.
-                sgn = self.parent().geometry.sgn
-                if sgn(λ_start) > 0:
-                    return (
-                        self.parent().empty_set() if start.is_ultra_ideal() else start
-                    )
-                start = None
-
-        if end is not None:
-            if not end.is_finite():
-                # TODO: Turn this into a proper predicate.
-                sgn = self.parent().geometry.sgn
-                if sgn(λ_end) < 0:
-                    return self.parent().empty_set() if end.is_ultra_ideal() else end
-                end = None
-
-        if start is None and end is None:
-            return self._geodesic
-
-        assert (start is None or not start.is_ultra_ideal()) and (
-            end is None or not end.is_ultra_ideal()
-        )
-
-        if start == end:
-            return start
-
-        return self.parent().segment(
-            self._geodesic, start=start, end=end, check=False, assume_normalized=True
         )
 
     def _is_valid(self):
