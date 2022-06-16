@@ -5462,21 +5462,18 @@ class HyperbolicSegment(HyperbolicConvexSet):
         start = self._start
         end = self._end
 
-        if start is not None:
-            λ_start = self._geodesic.parametrize(start, model="euclidean", check=False)
-
-        if end is not None:
-            λ_end = self._geodesic.parametrize(end, model="euclidean", check=False)
+        def λ(point):
+            return self._geodesic.parametrize(point, model="euclidean", check=False)
 
         if start is not None and end is not None:
-            if λ_start > λ_end:
+            if λ(start) > λ(end):
                 raise ValueError("end point of segment must be after start point on the underlying geodesic")
 
         if start is not None:
             if not start.is_finite():
                 # TODO: Turn this into a proper predicate.
                 sgn = self.parent().geometry.sgn
-                if sgn(λ_start) > 0:
+                if sgn(λ(start)) > 0:
                     return (
                         self.parent().empty_set() if start.is_ultra_ideal() else start
                     )
@@ -5486,7 +5483,7 @@ class HyperbolicSegment(HyperbolicConvexSet):
             if not end.is_finite():
                 # TODO: Turn this into a proper predicate.
                 sgn = self.parent().geometry.sgn
-                if sgn(λ_end) < 0:
+                if sgn(λ(end)) < 0:
                     return self.parent().empty_set() if end.is_ultra_ideal() else end
                 end = None
 
