@@ -1295,10 +1295,6 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         )
 
     def half_space(self, a, b, c, model, check=True):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
         r"""
         Return a closed half space from its equation in ``model``.
 
@@ -1318,10 +1314,15 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         in the Klein model.
 
-        ..SEEALSO::
+        INPUT:
 
-            :meth:`HperbolicGeodesic.left_half_space`
-            :meth:`HperbolicGeodesic.right_half_space`
+        - ``a`` -- an element of the :meth:`base_ring`
+
+        - ``b`` -- an element of the :meth:`base_ring`
+
+        - ``c`` -- an element of the :meth:`base_ring`
+
+        - ``model`` -- one of ``"half_plane"``` or ``"klein"``
 
         EXAMPLES::
 
@@ -1335,6 +1336,16 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
             sage: H.vertical(0).left_half_space()
             {x ≤ 0}
+
+        The half space y ≥ 0 given by its equation in the Klein model::
+
+            sage: H.half_space(0, 0, 1, model="klein")
+            {(x^2 + y^2) - 1 ≥ 0}
+
+        ..SEEALSO::
+
+            :meth:`HperbolicGeodesic.left_half_space`
+            :meth:`HperbolicGeodesic.right_half_space`
 
         """
         geodesic = self.geodesic(a, b, c, model=model, check=check)
