@@ -1561,6 +1561,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         # TODO: Check INPUT
         # TODO: Check SEEALSO
         # TODO: Check for doctests
+        # TODO: Support polygons with extra vertices on a segment.
         r"""
         Return the convex polygon obtained by intersecting ``half_spaces``.
 
