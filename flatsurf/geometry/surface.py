@@ -1572,7 +1572,7 @@ class ExtraLabel(SageObject):
         return "ExtraLabel("+str(self._label)+")"
 
 
-class LabelComparator(object):
+class LabelComparator():
     r"""
     Implements a total ordering on labels, which may be of varying types.
     
