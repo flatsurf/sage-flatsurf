@@ -1555,7 +1555,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         return segment
 
     def polygon(
-        self, half_spaces, check=True, assume_sorted=False, assume_minimal=False
+        self, half_spaces, check=True, assume_sorted=False, assume_minimal=False, marked_vertices=False
     ):
         # TODO: Check documentation.
         # TODO: Check INPUT
@@ -1605,7 +1605,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             {x - 1 ≤ 0} ∩ {(x^2 + y^2) - 4 ≤ 0} ∩ {x + 1 ≥ 0} ∩ {(x^2 + y^2) - 1 ≥ 0}
 
         Any set of half spaces defines a polygon, even if the edges do not even
-        meed at ideal points::
+        meet at ideal points::
 
             sage: H.polygon([
             ....:   H.half_circle(0, 1).left_half_space(),
@@ -1685,20 +1685,108 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             sage: H.polygon(H.infinity().half_spaces(), assume_sorted=True)
             ∞
 
+        A polygon can also be created as the convex hull of its vertices::
+
+            sage: H.polygon([I - 1, I + 1, 2*I - 1, 2*I + 1])
+            {x - 1 ≤ 0} ∩ {(x^2 + y^2) - 5 ≤ 0} ∩ {x + 1 ≥ 0} ∩ {(x^2 + y^2) - 2 ≥ 0}
+
+        The vertices can also be infinite::
+
+            sage: H.polygon([-1, 1, 2*I])
+            {(x^2 + y^2) + 3*x - 4 ≤ 0} ∩ {(x^2 + y^2) - 3*x - 4 ≤ 0} ∩ {(x^2 + y^2) - 1 ≥ 0}
+
+        Redundant vertices are removed. However, they can be kept by setting
+        ``marked_vertices``::
+
+            sage: H.polygon([-1, 1, I, 2*I])
+            {(x^2 + y^2) + 3*x - 4 ≤ 0} ∩ {(x^2 + y^2) - 3*x - 4 ≤ 0} ∩ {(x^2 + y^2) - 1 ≥ 0}
+
+            sage: polygon = H.polygon([-1, 1, I, 2*I], marked_vertices=True)
+            sage: polygon
+            {(x^2 + y^2) + 3*x - 4 ≤ 0} ∩ {(x^2 + y^2) - 3*x - 4 ≤ 0} ∩ {(x^2 + y^2) - 1 ≥ 0} ∪ {I}
+
+            sage: polygon.vertices()
+            {-1, I, 2*I, 1}
+
+        A polygon can also be specified by giving both half spaces and
+        vertices. In that case, the vertices must be on the boundary of the
+        polygon::
+
+            sage: H.polygon([H.half_circle(0, 1).right_half_space(), 0])
+            {(x^2 + y^2) - 1 ≤ 0}
+
+        To keep the additional vertices, again ``marked_vertices`` must be set::
+
+            sage: H.polygon([H.half_circle(0, 1).left_half_space(), I], marked_vertices=True)
+            {(x^2 + y^2) - 1 ≥ 0} ∪ {I}
+
+            sage: H.polygon([H.vertical(0).left_half_space(), 0, I, oo], marked_vertices=True)
+            {x ≤ 0} ∪ {I}
+
+            sage: H.polygon([H.vertical(0).right_half_space(), I], marked_vertices=True)
+            {x ≥ 0} ∪ {I}
+
+        Note that this cannot be used to produce marked points on a geodesic::
+
+            sage: H.polygon([-1, I, 1])
+            {(x^2 + y^2) - 1 = 0}
+
+            sage: H.polygon([-1, I, 1], marked_vertices=True)
+            Traceback (most recent call last):
+            ...
+            NotImplementedError: cannot add marked vertices to low dimensional objects
+
+        Note that this cannot be used to produce marked points on a segment::
+
+            sage: H.polygon([I, 2*I, 3*I])
+            {x = 0}
+
+            sage: H.polygon([I, 2*I, 3*I], marked_vertices=True)
+            Traceback (most recent call last):
+            ...
+            NotImplementedError: cannot add marked vertices to low dimensional objects
+
         """
-        half_spaces = [self.coerce(half_space) for half_space in half_spaces]
+        defining_sets = [self(half_space) for half_space in half_spaces]
+
+        vertices = []
+        half_spaces = []
+
+        from collections.abc import Iterable
+        if isinstance(marked_vertices, Iterable):
+            vertices = marked_vertices
+            marked_vertices = True
+
+        for defining in defining_sets:
+            if isinstance(defining, HyperbolicPoint):
+                vertices.append(defining)
+            elif isinstance(defining, HyperbolicHalfSpace):
+                half_spaces.append(defining)
+            elif isinstance(defining, (HyperbolicSegment, HyperbolicGeodesic)):
+                vertices.append(defining.start())
+                vertices.append(defining.end())
+            else:
+                raise TypeError("sets defining a polygon must be points and half spaces")
+
+        if not vertices and not half_spaces:
+            raise NotImplementedError("cannot model intersection of no half spaces yet")
+
+        if not half_spaces:
+            assume_sorted = False
+
+            half_spaces = HyperbolicHalfSpaces.convex_hull(vertices)
 
         half_spaces = HyperbolicHalfSpaces(half_spaces, assume_sorted=assume_sorted)
 
         polygon = self.__make_element_class__(HyperbolicConvexPolygon)(
-            self, half_spaces
+            self, half_spaces, vertices
         )
 
         if check:
             polygon._check(require_normalized=False)
 
         if check or not assume_minimal:
-            polygon = polygon._normalize()
+            polygon = polygon._normalize(marked_vertices=marked_vertices)
 
         if check:
             polygon._check()
@@ -1742,7 +1830,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             {x = 0}
 
         """
-        subsets = [self.coerce(subset) for subset in subsets]
+        subsets = [self(subset) for subset in subsets]
 
         if len(subsets) == 0:
             raise NotImplementedError(
@@ -4221,7 +4309,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
     i.e., the intersection of a finite number of :class:`half spaces <HyperbolicHalfSpace>`.
     """
 
-    def __init__(self, parent, half_spaces):
+    def __init__(self, parent, half_spaces, vertices):
         # TODO: Check documentation.
         # TODO: Check INPUT
         # TODO: Check SEEALSO
@@ -4232,17 +4320,19 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
             raise TypeError("half_spaces must be HyperbolicHalfSpaces")
 
         self._half_spaces = half_spaces
+        self._marked_vertices = vertices
 
     def _check(self, require_normalized=True):
         # TODO: Check documentation.
         # TODO: Check INPUT
         # TODO: Check SEEALSO
         # TODO: Check for doctests
-        # TODO
+        # TODO: Check _marked_vertices on the boundary
+        # TODO: Check _marked_vertices not vertices of the polygon if require_normalized
         pass
 
     # TODO: Add examples.
-    def _normalize(self):
+    def _normalize(self, marked_vertices=False):
         # TODO: Check documentation.
         # TODO: Check INPUT
         # TODO: Check SEEALSO
@@ -4288,6 +4378,8 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
             {x - 1 ≥ 0}
 
         """
+        marked_vertices = self._marked_vertices if marked_vertices else []
+
         self = self._normalize_drop_trivially_redundant()
 
         if not self._half_spaces:
@@ -4305,7 +4397,18 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
         self = self._normalize_drop_euclidean_redundant(boundary)
 
         # Remove half spaces that make no contribution when restricting to the unit disk of the Klein model.
-        return self._normalize_drop_unit_disk_redundant()
+        self = self._normalize_drop_unit_disk_redundant()
+
+        if marked_vertices:
+            if self.dimension() < 2:
+                raise NotImplementedError("cannot add marked vertices to low dimensional objects")
+
+            self = self.parent().polygon(
+                 self.half_spaces(), check=False, assume_sorted=True, assume_minimal=True, marked_vertices=marked_vertices
+            )
+            self = self._normalize_drop_marked_vertices()
+
+        return self
 
     def _normalize_drop_trivially_redundant(self):
         # TODO: Check documentation.
@@ -4371,7 +4474,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
             reduced.append(half_space)
 
         return self.parent().polygon(
-            reduced, check=False, assume_sorted=True, assume_minimal=True
+             reduced, check=False, assume_sorted=True, assume_minimal=True, marked_vertices=False
         )
 
     def _normalize_drop_euclidean_redundant(self, boundary):
@@ -4629,8 +4732,8 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
         )
 
         return self.parent().polygon(
-            required_half_spaces, check=False, assume_sorted=True, assume_minimal=True
-        )
+            required_half_spaces, check=False, assume_sorted=True, assume_minimal=True, marked_vertices=False
+        ) 
 
     def _normalize_drop_unit_disk_redundant(self):
         # TODO: Check documentation.
@@ -4858,7 +4961,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
             return required_half_spaces[0]
 
         return self.parent().polygon(
-            required_half_spaces, check=False, assume_sorted=True, assume_minimal=True
+            required_half_spaces, check=False, assume_sorted=True, assume_minimal=True, marked_vertices=False,
         )
 
     def _euclidean_boundary(self):
@@ -5153,6 +5256,17 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
 
         return point
 
+    def _normalize_drop_marked_vertices(self):
+        # TODO: Check documentation.
+        # TODO: Check INPUT
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        vertices = [vertex for vertex in self._marked_vertices if vertex not in self.vertices(marked_vertices=False)]
+
+        return self.parent().polygon(
+            self._half_spaces, check=False, assume_sorted=True, assume_minimal=True, marked_vertices=vertices,
+        )
+
     def dimension(self):
         # TODO: Check documentation.
         # TODO: Check INPUT
@@ -5180,6 +5294,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
         # TODO: Check SEEALSO
         # TODO: Check for doctests
         # TODO: Define in HyperbolicConvexSet
+        # TODO: Check that this works for marked vertices.
         r"""
         Return the :class:`segments <HyperbolicOrientedSegment>` and
         :class:`geodesics <HyperbolicOrientedGeodesic>` defining this polygon.
@@ -5235,7 +5350,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
 
         return edges
 
-    def vertices(self):
+    def vertices(self, marked_vertices=True):
         # TODO: Check documentation.
         # TODO: Check INPUT
         # TODO: Check SEEALSO
@@ -5247,15 +5362,19 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
         """
         vertices = []
 
-        vertex = None
-        for edge in self.edges():
+        edges = self.edges()
+
+        end = edges[-1].end()
+        for i, edge in enumerate(edges):
             start = edge.start()
-            if vertex is not None and start != vertex:
+            if start != end:
                 vertices.append(start)
 
             end = edge.end()
             vertices.append(end)
-            vertex = end
+
+        if marked_vertices:
+            vertices.extend(self._marked_vertices)
 
         return HyperbolicVertices(vertices)
 
@@ -5271,7 +5390,11 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
         # TODO: Check INPUT
         # TODO: Check SEEALSO
         # TODO: Check for doctests
-        return " ∩ ".join([repr(half_space) for half_space in self._half_spaces])
+        half_spaces = " ∩ ".join([repr(half_space) for half_space in self._half_spaces])
+        vertices = ", ".join([repr(vertex) for vertex in self._marked_vertices])
+        if vertices:
+            return f"{half_spaces} ∪ {{{vertices}}}"
+        return half_spaces
 
     def plot(self, model="half_plane", **kwds):
         # TODO: Check documentation.
@@ -6093,6 +6216,8 @@ class SortedSet:
         # TODO: Check INPUT
         # TODO: Check SEEALSO
         # TODO: Check for doctests
+        if type(self) is not type(other):
+            raise TypeError
         entries = self._merge(list(self._entries), list(other._entries))
         return type(self)(entries, assume_sorted=True)
 
@@ -6334,6 +6459,48 @@ class HyperbolicHalfSpaces(SortedSet):
                 cmp = b.sign() * (a * bb - aa * b).sign()
 
         return cmp < 0
+
+    @classmethod
+    def convex_hull(cls, vertices):
+        # TODO: Check documentation.
+        # TODO: Check INPUT
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        # TODO: Can we use the sorting that HyperbolicVertices provides?
+        vertices = [vertex for (i, vertex) in enumerate(vertices) if vertex not in vertices[i + 1:]]
+        if not vertices:
+            raise NotImplementedError("cannot convert convex hull of no points yet")
+
+        if all(vertex == vertices[0] for vertex in vertices):
+            return vertices[0].half_spaces()
+
+        parent = vertices[0].parent()
+
+        half_spaces = []
+
+        # Determine the half spaces defining the convex hull of the
+        # vertices by iterating through the vertices in counterclockwise
+        # order (this is using the assumption that all the vertices are on
+        # the boundary of the convex hull.)
+        reference = min(vertices, key=lambda vertex: -vertex.coordinates(model="klein")[1])
+        rays = []
+        for vertex in vertices:
+            if vertex == reference:
+                continue
+            ray = parent.geodesic(reference, vertex).left_half_space()
+            rays.append(ray)
+            ray.vertex = vertex
+
+        rays = HyperbolicHalfSpaces(rays)
+
+        start = reference
+        for ray in rays:
+            end = ray.vertex
+            half_spaces.append(parent.geodesic(start, end).left_half_space())
+            start = end
+        half_spaces.append(parent.geodesic(start, reference).left_half_space())
+
+        return HyperbolicHalfSpaces(half_spaces)
 
 
 class BezierPath(GraphicPrimitive):

@@ -760,7 +760,7 @@ class GL2ROrbitClosure:
 
     def cylinder_circumference(self, component, A, sc_index, proj):
         r"""
-        Return the circumference of the cylindre ``component`` in the homology
+        Return the circumference of the cylinder ``component`` in the homology
         of the underlying surface.
 
         INPUT:
