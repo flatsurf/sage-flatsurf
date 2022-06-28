@@ -4733,7 +4733,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
 
         return self.parent().polygon(
             required_half_spaces, check=False, assume_sorted=True, assume_minimal=True, marked_vertices=False
-        ) 
+        )
 
     def _normalize_drop_unit_disk_redundant(self):
         # TODO: Check documentation.
