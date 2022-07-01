@@ -1561,9 +1561,10 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         # TODO: Check INPUT
         # TODO: Check SEEALSO
         # TODO: Check for doctests
-        # TODO: Support polygons with extra vertices on a segment.
         r"""
         Return the convex polygon obtained by intersecting ``half_spaces``.
+
+        ALGORITHM:
 
         See :meth:`intersection` for algorithmic details.
 
@@ -1685,113 +1686,145 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             sage: H.polygon(H.infinity().half_spaces(), assume_sorted=True)
             ∞
 
-        A polygon can also be created as the convex hull of its vertices::
+        .. SEEALSO::
 
-            sage: H.polygon([I - 1, I + 1, 2*I - 1, 2*I + 1])
-            {x - 1 ≤ 0} ∩ {(x^2 + y^2) - 5 ≤ 0} ∩ {x + 1 ≥ 0} ∩ {(x^2 + y^2) - 2 ≥ 0}
-
-        The vertices can also be infinite::
-
-            sage: H.polygon([-1, 1, 2*I])
-            {(x^2 + y^2) + 3*x - 4 ≤ 0} ∩ {(x^2 + y^2) - 3*x - 4 ≤ 0} ∩ {(x^2 + y^2) - 1 ≥ 0}
-
-        Redundant vertices are removed. However, they can be kept by setting
-        ``marked_vertices``::
-
-            sage: H.polygon([-1, 1, I, 2*I])
-            {(x^2 + y^2) + 3*x - 4 ≤ 0} ∩ {(x^2 + y^2) - 3*x - 4 ≤ 0} ∩ {(x^2 + y^2) - 1 ≥ 0}
-
-            sage: polygon = H.polygon([-1, 1, I, 2*I], marked_vertices=True)
-            sage: polygon
-            {(x^2 + y^2) + 3*x - 4 ≤ 0} ∩ {(x^2 + y^2) - 3*x - 4 ≤ 0} ∩ {(x^2 + y^2) - 1 ≥ 0} ∪ {I}
-
-            sage: polygon.vertices()
-            {-1, I, 2*I, 1}
-
-        A polygon can also be specified by giving both half spaces and
-        vertices. In that case, the vertices must be on the boundary of the
-        polygon::
-
-            sage: H.polygon([H.half_circle(0, 1).right_half_space(), 0])
-            {(x^2 + y^2) - 1 ≤ 0}
-
-        To keep the additional vertices, again ``marked_vertices`` must be set::
-
-            sage: H.polygon([H.half_circle(0, 1).left_half_space(), I], marked_vertices=True)
-            {(x^2 + y^2) - 1 ≥ 0} ∪ {I}
-
-            sage: H.polygon([H.vertical(0).left_half_space(), 0, I, oo], marked_vertices=True)
-            {x ≤ 0} ∪ {I}
-
-            sage: H.polygon([H.vertical(0).right_half_space(), I], marked_vertices=True)
-            {x ≥ 0} ∪ {I}
-
-        Note that this cannot be used to produce marked points on a geodesic::
-
-            sage: H.polygon([-1, I, 1])
-            {(x^2 + y^2) - 1 = 0}
-
-            sage: H.polygon([-1, I, 1], marked_vertices=True)
-            Traceback (most recent call last):
-            ...
-            NotImplementedError: cannot add marked vertices to low dimensional objects
-
-        Note that this cannot be used to produce marked points on a segment::
-
-            sage: H.polygon([I, 2*I, 3*I])
-            {x = 0}
-
-            sage: H.polygon([I, 2*I, 3*I], marked_vertices=True)
-            Traceback (most recent call last):
-            ...
-            NotImplementedError: cannot add marked vertices to low dimensional objects
+            :meth:`intersection` to intersect arbitrary convex sets
+            :meth:`convex_hull` to define a polygon by taking the convex hull
+            of a union of convex sets
 
         """
-        defining_sets = [self(half_space) for half_space in half_spaces]
+        if not marked_vertices:
+            marked_vertices = []
 
-        vertices = []
-        half_spaces = []
-
-        from collections.abc import Iterable
-        if isinstance(marked_vertices, Iterable):
-            vertices = marked_vertices
-            marked_vertices = True
-
-        for defining in defining_sets:
-            if isinstance(defining, HyperbolicPoint):
-                vertices.append(defining)
-            elif isinstance(defining, HyperbolicHalfSpace):
-                half_spaces.append(defining)
-            elif isinstance(defining, (HyperbolicSegment, HyperbolicGeodesic)):
-                vertices.append(defining.start())
-                vertices.append(defining.end())
-            else:
-                raise TypeError("sets defining a polygon must be points and half spaces")
-
-        if not vertices and not half_spaces:
-            raise NotImplementedError("cannot model intersection of no half spaces yet")
-
-        if not half_spaces:
-            assume_sorted = False
-
-            half_spaces = HyperbolicHalfSpaces.convex_hull(vertices)
+        half_spaces = [self(half_space) for half_space in half_spaces]
+        marked_vertices = [self(vertex) for vertex in marked_vertices]
 
         half_spaces = HyperbolicHalfSpaces(half_spaces, assume_sorted=assume_sorted)
 
         polygon = self.__make_element_class__(HyperbolicConvexPolygon)(
-            self, half_spaces, vertices
+            self, half_spaces, marked_vertices
         )
 
         if check:
             polygon._check(require_normalized=False)
 
         if check or not assume_minimal:
-            polygon = polygon._normalize(marked_vertices=marked_vertices)
+            polygon = polygon._normalize(marked_vertices=bool(marked_vertices))
 
         if check:
             polygon._check()
 
         return polygon
+
+    def convex_hull(self, *subsets, marked_vertices=False):
+        # TODO: Check documentation.
+        # TODO: Check INPUT
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        r"""
+
+        ALGORITHM:
+
+        TODO
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+        A polygon can also be created as the convex hull of its vertices::
+
+            sage: H.convex_hull(I - 1, I + 1, 2*I - 1, 2*I + 1)
+            {x - 1 ≤ 0} ∩ {(x^2 + y^2) - 5 ≤ 0} ∩ {x + 1 ≥ 0} ∩ {(x^2 + y^2) - 2 ≥ 0}
+
+        The vertices can also be infinite::
+
+            sage: H.convex_hull(-1, 1, 2*I)
+            {(x^2 + y^2) + 3*x - 4 ≤ 0} ∩ {(x^2 + y^2) - 3*x - 4 ≤ 0} ∩ {(x^2 + y^2) - 1 ≥ 0}
+
+        Redundant vertices are removed. However, they can be kept by setting
+        ``marked_vertices``::
+
+            sage: H.convex_hull(-1, 1, I, 2*I)
+            {(x^2 + y^2) + 3*x - 4 ≤ 0} ∩ {(x^2 + y^2) - 3*x - 4 ≤ 0} ∩ {(x^2 + y^2) - 1 ≥ 0}
+
+            sage: polygon = H.convex_hull(-1, 1, I, 2*I, marked_vertices=True)
+            sage: polygon
+            {(x^2 + y^2) + 3*x - 4 ≤ 0} ∩ {(x^2 + y^2) - 3*x - 4 ≤ 0} ∩ {(x^2 + y^2) - 1 ≥ 0} ∪ {I}
+
+            sage: polygon.vertices()
+            {-1, I, 2*I, 1}
+
+        The convex hull of a half space and a point::
+
+            sage: H.convex_hull(H.half_circle(0, 1).right_half_space(), 0)
+            {(x^2 + y^2) - 1 ≤ 0}
+
+        To keep the additional vertices, again ``marked_vertices`` must be set::
+
+            sage: H.convex_hull(H.half_circle(0, 1).left_half_space(), I, marked_vertices=True)
+            {(x^2 + y^2) - 1 ≥ 0} ∪ {I}
+
+            sage: H.convex_hull(H.vertical(0).left_half_space(), 0, I, oo, marked_vertices=True)
+            {x ≤ 0} ∪ {I}
+
+            sage: H.convex_hull(H.vertical(0).right_half_space(), I, marked_vertices=True)
+            {x ≥ 0} ∪ {I}
+
+        Note that this cannot be used to produce marked points on a geodesic::
+
+            sage: H.convex_hull(-1, I, 1)
+            {(x^2 + y^2) - 1 = 0}
+
+            sage: H.convex_hull(-1, I, 1, marked_vertices=True)
+            Traceback (most recent call last):
+            ...
+            NotImplementedError: cannot add marked vertices to low dimensional objects
+
+        Note that this cannot be used to produce marked points on a segment::
+
+            sage: H.convex_hull(I, 2*I, 3*I)
+            {x = 0}
+
+            sage: H.convex_hull(I, 2*I, 3*I, marked_vertices=True)
+            Traceback (most recent call last):
+            ...
+            NotImplementedError: cannot add marked vertices to low dimensional objects
+
+        """
+        subsets = [self(subset) for subset in subsets]
+
+        vertices = sum([list(subset.vertices()) for subset in subsets], start=[])
+
+        polygon = self.polygon(HyperbolicHalfSpaces.convex_hull(vertices))
+
+        half_spaces = []
+        for subset in subsets:
+            if subset.dimension() == 2:
+                if isinstance(subset, HyperbolicHalfSpace):
+                    half_spaces.append(subset)
+                elif isinstance(subset, HyperbolicConvexPolygon):
+                    # TODO: determine the half spaces contained in this polygon, i.e., the ones formed by vertices not connected by an edge (with the correct orientation.)
+                    raise NotImplementedError("cannot form convex hull of polygons yet")
+                else:
+                    raise NotImplementedError("cannot form convex hull of this kind of set yet")
+
+        edges = []
+
+        for edge in polygon.half_spaces():
+            # TODO: Documen that this is slow.
+            for half_space in half_spaces:
+                if (-edge).is_subset(half_space):
+                    break
+            else:
+                edges.append(edge)
+
+        if marked_vertices:
+            marked_vertices = [vertex for vertex in vertices if any(vertex in half_space.boundary() for half_space in edges)]
+
+        # TODO: Assert that all vertices and all half spaces are contained now.
+
+        return self.polygon(edges, marked_vertices=marked_vertices)
 
     def intersection(self, *subsets):
         # TODO: Check documentation.
@@ -2597,16 +2630,15 @@ class HyperbolicConvexSet(Element):
         if self.dimension() > other.dimension():
             return False
 
-        vertices = self.vertices()
-
-        for vertex in vertices:
+        for vertex in self.vertices():
             if vertex not in other:
                 return False
 
-        if self.dimension() > 1:
-            raise NotImplementedError("cannot decide subset relation for this two-dimensional set")
+        if self.dimension() <= 1:
+            return True
 
-        return True
+        # TODO: This is only correct for normalized sets?
+        return self.intersection(other) == self
 
     # TODO: Test that is_subset can compare all kinds of sets by inclusion.
 
@@ -6467,6 +6499,7 @@ class HyperbolicHalfSpaces(SortedSet):
         # TODO: Check SEEALSO
         # TODO: Check for doctests
         # TODO: Can we use the sorting that HyperbolicVertices provides?
+        # TODO: Make this work when the points are not on the convex hull
         vertices = [vertex for (i, vertex) in enumerate(vertices) if vertex not in vertices[i + 1:]]
         if not vertices:
             raise NotImplementedError("cannot convert convex hull of no points yet")
