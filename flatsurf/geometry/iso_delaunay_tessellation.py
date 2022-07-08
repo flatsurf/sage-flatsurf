@@ -50,8 +50,6 @@ class IsoDelaunayTessellation(Parent):
         Explore the dual graph of the IsoDelaunay tessellation up to the combinatorial ``limit`` starting from ``edge``.
         When ``edge`` is ``None``, explore all edges of the IsoDelaunay regions containing `i`.
         """
-        
-        # self._surface -> idr0 
 
 
         raise NotImplementedError
@@ -111,10 +109,22 @@ class IsoDelaunayTessellation(Parent):
         else: # point_or_edge is a surface
             raise NotImplementedError
         
-        A = self._point_to_matrix(z)
+        A = self._point_to_matrix(z) # [[1 20], [0 1]]
         A_T = self._surface.apply_matrix(A).delaunay_triangulation()
         T = A_T.apply_matrix(~A)
-        return self._iso_delaunay_region(T)
+        half_planes = self._iso_delaunay_region(T)
+        iso_delaunay_region = self._hyperbolic_plane.polygon(half_planes)
+        if iso_delaunay_region.dimension() < 2:
+            epsilon = 1/2
+            while True:
+                x, y = z.coordinates()
+                z1 = self._hyperbolic_plane.point(x + epsilon, y, model="half_plane")
+                face1 = self.face(z1)
+                if z in face1:
+                    return face1
+                epsilon /= 2
+            
+        return iso_delaunay_region
 
     def surface(self, point):
         r"""
@@ -171,18 +181,20 @@ class IsoDelaunayTessellation(Parent):
         return matrix(2, [1, x, 0, y])
 
     def _iso_delaunay_region(self, triangulation):
-        half_planes = [half_plane
-                       for edge in triangulation.edge_iterator()
-                       if (half_plane := self._half_plane(triangulation, edge)) is not None]
-        return self._hyperbolic_plane.polygon(half_planes)
+        return [half_plane for edge in triangulation.edge_iterator()
+                           if (half_plane := self._half_plane(triangulation, edge)) is not None]
 
 
     def _half_plane(self, triangulation, edge):
         r"""
         Build the halfplane associated to ``edge``.
-        If the hinge is not cocircular, return ``None``.
+        If the hinge is not convex, return ``None``.
         """
         from sage.all import matrix
+
+        # check if hinge is convex
+        if not triangulation.triangle_flip(*edge, test=True):
+            return None
 
         index_triangle, index_edge = edge
         index_opposite_triangle, index_opposite_edge = triangulation.opposite_edge(edge)
@@ -191,9 +203,7 @@ class IsoDelaunayTessellation(Parent):
         v2 = -triangulation.polygon(index_triangle).edge((index_edge - 1) % 3)
 
         incircle_determinant = matrix([[v[0], v[1], v[0]**2 + v[1]**2]
-                                for v in [v0, v1, v2]]).determinant()
-        if incircle_determinant != 0:
-            return None
+                                       for v in [v0, v1, v2]]).determinant()
 
         x0, y0 = v0
         x1, y1 = v1
