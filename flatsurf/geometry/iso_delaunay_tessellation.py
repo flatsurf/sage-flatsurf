@@ -110,8 +110,8 @@ class IsoDelaunayTessellation(Parent):
             raise NotImplementedError
         
         A = self._point_to_matrix(z) # [[1 20], [0 1]]
-        A_T = self._surface.apply_matrix(A).delaunay_triangulation()
-        T = A_T.apply_matrix(~A)
+        A_T = self._surface.apply_matrix(A, in_place=False).delaunay_triangulation(in_place=False)
+        T = A_T.apply_matrix(~A, in_place=False)
         half_planes = self._iso_delaunay_region(T)
         iso_delaunay_region = self._hyperbolic_plane.polygon(half_planes)
         if iso_delaunay_region.dimension() < 2:
@@ -135,7 +135,7 @@ class IsoDelaunayTessellation(Parent):
         from sage.all import matrix
 
         x, y = point.coordinates(model="half_plane")
-        return self._surface.apply_matrix(matrix([[1, x], [0, y]]))
+        return self._surface.apply_matrix(matrix([[1, x], [0, y]], in_place=False))
 
     def fundamental_domain(self):
         r"""
@@ -190,8 +190,6 @@ class IsoDelaunayTessellation(Parent):
         Build the halfplane associated to ``edge``.
         If the hinge is not convex, return ``None``.
         """
-        from sage.all import matrix
-
         # check if hinge is convex
         if not triangulation.triangle_flip(*edge, test=True):
             return None
@@ -201,9 +199,6 @@ class IsoDelaunayTessellation(Parent):
         v0 = triangulation.polygon(index_opposite_triangle).edge((index_opposite_edge + 1) % 3)
         v1 = triangulation.polygon(index_triangle).edge(index_edge)
         v2 = -triangulation.polygon(index_triangle).edge((index_edge - 1) % 3)
-
-        incircle_determinant = matrix([[v[0], v[1], v[0]**2 + v[1]**2]
-                                       for v in [v0, v1, v2]]).determinant()
 
         x0, y0 = v0
         x1, y1 = v1
