@@ -1,20 +1,21 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>The Geometry Package &#8212; sage-flatsurf 0.4.6 documentation</title>
+    <title>The Geometry Package &#8212; sage-flatsurf 0.4.7 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/classic.css" />
-    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
     
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
     <script>let toggleHintShow = 'Click to show';</script>
     <script>let toggleHintHide = 'Click to hide';</script>
@@ -42,7 +43,7 @@
         <li class="right" >
           <a href="walk_through.html" title="A tour of sage-flatsurf"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">sage-flatsurf 0.4.6 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">sage-flatsurf 0.4.7 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">The Geometry Package</a></li> 
       </ul>
     </div>  
@@ -53,11 +54,11 @@
           <div class="body" role="main">
             
   <section id="module-flatsurf.geometry">
-<span id="the-geometry-package"></span><h1>The Geometry Package<a class="headerlink" href="#module-flatsurf.geometry" title="Permalink to this headline">¶</a></h1>
+<span id="the-geometry-package"></span><h1>The Geometry Package<a class="headerlink" href="#module-flatsurf.geometry" title="Permalink to this heading">¶</a></h1>
 <p>This package contains modules for working with basic geometric objects relating to
 translation surfaces and more generally to similarity surfaces.</p>
 <section id="module-flatsurf.geometry.polygon">
-<span id="polygons"></span><h2>Polygons<a class="headerlink" href="#module-flatsurf.geometry.polygon" title="Permalink to this headline">¶</a></h2>
+<span id="polygons"></span><h2>Polygons<a class="headerlink" href="#module-flatsurf.geometry.polygon" title="Permalink to this heading">¶</a></h2>
 <p>Polygons embedded in the plane R^2.</p>
 <p>This file implements polygons with</p>
 <blockquote>
@@ -302,7 +303,7 @@ into the polygon.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="flatsurf.geometry.polygon.ConvexPolygons.Element">
 <span class="sig-name descname"><span class="pre">Element</span></span><a class="headerlink" href="#flatsurf.geometry.polygon.ConvexPolygons.Element" title="Permalink to this definition">¶</a></dt>
-<dd><p>alias of <a class="reference internal" href="#flatsurf.geometry.polygon.ConvexPolygon" title="flatsurf.geometry.polygon.ConvexPolygon"><code class="xref py py-class docutils literal notranslate"><span class="pre">flatsurf.geometry.polygon.ConvexPolygon</span></code></a></p>
+<dd><p>alias of <a class="reference internal" href="#flatsurf.geometry.polygon.ConvexPolygon" title="flatsurf.geometry.polygon.ConvexPolygon"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConvexPolygon</span></code></a></p>
 </dd></dl>
 
 <dl class="py method">
@@ -1264,7 +1265,7 @@ Raises a ValueError if less than three vertices have been accepted.</p>
 <dd><dl class="py attribute">
 <dt class="sig sig-object py" id="flatsurf.geometry.polygon.Polygons.Element">
 <span class="sig-name descname"><span class="pre">Element</span></span><a class="headerlink" href="#flatsurf.geometry.polygon.Polygons.Element" title="Permalink to this definition">¶</a></dt>
-<dd><p>alias of <a class="reference internal" href="#flatsurf.geometry.polygon.Polygon" title="flatsurf.geometry.polygon.Polygon"><code class="xref py py-class docutils literal notranslate"><span class="pre">flatsurf.geometry.polygon.Polygon</span></code></a></p>
+<dd><p>alias of <a class="reference internal" href="#flatsurf.geometry.polygon.Polygon" title="flatsurf.geometry.polygon.Polygon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Polygon</span></code></a></p>
 </dd></dl>
 
 <dl class="py method">
@@ -1788,7 +1789,7 @@ enumerated in counter-clockwise order.</p>
 
 </section>
 <section id="module-flatsurf.geometry.surface">
-<span id="surface-basics"></span><h2>Surface Basics<a class="headerlink" href="#module-flatsurf.geometry.surface" title="Permalink to this headline">¶</a></h2>
+<span id="surface-basics"></span><h2>Surface Basics<a class="headerlink" href="#module-flatsurf.geometry.surface" title="Permalink to this heading">¶</a></h2>
 <p>Data structures for surfaces built from polygons.</p>
 <p>All surfaces in sage-flatsurf are built from polygons whose sides are
 identified by similarities. This module provides data structures to describe
@@ -2434,7 +2435,7 @@ surface.</p>
 
 </section>
 <section id="module-flatsurf.geometry.similarity_surface">
-<span id="similarity-surfaces"></span><h2>Similarity Surfaces<a class="headerlink" href="#module-flatsurf.geometry.similarity_surface" title="Permalink to this headline">¶</a></h2>
+<span id="similarity-surfaces"></span><h2>Similarity Surfaces<a class="headerlink" href="#module-flatsurf.geometry.similarity_surface" title="Permalink to this heading">¶</a></h2>
 <p>Similarity surfaces.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="flatsurf.geometry.similarity_surface.SimilaritySurface">
@@ -3515,7 +3516,7 @@ sage: s.polygon(0).num_edges()
 
 </section>
 <section id="module-flatsurf.geometry.cone_surface">
-<span id="cone-surfaces"></span><h2>Cone Surfaces<a class="headerlink" href="#module-flatsurf.geometry.cone_surface" title="Permalink to this headline">¶</a></h2>
+<span id="cone-surfaces"></span><h2>Cone Surfaces<a class="headerlink" href="#module-flatsurf.geometry.cone_surface" title="Permalink to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="flatsurf.geometry.cone_surface.ConeSurface">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.cone_surface.</span></span><span class="sig-name descname"><span class="pre">ConeSurface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">surface</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/cone_surface.html#ConeSurface"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.cone_surface.ConeSurface" title="Permalink to this definition">¶</a></dt>
@@ -3569,7 +3570,7 @@ sage: s.polygon(0).num_edges()
 
 </section>
 <section id="module-flatsurf.geometry.translation_surface">
-<span id="translation-surfaces"></span><h2>Translation Surfaces<a class="headerlink" href="#module-flatsurf.geometry.translation_surface" title="Permalink to this headline">¶</a></h2>
+<span id="translation-surfaces"></span><h2>Translation Surfaces<a class="headerlink" href="#module-flatsurf.geometry.translation_surface" title="Permalink to this heading">¶</a></h2>
 <p>Translation Surfaces.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="flatsurf.geometry.translation_surface.AbstractOrigami">
@@ -3977,7 +3978,7 @@ Polygon: (0, 0), (1, 0), (1, 1), (0, 1)</p>
 
 </section>
 <section id="module-flatsurf.geometry.matrix_2x2">
-<span id="matrices-2x2"></span><h2>Matrices (2x2)<a class="headerlink" href="#module-flatsurf.geometry.matrix_2x2" title="Permalink to this headline">¶</a></h2>
+<span id="matrices-2x2"></span><h2>Matrices (2x2)<a class="headerlink" href="#module-flatsurf.geometry.matrix_2x2" title="Permalink to this heading">¶</a></h2>
 <p>Some tools for 2x2 matrices and planar geometry.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="flatsurf.geometry.matrix_2x2.angle">
@@ -4131,7 +4132,7 @@ True
 
 </section>
 <section id="module-flatsurf.geometry.similarity">
-<span id="similarities-and-translations"></span><h2>Similarities and Translations<a class="headerlink" href="#module-flatsurf.geometry.similarity" title="Permalink to this headline">¶</a></h2>
+<span id="similarities-and-translations"></span><h2>Similarities and Translations<a class="headerlink" href="#module-flatsurf.geometry.similarity" title="Permalink to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="flatsurf.geometry.similarity.Similarity">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.similarity.</span></span><span class="sig-name descname"><span class="pre">Similarity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sign</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/similarity.html#Similarity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity.Similarity" title="Permalink to this definition">¶</a></dt>
@@ -4287,13 +4288,13 @@ and (ax+by+s,bx-ay+t) if sign=-1</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="flatsurf.geometry.similarity.SimilarityGroup.Element">
 <span class="sig-name descname"><span class="pre">Element</span></span><a class="headerlink" href="#flatsurf.geometry.similarity.SimilarityGroup.Element" title="Permalink to this definition">¶</a></dt>
-<dd><p>alias of <a class="reference internal" href="#flatsurf.geometry.similarity.Similarity" title="flatsurf.geometry.similarity.Similarity"><code class="xref py py-class docutils literal notranslate"><span class="pre">flatsurf.geometry.similarity.Similarity</span></code></a></p>
+<dd><p>alias of <a class="reference internal" href="#flatsurf.geometry.similarity.Similarity" title="flatsurf.geometry.similarity.Similarity"><code class="xref py py-class docutils literal notranslate"><span class="pre">Similarity</span></code></a></p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.similarity.SimilarityGroup.an_element">
 <span class="sig-name descname"><span class="pre">an_element</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/similarity.html#SimilarityGroup.an_element"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity.SimilarityGroup.an_element" title="Permalink to this definition">¶</a></dt>
-<dd><p>File: sage/structure/parent.pyx (starting at line 2673)</p>
+<dd><p>File: sage/structure/parent.pyx (starting at line 2675)</p>
 <p>Returns a (preferably typical) element of this parent.</p>
 <p>This is used both for illustration and testing purposes. If
 the set <code class="docutils literal notranslate"><span class="pre">self</span></code> is empty, <a class="reference internal" href="#flatsurf.geometry.similarity.SimilarityGroup.an_element" title="flatsurf.geometry.similarity.SimilarityGroup.an_element"><code class="xref py py-meth docutils literal notranslate"><span class="pre">an_element()</span></code></a> raises the
@@ -4400,7 +4401,7 @@ in a bigger ring, the <code class="docutils literal notranslate"><span class="pr
 
 </section>
 <section id="module-flatsurf.geometry.tangent_bundle">
-<span id="tangent-bundle"></span><h2>Tangent Bundle<a class="headerlink" href="#module-flatsurf.geometry.tangent_bundle" title="Permalink to this headline">¶</a></h2>
+<span id="tangent-bundle"></span><h2>Tangent Bundle<a class="headerlink" href="#module-flatsurf.geometry.tangent_bundle" title="Permalink to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentBundle">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.tangent_bundle.</span></span><span class="sig-name descname"><span class="pre">SimilaritySurfaceTangentBundle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">similarity_surface</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ring</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/tangent_bundle.html#SimilaritySurfaceTangentBundle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentBundle" title="Permalink to this definition">¶</a></dt>
@@ -4765,7 +4766,7 @@ Segment in polygon 0 starting at (0.9442719099991588?, 0) and ending at (1, 0.18
 
 </section>
 <section id="module-flatsurf.geometry.mappings">
-<span id="maps-between-surfaces"></span><h2>Maps between Surfaces<a class="headerlink" href="#module-flatsurf.geometry.mappings" title="Permalink to this headline">¶</a></h2>
+<span id="maps-between-surfaces"></span><h2>Maps between Surfaces<a class="headerlink" href="#module-flatsurf.geometry.mappings" title="Permalink to this heading">¶</a></h2>
 <p>Mappings between translation surfaces.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="flatsurf.geometry.mappings.CanonicalizePolygonsMapping">
@@ -5161,7 +5162,7 @@ respecting the polygons and the base_labels.</p>
 
 </section>
 <section id="module-flatsurf.geometry.straight_line_trajectory">
-<span id="straight-line-flow"></span><h2>Straight-line Flow<a class="headerlink" href="#module-flatsurf.geometry.straight_line_trajectory" title="Permalink to this headline">¶</a></h2>
+<span id="straight-line-flow"></span><h2>Straight-line Flow<a class="headerlink" href="#module-flatsurf.geometry.straight_line_trajectory" title="Permalink to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="flatsurf.geometry.straight_line_trajectory.AbstractStraightLineTrajectory">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.straight_line_trajectory.</span></span><span class="sig-name descname"><span class="pre">AbstractStraightLineTrajectory</span></span><a class="reference internal" href="_modules/flatsurf/geometry/straight_line_trajectory.html#AbstractStraightLineTrajectory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.straight_line_trajectory.AbstractStraightLineTrajectory" title="Permalink to this definition">¶</a></dt>
@@ -5725,7 +5726,7 @@ sage: L.segments()
 
 </section>
 <section id="module-flatsurf.geometry.relative_homology">
-<span id="homology"></span><h2>Homology<a class="headerlink" href="#module-flatsurf.geometry.relative_homology" title="Permalink to this headline">¶</a></h2>
+<span id="homology"></span><h2>Homology<a class="headerlink" href="#module-flatsurf.geometry.relative_homology" title="Permalink to this heading">¶</a></h2>
 <p>This module contains a lazy implementation of a relative homology, 
 $H_1(S,Sigma; R)$, where $S$ is a similarity surface, $Sigma$ is the singularities
 or vertices, and $R$ is a ring.</p>
@@ -5740,7 +5741,7 @@ modulo equivalences of two types:
 <dd><dl class="py attribute">
 <dt class="sig sig-object py" id="flatsurf.geometry.relative_homology.RelativeHomology.Element">
 <span class="sig-name descname"><span class="pre">Element</span></span><a class="headerlink" href="#flatsurf.geometry.relative_homology.RelativeHomology.Element" title="Permalink to this definition">¶</a></dt>
-<dd><p>alias of <a class="reference internal" href="#flatsurf.geometry.relative_homology.RelativeHomologyClass" title="flatsurf.geometry.relative_homology.RelativeHomologyClass"><code class="xref py py-class docutils literal notranslate"><span class="pre">flatsurf.geometry.relative_homology.RelativeHomologyClass</span></code></a></p>
+<dd><p>alias of <a class="reference internal" href="#flatsurf.geometry.relative_homology.RelativeHomologyClass" title="flatsurf.geometry.relative_homology.RelativeHomologyClass"><code class="xref py py-class docutils literal notranslate"><span class="pre">RelativeHomologyClass</span></code></a></p>
 </dd></dl>
 
 <dl class="py method">
@@ -5834,7 +5835,7 @@ represents and edge and w represents the non-zero weight assigned.</p>
 
 </section>
 <section id="module-flatsurf.geometry.gl2r_orbit_closure">
-<span id="orbit-closures"></span><h2>Orbit Closures<a class="headerlink" href="#module-flatsurf.geometry.gl2r_orbit_closure" title="Permalink to this headline">¶</a></h2>
+<span id="orbit-closures"></span><h2>Orbit Closures<a class="headerlink" href="#module-flatsurf.geometry.gl2r_orbit_closure" title="Permalink to this heading">¶</a></h2>
 <p>GL(2,R)-orbit closure of translation surfaces</p>
 <p>EXAMPLES:</p>
 <p>Let us first construct a Veech surface in the stratum H(2):</p>
@@ -6418,7 +6419,7 @@ Basis matrix:
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>
@@ -6438,13 +6439,13 @@ Basis matrix:
         <li class="right" >
           <a href="walk_through.html" title="A tour of sage-flatsurf"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">sage-flatsurf 0.4.6 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">sage-flatsurf 0.4.7 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">The Geometry Package</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016-2021, Vincent Delecroix and Pat Hooper.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.5.0.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.0.2.
     </div>
   </body>
 </html>

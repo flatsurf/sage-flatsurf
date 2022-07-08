@@ -1,28 +1,28 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>The GL(2,R) action, the Veech group, Delaunay decomposition &#8212; sage-flatsurf 0.4.6 documentation</title>
+    <title>The GL(2,R) action, the Veech group, Delaunay decomposition &#8212; sage-flatsurf 0.4.7 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/classic.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
     
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
     <script>let toggleHintShow = 'Click to show';</script>
     <script>let toggleHintHide = 'Click to hide';</script>
     <script>let toggleOpenOnPrint = 'true';</script>
     <script src="../_static/togglebutton.js"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
-    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -44,7 +44,7 @@
         <li class="right" >
           <a href="defining_surfaces.html" title="Defining Surfaces in FlatSurf"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">sage-flatsurf 0.4.6 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">sage-flatsurf 0.4.7 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../examples.html" accesskey="U">Examples</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">The GL(2,R) action, the Veech group, Delaunay decomposition</a></li> 
       </ul>
@@ -55,9 +55,9 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section class="tex2jax_ignore mathjax_ignore" id="the-gl-2-r-action-the-veech-group-delaunay-decomposition">
-<h1>The GL(2,R) action, the Veech group, Delaunay decomposition<a class="headerlink" href="#the-gl-2-r-action-the-veech-group-delaunay-decomposition" title="Permalink to this headline">¶</a></h1>
-<p>Initial version by Pat Hooper <a class="reference external" href="mailto:whooper&#37;&#52;&#48;ccny&#46;cuny&#46;edu">mailto:whooper<span>&#64;</span>ccny<span>&#46;</span>cuny<span>&#46;</span>edu</a>, Dec 16, 2017.</p>
+  <section id="the-gl-2-r-action-the-veech-group-delaunay-decomposition">
+<h1>The GL(2,R) action, the Veech group, Delaunay decomposition<a class="headerlink" href="#the-gl-2-r-action-the-veech-group-delaunay-decomposition" title="Permalink to this heading">¶</a></h1>
+<p>Initial version by Pat Hooper <a class="reference external" href="mailto:whooper&#37;&#52;&#48;ccny&#46;cuny&#46;edu">whooper<span>&#64;</span>ccny<span>&#46;</span>cuny<span>&#46;</span>edu</a>, Dec 16, 2017.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="o">*</span>
@@ -66,7 +66,7 @@
 </div>
 </div>
 <section id="acting-on-surfaces-by-matrices">
-<h2>Acting on surfaces by matrices.<a class="headerlink" href="#acting-on-surfaces-by-matrices" title="Permalink to this headline">¶</a></h2>
+<h2>Acting on surfaces by matrices.<a class="headerlink" href="#acting-on-surfaces-by-matrices" title="Permalink to this heading">¶</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">veech_double_n_gon</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
@@ -81,7 +81,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/linear_action_and_delaunay_4_0.png" src="../_images/linear_action_and_delaunay_4_0.png" />
+<img alt="../_images/1c8ad5af72ceb51dbfef664e1a0a43811f040063388ca89f38edd560657b3555.png" src="../_images/1c8ad5af72ceb51dbfef664e1a0a43811f040063388ca89f38edd560657b3555.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -91,7 +91,7 @@
 </div>
 </div>
 </div>
-<p>You can act on surfaces with the <span class="math notranslate nohighlight">\(GL(2,R)\)</span> action</p>
+<p>You can act on surfaces with the $GL(2,R)$ action</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ss</span> <span class="o">=</span> <span class="n">m</span><span class="o">*</span><span class="n">s</span>
@@ -112,7 +112,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/linear_action_and_delaunay_8_0.png" src="../_images/linear_action_and_delaunay_8_0.png" />
+<img alt="../_images/468b5622be63f9d5ee1094669457e807823952c234da6c4e7e2cd103aed056a6.png" src="../_images/468b5622be63f9d5ee1094669457e807823952c234da6c4e7e2cd103aed056a6.png" />
 </div>
 </div>
 <p>To “renormalize” you can improve the presentation using the Delaunay decomposition.</p>
@@ -130,13 +130,13 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/linear_action_and_delaunay_11_0.png" src="../_images/linear_action_and_delaunay_11_0.png" />
+<img alt="../_images/46e62c331b54c660b2edf649d452d4bc9e293cf9aa0711e43e78e94eb209c6b3.png" src="../_images/46e62c331b54c660b2edf649d452d4bc9e293cf9aa0711e43e78e94eb209c6b3.png" />
 </div>
 </div>
 </section>
 <section id="the-veech-group">
-<h2>The Veech group<a class="headerlink" href="#the-veech-group" title="Permalink to this headline">¶</a></h2>
-<p>Set <span class="math notranslate nohighlight">\(s\)</span> to be the double pentagon again.</p>
+<h2>The Veech group<a class="headerlink" href="#the-veech-group" title="Permalink to this heading">¶</a></h2>
+<p>Set $s$ to be the double pentagon again.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">veech_double_n_gon</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
@@ -180,10 +180,10 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_html"><html>\[\newcommand{\Bold}[1]{\mathbf{#1}}\left(\begin{array}{rr}
+<div class="output text_html"><html>\(\displaystyle \left(\begin{array}{rr}
 1 & \frac{2}{5} a^{3} \\
 0 & 1
-\end{array}\right)\]</html></div></div>
+\end{array}\right)\)</html></div></div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -192,12 +192,12 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_html"><html>\[\newcommand{\Bold}[1]{\mathbf{#1}}\left(\begin{array}{rr}
+<div class="output text_html"><html>\(\displaystyle \left(\begin{array}{rr}
 1 & 2.752763840942347? \\
 0 & 1
-\end{array}\right)\]</html></div></div>
+\end{array}\right)\)</html></div></div>
 </div>
-<p>The following can be used to check that <span class="math notranslate nohighlight">\(m\)</span> is in the Veech group of <span class="math notranslate nohighlight">\(s\)</span>.</p>
+<p>The following can be used to check that $m$ is in the Veech group of $s$.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s</span><span class="o">.</span><span class="n">canonicalize</span><span class="p">()</span> <span class="o">==</span> <span class="p">(</span><span class="n">m</span><span class="o">*</span><span class="n">s</span><span class="p">)</span><span class="o">.</span><span class="n">canonicalize</span><span class="p">()</span>
@@ -212,7 +212,7 @@
 </div>
 </section>
 <section id="infinite-surfaces">
-<h2>Infinite surfaces<a class="headerlink" href="#infinite-surfaces" title="Permalink to this headline">¶</a></h2>
+<h2>Infinite surfaces<a class="headerlink" href="#infinite-surfaces" title="Permalink to this heading">¶</a></h2>
 <p>Infinite surfaces support multiplication by matrices and computing the Delaunay decomposition. (Computation is done “lazily”)</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -228,7 +228,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/linear_action_and_delaunay_24_0.png" src="../_images/linear_action_and_delaunay_24_0.png" />
+<img alt="../_images/648bee1c1a9437c8a17cd3340d8a9c9b8df1b0ad4a0fc9c139830cc772d709ba.png" src="../_images/648bee1c1a9437c8a17cd3340d8a9c9b8df1b0ad4a0fc9c139830cc772d709ba.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -252,7 +252,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/linear_action_and_delaunay_27_0.png" src="../_images/linear_action_and_delaunay_27_0.png" />
+<img alt="../_images/d396a7ed27374c9150bd527e9ac320104e09d90d2eb5a2750ddc75b0091ff4ee.png" src="../_images/d396a7ed27374c9150bd527e9ac320104e09d90d2eb5a2750ddc75b0091ff4ee.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -277,7 +277,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/linear_action_and_delaunay_30_0.png" src="../_images/linear_action_and_delaunay_30_0.png" />
+<img alt="../_images/2560f2c78e97be08251b54b8d8e561abf31fb4d7fd3b6ac8c813e8296e213235.png" src="../_images/2560f2c78e97be08251b54b8d8e561abf31fb4d7fd3b6ac8c813e8296e213235.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -295,10 +295,10 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/linear_action_and_delaunay_32_0.png" src="../_images/linear_action_and_delaunay_32_0.png" />
+<img alt="../_images/829ce4815ac46bd42b91394baf76c1d852770f9b8a0b3afdf46ed58a680abc96.png" src="../_images/829ce4815ac46bd42b91394baf76c1d852770f9b8a0b3afdf46ed58a680abc96.png" />
 </div>
 </div>
-<p>You can tell from the above picture that <span class="math notranslate nohighlight">\(m\)</span> is in the Veech group.</p>
+<p>You can tell from the above picture that $m$ is in the Veech group.</p>
 </section>
 </section>
 
@@ -347,7 +347,7 @@
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>
@@ -367,14 +367,14 @@
         <li class="right" >
           <a href="defining_surfaces.html" title="Defining Surfaces in FlatSurf"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">sage-flatsurf 0.4.6 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">sage-flatsurf 0.4.7 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../examples.html" >Examples</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">The GL(2,R) action, the Veech group, Delaunay decomposition</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016-2021, Vincent Delecroix and Pat Hooper.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.5.0.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.0.2.
     </div>
   </body>
 </html>

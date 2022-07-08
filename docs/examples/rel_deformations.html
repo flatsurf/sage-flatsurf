@@ -1,28 +1,28 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>Relative Period Deformations &#8212; sage-flatsurf 0.4.6 documentation</title>
+    <title>Relative Period Deformations &#8212; sage-flatsurf 0.4.7 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/classic.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
     
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
     <script>let toggleHintShow = 'Click to show';</script>
     <script>let toggleHintHide = 'Click to hide';</script>
     <script>let toggleOpenOnPrint = 'true';</script>
     <script src="../_static/togglebutton.js"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
-    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -44,7 +44,7 @@
         <li class="right" >
           <a href="linear_action_and_delaunay.html" title="The GL(2,R) action, the Veech group, Delaunay decomposition"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">sage-flatsurf 0.4.6 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">sage-flatsurf 0.4.7 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../examples.html" accesskey="U">Examples</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Relative Period Deformations</a></li> 
       </ul>
@@ -55,9 +55,9 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section class="tex2jax_ignore mathjax_ignore" id="relative-period-deformations">
-<h1>Relative Period Deformations<a class="headerlink" href="#relative-period-deformations" title="Permalink to this headline">¶</a></h1>
-<p>Initial version by Pat Hooper <a class="reference external" href="mailto:whooper&#37;&#52;&#48;ccny&#46;cuny&#46;edu">mailto:whooper<span>&#64;</span>ccny<span>&#46;</span>cuny<span>&#46;</span>edu</a>, Dec. 16, 2017.</p>
+  <section id="relative-period-deformations">
+<h1>Relative Period Deformations<a class="headerlink" href="#relative-period-deformations" title="Permalink to this heading">¶</a></h1>
+<p>Initial version by Pat Hooper <a class="reference external" href="mailto:whooper&#37;&#52;&#48;ccny&#46;cuny&#46;edu">whooper<span>&#64;</span>ccny<span>&#46;</span>cuny<span>&#46;</span>edu</a>, Dec. 16, 2017.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="o">*</span>
@@ -66,7 +66,7 @@
 </div>
 </div>
 <section id="the-arnoux-yoccoz-surface">
-<h2>The Arnoux-Yoccoz surface<a class="headerlink" href="#the-arnoux-yoccoz-surface" title="Permalink to this headline">¶</a></h2>
+<h2>The Arnoux-Yoccoz surface<a class="headerlink" href="#the-arnoux-yoccoz-surface" title="Permalink to this heading">¶</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">arnoux_yoccoz</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">canonicalize</span><span class="p">()</span>
@@ -81,7 +81,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/rel_deformations_4_0.png" src="../_images/rel_deformations_4_0.png" />
+<img alt="../_images/b304c277dae41f713afc61b24e0450f7b13864e5b84254d84d3382175bc7b302.png" src="../_images/b304c277dae41f713afc61b24e0450f7b13864e5b84254d84d3382175bc7b302.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -118,12 +118,12 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_html"><html>\[\newcommand{\Bold}[1]{\mathbf{#1}}\left(\begin{array}{rr}
+<div class="output text_html"><html>\(\displaystyle \left(\begin{array}{rr}
 \alpha & 0 \\
 0 & \alpha^{2} + \alpha + 1
-\end{array}\right)\]</html></div></div>
+\end{array}\right)\)</html></div></div>
 </div>
-<p>Check that <span class="math notranslate nohighlight">\(m\)</span> is the derivative of a pseudo-Anosov of <span class="math notranslate nohighlight">\(s\)</span>.</p>
+<p>Check that $m$ is the derivative of a pseudo-Anosov of $s$.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="n">m</span><span class="o">*</span><span class="n">s</span><span class="p">)</span><span class="o">.</span><span class="n">canonicalize</span><span class="p">()</span><span class="o">==</span><span class="n">s</span>
@@ -138,7 +138,7 @@
 </div>
 </section>
 <section id="rel-deformation">
-<h2>Rel deformation<a class="headerlink" href="#rel-deformation" title="Permalink to this headline">¶</a></h2>
+<h2>Rel deformation<a class="headerlink" href="#rel-deformation" title="Permalink to this heading">¶</a></h2>
 <p>A singularity of the surface is an equivalence class of vertices of the polygons making up the surface.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -194,7 +194,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/rel_deformations_18_0.png" src="../_images/rel_deformations_18_0.png" />
+<img alt="../_images/63e10f09de2d4618e9d134bfdcaf941d699c1f7036bf58ff1ff0f25895432277.png" src="../_images/63e10f09de2d4618e9d134bfdcaf941d699c1f7036bf58ff1ff0f25895432277.png" />
 </div>
 </div>
 </section>
@@ -244,7 +244,7 @@
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>
@@ -264,14 +264,14 @@
         <li class="right" >
           <a href="linear_action_and_delaunay.html" title="The GL(2,R) action, the Veech group, Delaunay decomposition"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">sage-flatsurf 0.4.6 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">sage-flatsurf 0.4.7 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../examples.html" >Examples</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Relative Period Deformations</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016-2021, Vincent Delecroix and Pat Hooper.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.5.0.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.0.2.
     </div>
   </body>
 </html>
