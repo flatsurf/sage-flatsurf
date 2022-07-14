@@ -403,6 +403,89 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         self._base_ring = geometry.base_ring()
         self.geometry = geometry
 
+    def _coerce_map_from_(self, other):
+        r"""
+        Return a coercion map from ``other`` to this hyperbolic plane.
+
+        EXAMPLES:
+
+        Coercions between base rings induce coercion between hyperbolic planes,
+        due to the :meth:`construction` functor::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+
+            sage: H = HyperbolicPlane()
+            sage: HyperbolicPlane(AA).has_coerce_map_from(H)
+            True
+
+        Base ring elements coerce as points on the real line::
+
+            sage: H.has_coerce_map_from(QQ)
+            True
+            sage: H.has_coerce_map_from(ZZ)
+            True
+
+        Complex numbers do not coerce into the hyperbolic plane since that
+        coercion would not be total::
+
+            sage: H.has_coerce_map_from(CC)
+            False
+            sage: H.has_coerce_map_from(I.parent())
+            False
+            sage: HyperbolicPlane(RR).has_coerce_map_from(CC)
+            False
+
+        """
+        if self.base_ring().has_coerce_map_from(other):
+            return True
+
+        if isinstance(other, HyperbolicPlane):
+            return self.base_ring().has_coerce_map_from(other.base_ring())
+
+        return False
+
+    def __contains__(self, x):
+        r"""
+        Return whether the hyperboic plane contains ``x``.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+
+            sage: H = HyperbolicPlane()
+
+        We mostly rely on the standard implementation in SageMath, i.e., the
+        interplay between the operator ``==`` and the coercion model::
+
+            sage: 0 in H
+            True
+
+        However, we override that logic for complex numbers. There cannot be a
+        coercion from the complex number to the hyperbolic plane since that map
+        would not be total but we want the following to work::
+
+            sage: I in H
+            True
+
+        We do not support such containment checks when conversion of the
+        element could lead to a loss of precision::
+
+            sage: CC(I) in H
+            False
+
+        """
+        from sage.categories.all import NumberFields
+
+        import sage.structure.element
+        from sage.structure.parent import Parent
+
+        parent = sage.structure.element.parent(x)
+        if isinstance(parent, Parent) and parent in NumberFields():
+            if x.real() in self.base_ring() and x.imag() in self.base_ring() and x.imag() >= 0:
+                return True
+
+        return super().__contains__(x)
+
     def change_ring(self, ring, geometry=None):
         r"""
         Return the hyperbolic plane over a different base ``ring``.
