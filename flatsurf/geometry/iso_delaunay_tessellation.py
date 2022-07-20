@@ -38,21 +38,67 @@ class IsoDelaunayTessellation(Parent):
     """
 
     def __init__(self, surface):
+        from sage.all import Graph
         self._surface_original = surface
         self._surface = self._surface_original.delaunay_triangulation()
         self._hyperbolic_plane = HyperbolicPlane(surface.base_ring())
+        self._faces = Graph([[self.root()], []])
+        self._faces.set_vertex(self.root(), self._surface)
 
     def _repr_(self):
         return f"IsoDelaunay Tessellation of {self._surface_original}"
 
-    def explore(self, limit=None, edge=None):
+    def explore(self, limit=None, vertex=None, edge=None):
         r"""
-        Explore the dual graph of the IsoDelaunay tessellation up to the combinatorial ``limit`` starting from ``edge``.
+        Explore the dual graph of the IsoDelaunay tessellation up to the combinatorial ``limit`` where you first cross ``edge``.
         When ``edge`` is ``None``, explore all edges of the IsoDelaunay regions containing `i`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: from flatsurf.geometry.iso_delaunay_tessellation import IsoDelaunayTessellation
+            sage: s = translation_surfaces.veech_2n_gon(4)
+            sage: idt = IsoDelaunayTessellation(s)
+            sage: idt.explore()
+
         """
+        limit = limit or 3  # TODO: explore until finding FD
+        if limit <= 0:
+            return
 
+        if edge is None:
+            vertex = vertex or self.root()
+            for edge in vertex.edges():
+                self.explore(limit=limit, vertex=vertex, edge=edge)
+            return
 
-        raise NotImplementedError
+        source = vertex or self.face(edge)
+        
+        source_triangulation = self._faces.get_vertex(source)
+        target_triangulation = source_triangulation.copy()
+        edges_to_flip = []
+        for source_triangulation_edge in source_triangulation.edge_iterator():
+            half_plane = self._half_plane(source_triangulation, source_triangulation_edge)
+            if half_plane is None:
+                continue
+            if half_plane.boundary() == edge:
+                edges_to_flip.append(source_triangulation_edge)
+        for edge_to_flip in edges_to_flip:
+            target_triangulation.flip_edge(edge_to_flip)
+        
+        target = self._hyperbolic_plane.polygon(self._iso_delaunay_region(target_triangulation))
+
+        assert -edge in target.edges()
+
+        is_new_idr = target not in self._faces
+        if is_new_idr:
+            self._faces.add_vertex(target)
+
+        if not self._faces.has_edge(source, target):
+            self._faces.add_edge(source, target)
+
+        for edge in target.edges():
+            self.explore(limit=limit-1, edge=edge)
 
     def is_vertex(self, translation_surface):
         r"""
@@ -64,7 +110,8 @@ class IsoDelaunayTessellation(Parent):
         r"""
         Return the vertex from which we started to build the IsoDelaunay tessellation.
         """
-        return self._hyperbolic_plane.point(0, 1, model="half_plane")
+        from sage.all import I
+        return self.face(I)
 
     def point(self, surface):
         r"""
@@ -106,12 +153,12 @@ class IsoDelaunayTessellation(Parent):
             else:
                 z = point_or_edge
 
-        else: # point_or_edge is a surface
+        else:  # point_or_edge is a surface
             raise NotImplementedError
-        
 
         A = self._point_to_matrix(z)
-        A_T = self._surface.apply_matrix(A, in_place=False).delaunay_triangulation(in_place=False)
+        A_T = self._surface.apply_matrix(
+            A, in_place=False).delaunay_triangulation(in_place=False)
         T = A_T.apply_matrix(~A, in_place=False)
         half_planes = self._iso_delaunay_region(T)
         iso_delaunay_region = self._hyperbolic_plane.polygon(half_planes)
@@ -119,12 +166,13 @@ class IsoDelaunayTessellation(Parent):
             epsilon = 1/2
             while True:
                 x, y = z.coordinates()
-                z1 = self._hyperbolic_plane.point(x + epsilon, y, model="half_plane")
+                z1 = self._hyperbolic_plane.point(
+                    x + epsilon, y, model="half_plane")
                 face1 = self.face(z1)
                 if z in face1:
                     return face1
                 epsilon /= 2
-            
+
         return iso_delaunay_region
 
     def surface(self, point):
@@ -183,8 +231,7 @@ class IsoDelaunayTessellation(Parent):
 
     def _iso_delaunay_region(self, triangulation):
         return [half_plane for edge in triangulation.edge_iterator()
-                           if (half_plane := self._half_plane(triangulation, edge)) is not None]
-
+                if (half_plane :=self._half_plane(triangulation, edge)) is not None]
 
     def _half_plane(self, triangulation, edge):
         r"""
@@ -196,8 +243,10 @@ class IsoDelaunayTessellation(Parent):
             return None
 
         index_triangle, index_edge = edge
-        index_opposite_triangle, index_opposite_edge = triangulation.opposite_edge(edge)
-        v0 = triangulation.polygon(index_opposite_triangle).edge((index_opposite_edge + 1) % 3)
+        index_opposite_triangle, index_opposite_edge = triangulation.opposite_edge(
+            edge)
+        v0 = triangulation.polygon(index_opposite_triangle).edge(
+            (index_opposite_edge + 1) % 3)
         v1 = triangulation.polygon(index_triangle).edge(index_edge)
         v2 = -triangulation.polygon(index_triangle).edge((index_edge - 1) % 3)
 
@@ -205,10 +254,11 @@ class IsoDelaunayTessellation(Parent):
         x1, y1 = v1
         x2, y2 = v2
 
-        a = x0 * y1 * y2 * (y2 - y1) + x1 * y0 * y2 * (y0 - y2) + x2 * y0 * y1 * (y1 - y0)
-        b = x0 * y0 * (x1 * y2 - x2 * y1) + x1 * y1 * (x2 * y0 - x0 * y2) + x2 * y2 * (x0 * y1 - x1 * y0)
-        c = x0 * x1 * y2 * (x0 - x1) + x1 * x2 * y0 * (x1 - x2) + x0 * x2 * y1 * (x2 - x0)
+        a = x0 * y1 * y2 * (y2 - y1) + x1 * y0 * y2 * \
+            (y0 - y2) + x2 * y0 * y1 * (y1 - y0)
+        b = x0 * y0 * (x1 * y2 - x2 * y1) + x1 * y1 * \
+            (x2 * y0 - x0 * y2) + x2 * y2 * (x0 * y1 - x1 * y0)
+        c = x0 * x1 * y2 * (x0 - x1) + x1 * x2 * y0 * \
+            (x1 - x2) + x0 * x2 * y1 * (x2 - x0)
 
         return self._hyperbolic_plane.geodesic(a, 2 * b, c, model="half_plane").left_half_space()
-
-      
