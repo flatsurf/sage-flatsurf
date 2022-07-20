@@ -2367,6 +2367,9 @@ class HyperbolicConvexSet(Element):
         True
 
     """
+    def __hash__(self):
+        # TODO: Implement me in subclasses and remove this.
+        return 0
 
     def half_spaces(self):
         # TODO: Check documentation.
