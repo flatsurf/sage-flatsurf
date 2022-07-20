@@ -109,7 +109,7 @@ class IsoDelaunayTessellation(Parent):
         else: # point_or_edge is a surface
             raise NotImplementedError
         
-        A = self._point_to_matrix(z) # [[1 20], [0 1]]
+        A = self._point_to_matrix(z)
         A_T = self._surface.apply_matrix(A).delaunay_triangulation()
         T = A_T.apply_matrix(~A)
         half_planes = self._iso_delaunay_region(T)
