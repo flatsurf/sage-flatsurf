@@ -403,6 +403,89 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         self._base_ring = geometry.base_ring()
         self.geometry = geometry
 
+    def _coerce_map_from_(self, other):
+        r"""
+        Return a coercion map from ``other`` to this hyperbolic plane.
+
+        EXAMPLES:
+
+        Coercions between base rings induce coercion between hyperbolic planes,
+        due to the :meth:`construction` functor::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+
+            sage: H = HyperbolicPlane()
+            sage: HyperbolicPlane(AA).has_coerce_map_from(H)
+            True
+
+        Base ring elements coerce as points on the real line::
+
+            sage: H.has_coerce_map_from(QQ)
+            True
+            sage: H.has_coerce_map_from(ZZ)
+            True
+
+        Complex numbers do not coerce into the hyperbolic plane since that
+        coercion would not be total::
+
+            sage: H.has_coerce_map_from(CC)
+            False
+            sage: H.has_coerce_map_from(I.parent())
+            False
+            sage: HyperbolicPlane(RR).has_coerce_map_from(CC)
+            False
+
+        """
+        if self.base_ring().has_coerce_map_from(other):
+            return True
+
+        if isinstance(other, HyperbolicPlane):
+            return self.base_ring().has_coerce_map_from(other.base_ring())
+
+        return False
+
+    def __contains__(self, x):
+        r"""
+        Return whether the hyperboic plane contains ``x``.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+
+            sage: H = HyperbolicPlane()
+
+        We mostly rely on the standard implementation in SageMath, i.e., the
+        interplay between the operator ``==`` and the coercion model::
+
+            sage: 0 in H
+            True
+
+        However, we override that logic for complex numbers. There cannot be a
+        coercion from the complex number to the hyperbolic plane since that map
+        would not be total but we want the following to work::
+
+            sage: I in H
+            True
+
+        We do not support such containment checks when conversion of the
+        element could lead to a loss of precision::
+
+            sage: CC(I) in H
+            False
+
+        """
+        from sage.categories.all import NumberFields
+
+        import sage.structure.element
+        from sage.structure.parent import Parent
+
+        parent = sage.structure.element.parent(x)
+        if isinstance(parent, Parent) and parent in NumberFields():
+            if x.real() in self.base_ring() and x.imag() in self.base_ring() and x.imag() >= 0:
+                return True
+
+        return super().__contains__(x)
+
     def change_ring(self, ring, geometry=None):
         r"""
         Return the hyperbolic plane over a different base ``ring``.
@@ -1555,14 +1638,35 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         return segment
 
     def polygon(
-        self, half_spaces, check=True, assume_sorted=False, assume_minimal=False, marked_vertices=False
+        self, half_spaces, check=True, assume_sorted=False, assume_minimal=False, marked_vertices=()
     ):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
         r"""
         Return the convex polygon obtained by intersecting ``half_spaces``.
+
+        INPUT:
+
+        - ``half_spaces`` -- a non-empty iterable of
+          :class:`HyperbolicHalfSpace`s of this hyperbolic plane.
+
+        - ``check`` -- boolean (default: ``True``), whether the arguments are
+          validated.
+
+        - ``assume_sorted`` -- boolean (default: ``False``), whether to assume
+          that the ``half_spaces`` are already sorted with respect ot
+          :meth:`HyperbolicHalfSpace._less_than`. When set, we omit sorting the
+          half spaces explicitly, which is asymptotically the most exponsive
+          part of the process of creating a polygon.
+
+        - ``assume_minimal`` -- boolean (default: ``False``), whether to assume
+          that the ``half_spaces`` provide a minimial representation of the
+          polygon, i.e., removing any of them describes a different polygon.
+          When set, we omit searching for a minimal subset of half spaces to
+          describe the polygon.
+
+        - ``marked_vertices`` -- an iterable of vertices (default: an empty
+          tuple), the vertices are included in the
+          :meth:`HyperbolicPolygon.vertices` even if they are not in the set of
+          minimal vertices describing this polygon.
 
         ALGORITHM:
 
@@ -1676,6 +1780,43 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             ....: ])
             sage: type(half_space)
             <class 'flatsurf.geometry.hyperbolic.HyperbolicHalfSpace_with_category'>
+
+        If we add a marked point to such a half space, the underlying type is a
+        polygon again::
+
+            sage: half_space = H.polygon([
+            ....:   H.half_circle(0, 1).right_half_space(),
+            ....: ], marked_vertices=[I])
+            sage: half_space
+            {(x^2 + y^2) - 1 ≤ 0} ∪ {I}
+            sage: type(half_space)
+            <class 'flatsurf.geometry.hyperbolic.HyperbolicConvexPolygon_with_category'>
+
+        Marked points that coincide with vertices are ignored::
+
+            sage: half_space = H.polygon([
+            ....:   H.half_circle(0, 1).right_half_space(),
+            ....: ], marked_vertices=[-1])
+            sage: half_space
+            {(x^2 + y^2) - 1 ≤ 0}
+            sage: type(half_space)
+            <class 'flatsurf.geometry.hyperbolic.HyperbolicHalfSpace_with_category'>
+
+        Marked points must be on an edge of the polygon::
+
+            sage: H.polygon([
+            ....:   H.half_circle(0, 1).right_half_space(),
+            ....: ], marked_vertices=[-2])
+            Traceback (most recent call last):
+            ...
+            ValueError: marked vertex must be on an edge of the polygon
+
+            sage: H.polygon([
+            ....:   H.half_circle(0, 1).right_half_space(),
+            ....: ], marked_vertices=[2*I])
+            Traceback (most recent call last):
+            ...
+            ValueError: marked vertex must be on an edge of the polygon
 
         The intersection of the half spaces is computed in time quasi-linear in
         the number of half spaces. The limiting factor is sorting the half
@@ -2226,6 +2367,9 @@ class HyperbolicConvexSet(Element):
         True
 
     """
+    def __hash__(self):
+        # TODO: Implement me in subclasses and remove this.
+        return 0
 
     def half_spaces(self):
         # TODO: Check documentation.
@@ -4359,9 +4503,10 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
         # TODO: Check INPUT
         # TODO: Check SEEALSO
         # TODO: Check for doctests
-        # TODO: Check _marked_vertices on the boundary
         # TODO: Check _marked_vertices not vertices of the polygon if require_normalized
-        pass
+        for vertex in self._marked_vertices:
+            if not any([vertex in edge for edge in self.edges()]):
+                raise ValueError("marked vertex must be on an edge of the polygon")
 
     # TODO: Add examples.
     def _normalize(self, marked_vertices=False):
@@ -4430,6 +4575,8 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
 
         # Remove half spaces that make no contribution when restricting to the unit disk of the Klein model.
         self = self._normalize_drop_unit_disk_redundant()
+
+        marked_vertices = [vertex for vertex in marked_vertices if vertex not in self.vertices()]
 
         if marked_vertices:
             if self.dimension() < 2:
