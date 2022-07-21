@@ -3452,6 +3452,13 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
 
         return self
 
+    def geodesic(self):
+        # TODO: Check documentation
+        # TODO: Check INPUTS
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        return self
+
 
 class HyperbolicUnorientedGeodesic(HyperbolicGeodesic):
     # TODO: Check documentation
