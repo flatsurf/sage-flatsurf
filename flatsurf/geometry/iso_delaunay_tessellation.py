@@ -50,8 +50,10 @@ class IsoDelaunayTessellation(Parent):
 
     def explore(self, limit=None, vertex=None, edge=None):
         r"""
-        Explore the dual graph of the IsoDelaunay tessellation up to the combinatorial ``limit`` where you first cross ``edge``.
-        When ``edge`` is ``None``, explore all edges of the IsoDelaunay regions containing `i`.
+        Explore the dual graph of the IsoDelaunay tessellation up to the combinatorial ``limit`` where you start from ``vertex`` and then first cross ``edge``.
+        When ``vertex`` is ``None``, start exploring from the vertex bounded by ``edge``.
+        When ``edge`` is ``None``, explore all edges of the IsoDelaunay regions bounding ``vertex``.
+        When both ``vertex`` and ``edge`` are ``None``, start exploring from a vertex that contains the point ``i``.
 
         EXAMPLES::
 
@@ -72,19 +74,24 @@ class IsoDelaunayTessellation(Parent):
                 self.explore(limit=limit, vertex=vertex, edge=edge)
             return
 
+        edge.plot().show()
         source = vertex or self.face(edge)
-        
         source_triangulation = self._faces.get_vertex(source)
+        source_triangulation.plot().show()
         target_triangulation = source_triangulation.copy()
         edges_to_flip = []
-        for source_triangulation_edge in source_triangulation.edge_iterator():
-            half_plane = self._half_plane(source_triangulation, source_triangulation_edge)
-            if half_plane is None:
-                continue
-            if half_plane.boundary() == edge:
-                edges_to_flip.append(source_triangulation_edge)
-        for edge_to_flip in edges_to_flip:
-            target_triangulation.flip_edge(edge_to_flip)
+        while True:
+            for triangulation_edge in target_triangulation.edge_iterator():
+                half_plane = self._half_plane(target_triangulation, triangulation_edge)
+                if half_plane is None:
+                    continue
+                if half_plane.boundary() == edge.geodesic():
+                    print(triangulation_edge, edge.geodesic())
+                    half_plane.boundary().plot().show()
+                    target_triangulation = target_triangulation.triangle_flip(*triangulation_edge)
+                    break
+            else:
+                break
         
         target = self._hyperbolic_plane.polygon(self._iso_delaunay_region(target_triangulation))
 
@@ -93,12 +100,13 @@ class IsoDelaunayTessellation(Parent):
         is_new_idr = target not in self._faces
         if is_new_idr:
             self._faces.add_vertex(target)
+            self._faces.set_vertex(target, target_triangulation)
 
         if not self._faces.has_edge(source, target):
             self._faces.add_edge(source, target)
 
         for edge in target.edges():
-            self.explore(limit=limit-1, edge=edge)
+            self.explore(limit=limit-1, vertex=target, edge=edge)
 
     def is_vertex(self, translation_surface):
         r"""
@@ -162,6 +170,14 @@ class IsoDelaunayTessellation(Parent):
         T = A_T.apply_matrix(~A, in_place=False)
         half_planes = self._iso_delaunay_region(T)
         iso_delaunay_region = self._hyperbolic_plane.polygon(half_planes)
+        
+        # Let M_i be starting surf with arbitrary DT producing potentially degen IDR
+        # Consider T_e * M_i until it has a nondegenerate IDR
+        # let M_{i+e} be the Delaunay triangulated surface with a nondegen IDR
+        # then T_{-e} * M_{i + e} is a new DT of M_i with a nondegen IDR 
+
+        # If M_i has a degenerate IDR, do flips until not the case
+        # e.g. only 8 / 250 of the triangulations of the regular octagon lead to a nondegen IDR 
         if iso_delaunay_region.dimension() < 2:
             epsilon = 1/2
             while True:
