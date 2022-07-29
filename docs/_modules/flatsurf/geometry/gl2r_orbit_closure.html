@@ -181,8 +181,14 @@
 
 <span class="sd">    We now illustrate the projection::</span>
 
-<span class="sd">        sage: V = O.proj._row_ambient_module() # optional: pyflatsurf</span>
-<span class="sd">        sage: H = O.proj._column_ambient_module() # optional: pyflatsurf</span>
+<span class="sd">        sage: try: # optional: pyflatsurf</span>
+<span class="sd">        ....:     V = O.proj.row_ambient_module()</span>
+<span class="sd">        ....: except AttributeError:</span>
+<span class="sd">        ....:     V = O.proj._row_ambient_module()</span>
+<span class="sd">        sage: try: # optional: pyflatsurf</span>
+<span class="sd">        ....:     H = O.proj.column_ambient_module()</span>
+<span class="sd">        ....: except AttributeError:</span>
+<span class="sd">        ....:     H = O.proj._column_ambient_module()</span>
 <span class="sd">        sage: assert O.proj.rank() == H.dimension() # optional: pyflatsurf</span>
 <span class="sd">        sage: for b in O.boundaries(): # optional: pyflatsurf</span>
 <span class="sd">        ....:    assert (O.proj * b).is_zero()</span>
@@ -1345,7 +1351,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016-2021, Vincent Delecroix and Pat Hooper.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.0.2.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.1.1.
     </div>
   </body>
 </html>

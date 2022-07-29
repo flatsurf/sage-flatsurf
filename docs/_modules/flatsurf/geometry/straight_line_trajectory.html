@@ -129,6 +129,18 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_end</span> <span class="o">=</span> <span class="n">start</span><span class="o">.</span><span class="n">forward_to_polygon_boundary</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_start</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_end</span><span class="o">.</span><span class="n">forward_to_polygon_boundary</span><span class="p">()</span>
 
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        TESTS::</span>
+
+<span class="sd">            sage: from flatsurf import similarity_surfaces</span>
+<span class="sd">            sage: from flatsurf.geometry.straight_line_trajectory import SegmentInPolygon</span>
+<span class="sd">            sage: s = similarity_surfaces.example()</span>
+<span class="sd">            sage: v = s.tangent_vector(0, (1/3,-1/4), (0,1))</span>
+<span class="sd">            sage: h = hash(SegmentInPolygon(v))</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_start</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_end</span><span class="p">))</span>
+
     <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">type</span><span class="p">(</span><span class="n">other</span><span class="p">)</span> <span class="ow">and</span> \
                <span class="bp">self</span><span class="o">.</span><span class="n">_start</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_start</span> <span class="ow">and</span> \
@@ -432,17 +444,17 @@
 <div class="viewcode-block" id="AbstractStraightLineTrajectory.terminal_tangent_vector"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.straight_line_trajectory.AbstractStraightLineTrajectory.terminal_tangent_vector">[docs]</a>    <span class="k">def</span> <span class="nf">terminal_tangent_vector</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">segment</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">end</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="AbstractStraightLineTrajectory.intersects"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.straight_line_trajectory.AbstractStraightLineTrajectory.intersects">[docs]</a>    <span class="k">def</span> <span class="nf">intersects</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">traj</span><span class="p">,</span> <span class="n">count_singularities</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="AbstractStraightLineTrajectory.intersects"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.straight_line_trajectory.AbstractStraightLineTrajectory.intersects">[docs]</a>    <span class="k">def</span> <span class="nf">intersects</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">traj</span><span class="p">,</span> <span class="n">count_singularities</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return true if this trajectory intersects the other trajectory.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">intersections</span><span class="p">(</span><span class="n">traj</span><span class="p">,</span> <span class="n">count_singularities</span> <span class="o">=</span> <span class="n">count_singularities</span><span class="p">))</span>
+            <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">intersections</span><span class="p">(</span><span class="n">traj</span><span class="p">,</span> <span class="n">count_singularities</span><span class="o">=</span><span class="n">count_singularities</span><span class="p">))</span>
         <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
         <span class="k">return</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="AbstractStraightLineTrajectory.intersections"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.straight_line_trajectory.AbstractStraightLineTrajectory.intersections">[docs]</a>    <span class="k">def</span> <span class="nf">intersections</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">traj</span><span class="p">,</span> <span class="n">count_singularities</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">include_segments</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="AbstractStraightLineTrajectory.intersections"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.straight_line_trajectory.AbstractStraightLineTrajectory.intersections">[docs]</a>    <span class="k">def</span> <span class="nf">intersections</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">traj</span><span class="p">,</span> <span class="n">count_singularities</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">include_segments</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the set of SurfacePoints representing the intersections</span>
 <span class="sd">        of this trajectory with the provided trajectory or SaddleConnection.</span>
@@ -456,8 +468,8 @@
 
 <span class="sd">        EXAMPLES::</span>
 
-<span class="sd">            sage: from flatsurf import *</span>
-<span class="sd">            sage: s=translation_surfaces.square_torus()</span>
+<span class="sd">            sage: from flatsurf import translation_surfaces</span>
+<span class="sd">            sage: s = translation_surfaces.square_torus()</span>
 <span class="sd">            sage: traj1 = s.tangent_vector(0,(1/2,0),(1,1)).straight_line_trajectory()</span>
 <span class="sd">            sage: traj1.flow(3)</span>
 <span class="sd">            sage: traj1.is_closed()</span>
@@ -468,6 +480,14 @@
 <span class="sd">            True</span>
 <span class="sd">            sage: sum(1 for _ in traj1.intersections(traj2))</span>
 <span class="sd">            2</span>
+
+<span class="sd">            sage: for p, (segs1, segs2) in traj1.intersections(traj2, include_segments=True):</span>
+<span class="sd">            ....:     print(p)</span>
+<span class="sd">            ....:     print(len(segs1), len(segs2))</span>
+<span class="sd">            Surface point with 2 coordinate representations</span>
+<span class="sd">            2 2</span>
+<span class="sd">            Surface point with 2 coordinate representations</span>
+<span class="sd">            2 2</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Partition the segments making up the trajectories by label.</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">traj</span><span class="p">,</span><span class="n">SaddleConnection</span><span class="p">):</span>
@@ -505,15 +525,14 @@
                                 <span class="k">if</span> <span class="n">new_point</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">intersection_points</span><span class="p">:</span>
                                     <span class="n">intersection_points</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">new_point</span><span class="p">)</span>
                                     <span class="k">if</span> <span class="n">include_segments</span><span class="p">:</span>
-                                        <span class="n">segments</span><span class="p">[</span><span class="n">new_point</span><span class="p">]</span><span class="o">=</span><span class="p">({</span><span class="n">seg1</span><span class="p">},{</span><span class="n">seg2</span><span class="p">})</span>
+                                        <span class="n">segments</span><span class="p">[</span><span class="n">new_point</span><span class="p">]</span> <span class="o">=</span> <span class="p">({</span><span class="n">seg1</span><span class="p">},</span> <span class="p">{</span><span class="n">seg2</span><span class="p">})</span>
                                     <span class="k">else</span><span class="p">:</span>
                                         <span class="k">yield</span> <span class="n">new_point</span>
                                 <span class="k">elif</span> <span class="n">include_segments</span><span class="p">:</span>
-                                    <span class="n">segments</span><span class="p">[</span><span class="n">new_point</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">seg1</span><span class="p">)</span>
-                                    <span class="n">segments</span><span class="p">[</span><span class="n">new_point</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">seg2</span><span class="p">)</span>
+                                    <span class="n">segments</span><span class="p">[</span><span class="n">new_point</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">seg1</span><span class="p">)</span>
+                                    <span class="n">segments</span><span class="p">[</span><span class="n">new_point</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">seg2</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">include_segments</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">segments</span><span class="p">):</span>
-                <span class="k">yield</span> <span class="n">x</span></div></div>
+            <span class="k">yield from</span> <span class="n">segments</span><span class="o">.</span><span class="n">items</span><span class="p">()</span></div></div>
 
 
 
@@ -935,7 +954,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016-2021, Vincent Delecroix and Pat Hooper.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.0.2.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.1.1.
     </div>
   </body>
 </html>
