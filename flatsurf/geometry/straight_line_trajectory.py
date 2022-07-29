@@ -81,6 +81,18 @@ class SegmentInPolygon:
             self._end = start.forward_to_polygon_boundary()
             self._start = self._end.forward_to_polygon_boundary()
 
+    def __hash__(self):
+        r"""
+        TESTS::
+
+            sage: from flatsurf import similarity_surfaces
+            sage: from flatsurf.geometry.straight_line_trajectory import SegmentInPolygon
+            sage: s = similarity_surfaces.example()
+            sage: v = s.tangent_vector(0, (1/3,-1/4), (0,1))
+            sage: h = hash(SegmentInPolygon(v))
+        """
+        return hash((self._start, self._end))
+
     def __eq__(self, other):
         return type(self) is type(other) and \
                self._start == other._start and \
