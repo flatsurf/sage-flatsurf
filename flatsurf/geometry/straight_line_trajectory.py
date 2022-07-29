@@ -435,14 +435,11 @@ class AbstractStraightLineTrajectory:
 
             sage: for p, (segs1, segs2) in traj1.intersections(traj2, include_segments=True):
             ....:     print(p)
-            ....:     print(segs1)
-            ....:     print(segs2)
+            ....:     print(len(segs1), len(segs2))
             Surface point with 2 coordinate representations
-            {Segment in polygon 0 starting at (1/2, 0) and ending at (1, 1/2), Segment in polygon 0 starting at (0, 1/2) and ending at (1/2, 1)}
-            {Segment in polygon 0 starting at (1, 1/2) and ending at (1/2, 1), Segment in polygon 0 starting at (1/2, 0) and ending at (0, 1/2)}
+            2 2
             Surface point with 2 coordinate representations
-            {Segment in polygon 0 starting at (1/2, 0) and ending at (1, 1/2), Segment in polygon 0 starting at (0, 1/2) and ending at (1/2, 1)}
-            {Segment in polygon 0 starting at (1, 1/2) and ending at (1/2, 1), Segment in polygon 0 starting at (1/2, 0) and ending at (0, 1/2)}
+            2 2
         """
         # Partition the segments making up the trajectories by label.
         if isinstance(traj,SaddleConnection):
