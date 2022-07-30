@@ -1858,15 +1858,20 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         return polygon
 
     def convex_hull(self, *subsets, marked_vertices=False):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
         r"""
+        Return the convex hull of the ``subsets``.
+
+        INPUT:
+
+        - ``subsets`` -- a sequence of subsets of this hyperbolic space.
+
+        - ``marked_vertices`` -- a boolean (default: ``False``), whether to
+          keep redundant vertices on the boundary.
 
         ALGORITHM:
 
-        TODO
+        We use the standard Graham scan algorithm which runs in O(nlogn), see
+        :meth:`HyperbolicHalfSpaces.convex_hull`.
 
         EXAMPLES::
 
@@ -1931,6 +1936,11 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             Traceback (most recent call last):
             ...
             NotImplementedError: cannot add marked vertices to low dimensional objects
+
+        .. SEEALSO::
+
+            :meth:`HyperbolicHalfSpaces.convex_hull` for the underlying implementation
+            :meth:`intersection` to compute the intersection of convex sets
 
         """
         subsets = [self(subset) for subset in subsets]
