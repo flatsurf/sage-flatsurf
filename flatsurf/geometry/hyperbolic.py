@@ -2377,9 +2377,6 @@ class HyperbolicConvexSet(Element):
         True
 
     """
-    def __hash__(self):
-        # TODO: Implement me in subclasses and remove this.
-        return 0
 
     def half_spaces(self):
         # TODO: Check documentation.
@@ -2865,6 +2862,13 @@ class HyperbolicConvexSet(Element):
         # TODO: Test that other implementation are consistent with vertices()
         raise NotImplementedError
 
+    def __hash__(self):
+        # TODO: Check documentation.
+        # TODO: Check INPUT
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        raise NotImplementedError("this convex set is not hashable")
+
 
 class HyperbolicOrientedConvexSet(HyperbolicConvexSet):
     # TODO: Check documentation
@@ -3110,6 +3114,13 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
         # TODO: Check SEEALSO
         # TODO: Check for doctests
         return self.boundary().vertices()
+
+    def __hash__(self):
+        # TODO: Check documentation.
+        # TODO: Check INPUT
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        return hash(self._geodesic)
 
 
 class HyperbolicGeodesic(HyperbolicConvexSet):
