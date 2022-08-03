@@ -1899,7 +1899,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             {(x^2 + y^2) + 3*x - 4 ≤ 0} ∩ {(x^2 + y^2) - 3*x - 4 ≤ 0} ∩ {(x^2 + y^2) - 1 ≥ 0} ∪ {I}
 
             sage: polygon.vertices()
-            {-1, I, 2*I, 1}
+            {-1, I, 1, 2*I}
 
         The convex hull of a half space and a point::
 
@@ -1937,6 +1937,15 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             ...
             NotImplementedError: cannot add marked vertices to low dimensional objects
 
+        The convex point of two polygons which contain infinitely many ideal points::
+
+            sage: H.convex_hull(
+            ....:     H.polygon([H.geodesic(-1, -1/4).left_half_space(), H.geodesic(0, -2).left_half_space()]),
+            ....:     H.polygon([H.geodesic(4, 2).left_half_space(), H.geodesic(4, oo).left_half_space()]),
+            ....:     H.polygon([H.geodesic(-1/2, 1/2).left_half_space(), H.geodesic(2, -2).left_half_space()])
+            ....: )
+            {2*(x^2 + y^2) - x ≥ 0} ∩ {(x^2 + y^2) - 2*x - 8 ≤ 0} ∩ {8*(x^2 + y^2) + 6*x + 1 ≥ 0}
+
         .. SEEALSO::
 
             :meth:`HyperbolicHalfSpaces.convex_hull` for the underlying implementation
@@ -1955,8 +1964,14 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
                 if isinstance(subset, HyperbolicHalfSpace):
                     half_spaces.append(subset)
                 elif isinstance(subset, HyperbolicConvexPolygon):
-                    # TODO: determine the half spaces contained in this polygon, i.e., the ones formed by vertices not connected by an edge (with the correct orientation.)
-                    raise NotImplementedError("cannot form convex hull of polygons yet")
+                    # An infinity polygon is more than just the convex hull of
+                    # its vertices, it may also contain entire half spaces,
+                    # namely those that are between vertices that are not
+                    # connected by an edge.
+                    edges = subset.edges()
+                    for (a, b) in subset.vertices().pairs():
+                        if a.segment(b) not in edges:
+                            half_spaces.append(self.geodesic(a, b).right_half_space())
                 else:
                     raise NotImplementedError("cannot form convex hull of this kind of set yet")
 
@@ -5664,6 +5679,8 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
                 pass
             elif AB == "negative":
                 start = None
+            elif AB == "anti-parallel":
+                start = None
             else:
                 raise NotImplementedError(
                     f"cannot determine edges when boundaries are in configuration {AB}"
@@ -5676,6 +5693,8 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
             elif BC == "concave":
                 pass
             elif BC == "negative":
+                end = None
+            elif BC == "anti-parallel":
                 end = None
             else:
                 raise NotImplementedError(
@@ -6449,6 +6468,7 @@ class SortedSet:
     # TODO: Check INPUTS
     # TODO: Check SEEALSO
     # TODO: Check for doctests
+    # TODO: Add a collections.abc class.
     # TODO: Benchmark?
     r"""
     A set of objects sorted by :meth:`SortedSet.cmp`.
@@ -6639,6 +6659,15 @@ class SortedSet:
         # TODO: Benchmark?
         return len(self._entries)
 
+    def pairs(self):
+        # TODO: Check documentation.
+        # TODO: Check INPUT
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        # TODO: Benchmark?
+        for i in range(len(self._entries)):
+            yield self._entries[i-1], self._entries[i]
+
     def triples(self):
         # TODO: Check documentation.
         # TODO: Check INPUT
@@ -6657,6 +6686,7 @@ class HyperbolicVertices(SortedSet):
     # TODO: Check SEEALSO
     # TODO: Check for doctests
     # TODO: Benchmark?
+    # TODO: Do we need to disable _merge in most cases (probably fine if both sets of vertices define the same polygon?)
     r"""
     A set of vertices on the boundary of a convex set in the hyperbolic plane,
     sorted in counterclockwise order.
@@ -6687,21 +6717,29 @@ class HyperbolicVertices(SortedSet):
         # TODO: Check SEEALSO
         # TODO: Check for doctests
         # TODO: Benchmark?
-        if len(vertices) == 0:
-            raise ValueError("vertex set must not be empty")
 
-        min = vertices[0]
-        self._min = min.parent().point(0, 0, model="klein")
+        if len(vertices) != 0:
+            # We sort vertices in counterclockwise order. We need to fix a starting
+            # point consistently, namely we choose the leftmost point in the Klein
+            # model and if there are ties the one with minimal y coordinate.
+            # That way we can then order vertices by their slopes with the starting
+            # point to get a counterclockwise walk.
+            self._start = min(vertices, key=lambda vertex: vertex.coordinates(model="klein"))
 
-        for vertex in vertices[1:]:
-            if self._lt_(vertex, min):
-                min = vertex
-            else:
-                assert self._lt_(min, vertex), "vertices must not contain duplicates"
-
-        self._min = min
+        # _lt_ needs to know the global structure of the convex hull of the vertices.
+        # The base class constructor will replace _entries with a sorted version of _entries.
+        self._entries = tuple(vertices)
 
         super().__init__(vertices, assume_sorted=assume_sorted)
+
+    def _slope(self, vertex):
+        # TODO: Check documentation.
+        # TODO: Check INPUT
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        sx, sy = self._start.coordinates(model="klein")
+        x, y = vertex.coordinates(model="klein")
+        return (y - sy, x - sx)
 
     def _lt_(self, lhs, rhs):
         # TODO: Check documentation.
@@ -6709,23 +6747,40 @@ class HyperbolicVertices(SortedSet):
         # TODO: Check SEEALSO
         # TODO: Check for doctests
         # TODO: Benchmark?
-        # TODO: This is a bit hacky. And probably slow. (Do we need predicates here?)
-        from sage.all import RR
-
+        if lhs == self._start:
+            return True
+        if rhs == self._start:
+            return False
         if lhs == rhs:
             return False
 
-        if lhs.change_ring(RR).coordinates(model="klein") < rhs.change_ring(
-            RR
-        ).coordinates(model="klein"):
-            return True
-        elif lhs.change_ring(RR).coordinates(model="klein") == rhs.change_ring(
-            RR
-        ).coordinates(model="klein"):
-            if lhs.coordinates(model="klein") < rhs.coordinates(model="klein"):
-                return True
+        dy_lhs, dx_lhs = self._slope(lhs)
+        dy_rhs, dx_rhs = self._slope(rhs)
 
-        return False
+        assert dx_lhs >= 0 and dx_rhs >= 0, "all points must be to the right of the starting point due to chosen normalization"
+
+        if dy_lhs * dx_rhs < dy_rhs * dx_lhs:
+            return True
+
+        if dy_lhs * dx_rhs > dy_rhs * dx_lhs:
+            return False
+
+        # The points (start, lhs, rhs) are collinear.
+        # In general we cannot decide their order with only looking at start,
+        # lhs, and rhs. We need to understand where the rest of the convex hull
+        # lives.
+        assert lhs in self._entries and rhs in self._entries, "cannot compare vertices that are not defining for the convex hull"
+
+        # If there is any vertex with a bigger slope, then this line is at the
+        # start of the walk in counterclockwise order.
+        for vertex in self._entries:
+            dy, dx = self._slope(vertex)
+            if dy * dx_rhs > dy_rhs * dx:
+                return dx_lhs < dx_rhs
+            elif dy * dx_rhs < dy_rhs * dx:
+                return dx_lhs > dx_rhs
+
+        raise ValueError("cannot decide counterclockwise ordering of three collinear points")
 
 
 class HyperbolicHalfSpaces(SortedSet):
@@ -6744,9 +6799,9 @@ class HyperbolicHalfSpaces(SortedSet):
         # TODO: This is essentially atan2.
         r"""
         Return whether the half space ``lhs`` is smaller than ``rhs`` in a cyclic
-        ordering of normal vectors, i.e., in an ordering that half spaces
-        whether their normal points to the left/right, the slope of the
-        geodesic, and finally by containment.
+        ordering of normal vectors, i.e., order half spaces by whether their
+        normal points to the left/right, the slope of the geodesic, and finally
+        by containment.
 
         This ordering is such that :meth:`HyperbolicPlane.intersection` can be
         computed in linear time for two hyperbolic convex sets.
