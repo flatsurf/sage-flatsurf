@@ -40,8 +40,9 @@ class IsoDelaunayTessellation(Parent):
     def __init__(self, surface):
         from sage.all import Graph
         self._surface_original = surface
-        self._surface = self._surface_original.delaunay_triangulation()
         self._hyperbolic_plane = HyperbolicPlane(surface.base_ring())
+        self._surface = surface.delaunay_triangulation()
+        self._surface = self._delaunay_triangulation(surface)
         self._faces = Graph([[self.root()], []])
         self._faces.set_vertex(self.root(), self._surface)
 
@@ -55,6 +56,7 @@ class IsoDelaunayTessellation(Parent):
         When ``edge`` is ``None``, explore all edges of the IsoDelaunay regions bounding ``vertex``.
         When both ``vertex`` and ``edge`` are ``None``, start exploring from a vertex that contains the point ``i``.
 
+
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
@@ -64,7 +66,7 @@ class IsoDelaunayTessellation(Parent):
             sage: idt.explore()
 
         """
-        limit = limit or 3  # TODO: explore until finding FD
+        limit = 3 if limit is None else limit  # TODO: explore until finding FD
         if limit <= 0:
             return
 
@@ -74,26 +76,25 @@ class IsoDelaunayTessellation(Parent):
                 self.explore(limit=limit, vertex=vertex, edge=edge)
             return
 
-        edge.plot().show()
         source = vertex or self.face(edge)
         source_triangulation = self._faces.get_vertex(source)
-        source_triangulation.plot().show()
         target_triangulation = source_triangulation.copy()
         edges_to_flip = []
         while True:
             for triangulation_edge in target_triangulation.edge_iterator():
-                half_plane = self._half_plane(target_triangulation, triangulation_edge)
+                half_plane = self._half_plane(
+                    target_triangulation, triangulation_edge)
                 if half_plane is None:
                     continue
                 if half_plane.boundary() == edge.geodesic():
-                    print(triangulation_edge, edge.geodesic())
-                    half_plane.boundary().plot().show()
-                    target_triangulation = target_triangulation.triangle_flip(*triangulation_edge)
+                    target_triangulation = target_triangulation.triangle_flip(
+                        *triangulation_edge)
                     break
             else:
                 break
-        
-        target = self._hyperbolic_plane.polygon(self._iso_delaunay_region(target_triangulation))
+
+        target = self._hyperbolic_plane.polygon(
+            self._iso_delaunay_region(target_triangulation))
 
         assert -edge in target.edges()
 
@@ -117,6 +118,15 @@ class IsoDelaunayTessellation(Parent):
     def root(self):
         r"""
         Return the vertex from which we started to build the IsoDelaunay tessellation.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: from flatsurf.geometry.iso_delaunay_tessellation import IsoDelaunayTessellation
+            sage: s = translation_surfaces.veech_2n_gon(4)
+            sage: idt = IsoDelaunayTessellation(s)
+            sage: idt.root()
+            {(6*a + 8)*(x^2 + y^2) + (-20*a - 28)*x + 14*a + 20 ≥ 0} ∩ {(2*a + 3)*(x^2 + y^2) + (-4*a - 6)*x - 2*a - 3 ≤ 0} ∩ {(4*a + 6)*(x^2 + y^2) - 4*a - 6 ≥ 0}
         """
         from sage.all import I
         return self.face(I)
@@ -151,6 +161,7 @@ class IsoDelaunayTessellation(Parent):
             sage: idt = IsoDelaunayTessellation(s)
             sage: i = idt._hyperbolic_plane(i) # TODO Automatically coerce
             sage: idt.face(i)
+            {(6*a + 8)*(x^2 + y^2) + (-20*a - 28)*x + 14*a + 20 ≥ 0} ∩ {(2*a + 3)*(x^2 + y^2) + (-4*a - 6)*x - 2*a - 3 ≤ 0} ∩ {(4*a + 6)*(x^2 + y^2) - 4*a - 6 ≥ 0}
 
         """
 
@@ -170,16 +181,16 @@ class IsoDelaunayTessellation(Parent):
         T = A_T.apply_matrix(~A, in_place=False)
         half_planes = self._iso_delaunay_region(T)
         iso_delaunay_region = self._hyperbolic_plane.polygon(half_planes)
-        
+
         # Let M_i be starting surf with arbitrary DT producing potentially degen IDR
         # Consider T_e * M_i until it has a nondegenerate IDR
         # let M_{i+e} be the Delaunay triangulated surface with a nondegen IDR
-        # then T_{-e} * M_{i + e} is a new DT of M_i with a nondegen IDR 
+        # then T_{-e} * M_{i + e} is a new DT of M_i with a nondegen IDR
 
         # If M_i has a degenerate IDR, do flips until not the case
-        # e.g. only 8 / 250 of the triangulations of the regular octagon lead to a nondegen IDR 
+        # e.g. only 8 / 250 of the triangulations of the regular octagon lead to a nondegen IDR
         if iso_delaunay_region.dimension() < 2:
-            epsilon = 1/2
+            epsilon = QQ(1)/2
             while True:
                 x, y = z.coordinates()
                 z1 = self._hyperbolic_plane.point(
@@ -232,8 +243,7 @@ class IsoDelaunayTessellation(Parent):
 
     def _surface_to_point(self, surface):
         t0 = self._surface.polygon(0)
-        t1 = surface.polygon(0)
-        print(t1)
+        t1 = surface.p
         v0, v1, _ = t0.edges()
         w0, w1, _ = t1.edges()
 
@@ -244,6 +254,10 @@ class IsoDelaunayTessellation(Parent):
 
         x, y = point.coordinates(model="half_plane")
         return matrix(2, [1, x, 0, y])
+
+    def _point_to_surface(self, point):
+        m = self._point_to_matrix(point)
+        return self._surface.apply_matrix(m)
 
     def _iso_delaunay_region(self, triangulation):
         return [half_plane for edge in triangulation.edge_iterator()
@@ -278,3 +292,23 @@ class IsoDelaunayTessellation(Parent):
             (x1 - x2) + x0 * x2 * y1 * (x2 - x0)
 
         return self._hyperbolic_plane.geodesic(a, 2 * b, c, model="half_plane").left_half_space()
+
+
+    def _delaunay_triangulation(self, _surface):
+        r"""
+        Return a Delaunay triangulation for `_surface` whose IDR is 2-dimensional
+        """
+        from sage.all import QQ, I
+
+        epsilon = QQ(1/2)
+        while epsilon > QQ(1/32):
+            I1 = self._hyperbolic_plane.point(epsilon, 1, model="half_plane")
+            face1 = self.face(I1)
+            #if z1 in face1.interior() and I in face1: TODO add interior()
+            if I in face1:
+                break
+            epsilon /= 2
+
+        nondegenerate_triangulation = self._point_to_surface(I1).delaunay_triangulation() 
+        perturbation = self._point_to_matrix(I1)
+        return nondegenerate_triangulation.apply_matrix(perturbation.inverse())
