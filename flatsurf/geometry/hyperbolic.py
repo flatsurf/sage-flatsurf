@@ -2368,6 +2368,7 @@ class HyperbolicEpsilonGeometry(UniqueRepresentation, HyperbolicGeometry):
 
 
 # TODO: Change richcmp to match the description below.
+# TODO: Implement checking whether a point is in the interior.
 class HyperbolicConvexSet(Element):
     # TODO: Check documentation
     # TODO: Check INPUTS
@@ -2846,8 +2847,6 @@ class HyperbolicConvexSet(Element):
 
     # TODO: Test that is_subset can compare all kinds of sets by inclusion.
 
-    # TODO: Provide hashing.
-
     def an_element(self):
         # TODO: Check documentation.
         # TODO: Check INPUT
@@ -2924,12 +2923,75 @@ class HyperbolicConvexSet(Element):
         raise NotImplementedError
 
     def __hash__(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
-        raise NotImplementedError("this convex set is not hashable")
+        r"""
+        Return a hash value for this convex set.
+
+        Specific sets should override this method.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(QQ)
+
+            sage: hash(H.empty_set())
+            0
+
+        Note that has values of sets over different base rings might not be
+        consistent::
+
+            sage: HyperbolicPlane(ZZ).half_circle(0, 2) == HyperbolicPlane(AA).half_circle(0, 2)
+            True
+
+            sage: hash(HyperbolicPlane(ZZ).half_circle(0, 2)) == hash(HyperbolicPlane(AA).half_circle(0, 2))
+            False
+
+        Sets over inexact base rings are not be hashable (since their hash
+        would not be compatible with the notion of equality)::
+
+            sage: hash(HyperbolicPlane(RR).vertical(0))
+            Traceback (most recent call last):
+            ...
+            TypeError: cannot hash geodesic defined over inexact base ring
+
+        """
+        raise NotImplementedError(f"the set {self} is not hashable")
+
+    def _test_hash(self, **options):
+        r"""
+        Verify that this set implements a good hash function.
+
+        TESTS::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(QQ)
+
+            sage: H.an_element()._test_plot()
+
+        Nothing is tested for unhashable sets::
+
+            sage: H = HyperbolicPlane(RR)
+
+            sage: H.an_element()._test_hash()
+
+        """
+        tester = self._tester(**options)
+
+        # We refuse to hash inexact elements.
+        if not self.parent().base_ring().is_exact():
+            if not self.is_empty():
+                with tester.assertRaises(TypeError):
+                    hash(self)
+            return
+
+        tester.assertEqual(hash(self), hash(self))
+
+        # We test that the hash function is good enough to distinguish this set
+        # from some generic sets. While, there will be hash collisions
+        # eventually, they should not show up with such non-random sets for a
+        # good hash function.
+        for subset in self.parent().some_elements():
+            if subset != self:
+                tester.assertNotEqual(hash(self), hash(subset))
 
 
 class HyperbolicOrientedConvexSet(HyperbolicConvexSet):
@@ -2979,7 +3041,7 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
 
         self._geodesic = geodesic
 
-    def equation(self, model, gcd=False):
+    def equation(self, model, normalization=None):
         # TODO: Check documentation.
         # TODO: Check INPUT
         # TODO: Check SEEALSO
@@ -2997,7 +3059,7 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
         Note that the output is not unique since the coefficients can be scaled
         by a positive scalar.
         """
-        return self._geodesic.equation(model=model, gcd=gcd)
+        return self._geodesic.equation(model=model, normalization=normalization)
 
     def _repr_(self):
         # TODO: Check documentation.
@@ -3027,7 +3089,7 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
         sgn = self.parent().geometry.sgn
 
         # Convert to the upper half plane model as a(x^2 + y^2) + bx + c ≥ 0.
-        a, b, c = self.equation(model="half_plane", gcd=None)
+        a, b, c = self.equation(model="half_plane", normalization=["gcd", None])
 
         # Remove any trailing - signs in the output.
         cmp = "≥"
@@ -3193,12 +3255,26 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
         return self.boundary().vertices()
 
     def __hash__(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
-        return hash(self._geodesic)
+        r"""
+        Return a hash value for this half space
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+
+            sage: H = HyperbolicPlane()
+
+        Since half spaces are hashable, they can be put in a hash table, such
+        as a Python ``set``::
+
+            sage: S = {H.vertical(0).left_half_space(), H.vertical(0).right_half_space()}
+            sage: len(S)
+            2
+
+        """
+        # Add the type to the hash value to distinguish the hash value from an
+        # actual geodesic.
+        return hash((type(self), self._geodesic))
 
 
 class HyperbolicGeodesic(HyperbolicConvexSet):
@@ -3257,25 +3333,6 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
         self._b = b
         self._c = c
 
-    def __hash__(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
-        # TODO: This is wrong when there is a GCD. What about inexact rings?
-        r"""
-        TESTS::
-
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicGeodesic
-            sage: H = HyperbolicPlane()
-
-            sage: hash(H.vertical(0)) == hash(H.vertical(0))
-            True
-
-        """
-        return hash((self._a, self._b, self._c))
-
     def is_ultra_ideal(self):
         # TODO: Check documentation.
         # TODO: Check INPUT
@@ -3301,7 +3358,7 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
 
         if model == "half_plane":
             # Convert to the upper half plane model as a(x^2 + y^2) + bx + c = 0.
-            a, b, c = self.equation(model="half_plane", gcd=None)
+            a, b, c = self.equation(model="half_plane", normalization=["gcd", None])
 
             from sage.all import PolynomialRing
 
@@ -3314,7 +3371,7 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
                 return f"{{{repr(R([c, b]))} = 0}}"
 
         if model == "klein":
-            a, b, c = self.equation(model="klein", gcd=None)
+            a, b, c = self.equation(model="klein", normalization=["gcd", None])
 
             from sage.all import PolynomialRing
 
@@ -3329,7 +3386,7 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
 
         raise NotImplementedError("printing not supported in this model")
 
-    def equation(self, model, gcd=False):
+    def equation(self, model, normalization=None):
         # TODO: Check documentation.
         # TODO: Check INPUT
         # TODO: Check SEEALSO
@@ -3350,19 +3407,34 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
         - ``model`` -- the model in which this equation holds, either
           ``"half_plane"`` or ``"klein"``
 
-        - ``gcd`` -- whether to divide the coefficients in the equation by
-          their gcd. If ``None``, such a division is attempted but errors are
-          silently ignored.
+        - ``normalization`` -- how to normalize the coefficients; the default
+          ``None`` is not to normalize at all. Other options are ``gcd``, to
+          divide the coefficients by their greatest common divisor, ``one``, to
+          normalize the first non-zero coefficient to ±1. This can also be a
+          list of such values which are then tried in order and exceptions are
+          silently ignored unless they happen at the last option.
 
         If this geodesic :meth;`is_oriented`, then the sign of the coefficients
         is chosen to encode the orientation of this geodesic. The sign is such
         that the half plane obtained by replacing ``=`` with ``≥`` in above
         equationsis on the left of the geodesic.
 
-        Note that the output does not uniquely describe the geodesic since the
+        Note that the output might not uniquely describe the geodesic since the
         coefficients are only unique up to scaling.
 
         """
+        normalization = normalization or [None]
+
+        if isinstance(normalization, str):
+            normalization = [normalization]
+
+        from collections.abc import Sequence
+        if not isinstance(normalization, Sequence):
+            normalization = [normalization]
+
+        normalization = list(normalization)
+        normalization.reverse()
+
         a, b, c = self._a, self._b, self._c
 
         if model == "klein":
@@ -3372,30 +3444,56 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
         else:
             raise NotImplementedError("cannot determine equation for this model yet")
 
-        if gcd is not False:
-            try:
-                from sage.all import gcd as gcd_
-
-                d = gcd_((a, b, c))
-                assert d > 0
-                a /= d
-                b /= d
-                c /= d
-            except Exception:
-                if gcd:
-                    raise
-
-        if not self.is_oriented():
-            # TODO: Turn this into a proper predicate.
-            sgn = self.parent().geometry.sgn
-            if (
+        # TODO: Turn this into a proper predicate.
+        sgn = self.parent().geometry.sgn
+        sgn = -1 if (
                 sgn(a) < 0
                 or (sgn(a) == 0 and b < 0)
                 or (sgn(a) == 0 and sgn(b) == 0 and sgn(c) < 0)
-            ):
-                a *= -1
-                b *= -1
-                c *= -1
+            ) else 1
+
+        while normalization:
+            strategy = normalization.pop()
+
+            if strategy is None:
+                break
+
+            if strategy == "gcd":
+                try:
+                    from sage.all import gcd as gcd_
+
+                    d = gcd_((a, b, c))
+                    assert d > 0
+                    (a, b, c) = (a / d, b / d, c / d)
+                    break
+                except Exception:
+                    if not normalization:
+                        raise
+                    continue
+
+            if strategy == "one":
+                try:
+                    if a:
+                        d = sgn * a
+                    elif b:
+                        d = sgn * b
+                    else:
+                        assert c
+                        d = sgn * c
+
+                    (a, b, c) = (a / d, b / d, c / d)
+                    break
+                except Exception:
+                    if not normalization:
+                        raise
+                    continue
+
+            raise ValueError(f"unknown normalization {strategy}")
+
+        if not self.is_oriented():
+            a *= sgn
+            b *= sgn
+            c *= sgn
 
         return a, b, c
 
@@ -3570,6 +3668,46 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
         # TODO: Check for doctests
         # TODO: Benchmark?
         return self
+
+    def __hash__(self):
+        r"""
+        Return a hash value for this geodesic.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+
+            sage: H = HyperbolicPlane()
+
+        Since oriented geodesics are hashable, they can be put in a hash table, such as a
+        Python ``set``::
+
+            sage: S = {H.vertical(0), -H.vertical(0)}
+            sage: len(S)
+            2
+
+        Same for unoriented geodesics::
+
+            sage: {H.vertical(0).unoriented(), (-H.vertical(0)).unoriented()}
+            {{x = 0}}
+
+        Oriented and unoriented geodesics are distinct and so is their hash
+        value (typically)::
+
+            sage: hash(H.vertical(0)) != hash(H.vertical(0).unoriented())
+            True
+
+        We can also mix oriented and unoriented geodesics in hash tables::
+
+            sage: S = {H.vertical(0), -H.vertical(0), H.vertical(0).unoriented(), (-H.vertical(0)).unoriented()}
+            sage: len(S)
+            3
+
+        """
+        if not self.parent().base_ring().is_exact():
+            raise TypeError("cannot hash geodesic defined over inexact base ring")
+
+        return hash((type(self), self.equation(model="klein", normalization=["one", "gcd"])))
 
 
 class HyperbolicUnorientedGeodesic(HyperbolicGeodesic):
@@ -4162,6 +4300,9 @@ class HyperbolicPoint(HyperbolicConvexSet):
                 if sqrt not in self.parent().base_ring():
                     raise ValueError(f"square root of {square} not in {self.parent().base_ring()}")
             except ValueError:
+                # TODO: We should make this more explicit and use a proper
+                # keyword for this. Also, make sure that all method that accept
+                # a ring implement this.
                 if ring == "try":
                     return None
                 raise
@@ -4301,6 +4442,39 @@ class HyperbolicPoint(HyperbolicConvexSet):
         # TODO: Check for doctests
         # TODO: Benchmark?
         return HyperbolicVertices([self])
+
+    def __hash__(self):
+        r"""
+        Return a hash value for this point.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+
+            sage: H = HyperbolicPlane()
+
+        Since points are hashable, they can be put in a hash table, such as a
+        Python ``set``::
+
+            sage: S = {H(I), H(0)}
+            sage: len(S)
+            2
+
+        ::
+
+            sage: {H.half_circle(0, 1).start(), H.half_circle(-2, 1).end()}
+            {-1}
+
+        Also, endpoints of geodesics that have no coordinates in the base ring
+        can be hashed, see :meth:`HyperbolicPointFromGeodesic.__hash__`::
+
+            sage: S = {H.half_circle(0, 2).start()}
+
+        """
+        if not self.parent().base_ring().is_exact():
+            raise TypeError("cannot hash a point defined over inexact base ring")
+
+        return hash(self.coordinates(ring=self.parent().base_ring(), model="klein"))
 
 
 class HyperbolicPointFromCoordinates(HyperbolicPoint):
@@ -4586,6 +4760,10 @@ class HyperbolicPointFromGeodesic(HyperbolicPoint):
                 if self._geodesic == -other._geodesic:
                     return False
 
+                # TODO: This is probably too complicated. If we can compute the
+                # intersection of two geodesics, then that point should have
+                # coordinates in the base ring (or its fraction field or
+                # something like that.)
                 intersection = self._geodesic._intersection(other._geodesic)
 
                 return self == intersection and other == intersection
@@ -4636,6 +4814,56 @@ class HyperbolicPointFromGeodesic(HyperbolicPoint):
             self = self._geodesic.change(ring=ring, geometry=geometry).start()
 
         return self
+
+    def __hash__(self):
+        r"""
+        Return a hash value for this point.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+
+            sage: H = HyperbolicPlane()
+
+        Points that are given as the endpoints of a geodesic may or may not
+        have coordinates over the base ring::
+
+            sage: H.half_circle(0, 1).start().coordinates(model="klein")
+            (-1, 0)
+            sage: H.half_circle(0, 2).start().coordinates(model="klein")
+            Traceback (most recent call last):
+            ...
+            ValueError: square root of 32 not in Rational Field
+
+        While they always have coordinates in a quadratic extension, the hash
+        of the coordinates in the extension might not be consistent with has
+        values in the base ring, so we cannot simply hash the coordinates over
+        some field extension::
+
+            sage: hash(QQ(1/2)) == hash(AA(1/2))
+            False
+
+        To obtain consistent hash values for sets over the same base ring, at
+        least if that base ring is a field, we observe that a point whose
+        coordinates are not in the base ring cannot be the starting point of
+        two different geodesics with an equation in the base ring. Indeed, for
+        it otherwise had coordinates in the base ring as it were the
+        intersection of these two geodesics and whence a solution to a linear
+        equation with coefficients in the base ring. So, for points that have
+        no coordinates in the base ring, we can hash the equation of the
+        oriented geodesic to obtain a hash value::
+
+            sage: hash(H.half_circle(0, 2).start()) != hash(H.half_circle(0, 2).end())
+            True
+
+        """
+        if self.coordinates(model="klein", ring="try") is not None:
+            return super().__hash__()
+
+        from sage.categories.all import Fields
+        if self.parent().base_ring() not in Fields():
+            raise NotImplementedError("cannot hash point defined by a geodesic over a non-field yet")
+        return hash((type(self), self._geodesic))
 
 
 class HyperbolicConvexPolygon(HyperbolicConvexSet):
@@ -5829,6 +6057,24 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
                 return False
             return self._half_spaces == other._half_spaces
 
+    def __hash__(self):
+        r"""
+        Return a hash value for this polygon.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+
+            sage: H = HyperbolicPlane()
+
+        Since polygons are hashable, they can be put in a hash table, such
+        as a Python ``set``::
+
+            sage: S = {H.polygon([H.vertical(1).left_half_space(), H.vertical(-1).right_half_space()])}
+
+        """
+        return hash(self._half_spaces)
+
 
 class HyperbolicSegment(HyperbolicConvexSet):
     # TODO: Check documentation
@@ -6176,6 +6422,15 @@ class HyperbolicSegment(HyperbolicConvexSet):
         # TODO: Benchmark?
         return HyperbolicVertices([self.start(), self.end()])
 
+    def dimension(self):
+        # TODO: Check documentation.
+        # TODO: Check INPUT
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        from sage.all import ZZ
+
+        return ZZ(1)
+
 
 class HyperbolicUnorientedSegment(HyperbolicSegment):
     # TODO: Check documentation
@@ -6194,6 +6449,26 @@ class HyperbolicUnorientedSegment(HyperbolicSegment):
         sage: segment = H.segment(H.vertical(0), start=I).unoriented()
 
     """
+
+    def __hash__(self):
+        r"""
+        Return a hash value for this set.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+
+            sage: H = HyperbolicPlane()
+            sage: s = H(I).segment(2*I)
+
+        Since an uriented segment is hashable, it can be put in a hash table, such as a
+        Python ``set``::
+
+            sage: {s.unoriented(), (-s).unoriented()}
+            {{-x = 0} ∩ {(x^2 + y^2) - 1 ≥ 0} ∩ {(x^2 + y^2) - 4 ≤ 0}}
+
+        """
+        return hash((frozenset([self._start, self._end]), self.geodesic()))
 
 
 class HyperbolicOrientedSegment(HyperbolicSegment, HyperbolicOrientedConvexSet):
@@ -6302,6 +6577,26 @@ class HyperbolicOrientedSegment(HyperbolicSegment, HyperbolicOrientedConvexSet):
         raise NotImplementedError(
             "cannot determine configuration of segments that intersect in an infinite point"
         )
+
+    def __hash__(self):
+        r"""
+        Return a hash value for this set.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+
+            sage: H = HyperbolicPlane()
+            sage: s = H(I).segment(2*I)
+
+        Since this set is hashable, it can be put in a hash table, such as a
+        Python ``set``::
+
+            sage: {s}
+            {{-x = 0} ∩ {(x^2 + y^2) - 1 ≥ 0} ∩ {(x^2 + y^2) - 4 ≤ 0}}
+
+        """
+        return hash((self._start, self._end, self.geodesic()))
 
 
 class HyperbolicEmptySet(HyperbolicConvexSet):
@@ -6431,6 +6726,25 @@ class HyperbolicEmptySet(HyperbolicConvexSet):
             raise NotImplementedError("cannot change orientation of empty set")
 
         return self
+
+    def __hash__(self):
+        r"""
+        Return a hash value for this set.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+
+            sage: H = HyperbolicPlane()
+
+        Since this set is hashable, it can be put in a hash table, such as a
+        Python ``set``::
+
+            sage: {H.empty_set()}
+            {{}}
+
+        """
+        return 0
 
 
 def sl2_to_so12(m):
@@ -6612,6 +6926,21 @@ class SortedSet:
 
         """
         return not (self == other)
+
+    def __hash__(self):
+        r"""
+        Return a hash value for this set that is consistent with :meth:`__eq__`
+        and :meth:`__ne__`.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(QQ)
+            sage: hash(H.vertical(0).vertices()) != hash(H.vertical(1).vertices())
+            True
+
+        """
+        return hash(tuple(self._entries))
 
     def __add__(self, other):
         # TODO: Check documentation.
