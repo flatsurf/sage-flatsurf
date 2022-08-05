@@ -1873,6 +1873,9 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         We use the standard Graham scan algorithm which runs in O(nlogn), see
         :meth:`HyperbolicHalfSpaces.convex_hull`.
 
+        However, to get the unbounded bits of the convex hull right, we use a
+        somewhat naive O(n²) algorithm which could probably be improved easily.
+
         EXAMPLES::
 
             sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
@@ -1978,7 +1981,6 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         edges = []
 
         for edge in polygon.half_spaces():
-            # TODO: Documen that this is slow.
             for half_space in half_spaces:
                 if (-edge).is_subset(half_space):
                     break
@@ -1988,9 +1990,12 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         if marked_vertices:
             marked_vertices = [vertex for vertex in vertices if any(vertex in half_space.boundary() for half_space in edges)]
 
-        # TODO: Assert that all vertices and all half spaces are contained now.
+        polygon = self.polygon(edges, marked_vertices=marked_vertices)
 
-        return self.polygon(edges, marked_vertices=marked_vertices)
+        assert all(subset.is_subset(polygon) for subset in subsets), "convex hull does not contain all the sets is supposed to be the convex hull of"
+
+        return polygon
+
 
     def intersection(self, *subsets):
         # TODO: Check documentation.
