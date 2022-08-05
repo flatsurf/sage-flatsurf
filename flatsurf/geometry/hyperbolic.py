@@ -1996,13 +1996,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         return polygon
 
-
     def intersection(self, *subsets):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
         r"""
         Return the intersection of convex ``subsets``.
 
@@ -2023,6 +2017,10 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         See :meth:`HyperbolicConvexPolygon._normalize` for more algorithmic details.
 
+        INPUT:
+
+        - ``subsets`` -- a non-empty sequence of subsets of this hyperbolic space.
+
         EXAMPLES::
 
             sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
@@ -2033,6 +2031,18 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
             sage: H.intersection(H.vertical(0).left_half_space(), H.vertical(0).right_half_space())
             {x = 0}
+
+        We cannot form the intersection of no spaces yet::
+
+            sage: H.intersection()
+            Traceback (most recent call last):
+            ...
+            NotImplementedError: the full hyperbolic space cannot be created as an intersection
+
+        .. SEEALSO::
+
+            :meth:`HyperbolicPlane.polygon` for a specialized version for the intersection of half spaces
+            :meth:`HyperbolicPLane.convex_hull` to compute the convex hull of subspaces
 
         """
         subsets = [self(subset) for subset in subsets]
