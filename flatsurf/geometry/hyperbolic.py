@@ -2064,11 +2064,6 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         ).unoriented()
 
     def empty_set(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
         r"""
         Return an empty subset of this space.
 
@@ -2083,11 +2078,6 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         return self.__make_element_class__(HyperbolicEmptySet)(self)
 
     def _repr_(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
         r"""
         Return a printable representation of this hyperbolic plane.
 
