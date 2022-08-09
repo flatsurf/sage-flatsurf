@@ -477,7 +477,7 @@ class SimilaritySurfaceTangentBundle:
     r"""
     Construct the tangent bundle of a given similarity surface.
 
-    Needs work: We should check for coersion from the base_ring of the surface
+    Needs work: We should check for coercion from the base_ring of the surface
     """
     def __init__(self, similarity_surface, ring=None):
         self._s=similarity_surface

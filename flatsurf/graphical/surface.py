@@ -504,7 +504,7 @@ class GraphicalSurface:
         r"""
         Return the quadruple (x1,y1,x2,y2) where x1 and y1 are the minimal
         x- and y-coordinates of a visible graphical polygon and x2 and y2 are the
-        maximal x-and y- cordinates  of a visible graphical polygon.
+        maximal x-and y- coordinates of a visible graphical polygon.
         """
         return self.xmin(), self.ymin(), self.xmax(), self.ymax()
 

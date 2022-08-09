@@ -169,7 +169,7 @@ class Surface(SageObject):
         r"""
         Return the polygon with the provided label.
 
-        This method must be overriden in subclasses.
+        This method must be overridden in subclasses.
         """
         raise NotImplementedError
 
@@ -178,7 +178,7 @@ class Surface(SageObject):
         Given the label ``l`` of a polygon and an edge ``e`` in that polygon
         returns the pair (``ll``, ``ee``) to which this edge is glued.
 
-        This method must be overriden in subclasses.
+        This method must be overridden in subclasses.
         """
         raise NotImplementedError
 
@@ -301,7 +301,7 @@ class Surface(SageObject):
         r"""
         The field on which the coordinates of ``self`` live.
 
-        This method must be overriden in subclasses!
+        This method must be overridden in subclasses!
         """
         return self._base_ring
 
@@ -857,7 +857,7 @@ class Surface_list(Surface):
                 glue[e] = return_value
                 return return_value
         else:
-            # Sucessfully return edge data
+            # Successfully return edge data
             return oe
 
     # Methods for changing the surface
@@ -1299,7 +1299,7 @@ class Surface_dict(Surface):
                 else:
                     raise ValueError("label={} already used by another polygon".format(label))
             except KeyError:
-                # This seems inconvienient to enforce:
+                # This seems inconvenient to enforce:
                 #
                 #if not self._reference_surface is None:
                 #    # Can not be sure we are not overwriting a polygon in the reference surface.
@@ -1575,9 +1575,10 @@ class ExtraLabel(SageObject):
 class LabelComparator(object):
     r"""
     Implements a total ordering on labels, which may be of varying types.
-    
+
     We use hashes, so if hash(label1) < hash(label2) we declare label1 < label2.
-    For objects with the same hash, we store an arbitary ordering.
+
+    For objects with the same hash, we store an arbitrary ordering.
     """
     def __init__(self):
         r"""

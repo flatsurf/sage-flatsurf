@@ -148,7 +148,7 @@ class HalfTranslationSurface(HalfDilationSurface, RationalConeSurface):
             p = self.polygon(lab)
             for e in range(p.num_edges()):
                 # Warning: check the matrices computed from the edges,
-                # rather the ones overriden by TranslationSurface.
+                # rather the ones overridden by TranslationSurface.
                 m = SimilaritySurface.edge_matrix(self,lab,e)
                 tester.assertTrue(m.is_one() or (-m).is_one(),
                     "edge_matrix between edge e={} and e'={} has matrix\n{}\nwhich is neither a translation nor a rotation by pi".format((lab,e), self.opposite_edge((lab,e)), m))

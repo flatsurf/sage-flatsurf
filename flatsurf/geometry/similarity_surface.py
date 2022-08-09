@@ -194,7 +194,7 @@ class SimilaritySurface(SageObject):
         r"""
         The field on which the coordinates of ``self`` live.
 
-        This method must be overriden in subclasses!
+        This method must be overridden in subclasses!
         """
         return self._s.base_ring()
 
@@ -1512,7 +1512,8 @@ class SimilaritySurface(SageObject):
 
     def triangulation_mapping(self):
         r"""
-        Return a SurfaceMapping triangulating the suface or None if the surface is already triangulated.
+        Return a ``SurfaceMapping`` triangulating the surface
+        or ``None`` if the surface is already triangulated.
         """
         from flatsurf.geometry.mappings import triangulation_mapping
         return triangulation_mapping(self)

@@ -26,7 +26,7 @@ class RationalConeSurface(ConeSurface):
             p = self.polygon(lab)
             for e in range(p.num_edges()):
                 # Warning: check the matrices computed from the edges,
-                # rather the ones overriden by TranslationSurface.
+                # rather the ones overridden by TranslationSurface.
                 m = SimilaritySurface.edge_matrix(self,lab,e)
                 tester.assertTrue(is_cosine_sine_of_rational(m[0][0],m[0][1]))
 

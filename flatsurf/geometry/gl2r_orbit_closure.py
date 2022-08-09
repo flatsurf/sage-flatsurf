@@ -474,7 +474,7 @@ class GL2ROrbitClosure:
         r"""
         Return a pair ``(tree, proj)`` where
 
-        - ``tree`` is a tree encoded in a dictionnary. Its keys are the faces
+        - ``tree`` is a tree encoded in a dictionary. Its keys are the faces
           (coded by their minimal adjacent half-edge) and the corresponding
           value is the half-edge to cross to go toward the root face.
 
@@ -766,12 +766,12 @@ class GL2ROrbitClosure:
 
     def cylinder_circumference(self, component, A, sc_index, proj):
         r"""
-        Return the circumference of the cylindre ``component`` in the homology
+        Return the circumference of the cylinder ``component`` in the homology
         of the underlying surface.
 
         INPUT:
 
-        - ``component`` - a cylinder
+        - ``component`` -- a cylinder
 
         - ``A``, ``sc_index``, ``proj`` -- the output of
           ``flow_decomposition_kontsevich_zorich_cocycle``
@@ -792,7 +792,7 @@ class GL2ROrbitClosure:
             sage: O.cylinder_circumference(c1, *kz) # optional: pyflatsurf
             (0, 0, -1, 0)
         """
-        if component.cylinder() != True:
+        if component.cylinder() is not True:
             raise ValueError
 
         perimeters = [p for p in component.perimeter()]

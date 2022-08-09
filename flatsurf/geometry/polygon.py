@@ -952,7 +952,7 @@ class Polygon(Element):
 
     def angle(self, e, numerical=False, assume_rational=False):
         r"""
-        Return the angle at the begining of the start point of the edge ``e``.
+        Return the angle at the beginning of the start point of the edge ``e``.
 
         EXAMPLES::
 
