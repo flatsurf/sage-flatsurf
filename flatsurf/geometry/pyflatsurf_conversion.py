@@ -24,7 +24,6 @@ Interface with pyflatsurf
 
 from sage.all import QQ, AA, ZZ
 
-
 def _check_data(vp, fp, vec):
     r"""
     Check consistency of data
@@ -79,67 +78,149 @@ def _cycle_decomposition(p):
     return cycles
 
 
+class FlatsurfConverter:
+    r"""
+    Conversion between sage-flatsurf and libflatsurf/pyflatsurf.
+    """
+    def __init__(self, S):
+        from flatsurf.geometry.translation_surface import TranslationSurface
+        if not isinstance(S, TranslationSurface):
+            raise TypeError("S must be a translation surface")
+        if not S.is_finite():
+            raise ValueError("the surface S must be finite")
+
+        # number of half-edges in the triangulation
+        n = 3 * sum(S.polygon(label).num_edges() - 2 for label in S.label_iterator())
+
+        self._half_edge_map = {} # map (face label, edge number) -> integer
+        self._half_edge_section = [] # integer -> (face label, edge number)
+        self._triangulation_edges = [] # integer -> (face label, vertex start, vertex end)
+
+        # populate half edges in the surface
+        k = 1
+        vectors = []
+        for t0, t1 in S.edge_iterator(gluings=True):
+            if t0 in self._half_edge_map:
+                continue
+
+            self._half_edge_map[t0] = k
+            self._half_edge_map[t1] = -k
+            self._half_edge_section.append(t0)
+            self._half_edge_section.append(t1)
+            f0, e0 = t0
+            p = S.polygon(f0)
+            vectors.append(p.edge(e0))
+            k += 1
+
+        # possibly triangulate and compute face permutation
+        from .polygon import triangulate, build_faces
+        fp = [None] * (n + 1)
+        for label in S.label_iterator():
+            poly = S.polygon(label)
+            ne = poly.num_edges()
+            if ne == 3:
+                # already a triangle
+                for i in range(3):
+                    fp[self._half_edge_map[(label, i)]] = self._half_edge_map[(label, (i+1) % 3)]
+            else:
+                local_edges = {}
+                for i in range(ne):
+                    local_edges[(i, (i+1)%ne)] = self._half_edge_map[(label, i)]
+                new_edges = triangulate(poly.vertices())
+                assert len(new_edges) == ne - 3
+                for a, b in new_edges:
+                    local_edges[(a, b)] = k
+                    local_edges[(b, a)] = -k
+                    k += 1
+                    self._triangulation_edges.append((label, a, b))
+                    vectors.append(poly.vertex(b) - poly.vertex(a))
+                for a, b, c in build_faces(ne, new_edges):
+                    fp[local_edges[(a, b)]] = local_edges[(b, c)]
+                    fp[local_edges[(b, c)]] = local_edges[(c, a)]
+                    fp[local_edges[(c, a)]] = local_edges[(a, b)]
+
+        assert k == 1 + n // 2, (k, n)
+        assert all(fp[i] is not None and fp[-i] is not None for i in range(1, n//2 + 1))
+
+        # compute vertex permutation from face permutation
+        vp = [None] * (n + 1)
+        for i in range(1, n // 2 + 1):
+            vp[fp[-i]] = i
+            vp[fp[i]] = -i
+
+        # find a finite SageMath base ring that contains all the coordinates
+        base_ring = S.base_ring()
+        if base_ring is AA:
+            from sage.rings.qqbar import number_field_elements_from_algebraics
+            from itertools import chain
+            base_ring = number_field_elements_from_algebraics(list(chain(*[list(v) for v in vec])), embedded=True)[0]
+
+        # build flatsurf data
+        from flatsurf.features import pyflatsurf_feature
+        pyflatsurf_feature.require()
+        import pyflatsurf
+        from pyflatsurf.vector import Vectors
+        from pyflatsurf.factory import make_surface
+
+
+        # A model of the vector space R² in libflatsurf, e.g., to represent the
+        # vector associated to a saddle connection.
+        self._V2 = Vectors(base_ring)
+        vectors = [self._V2(v).vector for v in vectors]
+        _check_data(vp, fp, vectors)
+        self._pyflatsurf_surface = make_surface(_cycle_decomposition(vp), vectors)
+        self._surface = S
+
+    def sage_flatsurf_surface(self):
+        return self._surface
+
+    def pyflatsurf_surface(self):
+        return self._pyflatsurf_surface
+
+    def half_edge_to_pyflatsurf(self, e):
+        r"""
+        INPUT:
+
+        - ``e`` - a pair ``(face_label, edge_number)``
+        """
+        import pyflatsurf
+        return pyflatsurf.flatsurf.HalfEdge(self._half_edge_map[e])
+
+    def half_edge_from_pyflatsurf(self, h):
+        r"""
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: from flatsurf.geometry.pyflatsurf_conversion import FlatsurfConverter
+            sage: S = translation_surfaces.cathedral(1, 1)
+            sage: f = FlatsurfConverter(S) # optional: pyflatsurf
+            sage: T = f.pyflatsurf_surface() # optional: pyflatsurf
+            sage: for e in S.edge_iterator(): # optional: pyflatsurf
+            ....:     assert f.half_edge_from_pyflatsurf(f.half_edge_to_pyflatsurf(e)) == e
+        """
+        return self._half_edge_section[h.index()]
+
+    def point_to_pyflatsurf(self, p):
+        raise NotImplementedError
+
+    def point_from_pyflatsurf(self, p):
+        raise NotImplementedError
+
+
 def to_pyflatsurf(S):
     r"""
     Given S a translation surface from sage-flatsurf return a
     flatsurf::FlatTriangulation from libflatsurf/pyflatsurf.
+
+    EXAMPLES::
+
+        sage: from flatsurf import translation_surfaces
+        sage: from flatsurf.geometry.pyflatsurf_conversion import to_pyflatsurf
+        sage: T = translation_surfaces.cathedral(1, 1)
+        sage: to_pyflatsurf(T) # optional: pyflatsurf
+        FlatTriangulationCombinatorial(...)
     """
-    from flatsurf.geometry.translation_surface import TranslationSurface
-    if not isinstance(S, TranslationSurface):
-        raise TypeError("S must be a translation surface")
-    if not S.is_finite():
-        raise ValueError("the surface S must be finite")
-
-    S = S.triangulate()
-
-    # populate half edges and vectors
-    n = sum(S.polygon(lab).num_edges() for lab in S.label_iterator())
-    half_edge_labels = {}   # map: (face lab, edge num) in faltsurf -> integer
-    vec = []                # vectors
-    k = 1                   # half edge label in {1, ..., n}
-    for t0, t1 in S.edge_iterator(gluings=True):
-        if t0 in half_edge_labels:
-            continue
-
-        half_edge_labels[t0] = k
-        half_edge_labels[t1] = -k
-
-        f0, e0 = t0
-        p = S.polygon(f0)
-        vec.append(p.edge(e0))
-
-        k += 1
-
-    # compute vertex and face permutations
-    vp = [None] * (n+1)  # vertex permutation
-    fp = [None] * (n+1)  # face permutation
-    for t in S.edge_iterator(gluings=False):
-        e = half_edge_labels[t]
-        j = (t[1] + 1) % S.polygon(t[0]).num_edges()
-        fp[e] = half_edge_labels[(t[0], j)]
-        vp[fp[e]] = -e
-
-    # convert the vp permutation into cycles
-    verts = _cycle_decomposition(vp)
-
-    # find a finite SageMath base ring that contains all the coordinates
-    base_ring = S.base_ring()
-    if base_ring is AA:
-        from sage.rings.qqbar import number_field_elements_from_algebraics
-        from itertools import chain
-        base_ring = number_field_elements_from_algebraics(list(chain(*[list(v) for v in vec])), embedded=True)[0]
-
-    from flatsurf.features import pyflatsurf_feature
-    pyflatsurf_feature.require()
-    from pyflatsurf.vector import Vectors
-
-    V = Vectors(base_ring)
-    vec = [V(v).vector for v in vec]
-
-    _check_data(vp, fp, vec)
-
-    from pyflatsurf.factory import make_surface
-    return make_surface(verts, vec)
+    return FlatsurfConverter(S).pyflatsurf_surface()
 
 
 def sage_ring(surface):
