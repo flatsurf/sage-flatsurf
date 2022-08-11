@@ -133,8 +133,14 @@ class GL2ROrbitClosure:
 
     We now illustrate the projection::
 
-        sage: V = O.proj._row_ambient_module() # optional: pyflatsurf
-        sage: H = O.proj._column_ambient_module() # optional: pyflatsurf
+        sage: try: # optional: pyflatsurf
+        ....:     V = O.proj.row_ambient_module()
+        ....: except AttributeError:
+        ....:     V = O.proj._row_ambient_module()
+        sage: try: # optional: pyflatsurf
+        ....:     H = O.proj.column_ambient_module()
+        ....: except AttributeError:
+        ....:     H = O.proj._column_ambient_module()
         sage: assert O.proj.rank() == H.dimension() # optional: pyflatsurf
         sage: for b in O.boundaries(): # optional: pyflatsurf
         ....:    assert (O.proj * b).is_zero()
