@@ -151,20 +151,18 @@ class GL2ROrbitClosure:
         from flatsurf.geometry.translation_surface import TranslationSurface
         if isinstance(surface, TranslationSurface):
             base_ring = surface.base_ring()
-            from flatsurf.geometry.pyflatsurf_conversion import to_pyflatsurf
-            self._surface = to_pyflatsurf(surface)
+            from .pyflatsurf_conversion import FlatsurfConverter
+            self._converter = FlatsurfConverter(surface)
+            self._surface = self._converter.pyflatsurf_surface()
+            self.V2 = self._converter._V2
         else:
             from flatsurf.geometry.pyflatsurf_conversion import sage_ring
             base_ring = sage_ring(surface)
             self._surface = surface
-
-        # A model of the vector space R² in libflatsurf, e.g., to represent the
-        # vector associated to a saddle connection.
-        from flatsurf.features import pyflatsurf_feature
-        pyflatsurf_feature.require()
-        import pyflatsurf.vector
-
-        self.V2 = pyflatsurf.vector.Vectors(base_ring)
+            from flatsurf.features import pyflatsurf_feature
+            pyflatsurf_feature.require()
+            import pyflatsurf.vector
+            self.V2 = pyflatsurf.vector.Vectors(base_ring)
 
         # We construct a spanning set of edges, that is a subset of the
         # edges that form a basis of H_1(S, Sigma; Z)
