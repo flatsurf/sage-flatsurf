@@ -171,6 +171,57 @@ class FlatsurfConverter:
         self._pyflatsurf_surface = make_surface(_cycle_decomposition(vp), vectors)
         self._surface = S
 
+    def flow_decomposition(self, v, limit=-1):
+        r"""
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: from flatsurf.geometry.pyflatsurf_conversion import FlatsurfConverter
+            sage: S = translation_surfaces.cathedral(1, 1)
+            sage: f = FlatsurfConverter(S) # optional: pyflatsurf
+            sage: f.flow_decomposition((1, 0)) # optional: pyflatsurf
+            lowDecomposition with 5 cylinders, 0 minimal components and 0 undetermined components
+        """
+        v = self._V2(v)
+
+        import pyflatsurf
+
+        decomposition = pyflatsurf.flatsurf.makeFlowDecomposition(self._pyflatsurf_surface, v.vector)
+
+        u = self._V2._isomorphic_vector_space(v)
+        if limit != 0:
+            decomposition.decompose(int(limit))
+        return decomposition
+
+    def flow_decompositions(self, bound, limit=-1, bfs=False):
+        limit = int(limit)
+
+        connections = self._pyflatsurf_surface.connections().bound(int(bound))
+        if bfs:
+            connections = connections.byLength()
+
+        slopes = None
+
+        from flatsurf.features import cppyy_feature
+        cppyy_feature.require()
+        import cppyy
+
+        for connection in connections:
+            direction = connection.vector()
+            if slopes is None:
+                slopes = cppyy.gbl.std.set[type(direction), type(direction).CompareSlope]()
+            if slopes.find(direction) != slopes.end():
+                continue
+            slopes.insert(direction)
+            yield self.flow_decomposition(direction, limit)
+
+    def flow_decompositions_depth_first(self, bound, limit=-1):
+        return self.decompositions(bound, bfs=False, limit=limit)
+
+    def flow_decompositions_breadth_first(self, bound, limit=-1):
+        return self.decompositions(bound, bfs=True, limit=limit)
+
+
     def sage_flatsurf_surface(self):
         return self._surface
 
