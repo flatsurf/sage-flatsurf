@@ -26,8 +26,49 @@ import pytest
 
 pytest.importorskip("pyflatsurf")
 
+from sage.all import QQ, AA
 from flatsurf import translation_surfaces
-from flatsurf.geometry.pyflatsurf_conversion import to_pyflatsurf
+from flatsurf.geometry.pyflatsurf_conversion import from_pyflatsurf, to_pyflatsurf
+
+
+@pytest.fixture
+def sage_flatsurf_surface_sample():
+
+    surfaces = []
+
+    from sage.all import SymmetricGroup
+    G = SymmetricGroup(3)
+    r = G('(1,2,3)')
+    u = G('(1,2)')
+    O = translation_surfaces.origami(r, u)
+    surfaces.append(O)
+    surfaces.append(AA(2).sqrt() * O)
+
+    for n in [3, 5, 7]:
+        surfaces.append(translation_surfaces.veech_double_n_gon(n))
+
+    for g in [3, 4]:
+        surfaces.append(translation_surfaces.arnoux_yoccoz(g))
+
+
+    for n in [3, 17]:
+        surfaces.append(translation_surfaces.ward(n))
+
+    return surfaces
+
+@pytest.fixture
+def pyflatsurf_surface_sample():
+    from pyflatsurf.vector import Vectors
+    from pyflatsurf.factory import make_surface
+
+    surfaces = []
+    V2 = Vectors(QQ)
+    vertices = [(1, -3, 2, -1, 6, -5), (-2, 4, -6, 5, -4, 3)]
+    vectors = [V2((1, 1)), V2((-1, 0)), V2((0, -1)), V2((1, 1)), V2((-1, 0)), V2((0, -1))]
+    surfaces.append(make_surface(vertices, [v.vector for v in vectors]))
+
+    return surfaces
+
 
 def test_origami1():
     from sage.all import SymmetricGroup
@@ -35,7 +76,8 @@ def test_origami1():
     r = u = G('(1,2)')
     O = translation_surfaces.origami(r, u)
     S = to_pyflatsurf(O)
-    assert str(S) == "FlatTriangulationCombinatorial(vertices = (1, -3, 2, -1, 6, -5)(-2, 4, -6, 5, -4, 3), faces = (1, 2, 3)(-1, -5, -6)(-2, -3, -4)(4, 5, 6)) with vectors {1: (1, 1), 2: (-1, 0), 3: (0, -1), 4: (1, 1), 5: (-1, 0), 6: (0, -1)}"
+    assert str(S) == "FlatTriangulationCombinatorial(vertices = (1, 5, -4, 3, -5, -2)(-1, -6, 4, -3, 6, 2), faces = (1, 2, -5)(-1, -2, 6)(3, 4, 5)(-3, -4, -6)) with vectors {1: (1, 0), 2: (0, 1), 3: (-1, 0), 4: (0, -1), 5: (1, 1), 6: (1, 1)}"
+
 
 def test_origami2():
     from sage.all import SymmetricGroup
@@ -44,21 +86,37 @@ def test_origami2():
     u = G('(1,2)')
     O = translation_surfaces.origami(r, u)
     S = to_pyflatsurf(O)
-    assert str(S) == "FlatTriangulationCombinatorial(vertices = (1, -3, 8, -7, 3, -2, 4, -6, 5, -4, 9, -8, 7, -9, 2, -1, 6, -5), faces = (1, 2, 3)(-1, -5, -6)(-2, -9, -4)(-3, -7, -8)(4, 5, 6)(7, 8, 9)) with vectors {1: (1, 1), 2: (-1, 0), 3: (0, -1), 4: (1, 1), 5: (-1, 0), 6: (0, -1), 7: (1, 1), 8: (-1, 0), 9: (0, -1)}"
+    assert str(S) == "FlatTriangulationCombinatorial(vertices = (1, 7, -4, -6, -9, 4, -3, 8, 2, -1, -8, -5, 6, 9, 5, 3, -7, -2), faces = (1, 2, -7)(-1, -2, 8)(3, 4, 7)(-3, 5, -8)(-4, -9, 6)(-5, 9, -6)) with vectors {1: (1, 0), 2: (0, 1), 3: (-1, 0), 4: (0, -1), 5: (0, 1), 6: (1, 0), 7: (1, 1), 8: (1, 1), 9: (1, 1)}"
 
-@pytest.mark.parametrize("n", [3, 5, 7])
-def test_regular_n_gons(n):
-    S = translation_surfaces.veech_double_n_gon(n)
-    T = to_pyflatsurf(S)
 
-@pytest.mark.parametrize("g", [3, 4])
-def test_arnoux_yoccoz(g):
-    A = translation_surfaces.arnoux_yoccoz(g)
-    B = to_pyflatsurf(A)
+def test_to_pyflatsurf(sage_flatsurf_surface_sample):
+    for S in sage_flatsurf_surface_sample:
+        f = S.pyflatsurf_converter()
+        T = f.pyflatsurf_surface()
 
-def test_ward3():
-    W3 = translation_surfaces.ward(3)
-    X3 = to_pyflatsurf(W3)
+        assert S.pyflatsurf_converter() is f
+        assert f.sage_flatsurf_surface() is S
 
-    W17 = translation_surfaces.ward(17)
-    X17 = to_pyflatsurf(W17)
+        for e in S.edge_iterator():
+            assert f.half_edge_from_pyflatsurf(f.half_edge_to_pyflatsurf(e)) == e, S
+
+        for h in T.halfEdges():
+            e = f.half_edge_from_pyflatsurf(h)
+            assert e is None or f.half_edge_to_pyflatsurf(e) == h, S
+
+
+def test_from_pyflatsurf(pyflatsurf_surface_sample):
+    for T in pyflatsurf_surface_sample:
+        S = from_pyflatsurf(T)
+        f = S.pyflatsurf_converter()
+
+        assert f.pyflatsurf_surface() is T
+        assert S.pyflatsurf_converter() is f
+        assert f.sage_flatsurf_surface() is S
+        
+        for e in S.edge_iterator():
+            assert f.half_edge_from_pyflatsurf(f.half_edge_to_pyflatsurf(e)) == e, T
+
+        for h in T.halfEdges():
+            e = f.half_edge_from_pyflatsurf(h)
+            assert f.half_edge_to_pyflatsurf(e) == h, T
