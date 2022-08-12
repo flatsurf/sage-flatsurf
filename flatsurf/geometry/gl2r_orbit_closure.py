@@ -151,8 +151,7 @@ class GL2ROrbitClosure:
         from flatsurf.geometry.translation_surface import TranslationSurface
         if isinstance(surface, TranslationSurface):
             base_ring = surface.base_ring()
-            from .pyflatsurf_conversion import FlatsurfConverter
-            self._converter = FlatsurfConverter(surface)
+            self._converter = surface.pyflatsurf_converter()
             self._surface = self._converter.pyflatsurf_surface()
             self.V2 = self._converter._V2
         else:
