@@ -667,46 +667,16 @@ class GL2ROrbitClosure:
         return B
 
     def decomposition(self, v, limit=-1):
-        v = self.V2(v)
-
-        from flatsurf.features import pyflatsurf_feature
-        pyflatsurf_feature.require()
-        import pyflatsurf
-
-        decomposition = pyflatsurf.flatsurf.makeFlowDecomposition(self._surface, v.vector)
-
-        u = self.V2._isomorphic_vector_space(v)
-        if limit != 0:
-            decomposition.decompose(int(limit))
-        return decomposition
+        return self._converter.flow_decomposition(v, limit)
 
     def decompositions(self, bound, limit=-1, bfs=False):
-        limit = int(limit)
-
-        connections = self._surface.connections().bound(int(bound))
-        if bfs:
-            connections = connections.byLength()
-
-        slopes = None
-
-        from flatsurf.features import cppyy_feature
-        cppyy_feature.require()
-        import cppyy
-
-        for connection in connections:
-            direction = connection.vector()
-            if slopes is None:
-                slopes = cppyy.gbl.std.set[type(direction), type(direction).CompareSlope]()
-            if slopes.find(direction) != slopes.end():
-                continue
-            slopes.insert(direction)
-            yield self.decomposition(direction, limit)
+        return self._converter.flow_decompositions(bound, limit, bfs)
 
     def decompositions_depth_first(self, bound, limit=-1):
-        return self.decompositions(bound, bfs=False, limit=limit)
+        return self._converter.flow_decompositions_depth_first(bound, limit)
 
     def decompositions_breadth_first(self, bound, limit=-1):
-        return self.decompositions(bound, bfs=True, limit=limit)
+        return self._convert.flow_decompositions_breadth_first(self, bound, limit)
 
     def is_teichmueller_curve(self, bound, limit=-1):
         r"""

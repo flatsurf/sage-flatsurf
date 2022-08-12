@@ -2361,3 +2361,15 @@ class SimilaritySurface(SageObject):
             h = h + 3*hash(edgepair)
         self._hash=h
         return h
+
+    def pyflatsurf_converter(self):
+        try:
+            return self._converter
+        except AttributeError:
+            pass
+
+        if self.is_mutable():
+            raise ValueError("mutable surface; apply .set_immutable() first")
+        from .pyflatsurf_conversion import FlatsurfConverter
+        self._converter = FlatsurfConverter(self)
+        return self._converter
