@@ -76,8 +76,8 @@ class HalfDilationSurface(SimilaritySurface):
         if not is_Matrix(m):
             from sage.matrix.constructor import matrix
             m = matrix(2, 2, m)
-        elif m.dimensions != (2, 2):
-            raise NotImplementedError("Only implemented for 2x2 matrices.")
+        elif m.dimensions() != (2, 2):
+            raise ValueError("must be a 2x2 matrix")
         # TODO: why returning a copy here!?
         return self.__class__(GL2RImageSurface(self, m)).copy()
 
