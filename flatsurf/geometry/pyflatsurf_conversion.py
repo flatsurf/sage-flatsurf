@@ -230,9 +230,12 @@ class FlatsurfConverter:
         S.set_immutable()
 
         from flatsurf.geometry.translation_surface import TranslationSurface
+        from pyflatsurf.vector import Vectors
 
         self._surface = TranslationSurface(S)
+        self._surface.set_immutable()
         self._pyflatsurf_surface = T
+        self._V2 = Vectors(self._surface.base_ring())
 
     def sage_flatsurf_surface(self):
         return self._surface
