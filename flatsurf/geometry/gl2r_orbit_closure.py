@@ -150,18 +150,13 @@ class GL2ROrbitClosure:
     def __init__(self, surface):
         from flatsurf.geometry.translation_surface import TranslationSurface
         if isinstance(surface, TranslationSurface):
-            base_ring = surface.base_ring()
             self._converter = surface.pyflatsurf_converter()
-            self._surface = self._converter.pyflatsurf_surface()
-            self.V2 = self._converter._V2
         else:
-            from flatsurf.geometry.pyflatsurf_conversion import sage_ring
-            base_ring = sage_ring(surface)
-            self._surface = surface
-            from flatsurf.features import pyflatsurf_feature
-            pyflatsurf_feature.require()
-            import pyflatsurf.vector
-            self.V2 = pyflatsurf.vector.Vectors(base_ring)
+            from .pyflatsurf_conversion import from_pyflatsurf
+            self._converter = from_pyflatsurf(surface).pyflatsurf_converter()
+
+        self._surface = self._converter.pyflatsurf_surface()
+        self.V2 = self._converter._V2
 
         # We construct a spanning set of edges, that is a subset of the
         # edges that form a basis of H_1(S, Sigma; Z)
