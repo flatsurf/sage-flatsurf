@@ -78,10 +78,6 @@ def _cycle_decomposition(p):
     return cycles
 
 
-# TODO:
-# - make proper caching (at class level? in the similarity surface?)
-# - make it possible to initialize it from a pyflatsurf surface
-# - move flow decomposition access directly on similarity surface?
 class FlatsurfConverter:
     r"""
     Conversion between sage-flatsurf and libflatsurf/pyflatsurf.
