@@ -7757,7 +7757,7 @@ class BezierPath(GraphicPrimitive):
 
                 return [
                     BezierPath.Command(
-                        "MOVETOINFINITY", [end.change_ring(RR).coordinates(), (0, 1)]
+                        "MOVETOINFINITY", [end.change_ring(RR).coordinates(), (-1, 0)]
                     ),
                     BezierPath.Command("LINETO", [end.change_ring(RR).coordinates()]),
                 ]
