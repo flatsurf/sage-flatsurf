@@ -71,7 +71,7 @@ class HalfDilationSurface(SimilaritySurface):
 
             sage: s = AA(2).sqrt() * translation_surfaces.square_torus()
             sage: s.base_ring()
-            AA
+            Algebraic Real Field
         """
         if not is_Matrix(m):
             from sage.matrix.constructor import matrix
