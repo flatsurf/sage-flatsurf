@@ -265,7 +265,7 @@ class FlatsurfConverter:
             sage: from flatsurf import translation_surfaces
             sage: from flatsurf.geometry.pyflatsurf_conversion import FlatsurfConverter
             sage: S = translation_surfaces.cathedral(1, 1)
-            sage: f = S.flatsurf_converter() # optional: pyflatsurf
+            sage: f = S.pyflatsurf_converter() # optional: pyflatsurf
             sage: f.flow_decomposition((1, 0)) # optional: pyflatsurf
             FlowDecomposition with 5 cylinders, 0 minimal components and 0 undetermined components
         """
@@ -320,7 +320,7 @@ def to_pyflatsurf(S):
         sage: from flatsurf.geometry.pyflatsurf_conversion import to_pyflatsurf
         sage: T = translation_surfaces.cathedral(1, 1)
         sage: to_pyflatsurf(T) # optional: pyflatsurf
-        FlatTriangulationCombinatorial(...)
+        FlatTriangulationCombinatorial...
     """
     return S.pyflatsurf_converter().pyflatsurf_surface()
 
@@ -441,10 +441,12 @@ def from_pyflatsurf(T):
         0
         sage: for i in range(5): S.set_edge_pairing(0, i, 0, 5+i)
         sage: M = TranslationSurface(S)
-        sage: X = GL2ROrbitClosure(M)  # optional: pyflatsurf
-        sage: D0 = list(X.decompositions(2))[2]  # optional: pyflatsurf
+        sage: M.set_immutable()
+        sage: f = M.pyflatsurf_converter() # optional: pyflatsurf
+        sage: D0 = list(f.flow_decompositions(2))[2]  # optional: pyflatsurf
         sage: T0 = D0.triangulation()  # optional: pyflatsurf
         sage: S0 = from_pyflatsurf(T0)  # optional: pyflatsurf
+        sage: S0 # optional: pyflatsurf
         TranslationSurface built from 8 polygons
         sage: to_pyflatsurf(S0) is T0 # optional: pyflatsurf
         True
