@@ -371,12 +371,32 @@ class FlatsurfConverter:
     def saddle_connection_to_pyflatsurf(self, sc):
         raise NotImplementedError
 
-    def saddle_connection_from_pyflatsurf(self, sc):
+    def saddle_connection_from_pyflatsurf(self, sc, check=True):
+        r"""
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: s = translation_surfaces.square_torus()
+            sage: for sc in s._pyflatsurf.codomain().connections().bound(3r):
+            ....:     print(s._pyflatsurf.saddle_connection_from_pyflatsurf(sc))
+            Saddle connection ...
+            ...
+
+            sage: set(s.saddle_connections(3*3)) == set(s._pyflatsurf.saddle_connection_from_pyflatsurf(sc) for sc in s._pyflatsurf.codomain().connections().bound(3r))
+            True
+        """
         h_start = sc.source()
-        f_start, e_start = self.half_edge_from_pyflatsurf(h_start)
-        hend = sc.target()
-        f_end, e_end = self.half_edge_from_pyflatsurf(h_end)
-        raise NotImplementedError
+        f_start, e_start, _ = self._half_edge_section[h_start.index()]
+        h_end = sc.target()
+        f_end, e_end, _ = self._half_edge_section[h_end.index()]
+        v = self.vector_space()(sc.vector())
+        v = self.vector_space()._isomorphic_vector_space(v)
+        S = self.domain()
+        poly = S.polygon(f_start)
+        from .surface_objects import SaddleConnection
+        return SaddleConnection(surface=S, start_data=(f_start, e_start),
+                direction=v, end_data=(f_end, e_end), end_direction=-v,
+                holonomy=v, end_holonomy=-v, check=check)
 
     def point_to_pyflatsurf(self, p):
         raise NotImplementedError
