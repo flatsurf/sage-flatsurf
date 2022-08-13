@@ -27,6 +27,7 @@ from six.moves import range
 from six import iteritems
 
 from sage.misc.cachefunc import cached_method
+from sage.misc.lazy_attribute import lazy_attribute
 from sage.misc.sage_unittest import TestSuite
 
 from sage.structure.sage_object import SageObject
@@ -2362,14 +2363,9 @@ class SimilaritySurface(SageObject):
         self._hash=h
         return h
 
-    def pyflatsurf_converter(self):
-        try:
-            return self._converter
-        except AttributeError:
-            pass
-
+    @lazy_attribute
+    def _pyflatsurf(self):
         if self.is_mutable():
-            raise ValueError("mutable surface; apply .set_immutable() first")
+            raise ValueError("mutable surface; make your surface immutable first by calling .set_immutable()")
         from .pyflatsurf_conversion import FlatsurfConverter
-        self._converter = FlatsurfConverter(self)
-        return self._converter
+        return FlatsurfConverter(self)

@@ -50,7 +50,6 @@ def sage_flatsurf_surface_sample():
     for g in [3, 4]:
         surfaces.append(translation_surfaces.arnoux_yoccoz(g))
 
-
     for n in [3, 17]:
         surfaces.append(translation_surfaces.ward(n))
 
@@ -91,11 +90,10 @@ def test_origami2():
 
 def test_to_pyflatsurf(sage_flatsurf_surface_sample):
     for S in sage_flatsurf_surface_sample:
-        f = S.pyflatsurf_converter()
-        T = f.pyflatsurf_surface()
+        f = S._pyflatsurf
+        T = f.codomain()
 
-        assert S.pyflatsurf_converter() is f
-        assert f.sage_flatsurf_surface() is S
+        assert f.domain() is S
 
         for e in S.edge_iterator():
             assert f.half_edge_from_pyflatsurf(f.half_edge_to_pyflatsurf(e)) == e, S
@@ -106,13 +104,13 @@ def test_to_pyflatsurf(sage_flatsurf_surface_sample):
 
 
 def test_from_pyflatsurf(pyflatsurf_surface_sample):
+    from flatsurf.geometry.pyflatsurf_conversion import FlatsurfConverter
     for T in pyflatsurf_surface_sample:
-        S = from_pyflatsurf(T)
-        f = S.pyflatsurf_converter()
+        f = FlatsurfConverter.from_pyflatsurf(T)
+        S = f.domain()
 
-        assert f.pyflatsurf_surface() is T
-        assert S.pyflatsurf_converter() is f
-        assert f.sage_flatsurf_surface() is S
+        assert not S.is_mutable()
+        assert f.codomain() == T
         
         for e in S.edge_iterator():
             assert f.half_edge_from_pyflatsurf(f.half_edge_to_pyflatsurf(e)) == e, T

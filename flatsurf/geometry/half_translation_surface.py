@@ -278,4 +278,8 @@ class HalfTranslationSurface(HalfDilationSurface, RationalConeSurface):
         for (p1,e1),(p2,e2) in self.edge_iterator(gluings=True):
             S.set_edge_pairing(relabelling[p1], e1, relabelling[p2], e2)
 
-        return (type(self)(S), M)
+        S.set_immutable()
+        surface = type(self)(S)
+        surface.set_immutable()
+
+        return (surface, M)
