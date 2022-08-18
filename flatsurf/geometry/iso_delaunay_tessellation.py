@@ -98,16 +98,40 @@ class IsoDelaunayTessellation(Parent):
 
         assert -edge in target.edges()
 
-        is_new_idr = target not in self._faces
-        if is_new_idr:
+
+        kind, vertices = self._find_idr(target, target_triangulation)
+
+        if kind == "OLD":
+            assert len(vertices) == 1
+            self._faces.add_edge(source, vertices[0])
+        elif kind == "ISOMORPHIC":
+            assert len(vertices) == 1
+            self._faces.add_edge(source, vertices[0])
+        elif kind == "SYMMETRIC":
+            assert len(vertices) >= 3
+            raise NotImplementedError
+        elif kind == "NEW":
             self._faces.add_vertex(target)
             self._faces.set_vertex(target, target_triangulation)
-
-        if not self._faces.has_edge(source, target):
             self._faces.add_edge(source, target)
+            
+            for edge in target.edges():
+                self.explore(limit=limit-1, vertex=target, edge=edge)
+    
+        else:
+            raise ValueError(f"kind {kind} was unexpected")
 
-        for edge in target.edges():
-            self.explore(limit=limit-1, vertex=target, edge=edge)
+    def _find_idr(self, target_polygon, target_triangulation):
+        r"""
+        Classify whether ``target`` is identical to a vertex in ``self._faces``, or is isomorphic to a vertex in ``self._faces``, or has a self-isomorphism, or is a new IDR.
+        """
+        for vertex in self._faces:
+            if vertex == target_polygon:
+                return "OLD", [vertex]
+            from flatsurf.geometry.pyflatsurf_conversion import to_pyflatsurf
+            if to_pyflatsurf(target_triangulation).isomorphism(to_pyflatsurf(self._faces.get_vertex(vertex))).has_value():
+                return "ISOMORPHIC", [vertex]
+        return "NEW", None
 
     def is_vertex(self, translation_surface):
         r"""
@@ -222,7 +246,7 @@ class IsoDelaunayTessellation(Parent):
         raise NotImplementedError
 
     def plot(self):
-        raise NotImplementedError
+        return sum(idr.plot() for idr in self._faces)
 
     def polygon(self, vertex_or_edge):
         r"""
