@@ -128,9 +128,17 @@ class IsoDelaunayTessellation(Parent):
         for vertex in self._faces:
             if vertex == target_polygon:
                 return "OLD", [vertex]
-            from flatsurf.geometry.pyflatsurf_conversion import to_pyflatsurf
-            if to_pyflatsurf(target_triangulation).isomorphism(to_pyflatsurf(self._faces.get_vertex(vertex))).has_value():
+
+        from flatsurf.geometry.pyflatsurf_conversion import to_pyflatsurf
+        target_triangulation = to_pyflatsurf(target_triangulation)
+
+        assert target_triangulation.isomorphism(target_triangulation).has_value()
+
+        for vertex in self._faces:
+            triangulation = to_pyflatsurf(self._faces.get_vertex(vertex))
+            if triangulation.isomorphism(target_triangulation, filter_matrix=lambda a, b, c, d: a*d - b*c == 1).has_value():
                 return "ISOMORPHIC", [vertex]
+
         return "NEW", None
 
     def is_vertex(self, translation_surface):
