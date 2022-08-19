@@ -43,7 +43,7 @@ class IsoDelaunayTessellation(Parent):
         self._hyperbolic_plane = HyperbolicPlane(surface.base_ring())
         self._surface = surface.delaunay_triangulation()
         self._surface = self._delaunay_triangulation(surface)
-        self._faces = Graph([[self.root()], []])
+        self._faces = DiGraph([[self.root()], []], multiedges=True, loops=True)
         self._faces.set_vertex(self.root(), self._surface)
 
     def _repr_(self):
@@ -98,30 +98,32 @@ class IsoDelaunayTessellation(Parent):
 
         assert -edge in target.edges()
 
-
-        kind, vertices = self._find_idr(target, target_triangulation)
+        kind, vertices = self._classify_idr(target, target_triangulation)
 
         if kind == "OLD":
             assert len(vertices) == 1
-            self._faces.add_edge(source, vertices[0])
+            self._faces.add_edge(source, vertices[0], label=(edge, -edge))
+            self._faces.add_edge(vertices[0], source, label=(-edge, edge))
         elif kind == "ISOMORPHIC":
             assert len(vertices) == 1
-            self._faces.add_edge(source, vertices[0])
+            self._faces.add_edge(source, vertices[0], label=(edge, -edge))
+            self._faces.add_edge(vertices[0], source, label=(-edge, edge))
         elif kind == "SYMMETRIC":
             assert len(vertices) >= 3
             raise NotImplementedError
         elif kind == "NEW":
             self._faces.add_vertex(target)
             self._faces.set_vertex(target, target_triangulation)
-            self._faces.add_edge(source, target)
-            
+            self._faces.add_edge(source, target, label=(edge, -edge))
+            self._faces.add_edge(target, source, label=(-edge, edge))
+
             for edge in target.edges():
                 self.explore(limit=limit-1, vertex=target, edge=edge)
-    
+
         else:
             raise ValueError(f"kind {kind} was unexpected")
 
-    def _find_idr(self, target_polygon, target_triangulation):
+    def _classify_idr(self, target_polygon, target_triangulation):
         r"""
         Classify whether ``target`` is identical to a vertex in ``self._faces``, or is isomorphic to a vertex in ``self._faces``, or has a self-isomorphism, or is a new IDR.
         """
@@ -132,7 +134,28 @@ class IsoDelaunayTessellation(Parent):
         from flatsurf.geometry.pyflatsurf_conversion import to_pyflatsurf
         target_triangulation = to_pyflatsurf(target_triangulation)
 
-        assert target_triangulation.isomorphism(target_triangulation).has_value()
+        def filter_matrix(a, b, c, d):
+            from pyeantic import RealEmbeddedNumberField
+            k = RealEmbeddedNumberField(a.parent())
+            a, b, c, d = k(a), k(b), k(c), k(d)
+            l = k.number_field
+            a, b, c, d = l(a), l(b), l(c), l(d)
+
+            if (a, b, c, d) in isomorphisms or a * d - b * c == -1:
+                return False
+            isomorphisms[-1] = (a, b, c, d)
+            return True
+
+        isomorphisms = []
+
+        while True:
+            isomorphisms.append(())
+            if not target_triangulation.isomorphism(target_triangulation, filter_matrix=filter_matrix).has_value():
+                isomorphisms.pop()
+                break
+        print(isomorphisms)
+
+        # TODO get "primitive rotation"
 
         for vertex in self._faces:
             triangulation = to_pyflatsurf(self._faces.get_vertex(vertex))
@@ -325,7 +348,6 @@ class IsoDelaunayTessellation(Parent):
 
         return self._hyperbolic_plane.geodesic(a, 2 * b, c, model="half_plane").left_half_space()
 
-
     def _delaunay_triangulation(self, _surface):
         r"""
         Return a Delaunay triangulation for `_surface` whose IDR is 2-dimensional
@@ -336,11 +358,12 @@ class IsoDelaunayTessellation(Parent):
         while epsilon > QQ(1/32):
             I1 = self._hyperbolic_plane.point(epsilon, 1, model="half_plane")
             face1 = self.face(I1)
-            #if z1 in face1.interior() and I in face1: TODO add interior()
+            # if z1 in face1.interior() and I in face1: TODO add interior()
             if I in face1:
                 break
             epsilon /= 2
 
-        nondegenerate_triangulation = self._point_to_surface(I1).delaunay_triangulation() 
+        nondegenerate_triangulation = self._point_to_surface(
+            I1).delaunay_triangulation()
         perturbation = self._point_to_matrix(I1)
         return nondegenerate_triangulation.apply_matrix(perturbation.inverse())
