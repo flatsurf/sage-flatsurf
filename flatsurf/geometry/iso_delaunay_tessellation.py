@@ -38,13 +38,13 @@ class IsoDelaunayTessellation(Parent):
     """
 
     def __init__(self, surface):
-        from sage.all import Graph
+        from sage.all import DiGraph
         self._surface_original = surface
         self._hyperbolic_plane = HyperbolicPlane(surface.base_ring())
         self._surface = surface.delaunay_triangulation()
         self._surface = self._delaunay_triangulation(surface)
-        self._faces = DiGraph([[self.root()], []], multiedges=True, loops=True)
-        self._faces.set_vertex(self.root(), self._surface)
+        self._faces = DiGraph(multiedges=True, loops=True)
+        self._ensure_vertex(self.root(), self._surface, self.root().edges()[0])
 
     def _repr_(self):
         return f"IsoDelaunay Tessellation of {self._surface_original}"
@@ -66,6 +66,8 @@ class IsoDelaunayTessellation(Parent):
             sage: idt.explore()
 
         """
+
+        # TODO: distinguish between triangulation edges, hyperbolic polygon edges, graph edges, ...
         limit = 3 if limit is None else limit  # TODO: explore until finding FD
         if limit <= 0:
             return
@@ -75,6 +77,12 @@ class IsoDelaunayTessellation(Parent):
             for edge in vertex.edges():
                 self.explore(limit=limit, vertex=vertex, edge=edge)
             return
+
+        # ensure that we haven't already explored across polygon edge
+        for _, _, (source_polygon_edge, _) in self._faces.edges(vertex, labels=True):
+            if source_polygon_edge == edge:
+                return
+
 
         source = vertex or self.face(edge)
         source_triangulation = self._faces.get_vertex(source)
@@ -98,44 +106,29 @@ class IsoDelaunayTessellation(Parent):
 
         assert -edge in target.edges()
 
-        kind, vertices = self._classify_idr(target, target_triangulation)
+        vertex, polygon_edge, is_new = self._ensure_vertex(target, target_triangulation, -edge)
+        self._faces.add_edge(source, vertex, label=(edge, polygon_edge))
+        self._faces.add_edge(vertex, source, label=(polygon_edge, edge))
 
-        if kind == "OLD":
-            assert len(vertices) == 1
-            self._faces.add_edge(source, vertices[0], label=(edge, -edge))
-            self._faces.add_edge(vertices[0], source, label=(-edge, edge))
-        elif kind == "ISOMORPHIC":
-            assert len(vertices) == 1
-            self._faces.add_edge(source, vertices[0], label=(edge, -edge))
-            self._faces.add_edge(vertices[0], source, label=(-edge, edge))
-        elif kind == "SYMMETRIC":
-            assert len(vertices) >= 3
-            raise NotImplementedError
-        elif kind == "NEW":
-            self._faces.add_vertex(target)
-            self._faces.set_vertex(target, target_triangulation)
-            self._faces.add_edge(source, target, label=(edge, -edge))
-            self._faces.add_edge(target, source, label=(-edge, edge))
-
+        if is_new:
             for edge in target.edges():
                 self.explore(limit=limit-1, vertex=target, edge=edge)
 
-        else:
-            raise ValueError(f"kind {kind} was unexpected")
-
-    def _classify_idr(self, target_polygon, target_triangulation):
+       
+    def _ensure_vertex(self, target_polygon, target_triangulation, target_polygon_edge):
         r"""
-        Classify whether ``target`` is identical to a vertex in ``self._faces``, or is isomorphic to a vertex in ``self._faces``, or has a self-isomorphism, or is a new IDR.
+        Return vertex and edge of hyperbolic polygon TODO 
         """
         for vertex in self._faces:
             if vertex == target_polygon:
-                return "OLD", [vertex]
+                return vertex, target_polygon_edge, False
 
         from flatsurf.geometry.pyflatsurf_conversion import to_pyflatsurf
-        target_triangulation = to_pyflatsurf(target_triangulation)
+        flat_target_triangulation = to_pyflatsurf(target_triangulation)
 
         def filter_matrix(a, b, c, d):
             from pyeantic import RealEmbeddedNumberField
+            from sage.all import I, RDF
             k = RealEmbeddedNumberField(a.parent())
             a, b, c, d = k(a), k(b), k(c), k(d)
             l = k.number_field
@@ -150,7 +143,7 @@ class IsoDelaunayTessellation(Parent):
 
         while True:
             isomorphisms.append(())
-            if not target_triangulation.isomorphism(target_triangulation, filter_matrix=filter_matrix).has_value():
+            if not flat_target_triangulation.isomorphism(flat_target_triangulation, filter_matrix=filter_matrix).has_value():
                 isomorphisms.pop()
                 break
         print(isomorphisms)
@@ -159,10 +152,13 @@ class IsoDelaunayTessellation(Parent):
 
         for vertex in self._faces:
             triangulation = to_pyflatsurf(self._faces.get_vertex(vertex))
-            if triangulation.isomorphism(target_triangulation, filter_matrix=lambda a, b, c, d: a*d - b*c == 1).has_value():
-                return "ISOMORPHIC", [vertex]
+            if triangulation.isomorphism(flat_target_triangulation, filter_matrix=lambda a, b, c, d: a*d - b*c == 1).has_value():
+                return vertex, None, False # TODO apply mobius to find the polygon edge of the previously-found corresponding to the target_polygon_edge
 
-        return "NEW", None
+        # add new vertex
+        self._faces.add_vertex(target_polygon)
+        self._faces.set_vertex(target_polygon, target_triangulation)
+        return target_polygon, target_polygon_edge, True
 
     def is_vertex(self, translation_surface):
         r"""
