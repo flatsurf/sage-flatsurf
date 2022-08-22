@@ -142,8 +142,9 @@ class IsoDelaunayTessellation(Parent):
         isomorphisms = []
 
         while True:
+            from pyflatsurf import flatsurf
             isomorphisms.append(())
-            if not flat_target_triangulation.isomorphism(flat_target_triangulation, filter_matrix=filter_matrix).has_value():
+            if not flat_target_triangulation.isomorphism(flat_target_triangulation, kind=flatsurf.ISOMORPHISM.DELAUNAY_CELLS, filter_matrix=filter_matrix).has_value():
                 isomorphisms.pop()
                 break
         print(isomorphisms)
