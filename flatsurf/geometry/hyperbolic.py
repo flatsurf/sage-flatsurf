@@ -3324,6 +3324,18 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
         self._b = b
         self._c = c
 
+    def _check(self, require_normalized=True):
+        # TODO: Check documentation.
+        # TODO: Check INPUT
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        # TODO: Benchmark?
+        # TODO: Should this be in the oriented class? Should there be an equivalent in the unoriented class?
+        if self.is_ultra_ideal():
+            raise ValueError(
+                f"equation {self._a} + ({self._b})*x + ({self._c})*y = 0 does not define a chord in the Klein model"
+            )
+
     def is_ultra_ideal(self):
         # TODO: Check documentation.
         # TODO: Check INPUT
@@ -3528,6 +3540,210 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
             )
             .plot(model=model, **kwds)
         )
+
+    def pole(self):
+        r"""
+        Return the pole of this geodesic.
+
+        ALGORITHM:
+
+        The pole is the intersection of tangents of the Klein disk at
+        the ideal endpoints of this geodesic, see `Wikipedia
+        <https://en.wikipedia.org/wiki/Beltrami%E2%80%93Klein_model#Compass_and_straightedge_constructions>`
+
+        EXAMPLES:
+
+        The pole of a geodesic is an ultra ideal point::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(QQ)
+            sage: p = H.vertical(2).pole(); p
+            (1/2, 1)
+            sage: p.is_ultra_ideal()
+            True
+
+        Computing the pole is only implemented if it is a finite point in the
+        Euclidean plane::
+
+            sage: H.half_circle(0, 1).pole()
+            Traceback (most recent call last):
+            ...
+            NotImplementedError: can only compute pole if geodesic is a not a diameter in the Klein model
+
+        The pole might not be defined without passing to a larger base ring::
+
+            sage: H.half_circle(2, 2).pole()
+            Traceback (most recent call last):
+            ...
+            ValueError: square root of 32 not in Rational Field
+
+        """
+        if self.is_diameter():
+            raise NotImplementedError("can only compute pole if geodesic is a not a diameter in the Klein model")
+
+        def tangent(endpoint):
+            x, y = endpoint.coordinates(model="klein")
+            return self.parent().geodesic(-(x*x + y*y), x, y, model="klein", check=False)
+
+        A, B = self.vertices()
+
+        pole = tangent(A)._intersection(tangent(B))
+
+        assert pole is not None, "non-parallel lines must intersect"
+
+        return pole
+
+    def perpendicular(self, point_or_geodesic=None):
+        r"""
+        Return a geodesic that is perpendicular to this geodesic.
+
+        If ``point_or_geodesic`` is a point, return a geodesic
+        through that point.
+
+        If ``point_or_geodesic`` is another geodesic, return a
+        geodesic that is also perpendicular to that geodesic.
+
+        ALGORITHM:
+
+        We use the construction as explained on `Wikipedia
+        <https://en.wikipedia.org/wiki/Beltrami%E2%80%93Klein_model#Compass_and_straightedge_constructions>`.
+
+        INPUT:
+
+        - ``point_or_geodesic`` -- a point or a geodesic in the
+          hyperbolic plane or ``None`` (the default)
+
+        EXAMPLES:
+
+        Without parameters this method returns one of the many
+        perpendicular geodesics::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(QQ)
+            sage: v = H.vertical(2)
+            sage: v.perpendicular()
+            {(x^2 + y^2) - 4*x - 1 = 0}
+
+        We can request a perpendicular geodesic through a specific
+        point::
+
+            sage: v.perpendicular(2 + I)
+            {(x^2 + y^2) - 4*x + 3 = 0}
+            sage: v.perpendicular(I)
+            {(x^2 + y^2) - 4*x - 1 = 0}
+
+        In some cases, such a geodesic might not exist::
+
+            sage: v.perpendicular(oo)
+            Traceback (most recent call last):
+            ...
+            ValueError: ... does not define a chord in the Klein model
+
+        We can request a geodesic that is also perpendicular to
+        another geodesic::
+
+            sage: v.perpendicular(H.half_circle(4, 1))
+            {(x^2 + y^2) - 4*x + 1 = 0}
+
+        In some cases, such a geodesic might not exist::
+
+            sage: v.perpendicular(H.half_circle(2, 1))
+            Traceback (most recent call last):
+            ...
+            ValueError: ... does not define a chord in the Klein model
+
+        TESTS:
+
+        Verify that this also works for geodesic that have no finite pole::
+
+            sage: H.vertical(0).perpendicular()
+            {(x^2 + y^2) - 1 = 0}
+            sage: H.half_circle(0, 1).perpendicular()
+            {x = 0}
+            sage: H.half_circle(0, 1).perpendicular(0)
+            {x = 0}
+            sage: H.half_circle(0, 1).perpendicular(2)
+            {2*(x^2 + y^2) - 5*x + 2 = 0}
+
+            sage: H.vertical(0).perpendicular(H.half_circle(0, 1))
+            Traceback (most recent call last):
+            ...
+            ValueError: no geodesic perpendicular to both {-x = 0} and {(x^2 + y^2) - 1 = 0}
+            sage: H.half_circle(0, 1).perpendicular(H.vertical(0))
+            Traceback (most recent call last):
+            ...
+            ValueError: no geodesic perpendicular to both {(x^2 + y^2) - 1 = 0} and {-x = 0}
+            sage: H.vertical(0).perpendicular(H.vertical(0))
+            {(x^2 + y^2) - 1 = 0}
+            sage: H.vertical(0).perpendicular(H.half_circle(0, 1))
+            Traceback (most recent call last):
+            ...
+            ValueError: no geodesic perpendicular to both {-x = 0} and {(x^2 + y^2) - 1 = 0}
+
+        """
+        if point_or_geodesic is None:
+            point_or_geodesic = self.an_element()
+
+        point_or_geodesic = self.parent()(point_or_geodesic)
+
+        if isinstance(point_or_geodesic, HyperbolicGeodesic):
+            other = point_or_geodesic
+            if self.unoriented() == other.unoriented():
+                return self.perpendicular(self.an_element())
+
+            if self.is_diameter() and other.is_diameter():
+                raise ValueError(f"no geodesic perpendicular to both {self} and {other}")
+
+            if other.is_diameter():
+                return other.perpendicular(self)
+
+            if self.is_diameter():
+                # Construct the line a + bx + cy = 0 perpendicular to the
+                # diameter through the pole of the other geodesic.
+                b, c = (-self._c, self._b)
+                x, y = other.pole().coordinates(model="klein")
+                a = -(b*x + c*y)
+
+                # The line might be not intersect the Klein disk. An error is
+                # raised here in that case.
+                return self.parent().geodesic(a, b, c, model="klein", oriented=False)
+
+            # In the generic case, the perpendicular goes through both poles.
+            # Throws an error if that line does not define a geodesic because
+            # it's outside of the Klein disk.
+            return self.parent().geodesic(self.pole(), other.pole(), oriented=False)
+        else:
+            point = point_or_geodesic
+            if self.is_diameter():
+                # Construct the line a + bx + cy = 0 perpendicular to the
+                # diameter through the given point.
+                b, c = (-self._c, self._b)
+                x, y = point.coordinates(model="klein")
+                a = -(b*x + c*y)
+
+                perpendicular = self.parent().geodesic(a, b, c, model="klein", oriented=False)
+            else:
+                perpendicular = self.parent().geodesic(self.pole(), point, oriented=False)
+
+            assert point in perpendicular
+
+            return perpendicular
+
+    def is_diameter(self):
+        r"""
+        Return whether this geodesic is a diameter in the Klein model.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(QQ)
+            sage: H.vertical(0).is_diameter()
+            True
+            sage: H.vertical(1).is_diameter()
+            False
+
+        """
+        return self.parent().point(0, 0, model="klein") in self
 
     def _richcmp_(self, other, op):
         # TODO: Check documentation.
@@ -3777,18 +3993,6 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
         return self.parent().geodesic(
             -self._a, -self._b, -self._c, model="klein", check=False
         )
-
-    def _check(self, require_normalized=True):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
-        # TODO: Should this be in the oriented class? Should there be an equivalent in the unoriented class?
-        if self.is_ultra_ideal():
-            raise ValueError(
-                f"equation {self._a} + ({self._b})*x + ({self._c})*y = 0 does not define a chord in the Klein model"
-            )
 
     def start(self):
         # TODO: Check documentation.
@@ -4284,9 +4488,9 @@ class HyperbolicPoint(HyperbolicConvexSet):
                 if sqrt not in self.parent().base_ring():
                     raise ValueError(f"square root of {square} not in {self.parent().base_ring()}")
             except ValueError:
-                # TODO: We should make this more explicit and use a proper
-                # keyword for this. Also, make sure that all method that accept
-                # a ring implement this.
+                # TODO: We should throw a special exception instead and drop
+                # this keyword. Otherwise, we need to write a lot of
+                # boilerplate to check for None return values everywhere.
                 if ring == "try":
                     return None
                 raise
