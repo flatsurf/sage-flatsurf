@@ -3700,6 +3700,7 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
             ValueError: no geodesic perpendicular to both {-x = 0} and {(x^2 + y^2) - 1 = 0}
 
         """
+        # TODO: Orientation should be such that it is turning ccw from this geodesic.
         if point_or_geodesic is None:
             point_or_geodesic = self.an_element()
 
