@@ -2753,7 +2753,7 @@ class HyperbolicConvexSet(Element):
         # TODO: This can be implemented generically.
         raise NotImplementedError
 
-    def apply_isometry(self, isometry, model="half_plane"):
+    def apply_isometry(self, isometry, model="half_plane", on_right=False):
         # TODO: Check documentation.
         # TODO: Check INPUT
         # TODO: Check SEEALSO
@@ -2766,7 +2766,10 @@ class HyperbolicConvexSet(Element):
 
         - ``isometry`` -- a 2x2 matrix in `PGL(2,\mathbb{R})` or a 3x3 matrix in `SO(1, 2)`
 
-        - ``model`` -- either ``"half_plane"`` or ``"klein"``
+        - ``model`` (optional) -- either ``"half_plane"`` (default) or ``"klein"``
+
+        - ``on_right`` (optional; default to ``False``) -- set it to ``True`` if you want
+          the right action.
         """
         if model == "half_plane":
             isometry = sl2_to_so12(isometry)
@@ -2774,7 +2777,7 @@ class HyperbolicConvexSet(Element):
 
         if model == "klein":
             self._check_isometry_klein(isometry)
-            return self._apply_isometry_klein(isometry)
+            return self._apply_isometry_klein(isometry, on_right=on_right)
 
         raise NotImplementedError(
             "applying isometry not supported in this hyperbolic model"
@@ -2796,11 +2799,21 @@ class HyperbolicConvexSet(Element):
             sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
             sage: H = HyperbolicPlane(QQ)
             sage: p = H(I)
-            sage: matrix([[1, 2], [3, 4]]) * p
+            sage: m = matrix([[1, 2], [3, 4]])
+            sage: m * p
             11/25 + 2/25*I
+            sage: p * m
+            -7/5 + 1/5*I
 
+        TESTS::
+
+            sage: m0 = matrix(2, [1, 2, 3, 4])
+            sage: m1 = matrix(2, [1, 1, 0, 1])
+            sage: p = HyperbolicPlane(QQ)(I + 1)
+            sage: assert (m0 * m1) * p == m0 * (m1 * p)
+            sage: assert p * (m0 * m1) == (p * m0) * m1
         """
-        return self.apply_isometry(x)
+        return self.apply_isometry(x, on_right=self_on_left)
 
     def is_subset(self, other):
         r"""
@@ -4256,7 +4269,7 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
 
         raise NotImplementedError("cannot parametrize a geodesic over this model yet")
 
-    def _apply_isometry_klein(self, isometry):
+    def _apply_isometry_klein(self, isometry, on_right=False):
         # TODO: Check documentation.
         # TODO: Check INPUT
         # TODO: Check SEEALSO
@@ -4264,6 +4277,13 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
         # TODO: Benchmark?
         # TODO: Should this be in the oriented class? Should there be an equivalent in the unoriented class?
         r"""
+        INPUT:
+
+        - ``isometry`` -- a 3 x 3 matrix
+
+        - ``on_right`` -- an optional boolean which default to ``False``; set it to
+          ``True`` if you want a right action instead.
+
         TESTS::
 
             sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
@@ -4272,22 +4292,27 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
             sage: p1 = H(1)
             sage: p2 = H(oo)
             sage: for (a, b, c, d) in [(2, 1, 1, 1), (1, 1, 0, 1), (1, 0, 1, 1), (2, 0, 0 , 1)]:
-            ....:     m = matrix(2, [a, b, c, d])
-            ....:     q0 = p0.apply_isometry(m)
-            ....:     q1 = p1.apply_isometry(m)
-            ....:     q2 = p2.apply_isometry(m)
-            ....:     assert H.geodesic(p0, p1).apply_isometry(m) == H.geodesic(q0, q1)
-            ....:     assert H.geodesic(p1, p0).apply_isometry(m) == H.geodesic(q1, q0)
-            ....:     assert H.geodesic(p1, p2).apply_isometry(m) == H.geodesic(q1, q2)
-            ....:     assert H.geodesic(p2, p1).apply_isometry(m) == H.geodesic(q2, q1)
-            ....:     assert H.geodesic(p2, p0).apply_isometry(m) == H.geodesic(q2, q0)
-            ....:     assert H.geodesic(p0, p2).apply_isometry(m) == H.geodesic(q0, q2)
+            ....:     for on_right in [True, False]:
+            ....:         m = matrix(2, [a, b, c, d])
+            ....:         q0 = p0.apply_isometry(m, on_right=on_right)
+            ....:         q1 = p1.apply_isometry(m, on_right=on_right)
+            ....:         q2 = p2.apply_isometry(m, on_right=on_right)
+            ....:         assert H.geodesic(p0, p1).apply_isometry(m, on_right=on_right) == H.geodesic(q0, q1)
+            ....:         assert H.geodesic(p1, p0).apply_isometry(m, on_right=on_right) == H.geodesic(q1, q0)
+            ....:         assert H.geodesic(p1, p2).apply_isometry(m, on_right=on_right) == H.geodesic(q1, q2)
+            ....:         assert H.geodesic(p2, p1).apply_isometry(m, on_right=on_right) == H.geodesic(q2, q1)
+            ....:         assert H.geodesic(p2, p0).apply_isometry(m, on_right=on_right) == H.geodesic(q2, q0)
+            ....:         assert H.geodesic(p0, p2).apply_isometry(m, on_right=on_right) == H.geodesic(q0, q2)
+
         """
         from sage.modules.free_module_element import vector
 
+        if not on_right:
+            isometry = isometry.inverse()
+
         b, c, a = (
             vector(self.parent().base_ring(), [self._b, self._c, self._a])
-            * isometry.inverse()
+            * isometry
         )
         return self.parent().geodesic(a, b, c, model="klein")
 
@@ -4543,13 +4568,22 @@ class HyperbolicPoint(HyperbolicConvexSet):
         """
         return self.coordinates(model="half_plane")[1]
 
-    def _apply_isometry_klein(self, isometry):
+    def _apply_isometry_klein(self, isometry, on_right=False):
         # TODO: Check documentation.
         # TODO: Check INPUT
         # TODO: Check SEEALSO
         # TODO: Check for doctests
         # TODO: Benchmark?
         r"""
+        INPUT:
+
+        - ``isometry`` -- a 2x2 matrix in `PGL(2,\mathbb{R})` or a 3x3 matrix in `SO(1, 2)`
+
+        - ``model`` (optional) -- either ``"half_plane"`` (default) or ``"klein"``
+
+        - ``on_right`` (optional; default to ``False``) -- set it to ``True`` if you want
+          the right action.
+
         TESTS::
 
             sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
@@ -4564,6 +4598,9 @@ class HyperbolicPoint(HyperbolicConvexSet):
         from sage.modules.free_module_element import vector
 
         x, y = self.coordinates(model="klein")
+
+        if on_right:
+            isometry = isometry.inverse()
 
         x, y, z = isometry * vector(self.parent().base_ring(), [x, y, 1])
         return self.parent().point(x / z, y / z, model="klein")
@@ -6836,19 +6873,27 @@ class HyperbolicEmptySet(HyperbolicConvexSet):
         # TODO: Benchmark?
         return "{}"
 
-    def _apply_isometry_klein(self, isometry):
+    def _apply_isometry_klein(self, isometry, on_right=False):
         # TODO: Check documentation.
         # TODO: Check INPUT
         # TODO: Check SEEALSO
         # TODO: Check for doctests
         # TODO: Benchmark?
         r"""
+        INPUT:
+
+        - ``isometry`` -- a 3 x 3 matrix
+
+        - ``on_right`` -- an optional boolean which default to ``False``; set it to
+          ``True`` if you want a right action instead.
+
         TESTS::
 
             sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
             sage: S = HyperbolicPlane(QQ).empty_set()
             sage: S.apply_isometry(matrix(2, [2, 1, 1, 1])) is S
             True
+
         """
         return self
 
@@ -6938,6 +6983,23 @@ def sl2_to_so12(m):
     # TODO: Benchmark?
     r"""
     Return the lift of the 2x2 matrix ``m`` inside ``SO(1,2)``.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.hyperbolic import sl2_to_so12
+        sage: sl2_to_so12(matrix(2, [1,1,0,1]))
+        [   1   -1    1]
+        [   1  1/2  1/2]
+        [   1 -1/2  3/2]
+        sage: sl2_to_so12(matrix(2, [1,0,1,1]))
+        [   1    1    1]
+        [  -1  1/2 -1/2]
+        [   1  1/2  3/2]
+        sage: sl2_to_so12(matrix(2, [2,0,0,1/2]))
+        [   1    0    0]
+        [   0 17/8 15/8]
+        [   0 15/8 17/8]
+
     """
     from sage.matrix.constructor import matrix
 
