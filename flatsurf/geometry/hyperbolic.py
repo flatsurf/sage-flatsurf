@@ -6672,9 +6672,14 @@ class HyperbolicSegment(HyperbolicConvexSet):
 
             sage: K.<a> = NumberField(x^2 - 2, embedding=1.414)
             sage: H = HyperbolicPlane(K)
-            sage: s = H(I- 1).segment(I + 1)
+            sage: s = H(I - 1).segment(I + 1)
             sage: s.midpoint()
             a*I
+
+        .. SEEALSO::
+
+            :meth:`HyperbolicConvexPolygon.centroid` for a generalization of this
+            :meth:`HyperbolicSegment.perpendicular` for the perpendicular bisector
 
         """
         start, end = self.vertices()
@@ -6695,6 +6700,53 @@ class HyperbolicSegment(HyperbolicConvexSet):
             # One of the two lines start at any p must intersect the segment
             # already. No need to check the other p.
             assert False, f"segment {self} must have a midpoint but the straightedge and compass construction did not yield any"
+
+    def perpendicular(self, point=None):
+        r"""
+        Return the geodesic through ``point`` that is perpendicular to this
+        segment.
+
+        If no point is given, return the perpendicular bisector of this
+        segment.
+
+        ALGORITHM:
+
+        See :meth:`HyperbolicGeodesic.perpendicular`.
+
+        INPUT:
+
+        - ``point`` -- a point on this segment or ``None`` (the default)
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicSegment
+            sage: H = HyperbolicPlane()
+            sage: s = H(I).segment(4*I)
+            sage: s.perpendicular()
+            {(x^2 + y^2) - 4 = 0}
+            sage: s.perpendicular(I)
+            {(x^2 + y^2) - 1 = 0}
+
+        ::
+
+            sage: K.<a> = NumberField(x^2 - 2, embedding=1.414)
+            sage: H = HyperbolicPlane(K)
+            sage: s = H(I - 1).segment(I + 1)
+            sage: s.perpendicular()
+            {x = 0}
+            sage: s.perpendicular(I - 1)
+            {4/3*(x^2 + y^2) + 16/3*x + 8/3 = 0}
+
+        """
+        if point is None:
+            point = self.midpoint()
+
+        point = self.parent()(point)
+
+        if point not in self:
+            raise ValueError(f"point must be in the segment but {point} is not in {self}")
+
+        return self.geodesic().perpendicular(point)
 
 
 class HyperbolicUnorientedSegment(HyperbolicSegment):
