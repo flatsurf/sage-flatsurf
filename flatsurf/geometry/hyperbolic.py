@@ -6651,6 +6651,51 @@ class HyperbolicSegment(HyperbolicConvexSet):
 
         return ZZ(1)
 
+    def midpoint(self):
+        r"""
+        Return the midpoint of this segment.
+
+        ALGORITHM:
+
+        We use the construction as explained on `Wikipedia
+        <https://en.wikipedia.org/wiki/Beltrami%E2%80%93Klein_model#Compass_and_straightedge_constructions>`.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicSegment
+            sage: H = HyperbolicPlane()
+            sage: s = H(I).segment(4*I)
+            sage: s.midpoint()
+            2*I
+
+        ::
+
+            sage: K.<a> = NumberField(x^2 - 2, embedding=1.414)
+            sage: H = HyperbolicPlane(K)
+            sage: s = H(I- 1).segment(I + 1)
+            sage: s.midpoint()
+            a*I
+
+        """
+        start, end = self.vertices()
+
+        if start == end:
+            return start
+
+        if not start.is_finite() or not end.is_finite():
+            raise NotImplementedError(f"cannot compute midpoint of unbounded segment {self}")
+
+        for p in self.geodesic().perpendicular(start).vertices():
+            for q in self.geodesic().perpendicular(end).vertices():
+                line = self.parent().geodesic(p, q)
+                intersection = self.intersection(line)
+                if intersection:
+                    return intersection
+
+            # One of the two lines start at any p must intersect the segment
+            # already. No need to check the other p.
+            assert False, f"segment {self} must have a midpoint but the straightedge and compass construction did not yield any"
+
 
 class HyperbolicUnorientedSegment(HyperbolicSegment):
     # TODO: Check documentation
