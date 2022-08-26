@@ -3473,9 +3473,15 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
 
             if strategy == "gcd":
                 try:
-                    from sage.all import gcd as gcd_
+                    def gcd(*coefficients):
+                        coefficients = [c for c in coefficients if c]
+                        if len(coefficients) == 1:
+                            return sgn * coefficients[0]
 
-                    d = gcd_((a, b, c))
+                        from sage.all import gcd
+                        return gcd(coefficients)
+
+                    d = gcd(a, b, c)
                     assert d > 0
                     (a, b, c) = (a / d, b / d, c / d)
                     break
