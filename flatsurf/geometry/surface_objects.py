@@ -542,7 +542,7 @@ class SaddleConnection(SageObject):
 
     def plot(self, *args, **options):
         r"""
-        Equivalent to .trajectory().plot(*args, **options)
+        Equivalent to ``.trajectory().plot(*args, **options)``
         """
         return self.trajectory().plot(*args, **options)
 
