@@ -6470,6 +6470,27 @@ class HyperbolicSegment(HyperbolicConvexSet):
             self._geodesic, start=start, end=end, check=False, assume_normalized=True, oriented=self.is_oriented()
         )
 
+    def _apply_isometry_klein(self, isometry, on_right=False):
+        # TODO: Check documentation.
+        # TODO: Check INPUT
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        # TODO: Benchmark?
+        r"""
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicSegment
+            sage: H = HyperbolicPlane()
+
+            sage: segment = H.segment(H.vertical(0), start=I)
+            sage: segment.apply_isometry(matrix(2, [1, 1, 0, 1]))
+
+        """
+        geodesic = self.geodesic()._apply_isometry_klein(isometry, on_right=on_right)
+        start = self._start._apply_isometry_klein(isometry, on_right=on_right) if self._start is not None else None
+        end = self._end._apply_isometry_klein(isometry, on_right=on_right) if self._end is not None else None
+        return self.parent().segment(geodesic, start=start, end=end)
+
     def _endpoint_half_spaces(self):
         # TODO: Check documentation.
         # TODO: Check INPUT
