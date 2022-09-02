@@ -68,21 +68,23 @@ class IsoDelaunayTessellation(Parent):
         """
 
         # TODO: distinguish between triangulation edges, hyperbolic polygon edges, graph edges, ...
-        limit = 3 if limit is None else limit  # TODO: explore until finding FD
+        from sage.all import oo
+
+        limit = oo if limit is None else limit
         if limit <= 0:
-            return
+            return vertex
 
         if edge is None:
             vertex = vertex or self.root()
             for edge in vertex.edges():
-                self.explore(limit=limit, vertex=vertex, edge=edge)
-            return
+                assert vertex in self._faces
+                vertex = self.explore(limit=limit, vertex=vertex, edge=edge)
+            return vertex
 
         # ensure that we haven't already explored across polygon edge
         for _, _, (source_polygon_edge, _) in self._faces.edges(vertex, labels=True):
             if source_polygon_edge == edge:
-                return
-
+                return vertex
 
         source = vertex or self.face(edge)
         source_triangulation = self._faces.get_vertex(source)
@@ -98,6 +100,9 @@ class IsoDelaunayTessellation(Parent):
                     target_triangulation = target_triangulation.triangle_flip(
                         *triangulation_edge)
                     break
+
+                # glue triangles across triangulation_edge that flips to get mock Delaunay cells
+                # solve for self-isomorphism on level of mock cells?
             else:
                 break
 
@@ -107,6 +112,10 @@ class IsoDelaunayTessellation(Parent):
         assert -edge in target.edges()
 
         vertex, polygon_edge, is_new = self._ensure_vertex(target, target_triangulation, -edge)
+        assert polygon_edge is not None
+        if edge == polygon_edge:
+            # want to swap vertex for a polygon that has an orbifold point
+            raise NotImplementedError()
         self._faces.add_edge(source, vertex, label=(edge, polygon_edge))
         self._faces.add_edge(vertex, source, label=(polygon_edge, edge))
 
@@ -114,10 +123,12 @@ class IsoDelaunayTessellation(Parent):
             for edge in target.edges():
                 self.explore(limit=limit-1, vertex=target, edge=edge)
 
-       
+        return vertex
+
+
     def _ensure_vertex(self, target_polygon, target_triangulation, target_polygon_edge):
         r"""
-        Return vertex and edge of hyperbolic polygon TODO 
+        Return vertex and edge of hyperbolic polygon TODO
         """
         for vertex in self._faces:
             if vertex == target_polygon:
@@ -126,7 +137,9 @@ class IsoDelaunayTessellation(Parent):
         from flatsurf.geometry.pyflatsurf_conversion import to_pyflatsurf
         flat_target_triangulation = to_pyflatsurf(target_triangulation)
 
+
         def filter_matrix(a, b, c, d):
+            # TODO fix interface for isomorphisms
             from pyeantic import RealEmbeddedNumberField
             from sage.all import I, RDF
             k = RealEmbeddedNumberField(a.parent())
@@ -144,17 +157,43 @@ class IsoDelaunayTessellation(Parent):
         while True:
             from pyflatsurf import flatsurf
             isomorphisms.append(())
-            if not flat_target_triangulation.isomorphism(flat_target_triangulation, kind=flatsurf.ISOMORPHISM.DELAUNAY_CELLS, filter_matrix=filter_matrix).has_value():
+            if not flat_target_triangulation.isomorphism(flat_target_triangulation, filter_matrix=filter_matrix).has_value():
                 isomorphisms.pop()
                 break
-        print(isomorphisms)
 
         # TODO get "primitive rotation"
+        if set(isomorphisms) != {(1, 0, 0, 1) , (-1, 0, 0, -1)}:
+            raise NotImplementedError("subdivide IDR not implemented")
 
+        # TODO vertex is an awful name
         for vertex in self._faces:
+            isomorphism = None
+
+            def capture_matrix(a, b, c, d):
+                if a * d - b * c != 1:
+                    return False
+
+                from pyeantic import RealEmbeddedNumberField
+                from sage.all import I, RDF
+                k = RealEmbeddedNumberField(a.parent())
+                a, b, c, d = k(a), k(b), k(c), k(d)
+                l = k.number_field
+                a, b, c, d = l(a), l(b), l(c), l(d)
+
+                nonlocal isomorphism
+                isomorphism = (a, b, c, d)
+                return True
+
             triangulation = to_pyflatsurf(self._faces.get_vertex(vertex))
-            if triangulation.isomorphism(flat_target_triangulation, filter_matrix=lambda a, b, c, d: a*d - b*c == 1).has_value():
-                return vertex, None, False # TODO apply mobius to find the polygon edge of the previously-found corresponding to the target_polygon_edge
+            if flat_target_triangulation.isomorphism(triangulation, filter_matrix=capture_matrix).has_value():
+                assert isomorphism is not None
+                a, b, c, d = isomorphism
+                from sage.all import matrix
+                mob = matrix(2, [a, -b, -c, d])
+                image_edge = target_polygon_edge.apply_isometry(mob, model='half_plane')
+
+                assert image_edge in vertex.edges()
+                return vertex, image_edge, False
 
         # add new vertex
         self._faces.add_vertex(target_polygon)
