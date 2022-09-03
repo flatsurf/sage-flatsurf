@@ -2739,7 +2739,11 @@ class HyperbolicConvexSet(Element):
                     raise ValueError("invalid isometry")
 
         # TODO: Use a specialized predicate instead of the _method.
-        if not self.parent().geometry._equal(D[0, 0], D[1, 1]) or not self.parent().geometry._equal(
+        if not self.parent().geometry._equal(D[0, 0], D[1, 1]):
+            raise ValueError("invalid isometry")
+
+        # TODO: Use a specialized predicate instead of the _method.
+        if not self.parent().geometry._equal(
             D[0, 0], -D[2, 2]
         ):
             raise ValueError("invalid isometry")
@@ -3749,6 +3753,54 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
 
             return perpendicular
 
+    def midpoint(self):
+        r"""
+        Return the fixed point of the (determinant one) Möbius transformation
+        that interchanges the ideal endpoints of this geodesic.
+
+        ALGORITHM:
+
+        For the vertical connecting zero and infinity, the Möbius
+        transformation sending z to `-1/z` has the imaginary unit as its fixed
+        point. For a half circle centered at the origin its point on the
+        imaginary axis must be the fixed point (due to symmetry or a direct
+        computation.) All other geodesics, are just translated versions of
+        these so we can just conjugate with a translation to determine the
+        fixed point, i.e., the fixed point is a translate of one of the above.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicSegment
+            sage: H = HyperbolicPlane()
+            sage: H.vertical(0).midpoint()
+            I
+            sage: H.vertical(1).midpoint()
+            1 + I
+            sage: H.half_circle(1, 1).midpoint()
+            1 + I
+
+        .. SEEALSO::
+
+            :meth:`HyperbolicSegment.midpoint`
+
+        """
+        a, b = self.vertices()
+
+        if self.is_vertical():
+            if a == self.parent().infinity():
+                a, b = b, a
+            x, _ = a.coordinates(model="half_plane")
+
+            return self.parent().point(x, 1, model="half_plane")
+
+        ax, _ = a.coordinates(model="half_plane")
+        bx, _ = b.coordinates(model="half_plane")
+
+        m = (ax + bx) / 2
+        r = abs(bx - ax) / 2
+
+        return self.parent().point(m, r, model="half_plane")
+
     def is_diameter(self):
         r"""
         Return whether this geodesic is a diameter in the Klein model.
@@ -3764,6 +3816,23 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
 
         """
         return self.parent().point(0, 0, model="klein") in self
+
+    def is_vertical(self):
+        r"""
+        Return whether this geodesic is a vertical in the upper half plane.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(QQ)
+            sage: H.vertical(0).is_vertical()
+            True
+            sage: H.half_circle(0, 1).is_vertical()
+            False
+
+        """
+        # TODO: This check is probably done a few times in the code. We should use this predicate instead.
+        return self.parent().infinity() in self
 
     def _richcmp_(self, other, op):
         # TODO: Check documentation.
@@ -6484,6 +6553,7 @@ class HyperbolicSegment(HyperbolicConvexSet):
 
             sage: segment = H.segment(H.vertical(0), start=I)
             sage: segment.apply_isometry(matrix(2, [1, 1, 0, 1]))
+            {-x + 1 = 0} ∩ {2*(x^2 + y^2) - 3*x - 1 ≥ 0}
 
         """
         geodesic = self.geodesic()._apply_isometry_klein(isometry, on_right=on_right)
@@ -6714,6 +6784,9 @@ class HyperbolicSegment(HyperbolicConvexSet):
 
         if start == end:
             return start
+
+        if not start.is_finite() and not end.is_finite():
+            return self.geodesic().midpoint()
 
         if not start.is_finite() or not end.is_finite():
             raise NotImplementedError(f"cannot compute midpoint of unbounded segment {self}")
