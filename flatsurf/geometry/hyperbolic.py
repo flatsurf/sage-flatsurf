@@ -4716,11 +4716,15 @@ class HyperbolicPoint(HyperbolicConvexSet):
         if model == "half_plane":
             from sage.all import point
 
-            plot = point(self.coordinates(model="half_plane"), **kwds)
+            # We need to wrap the coordinates into a list so they are not
+            # interpreted as a list of complex numbers.
+            plot = point([self.coordinates(model="half_plane")], **kwds)
         elif model == "klein":
             from sage.all import point
 
-            plot = point(self.coordinates(model="klein"), **kwds)
+            # We need to wrap the coordinates into a list so they are not
+            # interpreted as a list of complex numbers.
+            plot = point([self.coordinates(model="klein")], **kwds)
         else:
             raise NotImplementedError
 
