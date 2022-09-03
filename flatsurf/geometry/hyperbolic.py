@@ -4716,11 +4716,15 @@ class HyperbolicPoint(HyperbolicConvexSet):
         if model == "half_plane":
             from sage.all import point
 
-            plot = point(self.coordinates(model="half_plane"), **kwds)
+            # We need to wrap the coordinates into a list so they are not
+            # interpreted as a list of complex numbers.
+            plot = point([self.coordinates(model="half_plane")], **kwds)
         elif model == "klein":
             from sage.all import point
 
-            plot = point(self.coordinates(model="klein"), **kwds)
+            # We need to wrap the coordinates into a list so they are not
+            # interpreted as a list of complex numbers.
+            plot = point([self.coordinates(model="klein")], **kwds)
         else:
             raise NotImplementedError
 
@@ -5187,7 +5191,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
             raise TypeError("half_spaces must be HyperbolicHalfSpaces")
 
         self._half_spaces = half_spaces
-        self._marked_vertices = vertices
+        self._marked_vertices = tuple(vertices)
 
     def _check(self, require_normalized=True):
         # TODO: Check documentation.
@@ -6312,8 +6316,10 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
         if pos != edges[0].start():
             commands.append(BezierPath.Command("MOVETO", [edges[0].start()]))
 
+        plot = hyperbolic_path(commands, model=model, **kwds)
+
         return self._enhance_plot(
-            hyperbolic_path(commands, model=model, **kwds), model=model
+            plot, model=model
         )
 
     def change(self, ring=None, geometry=None, oriented=None):
@@ -6353,7 +6359,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
         if op == op_EQ:
             if not isinstance(other, HyperbolicConvexPolygon):
                 return False
-            return self._half_spaces == other._half_spaces
+            return self._half_spaces == other._half_spaces and self._marked_vertices == other._marked_vertices
 
     def __hash__(self):
         r"""
@@ -6371,7 +6377,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
             sage: S = {H.polygon([H.vertical(1).left_half_space(), H.vertical(-1).right_half_space()])}
 
         """
-        return hash(self._half_spaces)
+        return hash((self._half_spaces, self._marked_vertices))
 
 
 class HyperbolicSegment(HyperbolicConvexSet):
