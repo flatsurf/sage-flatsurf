@@ -66,30 +66,45 @@ class IsoDelaunayTessellation(Parent):
             sage: idt.explore()
 
         """
+        # TODO: distinguish between triangulation edges, hyperbolic polygon edges, graph edges, ... in variable naming.
 
-        # TODO: distinguish between triangulation edges, hyperbolic polygon edges, graph edges, ...
         from sage.all import oo
 
         limit = oo if limit is None else limit
         if limit <= 0:
             return vertex
 
+        if vertex is None:
+            if edge is None:
+                vertex = self.root()
+            else:
+                for vertex in self._faces.vertices():
+                    if edge in vertex.edges():
+                        break
+                else:
+                    raise ValueError("edge must be an edge of a polygon in the explored tesselation")
+
+        if vertex not in self._faces:
+            raise ValueError("vertex must be a polygon of the explored tesselation")
+
         if edge is None:
-            vertex = vertex or self.root()
             for edge in vertex.edges():
                 assert vertex in self._faces
+                assert edge in vertex.edges()
                 vertex = self.explore(limit=limit, vertex=vertex, edge=edge)
             return vertex
 
-        # ensure that we haven't already explored across polygon edge
+        if edge not in vertex.edges():
+            raise ValueError("edge must be an edge of the vertex polygon")
+
+        # nothing to do if we have already explored across this polygon edge
         for _, _, (source_polygon_edge, _) in self._faces.edges(vertex, labels=True):
             if source_polygon_edge == edge:
                 return vertex
 
-        source = vertex or self.face(edge)
-        source_triangulation = self._faces.get_vertex(source)
+        source_triangulation = self._faces.get_vertex(vertex)
         target_triangulation = source_triangulation.copy()
-        edges_to_flip = []
+
         while True:
             for triangulation_edge in target_triangulation.edge_iterator():
                 half_plane = self._half_plane(
@@ -109,22 +124,57 @@ class IsoDelaunayTessellation(Parent):
         target = self._hyperbolic_plane.polygon(
             self._iso_delaunay_region(target_triangulation))
 
-        assert -edge in target.edges()
+        assert -edge in target.edges(), f"edge {-edge} is not in the polygon {target} after crossing {edge} from {vertex}"
 
-        vertex, polygon_edge, is_new = self._ensure_vertex(target, target_triangulation, -edge)
-        assert polygon_edge is not None
+        target, polygon_edge, is_new = self._ensure_vertex(target, target_triangulation, -edge)
+
         if edge == polygon_edge:
-            # want to swap vertex for a polygon that has an orbifold point
-            raise NotImplementedError()
-        self._faces.add_edge(source, vertex, label=(edge, polygon_edge))
-        self._faces.add_edge(vertex, source, label=(polygon_edge, edge))
+            # there is an orbifold point on that edge; insert a vertex into the
+            # polygon "vertex"
+            polygon = vertex.parent().polygon(
+                vertex.half_spaces(),
+                marked_vertices=tuple(vertex.vertices()) + (edge.midpoint(),))
+
+            assert polygon != vertex
+
+            self._faces.add_vertex(polygon)
+            self._faces.set_vertex(polygon, self._faces.get_vertex(vertex))
+            for source, target, label in list(self._faces.edges(vertex, labels=True)):
+                self._faces.delete_edge(source, target, label)
+                if source == vertex:
+                    source = polygon
+                if target == vertex:
+                    target = polygon
+
+                self._faces.add_edge(source, target, label=label)
+
+            self._faces.delete_vertex(vertex)
+
+            vertex = polygon
+            target = vertex
+
+            for e in polygon.edges():
+                if e.start() == edge.start():
+                    edge = e
+                    break
+            else:
+                assert False
+
+            for e in polygon.edges():
+                if e.end() == edge.end():
+                    polygon_edge = e
+                    break
+            else:
+                assert False
+
+        self._faces.add_edge(vertex, target, label=(edge, polygon_edge))
+        self._faces.add_edge(target, vertex, label=(polygon_edge, edge))
 
         if is_new:
             for edge in target.edges():
                 self.explore(limit=limit-1, vertex=target, edge=edge)
 
         return vertex
-
 
     def _ensure_vertex(self, target_polygon, target_triangulation, target_polygon_edge):
         r"""
