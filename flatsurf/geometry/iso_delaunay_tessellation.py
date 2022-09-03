@@ -38,12 +38,12 @@ class IsoDelaunayTessellation(Parent):
     """
 
     def __init__(self, surface):
-        from sage.all import DiGraph
+        from sage.all import Graph
         self._surface_original = surface
         self._hyperbolic_plane = HyperbolicPlane(surface.base_ring())
         self._surface = surface.delaunay_triangulation()
         self._surface = self._delaunay_triangulation(surface)
-        self._faces = DiGraph(multiedges=True, loops=True)
+        self._faces = Graph(multiedges=True, loops=True)
         self._ensure_vertex(self.root(), self._surface, self.root().edges()[0])
 
     def _repr_(self):
@@ -98,8 +98,8 @@ class IsoDelaunayTessellation(Parent):
             raise ValueError("edge must be an edge of the vertex polygon")
 
         # nothing to do if we have already explored across this polygon edge
-        for _, _, (source_polygon_edge, _) in self._faces.edges(vertex, labels=True):
-            if source_polygon_edge == edge:
+        for _, _, edges in self._faces.edges(vertex, labels=True):
+            if edge in edges:
                 return vertex
 
         source_triangulation = self._faces.get_vertex(vertex)
@@ -129,52 +129,69 @@ class IsoDelaunayTessellation(Parent):
         target, polygon_edge, is_new = self._ensure_vertex(target, target_triangulation, -edge)
 
         if edge == polygon_edge:
-            # there is an orbifold point on that edge; insert a vertex into the
-            # polygon "vertex"
-            polygon = vertex.parent().polygon(
-                vertex.half_spaces(),
-                marked_vertices=tuple(vertex.vertices()) + (edge.midpoint(),))
-
-            assert polygon != vertex
-
-            self._faces.add_vertex(polygon)
-            self._faces.set_vertex(polygon, self._faces.get_vertex(vertex))
-            for source, target, label in list(self._faces.edges(vertex, labels=True)):
-                self._faces.delete_edge(source, target, label)
-                if source == vertex:
-                    source = polygon
-                if target == vertex:
-                    target = polygon
-
-                self._faces.add_edge(source, target, label=label)
-
-            self._faces.delete_vertex(vertex)
-
-            vertex = polygon
+            assert target == vertex
+            # crossing edge of the polygon cycles back to the very edge in the
+            # polygon, so there is an orbifold point on that edge.
+            # We patch the polygon by inserting a marked point.
+            vertex, (edge, polygon_edge) = self._insert_orbifold_point(vertex, edge.midpoint())
             target = vertex
 
-            for e in polygon.edges():
-                if e.start() == edge.start():
-                    edge = e
-                    break
-            else:
-                assert False
-
-            for e in polygon.edges():
-                if e.end() == edge.end():
-                    polygon_edge = e
-                    break
-            else:
-                assert False
-
-        self._faces.add_edge(vertex, target, label=(edge, polygon_edge))
-        self._faces.add_edge(target, vertex, label=(polygon_edge, edge))
+        self._faces.add_edge(vertex, target, label={edge, polygon_edge})
 
         if is_new:
             for edge in target.edges():
                 self.explore(limit=limit-1, vertex=target, edge=edge)
 
         return vertex
+
+    def _insert_orbifold_point(self, vertex, point):
+        r"""
+        Insert ``point`` as a marked point on an edge of the polygon ``vertex``
+        (and update the graph representing the explored part of the fundamental
+        domain.)
+
+        Return the new polygon and the edges adjacent to point.
+        """
+        for edge in vertex.edges():
+            if point in edge:
+                break
+        else:
+            assert False
+
+        polygon = vertex.parent().polygon(
+            vertex.half_spaces(),
+            marked_vertices=tuple(vertex.vertices()) + (point,))
+
+        assert polygon != vertex
+
+        self._faces.add_vertex(polygon)
+        self._faces.set_vertex(polygon, self._faces.get_vertex(vertex))
+        for source, target, label in list(self._faces.edges(vertex, labels=True)):
+            self._faces.delete_edge(source, target, label)
+            if source == vertex:
+                source = polygon
+            if target == vertex:
+                target = polygon
+
+            self._faces.add_edge(source, target, label=label)
+
+        self._faces.delete_vertex(vertex)
+
+        for e in polygon.edges():
+            if e.start() == edge.start():
+                edge = e
+                break
+        else:
+            assert False
+
+        for e in polygon.edges():
+            if e.end() == edge.end():
+                polygon_edge = e
+                break
+        else:
+            assert False
+
+        return polygon, (edge, polygon_edge)
 
     def _ensure_vertex(self, target_polygon, target_triangulation, target_polygon_edge):
         r"""
@@ -187,15 +204,13 @@ class IsoDelaunayTessellation(Parent):
         from flatsurf.geometry.pyflatsurf_conversion import to_pyflatsurf
         flat_target_triangulation = to_pyflatsurf(target_triangulation)
 
-
         def filter_matrix(a, b, c, d):
             # TODO fix interface for isomorphisms
             from pyeantic import RealEmbeddedNumberField
-            from sage.all import I, RDF
             k = RealEmbeddedNumberField(a.parent())
             a, b, c, d = k(a), k(b), k(c), k(d)
-            l = k.number_field
-            a, b, c, d = l(a), l(b), l(c), l(d)
+            k = k.number_field
+            a, b, c, d = k(a), k(b), k(c), k(d)
 
             if (a, b, c, d) in isomorphisms or a * d - b * c == -1:
                 return False
@@ -205,14 +220,13 @@ class IsoDelaunayTessellation(Parent):
         isomorphisms = []
 
         while True:
-            from pyflatsurf import flatsurf
             isomorphisms.append(())
             if not flat_target_triangulation.isomorphism(flat_target_triangulation, filter_matrix=filter_matrix).has_value():
                 isomorphisms.pop()
                 break
 
         # TODO get "primitive rotation"
-        if set(isomorphisms) != {(1, 0, 0, 1) , (-1, 0, 0, -1)}:
+        if set(isomorphisms) != {(1, 0, 0, 1), (-1, 0, 0, -1)}:
             raise NotImplementedError("subdivide IDR not implemented")
 
         # TODO vertex is an awful name
@@ -224,11 +238,10 @@ class IsoDelaunayTessellation(Parent):
                     return False
 
                 from pyeantic import RealEmbeddedNumberField
-                from sage.all import I, RDF
                 k = RealEmbeddedNumberField(a.parent())
                 a, b, c, d = k(a), k(b), k(c), k(d)
-                l = k.number_field
-                a, b, c, d = l(a), l(b), l(c), l(d)
+                k = k.number_field
+                a, b, c, d = k(a), k(b), k(c), k(d)
 
                 nonlocal isomorphism
                 isomorphism = (a, b, c, d)
@@ -331,6 +344,7 @@ class IsoDelaunayTessellation(Parent):
         # If M_i has a degenerate IDR, do flips until not the case
         # e.g. only 8 / 250 of the triangulations of the regular octagon lead to a nondegen IDR
         if iso_delaunay_region.dimension() < 2:
+            from sage.all import QQ
             epsilon = QQ(1)/2
             while True:
                 x, y = z.coordinates()
@@ -402,7 +416,7 @@ class IsoDelaunayTessellation(Parent):
 
     def _iso_delaunay_region(self, triangulation):
         return [half_plane for edge in triangulation.edge_iterator()
-                if (half_plane :=self._half_plane(triangulation, edge)) is not None]
+                if (half_plane := self._half_plane(triangulation, edge)) is not None]
 
     def _half_plane(self, triangulation, edge):
         r"""
