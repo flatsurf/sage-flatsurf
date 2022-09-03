@@ -68,6 +68,8 @@ class IsoDelaunayTessellation(Parent):
         """
         # TODO: distinguish between triangulation edges, hyperbolic polygon edges, graph edges, ... in variable naming.
 
+        # TODO: The return value is cryptic when called from the outside. We should probably break this out into an _explore method.
+
         from sage.all import oo
 
         limit = oo if limit is None else limit
