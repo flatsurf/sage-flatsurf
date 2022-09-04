@@ -4,6 +4,20 @@ sage-flatsurf Change Log
 
 .. current developments
 
+v0.4.7
+====================
+
+**Changed:**
+
+* SimilaritySurface.edge_matrix becomes a cached_method
+
+**Removed:**
+
+* Removed unused functions from matrix_2x2, namely, `number_field_to_AA`,
+  `homothety_rotation_decomposition`, `is_similarity`, `rotation_matrix_angle`.
+
+
+
 v0.4.6
 ====================
 

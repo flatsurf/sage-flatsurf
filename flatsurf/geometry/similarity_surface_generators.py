@@ -92,17 +92,18 @@ def flipper_nf_element_to_sage(x, K=None):
     coeffs.extend([0] * (K.degree() - len(coeffs)))
     return K(coeffs)
 
+
 class EInfinitySurface(Surface):
     r"""
     The surface based on the $E_\infinity$ graph.
 
-     The biparite graph is shown below, with edges numbered:
+    The biparite graph is shown below, with edges numbered::
 
-      0   1   2  -2   3  -3   4  -4
-    *---o---*---o---*---o---*---o---*...
-            |
-            |-1
-            o
+          0   1   2  -2   3  -3   4  -4
+        *---o---*---o---*---o---*---o---*...
+                |
+                |-1
+                o
 
     Here, black vertices are colored *, and white o.
     Black nodes represent vertical cylinders and white nodes
@@ -223,6 +224,7 @@ class EInfinitySurface(Surface):
                 return -p,(e+2)%4
             else:
                 return 1-p,(e+2)%4
+
 
 class TFractalSurface(Surface):
     r"""
@@ -669,6 +671,7 @@ class DilationSurfaceGenerators:
         and $d$ should be real numbers strictly between zero and one.
         These represent the lengths of an edge of the resulting octagon,
         as below.
+
                  c
            +--+-------+
          d |2/        |
@@ -678,6 +681,7 @@ class DilationSurfaceGenerators:
            |        /1| b
            +-------+--+
               a
+
         The other edges will have length $1-a$, $1-b$, $1-c$, and $1-d$.
         Dilations used to glue edges will be by factors $c/a$, $d/b$,
         $(1-c)/(1-a)$ and $(1-d)/(1-b)$.

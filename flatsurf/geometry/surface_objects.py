@@ -538,7 +538,8 @@ class SaddleConnection(SageObject):
         return traj
 
     def plot(self, *args, **options):
-        r""" Equivalant to .trajectory().plot(*args, **options)
+        r"""
+        Equivalent to ``.trajectory().plot(*args, **options)``
         """
         return self.trajectory().plot(*args, **options)
 

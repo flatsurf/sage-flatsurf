@@ -113,6 +113,9 @@ class SimilaritySurfaceTangentVector:
         else:
             raise ValueError("Provided point lies outside the indexed polygon")
 
+        self._point.set_immutable()
+        self._vector.set_immutable()
+
     def __repr__(self):
         return "SimilaritySurfaceTangentVector in polygon "+repr(self._polygon_label)+\
             " based at "+repr(self._point)+" with vector "+repr(self._vector)
@@ -129,7 +132,16 @@ class SimilaritySurfaceTangentVector:
         return not self.__eq__(other)
 
     def __hash__(self):
-        return hash(tuple(sorted(self.__dict__.items())))
+        r"""
+        TESTS::
+
+            sage: from flatsurf import translation_surfaces
+            sage: s = translation_surfaces.square_torus()
+            sage: for y in [0,1]:
+            ....:     for d in [1,-1]:
+            ....:         h = hash(s.tangent_vector(0, (1/2, y), (d, 0)))
+        """
+        return hash((self._bundle, self._polygon_label, self._point, self._vector))
 
     def surface(self):
         r"""Return the underlying surface."""

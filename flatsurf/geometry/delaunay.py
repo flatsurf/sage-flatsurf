@@ -18,11 +18,12 @@ from six.moves import range, map, filter, zip
 
 from flatsurf.geometry.surface import Surface, Surface_list
 
+
 class LazyTriangulatedSurface(Surface):
     r"""
     Surface class used to triangulate an infinite surface.
     
-    EXAMPLES::
+    EXAMPLES:
 
     Example with relabel=False::
 
@@ -80,11 +81,12 @@ class LazyTriangulatedSurface(Surface):
         else:
             return (pp,ee)
 
+
 class LazyDelaunayTriangulatedSurface(Surface):
     r"""
     Surface class used to find a Delaunay triangulation of an infinite surface.
     
-    EXAMPLES::
+    EXAMPLES:
 
     Example with relabel=False::
 

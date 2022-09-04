@@ -82,41 +82,41 @@ def polyhedron_to_cone_surface(polyhedron, use_AA=False, scaling_factor=ZZ(1)):
 
     EXAMPLES::
 
-    sage: from flatsurf.geometry.polyhedra import *
-    sage: vertices=[]
-    sage: for i in range(3):
-    ....:     temp=vector([1 if k==i else 0 for k in range(3)])
-    ....:     for j in range(-1,3,2):
-    ....:         vertices.append(j*temp)
-    sage: octahedron=Polyhedron(vertices=vertices)
-    sage: surface,surface_to_octahedron = \
-    ....:     polyhedron_to_cone_surface(octahedron,scaling_factor=AA(1/sqrt(2)))
-    sage: TestSuite(surface).run()
-    sage: TestSuite(surface_to_octahedron).run(skip="_test_pickling")
-    sage: surface.num_polygons()
-    8
-    sage: surface.base_ring()
-    Number Field in a with defining polynomial y^2 - 3 with a = 1.732050807568878?
-    sage: sqrt3=surface.base_ring().gen()
-    sage: tangent_bundle=surface.tangent_bundle()
-    sage: v=tangent_bundle(0,(0,0),(sqrt3,2))
-    sage: traj=v.straight_line_trajectory()
-    sage: traj.flow(10)
-    sage: traj.is_saddle_connection()
-    True
-    sage: traj.combinatorial_length()
-    8
-    sage: path3d = surface_to_octahedron(traj)
-    sage: len(path3d)
-    9
-    sage: # We will show that the length of the path is sqrt(42):
-    sage: total_length = 0
-    sage: for i in range(8):
-    ....:     start = path3d[i]
-    ....:     end = path3d[i+1]
-    ....:     total_length += (vector(end)-vector(start)).norm()
-    sage: ZZ(total_length**2)
-    42
+        sage: from flatsurf.geometry.polyhedra import *
+        sage: vertices=[]
+        sage: for i in range(3):
+        ....:     temp=vector([1 if k==i else 0 for k in range(3)])
+        ....:     for j in range(-1,3,2):
+        ....:         vertices.append(j*temp)
+        sage: octahedron=Polyhedron(vertices=vertices)
+        sage: surface,surface_to_octahedron = \
+        ....:     polyhedron_to_cone_surface(octahedron,scaling_factor=AA(1/sqrt(2)))
+        sage: TestSuite(surface).run()
+        sage: TestSuite(surface_to_octahedron).run(skip="_test_pickling")
+        sage: surface.num_polygons()
+        8
+        sage: surface.base_ring()
+        Number Field in a with defining polynomial y^2 - 3 with a = 1.732050807568878?
+        sage: sqrt3=surface.base_ring().gen()
+        sage: tangent_bundle=surface.tangent_bundle()
+        sage: v=tangent_bundle(0,(0,0),(sqrt3,2))
+        sage: traj=v.straight_line_trajectory()
+        sage: traj.flow(10)
+        sage: traj.is_saddle_connection()
+        True
+        sage: traj.combinatorial_length()
+        8
+        sage: path3d = surface_to_octahedron(traj)
+        sage: len(path3d)
+        9
+        sage: # We will show that the length of the path is sqrt(42):
+        sage: total_length = 0
+        sage: for i in range(8):
+        ....:     start = path3d[i]
+        ....:     end = path3d[i+1]
+        ....:     total_length += (vector(end)-vector(start)).norm()
+        sage: ZZ(total_length**2)
+        42
     """
     assert polyhedron.dim()==3
     c=polyhedron.center()
@@ -277,6 +277,7 @@ def polyhedron_to_cone_surface(polyhedron, use_AA=False, scaling_factor=ZZ(1)):
             return S, \
                 ConeSurfaceToPolyhedronMap(S,polyhedron,face_map_data)
 
+
 def platonic_tetrahedron():
     r"""Produce a triple consisting of a polyhedral version of the platonic tetrahedron,
     the associated cone surface, and a ConeSurfaceToPolyhedronMap from the surface
@@ -284,10 +285,10 @@ def platonic_tetrahedron():
 
     EXAMPLES::
 
-    sage: from flatsurf.geometry.polyhedra import platonic_tetrahedron
-    sage: polyhedron,surface,surface_to_polyhedron = platonic_tetrahedron()
-    sage: TestSuite(surface).run()
-    r"""
+        sage: from flatsurf.geometry.polyhedra import platonic_tetrahedron
+        sage: polyhedron,surface,surface_to_polyhedron = platonic_tetrahedron()
+        sage: TestSuite(surface).run()
+    """
     vertices=[]
     for x in range(-1,3,2):
         for y in range(-1,3,2):
@@ -296,6 +297,7 @@ def platonic_tetrahedron():
     s,m = polyhedron_to_cone_surface(p,scaling_factor=AA(1/sqrt(2)))
     return p,s,m
 
+
 def platonic_cube():
     r"""Produce a triple consisting of a polyhedral version of the platonic cube,
     the associated cone surface, and a ConeSurfaceToPolyhedronMap from the surface
@@ -303,10 +305,10 @@ def platonic_cube():
 
     EXAMPLES::
 
-    sage: from flatsurf.geometry.polyhedra import platonic_cube
-    sage: polyhedron,surface,surface_to_polyhedron = platonic_cube()
-    sage: TestSuite(surface).run()
-    r"""
+        sage: from flatsurf.geometry.polyhedra import platonic_cube
+        sage: polyhedron,surface,surface_to_polyhedron = platonic_cube()
+        sage: TestSuite(surface).run()
+    """
     vertices=[]
     for x in range(-1,3,2):
         for y in range(-1,3,2):
@@ -316,6 +318,7 @@ def platonic_cube():
     s,m = polyhedron_to_cone_surface(p,scaling_factor=QQ(1)/2)
     return p,s,m
 
+
 def platonic_octahedron():
     r"""Produce a triple consisting of a polyhedral version of the platonic octahedron,
     the associated cone surface, and a ConeSurfaceToPolyhedronMap from the surface
@@ -323,10 +326,10 @@ def platonic_octahedron():
 
     EXAMPLES::
 
-    sage: from flatsurf.geometry.polyhedra import platonic_octahedron
-    sage: polyhedron,surface,surface_to_polyhedron = platonic_octahedron()
-    sage: TestSuite(surface).run()
-    r"""
+        sage: from flatsurf.geometry.polyhedra import platonic_octahedron
+        sage: polyhedron,surface,surface_to_polyhedron = platonic_octahedron()
+        sage: TestSuite(surface).run()
+    """
     vertices=[]
     for i in range(3):
         temp=vector(QQ,[1 if k==i else 0 for k in range(3)])
@@ -337,6 +340,7 @@ def platonic_octahedron():
         polyhedron_to_cone_surface(octahedron,scaling_factor=AA(sqrt(2)))
     return octahedron,surface,surface_to_octahedron
 
+
 def platonic_dodecahedron():
     r"""Produce a triple consisting of a polyhedral version of the platonic dodecahedron,
     the associated cone surface, and a ConeSurfaceToPolyhedronMap from the surface
@@ -344,10 +348,10 @@ def platonic_dodecahedron():
 
     EXAMPLES::
 
-    sage: from flatsurf.geometry.polyhedra import platonic_dodecahedron
-    sage: polyhedron,surface,surface_to_polyhedron = platonic_dodecahedron()
-    sage: TestSuite(surface).run()
-    r"""
+        sage: from flatsurf.geometry.polyhedra import platonic_dodecahedron
+        sage: polyhedron,surface,surface_to_polyhedron = platonic_dodecahedron()
+        sage: TestSuite(surface).run()
+    """
     vertices=[]
     phi=AA(1+sqrt(5))/2
     F=NumberField(phi.minpoly(),"phi",embedding=phi)
@@ -366,6 +370,7 @@ def platonic_dodecahedron():
     s,m = polyhedron_to_cone_surface(p,scaling_factor=scale)
     return p,s,m
 
+
 def platonic_icosahedron():
     r"""Produce a triple consisting of a polyhedral version of the platonic icosahedron,
     the associated cone surface, and a ConeSurfaceToPolyhedronMap from the surface
@@ -373,10 +378,10 @@ def platonic_icosahedron():
 
     EXAMPLES::
 
-    sage: from flatsurf.geometry.polyhedra import platonic_icosahedron
-    sage: polyhedron,surface,surface_to_polyhedron = platonic_icosahedron()
-    sage: TestSuite(surface).run()
-    r"""
+        sage: from flatsurf.geometry.polyhedra import platonic_icosahedron
+        sage: polyhedron,surface,surface_to_polyhedron = platonic_icosahedron()
+        sage: TestSuite(surface).run()
+    """
     vertices=[]
     phi=AA(1+sqrt(5))/2
     F=NumberField(phi.minpoly(),"phi",embedding=phi)
