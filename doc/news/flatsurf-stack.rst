@@ -1,6 +1,6 @@
 **Added:**
 
-* Added installation instructions to the documentations.
+* Added installation instructions to the documentation.
 
 **Fixed:**
 
