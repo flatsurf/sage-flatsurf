@@ -10,13 +10,12 @@ kernelspec:
   display_name: SageMath 9.2
   language: sage
   name: sagemath
+author: Pat Hooper <whooper@ccny.cuny.edu>
 ---
 
 +++ {"deletable": true, "editable": true}
 
-# The GL(2,R) action, the Veech group, Delaunay decomposition
-
-Initial version by Pat Hooper <whooper@ccny.cuny.edu>, Dec 16, 2017.
+# The GL(2,R) Action, the Veech Group, Delaunay Decomposition
 
 ```{code-cell} ipython3
 ---

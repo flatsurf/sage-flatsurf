@@ -1,7 +1,7 @@
 import setuptools
 from distutils.core import setup
 
-with open('README.rst') as f:
+with open('README.md') as f:
     long_description = f.read()
 
 setup(name='sage_flatsurf',
@@ -9,7 +9,7 @@ setup(name='sage_flatsurf',
     author_email = 'vincent.delecroix@u-bordeaux.fr',
     description="flat surfaces",
     long_description=long_description,
-    long_description_content_type="text/x-rst",
+    long_description_content_type="text/markdown",
     version='0.4.7',
     url='https://github.com/flatsurf/sage-flatsurf',
     license='GNU General Public License, version 2',
