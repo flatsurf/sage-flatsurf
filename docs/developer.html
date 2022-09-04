@@ -1,0 +1,166 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>The Developer’s Guide for sage-flatsurf &#8212; sage-flatsurf 0.4.7 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Defining Surfaces" href="examples/defining_surfaces.html" />
+    <link rel="prev" title="Installing sage-flatsurf" href="install.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="examples/defining_surfaces.html" title="Defining Surfaces"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="install.html" title="Installing sage-flatsurf"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">sage-flatsurf 0.4.7 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">The Developer’s Guide for sage-flatsurf</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="the-developer-s-guide-for-sage-flatsurf">
+<span id="developers-guide"></span><h1>The Developer’s Guide for sage-flatsurf<a class="headerlink" href="#the-developer-s-guide-for-sage-flatsurf" title="Permalink to this heading">¶</a></h1>
+<p>sage-flatsurf is a pure Python module that depends on SageMath. We try to
+follow the <a class="reference external" href="https://doc.sagemath.org/html/en/developer/coding_basics.html">programming conventions of SageMath</a>.</p>
+<p>Contributions to sage-flatsurf are always welcome. If you want to contribute,
+don’t hesitate to <a class="reference external" href="https://flatsurf.github.io">reach out to us</a>, create an
+<a class="reference external" href="https://github.com/flatsurf/sage-flatsurf/issues">issue</a>, or contribute a
+<a class="reference external" href="https://github.com/flatsurf/sage-flatsurf/pulls">pull request</a>.</p>
+<p>We recommend to work on sage-flatsurf in a conda environment since currently
+that is the easiest way to make sure that all optional dependencies of
+sage-flatsurf are satisfied.</p>
+<p>To setup a conda environment, it’s maybe best to first install sage-flatsurf
+with mamba, as explained in our <a class="reference external" href="installation-mamba">installation guide</a>.</p>
+<p>If that worked, you should create a separate environment to work on
+sage-flatsurf:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mamba</span> <span class="n">env</span> <span class="n">create</span> <span class="o">-</span><span class="n">n</span> <span class="n">sage</span><span class="o">-</span><span class="n">flatsurf</span><span class="o">-</span><span class="n">build</span> <span class="o">-</span><span class="n">f</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">flatsurf</span><span class="o">/</span><span class="n">sage</span><span class="o">-</span><span class="n">flatsurf</span><span class="o">/</span><span class="n">raw</span><span class="o">/</span><span class="n">master</span><span class="o">/</span><span class="n">environment</span><span class="o">.</span><span class="n">yml</span>
+</pre></div>
+</div>
+<p>This environment has all the dependencies of sage-flatsurf installed, but not
+sage-flatsurf itself:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mamba</span> <span class="n">activate</span> <span class="n">sage</span><span class="o">-</span><span class="n">flatsurf</span><span class="o">-</span><span class="n">build</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="https://swcarpentry.github.io/git-novice/">Clone</a> the sage-flatsurf
+repository:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">flatsurf</span><span class="o">/</span><span class="n">sage</span><span class="o">-</span><span class="n">flatsurf</span><span class="o">.</span><span class="n">git</span>
+</pre></div>
+</div>
+<p>You can now install an editable version of sage-flatsurf inside the <code class="docutils literal notranslate"><span class="pre">sage-flatsurf-build</span></code> environment, so any changes you make to <code class="docutils literal notranslate"><span class="pre">sage-flatsurf/</span></code> are going to be available immediately in this environment:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">e</span> <span class="o">./</span><span class="n">sage</span><span class="o">-</span><span class="n">flatsurf</span>
+</pre></div>
+</div>
+<p>You can now run our doctests, and run our test suite:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span> <span class="o">-</span><span class="n">tp</span> <span class="o">--</span><span class="n">initial</span> <span class="o">--</span><span class="n">optional</span><span class="o">=</span><span class="n">sage</span><span class="p">,</span><span class="n">flipper</span><span class="p">,</span><span class="n">eantic</span><span class="p">,</span><span class="n">exactreal</span><span class="p">,</span><span class="n">pyflatsurf</span> <span class="n">flatsurf</span> <span class="n">doc</span>
+<span class="n">pytest</span> <span class="o">-</span><span class="n">n</span> <span class="n">auto</span>
+</pre></div>
+</div>
+<p>Note that you can use <code class="docutils literal notranslate"><span class="pre">mamba</span> <span class="pre">upgrade</span> <span class="pre">-n</span> <span class="pre">sage-flatsurf-build</span> <span class="pre">--all</span></code> to update all of sage-flatsurf’s dependencies. You can also recreate the environment to make sure that it’s identical to the one that is used in our automated tests:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">deactivate</span>
+<span class="n">mamba</span> <span class="n">uninstall</span> <span class="o">-</span><span class="n">n</span> <span class="n">sage</span><span class="o">-</span><span class="n">flatsurf</span><span class="o">-</span><span class="n">build</span> <span class="o">--</span><span class="nb">all</span>
+<span class="n">mamba</span> <span class="n">env</span> <span class="n">create</span> <span class="o">-</span><span class="n">n</span> <span class="n">sage</span><span class="o">-</span><span class="n">flatsurf</span><span class="o">-</span><span class="n">build</span> <span class="o">-</span><span class="n">f</span> <span class="o">./</span><span class="n">sage</span><span class="o">-</span><span class="n">flatsurf</span><span class="o">/</span><span class="n">environment</span><span class="o">.</span><span class="n">yml</span>
+<span class="n">mamba</span> <span class="n">activate</span> <span class="n">sage</span><span class="o">-</span><span class="n">flatsurf</span><span class="o">-</span><span class="n">build</span>
+</pre></div>
+</div>
+<p>This should cover the very basics of development but there are certainly lots
+of things that we missed here, so don’t hesitate to <a class="reference external" href="https://flatsurf.github.io">contact us</a> if anything does not work out right away :)</p>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="install.html"
+                          title="previous chapter">Installing sage-flatsurf</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="examples/defining_surfaces.html"
+                          title="next chapter">Defining Surfaces</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/developer.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="examples/defining_surfaces.html" title="Defining Surfaces"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="install.html" title="Installing sage-flatsurf"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">sage-flatsurf 0.4.7 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">The Developer’s Guide for sage-flatsurf</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2016-2022, the sage-flatsurf authors.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.1.1.
+    </div>
+  </body>
+</html>

@@ -10,33 +10,12 @@ kernelspec:
   display_name: SageMath 9.2
   language: sage
   name: sagemath
+author: Pat Hooper <whooper@ccny.cuny.edu>
 ---
 
 +++ {"deletable": true, "editable": true}
 
-# FlatSurf Demo
-
-## Warwick EPSRC Symposium on "Computation in geometric topology"
-
-By Pat Hooper <whooper@ccny.cuny.edu>
-
-This material is based upon work supported by the National Science Foundation
-under Grant 1500965.
-
-Flatsurf is a Sage module to work with "flat surfaces"
-written so far mostly by Vincent Delecroix and Pat Hooper.
-It is developing in random directions depending on our interests,
-but we would like it to be as helpful as possible for everyone...
-We welcome other contributors!
-
-To get flatsurf you first need <a href="https://www.sagemath.org/">Sage</a>.
-Then you can get flatsurf by following the directions here on the
-<a href="https://github.com/flatsurf/sage-flatsurf#installing-the-module">flatsurf GitHub page</a>.
-(Currently we recommend running
-
-<code>sage -pip install git+https://github.com/flatsurf/sage-flatsurf</code>
-
-to install.)
+# Notes from the Warwick EPSRC Symposium on "Computation in geometric topology"
 
 ```{code-cell} ipython3
 ---

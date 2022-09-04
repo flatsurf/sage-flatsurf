@@ -10,13 +10,12 @@ kernelspec:
   display_name: SageMath 9.2
   language: sage
   name: sagemath
+author: Pat Hooper <whooper@ccny.cuny.edu>
 ---
 
 +++ {"deletable": true, "editable": true}
 
 # Relative Period Deformations
-
-Initial version by Pat Hooper <whooper@ccny.cuny.edu>, Dec. 16, 2017.
 
 ```{code-cell} ipython3
 ---

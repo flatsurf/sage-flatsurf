@@ -1,0 +1,242 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Installing sage-flatsurf &#8212; sage-flatsurf 0.4.7 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="The Developer’s Guide for sage-flatsurf" href="developer.html" />
+    <link rel="prev" title="sage-flatsurf: Flat Surfaces in SageMath" href="index.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="developer.html" title="The Developer’s Guide for sage-flatsurf"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="sage-flatsurf: Flat Surfaces in SageMath"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">sage-flatsurf 0.4.7 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Installing sage-flatsurf</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="installing-sage-flatsurf">
+<h1>Installing sage-flatsurf<a class="headerlink" href="#installing-sage-flatsurf" title="Permalink to this heading">¶</a></h1>
+<p>Currently, sage-flatsurf is not widely available in package managers. We
+therefore recommend to use mamba to install sage-flatsurf. This should work
+nicely, if you are on Linux or macOS. If you are using Windows, you could try
+to install sage-flatsurf with mamba in Windows Subsystem for Linux (WSL). If
+you are having trouble with this or are on another operating system, please
+<a class="reference external" href="https://flatsurf.github.io">contact us</a>. We’re thrilled about any new user of
+sage-flatsurf and we’re very happy to help and in the process improve these
+installation instructions.</p>
+<section id="install-with-mamba">
+<span id="installation-mamba"></span><h2>Install with Mamba<a class="headerlink" href="#install-with-mamba" title="Permalink to this heading">¶</a></h2>
+<p>Please first install <a class="reference external" href="https://github.com/conda-forge/miniforge#mambaforge">mambaforge</a>.</p>
+<p>Here is some vocabulary, in case you are interested. Feel free to skip this
+paragraph. mambaforge, is a program that installs both conda and mamba on your
+system. <a class="reference external" href="https://conda.io">conda</a> is essentially a package manager for
+Windows, macOS, and Linux that installs software without requiring superuser
+permissions. <a class="reference external" href="https://github.com/mamba-org/mamba">mamba</a> is a fast version of
+conda. mambaforge installs conda and mamba preconfigured to use packages from
+conda-forge. <a class="reference external" href="https://conda-forge.org">conda-forge</a> is a community effort to
+package lots of software and make it easily installable with conda and mamba.
+The entire flatsurf stack, <a class="reference external" href="https://github.com/conda-forge/sage-flatsurf-feedstock/">in particular sage-flatsurf</a>, is available from
+conda-forge. conda and mamba install packages in <em>conda environments</em>,
+independent sets of software. You could for example have different environments
+for different versions of sage-flatsurf and SageMath. To use software from an
+environment, it needs to be <em>activated</em>. You can only activate a single
+environment at a time.</p>
+<p>Once you installed mambaforge, open a new command line terminal. The <code class="docutils literal notranslate"><span class="pre">mamba</span></code>
+command should now be available. The <code class="docutils literal notranslate"><span class="pre">base</span></code> environment is already active,
+it contains the mamba package manager. (If your terminal always prints
+<code class="docutils literal notranslate"><span class="pre">(base)</span></code> and you find that annoying, run <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">config</span> <span class="pre">--set</span>
+<span class="pre">auto_activate_base</span> <span class="pre">false</span></code> to get rid of that prompt.)</p>
+<p>You can now create a <code class="docutils literal notranslate"><span class="pre">flatsurf</span></code> environment (feel free to pick any other
+name) with the entire flatsurf stack (<a class="reference external" href="https://sagemath.org">SageMath</a>,
+sage-flatsurf, <a class="reference external" href="https://github.com/flatsurf/flatsurf">libflatsurf</a>,
+<a class="reference external" href="https://github.com/flatsurf/ipyvue-flatsurf">ipyvue-flatsurf</a> widgets, …)
+installed:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mamba</span> <span class="n">env</span> <span class="n">create</span> <span class="o">-</span><span class="n">n</span> <span class="n">flatsurf</span> <span class="o">-</span><span class="n">f</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">flatsurf</span><span class="o">/</span><span class="n">sage</span><span class="o">-</span><span class="n">flatsurf</span><span class="o">/</span><span class="n">raw</span><span class="o">/</span><span class="n">master</span><span class="o">/</span><span class="n">flatsurf</span><span class="o">.</span><span class="n">yml</span>
+</pre></div>
+</div>
+<p>Immediately after a new version of sage-flatsurf is released, this command
+might fail because not all packages have been built for your platform yet. When
+this is the case, you can also install a previous version of sage-flatsurf;
+replace the <code class="docutils literal notranslate"><span class="pre">0.5.0</span></code> below with any recent <a class="reference external" href="https://github.com/flatsurf/sage-flatsurf/releases">version of sage-flatsurf</a>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mamba</span> <span class="n">env</span> <span class="n">create</span> <span class="o">-</span><span class="n">n</span> <span class="n">flatsurf</span> <span class="o">-</span><span class="n">f</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">raw</span><span class="o">.</span><span class="n">githubusercontent</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">flatsurf</span><span class="o">/</span><span class="n">sage</span><span class="o">-</span><span class="n">flatsurf</span><span class="o">/</span><span class="mf">0.5.0</span><span class="o">/</span><span class="n">flatsurf</span><span class="o">.</span><span class="n">yml</span>
+</pre></div>
+</div>
+<p>You can now activate the flatsurf environment and start SageMath:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mamba</span> <span class="n">activate</span> <span class="n">flatsurf</span>
+<span class="n">sage</span>
+</pre></div>
+</div>
+<p>If you prefer to work in a graphical environment, you can also launch Jupyter:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mamba</span> <span class="n">activate</span> <span class="n">flatsurf</span>
+<span class="n">jupyter</span> <span class="n">notebook</span>
+</pre></div>
+</div>
+</section>
+<section id="upgrade-with-mamba">
+<span id="upgrade-mamba"></span><h2>Upgrade with Mamba<a class="headerlink" href="#upgrade-with-mamba" title="Permalink to this heading">¶</a></h2>
+<p>If you followed the above guide, it should be easy to upgrade to the latest
+release of sage-flatsurf. Before you do that, it’s usually a good idea to make
+sure that you are using the latest conda and mamba:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mamba</span> <span class="n">upgrade</span> <span class="o">-</span><span class="n">n</span> <span class="n">base</span> <span class="o">--</span><span class="nb">all</span>
+</pre></div>
+</div>
+<p>To update sage-flatsurf and all the other packages in the flatsurf environment itself:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mamba</span> <span class="o">-</span><span class="n">n</span> <span class="n">flatsurf</span> <span class="n">upgrade</span> <span class="o">--</span><span class="nb">all</span>
+</pre></div>
+</div>
+<p>If after an upgrade something does not work correctly, please <a class="reference external" href="https://flatsurf.github.io">let us know</a>; we probably missed to declare some dependency.</p>
+<p>You can also reinstall the flatsurf environment when this happens. First,
+uninstall the flatsurf environment:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mamba</span> <span class="n">uninstall</span> <span class="o">-</span><span class="n">n</span> <span class="n">flatsurf</span> <span class="o">--</span><span class="nb">all</span>
+</pre></div>
+</div>
+<p>Then reinstall as above:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mamba</span> <span class="n">env</span> <span class="n">create</span> <span class="o">-</span><span class="n">n</span> <span class="n">flatsurf</span> <span class="o">-</span><span class="n">f</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">flatsurf</span><span class="o">/</span><span class="n">sage</span><span class="o">-</span><span class="n">flatsurf</span><span class="o">/</span><span class="n">raw</span><span class="o">/</span><span class="n">master</span><span class="o">/</span><span class="n">flatsurf</span><span class="o">.</span><span class="n">yml</span>
+</pre></div>
+</div>
+<p>This does not delete or otherwise modify any of your notebooks or SageMath archives.</p>
+</section>
+<section id="install-into-sagemath">
+<span id="installation-sagemath"></span><h2>Install into SageMath<a class="headerlink" href="#install-into-sagemath" title="Permalink to this heading">¶</a></h2>
+<p>If you are using a <a class="reference external" href="https://doc.sagemath.org/html/en/installation/source.html">source build of SageMath</a> or if you
+downloaded a SageMath binary, you can install sage-flatsurf into SageMath. Note
+that this does not install all the optional dependencies of sage-flatsurf so
+some computations might fail in this setup:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span> <span class="o">-</span><span class="n">pip</span> <span class="n">install</span> <span class="n">sage</span><span class="o">-</span><span class="n">flatsurf</span>
+</pre></div>
+</div>
+<p>To uninstall sage-flatsurf again later:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span> <span class="o">-</span><span class="n">pip</span> <span class="n">uninstall</span> <span class="n">sage</span><span class="o">-</span><span class="n">flatsurf</span>
+</pre></div>
+</div>
+</section>
+<section id="install-from-pypi">
+<span id="installation-pip"></span><h2>Install from PyPI<a class="headerlink" href="#install-from-pypi" title="Permalink to this heading">¶</a></h2>
+<p>You can install sage-flatsurf from <a class="reference external" href="https://pypi.org/project/sage-flatsurf/">PyPI</a> if you installed sagelib as a
+Python package. Again, this does not come with the optional dependencies of
+sage-flatsurf, so some computations might fail in this setup:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">--</span><span class="n">user</span> <span class="n">sage</span><span class="o">-</span><span class="n">flatsurf</span>
+</pre></div>
+</div>
+<p>To uninstall sage-flatsurf again later:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">uninstall</span> <span class="o">--</span><span class="n">user</span> <span class="n">sage</span><span class="o">-</span><span class="n">flatsurf</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Installing sage-flatsurf</a><ul>
+<li><a class="reference internal" href="#install-with-mamba">Install with Mamba</a></li>
+<li><a class="reference internal" href="#upgrade-with-mamba">Upgrade with Mamba</a></li>
+<li><a class="reference internal" href="#install-into-sagemath">Install into SageMath</a></li>
+<li><a class="reference internal" href="#install-from-pypi">Install from PyPI</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="index.html"
+                          title="previous chapter">sage-flatsurf: Flat Surfaces in SageMath</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="developer.html"
+                          title="next chapter">The Developer’s Guide for sage-flatsurf</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/install.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="developer.html" title="The Developer’s Guide for sage-flatsurf"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="sage-flatsurf: Flat Surfaces in SageMath"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">sage-flatsurf 0.4.7 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Installing sage-flatsurf</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2016-2022, the sage-flatsurf authors.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.1.1.
+    </div>
+  </body>
+</html>

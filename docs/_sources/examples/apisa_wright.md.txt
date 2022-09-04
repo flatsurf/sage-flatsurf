@@ -13,9 +13,12 @@ kernelspec:
 ---
 
 # Exploring Orbit Closures
-The file demonstrates how to use the `flatsurf` programs to compute the
-`GL(2,R)`-orbit closure of a surface. This example was interesting to
-P. Apisa and A. Wright.
+
+We demonstrate how to use sage-flatsurf to compute the `GL(2,R)`-orbit closure
+of a surface. This example was interesting to P. Apisa and A. Wright.
+
+Parts of this rely on the C++ library libflatsurf. Please consult our
+installation guide if it is not available on your system yet.
 
 +++
 
