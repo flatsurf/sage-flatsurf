@@ -251,7 +251,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
   ('index', 'sage-flatsurf', u'sage-flatsurf Documentation',
-   u'Vincent Delecroix and Pat Hooper', 'sage-flatsurf', 'One line description of project.',
+   u'the sage-flatsurf authors', 'sage-flatsurf', 'One line description of project.',
    'Miscellaneous'),
 ]
 
