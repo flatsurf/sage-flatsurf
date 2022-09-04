@@ -27,7 +27,7 @@ sage-flatsurf::
 This environment has all the dependencies of sage-flatsurf installed, but not
 sage-flatsurf itself::
 
-        conda activate sage-flatsurf-build
+        mamba activate sage-flatsurf-build
 
 `Clone <https://swcarpentry.github.io/git-novice/>`_ the sage-flatsurf
 repository::
@@ -48,7 +48,7 @@ Note that you can use ``mamba upgrade -n sage-flatsurf-build --all`` to update a
         conda deactivate
         mamba uninstall -n sage-flatsurf-build --all
         mamba env create -n sage-flatsurf-build -f ./sage-flatsurf/environment.yml
-        conda activate sage-flatsurf-build
+        mamba activate sage-flatsurf-build
 
 This should cover the very basics of development but there are certainly lots
 of things that we missed here, so don't hesitate to `contact us

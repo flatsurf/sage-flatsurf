@@ -34,7 +34,7 @@ environment, it needs to be *activated*. You can only activate a single
 environment at a time.
 
 Once you installed mambaforge, open a new command line terminal. The ``mamba``
-command should now be available. The ``base`` environment is already activate,
+command should now be available. The ``base`` environment is already active,
 it contains the mamba package manager. (If your terminal always prints
 ``(base)`` and you find that annoying, run ``conda config --set
 auto_activate_base false`` to get rid of that prompt.)
@@ -57,12 +57,12 @@ replace the ``0.5.0`` below with any recent `version of sage-flatsurf
 
 You can now activate the flatsurf environment and start SageMath::
 
-        conda activate flatsurf
+        mamba activate flatsurf
         sage
 
 If you prefer to work in a graphical environment, you can also launch Jupyter::
 
-        conda activate flatsurf
+        mamba activate flatsurf
         jupyter notebook
 
 .. _upgrade-mamba:
