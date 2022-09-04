@@ -792,7 +792,7 @@ class GL2ROrbitClosure:
             sage: O.cylinder_circumference(c1, *kz) # optional: pyflatsurf
             (0, 0, -1, 0)
         """
-        if component.cylinder() is not True:
+        if component.cylinder() != True:  # cannot be replaced by "is not True"
             raise ValueError
 
         perimeters = [p for p in component.perimeter()]
