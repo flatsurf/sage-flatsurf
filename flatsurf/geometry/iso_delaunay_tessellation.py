@@ -68,13 +68,11 @@ class IsoDelaunayTessellation(Parent):
         """
         # TODO: distinguish between triangulation edges, hyperbolic polygon edges, graph edges, ... in variable naming.
 
-        # TODO: The return value is cryptic when called from the outside. We should probably break this out into an _explore method.
-
         from sage.all import oo
 
         limit = oo if limit is None else limit
         if limit <= 0:
-            return vertex
+            return
 
         if vertex is None:
             if edge is None:
@@ -91,10 +89,8 @@ class IsoDelaunayTessellation(Parent):
 
         if edge is None:
             for edge in vertex.edges():
-                assert vertex in self._faces
-                assert edge in vertex.edges()
-                vertex = self.explore(limit=limit, vertex=vertex, edge=edge)
-            return vertex
+                self.explore(limit=limit, vertex=vertex, edge=edge)
+            return
 
         if edge not in vertex.edges():
             raise ValueError("edge must be an edge of the vertex polygon")
@@ -102,7 +98,7 @@ class IsoDelaunayTessellation(Parent):
         # nothing to do if we have already explored across this polygon edge
         for _, _, edges in self._faces.edges(vertex, labels=True):
             if edge in edges:
-                return vertex
+                return
 
         source_triangulation = self._faces.get_vertex(vertex)
         target_triangulation = source_triangulation.copy()
@@ -130,21 +126,42 @@ class IsoDelaunayTessellation(Parent):
 
         target, polygon_edge, is_new = self._ensure_vertex(target, target_triangulation, -edge)
 
-        if edge == polygon_edge:
-            assert target == vertex
-            # crossing edge of the polygon cycles back to the very edge in the
-            # polygon, so there is an orbifold point on that edge.
-            # We patch the polygon by inserting a marked point.
-            vertex, (edge, polygon_edge) = self._insert_orbifold_point(vertex, edge.midpoint())
-            target = vertex
-
         self._faces.add_edge(vertex, target, label={edge, polygon_edge})
 
         if is_new:
             for edge in target.edges():
                 self.explore(limit=limit-1, vertex=target, edge=edge)
 
-        return vertex
+    def insert_orbifold_points(self):
+        r"""
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: from flatsurf.geometry.iso_delaunay_tessellation import IsoDelaunayTessellation
+            sage: s = translation_surfaces.mcmullen_genus2_prototype(1, 1, 0, -1)
+            sage: t = s.delaunay_triangulation()
+            sage: idt = IsoDelaunayTessellation(t)
+            sage: z = idt._hyperbolic_plane(i)
+            sage: idt.explore()
+
+            sage: idt._faces.vertices()
+            [{2*l*(x^2 + y^2) + (-8*l + 4)*x ≥ 0} ∩ {(8*l - 4)*x - 4*l + 2 ≤ 0} ∩ {x ≥ 0}]
+            sage: idt.insert_orbifold_points()
+            sage: idt._faces.vertices()
+            [{2*l*(x^2 + y^2) + (-8*l + 4)*x ≥ 0} ∩ {(8*l - 4)*x - 4*l + 2 ≤ 0} ∩ {x ≥ 0} ∪ {I}]
+
+        """
+        # TODO: Should this mutate the tesselation or create a copy instead?
+        for vertex in self._faces.vertices():
+            for source, target, edges in self._faces.edges(vertex, labels=True):
+                # crossing edge of the polygon cycles back to the very edge in the
+                # polygon, so there is an orbifold point on that edge.
+                # We patch the polygon by inserting a marked point.
+                if len(edges) == 1:
+                    assert source == target
+                    vertex, _ = self._insert_orbifold_point(vertex, next(iter(edges)).midpoint())
+
+        # TODO: Insert orbifold points in the interior of a polygon, i.e., the ones detected with isomorphism()
 
     def _insert_orbifold_point(self, vertex, point):
         r"""
