@@ -7,6 +7,13 @@ EXAMPLES::
     sage: IsoDelaunayTessellation(s)
     IsoDelaunay Tessellation of TranslationSurface built from 2 polygons
 
+REFERENCES:
+
+TODO: Write a text citing some references.
+
+.. [JB2009] \J. Bowman, "Flat Structures and Complex Structures in Teichmüller
+            Theory", PhD Thesis, https://hdl.handle.net/1813/13979
+
 """
 # *********************************************************************
 #  This file is part of sage-flatsurf.
@@ -67,6 +74,9 @@ class IsoDelaunayTessellation(Parent):
 
         """
         # TODO: distinguish between triangulation edges, hyperbolic polygon edges, graph edges, ... in variable naming.
+        # We could try to adopt bowman notation: he calls our _faces "tiles"
+        # and uses "tessellation edge" and "tessellation vertex" for the
+        # subsets of H.
 
         from sage.all import oo
 
