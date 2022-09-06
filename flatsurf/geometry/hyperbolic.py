@@ -2145,7 +2145,7 @@ class HyperbolicGeometry:
         r"""
         TESTS::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicGeometry
             sage: H = HyperbolicPlane()
             sage: isinstance(H.geometry, HyperbolicGeometry)
             True
@@ -2309,12 +2309,20 @@ class HyperbolicGeometry:
         raise NotImplementedError("this geometry does not implement _equal()")
 
     def change_ring(ring):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
-        raise NotImplementedError
+        r"""
+        Return this geometry with the :meth:`base_ring` changed to ``ring``.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(QQ)
+            sage: H.geometry
+            Exact geometry over Rational Field
+            sage: H.geometry.change_ring(AA)
+            Exact geometry over Algebraic Real Field
+
+        """
+        raise NotImplementedError("this geometry does not implement change_ring()")
 
     def projective(self, p, q, point):
         r"""
