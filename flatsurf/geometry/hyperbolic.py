@@ -2091,19 +2091,66 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         return f"Hyperbolic Plane over {repr(self.base_ring())}"
 
 
-# TODO: Define more "hyperbolic" predicates instead.
 class HyperbolicGeometry:
-    # TODO: Check documentation
-    # TODO: Check INPUTS
-    # TODO: Check SEEALSO
-    # TODO: Check for doctests
-    # TODO: Benchmark?
+    r"""
+    Predicates and primitive geometric constructions over a base ``ring``.
+
+    This class and its subclasses implement the core underlying hyperbolic
+    geometry that depends on the base ring. For example, when deciding whether
+    two points in the hyperbolic plane are equal, we cannot just compare their
+    coordinates if the base ring is inexact. Therefore, that predicate is
+    implemented in this "geometry" class and is implemented differently by
+    :class:`HyperbolicExactGeometry` for exact and
+    :class:`HyperbolicEpsilonGeometry` for inexact rings.
+
+    INPUT:
+
+    - ``ring`` -- a ring, the ring in which coordinates in the hyperbolic plane
+      will be represented
+
+    .. NOTE::
+
+        Abstract methods are not marked with `@abstractmethod` since we cannot
+        use the ABCMeta metaclass to enforce their implementation; otherwise,
+        our subclasses could not use the unique representation metaclasses.
+
+    EXAMPLES:
+
+    The specific hyperbolic geometry implementation is picked automatically,
+    depending on whether the base ring is exact or not::
+
+        sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+        sage: H = HyperbolicPlane()
+        sage: H.geometry
+        Exact geometry over Rational Field
+        sage: H(0) == H(1/1024)
+        False
+
+    However, we can explicitly use a different or custom geometry::
+
+        sage: from flatsurf.geometry.hyperbolic import HyperbolicEpsilonGeometry
+        sage: H = HyperbolicPlane(QQ, HyperbolicEpsilonGeometry(QQ, 1/1024))
+        sage: H.geometry
+        Epsilon geometry with ϵ=1/1024 over Rational Field
+        sage: H(0) == H(1/2048)
+        True
+
+    .. SEEALSO::
+
+        :class:`HyperbolicExactGeometry`, :class:`HyperbolicEpsilonGeometry`
+
+    """
+
     def __init__(self, ring):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        TESTS::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicGeometry
+            sage: H = HyperbolicPlane()
+            sage: isinstance(H.geometry, HyperbolicGeometry)
+            True
+
+        """
         self._ring = ring
 
     def base_ring(self):
@@ -2317,6 +2364,20 @@ class HyperbolicExactGeometry(UniqueRepresentation, HyperbolicGeometry):
 
         return HyperbolicExactGeometry(ring)
 
+    def __repr__(self):
+        r"""
+        Return a printable representation of this geometry.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+            sage: H.geometry
+            Exact geometry over Rational Field
+
+        """
+        return f"Exact geometry over {self._ring}"
+
 
 class HyperbolicEpsilonGeometry(UniqueRepresentation, HyperbolicGeometry):
     # TODO: Check documentation
@@ -2358,6 +2419,20 @@ class HyperbolicEpsilonGeometry(UniqueRepresentation, HyperbolicGeometry):
             raise ValueError("cannot change_ring() to an exact ring")
 
         return HyperbolicEpsilonGeometry(ring, self._epsilon)
+
+    def __repr__(self):
+        r"""
+        Return a printable representation of this geometry.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(RR)
+            sage: H.geometry
+            Epsilon geometry with ϵ=1.00000000000000e-6 over Real Field with 53 bits of precision
+
+        """
+        return f"Epsilon geometry with ϵ={self._epsilon} over {self._ring}"
 
 
 # TODO: Change richcmp to match the description below.
