@@ -2145,7 +2145,7 @@ class HyperbolicGeometry:
         r"""
         TESTS::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicGeometry
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
             sage: H = HyperbolicPlane()
             sage: isinstance(H.geometry, HyperbolicGeometry)
             True
@@ -2154,50 +2154,159 @@ class HyperbolicGeometry:
         self._ring = ring
 
     def base_ring(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Return the ring over which this geometry is implemented.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+            sage: H.geometry.base_ring()
+            Rational Field
+
+        """
         return self._ring
 
     def _zero(self, x):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Return whether ``x`` should be considered zero in the
+        :meth:`base_ring`.
+
+        .. NOTE::
+
+            This predicate should not be used directly in geometric
+            constructions since it does not specify the context in which this
+            question is asked. This makes it very difficult to override a
+            specific aspect in a custom geometry. Also, this predicate lacks
+            the context of other elements; a proper predicate should also take
+            other elements into account to decide this question relative to the
+            other values.
+
+        INPUT:
+
+        - ``x`` -- an element of the :meth:`base_ring`
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(RR)
+            sage: H.geometry._zero(1)
+            False
+            sage: H.geometry._zero(1e-9)
+            True
+
+        """
         return self._cmp(x, 0) == 0
 
     def _cmp(self, x, y):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Return how ``x`` compares to ``y``.
+
+        .. NOTE::
+
+            This predicate should not be used directly in geometric
+            constructions since it does not specify the context in which this
+            question is asked. This makes it very difficult to override a
+            specific aspect in a custom geometry.
+
+        INPUT:
+
+        - ``x`` -- an element of the :meth:`base_ring`
+
+        - ``y`` -- an element of the :meth:`base_ring`
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(QQ)
+            sage: H.geometry._cmp(0, 0)
+            0
+            sage: H.geometry._cmp(0, 1)
+            -1
+            sage: H.geometry._cmp(1, 0)
+            1
+
+        ::
+
+            sage: H = HyperbolicPlane(RR)
+            sage: H.geometry._cmp(0, 0)
+            0
+            sage: H.geometry._cmp(0, 1)
+            -1
+            sage: H.geometry._cmp(1, 0)
+            1
+            sage: H.geometry._cmp(1e-10, 0)
+            0
+
+        """
         if self._equal(x, y):
             return 0
         if x < y:
             return -1
 
-        assert x > y
+        assert x > y, "Geometry over this ring must override _cmp since not (x == y) and not (x < y) does not imply x > y"
         return 1
 
     def _sgn(self, x):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Return the sign of ``x``.
+
+        .. NOTE::
+
+            This predicate should not be used directly in geometric
+            constructions since it does not specify the context in which this
+            question is asked. This makes it very difficult to override a
+            specific aspect in a custom geometry. Also, this predicate lacks
+            the context of other elements; a proper predicate should also take
+            other elements into account to decide this question relative to the
+            other values.
+
+        INPUT:
+
+        - ``x`` -- an element of the :meth:`base_ring`.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(RR)
+            sage: H.geometry._sgn(1)
+            1
+            sage: H.geometry._sgn(-1)
+            -1
+            sage: H.geometry._sgn(1e-10)
+            0
+
+        """
         return self._cmp(x, 0)
 
     def _equal(self, x, y):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
-        raise NotImplementedError
+        r"""
+        Return whether ``x`` and ``y`` should be considered equal in the :meth:`base_ring`.
+
+        .. NOTE::
+
+            This predicate should not be used directly in geometric
+            constructions since it does not specify the context in which this
+            question is asked. This makes it very difficult to override a
+            specific aspect in a custom geometry.
+
+        INPUT:
+
+        - ``x`` -- an element of the :meth:`base_ring`
+
+        - ``y`` -- an element of the :meth:`base_ring`
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(RR)
+            sage: H.geometry._equal(0, 1)
+            False
+            sage: H.geometry._equal(0, 1e-10)
+            True
+
+        """
+        raise NotImplementedError("this geometry does not implement _equal()")
 
     def change_ring(ring):
         # TODO: Check documentation.
