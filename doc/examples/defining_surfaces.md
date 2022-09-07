@@ -10,11 +10,10 @@ kernelspec:
   display_name: SageMath 9.2
   language: sage
   name: sagemath
+author: Pat Hooper <whooper@ccny.cuny.edu>
 ---
 
-# Defining Surfaces in FlatSurf
-
-Initial version by Pat Hooper <whooper@ccny.cuny.edu>, Dec 16, 2017.
+# Defining Surfaces
 
 ```{code-cell} ipython3
 from flatsurf import *
