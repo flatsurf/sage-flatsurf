@@ -220,6 +220,7 @@ from sage.plot.primitive import GraphicPrimitive
 
 
 class HyperbolicPlane(Parent, UniqueRepresentation):
+    # TODO: Override is_exact()
     r"""
     The hyperbolic plane.
 
