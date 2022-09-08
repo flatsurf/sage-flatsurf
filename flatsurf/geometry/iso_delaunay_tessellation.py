@@ -37,6 +37,7 @@ TODO: Write a text citing some references.
 
 from sage.structure.parent import Parent
 from flatsurf.geometry.hyperbolic import HyperbolicPlane
+from sage.misc.cachefunc import cached_method
 
 
 class IsoDelaunayTessellation(Parent):
@@ -51,12 +52,13 @@ class IsoDelaunayTessellation(Parent):
         self._surface = surface.delaunay_triangulation()
         self._surface = self._delaunay_triangulation(surface)
         self._faces = Graph(multiedges=True, loops=True)
+        self._surface.set_immutable()
         self._ensure_vertex(self.root(), self._surface, self.root().edges()[0])
 
     def _repr_(self):
         return f"IsoDelaunay Tessellation of {self._surface_original}"
 
-    def explore(self, limit=None, vertex=None, edge=None):
+    def explore(self, limit=None, vertex=None):
         r"""
         Explore the dual graph of the IsoDelaunay tessellation up to the combinatorial ``limit`` where you start from ``vertex`` and then first cross ``edge``.
         When ``vertex`` is ``None``, start exploring from the vertex bounded by ``edge``.
@@ -85,32 +87,33 @@ class IsoDelaunayTessellation(Parent):
             return
 
         if vertex is None:
-            if edge is None:
-                vertex = self.root()
-            else:
-                for vertex in self._faces.vertices():
-                    if edge in vertex.edges():
-                        break
-                else:
-                    raise ValueError("edge must be an edge of a polygon in the explored tesselation")
+            vertex = self.root()
 
         if vertex not in self._faces:
             raise ValueError("vertex must be a polygon of the explored tesselation")
 
-        if edge is None:
+        enqueued = set()
+
+        from collections import deque
+        queue = deque([(0, vertex)])
+        enqueued.add(vertex)
+
+        while queue:
+            distance, vertex = queue.popleft()
+
             for edge in vertex.edges():
-                self.explore(limit=limit, vertex=vertex, edge=edge)
-            return
+                other = self._explore(vertex, edge)
+                if distance + 1 < limit and other not in enqueued:
+                    enqueued.add(other)
+                    queue.append((distance + 1, other))
 
-        if edge not in vertex.edges():
-            raise ValueError("edge must be an edge of the vertex polygon")
-
+    def _explore(self, vertex, edge):
+        target = self._cross(vertex, edge)
         # nothing to do if we have already explored across this polygon edge
-        for _, _, edges in self._faces.edges(vertex, labels=True):
-            if edge in edges:
-                return
+        if target is not None:
+            return target
 
-        source_triangulation = self._faces.get_vertex(vertex)
+        _, source_triangulation = self._faces.get_vertex(vertex)
         target_triangulation = source_triangulation.copy()
 
         while True:
@@ -134,13 +137,31 @@ class IsoDelaunayTessellation(Parent):
 
         assert -edge in target.edges(), f"edge {-edge} is not in the polygon {target} after crossing {edge} from {vertex}"
 
+        target_triangulation.set_immutable()
         target, polygon_edge, is_new = self._ensure_vertex(target, target_triangulation, -edge)
 
         self._faces.add_edge(vertex, target, label={edge, polygon_edge})
 
-        if is_new:
-            for edge in target.edges():
-                self.explore(limit=limit-1, vertex=target, edge=edge)
+        return target
+
+    def _cross(self, vertex, edge):
+        mod, _ = self._faces.get_vertex(vertex)
+
+        if mod is not None:
+            edges = list(vertex.edges())
+            edge = set(edges[edges.index(edge) % mod::mod])
+        else:
+            edge = {edge}
+
+        for v, w, edges in self._faces.edges(vertex, labels=True):
+            if any(e in edges for e in edge):
+                if v == vertex:
+                    return w
+                if w == vertex:
+                    return v
+                assert False
+
+        return None
 
     def insert_orbifold_points(self):
         r"""
@@ -222,6 +243,12 @@ class IsoDelaunayTessellation(Parent):
 
         return polygon, (edge, polygon_edge)
 
+    @cached_method
+    def _to_pyflatsurf(self, triangulation):
+        # TODO: Clear this cache when explore() is finished.
+        from flatsurf.geometry.pyflatsurf_conversion import to_pyflatsurf
+        return to_pyflatsurf(triangulation)
+
     def _ensure_vertex(self, target_polygon, target_triangulation, target_polygon_edge):
         r"""
         Return vertex and edge of hyperbolic polygon TODO
@@ -230,8 +257,7 @@ class IsoDelaunayTessellation(Parent):
             if vertex == target_polygon:
                 return vertex, target_polygon_edge, False
 
-        from flatsurf.geometry.pyflatsurf_conversion import to_pyflatsurf
-        flat_target_triangulation = to_pyflatsurf(target_triangulation)
+        flat_target_triangulation = self._to_pyflatsurf(target_triangulation)
 
         def filter_matrix(a, b, c, d):
             # TODO fix interface for isomorphisms
@@ -254,9 +280,17 @@ class IsoDelaunayTessellation(Parent):
                 isomorphisms.pop()
                 break
 
-        # TODO get "primitive rotation"
         if set(isomorphisms) != {(1, 0, 0, 1), (-1, 0, 0, -1)}:
-            raise NotImplementedError("subdivide IDR not implemented")
+            assert len(isomorphisms) % 2 == 0
+            order = len(isomorphisms) // 2
+            assert len(target_polygon.edges()) % order == 0
+            mod = len(target_polygon.edges()) // order
+
+            # add new vertex
+            self._faces.add_vertex(target_polygon)
+            assert target_triangulation is not None
+            self._faces.set_vertex(target_polygon, (mod, target_triangulation))
+            return target_polygon, target_polygon_edge, True
 
         # TODO vertex is an awful name
         for vertex in self._faces:
@@ -276,7 +310,7 @@ class IsoDelaunayTessellation(Parent):
                 isomorphism = (a, b, c, d)
                 return True
 
-            triangulation = to_pyflatsurf(self._faces.get_vertex(vertex))
+            triangulation = self._to_pyflatsurf(self._faces.get_vertex(vertex)[1])
             if flat_target_triangulation.isomorphism(triangulation, filter_matrix=capture_matrix).has_value():
                 assert isomorphism is not None
                 a, b, c, d = isomorphism
@@ -289,7 +323,8 @@ class IsoDelaunayTessellation(Parent):
 
         # add new vertex
         self._faces.add_vertex(target_polygon)
-        self._faces.set_vertex(target_polygon, target_triangulation)
+        assert target_triangulation is not None
+        self._faces.set_vertex(target_polygon, (None, target_triangulation))
         return target_polygon, target_polygon_edge, True
 
     def is_vertex(self, translation_surface):
@@ -406,6 +441,7 @@ class IsoDelaunayTessellation(Parent):
         raise NotImplementedError
 
     def plot(self):
+        # TODO: Why is plotting so slow?
         return sum(idr.plot() for idr in self._faces)
 
     def polygon(self, vertex_or_edge):
