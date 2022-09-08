@@ -5088,12 +5088,17 @@ class HyperbolicPointFromCoordinates(HyperbolicPoint):
         if self.is_ultra_ideal():
             return repr(self.coordinates(model="klein"))
 
-        x, y = self.coordinates(model="half_plane")
+        try:
+            x, y = self.coordinates(model="half_plane")
+        except ValueError:
+            # TODO: Use a more specific exception here.
+            # TODO: Unify with the code above?
+            return repr(self.coordinates(model="klein"))
+        else:
+            from sage.all import PowerSeriesRing
 
-        from sage.all import PowerSeriesRing
-
-        # We represent x + y*I in R[[I]] so we do not have to reimplement printing ourselves.
-        return repr(PowerSeriesRing(self.parent().base_ring(), names="I")([x, y]))
+            # We represent x + y*I in R[[I]] so we do not have to reimplement printing ourselves.
+            return repr(PowerSeriesRing(self.parent().base_ring(), names="I")([x, y]))
 
     def change(self, ring=None, geometry=None, oriented=None):
         # TODO: Check documentation.
