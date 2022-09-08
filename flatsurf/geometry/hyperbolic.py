@@ -6273,14 +6273,21 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
                         intersection, model="euclidean", check=False
                     )
 
+                    # TODO: Fix RealSet in SageMath to work with number fields.
+                    if λ.parent().is_exact():
+                        from sage.all import AA
+                        rλ = AA(λ)
+                    else:
+                        rλ = λ
+
                     # Determine whether this half space constrains to (-∞, λ] or [λ, ∞).
                     if (
                         boundary.parametrize(λ + 1, model="euclidean", check=False)
                         in constraining
                     ):
-                        constraint = RealSet.unbounded_above_closed(λ)
+                        constraint = RealSet.unbounded_above_closed(rλ)
                     else:
-                        constraint = RealSet.unbounded_below_closed(λ)
+                        constraint = RealSet.unbounded_below_closed(rλ)
 
                     interval = interval.intersection(constraint)
 
