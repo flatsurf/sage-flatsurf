@@ -8316,11 +8316,14 @@ class BezierPath(GraphicPrimitive):
                     )
                 ]
             else:
-                from sage.all import RR
+                # TODO: This is a hack to make this work when the coordinates are not defined over the base field.
+                if pos.parent().base_ring().is_exact():
+                    from sage.all import AA
+                    pos = pos.parent().change_ring(AA)(pos)
 
                 bezier_commands = [
                     BezierPath.Command(
-                        "MOVETO", [pos.change_ring(RR).coordinates(model=model)]
+                        "MOVETO", [pos.coordinates(model=model)]
                     )
                 ]
         else:
@@ -8366,30 +8369,41 @@ class BezierPath(GraphicPrimitive):
 
         if model == "half_plane":
             if start == start.parent().infinity():
+                from sage.all import RR
                 return [
-                    BezierPath.Command("MOVETOINFINITY", [end.coordinates(), (0, 1)]),
-                    BezierPath.Command("LINETO", [end.coordinates()]),
+                    # TODO: Is change_ring() correct here?
+                    BezierPath.Command("MOVETOINFINITY", [end.change_ring(RR).coordinates(), (0, 1)]),
+                    # TODO: Is change_ring() correct here?
+                    BezierPath.Command("LINETO", [end.change_ring(RR).coordinates()]),
                 ]
 
             from sage.all import RR
+
+            # TODO: This is a hack to make this work when the coordinates are not defined over the base field.
+            if start.parent().base_ring().is_exact():
+                from sage.all import AA
+                start = start.parent().change_ring(AA)(start)
+            if end.parent().base_ring().is_exact():
+                from sage.all import AA
+                end = end.parent().change_ring(AA)(end)
 
             if end == end.parent().infinity():
                 return [
                     BezierPath.Command(
                         "LINETOINFINITY",
-                        [start.change_ring(RR).coordinates(model="half_plane"), (0, 1)],
+                        [start.coordinates(model="half_plane"), (0, 1)],
                     )
                 ]
 
-            p = start.change_ring(RR).coordinates(model="half_plane")
-            q = end.change_ring(RR).coordinates(model="half_plane")
+            p = start.coordinates(model="half_plane")
+            q = end.coordinates(model="half_plane")
 
             if (p[0] - q[0]).abs() < (p[1] - q[1]).abs() * 1e-6:
                 # This segment is (almost) vertical. We plot it as if it were
                 # vertical to avoid numeric issus.
                 return [BezierPath.Command("LINETO", [q])]
 
-            geodesic = start.change_ring(RR).parent().geodesic(start, end, check=False)
+            geodesic = start.parent().geodesic(start, end)
             center = (
                 (geodesic.start().coordinates()[0] + geodesic.end().coordinates()[0])
                 / 2,
