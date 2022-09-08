@@ -220,6 +220,7 @@ from sage.plot.primitive import GraphicPrimitive
 
 
 class HyperbolicPlane(Parent, UniqueRepresentation):
+    # TODO: Override is_exact()
     r"""
     The hyperbolic plane.
 
@@ -2091,74 +2092,238 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         return f"Hyperbolic Plane over {repr(self.base_ring())}"
 
 
-# TODO: Define more "hyperbolic" predicates instead.
 class HyperbolicGeometry:
-    # TODO: Check documentation
-    # TODO: Check INPUTS
-    # TODO: Check SEEALSO
-    # TODO: Check for doctests
-    # TODO: Benchmark?
+    r"""
+    Predicates and primitive geometric constructions over a base ``ring``.
+
+    This class and its subclasses implement the core underlying hyperbolic
+    geometry that depends on the base ring. For example, when deciding whether
+    two points in the hyperbolic plane are equal, we cannot just compare their
+    coordinates if the base ring is inexact. Therefore, that predicate is
+    implemented in this "geometry" class and is implemented differently by
+    :class:`HyperbolicExactGeometry` for exact and
+    :class:`HyperbolicEpsilonGeometry` for inexact rings.
+
+    INPUT:
+
+    - ``ring`` -- a ring, the ring in which coordinates in the hyperbolic plane
+      will be represented
+
+    .. NOTE::
+
+        Abstract methods are not marked with `@abstractmethod` since we cannot
+        use the ABCMeta metaclass to enforce their implementation; otherwise,
+        our subclasses could not use the unique representation metaclasses.
+
+    EXAMPLES:
+
+    The specific hyperbolic geometry implementation is picked automatically,
+    depending on whether the base ring is exact or not::
+
+        sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+        sage: H = HyperbolicPlane()
+        sage: H.geometry
+        Exact geometry over Rational Field
+        sage: H(0) == H(1/1024)
+        False
+
+    However, we can explicitly use a different or custom geometry::
+
+        sage: from flatsurf.geometry.hyperbolic import HyperbolicEpsilonGeometry
+        sage: H = HyperbolicPlane(QQ, HyperbolicEpsilonGeometry(QQ, 1/1024))
+        sage: H.geometry
+        Epsilon geometry with ϵ=1/1024 over Rational Field
+        sage: H(0) == H(1/2048)
+        True
+
+    .. SEEALSO::
+
+        :class:`HyperbolicExactGeometry`, :class:`HyperbolicEpsilonGeometry`
+
+    """
+
     def __init__(self, ring):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        TESTS::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicGeometry
+            sage: H = HyperbolicPlane()
+            sage: isinstance(H.geometry, HyperbolicGeometry)
+            True
+
+        """
         self._ring = ring
 
     def base_ring(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Return the ring over which this geometry is implemented.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+            sage: H.geometry.base_ring()
+            Rational Field
+
+        """
         return self._ring
 
     def _zero(self, x):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Return whether ``x`` should be considered zero in the
+        :meth:`base_ring`.
+
+        .. NOTE::
+
+            This predicate should not be used directly in geometric
+            constructions since it does not specify the context in which this
+            question is asked. This makes it very difficult to override a
+            specific aspect in a custom geometry. Also, this predicate lacks
+            the context of other elements; a proper predicate should also take
+            other elements into account to decide this question relative to the
+            other values.
+
+        INPUT:
+
+        - ``x`` -- an element of the :meth:`base_ring`
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(RR)
+            sage: H.geometry._zero(1)
+            False
+            sage: H.geometry._zero(1e-9)
+            True
+
+        """
         return self._cmp(x, 0) == 0
 
     def _cmp(self, x, y):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Return how ``x`` compares to ``y``.
+
+        .. NOTE::
+
+            This predicate should not be used directly in geometric
+            constructions since it does not specify the context in which this
+            question is asked. This makes it very difficult to override a
+            specific aspect in a custom geometry.
+
+        INPUT:
+
+        - ``x`` -- an element of the :meth:`base_ring`
+
+        - ``y`` -- an element of the :meth:`base_ring`
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(QQ)
+            sage: H.geometry._cmp(0, 0)
+            0
+            sage: H.geometry._cmp(0, 1)
+            -1
+            sage: H.geometry._cmp(1, 0)
+            1
+
+        ::
+
+            sage: H = HyperbolicPlane(RR)
+            sage: H.geometry._cmp(0, 0)
+            0
+            sage: H.geometry._cmp(0, 1)
+            -1
+            sage: H.geometry._cmp(1, 0)
+            1
+            sage: H.geometry._cmp(1e-10, 0)
+            0
+
+        """
         if self._equal(x, y):
             return 0
         if x < y:
             return -1
 
-        assert x > y
+        assert x > y, "Geometry over this ring must override _cmp since not (x == y) and not (x < y) does not imply x > y"
         return 1
 
     def _sgn(self, x):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Return the sign of ``x``.
+
+        .. NOTE::
+
+            This predicate should not be used directly in geometric
+            constructions since it does not specify the context in which this
+            question is asked. This makes it very difficult to override a
+            specific aspect in a custom geometry. Also, this predicate lacks
+            the context of other elements; a proper predicate should also take
+            other elements into account to decide this question relative to the
+            other values.
+
+        INPUT:
+
+        - ``x`` -- an element of the :meth:`base_ring`.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(RR)
+            sage: H.geometry._sgn(1)
+            1
+            sage: H.geometry._sgn(-1)
+            -1
+            sage: H.geometry._sgn(1e-10)
+            0
+
+        """
         return self._cmp(x, 0)
 
     def _equal(self, x, y):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
-        raise NotImplementedError
+        r"""
+        Return whether ``x`` and ``y`` should be considered equal in the :meth:`base_ring`.
+
+        .. NOTE::
+
+            This predicate should not be used directly in geometric
+            constructions since it does not specify the context in which this
+            question is asked. This makes it very difficult to override a
+            specific aspect in a custom geometry.
+
+        INPUT:
+
+        - ``x`` -- an element of the :meth:`base_ring`
+
+        - ``y`` -- an element of the :meth:`base_ring`
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(RR)
+            sage: H.geometry._equal(0, 1)
+            False
+            sage: H.geometry._equal(0, 1e-10)
+            True
+
+        """
+        raise NotImplementedError("this geometry does not implement _equal()")
 
     def change_ring(ring):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
-        raise NotImplementedError
+        r"""
+        Return this geometry with the :meth:`base_ring` changed to ``ring``.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(QQ)
+            sage: H.geometry
+            Exact geometry over Rational Field
+            sage: H.geometry.change_ring(AA)
+            Exact geometry over Algebraic Real Field
+
+        """
+        raise NotImplementedError("this geometry does not implement change_ring()")
 
     def projective(self, p, q, point):
         r"""
@@ -2317,6 +2482,20 @@ class HyperbolicExactGeometry(UniqueRepresentation, HyperbolicGeometry):
 
         return HyperbolicExactGeometry(ring)
 
+    def __repr__(self):
+        r"""
+        Return a printable representation of this geometry.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+            sage: H.geometry
+            Exact geometry over Rational Field
+
+        """
+        return f"Exact geometry over {self._ring}"
+
 
 class HyperbolicEpsilonGeometry(UniqueRepresentation, HyperbolicGeometry):
     # TODO: Check documentation
@@ -2358,6 +2537,20 @@ class HyperbolicEpsilonGeometry(UniqueRepresentation, HyperbolicGeometry):
             raise ValueError("cannot change_ring() to an exact ring")
 
         return HyperbolicEpsilonGeometry(ring, self._epsilon)
+
+    def __repr__(self):
+        r"""
+        Return a printable representation of this geometry.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(RR)
+            sage: H.geometry
+            Epsilon geometry with ϵ=1.00000000000000e-6 over Real Field with 53 bits of precision
+
+        """
+        return f"Epsilon geometry with ϵ={self._epsilon} over {self._ring}"
 
 
 # TODO: Change richcmp to match the description below.
@@ -4895,12 +5088,17 @@ class HyperbolicPointFromCoordinates(HyperbolicPoint):
         if self.is_ultra_ideal():
             return repr(self.coordinates(model="klein"))
 
-        x, y = self.coordinates(model="half_plane")
+        try:
+            x, y = self.coordinates(model="half_plane")
+        except ValueError:
+            # TODO: Use a more specific exception here.
+            # TODO: Unify with the code above?
+            return repr(self.coordinates(model="klein"))
+        else:
+            from sage.all import PowerSeriesRing
 
-        from sage.all import PowerSeriesRing
-
-        # We represent x + y*I in R[[I]] so we do not have to reimplement printing ourselves.
-        return repr(PowerSeriesRing(self.parent().base_ring(), names="I")([x, y]))
+            # We represent x + y*I in R[[I]] so we do not have to reimplement printing ourselves.
+            return repr(PowerSeriesRing(self.parent().base_ring(), names="I")([x, y]))
 
     def change(self, ring=None, geometry=None, oriented=None):
         # TODO: Check documentation.
@@ -6075,14 +6273,21 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
                         intersection, model="euclidean", check=False
                     )
 
+                    # TODO: Fix RealSet in SageMath to work with number fields.
+                    if λ.parent().is_exact():
+                        from sage.all import AA
+                        rλ = AA(λ)
+                    else:
+                        rλ = λ
+
                     # Determine whether this half space constrains to (-∞, λ] or [λ, ∞).
                     if (
                         boundary.parametrize(λ + 1, model="euclidean", check=False)
                         in constraining
                     ):
-                        constraint = RealSet.unbounded_above_closed(λ)
+                        constraint = RealSet.unbounded_above_closed(rλ)
                     else:
-                        constraint = RealSet.unbounded_below_closed(λ)
+                        constraint = RealSet.unbounded_below_closed(rλ)
 
                     interval = interval.intersection(constraint)
 
@@ -8111,11 +8316,14 @@ class BezierPath(GraphicPrimitive):
                     )
                 ]
             else:
-                from sage.all import RR
+                # TODO: This is a hack to make this work when the coordinates are not defined over the base field.
+                if pos.parent().base_ring().is_exact():
+                    from sage.all import AA
+                    pos = pos.parent().change_ring(AA)(pos)
 
                 bezier_commands = [
                     BezierPath.Command(
-                        "MOVETO", [pos.change_ring(RR).coordinates(model=model)]
+                        "MOVETO", [pos.coordinates(model=model)]
                     )
                 ]
         else:
@@ -8161,30 +8369,41 @@ class BezierPath(GraphicPrimitive):
 
         if model == "half_plane":
             if start == start.parent().infinity():
+                from sage.all import RR
                 return [
-                    BezierPath.Command("MOVETOINFINITY", [end.coordinates(), (0, 1)]),
-                    BezierPath.Command("LINETO", [end.coordinates()]),
+                    # TODO: Is change_ring() correct here?
+                    BezierPath.Command("MOVETOINFINITY", [end.change_ring(RR).coordinates(), (0, 1)]),
+                    # TODO: Is change_ring() correct here?
+                    BezierPath.Command("LINETO", [end.change_ring(RR).coordinates()]),
                 ]
 
             from sage.all import RR
+
+            # TODO: This is a hack to make this work when the coordinates are not defined over the base field.
+            if start.parent().base_ring().is_exact():
+                from sage.all import AA
+                start = start.parent().change_ring(AA)(start)
+            if end.parent().base_ring().is_exact():
+                from sage.all import AA
+                end = end.parent().change_ring(AA)(end)
 
             if end == end.parent().infinity():
                 return [
                     BezierPath.Command(
                         "LINETOINFINITY",
-                        [start.change_ring(RR).coordinates(model="half_plane"), (0, 1)],
+                        [start.coordinates(model="half_plane"), (0, 1)],
                     )
                 ]
 
-            p = start.change_ring(RR).coordinates(model="half_plane")
-            q = end.change_ring(RR).coordinates(model="half_plane")
+            p = start.coordinates(model="half_plane")
+            q = end.coordinates(model="half_plane")
 
             if (p[0] - q[0]).abs() < (p[1] - q[1]).abs() * 1e-6:
                 # This segment is (almost) vertical. We plot it as if it were
                 # vertical to avoid numeric issus.
                 return [BezierPath.Command("LINETO", [q])]
 
-            geodesic = start.change_ring(RR).parent().geodesic(start, end, check=False)
+            geodesic = start.parent().geodesic(start, end)
             center = (
                 (geodesic.start().coordinates()[0] + geodesic.end().coordinates()[0])
                 / 2,
