@@ -6377,6 +6377,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
         """
         raise NotImplementedError
 
+    @cached_method
     def edges(self, as_segments=False):
         # TODO: Check documentation.
         # TODO: Check INPUT
@@ -6442,6 +6443,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
                 )
             )
 
+        # TODO: Return a SortedSet
         return edges
 
     def vertices(self, marked_vertices=True):
@@ -7431,6 +7433,8 @@ def sl2_to_so12(m):
     )
 
 
+# TODO: Rename to OrderedSet?
+# TODO: Allow creating from generator while allowing to answer length immediately.
 class SortedSet:
     # TODO: Check documentation
     # TODO: Check INPUTS
