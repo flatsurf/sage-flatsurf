@@ -272,7 +272,7 @@ class IsoDelaunayTessellation(Parent):
             isomorphisms[-1] = (a, b, c, d)
             return True
 
-        isomorphisms = []
+        isomorphisms = [(1, 0, 0, 1), (-1, 0, 0, -1)]
 
         while True:
             isomorphisms.append(())
