@@ -8082,9 +8082,6 @@ class BezierPath(GraphicPrimitive):
 
         xlim = subplot.axes.get_xlim()
         ylim = subplot.axes.get_ylim()
-        # TODO: Drop debug.
-        # xlim = [-2, 10]
-        # ylim = [-1, 3]
 
         commands = list(reversed(self._commands))
 
