@@ -310,6 +310,10 @@ class IsoDelaunayTessellation(Parent):
                 isomorphism = (a, b, c, d)
                 return True
 
+            if len(vertex.edges()) != len(target_polygon.edges()):
+                # TODO: This optimization is not correct after insert_orbifold_points() has been called.
+                continue
+
             triangulation = self._to_pyflatsurf(self._faces.get_vertex(vertex)[1])
             if flat_target_triangulation.isomorphism(triangulation, filter_matrix=capture_matrix).has_value():
                 assert isomorphism is not None
