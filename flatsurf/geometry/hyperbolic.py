@@ -8212,6 +8212,7 @@ class BezierPath(GraphicPrimitive):
 
         patch.set_path(Path(vertices, codes))
 
+    @cached_method
     def get_minmax_data(self):
         # TODO: Check documentation.
         # TODO: Check INPUT
@@ -8228,22 +8229,34 @@ class BezierPath(GraphicPrimitive):
                 if command.code in ["MOVETO", "LINETO"]:
                     (pos,) = command.args
                     bbox.update_from_data_xy([pos], ignore=False)
-                elif command.code == "ARCTO":
+                elif command.code in ["ARCTO", "RARCTO"]:
                     target, center = command.args
-                    bbox = bbox.union(
-                        [bbox, self._arc_path(center, pos, target).get_extents()]
-                    )
-                    pos = target
-                elif command.code == "RARCTO":
-                    target, center = command.args
-                    bbox = bbox.union(
-                        [
+                    # We simplify the computation of the bounding box here to
+                    # speed things up. Since these are hyperbolic arcs, their
+                    # center must be at y=0 and the endpoints at y≥0.
+                    # bbox = bbox.union(
+                    #     [
+                    #         bbox,
+                    #         self._arc_path(
+                    #             center, target, pos, reverse=command.code == "RARCTO"
+                    #         ).get_extents(),
+                    #     ]
+                    # )
+                    bbox = bbox.union([
+                        bbox,
+                        Bbox.from_bounds(*pos, 0, 0),
+                        Bbox.from_bounds(*target, 0, 0),
+                    ])
+                    from sage.all import sgn
+                    if sgn(pos[0] - center[0]) != sgn(target[0] - center[0]):
+                        # The bounding box includes a point that is higher
+                        # than the endpoints of the arc.
+                        from math import sqrt
+                        bbox = bbox.union([
                             bbox,
-                            self._arc_path(
-                                center, target, pos, reverse=True
-                            ).get_extents(),
-                        ]
-                    )
+                            Bbox.from_bounds(center[0], sqrt((pos[0] - center[0]) ** 2 + pos[1]**2), 0, 0)
+                        ])
+
                     pos = target
                 elif command.code in ["LINETOINFINITY", "MOVETOINFINITY"]:
                     # TODO: Add a bit to the bounding box so these are always visible.
