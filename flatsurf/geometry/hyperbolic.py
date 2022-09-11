@@ -6510,17 +6510,17 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
 
         pos = edges[0].start()
 
-        commands = [BezierPath.Command("MOVETO", [pos])]
+        commands = [HyperbolicGraphicalPath.Command("MOVETO", [pos])]
 
         for edge in edges:
             if edge.start() != pos:
-                commands.append(BezierPath.Command("MOVETO", [edge.start()]))
+                commands.append(HyperbolicGraphicalPath.Command("MOVETO", [edge.start()]))
 
-            commands.append(BezierPath.Command("LINETO", [edge.end()]))
+            commands.append(HyperbolicGraphicalPath.Command("LINETO", [edge.end()]))
             pos = edge.end()
 
         if pos != edges[0].start():
-            commands.append(BezierPath.Command("MOVETO", [edges[0].start()]))
+            commands.append(HyperbolicGraphicalPath.Command("MOVETO", [edges[0].start()]))
 
         plot = hyperbolic_path(commands, model=model, **kwds)
 
@@ -6827,8 +6827,8 @@ class HyperbolicSegment(HyperbolicConvexSet):
         self = self.change_ring(RR)
         plot = hyperbolic_path(
             [
-                BezierPath.Command("MOVETO", [self.start()]),
-                BezierPath.Command("LINETO", [self.end()]),
+                HyperbolicGraphicalPath.Command("MOVETO", [self.start()]),
+                HyperbolicGraphicalPath.Command("LINETO", [self.end()]),
             ],
             model=model,
             **kwds,
@@ -7939,7 +7939,7 @@ class HyperbolicHalfSpaces(SortedSet):
         return HyperbolicHalfSpaces(half_spaces)
 
 
-class BezierPath(GraphicPrimitive):
+class HyperbolicGraphicalPath(GraphicPrimitive):
     # TODO: Check documentation
     # TODO: Check INPUTS
     # TODO: Check SEEALSO
@@ -8324,7 +8324,7 @@ class BezierPath(GraphicPrimitive):
             if model == "half_plane" and pos == pos.parent().infinity():
                 next = commands[-1].args[0]
                 bezier_commands = [
-                    BezierPath.Command(
+                    HyperbolicGraphicalPath.Command(
                         "MOVETOINFINITY", [next.coordinates(model=model), (0, 1)]
                     )
                 ]
@@ -8332,7 +8332,7 @@ class BezierPath(GraphicPrimitive):
                 from sage.all import RR
 
                 bezier_commands = [
-                    BezierPath.Command(
+                    HyperbolicGraphicalPath.Command(
                         "MOVETO", [pos.change_ring(RR).coordinates(model=model)]
                     )
                 ]
@@ -8365,51 +8365,51 @@ class BezierPath(GraphicPrimitive):
 
         assert len(bezier_commands) >= 2
 
-        return BezierPath(bezier_commands, kwds)
+        return HyperbolicGraphicalPath(bezier_commands, kwds)
 
     @classmethod
     def _hyperbolic_segment(cls, start, end, model):
         r"""
-        Return a sequence of :class:`BezierPath` that represent the closed
-        boundary of a :class:`HyperbolicPolygon`, namely the segment to ``end``
-        (from the previous position ``start``.)
+        Return a sequence of :class:`HyperbolicGraphicalPath` that represent
+        the closed boundary of a :class:`HyperbolicPolygon`, namely the segment
+        to ``end`` (from the previous position ``start``.)
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, BezierPath
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicGraphicalPath
             sage: H = HyperbolicPlane()
 
         A finite segment in the hyperbolic plane note that we assume that
         "cursor" is at ``start``, so only command that goes to ``end`` is
         returned::
 
-            sage: BezierPath._hyperbolic_segment(H(I), H(2*I), model="half_plane")
-            [BezierPath.Command(code='LINETO', args=[(0.000000000000000, 2.00000000000000)])]
+            sage: HyperbolicGraphicalPath._hyperbolic_segment(H(I), H(2*I), model="half_plane")
+            [HyperbolicGraphicalPath.Command(code='LINETO', args=[(0.000000000000000, 2.00000000000000)])]
 
         An infinite segment::
 
-            sage: BezierPath._hyperbolic_segment(H(I), H(oo), model="half_plane")
-            [BezierPath.Command(code='LINETOINFINITY', args=[(0.000000000000000, 1.00000000000000), (0, 1)])]
+            sage: HyperbolicGraphicalPath._hyperbolic_segment(H(I), H(oo), model="half_plane")
+            [HyperbolicGraphicalPath.Command(code='LINETOINFINITY', args=[(0.000000000000000, 1.00000000000000), (0, 1)])]
 
         A segment that is infinite on both ends::
 
-            sage: BezierPath._hyperbolic_segment(H(0), H(oo), model="half_plane")
-            [BezierPath.Command(code='LINETOINFINITY', args=[(0.000000000000000, 0.000000000000000), (0, 1)])]
+            sage: HyperbolicGraphicalPath._hyperbolic_segment(H(0), H(oo), model="half_plane")
+            [HyperbolicGraphicalPath.Command(code='LINETOINFINITY', args=[(0.000000000000000, 0.000000000000000), (0, 1)])]
 
         Note that this is a "closed" boundary of the polygon that is left of
         that segment unlike the "open" version produced by
         :meth:`_hyperbolic_move` which contains the entire positive real axis::
 
-            sage: BezierPath._hyperbolic_move(H(0), H(oo), model="half_plane")
-            [BezierPath.Command(code='LINETOINFINITY', args=[(0.000000000000000, 0.000000000000000), (1, 0)])]
+            sage: HyperbolicGraphicalPath._hyperbolic_move(H(0), H(oo), model="half_plane")
+            [HyperbolicGraphicalPath.Command(code='LINETOINFINITY', args=[(0.000000000000000, 0.000000000000000), (1, 0)])]
 
         The corresponding difference in the Klein model::
 
-            sage: BezierPath._hyperbolic_segment(H(0), H(oo), model="klein")
-            [BezierPath.Command(code='LINETO', args=[(0.000000000000000, 1.00000000000000)])]
+            sage: HyperbolicGraphicalPath._hyperbolic_segment(H(0), H(oo), model="klein")
+            [HyperbolicGraphicalPath.Command(code='LINETO', args=[(0.000000000000000, 1.00000000000000)])]
 
-            sage: BezierPath._hyperbolic_move(H(0), H(oo), model="klein")
-            [BezierPath.Command(code='ARCTO', args=[(0.000000000000000, 1.00000000000000), (0, 0)])]
+            sage: HyperbolicGraphicalPath._hyperbolic_move(H(0), H(oo), model="klein")
+            [HyperbolicGraphicalPath.Command(code='ARCTO', args=[(0.000000000000000, 1.00000000000000), (0, 0)])]
 
         """
         # TODO: Check documentation.
@@ -8431,13 +8431,13 @@ class BezierPath(GraphicPrimitive):
 
             if start == start.parent().infinity():
                 return [
-                    BezierPath.Command("MOVETOINFINITY", [(end_x, end_y), (0, 1)]),
-                    BezierPath.Command("LINETO", [(end_x, end_y)]),
+                    HyperbolicGraphicalPath.Command("MOVETOINFINITY", [(end_x, end_y), (0, 1)]),
+                    HyperbolicGraphicalPath.Command("LINETO", [(end_x, end_y)]),
                 ]
 
             if end == end.parent().infinity():
                 return [
-                    BezierPath.Command(
+                    HyperbolicGraphicalPath.Command(
                         "LINETOINFINITY",
                         [(start_x, start_y), (0, 1)],
                     )
@@ -8447,7 +8447,7 @@ class BezierPath(GraphicPrimitive):
             if (start_x - end_x).abs() < (start_y - end_y).abs() * 1e-6:
                 # This segment is (almost) vertical. We plot it as if it were
                 # vertical to avoid numeric issus.
-                return [BezierPath.Command("LINETO", [(end_x, end_y)])]
+                return [HyperbolicGraphicalPath.Command("LINETO", [(end_x, end_y)])]
 
             real_hyperbolic_plane = HyperbolicPlane(RR)
             geodesic = real_hyperbolic_plane.geodesic(
@@ -8460,13 +8460,13 @@ class BezierPath(GraphicPrimitive):
             )
 
             return [
-                BezierPath.Command("RARCTO" if start_x < end_x else "ARCTO", [(end_x, end_y), center])
+                HyperbolicGraphicalPath.Command("RARCTO" if start_x < end_x else "ARCTO", [(end_x, end_y), center])
             ]
         elif model == "klein":
             from sage.all import RR
 
             return [
-                BezierPath.Command(
+                HyperbolicGraphicalPath.Command(
                     "LINETO", [end.change_ring(RR).coordinates(model="klein")]
                 )
             ]
@@ -8476,8 +8476,9 @@ class BezierPath(GraphicPrimitive):
     @classmethod
     def _hyperbolic_move(cls, start, end, model):
         r"""
-        Return a list of :class:`BezierPath` that represent the open "segment"
-        on the boundary of a polygon connecting ``start`` and ``end``.
+        Return a list of :class:`HyperbolicGraphicalPath` that represent the
+        open "segment" on the boundary of a polygon connecting ``start`` and
+        ``end``.
         """
         # TODO: Check documentation.
         # TODO: Check INPUT
@@ -8498,17 +8499,17 @@ class BezierPath(GraphicPrimitive):
                 from sage.all import RR
 
                 return [
-                    BezierPath.Command(
+                    HyperbolicGraphicalPath.Command(
                         "MOVETOINFINITY", [end.change_ring(RR).coordinates(), (-1, 0)]
                     ),
-                    BezierPath.Command("LINETO", [end.change_ring(RR).coordinates()]),
+                    HyperbolicGraphicalPath.Command("LINETO", [end.change_ring(RR).coordinates()]),
                 ]
 
             if end == end.parent().infinity():
                 from sage.all import RR
 
                 return [
-                    BezierPath.Command(
+                    HyperbolicGraphicalPath.Command(
                         "LINETOINFINITY", [start.change_ring(RR).coordinates(), (1, 0)]
                     )
                 ]
@@ -8520,17 +8521,17 @@ class BezierPath(GraphicPrimitive):
                 < end.change_ring(RR).coordinates()[0]
             ):
                 return [
-                    BezierPath.Command("LINETO", [end.change_ring(RR).coordinates()])
+                    HyperbolicGraphicalPath.Command("LINETO", [end.change_ring(RR).coordinates()])
                 ]
             else:
                 return [
-                    BezierPath.Command(
+                    HyperbolicGraphicalPath.Command(
                         "LINETOINFINITY", [start.change_ring(RR).coordinates(), (1, 0)]
                     ),
-                    BezierPath.Command(
+                    HyperbolicGraphicalPath.Command(
                         "MOVETOINFINITY", [end.change_ring(RR).coordinates(), (-1, 0)]
                     ),
-                    BezierPath.Command("LINETO", [end.change_ring(RR).coordinates()]),
+                    HyperbolicGraphicalPath.Command("LINETO", [end.change_ring(RR).coordinates()]),
                 ]
 
             raise NotImplementedError(
@@ -8541,7 +8542,7 @@ class BezierPath(GraphicPrimitive):
             from sage.all import RR
 
             return [
-                BezierPath.Command(
+                HyperbolicGraphicalPath.Command(
                     "ARCTO", [end.change_ring(RR).coordinates(model="klein"), (0, 0)]
                 )
             ]
@@ -8576,7 +8577,7 @@ def hyperbolic_path(commands, model="half_plane", **options):
     g._set_extra_kwds(Graphics._extract_kwds_for_show(options))
 
     try:
-        g.add_primitive(BezierPath.hyperbolic_path(commands[:], model=model, **options))
+        g.add_primitive(HyperbolicGraphicalPath.hyperbolic_path(commands[:], model=model, **options))
     except Exception as e:
         raise RuntimeError(f"Failed to render hyperbolic path {commands}", e)
 
