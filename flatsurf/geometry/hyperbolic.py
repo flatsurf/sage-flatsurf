@@ -7940,6 +7940,93 @@ class HyperbolicHalfSpaces(SortedSet):
 
 
 class HyperbolicGraphicalPath(GraphicPrimitive):
+    r"""
+    A plotted path in the hyperbolic plane, i.e., a sequence of commands and
+    associated control points in the hyperbolic plane.
+
+    The ``plot`` methods of most hyperbolic convex sets rely on such a path.
+    Usually, such a path should not be produced directly.
+
+    EXAMPLES:
+
+    A geodesic plot as a single such path (wrapped in a SageMath graphics
+    object)::
+
+        sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicGraphicalPath
+        sage: H = HyperbolicPlane(QQ)
+        sage: P = H.vertical(0).plot()
+        sage: isinstance(P[0], HyperbolicGraphicalPath)
+        True
+
+    The sequence of commands should always start with a move command to
+    establish the starting point of the plot; note that coordinates are always
+    given in the Cartesian two dimension plot coordinate system::
+
+        sage: P = HyperbolicGraphicalPath([
+        ....:     HyperbolicGraphicalPath.Command("MOVETO", (0, 0))
+        ....: ])
+
+    After the initial move, a sequence of arcs can be drawn to represent
+    objects in the upper half plane model; the parameters is the center and the
+    end point of the arc::
+
+        sage: P = HyperbolicGraphicalPath([
+        ....:     HyperbolicGraphicalPath.Command("MOVETO", [(-1, 0)]),
+        ....:     HyperbolicGraphicalPath.Command("ARCTO", [(0, 0), (0, 1)]),
+        ....: ])
+
+    We can also draw segments to represent objects in the Klein disk model::
+
+        sage: P = HyperbolicGraphicalPath([
+        ....:     HyperbolicGraphicalPath.Command("MOVETO", [(-1, 0)]),
+        ....:     HyperbolicGraphicalPath.Command("LINETO", [(0, 0)]),
+        ....: ])
+
+    Additionally, we can draw rays to represent verticals in the upper half
+    plane model; the parameter is the direction of the ray, i.e., (0, 1) for
+    a vertical::
+
+        sage: P = HyperbolicGraphicalPath([
+        ....:     HyperbolicGraphicalPath.Command("MOVETO", [(0, 0)]),
+        ....:     HyperbolicGraphicalPath.Command("LINETOINFINITY", [(0, 1)]),
+        ....: ])
+
+    Similarly, we can also move the cursor to an infinitely far point in a
+    certain direction. This can be used to plot a half plane, e.g., the point
+    with non-negative real part::
+
+        sage: P = HyperbolicGraphicalPath([
+        ....:     HyperbolicGraphicalPath.Command("MOVETO", [(0, 0)]),
+        ....:     HyperbolicGraphicalPath.Command("MOVETOINFINITY", [(1, 0)]),
+        ....:     HyperbolicGraphicalPath.Command("MOVETOINFINITY", [(0, 1)]),
+        ....:     HyperbolicGraphicalPath.Command("LINETO", [(0, 0)]),
+        ....: ])
+
+    In a similar way, we can also draw an actual line, here the real axis::
+
+        sage: P = HyperbolicGraphicalPath([
+        ....:     HyperbolicGraphicalPath.Command("MOVETOINFINITY", [(-1, 0)]),
+        ....:     HyperbolicGraphicalPath.Command("LINETOINFINITY", [(1, 0)]),
+        ....: ])
+
+    Finally, we can draw an arc in clockwise direction; here we plot the point
+    in the upper half plane of norm between 1 and 2::
+
+        sage: P = HyperbolicGraphicalPath([
+        ....:     HyperbolicGraphicalPath.Command("MOVETO", [(-1, 0)]),
+        ....:     HyperbolicGraphicalPath.Command("ARCTO", [(0, 0), (1, 0)]),
+        ....:     HyperbolicGraphicalPath.Command("MOVETO", [(2, 0)]),
+        ....:     HyperbolicGraphicalPath.Command("RARCTO", [(0, 0), (-2, 0)]),
+        ....:     HyperbolicGraphicalPath.Command("MOVETO", [(-1, 0)]),
+        ....: ])
+
+    """
+    @dataclass
+    class Command:
+        code: str
+        args: tuple
+
+
     # TODO: Check documentation
     # TODO: Check INPUTS
     # TODO: Check SEEALSO
@@ -7952,6 +8039,7 @@ class HyperbolicGraphicalPath(GraphicPrimitive):
         # TODO: Check SEEALSO
         # TODO: Check for doctests
         # TODO: Benchmark?
+        # TODO: Validate input.
         options = options or {}
 
         valid_options = self._allowed_options()
@@ -8170,7 +8258,7 @@ class HyperbolicGraphicalPath(GraphicPrimitive):
 
                 vertices.append(vertex(pos, direction))
                 codes.append(Path.LINETO)
-            elif command.code in "ARCTO":
+            elif command.code == "ARCTO":
                 target, center = command.args
 
                 assert direction is None
@@ -8270,11 +8358,6 @@ class HyperbolicGraphicalPath(GraphicPrimitive):
             return minmax_data(bbox.intervalx, bbox.intervaly, dict=True)
         except Exception as e:
             raise RuntimeError(e)
-
-    @dataclass
-    class Command:
-        code: str
-        args: tuple
 
     @classmethod
     def _arc_path(cls, center, start, end, reverse=False):
