@@ -7,6 +7,48 @@ EXAMPLES::
     sage: IsoDelaunayTessellation(s)
     IsoDelaunay Tessellation of TranslationSurface built from 2 polygons
 
+TODO: Write something smart here.
+TODO: Implement this surface in sage-flatsurf.
+
+::
+
+    sage: def prym3(w, h, t, e):
+    ....:     from flatsurf import Surface_dict, TranslationSurface, polygons
+    ....:     k.<rtD> = QuadraticField(e**2 + 8 * w * h)
+    ....:     lmbd = (e + rtD)/2
+    ....:
+    ....:     square = polygons.square(lmbd, field=k)
+    ....:     parallelogram_top = polygons((w - lmbd, 0), (lmbd, 0), (t, h), (-lmbd, 0), (lmbd - w, 0), (-t, -h), field=k)
+    ....:     parallelogram_bottom = polygons((lmbd, 0), (w - lmbd, 0), (t, h), (lmbd - w, 0), (-lmbd, 0), (-t, -h), field=k)
+    ....:
+    ....:     surface = Surface_dict(base_ring=k)
+    ....:
+    ....:     surface.add_polygon(parallelogram_bottom, label=0)
+    ....:     surface.add_polygon(square, label=1)
+    ....:     surface.add_polygon(parallelogram_top, label=2)
+    ....:
+    ....:     surface.change_base_label(1)
+    ....:
+    ....:     surface.change_edge_gluing(0, 0, 2, 3)
+    ....:     surface.change_edge_gluing(0, 1, 0, 3)
+    ....:     surface.change_edge_gluing(0, 2, 0, 5)
+    ....:     surface.change_edge_gluing(0, 4, 1, 0)
+    ....:     surface.change_edge_gluing(1, 1, 1, 3)
+    ....:     surface.change_edge_gluing(1, 2, 2, 1)
+    ....:     surface.change_edge_gluing(2, 0, 2, 4)
+    ....:     surface.change_edge_gluing(2, 2, 2, 5)
+    ....:
+    ....:     return TranslationSurface(surface)
+    ....:
+    sage: s = prym3(5, 1, 0, 0)
+    sage: t = s.delaunay_triangulation()
+
+    sage: from flatsurf.geometry.iso_delaunay_tessellation import IsoDelaunayTessellation
+    sage: idt = IsoDelaunayTessellation(t)
+    sage: idt.explore()
+    sage: idt.plot().show()
+    Graphics object consisting of 110 graphics primitives
+
 REFERENCES:
 
 TODO: Write a text citing some references.
