@@ -5071,8 +5071,7 @@ class HyperbolicPointFromCoordinates(HyperbolicPoint):
                 return other == self
 
             # TODO: Use a specialized predicate instead of the _method.
-            return all(self.parent().geometry._equal(a, b) for (a, b) in zip(self.coordinates(model="klein"), other.coordinates(model="klein"))
-            )
+            return all(self.parent().geometry._equal(a, b) for (a, b) in zip(self.coordinates(model="klein"), other.coordinates(model="klein")))
 
         super()._richcmp_(other, op)
 
