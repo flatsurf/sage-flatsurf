@@ -210,6 +210,7 @@ We can also intersect objects that are not half spaces::
 ######################################################################
 
 from dataclasses import dataclass
+from typing import Literal
 
 from sage.structure.parent import Parent
 from sage.structure.element import Element
@@ -7949,6 +7950,21 @@ class HyperbolicGraphicalPath(GraphicPrimitive):
     The ``plot`` methods of most hyperbolic convex sets rely on such a path.
     Usually, such a path should not be produced directly.
 
+    This can be considered a more generic version of
+    :class:`sage.plot.line.Line` and :class:`sage.plot.polygon.Polygon` since
+    this is not limited to finite line segments. At the same time this
+    generalizes matplotlib's ``Path`` somewhat, again by allowing infinite rays
+    and lines.
+
+    INPUT:
+
+    - ``commands`` -- a sequence of :class:`HyperbolicPath.Command` describing
+      the path.
+
+    - ``options`` -- a dict or ``None`` (the default), options to affect the
+      plotting of the path; the options accepted are the same that
+      :class:`sage.plot.polygon.Polygon` accepts.
+
     EXAMPLES:
 
     A geodesic plot as a single such path (wrapped in a SageMath graphics
@@ -7965,7 +7981,7 @@ class HyperbolicGraphicalPath(GraphicPrimitive):
     given in the Cartesian two dimension plot coordinate system::
 
         sage: P = HyperbolicGraphicalPath([
-        ....:     HyperbolicGraphicalPath.Command("MOVETO", (0, 0))
+        ....:     HyperbolicGraphicalPath.Command("MOVETO", ((0, 0),))
         ....: ])
 
     After the initial move, a sequence of arcs can be drawn to represent
@@ -7973,15 +7989,15 @@ class HyperbolicGraphicalPath(GraphicPrimitive):
     end point of the arc::
 
         sage: P = HyperbolicGraphicalPath([
-        ....:     HyperbolicGraphicalPath.Command("MOVETO", [(-1, 0)]),
-        ....:     HyperbolicGraphicalPath.Command("ARCTO", [(0, 0), (0, 1)]),
+        ....:     HyperbolicGraphicalPath.Command("MOVETO", ((-1, 0),)),
+        ....:     HyperbolicGraphicalPath.Command("ARCTO", ((0, 0), (0, 1))),
         ....: ])
 
     We can also draw segments to represent objects in the Klein disk model::
 
         sage: P = HyperbolicGraphicalPath([
-        ....:     HyperbolicGraphicalPath.Command("MOVETO", [(-1, 0)]),
-        ....:     HyperbolicGraphicalPath.Command("LINETO", [(0, 0)]),
+        ....:     HyperbolicGraphicalPath.Command("MOVETO", ((-1, 0),)),
+        ....:     HyperbolicGraphicalPath.Command("LINETO", ((0, 0),)),
         ....: ])
 
     Additionally, we can draw rays to represent verticals in the upper half
@@ -7989,8 +8005,8 @@ class HyperbolicGraphicalPath(GraphicPrimitive):
     a vertical::
 
         sage: P = HyperbolicGraphicalPath([
-        ....:     HyperbolicGraphicalPath.Command("MOVETO", [(0, 0)]),
-        ....:     HyperbolicGraphicalPath.Command("LINETOINFINITY", [(0, 1)]),
+        ....:     HyperbolicGraphicalPath.Command("MOVETO", ((0, 0),)),
+        ....:     HyperbolicGraphicalPath.Command("RAYTO", ((0, 1),)),
         ....: ])
 
     Similarly, we can also move the cursor to an infinitely far point in a
@@ -7998,40 +8014,46 @@ class HyperbolicGraphicalPath(GraphicPrimitive):
     with non-negative real part::
 
         sage: P = HyperbolicGraphicalPath([
-        ....:     HyperbolicGraphicalPath.Command("MOVETO", [(0, 0)]),
-        ....:     HyperbolicGraphicalPath.Command("MOVETOINFINITY", [(1, 0)]),
-        ....:     HyperbolicGraphicalPath.Command("MOVETOINFINITY", [(0, 1)]),
-        ....:     HyperbolicGraphicalPath.Command("LINETO", [(0, 0)]),
+        ....:     HyperbolicGraphicalPath.Command("MOVETO", ((0, 0),)),
+        ....:     HyperbolicGraphicalPath.Command("MOVETOINFINITY", ((1, 0),)),
+        ....:     HyperbolicGraphicalPath.Command("MOVETOINFINITY", ((0, 1),)),
+        ....:     HyperbolicGraphicalPath.Command("LINETO", ((0, 0),)),
         ....: ])
 
     In a similar way, we can also draw an actual line, here the real axis::
 
         sage: P = HyperbolicGraphicalPath([
-        ....:     HyperbolicGraphicalPath.Command("MOVETOINFINITY", [(-1, 0)]),
-        ....:     HyperbolicGraphicalPath.Command("LINETOINFINITY", [(1, 0)]),
+        ....:     HyperbolicGraphicalPath.Command("MOVETOINFINITY", ((-1, 0),)),
+        ....:     HyperbolicGraphicalPath.Command("RAYTO", ((1, 0),)),
         ....: ])
 
     Finally, we can draw an arc in clockwise direction; here we plot the point
     in the upper half plane of norm between 1 and 2::
 
         sage: P = HyperbolicGraphicalPath([
-        ....:     HyperbolicGraphicalPath.Command("MOVETO", [(-1, 0)]),
-        ....:     HyperbolicGraphicalPath.Command("ARCTO", [(0, 0), (1, 0)]),
-        ....:     HyperbolicGraphicalPath.Command("MOVETO", [(2, 0)]),
-        ....:     HyperbolicGraphicalPath.Command("RARCTO", [(0, 0), (-2, 0)]),
-        ....:     HyperbolicGraphicalPath.Command("MOVETO", [(-1, 0)]),
+        ....:     HyperbolicGraphicalPath.Command("MOVETO", ((-1, 0),)),
+        ....:     HyperbolicGraphicalPath.Command("ARCTO", ((0, 0), (1, 0))),
+        ....:     HyperbolicGraphicalPath.Command("MOVETO", ((2, 0),)),
+        ....:     HyperbolicGraphicalPath.Command("RARCTO", ((0, 0), (-2, 0))),
+        ....:     HyperbolicGraphicalPath.Command("MOVETO", ((-1, 0),)),
         ....: ])
+
+    .. SEEALSO::
+
+        :func:`hyperbolic_path` to create a ``Graphics`` containing a
+        :class:`HyperbolicGraphicalPath`, most likely you want to use that
+        function if you want to use this functionality in plots of your own.
 
     """
     @dataclass
     class Command:
-        code: str
+        r"""
+        A step on the path, given by a ``code`` and a tuple of parameters,
+        typically coordinates.
+        """
+        code: Literal["MOVETO", "MOVETOINFINITY", "LINETO", "RAYTO", "ARCTO", "RARCTO"]
         args: tuple
 
-    # TODO: Check documentation
-    # TODO: Check INPUTS
-    # TODO: Check SEEALSO
-    # TODO: Check for doctests
     # TODO: Benchmark?
     # TODO: Use sage's vector or matplotlib builtins more so we do not need to implement basic geometric primitives manually here.
     def __init__(self, commands, options=None):
@@ -8074,7 +8096,7 @@ class HyperbolicGraphicalPath(GraphicPrimitive):
         # TODO: Check for doctests
         # TODO: Benchmark?
         r"""
-        Render this path on the subplot.
+        Render this path on ``subplot``.
 
         Matplotlib was not really made to draw things that extend to infinity.
         The trick here is to register a callback that redraws whenever the
@@ -8249,7 +8271,7 @@ class HyperbolicGraphicalPath(GraphicPrimitive):
 
                 vertices.append(pos)
                 codes.append(Path.LINETO)
-            elif command.code == "LINETOINFINITY":
+            elif command.code == "RAYTO":
                 assert direction is None
 
                 base, direction = command.args
@@ -8346,7 +8368,7 @@ class HyperbolicGraphicalPath(GraphicPrimitive):
                         ])
 
                     pos = target
-                elif command.code in ["LINETOINFINITY", "MOVETOINFINITY"]:
+                elif command.code in ["RAYTO", "MOVETOINFINITY"]:
                     # TODO: Add a bit to the bounding box so these are always visible.
                     pass
                 else:
@@ -8439,7 +8461,7 @@ class HyperbolicGraphicalPath(GraphicPrimitive):
             else:
                 raise NotImplementedError("unsuported hyperbolic plotting code")
 
-        if bezier_commands[-1].code == "LINETOINFINITY" and bezier_commands[-1].args[
+        if bezier_commands[-1].code == "RAYTO" and bezier_commands[-1].args[
             -1
         ] == (1, 0):
             assert bezier_commands[0].code == "MOVETOINFINITY" and bezier_commands[
@@ -8473,19 +8495,19 @@ class HyperbolicGraphicalPath(GraphicPrimitive):
         An infinite segment::
 
             sage: HyperbolicGraphicalPath._hyperbolic_segment(H(I), H(oo), model="half_plane")
-            [HyperbolicGraphicalPath.Command(code='LINETOINFINITY', args=[(0.000000000000000, 1.00000000000000), (0, 1)])]
+            [HyperbolicGraphicalPath.Command(code='RAYTO', args=[(0.000000000000000, 1.00000000000000), (0, 1)])]
 
         A segment that is infinite on both ends::
 
             sage: HyperbolicGraphicalPath._hyperbolic_segment(H(0), H(oo), model="half_plane")
-            [HyperbolicGraphicalPath.Command(code='LINETOINFINITY', args=[(0.000000000000000, 0.000000000000000), (0, 1)])]
+            [HyperbolicGraphicalPath.Command(code='RAYTO', args=[(0.000000000000000, 0.000000000000000), (0, 1)])]
 
         Note that this is a "closed" boundary of the polygon that is left of
         that segment unlike the "open" version produced by
         :meth:`_hyperbolic_move` which contains the entire positive real axis::
 
             sage: HyperbolicGraphicalPath._hyperbolic_move(H(0), H(oo), model="half_plane")
-            [HyperbolicGraphicalPath.Command(code='LINETOINFINITY', args=[(0.000000000000000, 0.000000000000000), (1, 0)])]
+            [HyperbolicGraphicalPath.Command(code='RAYTO', args=[(0.000000000000000, 0.000000000000000), (1, 0)])]
 
         The corresponding difference in the Klein model::
 
@@ -8522,7 +8544,7 @@ class HyperbolicGraphicalPath(GraphicPrimitive):
             if end == end.parent().infinity():
                 return [
                     HyperbolicGraphicalPath.Command(
-                        "LINETOINFINITY",
+                        "RAYTO",
                         [(start_x, start_y), (0, 1)],
                     )
                 ]
@@ -8594,7 +8616,7 @@ class HyperbolicGraphicalPath(GraphicPrimitive):
 
                 return [
                     HyperbolicGraphicalPath.Command(
-                        "LINETOINFINITY", [start.change_ring(RR).coordinates(), (1, 0)]
+                        "RAYTO", [start.change_ring(RR).coordinates(), (1, 0)]
                     )
                 ]
 
@@ -8610,7 +8632,7 @@ class HyperbolicGraphicalPath(GraphicPrimitive):
             else:
                 return [
                     HyperbolicGraphicalPath.Command(
-                        "LINETOINFINITY", [start.change_ring(RR).coordinates(), (1, 0)]
+                        "RAYTO", [start.change_ring(RR).coordinates(), (1, 0)]
                     ),
                     HyperbolicGraphicalPath.Command(
                         "MOVETOINFINITY", [end.change_ring(RR).coordinates(), (-1, 0)]
