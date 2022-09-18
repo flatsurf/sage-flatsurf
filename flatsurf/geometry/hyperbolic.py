@@ -2863,13 +2863,15 @@ class HyperbolicConvexSet(Element):
             tester.assertEqual(self, self.change(oriented=True))
 
     def plot(self, model="half_plane", **kwds):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
         r"""
         Return a plot of this subset.
+
+        Consult the implementation in the subclasses for a list supported
+        keyword arguments, in particular :meth:`HyperbolicConvexPolygon.plot`.
+
+        INPUT:
+
+        - ``model`` -- one of ``"half_plane"`` and ``"klein"``
 
         EXAMPLES::
 
@@ -2880,15 +2882,9 @@ class HyperbolicConvexSet(Element):
             Graphics object consisting of 1 graphics primitive
 
         """
-        # TODO: This could be implemented generically.
         raise NotImplementedError(f"this {type(self)} does not support plotting")
 
     def _test_plot(self, **options):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
         r"""
         Verify that this set implements :meth:`plot`.
 
@@ -3410,11 +3406,29 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
             return self._geodesic._richcmp_(other._geodesic, op)
 
     def plot(self, model="half_plane", **kwds):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Return a plot of this half space in the hyperbolic ``model``.
+
+        See :meth:`HyperbolicConvexPolygon.plot` for the supported keyword
+        arguments.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(QQ)
+
+            sage: G = H.vertical(0).left_half_space().plot()
+
+        In the half plane model, the half space is rendered as an infinite polygon::
+
+            sage: G = H.vertical(0).left_half_space().plot()
+            sage: G[0]
+            CartesianPathPlot([CartesianPathPlotCommand(code='MOVETO', args=(0.000000000000000, 0.000000000000000)),
+                CartesianPathPlotCommand(code='RAYTO', args=(0, 1)),
+                CartesianPathPlotCommand(code='MOVETOINFINITY', args=(-1, 0)),
+                CartesianPathPlotCommand(code='MOVETO', args=(0.000000000000000, 0.000000000000000))])
+
+        """
         return (
             self.parent()
             .polygon([self], check=False, assume_minimal=True)
@@ -3738,15 +3752,19 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
         return HyperbolicHalfSpaces([self.left_half_space(), self.right_half_space()])
 
     def plot(self, model="half_plane", **kwds):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
         r"""
-        Create a plot of this geodesic in the hyperbolic ``model``.
+        Return a plot of this geodesic in the hyperbolic ``model``.
 
-        Additional arguments are passed on to the underlying SageMath plotting methods.
+        See :meth:`HyperbolicSegment.plot` for the supported keyword arguments.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(QQ)
+
+            sage: H.vertical(0).plot()
+            Graphics object consisting of 1 graphics primitive
+
         """
         return (
             self.parent()
@@ -8091,6 +8109,24 @@ class CartesianPathPlot(GraphicPrimitive):
         from sage.plot.polygon import Polygon
 
         return Polygon([], [], {})._allowed_options()
+
+    def __repr__(self):
+        r"""
+        Return a printable representation of this plot for debugging purposes.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import CartesianPathPlot, CartesianPathPlotCommand
+
+            sage: P = CartesianPathPlot([
+            ....:     CartesianPathPlotCommand("MOVETO", (-1, 0)),
+            ....:     CartesianPathPlotCommand("LINETO", (0, 0)),
+            ....: ])
+            sage: P
+            CartesianPathPlot([CartesianPathPlotCommand(code='MOVETO', args=(-1, 0)), CartesianPathPlotCommand(code='LINETO', args=(0, 0))])
+
+        """
+        return f"CartesianPathPlot({self._commands})"
 
     def _render_on_subplot(self, subplot):
         # TODO: Check documentation.
