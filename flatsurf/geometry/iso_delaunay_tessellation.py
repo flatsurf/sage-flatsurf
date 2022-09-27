@@ -124,6 +124,8 @@ class IsoDelaunayTessellation(Parent):
 
         from sage.all import oo
 
+        print(len(self._faces))
+
         limit = oo if limit is None else limit
         if limit <= 0:
             return
@@ -578,3 +580,18 @@ class IsoDelaunayTessellation(Parent):
             I1).delaunay_triangulation()
         perturbation = self._point_to_matrix(I1)
         return nondegenerate_triangulation.apply_matrix(perturbation.inverse())
+
+    def orbifold_euler_characteristic(self):
+        pass
+
+    def genus(self):
+        pass
+
+    def ncusps(self):
+        pass
+
+    def nu2(self):
+        pass
+
+    def nu3(self):
+        pass
