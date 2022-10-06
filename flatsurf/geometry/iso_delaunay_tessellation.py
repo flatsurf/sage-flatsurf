@@ -582,16 +582,34 @@ class IsoDelaunayTessellation(Parent):
         return nondegenerate_triangulation.apply_matrix(perturbation.inverse())
 
     def orbifold_euler_characteristic(self):
+        r"""
+        chi_top = V - E + F in ZZ
+        chi_orb = chi_top + \sum_{orbifold points} (-1 + 1/n) in QQ
+
+        eg for H^2/SL(2, Z)
+        chi_top = 2 - 2 + 1 = euler char of a punctured sphere
+
+        chi_orb = 1 + (-1 + 1/2) + (-1 + 1/3) = -1 + 5/6 = -1/6
+        """
         pass
 
     def genus(self):
+        r"""
+        chi_top = 2 - n - 2g ==> g = (2 - n - chi_top)/2
+        """
         pass
 
-    def ncusps(self):
+    def cusps(self):
+        r"""
+        Return the number of punctures of the quotient H^2/Gamma
+        """
         pass
 
-    def nu2(self):
-        pass
+    def orbifold_points(self, order=None):
+        r"""
+        Return the set of orbifold points, i.e., the fixed points of finite-order rotations in Gamma.
 
-    def nu3(self):
+        When ``order = k``, return only the orbifold points with total angle ``2pi/k``.
+        """
+        # TODO: implement by developing in a circle around vertex
         pass
