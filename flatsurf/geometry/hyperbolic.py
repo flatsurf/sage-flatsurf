@@ -212,6 +212,8 @@ We can also intersect objects that are not half spaces::
 from dataclasses import dataclass
 from typing import Literal
 
+import matplotlib.path
+
 from sage.structure.parent import Parent
 from sage.structure.element import Element
 from sage.structure.unique_representation import UniqueRepresentation
@@ -6662,7 +6664,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
         """
         # TODO: Document keyword arguments.
         kwds.setdefault("color", "#efffff")
-        kwds.setdefault("edgecolor", "#d1d1d1")
+        kwds.setdefault("edgecolor", "blue")
 
         if len(self._half_spaces) == 0:
             raise NotImplementedError("cannot plot full space")
@@ -8268,6 +8270,46 @@ class CartesianPathPlot(GraphicPrimitive):
         """
         return f"CartesianPathPlot({self._commands})"
 
+    class DynamicPath(matplotlib.path.Path):
+        # TODO: Do we need a dynamic path or a dynamic patch?
+        r"""
+        A path that contains infinite rays and dynamically redraws when its
+        bounding box changes so that these rays always extend beyond the
+        viewport.
+        """
+        # TODO: Check documentation.
+        # TODO: Check INPUT
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        # TODO: Benchmark?
+
+        def __init__(self, parent):
+            self._parent = parent
+            self._box = None
+            self._redraw(self._box, force=True)
+
+        @property
+        @cached_method
+        def _bbox(self):
+            r"""
+            Return a minimal bounding box for this path.
+            """
+            # TODO: Check documentation.
+            # TODO: Check INPUT
+            # TODO: Check SEEALSO
+            # TODO: Check for doctests
+            # TODO: Benchmark?
+            raise NotImplementedError
+
+        def _redraw(self, box, force=False):
+            # TODO: Check documentation.
+            # TODO: Check INPUT
+            # TODO: Check SEEALSO
+            # TODO: Check for doctests
+            # TODO: Benchmark?
+            raise NotImplementedError
+            # .padded(max(self._box.width, self._box.height)))
+
     def _render_on_subplot(self, subplot):
         # TODO: Check documentation.
         # TODO: Check INPUT
@@ -8280,7 +8322,7 @@ class CartesianPathPlot(GraphicPrimitive):
         Matplotlib was not really made to draw things that extend to infinity.
         The trick here is to register a callback that redraws whenever the
         viewbox of the plot changes, e.g., as more objects are added to the
-        plot.
+        plot or as the plot is dragged around.
         """
         # TODO: Use sage's vector or matplotlib builtins more so we do not need to implement basic geometric primitives manually here.
         # Rewrite options to only contain matplotlib compatible entries
@@ -8300,46 +8342,54 @@ class CartesianPathPlot(GraphicPrimitive):
 
         from matplotlib.path import Path
 
-        fill_path = Path([(0, 0)])
-        edge_path = Path([(0, 0)])
+        path = Path([(0, 0)])
 
         from matplotlib.patches import PathPatch
 
-        fill_patch = PathPatch(fill_path, **matplotlib_options)
-        edge_patch = PathPatch(edge_path, **matplotlib_options)
+        patch = PathPatch(path, **matplotlib_options)
+
+        subplot.axes.add_patch(patch)
 
         options = self.options()
-        fill = options.pop("fill")
+
+        fill = options.pop("fill", None)
         if fill:
-            subplot.axes.add_patch(fill_patch)
-        subplot.axes.add_patch(edge_patch)
+            patch.set_fill(True)
 
         # Translate SageMath options to matplotlib style.
-        fill_patch.set_linewidth(float(options["thickness"]))
+        if "thickness" in options:
+            patch.set_linewidth(float(options.pop("thickness")))
+
         if "linestyle" in options:
-            fill_patch.set_linestyle(options["linestyle"])
-        fill_patch.set_alpha(float(options["alpha"]))
+            patch.set_linestyle(options.pop("linestyle"))
+
+        if "alpha" in options:
+            patch.set_alpha(float(options["alpha"]))
 
         from sage.plot.colors import to_mpl_color
 
-        color = to_mpl_color(options.pop("rgbcolor"))
+        color = None
+        if "rgbcolor" in options:
+            color = to_mpl_color(options.pop("rgbcolor"))
 
-        fill_patch.set_fill(True)
-        edge_patch.set_fill(False)
+        edge_color = None
+        if "edgecolor" in options:
+            edge_color = to_mpl_color(options.pop("edgecolor"))
 
-        edge_color = options.pop("edgecolor")
-        if fill:
-            if edge_color is None:
-                fill_patch.set_color(color)
-                edge_patch.set_color(color)
+        if edge_color is None:
+            if color is None:
+                pass
             else:
-                fill_patch.set_facecolor(color)
-                fill_patch.set_edgecolor(color)
-                edge_patch.set_edgecolor(to_mpl_color(edge_color))
+                patch.set_color(color)
         else:
-            edge_patch.set_edgecolor(edge_color or color)
+            patch.set_edgecolor(edge_color)
+            if color is None:
+                pass
+            else:
+                patch.set_facecolor(color)
 
-        fill_patch.set_label(options["legend_label"])
+        if "legend_label" in options:
+            patch.set_label(options.pop("legend_label"))
 
         def redraw(_=None):
             # TODO: Check documentation.
@@ -8351,8 +8401,7 @@ class CartesianPathPlot(GraphicPrimitive):
             Redraw after the viewport has been rescaled to make sure that
             infinite rays reach the end of the viewport.
             """
-            self._redraw_on_subplot(subplot, fill_patch, fill=True)
-            self._redraw_on_subplot(subplot, edge_patch, fill=False)
+            self._redraw_on_subplot(subplot, patch, fill=fill)
 
         subplot.axes.callbacks.connect("ylim_changed", redraw)
         subplot.axes.callbacks.connect("xlim_changed", redraw)
@@ -8374,9 +8423,7 @@ class CartesianPathPlot(GraphicPrimitive):
         xlim = subplot.axes.get_xlim()
         ylim = subplot.axes.get_ylim()
 
-        commands = list(reversed(self._commands))
-
-        command = commands.pop()
+        command = self._commands[0]
 
         def vertex(pos, direction):
             # TODO: Check documentation.
@@ -8436,29 +8483,41 @@ class CartesianPathPlot(GraphicPrimitive):
 
         codes = [Path.MOVETO]
 
-        while commands:
-            command = commands.pop()
-
+        for command in self._commands[1:]:
             if command.code == "LINETO":
                 target = command.args
 
-                if direction is not None and pos != target:
-                    raise ValueError(
-                        f"Cannot execute LINETO from infinite point at {pos} + λ {direction} when going to {target}"
-                    )
+                if direction is not None:
+                    vertices.append(vertex(target, direction))
+                    codes.append(Path.LINETO)
+                    direction = None
 
-                direction = None
                 pos = target
 
                 vertices.append(pos)
                 codes.append(Path.LINETO)
             elif command.code == "RAYTO":
-                assert direction is None
+                if direction is None:
+                    direction = command.args
 
-                direction = command.args
+                    vertices.append(vertex(pos, direction))
+                    codes.append(Path.LINETO)
+                else:
+                    start = vertex(pos, direction)
 
-                vertices.append(vertex(pos, direction))
-                codes.append(Path.LINETO)
+                    direction = command.args
+                    end = vertex(pos, direction)
+
+                    # Sweep the bounding box counterclockwise from start to end
+                    from sage.all import vector
+
+                    # TODO: Is this the correct center?
+                    center = vector(((start[0] + end[0]) / 2, (start[1] + end[1]) / 2))
+
+                    extend(self._arc_path(center, start, end))
+
+                    vertices.append(end)
+                    codes.append(Path.LINETO if fill else Path.MOVETO)
             elif command.code == "ARCTO":
                 target, center = command.args
 
@@ -8475,24 +8534,12 @@ class CartesianPathPlot(GraphicPrimitive):
                 extend(self._arc_path(center, target, pos, reverse=True))
 
                 pos = target
-            elif command.code == "MOVETOINFINITY":
-                assert direction is not None
-
-                start = vertex(pos, direction)
-
-                direction = command.args
-                end = vertex(pos, direction)
-
-                # Sweep the bounding box counterclockwise from start to end
-                from sage.all import vector
-
-                # TODO: Is this the correct center?
-                center = vector(((start[0] + end[0]) / 2, (start[1] + end[1]) / 2))
-
-                extend(self._arc_path(center, start, end))
-
-                vertices.append(end)
-                codes.append(Path.LINETO if fill else Path.MOVETO)
+            elif command.code == "MOVETO":
+                target = command.args
+                pos = target
+                direction = None
+                vertices.append(pos)
+                codes.append(Path.MOVETO)
             else:
                 raise RuntimeError(f"cannot draw {command.code} yet")
 
@@ -8753,7 +8800,6 @@ hi
              CartesianPathPlotCommand(code='LINETO', args=(0.000000000000000, 0.000000000000000))]
 
         """
-        # TODO: Implement fill & stroke
         cartesian_commands = []
         cursor = None
 
@@ -8873,7 +8919,7 @@ hi
 
             return [
                 CartesianPathPlotCommand(
-                    "LINETO", [end.change_ring(RR).coordinates(model="klein")]
+                    "LINETO", end.change_ring(RR).coordinates(model="klein")
                 )
             ]
         else:
@@ -9058,8 +9104,8 @@ def hyperbolic_path(commands, model="half_plane", **options):
 
     try:
         if options.get("fill", None):
-            g.add_primitive(CartesianPathPlot(HyperbolicPathPlotCommand.make_cartesian(commands, model=model, fill=True, stroke=False), options))
-        g.add_primitive(CartesianPathPlot(HyperbolicPathPlotCommand.make_cartesian(commands, model=model, fill=False, stroke=True), options))
+            g.add_primitive(CartesianPathPlot(HyperbolicPathPlotCommand.make_cartesian(commands, model=model, fill=True, stroke=False), {**options, 'thickness': 0}))
+        g.add_primitive(CartesianPathPlot(HyperbolicPathPlotCommand.make_cartesian(commands, model=model, fill=False, stroke=True), {**options, 'fill': False}))
     except Exception as e:
         raise RuntimeError(f"Failed to render hyperbolic path {commands}", e)
 
