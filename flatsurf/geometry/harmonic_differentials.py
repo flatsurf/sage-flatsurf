@@ -1,3 +1,24 @@
+r"""
+TODO: Document this module.
+"""
+######################################################################
+#  This file is part of sage-flatsurf.
+#
+#        Copyright (C) 2022 Julian Rüth
+#
+#  sage-flatsurf is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  sage-flatsurf is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
+######################################################################
 from sage.structure.parent import Parent
 from sage.structure.element import Element
 from sage.categories.all import SetsWithPartialMaps
@@ -15,10 +36,42 @@ class HarmonicDifferential(Element):
 
 
 class HarmonicDifferentials(UniqueRepresentation, Parent):
+    r"""
+    The space of harmonic differentials on this surface.
+
+    EXAMPLES::
+
+        sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialCohomology
+        sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+        sage: T.set_immutable()
+
+        sage: Ω = HarmonicDifferentials(T); Ω
+        Ω(TranslationSurface built from 2 polygons)
+
+    ::
+
+        sage: H = SimplicialCohomology(T)
+        sage: Ω(H())
+        [0.0, 0.0]
+
+    """
     Element = HarmonicDifferential
 
     @staticmethod
     def __classcall__(cls, surface, coefficients=None, category=None):
+        r"""
+        Normalize parameters when creating the space of harmonic differentials.
+
+        TESTS::
+
+            sage: from flatsurf import translation_surfaces, HarmonicDifferentials
+            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T.set_immutable()
+
+            sage: HarmonicDifferentials(T) is HarmonicDifferentials(T)
+            True
+
+        """
         from sage.all import RR
         return super().__classcall__(cls, surface, coefficients or RR, category or SetsWithPartialMaps())
 
@@ -43,7 +96,7 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
 
         raise NotImplementedError()
 
-    def _element_from_cohomology(self, Φ, /, prec):
+    def _element_from_cohomology(self, Φ, /, prec=20):
         # We develop a consistent system of Laurent series at each vertex of the Voronoi diagram
         # to describe a differential.
 
@@ -151,30 +204,34 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
         # (3) We have that for any cycle γ, Re(∫fω) = Re(∫η) = Φ(γ). We can turn this into constraints
         # on the coefficients as we integrate numerically following the path γ as it intersects the radii of
         # convergence.
-        for cycle, value in zip(Φ.parent().homology().basis(), Φ.vector()):
+        for cycle in Φ.parent().homology().gens():
+            value = Φ(cycle)
             constraint = {
                 triangle: ([ZZ(0)] * prec, [ZZ(0)] * prec) for triangle in range(self._surface.num_polygons())
             }
-            for c in range(len(cycle)):
-                triangle_, edge_ = self._surface.opposite_edge(*cycle[(c - 1) % len(cycle)])
-                triangle, edge = cycle[c]
+            for path, multiplicity in cycle.voronoi_path():
+                assert multiplicity == 1
+                for c in range(len(path)):
+                    # TODO: Zip path and a shifted path instead.
+                    triangle_, edge_ = self._surface.opposite_edge(*path[c - 1])
+                    triangle, edge = path[c]
 
-                assert self._surface.singularity(triangle_, edge_) == self._surface.singularity(triangle, edge), "cycle is not closed"
+                    assert self._surface.singularity(triangle_, edge_) == self._surface.singularity(triangle, edge), "cycle is not closed"
 
-                while (triangle_, edge_) != (triangle, edge):
-                    coefficients = constraint[triangle_][0]
+                    while (triangle_, edge_) != (triangle, edge):
+                        coefficients = constraint[triangle_][0]
 
-                    P = Δ(triangle_, edge_)
-                    for k in range(prec):
-                        coefficients[k] -= (complex(*P)**(k + 1)/(k + 1)).real()
+                        P = Δ(triangle_, edge_)
+                        for k in range(prec):
+                            coefficients[k] -= (complex(*P)**(k + 1)/(k + 1)).real()
 
-                    edge_ = (edge_ + 2) % 3
+                        edge_ = (edge_ + 2) % 3
 
-                    P = Δ(triangle_, edge_)
-                    for k in range(prec):
-                        coefficients[k] += (complex(*P)**(k + 1)/(k + 1)).real()
+                        P = Δ(triangle_, edge_)
+                        for k in range(prec):
+                            coefficients[k] += (complex(*P)**(k + 1)/(k + 1)).real()
 
-                    triangle_, edge_ = self._surface.opposite_edge(triangle_, edge_)
+                        triangle_, edge_ = self._surface.opposite_edge(triangle_, edge_)
 
             add_real_constraint(constraint, value)
 
@@ -187,7 +244,6 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
         import scipy.linalg
         import numpy
         solution, residues, _, _ = scipy.linalg.lstsq(numpy.matrix(constraints[0]), numpy.array(constraints[1]))
-        print(residues)
         solution = solution[:-lagranges]
         solution = [solution[k*prec:(k+1)*prec] for k in range(self._surface.num_polygons())]
         return self.element_class(self, solution)
