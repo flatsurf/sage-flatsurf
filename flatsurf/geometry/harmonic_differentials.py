@@ -27,12 +27,12 @@ from sage.all import ZZ
 
 
 class HarmonicDifferential(Element):
-    def __init__(self, parent, coefficients):
+    def __init__(self, parent, series):
         super().__init__(parent)
-        self._coefficients = coefficients
+        self._series = series
 
     def _repr_(self):
-        return repr([coefficients[0] for coefficients in self._coefficients])
+        return repr(tuple(self._series.values()))
 
 
 class HarmonicDifferentials(UniqueRepresentation, Parent):
@@ -52,7 +52,13 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
 
         sage: H = SimplicialCohomology(T)
         sage: Ω(H())
-        [0.0, 0.0]
+        (O(z^5) at 0, O(z^5) at 1)
+
+    ::
+
+        sage: γ = H.homology().gens()[0]
+        sage: f = H({γ: 1})
+        sage: Ω(f)
 
     """
     Element = HarmonicDifferential
@@ -96,7 +102,7 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
 
         raise NotImplementedError()
 
-    def _element_from_cohomology(self, Φ, /, prec=20):
+    def _element_from_cohomology(self, Φ, /, prec=5):
         # We develop a consistent system of Laurent series at each vertex of the Voronoi diagram
         # to describe a differential.
 
@@ -246,4 +252,39 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
         solution, residues, _, _ = scipy.linalg.lstsq(numpy.matrix(constraints[0]), numpy.array(constraints[1]))
         solution = solution[:-lagranges]
         solution = [solution[k*prec:(k+1)*prec] for k in range(self._surface.num_polygons())]
-        return self.element_class(self, solution)
+        return self.element_class(self, {
+            polygon: PowerSeries(self._surface, polygon, [self._coefficients(c) for c in solution[k]])
+            for (k, polygon) in enumerate(self._surface.label_iterator())
+            })
+
+
+class PowerSeries:
+    r"""
+    A power series developed around the center of a Voronoi cell.
+
+    This class is used in the implementation of :class:`HormonicDifferential`.
+    A harmonic differential is a power series developed at each Voronoi cell.
+
+    EXAMPLES::
+
+        sage: from flatsurf import translation_surfaces
+        sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+        sage: T.set_immutable()
+
+        sage: from flatsurf.geometry.harmonic_differentials import PowerSeries
+        sage: PowerSeries(T, 0, [1, 2, 3, 0, 0])
+        1 + 2*z + 3*z^2 + O(z^5) at 0
+
+    """
+
+    def __init__(self, surface, polygon, coefficients):
+        self._surface = surface
+        self._polygon = polygon
+        self._coefficients = coefficients
+
+    def __repr__(self):
+        from sage.all import Sequence, PowerSeriesRing, O
+        R = Sequence(self._coefficients, immutable=True).universe()
+        R = PowerSeriesRing(R, 'z')
+        f = R(self._coefficients) + O(R.gen()**len(self._coefficients))
+        return f"{f} at {self._polygon}"
