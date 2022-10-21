@@ -31,6 +31,168 @@ class HarmonicDifferential(Element):
         super().__init__(parent)
         self._series = series
 
+    @staticmethod
+    def _midpoint(surface, triangle, edge):
+        r"""
+        Return the (complex) vector from the center of the circumcircle to
+        the center of the edge.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T.set_immutable()
+
+            sage: from flatsurf.geometry.harmonic_differentials import HarmonicDifferential
+            sage: HarmonicDifferential._midpoint(T, 0, 0)
+            0j
+            sage: HarmonicDifferential._midpoint(T, 0, 1)
+            0.5j
+            sage: HarmonicDifferential._midpoint(T, 0, 2)
+            (-0.5+0j)
+            sage: HarmonicDifferential._midpoint(T, 1, 0)
+            0j
+            sage: HarmonicDifferential._midpoint(T, 1, 1)
+            -0.5j
+            sage: HarmonicDifferential._midpoint(T, 1, 2)
+            (0.5+0j)
+
+        """
+        P = surface.polygon(triangle)
+        Δ = -P.circumscribing_circle().center() + P.vertex(edge) + P.edge(edge) / 2
+        return complex(*Δ)
+
+    @staticmethod
+    def _integrate_symbolic(chain, prec):
+        r"""
+        Return the linear combination of the power series coefficients that
+        decsribe the integral of a differential along the homology class
+        ``chain``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, SimplicialHomology
+            sage: from flatsurf.geometry.harmonic_differentials import HarmonicDifferential
+            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T.set_immutable()
+
+            sage: H = SimplicialHomology(T)
+            sage: HarmonicDifferential._integrate_symbolic(H(), prec=5)
+            {}
+
+            sage: a, b = H.gens()
+            sage: HarmonicDifferential._integrate_symbolic(a, prec=5)
+            {0: [(0.5+0.5j),
+              (-0.25+0j),
+              (0.041666666666666664-0.041666666666666664j),
+              0j,
+              (0.00625+0.00625j)],
+             1: [(0.5+0.5j),
+              (0.25+0j),
+              (0.041666666666666664-0.041666666666666664j),
+              0j,
+              (0.00625+0.00625j)]}
+            sage: HarmonicDifferential._integrate_symbolic(b, prec=5)
+            {0: [(-0.5+0j),
+              (0.125+0j),
+              (-0.041666666666666664+0j),
+              (0.015625+0j),
+              (-0.00625+0j)],
+             1: [(-0.5+0j),
+              (-0.125+0j),
+              (-0.041666666666666664+0j),
+              (-0.015625+0j),
+              (-0.00625+0j)]}
+
+        """
+        surface = chain.surface()
+
+        expression = {}
+
+        for path, multiplicity in chain.voronoi_path().monomial_coefficients().items():
+
+            for S, T in zip(path[1:] + path[:1], path):
+                # Integrate from the midpoint of the edge of S to the midpoint of the edge of T
+                S = surface.opposite_edge(*S)
+                assert S[0] == T[0], f"consecutive elements of a path must be attached to the same face in {path}"
+
+                # Namely we integrate the power series defined around the Voronoi vertex of S by symbolically integrating each monomial term.
+                cell = S[0]
+                coefficients = expression.get(cell, [0] * prec)
+
+                # The midpoints of the edges
+                P = HarmonicDifferential._midpoint(surface, *S)
+                Q = HarmonicDifferential._midpoint(surface, *T)
+
+                for k in range(prec):
+                    coefficients[k] -= multiplicity * P**(k + 1) / (k + 1)
+                    coefficients[k] += multiplicity * Q**(k + 1) / (k + 1)
+
+                expression[cell] = coefficients
+
+        return expression
+
+    def _evaluate(self, expression):
+        r"""
+        Evaluate an expression by plugging in the coefficients of the power
+        series defining this differential.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology, SimplicialCohomology
+            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T.set_immutable()
+
+            sage: H = SimplicialHomology(T)
+            sage: a, b = H.gens()
+            sage: H = SimplicialCohomology(T)
+            sage: f = H({a: 1})
+
+            sage: Ω = HarmonicDifferentials(T)
+            sage: η = Ω(f); η
+            (-0.179500990254010 ... at 0, -0.350210481202233 ... at 1)
+
+        Compute the sum of the constant coefficients::
+
+            sage: η._evaluate({0: [1], 1: [1]})
+            -0.529711471456243
+
+        """
+        return sum(c*a for face in expression for (c, a) in zip(expression.get(face, []), self._series[face]._coefficients))
+
+    def integrate(self, chain):
+        r"""
+        Return the integral of this differential along the homology class
+        ``chain``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology, SimplicialCohomology
+            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T.set_immutable()
+
+            sage: H = SimplicialHomology(T)
+            sage: a, b = H.gens()
+            sage: H = SimplicialCohomology(T)
+
+        Construct a differential form such that integrating it along `a` yields real part
+        1, and along `b` real part 0::
+
+            sage: f = H({a: 1})
+
+            sage: Ω = HarmonicDifferentials(T)
+            sage: η = Ω(f)
+
+            sage: η.integrate(a)
+            (-0.2998018977174907-0.268495653337972j)
+
+            sage: η.integrate(b)
+            (0.27770664134510037+0j)
+
+        """
+        # TODO: The above outputs are wrong :(
+        return self._evaluate(HarmonicDifferential._integrate_symbolic(chain, max(series.precision() for series in self._series.values())))
+
     def _repr_(self):
         return repr(tuple(self._series.values()))
 
@@ -56,9 +218,13 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
 
     ::
 
-        sage: γ = H.homology().gens()[0]
-        sage: f = H({γ: 1})
-        sage: Ω(f)
+        sage: a, b = H.homology().gens()
+        sage: f = H({b: 1})
+        sage: η = Ω(f)
+        sage: η.integrate(a)  # not tested
+        0
+        sage: η.integrate(b)  # not tested
+        1
 
     """
     Element = HarmonicDifferential
@@ -97,6 +263,10 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
     def _element_constructor_(self, x, *args, **kwargs):
         from flatsurf.geometry.cohomology import SimplicialCohomology
         cohomology = SimplicialCohomology(self._surface, self._coefficients)
+
+        if not x:
+            return self._element_from_cohomology(cohomology(), *args, **kwargs)
+
         if x.parent() is cohomology:
             return self._element_from_cohomology(x, *args, **kwargs)
 
@@ -281,6 +451,9 @@ class PowerSeries:
         self._surface = surface
         self._polygon = polygon
         self._coefficients = coefficients
+
+    def precision(self):
+        return len(self._coefficients)
 
     def __repr__(self):
         from sage.all import Sequence, PowerSeriesRing, O

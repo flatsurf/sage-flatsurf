@@ -123,20 +123,22 @@ class SimplicialHomologyClass(Element):
             sage: H = SimplicialHomology(T)
             sage: a,b = H.gens()
             sage: a.voronoi_path()
-            B[((0, 0),)]
+            B[((0, 0), (1, 2), (0, 1), (1, 0))]
             sage: b.voronoi_path()
-            B[((0, 1),)]
+            B[((0, 1), (1, 0), (0, 2), (1, 1))]
 
         """
         from sage.all import FreeModule, vector
 
         homology, _, _ = self.parent()._homology()
-        M = FreeModule(self.parent()._coefficients, self.parent()._voronoi_paths())
+        M = FreeModule(self.parent()._coefficients, self.parent()._paths(voronoi=True))
         return M.from_vector(vector(self._homology()))
 
-    def _voronoi_path(self):
+    def _path(self, voronoi=False):
         r"""
-        Return this generator as a path inside the Voronoi cells.
+        Return this generator as a path.
+
+        If ``voronoi``, the path is formed by walking from midpoints of edges while staying inside Voronoi cells.
 
         EXAMPLES::
 
@@ -144,11 +146,15 @@ class SimplicialHomologyClass(Element):
             sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
             sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
-            sage: a,b = H.gens()
-            sage: a._voronoi_path()
+            sage: a, b = H.gens()
+            sage: a._path()
             ((0, 0),)
-            sage: b._voronoi_path()
+            sage: b._path()
             ((0, 1),)
+            sage: a._path(voronoi=True)
+            ((0, 0), (1, 2), (0, 1), (1, 0))
+            sage: b._path(voronoi=True)
+            ((0, 1), (1, 0), (0, 2), (1, 1))
 
         """
         edges = []
@@ -169,16 +175,37 @@ class SimplicialHomologyClass(Element):
         path = [edges.pop()]
 
         while edges:
-            previous = self._surface.singularity(*self._surface.opposite_edge(*path[-1]))
+            # Lengthen the path by searching for an edge that starts at the
+            # vertex at which the constructed path ends.
+            previous = path[-1]
+            vertex = self._surface.singularity(*self._surface.opposite_edge(*previous))
             for edge in edges:
-                if self._surface.singularity(*edge) == previous:
+                if self._surface.singularity(*edge) == vertex:
                     path.append(edge)
                     edges.remove(edge)
                     break
             else:
                 raise NotImplementedError
 
-        return tuple(path)
+        if not voronoi:
+            return tuple(path)
+
+        # Instead of walking the edges of the triangulation, we walk
+        # across faces between the midpoints of the edges to construct a path
+        # inside Voronoi cells.
+        voronoi_path = [path[0]]
+
+        for previous, edge in zip(path[1:] + path[:1], path):
+            previous = self.surface().opposite_edge(*previous)
+            while previous != edge:
+                previous = previous[0], (previous[1] + 2) % 3
+                voronoi_path.append(previous)
+                previous = self.surface().opposite_edge(*previous)
+
+        return tuple(voronoi_path)
+
+    def surface(self):
+        return self.parent().surface()
 
 
 class SimplicialHomology(UniqueRepresentation, Parent):
@@ -245,6 +272,9 @@ class SimplicialHomology(UniqueRepresentation, Parent):
 
         self._surface = surface
         self._coefficients = coefficients
+
+    def surface(self):
+        return self._surface
 
     @cached_method
     def chain_module(self, dimension=1):
@@ -413,6 +443,9 @@ class SimplicialHomology(UniqueRepresentation, Parent):
         return f"H₁({self._surface}; {self._coefficients})"
 
     def _element_constructor_(self, x):
+        if x == 0 or x is None:
+            return self.element_class(self, self.chain_module(1).zero())
+
         if x.parent() in (self.chain_module(0), self.chain_module(1), self.chain_module(2)):
             return self.element_class(self, x)
 
@@ -453,17 +486,20 @@ class SimplicialHomology(UniqueRepresentation, Parent):
         return tuple(self(from_homology(g)) for g in homology.gens())
 
     @cached_method
-    def _voronoi_paths(self):
+    def _paths(self, voronoi=False):
         r"""
-        Return the generators of homology in dimension 1 as paths in the
-        Voronoi cells.
+        Return the generators of homology in dimension 1 as paths.
+
+        If ``voronoi``, the paths are inside Voronoi cells without touching the vertices of the triangulation.
+
+        EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
             sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
             sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
-            sage: H._voronoi_paths()
+            sage: H._paths()
             [((0, 0),), ((0, 1),)]
 
         """
-        return [gen._voronoi_path() for gen in self.gens()]
+        return [gen._path(voronoi=voronoi) for gen in self.gens()]
