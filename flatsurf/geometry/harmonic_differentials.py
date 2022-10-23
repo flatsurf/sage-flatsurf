@@ -134,8 +134,10 @@ class HarmonicDifferential(Element):
 
         return expression
 
-    def _evaluate_symbolic(self, triangle, point, derivative):
-        pass
+    @staticmethod
+    def _evaluate_symbolic(Δ, derivative, prec):
+        from sage.all import ZZ, factorial
+        return [ZZ(0) if k < derivative else factorial(k) / factorial(k - derivative) * Δ**(k - derivative) for k in range(prec)]
 
     def _evaluate(self, expression):
         r"""
@@ -280,7 +282,7 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
 
         raise NotImplementedError()
 
-    def _element_from_cohomology(self, cocycle, /, prec=5):
+    def _element_from_cohomology(self, cocycle, /, prec=5, consistency=2):
         # We develop a consistent system of Laurent series at each vertex of the Voronoi diagram
         # to describe a differential.
 
@@ -300,7 +302,7 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
         # are at the same distance in fact.) So the radii of convergence of two neigbhouring cells overlap
         # and the power series must coincide there. Note that this constraint is unrelated to the cohomology
         # class Φ.
-        constraints.require_consistency(prec // 2)
+        constraints.require_consistency(consistency)
 
         # TODO: What should the rank be after this step?
         # from numpy.linalg import matrix_rank
@@ -320,7 +322,23 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
 
         # Check whether this is actually a global differential:
         # (1) Check that the series are actually consistent where the Voronoi cells overlap.
+        for (triangle, edge) in self._surface.edge_iterator():
+            triangle_, edge_ = self._surface.opposite_edge(triangle, edge)
+            for derivative in range(consistency):
+                expected = η._evaluate({triangle: HarmonicDifferential._evaluate_symbolic(HarmonicDifferential._midpoint(self._surface, triangle, edge), derivative, prec)})
+                other = η._evaluate({triangle_: HarmonicDifferential._evaluate_symbolic(HarmonicDifferential._midpoint(self._surface, triangle_, edge_), derivative, prec)})
+                error = abs((expected - other) / expected)
+                if error > 1e-6:
+                    print(f"power series defining harmonic differential are not consistent: {derivative}th derivate does not match between {(triangle, edge)} and {(triangle_, edge_)}; relative error is {error}")
+
         # (2) Check that differential actually integrates like the cohomology class.
+        for gen in cocycle.parent().homology().gens():
+            expected = cocycle(gen)
+            actual = η.integrate(gen)
+            error = abs((expected - actual) / expected)
+            if error > 1e-6:
+                print(f"harmonic differential does not have prescribed integral at {gen}; relative error is {error}")
+
         # (3) Check that the area is finite.
 
         return η
@@ -491,8 +509,8 @@ class PowerSeriesConstraints:
             sage: C
             [PowerSeriesConstraints.Constraint(real={0: [1.0], 1: [-1.0]}, imag={}, lagrange=[], value=0),
              PowerSeriesConstraints.Constraint(real={}, imag={0: [1.0], 1: [-1.0]}, lagrange=[], value=0),
-             PowerSeriesConstraints.Constraint(real={0: [1.0], 1: [-1.0]}, imag={0: [-0.0, -0.5], 1: [-0.0, -0.5]}, lagrange=[], value=0),
-             PowerSeriesConstraints.Constraint(real={0: [0.0, 0.5], 1: [0.0, 0.5]}, imag={0: [1.0], 1: [-1.0]}, lagrange=[], value=0),
+             PowerSeriesConstraints.Constraint(real={0: [1.0], 1: [-1.0]}, imag={0: [-0.0, -0.5], 1: [0.0, -0.5]}, lagrange=[], value=0),
+             PowerSeriesConstraints.Constraint(real={0: [0.0, 0.5], 1: [-0.0, 0.5]}, imag={0: [1.0], 1: [-1.0]}, lagrange=[], value=0),
              PowerSeriesConstraints.Constraint(real={0: [1.0, -0.5], 1: [-1.0, -0.5]}, imag={}, lagrange=[], value=0),
              PowerSeriesConstraints.Constraint(real={}, imag={0: [1.0, -0.5], 1: [-1.0, -0.5]}, lagrange=[], value=0)]
 
@@ -526,11 +544,10 @@ class PowerSeriesConstraints:
 
             # Require that the 0th, ..., prec-1th derivatives are the same at the midpoint of the edge.
             # The series f(z) = Σ a_k z^k has derivative Σ k!/(k-d)! a_k z^{k-d}
-            from sage.all import factorial
             for d in range(prec):
                 self.add_constraint({
-                    triangle0: [ZZ(0) if k < d else factorial(k) / factorial(k - d) * Δ0**(k - d) for k in range(self._prec)],
-                    triangle1: [ZZ(0) if k < d else -factorial(k) / factorial(k - d) * Δ1**(k - d) for k in range(self._prec)],
+                    triangle0: HarmonicDifferential._evaluate_symbolic(Δ0, d, self._prec),
+                    triangle1: [-c for c in HarmonicDifferential._evaluate_symbolic(Δ1, d, self._prec)],
                 }, ZZ(0))
 
     def require_finite_area(self):
@@ -568,11 +585,12 @@ class PowerSeriesConstraints:
 
         # If we let
         #   L(Re(a), Im(a), λ) = f(Re(a), Im(a)) - Σ λ_i g_i(Re(a), Im(a))
-        # and denote by f(Re(a), Im(a)) the above sum, and by g_i all the linear
-        # conditions collected so far, then we get two constraints for each
-        # a_k, one real, one imaginary, namely that the partial derivative wrt
-        # Re(a_k) and Im(a_k) vanishes. Note that we have one Lagrange
-        # multiplier for each linear constraint collected so far.
+        # and denote by f(Re(a), Im(a)) the above sum, and by g_i=0 all the
+        # affine linear conditions collected so far, then we get two
+        # constraints for each a_k, one real, one imaginary, namely that the
+        # partial derivative wrt Re(a_k) and Im(a_k) vanishes. Note that we
+        # have one Lagrange multiplier for each affine linear constraint
+        # collected so far.
         lagranges = len(self._constraints)
 
         # if any(constraint.value for constraint in self._constraints):
