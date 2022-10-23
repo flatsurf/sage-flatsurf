@@ -156,6 +156,22 @@ class SimplicialHomologyClass(Element):
             sage: b._path(voronoi=True)
             ((0, 1), (1, 0), (0, 2), (1, 1))
 
+        ::
+
+            sage: from flatsurf import EquiangularPolygons, similarity_surfaces
+            sage: E = EquiangularPolygons(3, 4, 13)
+            sage: P = E.an_element()
+            sage: T = similarity_surfaces.billiard(P, rational=True).minimal_cover(cover_type="translation").erase_marked_points()
+
+            sage: H = SimplicialHomology(T)
+            sage: a = H.gens()[0]; a
+            B[(0, 0)] - B[(30, 1)]
+            sage: a._path()
+            ((31, 2), (0, 0))
+            sage: a._path(voronoi=True)
+            ((31, 2), (30, 0), (25, 2), (5, 0), (13, 1), (18, 0), (7, 0), (12, 2), (4, 0), (24, 1), (28, 0), (21, 2), (14, 0), (9, 2), (3, 2),
+             (0, 0), (3, 1), (23, 1), (26, 1), (27, 1), (16, 0), (19, 2), (18, 1), (13, 0), (14, 1), (21, 1), (6, 2), (2, 0), (20, 1), (11, 0), (17, 0), (30, 1))
+
         """
         edges = []
 
@@ -174,13 +190,15 @@ class SimplicialHomologyClass(Element):
 
         path = [edges.pop()]
 
+        surface = self.surface()
+
         while edges:
             # Lengthen the path by searching for an edge that starts at the
             # vertex at which the constructed path ends.
             previous = path[-1]
-            vertex = self._surface.singularity(*self._surface.opposite_edge(*previous))
+            vertex = surface.singularity(*surface.opposite_edge(*previous))
             for edge in edges:
-                if self._surface.singularity(*edge) == vertex:
+                if surface.singularity(*edge) == vertex:
                     path.append(edge)
                     edges.remove(edge)
                     break
@@ -195,12 +213,15 @@ class SimplicialHomologyClass(Element):
         # inside Voronoi cells.
         voronoi_path = [path[0]]
 
-        for previous, edge in zip(path[1:] + path[:1], path):
+        for previous, edge in zip(path, path[1:] + path[:1]):
             previous = self.surface().opposite_edge(*previous)
             while previous != edge:
                 previous = previous[0], (previous[1] + 2) % 3
                 voronoi_path.append(previous)
                 previous = self.surface().opposite_edge(*previous)
+            voronoi_path.append(edge)
+
+        voronoi_path.pop()
 
         return tuple(voronoi_path)
 

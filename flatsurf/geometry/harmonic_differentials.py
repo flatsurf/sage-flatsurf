@@ -24,6 +24,8 @@ from sage.structure.element import Element
 from sage.categories.all import SetsWithPartialMaps
 from sage.structure.unique_representation import UniqueRepresentation
 from sage.all import ZZ
+from dataclasses import dataclass
+from collections import namedtuple
 
 
 class HarmonicDifferential(Element):
@@ -63,11 +65,11 @@ class HarmonicDifferential(Element):
         return complex(*Δ)
 
     @staticmethod
-    def _integrate_symbolic(chain, prec):
+    def _integrate_symbolic(cycle, prec):
         r"""
         Return the linear combination of the power series coefficients that
         decsribe the integral of a differential along the homology class
-        ``chain``.
+        ``cycle``.
 
         EXAMPLES::
 
@@ -105,16 +107,16 @@ class HarmonicDifferential(Element):
               (-0.00625+0j)]}
 
         """
-        surface = chain.surface()
+        surface = cycle.surface()
 
         expression = {}
 
-        for path, multiplicity in chain.voronoi_path().monomial_coefficients().items():
+        for path, multiplicity in cycle.voronoi_path().monomial_coefficients().items():
 
-            for S, T in zip(path[1:] + path[:1], path):
+            for S, T in zip((path[-1],) + path, path):
                 # Integrate from the midpoint of the edge of S to the midpoint of the edge of T
                 S = surface.opposite_edge(*S)
-                assert S[0] == T[0], f"consecutive elements of a path must be attached to the same face in {path}"
+                assert S[0] == T[0], f"consecutive elements of a path must be attached to the same face in {path} but {S} and {T} do not have that property"
 
                 # Namely we integrate the power series defined around the Voronoi vertex of S by symbolically integrating each monomial term.
                 cell = S[0]
@@ -131,6 +133,9 @@ class HarmonicDifferential(Element):
                 expression[cell] = coefficients
 
         return expression
+
+    def _evaluate_symbolic(self, triangle, point, derivative):
+        pass
 
     def _evaluate(self, expression):
         r"""
@@ -150,20 +155,20 @@ class HarmonicDifferential(Element):
 
             sage: Ω = HarmonicDifferentials(T)
             sage: η = Ω(f); η
-            (-0.179500990254010 ... at 0, -0.350210481202233 ... at 1)
+            (-0.200000000000082 - 0.500000000000258*I + ... at 0, -0.199999999999957 - 0.500000000001160*I + ... at 1)
 
         Compute the sum of the constant coefficients::
 
             sage: η._evaluate({0: [1], 1: [1]})
-            -0.529711471456243
+            -0.400000000000039 - 1.00000000000142*I
 
         """
         return sum(c*a for face in expression for (c, a) in zip(expression.get(face, []), self._series[face]._coefficients))
 
-    def integrate(self, chain):
+    def integrate(self, cycle):
         r"""
         Return the integral of this differential along the homology class
-        ``chain``.
+        ``cycle``.
 
         EXAMPLES::
 
@@ -183,15 +188,15 @@ class HarmonicDifferential(Element):
             sage: Ω = HarmonicDifferentials(T)
             sage: η = Ω(f)
 
-            sage: η.integrate(a)
-            (-0.2998018977174907-0.268495653337972j)
+            sage: η.integrate(a).real()  # tol 1e-6
+            1
 
-            sage: η.integrate(b)
-            (0.27770664134510037+0j)
+            sage: η.integrate(b).real()  # tol 1e-6
+            0
 
         """
         # TODO: The above outputs are wrong :(
-        return self._evaluate(HarmonicDifferential._integrate_symbolic(chain, max(series.precision() for series in self._series.values())))
+        return self._evaluate(HarmonicDifferential._integrate_symbolic(cycle, max(series.precision() for series in self._series.values())))
 
     def _repr_(self):
         return repr(tuple(self._series.values()))
@@ -221,9 +226,9 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
         sage: a, b = H.homology().gens()
         sage: f = H({b: 1})
         sage: η = Ω(f)
-        sage: η.integrate(a)  # not tested
+        sage: η.integrate(a).real()  # tol 1e-6
         0
-        sage: η.integrate(b)  # not tested
+        sage: η.integrate(b).real()  # tol 1e-6
         1
 
     """
@@ -257,6 +262,9 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
         # TODO: Coefficients must be reals of some sort?
         self._coefficients = coefficients
 
+    def surface(self):
+        return self._surface
+
     def _repr_(self):
         return f"Ω({self._surface})"
 
@@ -272,7 +280,7 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
 
         raise NotImplementedError()
 
-    def _element_from_cohomology(self, Φ, /, prec=5):
+    def _element_from_cohomology(self, cocycle, /, prec=5):
         # We develop a consistent system of Laurent series at each vertex of the Voronoi diagram
         # to describe a differential.
 
@@ -285,147 +293,37 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
         # At each vertex of the Voronoi diagram, write f=Σ a_k x^k + O(x^prec). Our task is now to determine
         # the a_k.
 
-        # We use several different constraints to determine these coefficients. We encode each complex
-        # coefficient as two real variables, its real and imaginary part.
-        constraints = ([], [])
-
-        def add_real_constraint(coefficients, value):
-            constraint = [0] * self._surface.num_polygons() * prec * 2
-            for triangle in coefficients.keys():
-                if triangle == "lagrange":
-                    constraint.extend(coefficients[triangle])
-                    continue
-
-                constraint[triangle * prec * 2:(triangle + 1) * prec * 2:2] = coefficients[triangle][0]
-                constraint[triangle * prec * 2 + 1:(triangle + 1) * prec * 2 + 1:2] = coefficients[triangle][1]
-
-            constraints[0].append(constraint)
-            constraints[1].append(value)
-
-        def add_complex_constraint(coefficients, value):
-            add_real_constraint({
-                triangle: (
-                    [c.real() for c in coefficients[triangle]],
-                    [-c.imag() for c in coefficients[triangle]],
-                ) for triangle in coefficients.keys()
-            }, value.real())
-            add_real_constraint({
-                triangle: (
-                    [c.imag() for c in coefficients[triangle]],
-                    [c.real() for c in coefficients[triangle]],
-                ) for triangle in coefficients.keys()
-            }, value.imag())
-
-        def Δ(triangle, edge):
-            r"""
-            Return the vector from the center of the circumcircle to the center of the edge.
-            """
-            P = self._surface.polygon(triangle)
-            return -P.circumscribing_circle().center() + P.vertex(edge) + P.edge(edge) / 2
-
-        def complex(*x):
-            C = self.base_ring().algebraic_closure()
-            return C(*x)
+        constraints = PowerSeriesConstraints(self.surface(), prec=prec)
 
         # (1) The radius of convergence of the power series is the distance from the vertex of the Voronoi
         # cell to the closest vertex of the triangulation (since we use a Delaunay triangulation, all vertices
         # are at the same distance in fact.) So the radii of convergence of two neigbhouring cells overlap
         # and the power series must coincide there. Note that this constraint is unrelated to the cohomology
         # class Φ.
-        for triangle0, edge0 in self._surface.edge_iterator():
-            triangle1, edge1 = self._surface.opposite_edge(triangle0, edge0)
+        constraints.require_consistency(prec // 2)
 
-            if triangle1 < triangle0:
-                # Add each constraint only once.
-                continue
+        # TODO: What should the rank be after this step?
+        # from numpy.linalg import matrix_rank
+        # A = constraints.matrix()[0]
+        # print(len(A), len(A[0]), matrix_rank(A))
 
-            Δ0 = Δ(triangle0, edge0)
-            Δ1 = Δ(triangle1, edge1)
-
-            # TODO: Don't go all the way to prec. The higher degrees are probably not that useful numerically.
-            from sage.all import binomial
-            for j in range(prec // 2):
-                add_complex_constraint({
-                    triangle0: [ZZ(0) if k < j else binomial(k, j)*complex(*Δ0)**(k - j) for k in range(prec)],
-                    triangle1: [ZZ(0) if k < j else binomial(k, j)*complex(*Δ1)**(k - j) for k in range(prec)]
-                }, ZZ(0))
-
-        # (2) Since the area 1 /(2iπ) ∫ η \wedge \overline{η} must be finite [TODO: REFERENCE?] we optimize for
-        # this quantity to be minimal. To make our lives easier, we do not optimize this value but instead
-        # the sum of the |a_k|^2 radius^k = (Re(a_k)^2 + Im(a_k)^2)·radius^k which are easier to compute.
-        # (TODO: Explain why this is reasonable to do instead.)
-        # We rewrite this condition using Langrange multipliers into a system of linear equations.
-
-        # If we let L(Re(a), Im(a), λ) = f(Re(a), Im(a)) + λ^t g(Re(a), Im(a)) and denote by f(Re(a), Im(a))
-        # the above sum, then we get two constraints for each a_k, one real, one imaginary, namely that the
-        # partial derivative for that Re(a_k) or Im(a_k) vanishes.
-        # Note that we have one Lagrange multiplier for each linear constraint collected so far.
-        lagranges = len(constraints[0])
-        for triangle in range(self._surface.num_polygons()):
-            R = 1  # TODO: Use the correct radius of convergence of this triangle.
-            for k in range(prec):
-                add_real_constraint({
-                    triangle: (
-                        [ZZ(0) if j != k else 2*R**k for j in range(prec)],
-                        [ZZ(0) for j in range(prec)]),
-                    "lagrange": [constraints[0][j][triangle * prec * 2 + 2*k] for j in range(lagranges)],
-                }, ZZ(0))
-                add_real_constraint({
-                    triangle: (
-                        [ZZ(0) for j in range(prec)],
-                        [ZZ(0) if j != k else 2*R**k for j in range(prec)]),
-                    "lagrange": [constraints[0][j][triangle * prec * 2 + 2*k + 1] for j in range(lagranges)],
-                }, ZZ(0))
-
-        # (3) We have that for any cycle γ, Re(∫fω) = Re(∫η) = Φ(γ). We can turn this into constraints
+        # (2) We have that for any cycle γ, Re(∫fω) = Re(∫η) = Φ(γ). We can turn this into constraints
         # on the coefficients as we integrate numerically following the path γ as it intersects the radii of
         # convergence.
-        for cycle in Φ.parent().homology().gens():
-            value = Φ(cycle)
-            constraint = {
-                triangle: ([ZZ(0)] * prec, [ZZ(0)] * prec) for triangle in range(self._surface.num_polygons())
-            }
-            for path, multiplicity in cycle.voronoi_path():
-                assert multiplicity == 1
-                for c in range(len(path)):
-                    # TODO: Zip path and a shifted path instead.
-                    triangle_, edge_ = self._surface.opposite_edge(*path[c - 1])
-                    triangle, edge = path[c]
+        constraints.require_cohomology(cocycle)
 
-                    assert self._surface.singularity(triangle_, edge_) == self._surface.singularity(triangle, edge), "cycle is not closed"
+        # (3) Since the area 1 /(2iπ) ∫ η \wedge \overline{η} must be finite [TODO: REFERENCE?] we optimize for
+        # this quantity to be minimal.
+        constraints.require_finite_area()
 
-                    while (triangle_, edge_) != (triangle, edge):
-                        coefficients = constraint[triangle_][0]
+        η = self.element_class(self, constraints.solve())
 
-                        P = Δ(triangle_, edge_)
-                        for k in range(prec):
-                            coefficients[k] -= (complex(*P)**(k + 1)/(k + 1)).real()
+        # Check whether this is actually a global differential:
+        # (1) Check that the series are actually consistent where the Voronoi cells overlap.
+        # (2) Check that differential actually integrates like the cohomology class.
+        # (3) Check that the area is finite.
 
-                        edge_ = (edge_ + 2) % 3
-
-                        P = Δ(triangle_, edge_)
-                        for k in range(prec):
-                            coefficients[k] += (complex(*P)**(k + 1)/(k + 1)).real()
-
-                        triangle_, edge_ = self._surface.opposite_edge(triangle_, edge_)
-
-            add_real_constraint(constraint, value)
-
-        # Solve the system of linear constraints to get all the coefficients.
-        vars = max(len(constraint) for constraint in constraints[0])
-
-        for constraint in constraints[0]:
-            constraint.extend([0] * (vars - len(constraint)))
-
-        import scipy.linalg
-        import numpy
-        solution, residues, _, _ = scipy.linalg.lstsq(numpy.matrix(constraints[0]), numpy.array(constraints[1]))
-        solution = solution[:-lagranges]
-        solution = [solution[k*prec:(k+1)*prec] for k in range(self._surface.num_polygons())]
-        return self.element_class(self, {
-            polygon: PowerSeries(self._surface, polygon, [self._coefficients(c) for c in solution[k]])
-            for (k, polygon) in enumerate(self._surface.label_iterator())
-            })
+        return η
 
 
 class PowerSeries:
@@ -461,3 +359,350 @@ class PowerSeries:
         R = PowerSeriesRing(R, 'z')
         f = R(self._coefficients) + O(R.gen()**len(self._coefficients))
         return f"{f} at {self._polygon}"
+
+
+class PowerSeriesConstraints:
+    r"""
+    A collection of (linear) constraints on the coefficients of power series
+    developed at the vertices of the Voronoi cells of a Delaunay triangulation.
+
+    This is used to create harmonic differentials from cohomology classes.
+    """
+    @dataclass
+    class Constraint:
+        real: dict
+        imag: dict
+        lagrange: list
+        value: complex
+
+        Coefficient = namedtuple("Coefficient", ["real", "imag"])
+
+        def get(self, triangle, k):
+            r"""
+            Return the coefficients that are multiplied with the coefficient
+            a_k of the power series for the ``triangle`` in this linear
+            constraint.
+            """
+            from sage.all import ZZ
+
+            real = self.real.get(triangle, [])[k:k+1]
+            imag = self.imag.get(triangle, [])[k:k+1]
+
+            return PowerSeriesConstraints.Constraint.Coefficient(
+                real=real[0] if real else ZZ(0),
+                imag=imag[0] if imag else ZZ(0))
+
+    def __init__(self, surface, prec):
+        self._surface = surface
+        self._prec = prec
+        self._constraints = []
+
+    def __repr__(self):
+        return repr(self._constraints)
+
+    def add_constraint(self, coefficients, value, real=True, imag=True):
+        def _imag(x):
+            x = x.imag
+            if callable(x):
+                x = x()
+            return x
+
+        def _real(x):
+            if hasattr(x, "real"):
+                x = x.real
+            if callable(x):
+                x = x()
+            return x
+
+        # We encode a constraint Σ c_i a_i = v as its real and imaginary part.
+        # (Our solver can handle complex systems but we also want to add
+        # constraints that only concern the real part of the a_i.)
+        # We have Re(Σ c_i a_i) = Σ Re(c_i) Re(a_i) - Im(c_i) Im(a_i)
+        #     and Im(Σ c_i a_i) = Σ Im(c_i) Re(a_i) + Re(c_i) Im(a_i).
+        if real:
+            self._add_constraint(
+                real={triangle: [_real(c) for c in coefficients[triangle]] for triangle in coefficients.keys()},
+                imag={triangle: [-_imag(c) for c in coefficients[triangle]] for triangle in coefficients.keys()},
+                value=_real(value))
+        if complex:
+            self._add_constraint(
+                real={triangle: [_imag(c) for c in coefficients[triangle]] for triangle in coefficients.keys()},
+                imag={triangle: [_real(c) for c in coefficients[triangle]] for triangle in coefficients.keys()},
+                value=_imag(value))
+
+    def _add_constraint(self, real, imag, value, lagrange=[]):
+        # Simplify constraint by dropping zero coefficients.
+        for triangle in real:
+            while real[triangle] and not real[triangle][-1]:
+                real[triangle].pop()
+
+        for triangle in imag:
+            while imag[triangle] and not imag[triangle][-1]:
+                imag[triangle].pop()
+
+        # Simplify constraints by dropping trivial constraints
+        real = {triangle: real[triangle] for triangle in real if real[triangle]}
+        imag = {triangle: imag[triangle] for triangle in imag if imag[triangle]}
+
+        # Simplify lagrange constraints
+        while lagrange and not lagrange[-1]:
+            lagrange.pop()
+
+        # Ignore trivial constraints
+        if not real and not imag and not value and not lagrange:
+            return
+
+        constraint = PowerSeriesConstraints.Constraint(real=real, imag=imag, value=value, lagrange=lagrange)
+
+        if constraint not in self._constraints:
+            self._constraints.append(constraint)
+
+    def require_consistency(self, prec):
+        r"""
+        The radius of convergence of the power series is the distance from the
+        vertex of the Voronoi cell to the closest singularity of the
+        triangulation (since we use a Delaunay triangulation, all vertices are
+        at the same distance in fact.) So the radii of convergence of two
+        neigbhouring cells overlap and the power series must coincide there.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T.set_immutable()
+
+        This example is a bit artificial. Both power series are developed
+        around the same point since a common edge is ambiguous in the Delaunay
+        triangulation. Therefore, it would be better to just require all
+        coefficients to be identical in the first place::
+
+            sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
+            sage: C = PowerSeriesConstraints(T, 1)
+            sage: C.require_consistency(1)
+            sage: C
+            [PowerSeriesConstraints.Constraint(real={0: [1.0], 1: [-1.0]}, imag={}, lagrange=[], value=0),
+             PowerSeriesConstraints.Constraint(real={}, imag={0: [1.0], 1: [-1.0]}, lagrange=[], value=0)]
+
+        If we add more coefficients, we get three pairs of contraints for the
+        three edges surrounding a face::
+
+            sage: C = PowerSeriesConstraints(T, 2)
+            sage: C.require_consistency(1)
+            sage: C
+            [PowerSeriesConstraints.Constraint(real={0: [1.0], 1: [-1.0]}, imag={}, lagrange=[], value=0),
+             PowerSeriesConstraints.Constraint(real={}, imag={0: [1.0], 1: [-1.0]}, lagrange=[], value=0),
+             PowerSeriesConstraints.Constraint(real={0: [1.0], 1: [-1.0]}, imag={0: [-0.0, -0.5], 1: [-0.0, -0.5]}, lagrange=[], value=0),
+             PowerSeriesConstraints.Constraint(real={0: [0.0, 0.5], 1: [0.0, 0.5]}, imag={0: [1.0], 1: [-1.0]}, lagrange=[], value=0),
+             PowerSeriesConstraints.Constraint(real={0: [1.0, -0.5], 1: [-1.0, -0.5]}, imag={}, lagrange=[], value=0),
+             PowerSeriesConstraints.Constraint(real={}, imag={0: [1.0, -0.5], 1: [-1.0, -0.5]}, lagrange=[], value=0)]
+
+        ::
+
+            sage: C = PowerSeriesConstraints(T, 2)
+            sage: C.require_consistency(2)
+            sage: C
+            [PowerSeriesConstraints.Constraint(real={0: [1.0], 1: [-1.0]}, imag={}, lagrange=[], value=0),
+             PowerSeriesConstraints.Constraint(real={}, imag={0: [1.0], 1: [-1.0]}, lagrange=[], value=0),
+             PowerSeriesConstraints.Constraint(real={0: [0, 1.0], 1: [0, -1.0]}, imag={}, lagrange=[], value=0),
+             PowerSeriesConstraints.Constraint(real={}, imag={0: [0, 1.0], 1: [0, -1.0]}, lagrange=[], value=0),
+             PowerSeriesConstraints.Constraint(real={0: [1.0], 1: [-1.0]}, imag={0: [-0.0, -0.5], 1: [-0.0, -0.5]}, lagrange=[], value=0),
+             PowerSeriesConstraints.Constraint(real={0: [0.0, 0.5], 1: [0.0, 0.5]}, imag={0: [1.0], 1: [-1.0]}, lagrange=[], value=0),
+             PowerSeriesConstraints.Constraint(real={0: [1.0, -0.5], 1: [-1.0, -0.5]}, imag={}, lagrange=[], value=0),
+             PowerSeriesConstraints.Constraint(real={}, imag={0: [1.0, -0.5], 1: [-1.0, -0.5]}, lagrange=[], value=0)]
+
+        """
+        if prec > self._prec:
+            raise ValueError("prec must not exceed global precision")
+
+        for triangle0, edge0 in self._surface.edge_iterator():
+            triangle1, edge1 = self._surface.opposite_edge(triangle0, edge0)
+
+            if triangle1 < triangle0:
+                # Add each constraint only once.
+                continue
+
+            Δ0 = HarmonicDifferential._midpoint(self._surface, triangle0, edge0)
+            Δ1 = HarmonicDifferential._midpoint(self._surface, triangle1, edge1)
+
+            # Require that the 0th, ..., prec-1th derivatives are the same at the midpoint of the edge.
+            # The series f(z) = Σ a_k z^k has derivative Σ k!/(k-d)! a_k z^{k-d}
+            from sage.all import factorial
+            for d in range(prec):
+                self.add_constraint({
+                    triangle0: [ZZ(0) if k < d else factorial(k) / factorial(k - d) * Δ0**(k - d) for k in range(self._prec)],
+                    triangle1: [ZZ(0) if k < d else -factorial(k) / factorial(k - d) * Δ1**(k - d) for k in range(self._prec)],
+                }, ZZ(0))
+
+    def require_finite_area(self):
+        r"""
+        Since the area 1 /(2iπ) ∫ η \wedge \overline{η} must be finite [TODO:
+        REFERENCE?] we can optimize for this quantity to be minimal.
+
+        EXPMALES::
+
+            sage: from flatsurf import translation_surfaces, SimplicialCohomology
+            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T.set_immutable()
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
+            sage: C = PowerSeriesConstraints(T, 1)
+            sage: C.require_consistency(1)
+
+            sage: C.require_finite_area()
+            sage: C
+            [PowerSeriesConstraints.Constraint(real={0: [1.0], 1: [-1.0]}, imag={}, lagrange=[], value=0),
+             PowerSeriesConstraints.Constraint(real={}, imag={0: [1.0], 1: [-1.0]}, lagrange=[], value=0),
+             PowerSeriesConstraints.Constraint(real={0: [2.0]}, imag={}, lagrange=[-1.0], value=0),
+             PowerSeriesConstraints.Constraint(real={}, imag={0: [2.0]}, lagrange=[0, -1.0], value=0),
+             PowerSeriesConstraints.Constraint(real={1: [2.0]}, imag={}, lagrange=[1.0], value=0),
+             PowerSeriesConstraints.Constraint(real={}, imag={1: [2.0]}, lagrange=[0, 1.0], value=0)]
+
+        """
+        # To make our lives easier, we do not optimize this value but instead
+        # the sum of the |a_k|^2·radius^k = (Re(a_k)^2 + Im(a_k)^2)·radius^k
+        # which are easier to compute. (TODO: Explain why this is reasonable to
+        # do instead.) We rewrite this condition using Langrange multipliers
+        # into a system of linear equations.
+
+        # If we let
+        #   L(Re(a), Im(a), λ) = f(Re(a), Im(a)) - Σ λ_i g_i(Re(a), Im(a))
+        # and denote by f(Re(a), Im(a)) the above sum, and by g_i all the linear
+        # conditions collected so far, then we get two constraints for each
+        # a_k, one real, one imaginary, namely that the partial derivative wrt
+        # Re(a_k) and Im(a_k) vanishes. Note that we have one Lagrange
+        # multiplier for each linear constraint collected so far.
+        lagranges = len(self._constraints)
+
+        # if any(constraint.value for constraint in self._constraints):
+        #     raise Exception("cannot add Lagrange Multiplier constraint when non-linear constraints have been added")
+
+        g = self._constraints
+
+        # We form the partial derivative with respect to the variables Re(a_k)
+        # and Im(a_k):
+        for triangle in range(self._surface.num_polygons()):
+            R = float(self._surface.polygon(triangle).circumscribing_circle().radius_squared().sqrt())
+
+            for k in range(self._prec):
+                # We get a constraint by forming dL/dRe(a_k) = 0, namely
+                # 2 Re(a_k) R^k - Σ λ_i dg_i/dRe(a_k) = 0
+                self._add_constraint(
+                    real={triangle: [ZZ(0) if j != k else 2*R**k for j in range(k+1)]},
+                    imag={},
+                    lagrange=[-g[i].get(triangle, k).real for i in range(lagranges)],
+                    value=ZZ(0))
+                # We get another constraint by forming dL/dIm(a_k) = 0, namely
+                # 2 Im(a_k) R^k + λ^t dg/dIm(a_k) = 0
+                self._add_constraint(
+                    real={},
+                    imag={triangle: [ZZ(0) if j != k else 2*R**k for j in range(k+1)]},
+                    lagrange=[-g[i].get(triangle, k).imag for i in range(lagranges)],
+                    value=ZZ(0))
+
+        # We form the partial derivatives with respect to the λ_i. This yields
+        # the condition -g_i=0 which is already recorded in the linear system.
+
+    def require_cohomology(self, cocycle):
+        r""""
+        Create a constraint by integrating numerically following the paths that
+        form a basis of homology.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, SimplicialCohomology
+            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T.set_immutable()
+
+            sage: H = SimplicialCohomology(T)
+            sage: a, b = H.homology().gens()
+
+        ::
+
+            sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
+            sage: C = PowerSeriesConstraints(T, 2)
+            sage: C.require_cohomology(H({a: 1}))
+            sage: C
+            [PowerSeriesConstraints.Constraint(real={0: [0.5, -0.25], 1: [0.5, 0.25]}, imag={0: [-0.5], 1: [-0.5]}, lagrange=[], value=1),
+             PowerSeriesConstraints.Constraint(real={0: [0.5], 1: [0.5]}, imag={0: [0.5, -0.25], 1: [0.5, 0.25]}, lagrange=[], value=0),
+             PowerSeriesConstraints.Constraint(real={0: [-0.5, 0.125], 1: [-0.5, -0.125]}, imag={}, lagrange=[], value=0),
+             PowerSeriesConstraints.Constraint(real={}, imag={0: [-0.5, 0.125], 1: [-0.5, -0.125]}, lagrange=[], value=0)]
+
+        ::
+
+            sage: C = PowerSeriesConstraints(T, 2)
+            sage: C.require_cohomology(H({b: 1}))
+            sage: C
+            [PowerSeriesConstraints.Constraint(real={0: [0.5, -0.25], 1: [0.5, 0.25]}, imag={0: [-0.5], 1: [-0.5]}, lagrange=[], value=0),
+             PowerSeriesConstraints.Constraint(real={0: [0.5], 1: [0.5]}, imag={0: [0.5, -0.25], 1: [0.5, 0.25]}, lagrange=[], value=0),
+             PowerSeriesConstraints.Constraint(real={0: [-0.5, 0.125], 1: [-0.5, -0.125]}, imag={}, lagrange=[], value=1),
+             PowerSeriesConstraints.Constraint(real={}, imag={0: [-0.5, 0.125], 1: [-0.5, -0.125]}, lagrange=[], value=0)]
+
+        """
+        for cycle in cocycle.parent().homology().gens():
+            coefficients = HarmonicDifferential._integrate_symbolic(cycle, self._prec)
+            self.add_constraint(coefficients, cocycle(cycle), imag=False)
+
+    def matrix(self):
+        A = []
+        b = []
+
+        lagranges = max(len(constraint.lagrange) for constraint in self._constraints)
+
+        for constraint in self._constraints:
+            A.append([])
+            b.append(constraint.value)
+            for triangle in self._surface.label_iterator():
+                real = constraint.real.get(triangle, [])
+                real.extend([ZZ(0)] * (self._prec - len(real)))
+                A[-1].extend(real)
+
+                imag = constraint.imag.get(triangle, [])
+                imag.extend([ZZ(0)] * (self._prec - len(imag)))
+                A[-1].extend(imag)
+
+            lagrange = constraint.lagrange
+            lagrange.extend([ZZ(0)] * (lagranges - len(lagrange)))
+
+            A[-1].extend(lagrange)
+
+        return A, b
+
+    def solve(self):
+        r"""
+        Return a solution for the system of constraints with minimal error.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T.set_immutable()
+
+            sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
+            sage: C = PowerSeriesConstraints(T, 1)
+            sage: C._add_constraint(real={0: [-1], 1: [1]}, imag={}, value=0)
+            sage: C._add_constraint(imag={0: [-1], 1: [1]}, real={}, value=0)
+            sage: C._add_constraint(real={0: [1]}, imag={}, value=1)
+            sage: C.solve()
+            {0: 1.00000000000000 + O(z) at 0, 1: 1.00000000000000 + O(z) at 1}
+
+        """
+        A, b = self.matrix()
+
+        import scipy.linalg
+        import numpy
+        solution, residues, _, _ = scipy.linalg.lstsq(numpy.matrix(A), numpy.array(b))
+
+        lagranges = max(len(constraint.lagrange) for constraint in self._constraints)
+
+        if lagranges:
+            solution = solution[:-lagranges]
+
+        solution = [solution[2*k*self._prec:2*(k+1)*self._prec] for k in range(self._surface.num_polygons())]
+
+        from sage.all import CC
+        return {
+            triangle: PowerSeries(self._surface, triangle, [CC(solution[k][p], solution[k][p + self._prec]) for p in range(self._prec)])
+            for (k, triangle) in enumerate(self._surface.label_iterator())
+        }
