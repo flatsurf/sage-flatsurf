@@ -33,6 +33,35 @@ class HarmonicDifferential(Element):
         super().__init__(parent)
         self._series = series
 
+    def _add_(self, other):
+        r"""
+        Return the sum of this harmonic differential and ``other`` by summing
+        their underlying power series.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology, SimplicialCohomology
+            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T.set_immutable()
+
+            sage: H = SimplicialHomology(T)
+            sage: a, b = H.gens()
+            sage: H = SimplicialCohomology(T)
+            sage: f = H({a: 1})
+
+            sage: Ω = HarmonicDifferentials(T)
+            sage: η = Ω(f); η
+            (-0.200000000000082 - 0.500000000000258*I + ...)
+
+            sage: η + η
+            (-0.400000000000164 - 1.00000000000052*I + ...)
+
+        """
+        return self.parent()({
+            triangle: self._series[triangle] + other._series[triangle]
+            for triangle in self._series
+        })
+
     @staticmethod
     def _midpoint(surface, triangle, edge):
         r"""
@@ -277,6 +306,9 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
         if not x:
             return self._element_from_cohomology(cohomology(), *args, **kwargs)
 
+        if isinstance(x, dict):
+            return self.element_class(self, x, *args, **kwargs)
+
         if x.parent() is cohomology:
             return self._element_from_cohomology(x, *args, **kwargs)
 
@@ -378,6 +410,29 @@ class PowerSeries:
         R = PowerSeriesRing(R, 'z')
         f = R(self._coefficients) + O(R.gen()**len(self._coefficients))
         return f"{f} at {self._polygon}"
+
+    def __add__(self, other):
+        r"""
+        Return the sum of two power series by summing their coefficients.
+
+        EXAMPLES::
+
+        sage: from flatsurf import translation_surfaces
+        sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+        sage: T.set_immutable()
+
+        sage: from flatsurf.geometry.harmonic_differentials import PowerSeries
+        sage: f = PowerSeries(T, 0, [1, 2, 3, 0, 0])
+        sage: f + f
+        2 + 4*z + 6*z^2 + O(z^5) at 0
+
+        """
+        if self._surface is not other._surface:
+            raise ValueError("power series must be defined on the same surface")
+        if self._polygon != other._polygon:
+            raise ValueError("power series must be defined with respect to the same polygon")
+
+        return PowerSeries(self._surface, self._polygon, [c + d for c, d in zip(self._coefficients, other._coefficients)])
 
 
 class PowerSeriesConstraints:
