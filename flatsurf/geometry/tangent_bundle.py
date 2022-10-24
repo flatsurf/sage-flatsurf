@@ -538,7 +538,7 @@ class SimilaritySurfaceTangentBundle:
         r"""Return the vector leaving a vertex of the polygon which under straight-line flow travels
         *clockwise* around the boundary of the polygon along the edge with the provided index.
         The length of the vector matches the length of the indexed edge.
-        Note that the point will be based in the polgon opposite the provided edge.
+        Note that the point will be based in the polygon opposite the provided edge.
 
         EXAMPLES::
 

@@ -356,7 +356,7 @@ class AbstractStraightLineTrajectory:
             ....:     assert w.count('a') == y-1
             ....:     assert w.count('b') == x-1
         """
-        ans = []
+        coding = []
 
         segments = self.segments()
 
@@ -367,7 +367,7 @@ class AbstractStraightLineTrajectory:
             e = start._position.get_edge()
             lab = (p,e) if alphabet is None else alphabet.get((p,e))
             if lab is not None:
-                ans.append(lab)
+                coding.append(lab)
 
         for i in range(len(segments)-1):
             s = segments[i]
@@ -376,7 +376,7 @@ class AbstractStraightLineTrajectory:
             e = end._position.get_edge()
             lab = (p,e) if alphabet is None else alphabet.get((p,e))
             if lab is not None:
-                ans.append(lab)
+                coding.append(lab)
 
         s = segments[-1]
         end = s.end()
@@ -386,9 +386,9 @@ class AbstractStraightLineTrajectory:
             e = end._position.get_edge()
             lab = (p,e) if alphabet is None else alphabet.get((p,e))
             if lab is not None:
-                ans.append(lab)
+                coding.append(lab)
 
-        return ans
+        return coding
 
     def initial_tangent_vector(self):
         return self.segment(0).start()
@@ -620,7 +620,7 @@ class StraightLineTrajectory(AbstractStraightLineTrajectory):
 
     def flow(self, steps):
         r"""
-        Append or preprend segments to the trajectory.
+        Append or prepend segments to the trajectory.
         If steps is positive, attempt to append this many segments.
         If steps is negative, attempt to prepend this many segments.
         Will fail gracefully the trajectory hits a singularity or closes up.

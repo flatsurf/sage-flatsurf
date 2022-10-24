@@ -1126,17 +1126,17 @@ class Polygon(Element):
 
             sage: S = polygons((1,0), (sqrt2/2, 3), (-2,3), (-sqrt2/2+1, -6))
             sage: T = polygons((sqrt2/2,3), (-2,3), (-sqrt2/2+1, -6), (1,0))
-            sage: ans, certif = S.is_isometric(T, certificate=True)
-            sage: assert ans
-            sage: shift, rot = certif
+            sage: isometric, cert = S.is_isometric(T, certificate=True)
+            sage: assert isometric
+            sage: shift, rot = cert
             sage: polygons(edges=[rot * S.edge((k + shift) % 4) for k in range(4)], base_point=T.vertex(0)) == T
             True
 
 
             sage: T = (matrix(2, [sqrt2/2, -sqrt2/2, sqrt2/2, sqrt2/2]) * S).translate((3,2))
-            sage: ans, certif = S.is_isometric(T, certificate=True)
-            sage: assert ans
-            sage: shift, rot = certif
+            sage: isometric, cert = S.is_isometric(T, certificate=True)
+            sage: assert isometric
+            sage: shift, rot = cert
             sage: polygons(edges=[rot * S.edge(k + shift) for k in range(4)], base_point=T.vertex(0)) == T
             True
         """
@@ -1228,9 +1228,9 @@ class Polygon(Element):
 
             sage: S.is_half_translate(T1, certificate=True)
             (True, (0, 1))
-            sage: ans, certif = S.is_half_translate(T2, certificate=True)
-            sage: assert ans
-            sage: shift, rot = certif
+            sage: half_translate, cert = S.is_half_translate(T2, certificate=True)
+            sage: assert half_translate
+            sage: shift, rot = cert
             sage: polygons(edges=[rot * S.edge(k + shift) for k in range(3)], base_point=T2.vertex(0)) == T2
             True
             sage: S.is_half_translate(T3, certificate=True)
@@ -2763,7 +2763,7 @@ class PolygonsConstructor:
         if angle <= 0 or angle > QQ((1,2)):
             raise ValueError('angle must be in ]0,1/2]')
 
-        z = QQbar.zeta(2*angle.denom())**angle.numer()
+        z = QQbar.zeta(2*angle.denom())**angle.numerator()
         c = z.real()
         s = z.imag()
 
