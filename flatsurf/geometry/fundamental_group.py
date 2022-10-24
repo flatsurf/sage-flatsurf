@@ -20,6 +20,7 @@ from sage.groups.group import Group
 from sage.structure.element import MultiplicativeGroupElement
 from sage.structure.unique_representation import UniqueRepresentation
 
+
 def intersection(i0, j0, i1, j1):
     r"""
     Intersection inside a polygon.
@@ -158,17 +159,17 @@ class Path(MultiplicativeGroupElement):
         """
         sp = self._polys[:]
         se = self._edges[:]
-        ser = self._edges_rev[:]
+        se_r = self._edges_rev[:]
 
         op = other._polys[:]
         oe = other._edges[:]
-        oer = other._edges_rev[:]
+        oe_r = other._edges_rev[:]
 
         if sp[-1] != op[0]:
             return None
 
         i = 0
-        while i < len(se) and i < len(oe) and se[-i-1] == oer[i]:
+        while i < len(se) and i < len(oe) and se[-i-1] == oe_r[i]:
             i += 1
 
         P = self.parent()
@@ -176,7 +177,7 @@ class Path(MultiplicativeGroupElement):
                 P,
                 sp[:len(sp)-i] + op[i+1:],
                 se[:len(se)-i]+ oe[i:],
-                ser[:len(ser)-i] + oer[i:])
+                se_r[:len(se_r)-i] + oe_r[i:])
 
     def __invert__(self):
         r"""

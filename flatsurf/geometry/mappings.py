@@ -828,7 +828,7 @@ def my_sgn(val):
 def polygon_compare(poly1,poly2):
     r"""
     Compare two polygons first by area, then by number of sides,
-    then by lexigraphical ording on edge vectors."""
+    then by lexigraphical ordering on edge vectors."""
     # This should not be used is broken!!
     #from sage.functions.generalized import sgn
     res = my_sgn(-poly1.area()+poly2.area())

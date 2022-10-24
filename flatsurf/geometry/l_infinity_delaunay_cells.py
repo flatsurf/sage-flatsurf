@@ -190,7 +190,7 @@ class LInfinityMarkedTriangulation:
             sage: T.bottom_top_pairs()
             [(0, 0, 1, 2)]
         """
-        ans = []
+        pairs = []
         for p1 in range(self._n):
             for e1 in range(3):
                 if self._edge_types[p1][e1] == V_BOT:
@@ -198,8 +198,8 @@ class LInfinityMarkedTriangulation:
                     p2,e2 = self.opposite_edge(p1,e1p1)
                     e2m1 = (e2-1)%3
                     if self._edge_types[p2][e2m1] == V_TOP:
-                        ans.append((p1,e1,p2,e2m1))
-        return ans
+                        pairs.append((p1,e1,p2,e2m1))
+        return pairs
 
     def right_left_pairs(self):
         r"""
@@ -217,7 +217,7 @@ class LInfinityMarkedTriangulation:
             sage: T.right_left_pairs()
             [(1, 1, 0, 2)]
         """
-        ans = []
+        pairs = []
         for p1 in range(self._n):
             for e1 in range(3):
                 if self._edge_types[p1][e1] == V_RIGHT:
@@ -225,8 +225,8 @@ class LInfinityMarkedTriangulation:
                     p2,e2 = self.opposite_edge(p1,e1p1)
                     e2m1 = (e2-1)%3
                     if self._edge_types[p2][e2m1] == V_LEFT:
-                        ans.append((p1,e1,p2,e2m1))
-        return ans
+                        pairs.append((p1,e1,p2,e2m1))
+        return pairs
 
     @cached_method
     def polytope(self):
