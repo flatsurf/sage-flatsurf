@@ -15,7 +15,7 @@ jobs:
         shell: bash -l {0}
         run: |
           mamba install codespell=2.2.2
-      - name: Run pytest
+      - name: Run codespell
         shell: bash -l {0}
         run: codespell flatsurf
       - uses: flatsurf/actions/show-logs@main
