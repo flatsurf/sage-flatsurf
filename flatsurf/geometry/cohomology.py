@@ -58,6 +58,31 @@ class SimplicialCohomologyClass(Element):
             for gen in self.parent().homology().gens()
         )
 
+    def _add_(self, other):
+        r"""
+        Return the pointwise sum of two homology classes.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, SimplicialCohomology
+            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T.set_immutable()
+            sage: H = SimplicialCohomology(T)
+
+            sage: γ = H.homology().gens()[0]
+            sage: f = H({γ: 1.337})
+            sage: (f + f)(γ) == 2*f(γ)
+            True
+
+        """
+        values = {}
+        for gen in self.parent().homology().gens():
+            value = self(gen) + other(gen)
+            if value:
+                values[gen] = value
+
+        return self.parent()(values)
+
 
 class SimplicialCohomology(UniqueRepresentation, Parent):
     r"""
