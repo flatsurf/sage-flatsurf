@@ -4,24 +4,19 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
     <title>The flatsurf.graphical Package &#8212; sage-flatsurf 0.4.7 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/classic.css" />
-    <link rel="stylesheet" type="text/css" href="_static/mystnb.css" />
-    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
-    <script>let toggleHintShow = 'Click to show';</script>
-    <script>let toggleHintHide = 'Click to hide';</script>
-    <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="_static/togglebutton.js"></script>
-    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="_static/sphinx_highlight.js"></script>
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -71,7 +66,7 @@ and graphical coordinates. We do this with a similarity (called transformation b
 <dt class="sig sig-object py" id="flatsurf.graphical.polygon.GraphicalPolygon.bounding_box">
 <span class="sig-name descname"><span class="pre">bounding_box</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/polygon.html#GraphicalPolygon.bounding_box"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.polygon.GraphicalPolygon.bounding_box" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the quadruple (x1,y1,x2,y2) where x1 and y1 are the minimal
-x- and y-coordinates and x2 and y2 are the maximal x-and y- cordinates.</p>
+x and y coordinates and x2 and y2 are the maximal x and y coordinates.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -334,7 +329,7 @@ when plotting a polygon edge which is adjacent to the edge it is glued to.</p>
 <span class="sig-name descname"><span class="pre">bounding_box</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/graphical/surface.html#GraphicalSurface.bounding_box"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.bounding_box" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the quadruple (x1,y1,x2,y2) where x1 and y1 are the minimal
 x- and y-coordinates of a visible graphical polygon and x2 and y2 are the
-maximal x-and y- cordinates  of a visible graphical polygon.</p>
+maximal x-and y- coordinates of a visible graphical polygon.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -995,9 +990,95 @@ is and the surface is infinite.</p>
     <h3><a href="index.html">Table of Contents</a></h3>
     <ul>
 <li><a class="reference internal" href="#">The flatsurf.graphical Package</a><ul>
-<li><a class="reference internal" href="#module-flatsurf.graphical.polygon">Graphical Polygons</a></li>
-<li><a class="reference internal" href="#module-flatsurf.graphical.surface">Graphical Surfaces</a></li>
-<li><a class="reference internal" href="#module-flatsurf.graphical.straight_line_trajectory">Graphical Straight-Line Trajectories</a></li>
+<li><a class="reference internal" href="#module-flatsurf.graphical.polygon">Graphical Polygons</a><ul>
+<li><a class="reference internal" href="#flatsurf.graphical.polygon.GraphicalPolygon"><code class="docutils literal notranslate"><span class="pre">GraphicalPolygon</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.graphical.polygon.GraphicalPolygon.base_polygon"><code class="docutils literal notranslate"><span class="pre">GraphicalPolygon.base_polygon()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.polygon.GraphicalPolygon.bounding_box"><code class="docutils literal notranslate"><span class="pre">GraphicalPolygon.bounding_box()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.polygon.GraphicalPolygon.contains"><code class="docutils literal notranslate"><span class="pre">GraphicalPolygon.contains()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.polygon.GraphicalPolygon.copy"><code class="docutils literal notranslate"><span class="pre">GraphicalPolygon.copy()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.polygon.GraphicalPolygon.plot_edge"><code class="docutils literal notranslate"><span class="pre">GraphicalPolygon.plot_edge()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.polygon.GraphicalPolygon.plot_edge_label"><code class="docutils literal notranslate"><span class="pre">GraphicalPolygon.plot_edge_label()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.polygon.GraphicalPolygon.plot_label"><code class="docutils literal notranslate"><span class="pre">GraphicalPolygon.plot_label()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.polygon.GraphicalPolygon.plot_points"><code class="docutils literal notranslate"><span class="pre">GraphicalPolygon.plot_points()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.polygon.GraphicalPolygon.plot_polygon"><code class="docutils literal notranslate"><span class="pre">GraphicalPolygon.plot_polygon()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.polygon.GraphicalPolygon.plot_zero_flag"><code class="docutils literal notranslate"><span class="pre">GraphicalPolygon.plot_zero_flag()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.polygon.GraphicalPolygon.set_transformation"><code class="docutils literal notranslate"><span class="pre">GraphicalPolygon.set_transformation()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.polygon.GraphicalPolygon.transform"><code class="docutils literal notranslate"><span class="pre">GraphicalPolygon.transform()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.polygon.GraphicalPolygon.transform_back"><code class="docutils literal notranslate"><span class="pre">GraphicalPolygon.transform_back()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.polygon.GraphicalPolygon.transformation"><code class="docutils literal notranslate"><span class="pre">GraphicalPolygon.transformation()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.polygon.GraphicalPolygon.transformed_vertex"><code class="docutils literal notranslate"><span class="pre">GraphicalPolygon.transformed_vertex()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.polygon.GraphicalPolygon.xmax"><code class="docutils literal notranslate"><span class="pre">GraphicalPolygon.xmax()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.polygon.GraphicalPolygon.xmin"><code class="docutils literal notranslate"><span class="pre">GraphicalPolygon.xmin()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.polygon.GraphicalPolygon.ymax"><code class="docutils literal notranslate"><span class="pre">GraphicalPolygon.ymax()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.polygon.GraphicalPolygon.ymin"><code class="docutils literal notranslate"><span class="pre">GraphicalPolygon.ymin()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-flatsurf.graphical.surface">Graphical Surfaces</a><ul>
+<li><a class="reference internal" href="#flatsurf.graphical.surface.GraphicalSurface"><code class="docutils literal notranslate"><span class="pre">GraphicalSurface</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.graphical.surface.GraphicalSurface.adjacent_edge_options"><code class="docutils literal notranslate"><span class="pre">GraphicalSurface.adjacent_edge_options</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.surface.GraphicalSurface.bounding_box"><code class="docutils literal notranslate"><span class="pre">GraphicalSurface.bounding_box()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.surface.GraphicalSurface.copy"><code class="docutils literal notranslate"><span class="pre">GraphicalSurface.copy()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.surface.GraphicalSurface.edge_label_options"><code class="docutils literal notranslate"><span class="pre">GraphicalSurface.edge_label_options</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.surface.GraphicalSurface.edge_labels"><code class="docutils literal notranslate"><span class="pre">GraphicalSurface.edge_labels()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.surface.GraphicalSurface.get_surface"><code class="docutils literal notranslate"><span class="pre">GraphicalSurface.get_surface()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.surface.GraphicalSurface.graphical_polygon"><code class="docutils literal notranslate"><span class="pre">GraphicalSurface.graphical_polygon()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.surface.GraphicalSurface.hide"><code class="docutils literal notranslate"><span class="pre">GraphicalSurface.hide()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.surface.GraphicalSurface.is_adjacent"><code class="docutils literal notranslate"><span class="pre">GraphicalSurface.is_adjacent()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.surface.GraphicalSurface.is_visible"><code class="docutils literal notranslate"><span class="pre">GraphicalSurface.is_visible()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.surface.GraphicalSurface.make_adjacent"><code class="docutils literal notranslate"><span class="pre">GraphicalSurface.make_adjacent()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.surface.GraphicalSurface.make_adjacent_and_visible"><code class="docutils literal notranslate"><span class="pre">GraphicalSurface.make_adjacent_and_visible()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.surface.GraphicalSurface.make_all_visible"><code class="docutils literal notranslate"><span class="pre">GraphicalSurface.make_all_visible()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.surface.GraphicalSurface.make_visible"><code class="docutils literal notranslate"><span class="pre">GraphicalSurface.make_visible()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.surface.GraphicalSurface.non_adjacent_edge_options"><code class="docutils literal notranslate"><span class="pre">GraphicalSurface.non_adjacent_edge_options</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.surface.GraphicalSurface.opposite_edge"><code class="docutils literal notranslate"><span class="pre">GraphicalSurface.opposite_edge()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.surface.GraphicalSurface.plot"><code class="docutils literal notranslate"><span class="pre">GraphicalSurface.plot()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.surface.GraphicalSurface.plot_edge"><code class="docutils literal notranslate"><span class="pre">GraphicalSurface.plot_edge()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.surface.GraphicalSurface.plot_edge_label"><code class="docutils literal notranslate"><span class="pre">GraphicalSurface.plot_edge_label()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.surface.GraphicalSurface.plot_polygon"><code class="docutils literal notranslate"><span class="pre">GraphicalSurface.plot_polygon()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.surface.GraphicalSurface.plot_polygon_label"><code class="docutils literal notranslate"><span class="pre">GraphicalSurface.plot_polygon_label()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.surface.GraphicalSurface.plot_zero_flag"><code class="docutils literal notranslate"><span class="pre">GraphicalSurface.plot_zero_flag()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.surface.GraphicalSurface.polygon_label_options"><code class="docutils literal notranslate"><span class="pre">GraphicalSurface.polygon_label_options</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.surface.GraphicalSurface.polygon_options"><code class="docutils literal notranslate"><span class="pre">GraphicalSurface.polygon_options</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.surface.GraphicalSurface.process_options"><code class="docutils literal notranslate"><span class="pre">GraphicalSurface.process_options()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.surface.GraphicalSurface.reset_letters"><code class="docutils literal notranslate"><span class="pre">GraphicalSurface.reset_letters()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.surface.GraphicalSurface.self_glued_edge_options"><code class="docutils literal notranslate"><span class="pre">GraphicalSurface.self_glued_edge_options</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.surface.GraphicalSurface.to_surface"><code class="docutils literal notranslate"><span class="pre">GraphicalSurface.to_surface()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.surface.GraphicalSurface.upside_down_polygon_options"><code class="docutils literal notranslate"><span class="pre">GraphicalSurface.upside_down_polygon_options</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.surface.GraphicalSurface.visible"><code class="docutils literal notranslate"><span class="pre">GraphicalSurface.visible()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.surface.GraphicalSurface.will_plot_adjacent_edges"><code class="docutils literal notranslate"><span class="pre">GraphicalSurface.will_plot_adjacent_edges</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.surface.GraphicalSurface.will_plot_edge_labels"><code class="docutils literal notranslate"><span class="pre">GraphicalSurface.will_plot_edge_labels</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.surface.GraphicalSurface.will_plot_edges"><code class="docutils literal notranslate"><span class="pre">GraphicalSurface.will_plot_edges</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.surface.GraphicalSurface.will_plot_non_adjacent_edges"><code class="docutils literal notranslate"><span class="pre">GraphicalSurface.will_plot_non_adjacent_edges</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.surface.GraphicalSurface.will_plot_polygon_labels"><code class="docutils literal notranslate"><span class="pre">GraphicalSurface.will_plot_polygon_labels</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.surface.GraphicalSurface.will_plot_polygons"><code class="docutils literal notranslate"><span class="pre">GraphicalSurface.will_plot_polygons</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.surface.GraphicalSurface.will_plot_self_glued_edges"><code class="docutils literal notranslate"><span class="pre">GraphicalSurface.will_plot_self_glued_edges</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.surface.GraphicalSurface.will_plot_upside_down_polygons"><code class="docutils literal notranslate"><span class="pre">GraphicalSurface.will_plot_upside_down_polygons</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.surface.GraphicalSurface.will_plot_zero_flags"><code class="docutils literal notranslate"><span class="pre">GraphicalSurface.will_plot_zero_flags</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.surface.GraphicalSurface.xmax"><code class="docutils literal notranslate"><span class="pre">GraphicalSurface.xmax()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.surface.GraphicalSurface.xmin"><code class="docutils literal notranslate"><span class="pre">GraphicalSurface.xmin()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.surface.GraphicalSurface.ymax"><code class="docutils literal notranslate"><span class="pre">GraphicalSurface.ymax()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.surface.GraphicalSurface.ymin"><code class="docutils literal notranslate"><span class="pre">GraphicalSurface.ymin()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.surface.GraphicalSurface.zero_flag_options"><code class="docutils literal notranslate"><span class="pre">GraphicalSurface.zero_flag_options</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-flatsurf.graphical.straight_line_trajectory">Graphical Straight-Line Trajectories</a><ul>
+<li><a class="reference internal" href="#flatsurf.graphical.straight_line_trajectory.GraphicalSegmentInPolygon"><code class="docutils literal notranslate"><span class="pre">GraphicalSegmentInPolygon</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.graphical.straight_line_trajectory.GraphicalSegmentInPolygon.end"><code class="docutils literal notranslate"><span class="pre">GraphicalSegmentInPolygon.end()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.straight_line_trajectory.GraphicalSegmentInPolygon.plot"><code class="docutils literal notranslate"><span class="pre">GraphicalSegmentInPolygon.plot()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.straight_line_trajectory.GraphicalSegmentInPolygon.polygon_label"><code class="docutils literal notranslate"><span class="pre">GraphicalSegmentInPolygon.polygon_label()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.straight_line_trajectory.GraphicalSegmentInPolygon.start"><code class="docutils literal notranslate"><span class="pre">GraphicalSegmentInPolygon.start()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flatsurf.graphical.straight_line_trajectory.GraphicalStraightLineTrajectory"><code class="docutils literal notranslate"><span class="pre">GraphicalStraightLineTrajectory</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.graphical.straight_line_trajectory.GraphicalStraightLineTrajectory.plot"><code class="docutils literal notranslate"><span class="pre">GraphicalStraightLineTrajectory.plot()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -1047,7 +1128,7 @@ is and the surface is infinite.</p>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016-2022, the sage-flatsurf authors.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.1.1.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
     </div>
   </body>
 </html>

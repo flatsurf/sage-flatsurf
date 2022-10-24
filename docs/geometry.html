@@ -4,24 +4,19 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
     <title>The flatsurf.geometry Package &#8212; sage-flatsurf 0.4.7 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/classic.css" />
-    <link rel="stylesheet" type="text/css" href="_static/mystnb.css" />
-    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
-    <script>let toggleHintShow = 'Click to show';</script>
-    <script>let toggleHintHide = 'Click to hide';</script>
-    <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="_static/togglebutton.js"></script>
-    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="_static/sphinx_highlight.js"></script>
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -784,7 +779,7 @@ Vector space of dimension 2 over Number Field in c with defining polynomial x^2 
 <dd><dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.polygon.Polygon.angle">
 <span class="sig-name descname"><span class="pre">angle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">numerical</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assume_rational</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/polygon.html#Polygon.angle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.polygon.Polygon.angle" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the angle at the begining of the start point of the edge <code class="docutils literal notranslate"><span class="pre">e</span></code>.</p>
+<dd><p>Return the angle at the beginning of the start point of the edge <code class="docutils literal notranslate"><span class="pre">e</span></code>.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.polygon</span> <span class="kn">import</span> <span class="n">polygons</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">polygons</span><span class="o">.</span><span class="n">square</span><span class="p">()</span><span class="o">.</span><span class="n">angle</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
@@ -929,9 +924,9 @@ File: sage/structure/element.pyx (starting at line 649)</p>
 
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">is_half_translate</span><span class="p">(</span><span class="n">T1</span><span class="p">,</span> <span class="n">certificate</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">ans</span><span class="p">,</span> <span class="n">certif</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">is_half_translate</span><span class="p">(</span><span class="n">T2</span><span class="p">,</span> <span class="n">certificate</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">sage</span><span class="p">:</span> <span class="k">assert</span> <span class="n">ans</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">shift</span><span class="p">,</span> <span class="n">rot</span> <span class="o">=</span> <span class="n">certif</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">half_translate</span><span class="p">,</span> <span class="n">cert</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">is_half_translate</span><span class="p">(</span><span class="n">T2</span><span class="p">,</span> <span class="n">certificate</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="k">assert</span> <span class="n">half_translate</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">shift</span><span class="p">,</span> <span class="n">rot</span> <span class="o">=</span> <span class="n">cert</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">polygons</span><span class="p">(</span><span class="n">edges</span><span class="o">=</span><span class="p">[</span><span class="n">rot</span> <span class="o">*</span> <span class="n">S</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="n">k</span> <span class="o">+</span> <span class="n">shift</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)],</span> <span class="n">base_point</span><span class="o">=</span><span class="n">T2</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span> <span class="o">==</span> <span class="n">T2</span>
 <span class="kc">True</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">is_half_translate</span><span class="p">(</span><span class="n">T3</span><span class="p">,</span> <span class="n">certificate</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -973,17 +968,17 @@ is mapped to the edge <code class="docutils literal notranslate"><span class="pr
 
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">polygons</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="n">sqrt2</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="n">sqrt2</span><span class="o">/</span><span class="mi">2</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">6</span><span class="p">))</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">T</span> <span class="o">=</span> <span class="n">polygons</span><span class="p">((</span><span class="n">sqrt2</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="n">sqrt2</span><span class="o">/</span><span class="mi">2</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">6</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">))</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">ans</span><span class="p">,</span> <span class="n">certif</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">is_isometric</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">certificate</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">sage</span><span class="p">:</span> <span class="k">assert</span> <span class="n">ans</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">shift</span><span class="p">,</span> <span class="n">rot</span> <span class="o">=</span> <span class="n">certif</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">isometric</span><span class="p">,</span> <span class="n">cert</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">is_isometric</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">certificate</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="k">assert</span> <span class="n">isometric</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">shift</span><span class="p">,</span> <span class="n">rot</span> <span class="o">=</span> <span class="n">cert</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">polygons</span><span class="p">(</span><span class="n">edges</span><span class="o">=</span><span class="p">[</span><span class="n">rot</span> <span class="o">*</span> <span class="n">S</span><span class="o">.</span><span class="n">edge</span><span class="p">((</span><span class="n">k</span> <span class="o">+</span> <span class="n">shift</span><span class="p">)</span> <span class="o">%</span> <span class="mi">4</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)],</span> <span class="n">base_point</span><span class="o">=</span><span class="n">T</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span> <span class="o">==</span> <span class="n">T</span>
 <span class="kc">True</span>
 
 
 <span class="n">sage</span><span class="p">:</span> <span class="n">T</span> <span class="o">=</span> <span class="p">(</span><span class="n">matrix</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="p">[</span><span class="n">sqrt2</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="n">sqrt2</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">sqrt2</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">sqrt2</span><span class="o">/</span><span class="mi">2</span><span class="p">])</span> <span class="o">*</span> <span class="n">S</span><span class="p">)</span><span class="o">.</span><span class="n">translate</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">ans</span><span class="p">,</span> <span class="n">certif</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">is_isometric</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">certificate</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">sage</span><span class="p">:</span> <span class="k">assert</span> <span class="n">ans</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">shift</span><span class="p">,</span> <span class="n">rot</span> <span class="o">=</span> <span class="n">certif</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">isometric</span><span class="p">,</span> <span class="n">cert</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">is_isometric</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">certificate</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="k">assert</span> <span class="n">isometric</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">shift</span><span class="p">,</span> <span class="n">rot</span> <span class="o">=</span> <span class="n">cert</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">polygons</span><span class="p">(</span><span class="n">edges</span><span class="o">=</span><span class="p">[</span><span class="n">rot</span> <span class="o">*</span> <span class="n">S</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="n">k</span> <span class="o">+</span> <span class="n">shift</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)],</span> <span class="n">base_point</span><span class="o">=</span><span class="n">T</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span> <span class="o">==</span> <span class="n">T</span>
 <span class="kc">True</span>
 </pre></div>
@@ -1845,14 +1840,14 @@ structure, e.g., by declaring that the data describes a
 <span class="sig-name descname"><span class="pre">opposite_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/surface.html#BaseRingChangedSurface.opposite_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface.BaseRingChangedSurface.opposite_edge" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given the label <code class="docutils literal notranslate"><span class="pre">l</span></code> of a polygon and an edge <code class="docutils literal notranslate"><span class="pre">e</span></code> in that polygon
 returns the pair (<code class="docutils literal notranslate"><span class="pre">ll</span></code>, <code class="docutils literal notranslate"><span class="pre">ee</span></code>) to which this edge is glued.</p>
-<p>This method must be overriden in subclasses.</p>
+<p>This method must be overridden in subclasses.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.surface.BaseRingChangedSurface.polygon">
 <span class="sig-name descname"><span class="pre">polygon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lab</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/surface.html#BaseRingChangedSurface.polygon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface.BaseRingChangedSurface.polygon" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the polygon with the provided label.</p>
-<p>This method must be overriden in subclasses.</p>
+<p>This method must be overridden in subclasses.</p>
 </dd></dl>
 
 </dd></dl>
@@ -1867,8 +1862,8 @@ returns the pair (<code class="docutils literal notranslate"><span class="pre">l
 <dt class="sig sig-object py" id="flatsurf.geometry.surface.LabelComparator">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.surface.</span></span><span class="sig-name descname"><span class="pre">LabelComparator</span></span><a class="reference internal" href="_modules/flatsurf/geometry/surface.html#LabelComparator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface.LabelComparator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Implements a total ordering on labels, which may be of varying types.</p>
-<p>We use hashes, so if hash(label1) &lt; hash(label2) we declare label1 &lt; label2.
-For objects with the same hash, we store an arbitary ordering.</p>
+<p>We use hashes, so if hash(label1) &lt; hash(label2) we declare label1 &lt; label2.</p>
+<p>For objects with the same hash, we store an arbitrary ordering.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.surface.LabelComparator.ge">
 <span class="sig-name descname"><span class="pre">ge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">l1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/surface.html#LabelComparator.ge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface.LabelComparator.ge" title="Permalink to this definition">¶</a></dt>
@@ -2068,7 +2063,7 @@ the surface in a canonical order with <a class="reference internal" href="#flats
 <dt class="sig sig-object py" id="flatsurf.geometry.surface.Surface.base_ring">
 <span class="sig-name descname"><span class="pre">base_ring</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/surface.html#Surface.base_ring"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface.Surface.base_ring" title="Permalink to this definition">¶</a></dt>
 <dd><p>The field on which the coordinates of <code class="docutils literal notranslate"><span class="pre">self</span></code> live.</p>
-<p>This method must be overriden in subclasses!</p>
+<p>This method must be overridden in subclasses!</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2186,14 +2181,14 @@ performance.</p>
 <span class="sig-name descname"><span class="pre">opposite_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">l</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/surface.html#Surface.opposite_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface.Surface.opposite_edge" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given the label <code class="docutils literal notranslate"><span class="pre">l</span></code> of a polygon and an edge <code class="docutils literal notranslate"><span class="pre">e</span></code> in that polygon
 returns the pair (<code class="docutils literal notranslate"><span class="pre">ll</span></code>, <code class="docutils literal notranslate"><span class="pre">ee</span></code>) to which this edge is glued.</p>
-<p>This method must be overriden in subclasses.</p>
+<p>This method must be overridden in subclasses.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.surface.Surface.polygon">
 <span class="sig-name descname"><span class="pre">polygon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/surface.html#Surface.polygon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface.Surface.polygon" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the polygon with the provided label.</p>
-<p>This method must be overriden in subclasses.</p>
+<p>This method must be overridden in subclasses.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2533,7 +2528,7 @@ check that the test suite fails as expected:</p>
 <dt class="sig sig-object py" id="flatsurf.geometry.similarity_surface.SimilaritySurface.base_ring">
 <span class="sig-name descname"><span class="pre">base_ring</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/similarity_surface.html#SimilaritySurface.base_ring"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.base_ring" title="Permalink to this definition">¶</a></dt>
 <dd><p>The field on which the coordinates of <code class="docutils literal notranslate"><span class="pre">self</span></code> live.</p>
-<p>This method must be overriden in subclasses!</p>
+<p>This method must be overridden in subclasses!</p>
 </dd></dl>
 
 <dl class="py method">
@@ -3176,7 +3171,7 @@ This will allow it to work for infinite surfaces.</p></li>
 polygons, and ensure that the gluings between two polygons joined by
 an edge in this tree is by translation.</p>
 <p>This guarantees that the group generated by the edge identifications is
-minimal among representions of the surface. In particular, if for instance
+minimal among representations of the surface. In particular, if for instance
 you have a translation surface which is anot representable as a translation
 surface (because polygons are presented with rotations) then after this
 change it will be representable as a translation surface.</p>
@@ -3492,7 +3487,8 @@ sage: s.polygon(0).num_edges()
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.similarity_surface.SimilaritySurface.triangulation_mapping">
 <span class="sig-name descname"><span class="pre">triangulation_mapping</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/similarity_surface.html#SimilaritySurface.triangulation_mapping"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.triangulation_mapping" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a SurfaceMapping triangulating the suface or None if the surface is already triangulated.</p>
+<dd><p>Return a <code class="docutils literal notranslate"><span class="pre">SurfaceMapping</span></code> triangulating the surface
+or <code class="docutils literal notranslate"><span class="pre">None</span></code> if the surface is already triangulated.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -3598,14 +3594,14 @@ Realization needs just to define a _domain and four cardinal directions.</p>
 <span class="sig-name descname"><span class="pre">opposite_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/translation_surface.html#AbstractOrigami.opposite_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.translation_surface.AbstractOrigami.opposite_edge" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given the label <code class="docutils literal notranslate"><span class="pre">l</span></code> of a polygon and an edge <code class="docutils literal notranslate"><span class="pre">e</span></code> in that polygon
 returns the pair (<code class="docutils literal notranslate"><span class="pre">ll</span></code>, <code class="docutils literal notranslate"><span class="pre">ee</span></code>) to which this edge is glued.</p>
-<p>This method must be overriden in subclasses.</p>
+<p>This method must be overridden in subclasses.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.translation_surface.AbstractOrigami.polygon">
 <span class="sig-name descname"><span class="pre">polygon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lab</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/translation_surface.html#AbstractOrigami.polygon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.translation_surface.AbstractOrigami.polygon" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the polygon with the provided label.</p>
-<p>This method must be overriden in subclasses.</p>
+<p>This method must be overridden in subclasses.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -3637,14 +3633,14 @@ Instead use TranslationSurface.standardize_polygons.</p>
 <span class="sig-name descname"><span class="pre">opposite_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">l</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/translation_surface.html#LazyStandardizedPolygonSurface.opposite_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.translation_surface.LazyStandardizedPolygonSurface.opposite_edge" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given the label <code class="docutils literal notranslate"><span class="pre">l</span></code> of a polygon and an edge <code class="docutils literal notranslate"><span class="pre">e</span></code> in that polygon
 returns the pair (<code class="docutils literal notranslate"><span class="pre">ll</span></code>, <code class="docutils literal notranslate"><span class="pre">ee</span></code>) to which this edge is glued.</p>
-<p>This method must be overriden in subclasses.</p>
+<p>This method must be overridden in subclasses.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.translation_surface.LazyStandardizedPolygonSurface.polygon">
 <span class="sig-name descname"><span class="pre">polygon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/translation_surface.html#LazyStandardizedPolygonSurface.polygon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.translation_surface.LazyStandardizedPolygonSurface.polygon" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the polygon with the provided label.</p>
-<p>This method must be overriden in subclasses.</p>
+<p>This method must be overridden in subclasses.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -3665,7 +3661,7 @@ deprecated.</p>
 <span class="sig-name descname"><span class="pre">opposite_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/translation_surface.html#MinimalTranslationCover.opposite_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.translation_surface.MinimalTranslationCover.opposite_edge" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given the label <code class="docutils literal notranslate"><span class="pre">l</span></code> of a polygon and an edge <code class="docutils literal notranslate"><span class="pre">e</span></code> in that polygon
 returns the pair (<code class="docutils literal notranslate"><span class="pre">ll</span></code>, <code class="docutils literal notranslate"><span class="pre">ee</span></code>) to which this edge is glued.</p>
-<p>This method must be overriden in subclasses.</p>
+<p>This method must be overridden in subclasses.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -3702,7 +3698,7 @@ returns the pair (<code class="docutils literal notranslate"><span class="pre">l
 <span class="sig-name descname"><span class="pre">opposite_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/translation_surface.html#Origami.opposite_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.translation_surface.Origami.opposite_edge" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given the label <code class="docutils literal notranslate"><span class="pre">l</span></code> of a polygon and an edge <code class="docutils literal notranslate"><span class="pre">e</span></code> in that polygon
 returns the pair (<code class="docutils literal notranslate"><span class="pre">ll</span></code>, <code class="docutils literal notranslate"><span class="pre">ee</span></code>) to which this edge is glued.</p>
-<p>This method must be overriden in subclasses.</p>
+<p>This method must be overridden in subclasses.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -3891,17 +3887,12 @@ vector will be treated as zero.</p></li>
 the triangles making up the surface without destroying any of them.
 So, the area of the triangle must be positive along the full interval
 of time of the deformation.  If false, then the deformation must have
-a particular form: all vectors for the deformation must be paralell.
+a particular form: all vectors for the deformation must be parallel.
 In this case we achieve the deformation with the help of the SL(2,R)
 action and Delaunay triangulations.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">limit</span></code> (integer) - Restricts the length of the size of SL(2,R)
 deformations considered. The algorithm should be roughly worst time
 linear in limit.</p></li>
-</ul>
-<p>TODO:</p>
-<ul class="simple">
-<li><p>Support arbitrary rel deformations.</p></li>
-<li><p>Remove the requirement that triangles be used.</p></li>
 </ul>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="o">*</span>
@@ -4406,7 +4397,7 @@ in a bigger ring, the <code class="docutils literal notranslate"><span class="pr
 <dt class="sig sig-object py" id="flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentBundle">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.tangent_bundle.</span></span><span class="sig-name descname"><span class="pre">SimilaritySurfaceTangentBundle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">similarity_surface</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ring</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/tangent_bundle.html#SimilaritySurfaceTangentBundle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentBundle" title="Permalink to this definition">¶</a></dt>
 <dd><p>Construct the tangent bundle of a given similarity surface.</p>
-<p>Needs work: We should check for coersion from the base_ring of the surface</p>
+<p>Needs work: We should check for coercion from the base_ring of the surface</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentBundle.base_ring">
 <span class="sig-name descname"><span class="pre">base_ring</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/tangent_bundle.html#SimilaritySurfaceTangentBundle.base_ring"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentBundle.base_ring" title="Permalink to this definition">¶</a></dt>
@@ -4418,7 +4409,7 @@ in a bigger ring, the <code class="docutils literal notranslate"><span class="pr
 <dd><p>Return the vector leaving a vertex of the polygon which under straight-line flow travels
 <em>clockwise</em> around the boundary of the polygon along the edge with the provided index.
 The length of the vector matches the length of the indexed edge.
-Note that the point will be based in the polgon opposite the provided edge.</p>
+Note that the point will be based in the polygon opposite the provided edge.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.similarity_surface_generators</span> <span class="kn">import</span> <span class="n">SimilaritySurfaceGenerators</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">s</span> <span class="o">=</span> <span class="n">SimilaritySurfaceGenerators</span><span class="o">.</span><span class="n">example</span><span class="p">()</span>
@@ -4833,7 +4824,7 @@ the surface in a canonical order with <code class="xref py py-meth docutils lite
 <dt class="sig sig-object py" id="flatsurf.geometry.mappings.MatrixListDeformedSurface.base_ring">
 <span class="sig-name descname"><span class="pre">base_ring</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/mappings.html#MatrixListDeformedSurface.base_ring"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.mappings.MatrixListDeformedSurface.base_ring" title="Permalink to this definition">¶</a></dt>
 <dd><p>The field on which the coordinates of <code class="docutils literal notranslate"><span class="pre">self</span></code> live.</p>
-<p>This method must be overriden in subclasses!</p>
+<p>This method must be overridden in subclasses!</p>
 </dd></dl>
 
 <dl class="py method">
@@ -4847,14 +4838,14 @@ the surface in a canonical order with <code class="xref py py-meth docutils lite
 <span class="sig-name descname"><span class="pre">opposite_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/mappings.html#MatrixListDeformedSurface.opposite_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.mappings.MatrixListDeformedSurface.opposite_edge" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given the label <code class="docutils literal notranslate"><span class="pre">l</span></code> of a polygon and an edge <code class="docutils literal notranslate"><span class="pre">e</span></code> in that polygon
 returns the pair (<code class="docutils literal notranslate"><span class="pre">ll</span></code>, <code class="docutils literal notranslate"><span class="pre">ee</span></code>) to which this edge is glued.</p>
-<p>This method must be overriden in subclasses.</p>
+<p>This method must be overridden in subclasses.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.mappings.MatrixListDeformedSurface.polygon">
 <span class="sig-name descname"><span class="pre">polygon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lab</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/mappings.html#MatrixListDeformedSurface.polygon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.mappings.MatrixListDeformedSurface.polygon" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the polygon with the provided label.</p>
-<p>This method must be overriden in subclasses.</p>
+<p>This method must be overridden in subclasses.</p>
 </dd></dl>
 
 </dd></dl>
@@ -5120,7 +5111,7 @@ If two vertices have the same y-coordinate, then the one with least x-coordinate
 <dt class="sig sig-object py" id="flatsurf.geometry.mappings.polygon_compare">
 <span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.mappings.</span></span><span class="sig-name descname"><span class="pre">polygon_compare</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">poly1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">poly2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/mappings.html#polygon_compare"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.mappings.polygon_compare" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compare two polygons first by area, then by number of sides,
-then by lexigraphical ording on edge vectors.</p>
+then by lexigraphical ordering on edge vectors.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -5477,7 +5468,7 @@ The keyword arguments in <cite>**options</cite> are passed on to <code class="xr
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.straight_line_trajectory.StraightLineTrajectory.flow">
 <span class="sig-name descname"><span class="pre">flow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">steps</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/straight_line_trajectory.html#StraightLineTrajectory.flow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.straight_line_trajectory.StraightLineTrajectory.flow" title="Permalink to this definition">¶</a></dt>
-<dd><p>Append or preprend segments to the trajectory.
+<dd><p>Append or prepend segments to the trajectory.
 If steps is positive, attempt to append this many segments.
 If steps is negative, attempt to prepend this many segments.
 Will fail gracefully the trajectory hits a singularity or closes up.</p>
@@ -6047,11 +6038,11 @@ that the absolute dimension is indeed <cite>6 = 2 rank</cite>:</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.gl2r_orbit_closure.GL2ROrbitClosure.cylinder_circumference">
 <span class="sig-name descname"><span class="pre">cylinder_circumference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">component</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sc_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/gl2r_orbit_closure.html#GL2ROrbitClosure.cylinder_circumference"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.gl2r_orbit_closure.GL2ROrbitClosure.cylinder_circumference" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the circumference of the cylindre <code class="docutils literal notranslate"><span class="pre">component</span></code> in the homology
+<dd><p>Return the circumference of the cylinder <code class="docutils literal notranslate"><span class="pre">component</span></code> in the homology
 of the underlying surface.</p>
 <p>INPUT:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">component</span></code> - a cylinder</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">component</span></code> – a cylinder</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>, <code class="docutils literal notranslate"><span class="pre">sc_index</span></code>, <code class="docutils literal notranslate"><span class="pre">proj</span></code> – the output of
 <code class="docutils literal notranslate"><span class="pre">flow_decomposition_kontsevich_zorich_cocycle</span></code></p></li>
 </ul>
@@ -6390,18 +6381,540 @@ Basis matrix:
     <h3><a href="index.html">Table of Contents</a></h3>
     <ul>
 <li><a class="reference internal" href="#">The flatsurf.geometry Package</a><ul>
-<li><a class="reference internal" href="#module-flatsurf.geometry.polygon">Polygons</a></li>
-<li><a class="reference internal" href="#module-flatsurf.geometry.surface">Surface Basics</a></li>
-<li><a class="reference internal" href="#module-flatsurf.geometry.similarity_surface">Similarity Surfaces</a></li>
-<li><a class="reference internal" href="#module-flatsurf.geometry.cone_surface">Cone Surfaces</a></li>
-<li><a class="reference internal" href="#module-flatsurf.geometry.translation_surface">Translation Surfaces</a></li>
-<li><a class="reference internal" href="#module-flatsurf.geometry.matrix_2x2">Matrices (2x2)</a></li>
-<li><a class="reference internal" href="#module-flatsurf.geometry.similarity">Similarities and Translations</a></li>
-<li><a class="reference internal" href="#module-flatsurf.geometry.tangent_bundle">Tangent Bundles</a></li>
-<li><a class="reference internal" href="#module-flatsurf.geometry.mappings">Maps between Surfaces</a></li>
-<li><a class="reference internal" href="#module-flatsurf.geometry.straight_line_trajectory">Straight-line Flow</a></li>
-<li><a class="reference internal" href="#module-flatsurf.geometry.relative_homology">Homology</a></li>
-<li><a class="reference internal" href="#module-flatsurf.geometry.gl2r_orbit_closure">Orbit Closures</a></li>
+<li><a class="reference internal" href="#module-flatsurf.geometry.polygon">Polygons</a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.ConvexPolygon"><code class="docutils literal notranslate"><span class="pre">ConvexPolygon</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.ConvexPolygon.circumscribing_circle"><code class="docutils literal notranslate"><span class="pre">ConvexPolygon.circumscribing_circle()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.ConvexPolygon.contains_point"><code class="docutils literal notranslate"><span class="pre">ConvexPolygon.contains_point()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.ConvexPolygon.find_separatrix"><code class="docutils literal notranslate"><span class="pre">ConvexPolygon.find_separatrix()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.ConvexPolygon.flow"><code class="docutils literal notranslate"><span class="pre">ConvexPolygon.flow()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.ConvexPolygon.flow_map"><code class="docutils literal notranslate"><span class="pre">ConvexPolygon.flow_map()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.ConvexPolygon.flow_to_exit"><code class="docutils literal notranslate"><span class="pre">ConvexPolygon.flow_to_exit()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.ConvexPolygon.get_point_position"><code class="docutils literal notranslate"><span class="pre">ConvexPolygon.get_point_position()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.ConvexPolygon.is_convex"><code class="docutils literal notranslate"><span class="pre">ConvexPolygon.is_convex()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.ConvexPolygons"><code class="docutils literal notranslate"><span class="pre">ConvexPolygons</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.ConvexPolygons.Element"><code class="docutils literal notranslate"><span class="pre">ConvexPolygons.Element</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.ConvexPolygons.has_coerce_map_from"><code class="docutils literal notranslate"><span class="pre">ConvexPolygons.has_coerce_map_from()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.EquiangularPolygons"><code class="docutils literal notranslate"><span class="pre">EquiangularPolygons</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.EquiangularPolygons.an_element"><code class="docutils literal notranslate"><span class="pre">EquiangularPolygons.an_element()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.EquiangularPolygons.angles"><code class="docutils literal notranslate"><span class="pre">EquiangularPolygons.angles()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.EquiangularPolygons.base_ring"><code class="docutils literal notranslate"><span class="pre">EquiangularPolygons.base_ring()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.EquiangularPolygons.billiard_unfolding_angles"><code class="docutils literal notranslate"><span class="pre">EquiangularPolygons.billiard_unfolding_angles()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.EquiangularPolygons.billiard_unfolding_stratum"><code class="docutils literal notranslate"><span class="pre">EquiangularPolygons.billiard_unfolding_stratum()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.EquiangularPolygons.billiard_unfolding_stratum_dimension"><code class="docutils literal notranslate"><span class="pre">EquiangularPolygons.billiard_unfolding_stratum_dimension()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.EquiangularPolygons.convexity"><code class="docutils literal notranslate"><span class="pre">EquiangularPolygons.convexity()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.EquiangularPolygons.lengths_polytope"><code class="docutils literal notranslate"><span class="pre">EquiangularPolygons.lengths_polytope</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.EquiangularPolygons.module"><code class="docutils literal notranslate"><span class="pre">EquiangularPolygons.module</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.EquiangularPolygons.random_element"><code class="docutils literal notranslate"><span class="pre">EquiangularPolygons.random_element()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.EquiangularPolygons.slopes"><code class="docutils literal notranslate"><span class="pre">EquiangularPolygons.slopes()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.EquiangularPolygons.strict_convexity"><code class="docutils literal notranslate"><span class="pre">EquiangularPolygons.strict_convexity()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.EquiangularPolygons.vector_space"><code class="docutils literal notranslate"><span class="pre">EquiangularPolygons.vector_space</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.MatrixActionOnPolygons"><code class="docutils literal notranslate"><span class="pre">MatrixActionOnPolygons</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.Polygon"><code class="docutils literal notranslate"><span class="pre">Polygon</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.Polygon.angle"><code class="docutils literal notranslate"><span class="pre">Polygon.angle()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.Polygon.angles"><code class="docutils literal notranslate"><span class="pre">Polygon.angles()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.Polygon.area"><code class="docutils literal notranslate"><span class="pre">Polygon.area()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.Polygon.base_ring"><code class="docutils literal notranslate"><span class="pre">Polygon.base_ring()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.Polygon.change_ring"><code class="docutils literal notranslate"><span class="pre">Polygon.change_ring()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.Polygon.cmp"><code class="docutils literal notranslate"><span class="pre">Polygon.cmp()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.Polygon.edge"><code class="docutils literal notranslate"><span class="pre">Polygon.edge()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.Polygon.edges"><code class="docutils literal notranslate"><span class="pre">Polygon.edges()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.Polygon.field"><code class="docutils literal notranslate"><span class="pre">Polygon.field()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.Polygon.is_convex"><code class="docutils literal notranslate"><span class="pre">Polygon.is_convex()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.Polygon.is_half_translate"><code class="docutils literal notranslate"><span class="pre">Polygon.is_half_translate()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.Polygon.is_isometric"><code class="docutils literal notranslate"><span class="pre">Polygon.is_isometric()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.Polygon.is_strictly_convex"><code class="docutils literal notranslate"><span class="pre">Polygon.is_strictly_convex()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.Polygon.is_translate"><code class="docutils literal notranslate"><span class="pre">Polygon.is_translate()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.Polygon.j_invariant"><code class="docutils literal notranslate"><span class="pre">Polygon.j_invariant()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.Polygon.module"><code class="docutils literal notranslate"><span class="pre">Polygon.module</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.Polygon.num_edges"><code class="docutils literal notranslate"><span class="pre">Polygon.num_edges()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.Polygon.plot"><code class="docutils literal notranslate"><span class="pre">Polygon.plot()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.Polygon.translate"><code class="docutils literal notranslate"><span class="pre">Polygon.translate()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.Polygon.triangulation"><code class="docutils literal notranslate"><span class="pre">Polygon.triangulation()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.Polygon.vector_space"><code class="docutils literal notranslate"><span class="pre">Polygon.vector_space</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.Polygon.vertex"><code class="docutils literal notranslate"><span class="pre">Polygon.vertex()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.Polygon.vertices"><code class="docutils literal notranslate"><span class="pre">Polygon.vertices()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.PolygonCreator"><code class="docutils literal notranslate"><span class="pre">PolygonCreator</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.PolygonCreator.add_vertex"><code class="docutils literal notranslate"><span class="pre">PolygonCreator.add_vertex()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.PolygonCreator.get_polygon"><code class="docutils literal notranslate"><span class="pre">PolygonCreator.get_polygon()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.PolygonCreator.vector_space"><code class="docutils literal notranslate"><span class="pre">PolygonCreator.vector_space()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.PolygonPosition"><code class="docutils literal notranslate"><span class="pre">PolygonPosition</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.PolygonPosition.EDGE_INTERIOR"><code class="docutils literal notranslate"><span class="pre">PolygonPosition.EDGE_INTERIOR</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.PolygonPosition.INTERIOR"><code class="docutils literal notranslate"><span class="pre">PolygonPosition.INTERIOR</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.PolygonPosition.OUTSIDE"><code class="docutils literal notranslate"><span class="pre">PolygonPosition.OUTSIDE</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.PolygonPosition.VERTEX"><code class="docutils literal notranslate"><span class="pre">PolygonPosition.VERTEX</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.PolygonPosition.get_edge"><code class="docutils literal notranslate"><span class="pre">PolygonPosition.get_edge()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.PolygonPosition.get_position_type"><code class="docutils literal notranslate"><span class="pre">PolygonPosition.get_position_type()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.PolygonPosition.get_vertex"><code class="docutils literal notranslate"><span class="pre">PolygonPosition.get_vertex()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.PolygonPosition.is_in_boundary"><code class="docutils literal notranslate"><span class="pre">PolygonPosition.is_in_boundary()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.PolygonPosition.is_in_edge_interior"><code class="docutils literal notranslate"><span class="pre">PolygonPosition.is_in_edge_interior()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.PolygonPosition.is_in_interior"><code class="docutils literal notranslate"><span class="pre">PolygonPosition.is_in_interior()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.PolygonPosition.is_inside"><code class="docutils literal notranslate"><span class="pre">PolygonPosition.is_inside()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.PolygonPosition.is_outside"><code class="docutils literal notranslate"><span class="pre">PolygonPosition.is_outside()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.PolygonPosition.is_vertex"><code class="docutils literal notranslate"><span class="pre">PolygonPosition.is_vertex()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.Polygons"><code class="docutils literal notranslate"><span class="pre">Polygons</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.Polygons.Element"><code class="docutils literal notranslate"><span class="pre">Polygons.Element</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.Polygons.base_ring"><code class="docutils literal notranslate"><span class="pre">Polygons.base_ring()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.Polygons.field"><code class="docutils literal notranslate"><span class="pre">Polygons.field()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.Polygons.module"><code class="docutils literal notranslate"><span class="pre">Polygons.module</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.Polygons.vector_space"><code class="docutils literal notranslate"><span class="pre">Polygons.vector_space</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.PolygonsConstructor"><code class="docutils literal notranslate"><span class="pre">PolygonsConstructor</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.PolygonsConstructor.rectangle"><code class="docutils literal notranslate"><span class="pre">PolygonsConstructor.rectangle()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.PolygonsConstructor.regular_ngon"><code class="docutils literal notranslate"><span class="pre">PolygonsConstructor.regular_ngon()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.PolygonsConstructor.right_triangle"><code class="docutils literal notranslate"><span class="pre">PolygonsConstructor.right_triangle()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.PolygonsConstructor.square"><code class="docutils literal notranslate"><span class="pre">PolygonsConstructor.square()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.PolygonsConstructor.triangle"><code class="docutils literal notranslate"><span class="pre">PolygonsConstructor.triangle()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.build_faces"><code class="docutils literal notranslate"><span class="pre">build_faces()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.dot_product"><code class="docutils literal notranslate"><span class="pre">dot_product()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.is_between"><code class="docutils literal notranslate"><span class="pre">is_between()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.is_opposite_direction"><code class="docutils literal notranslate"><span class="pre">is_opposite_direction()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.is_same_direction"><code class="docutils literal notranslate"><span class="pre">is_same_direction()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.line_intersection"><code class="docutils literal notranslate"><span class="pre">line_intersection()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.projectivization"><code class="docutils literal notranslate"><span class="pre">projectivization()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.regular_octagon"><code class="docutils literal notranslate"><span class="pre">regular_octagon()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.segment_intersect"><code class="docutils literal notranslate"><span class="pre">segment_intersect()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.solve"><code class="docutils literal notranslate"><span class="pre">solve()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.tensor"><code class="docutils literal notranslate"><span class="pre">tensor()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.triangulate"><code class="docutils literal notranslate"><span class="pre">triangulate()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.wedge"><code class="docutils literal notranslate"><span class="pre">wedge()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.polygon.wedge_product"><code class="docutils literal notranslate"><span class="pre">wedge_product()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-flatsurf.geometry.surface">Surface Basics</a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.BaseRingChangedSurface"><code class="docutils literal notranslate"><span class="pre">BaseRingChangedSurface</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.BaseRingChangedSurface.opposite_edge"><code class="docutils literal notranslate"><span class="pre">BaseRingChangedSurface.opposite_edge()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.BaseRingChangedSurface.polygon"><code class="docutils literal notranslate"><span class="pre">BaseRingChangedSurface.polygon()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.ExtraLabel"><code class="docutils literal notranslate"><span class="pre">ExtraLabel</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.LabelComparator"><code class="docutils literal notranslate"><span class="pre">LabelComparator</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.LabelComparator.ge"><code class="docutils literal notranslate"><span class="pre">LabelComparator.ge()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.LabelComparator.gt"><code class="docutils literal notranslate"><span class="pre">LabelComparator.gt()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.LabelComparator.le"><code class="docutils literal notranslate"><span class="pre">LabelComparator.le()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.LabelComparator.lt"><code class="docutils literal notranslate"><span class="pre">LabelComparator.lt()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.LabelWalker"><code class="docutils literal notranslate"><span class="pre">LabelWalker</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.LabelWalker.LabelWalkerIterator"><code class="docutils literal notranslate"><span class="pre">LabelWalker.LabelWalkerIterator</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.LabelWalker.LabelWalkerIterator.next"><code class="docutils literal notranslate"><span class="pre">LabelWalker.LabelWalkerIterator.next()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.LabelWalker.edge_back"><code class="docutils literal notranslate"><span class="pre">LabelWalker.edge_back()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.LabelWalker.edge_iterator"><code class="docutils literal notranslate"><span class="pre">LabelWalker.edge_iterator()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.LabelWalker.find_a_new_label"><code class="docutils literal notranslate"><span class="pre">LabelWalker.find_a_new_label()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.LabelWalker.find_all_labels"><code class="docutils literal notranslate"><span class="pre">LabelWalker.find_all_labels()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.LabelWalker.find_new_labels"><code class="docutils literal notranslate"><span class="pre">LabelWalker.find_new_labels()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.LabelWalker.label_dictionary"><code class="docutils literal notranslate"><span class="pre">LabelWalker.label_dictionary()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.LabelWalker.label_polygon_iterator"><code class="docutils literal notranslate"><span class="pre">LabelWalker.label_polygon_iterator()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.LabelWalker.label_to_number"><code class="docutils literal notranslate"><span class="pre">LabelWalker.label_to_number()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.LabelWalker.number_to_label"><code class="docutils literal notranslate"><span class="pre">LabelWalker.number_to_label()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.LabelWalker.polygon_iterator"><code class="docutils literal notranslate"><span class="pre">LabelWalker.polygon_iterator()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.LabelWalker.surface"><code class="docutils literal notranslate"><span class="pre">LabelWalker.surface()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.Surface"><code class="docutils literal notranslate"><span class="pre">Surface</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.Surface.add_polygon"><code class="docutils literal notranslate"><span class="pre">Surface.add_polygon()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.Surface.add_polygons"><code class="docutils literal notranslate"><span class="pre">Surface.add_polygons()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.Surface.area"><code class="docutils literal notranslate"><span class="pre">Surface.area()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.Surface.base_label"><code class="docutils literal notranslate"><span class="pre">Surface.base_label()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.Surface.base_ring"><code class="docutils literal notranslate"><span class="pre">Surface.base_ring()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.Surface.change_base_label"><code class="docutils literal notranslate"><span class="pre">Surface.change_base_label()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.Surface.change_edge_gluing"><code class="docutils literal notranslate"><span class="pre">Surface.change_edge_gluing()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.Surface.change_polygon"><code class="docutils literal notranslate"><span class="pre">Surface.change_polygon()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.Surface.change_polygon_gluings"><code class="docutils literal notranslate"><span class="pre">Surface.change_polygon_gluings()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.Surface.edge_gluing_iterator"><code class="docutils literal notranslate"><span class="pre">Surface.edge_gluing_iterator()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.Surface.edge_iterator"><code class="docutils literal notranslate"><span class="pre">Surface.edge_iterator()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.Surface.is_finite"><code class="docutils literal notranslate"><span class="pre">Surface.is_finite()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.Surface.is_mutable"><code class="docutils literal notranslate"><span class="pre">Surface.is_mutable()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.Surface.is_triangulated"><code class="docutils literal notranslate"><span class="pre">Surface.is_triangulated()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.Surface.label_iterator"><code class="docutils literal notranslate"><span class="pre">Surface.label_iterator()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.Surface.label_polygon_iterator"><code class="docutils literal notranslate"><span class="pre">Surface.label_polygon_iterator()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.Surface.make_immutable"><code class="docutils literal notranslate"><span class="pre">Surface.make_immutable()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.Surface.num_edges"><code class="docutils literal notranslate"><span class="pre">Surface.num_edges()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.Surface.num_polygons"><code class="docutils literal notranslate"><span class="pre">Surface.num_polygons()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.Surface.opposite_edge"><code class="docutils literal notranslate"><span class="pre">Surface.opposite_edge()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.Surface.polygon"><code class="docutils literal notranslate"><span class="pre">Surface.polygon()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.Surface.remove_polygon"><code class="docutils literal notranslate"><span class="pre">Surface.remove_polygon()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.Surface.set_edge_pairing"><code class="docutils literal notranslate"><span class="pre">Surface.set_edge_pairing()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.Surface.set_immutable"><code class="docutils literal notranslate"><span class="pre">Surface.set_immutable()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.Surface.walker"><code class="docutils literal notranslate"><span class="pre">Surface.walker()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.Surface_dict"><code class="docutils literal notranslate"><span class="pre">Surface_dict</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.Surface_dict.label_iterator"><code class="docutils literal notranslate"><span class="pre">Surface_dict.label_iterator()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.Surface_dict.num_polygons"><code class="docutils literal notranslate"><span class="pre">Surface_dict.num_polygons()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.Surface_dict.opposite_edge"><code class="docutils literal notranslate"><span class="pre">Surface_dict.opposite_edge()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.Surface_dict.polygon"><code class="docutils literal notranslate"><span class="pre">Surface_dict.polygon()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.Surface_list"><code class="docutils literal notranslate"><span class="pre">Surface_list</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.Surface_list.label_iterator"><code class="docutils literal notranslate"><span class="pre">Surface_list.label_iterator()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.Surface_list.num_polygons"><code class="docutils literal notranslate"><span class="pre">Surface_list.num_polygons()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.Surface_list.opposite_edge"><code class="docutils literal notranslate"><span class="pre">Surface_list.opposite_edge()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.Surface_list.polygon"><code class="docutils literal notranslate"><span class="pre">Surface_list.polygon()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.Surface_list.ramified_cover"><code class="docutils literal notranslate"><span class="pre">Surface_list.ramified_cover()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.surface_list_from_polygons_and_gluings"><code class="docutils literal notranslate"><span class="pre">surface_list_from_polygons_and_gluings()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-flatsurf.geometry.similarity_surface">Similarity Surfaces</a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface.SimilaritySurface"><code class="docutils literal notranslate"><span class="pre">SimilaritySurface</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.base_label"><code class="docutils literal notranslate"><span class="pre">SimilaritySurface.base_label()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.base_ring"><code class="docutils literal notranslate"><span class="pre">SimilaritySurface.base_ring()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.copy"><code class="docutils literal notranslate"><span class="pre">SimilaritySurface.copy()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.delaunay_decomposition"><code class="docutils literal notranslate"><span class="pre">SimilaritySurface.delaunay_decomposition()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.delaunay_single_flip"><code class="docutils literal notranslate"><span class="pre">SimilaritySurface.delaunay_single_flip()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.delaunay_single_join"><code class="docutils literal notranslate"><span class="pre">SimilaritySurface.delaunay_single_join()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.delaunay_triangulation"><code class="docutils literal notranslate"><span class="pre">SimilaritySurface.delaunay_triangulation()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.edge_iterator"><code class="docutils literal notranslate"><span class="pre">SimilaritySurface.edge_iterator()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.edge_matrix"><code class="docutils literal notranslate"><span class="pre">SimilaritySurface.edge_matrix</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.edge_transformation"><code class="docutils literal notranslate"><span class="pre">SimilaritySurface.edge_transformation()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.fundamental_group"><code class="docutils literal notranslate"><span class="pre">SimilaritySurface.fundamental_group()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.graphical_surface"><code class="docutils literal notranslate"><span class="pre">SimilaritySurface.graphical_surface()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.is_delaunay_decomposed"><code class="docutils literal notranslate"><span class="pre">SimilaritySurface.is_delaunay_decomposed()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.is_delaunay_triangulated"><code class="docutils literal notranslate"><span class="pre">SimilaritySurface.is_delaunay_triangulated()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.is_finite"><code class="docutils literal notranslate"><span class="pre">SimilaritySurface.is_finite()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.is_mutable"><code class="docutils literal notranslate"><span class="pre">SimilaritySurface.is_mutable()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.is_triangulated"><code class="docutils literal notranslate"><span class="pre">SimilaritySurface.is_triangulated()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.join_polygons"><code class="docutils literal notranslate"><span class="pre">SimilaritySurface.join_polygons()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.label_iterator"><code class="docutils literal notranslate"><span class="pre">SimilaritySurface.label_iterator()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.minimal_cover"><code class="docutils literal notranslate"><span class="pre">SimilaritySurface.minimal_cover()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.minimal_translation_cover"><code class="docutils literal notranslate"><span class="pre">SimilaritySurface.minimal_translation_cover()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.num_edges"><code class="docutils literal notranslate"><span class="pre">SimilaritySurface.num_edges()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.num_polygons"><code class="docutils literal notranslate"><span class="pre">SimilaritySurface.num_polygons()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.num_singularities"><code class="docutils literal notranslate"><span class="pre">SimilaritySurface.num_singularities()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.opposite_edge"><code class="docutils literal notranslate"><span class="pre">SimilaritySurface.opposite_edge()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.plot"><code class="docutils literal notranslate"><span class="pre">SimilaritySurface.plot()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.plot_polygon"><code class="docutils literal notranslate"><span class="pre">SimilaritySurface.plot_polygon()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.point"><code class="docutils literal notranslate"><span class="pre">SimilaritySurface.point()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.polygon"><code class="docutils literal notranslate"><span class="pre">SimilaritySurface.polygon()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.ramified_cover"><code class="docutils literal notranslate"><span class="pre">SimilaritySurface.ramified_cover()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.relabel"><code class="docutils literal notranslate"><span class="pre">SimilaritySurface.relabel()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.reposition_polygons"><code class="docutils literal notranslate"><span class="pre">SimilaritySurface.reposition_polygons()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.saddle_connections"><code class="docutils literal notranslate"><span class="pre">SimilaritySurface.saddle_connections()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.set_default_graphical_surface"><code class="docutils literal notranslate"><span class="pre">SimilaritySurface.set_default_graphical_surface()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.set_immutable"><code class="docutils literal notranslate"><span class="pre">SimilaritySurface.set_immutable()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.set_vertex_zero"><code class="docutils literal notranslate"><span class="pre">SimilaritySurface.set_vertex_zero()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.singularity"><code class="docutils literal notranslate"><span class="pre">SimilaritySurface.singularity()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.subdivide_polygon"><code class="docutils literal notranslate"><span class="pre">SimilaritySurface.subdivide_polygon()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.surface_point"><code class="docutils literal notranslate"><span class="pre">SimilaritySurface.surface_point()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.tangent_bundle"><code class="docutils literal notranslate"><span class="pre">SimilaritySurface.tangent_bundle()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.tangent_vector"><code class="docutils literal notranslate"><span class="pre">SimilaritySurface.tangent_vector()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.triangle_flip"><code class="docutils literal notranslate"><span class="pre">SimilaritySurface.triangle_flip()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.triangulate"><code class="docutils literal notranslate"><span class="pre">SimilaritySurface.triangulate()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.triangulation_mapping"><code class="docutils literal notranslate"><span class="pre">SimilaritySurface.triangulation_mapping()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.underlying_surface"><code class="docutils literal notranslate"><span class="pre">SimilaritySurface.underlying_surface()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.vector_space"><code class="docutils literal notranslate"><span class="pre">SimilaritySurface.vector_space()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.walker"><code class="docutils literal notranslate"><span class="pre">SimilaritySurface.walker()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-flatsurf.geometry.cone_surface">Cone Surfaces</a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.cone_surface.ConeSurface"><code class="docutils literal notranslate"><span class="pre">ConeSurface</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.cone_surface.ConeSurface.angles"><code class="docutils literal notranslate"><span class="pre">ConeSurface.angles()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.cone_surface.ConeSurface.area"><code class="docutils literal notranslate"><span class="pre">ConeSurface.area()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.cone_surface.ConeSurface.genus"><code class="docutils literal notranslate"><span class="pre">ConeSurface.genus()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-flatsurf.geometry.translation_surface">Translation Surfaces</a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.translation_surface.AbstractOrigami"><code class="docutils literal notranslate"><span class="pre">AbstractOrigami</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.translation_surface.AbstractOrigami.down"><code class="docutils literal notranslate"><span class="pre">AbstractOrigami.down()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.translation_surface.AbstractOrigami.left"><code class="docutils literal notranslate"><span class="pre">AbstractOrigami.left()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.translation_surface.AbstractOrigami.num_polygons"><code class="docutils literal notranslate"><span class="pre">AbstractOrigami.num_polygons()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.translation_surface.AbstractOrigami.opposite_edge"><code class="docutils literal notranslate"><span class="pre">AbstractOrigami.opposite_edge()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.translation_surface.AbstractOrigami.polygon"><code class="docutils literal notranslate"><span class="pre">AbstractOrigami.polygon()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.translation_surface.AbstractOrigami.polygon_labels"><code class="docutils literal notranslate"><span class="pre">AbstractOrigami.polygon_labels()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.translation_surface.AbstractOrigami.right"><code class="docutils literal notranslate"><span class="pre">AbstractOrigami.right()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.translation_surface.AbstractOrigami.up"><code class="docutils literal notranslate"><span class="pre">AbstractOrigami.up()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flatsurf.geometry.translation_surface.LazyStandardizedPolygonSurface"><code class="docutils literal notranslate"><span class="pre">LazyStandardizedPolygonSurface</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.translation_surface.LazyStandardizedPolygonSurface.opposite_edge"><code class="docutils literal notranslate"><span class="pre">LazyStandardizedPolygonSurface.opposite_edge()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.translation_surface.LazyStandardizedPolygonSurface.polygon"><code class="docutils literal notranslate"><span class="pre">LazyStandardizedPolygonSurface.polygon()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.translation_surface.LazyStandardizedPolygonSurface.standardize"><code class="docutils literal notranslate"><span class="pre">LazyStandardizedPolygonSurface.standardize()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flatsurf.geometry.translation_surface.MinimalTranslationCover"><code class="docutils literal notranslate"><span class="pre">MinimalTranslationCover</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.translation_surface.MinimalTranslationCover.opposite_edge"><code class="docutils literal notranslate"><span class="pre">MinimalTranslationCover.opposite_edge()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.translation_surface.MinimalTranslationCover.polygon"><code class="docutils literal notranslate"><span class="pre">MinimalTranslationCover.polygon()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flatsurf.geometry.translation_surface.Origami"><code class="docutils literal notranslate"><span class="pre">Origami</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.translation_surface.Origami.down"><code class="docutils literal notranslate"><span class="pre">Origami.down()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.translation_surface.Origami.left"><code class="docutils literal notranslate"><span class="pre">Origami.left()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.translation_surface.Origami.opposite_edge"><code class="docutils literal notranslate"><span class="pre">Origami.opposite_edge()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.translation_surface.Origami.right"><code class="docutils literal notranslate"><span class="pre">Origami.right()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.translation_surface.Origami.up"><code class="docutils literal notranslate"><span class="pre">Origami.up()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flatsurf.geometry.translation_surface.TranslationSurface"><code class="docutils literal notranslate"><span class="pre">TranslationSurface</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.translation_surface.TranslationSurface.canonicalize"><code class="docutils literal notranslate"><span class="pre">TranslationSurface.canonicalize()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.translation_surface.TranslationSurface.canonicalize_mapping"><code class="docutils literal notranslate"><span class="pre">TranslationSurface.canonicalize_mapping()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.translation_surface.TranslationSurface.cmp"><code class="docutils literal notranslate"><span class="pre">TranslationSurface.cmp()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.translation_surface.TranslationSurface.cmp_translation_surface"><code class="docutils literal notranslate"><span class="pre">TranslationSurface.cmp_translation_surface()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.translation_surface.TranslationSurface.edge_matrix"><code class="docutils literal notranslate"><span class="pre">TranslationSurface.edge_matrix()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.translation_surface.TranslationSurface.erase_marked_points"><code class="docutils literal notranslate"><span class="pre">TranslationSurface.erase_marked_points()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.translation_surface.TranslationSurface.j_invariant"><code class="docutils literal notranslate"><span class="pre">TranslationSurface.j_invariant()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.translation_surface.TranslationSurface.minimal_translation_cover"><code class="docutils literal notranslate"><span class="pre">TranslationSurface.minimal_translation_cover()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.translation_surface.TranslationSurface.rel_deformation"><code class="docutils literal notranslate"><span class="pre">TranslationSurface.rel_deformation()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.translation_surface.TranslationSurface.standardize_polygons"><code class="docutils literal notranslate"><span class="pre">TranslationSurface.standardize_polygons()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.translation_surface.TranslationSurface.stratum"><code class="docutils literal notranslate"><span class="pre">TranslationSurface.stratum()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-flatsurf.geometry.matrix_2x2">Matrices (2x2)</a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.matrix_2x2.angle"><code class="docutils literal notranslate"><span class="pre">angle()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.matrix_2x2.is_cosine_sine_of_rational"><code class="docutils literal notranslate"><span class="pre">is_cosine_sine_of_rational()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.matrix_2x2.similarity_from_vectors"><code class="docutils literal notranslate"><span class="pre">similarity_from_vectors()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-flatsurf.geometry.similarity">Similarities and Translations</a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity.Similarity"><code class="docutils literal notranslate"><span class="pre">Similarity</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity.Similarity.a"><code class="docutils literal notranslate"><span class="pre">Similarity.a()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity.Similarity.b"><code class="docutils literal notranslate"><span class="pre">Similarity.b()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity.Similarity.derivative"><code class="docutils literal notranslate"><span class="pre">Similarity.derivative()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity.Similarity.det"><code class="docutils literal notranslate"><span class="pre">Similarity.det()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity.Similarity.is_half_translation"><code class="docutils literal notranslate"><span class="pre">Similarity.is_half_translation()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity.Similarity.is_isometry"><code class="docutils literal notranslate"><span class="pre">Similarity.is_isometry()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity.Similarity.is_orientable"><code class="docutils literal notranslate"><span class="pre">Similarity.is_orientable()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity.Similarity.is_rotation"><code class="docutils literal notranslate"><span class="pre">Similarity.is_rotation()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity.Similarity.is_translation"><code class="docutils literal notranslate"><span class="pre">Similarity.is_translation()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity.Similarity.matrix"><code class="docutils literal notranslate"><span class="pre">Similarity.matrix()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity.Similarity.s"><code class="docutils literal notranslate"><span class="pre">Similarity.s()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity.Similarity.sign"><code class="docutils literal notranslate"><span class="pre">Similarity.sign()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity.Similarity.t"><code class="docutils literal notranslate"><span class="pre">Similarity.t()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity.SimilarityGroup"><code class="docutils literal notranslate"><span class="pre">SimilarityGroup</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity.SimilarityGroup.Element"><code class="docutils literal notranslate"><span class="pre">SimilarityGroup.Element</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity.SimilarityGroup.an_element"><code class="docutils literal notranslate"><span class="pre">SimilarityGroup.an_element()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity.SimilarityGroup.base_ring"><code class="docutils literal notranslate"><span class="pre">SimilarityGroup.base_ring()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity.SimilarityGroup.is_abelian"><code class="docutils literal notranslate"><span class="pre">SimilarityGroup.is_abelian()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity.SimilarityGroup.one"><code class="docutils literal notranslate"><span class="pre">SimilarityGroup.one()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-flatsurf.geometry.tangent_bundle">Tangent Bundles</a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentBundle"><code class="docutils literal notranslate"><span class="pre">SimilaritySurfaceTangentBundle</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentBundle.base_ring"><code class="docutils literal notranslate"><span class="pre">SimilaritySurfaceTangentBundle.base_ring()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentBundle.clockwise_edge"><code class="docutils literal notranslate"><span class="pre">SimilaritySurfaceTangentBundle.clockwise_edge()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentBundle.edge"><code class="docutils literal notranslate"><span class="pre">SimilaritySurfaceTangentBundle.edge()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentBundle.field"><code class="docutils literal notranslate"><span class="pre">SimilaritySurfaceTangentBundle.field()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentBundle.surface"><code class="docutils literal notranslate"><span class="pre">SimilaritySurfaceTangentBundle.surface()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentBundle.vector_space"><code class="docutils literal notranslate"><span class="pre">SimilaritySurfaceTangentBundle.vector_space()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentVector"><code class="docutils literal notranslate"><span class="pre">SimilaritySurfaceTangentVector</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentVector.bundle"><code class="docutils literal notranslate"><span class="pre">SimilaritySurfaceTangentVector.bundle()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentVector.clockwise_to"><code class="docutils literal notranslate"><span class="pre">SimilaritySurfaceTangentVector.clockwise_to()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentVector.counterclockwise_to"><code class="docutils literal notranslate"><span class="pre">SimilaritySurfaceTangentVector.counterclockwise_to()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentVector.differs_by_scaling"><code class="docutils literal notranslate"><span class="pre">SimilaritySurfaceTangentVector.differs_by_scaling()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentVector.edge_pointing_along"><code class="docutils literal notranslate"><span class="pre">SimilaritySurfaceTangentVector.edge_pointing_along()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentVector.forward_to_polygon_boundary"><code class="docutils literal notranslate"><span class="pre">SimilaritySurfaceTangentVector.forward_to_polygon_boundary()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentVector.invert"><code class="docutils literal notranslate"><span class="pre">SimilaritySurfaceTangentVector.invert()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentVector.is_based_at_singularity"><code class="docutils literal notranslate"><span class="pre">SimilaritySurfaceTangentVector.is_based_at_singularity()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentVector.is_in_boundary_of_polygon"><code class="docutils literal notranslate"><span class="pre">SimilaritySurfaceTangentVector.is_in_boundary_of_polygon()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentVector.point"><code class="docutils literal notranslate"><span class="pre">SimilaritySurfaceTangentVector.point()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentVector.polygon"><code class="docutils literal notranslate"><span class="pre">SimilaritySurfaceTangentVector.polygon()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentVector.polygon_label"><code class="docutils literal notranslate"><span class="pre">SimilaritySurfaceTangentVector.polygon_label()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentVector.position"><code class="docutils literal notranslate"><span class="pre">SimilaritySurfaceTangentVector.position()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentVector.singularity"><code class="docutils literal notranslate"><span class="pre">SimilaritySurfaceTangentVector.singularity()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentVector.straight_line_trajectory"><code class="docutils literal notranslate"><span class="pre">SimilaritySurfaceTangentVector.straight_line_trajectory()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentVector.surface"><code class="docutils literal notranslate"><span class="pre">SimilaritySurfaceTangentVector.surface()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentVector.vector"><code class="docutils literal notranslate"><span class="pre">SimilaritySurfaceTangentVector.vector()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentVector.vertex"><code class="docutils literal notranslate"><span class="pre">SimilaritySurfaceTangentVector.vertex()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flatsurf.geometry.tangent_bundle.rotate_limit"><code class="docutils literal notranslate"><span class="pre">rotate_limit</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-flatsurf.geometry.mappings">Maps between Surfaces</a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.CanonicalizePolygonsMapping"><code class="docutils literal notranslate"><span class="pre">CanonicalizePolygonsMapping</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.CanonicalizePolygonsMapping.pull_vector_back"><code class="docutils literal notranslate"><span class="pre">CanonicalizePolygonsMapping.pull_vector_back()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.CanonicalizePolygonsMapping.push_vector_forward"><code class="docutils literal notranslate"><span class="pre">CanonicalizePolygonsMapping.push_vector_forward()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.IdentityMapping"><code class="docutils literal notranslate"><span class="pre">IdentityMapping</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.IdentityMapping.pull_vector_back"><code class="docutils literal notranslate"><span class="pre">IdentityMapping.pull_vector_back()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.IdentityMapping.push_vector_forward"><code class="docutils literal notranslate"><span class="pre">IdentityMapping.push_vector_forward()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.MatrixListDeformedSurface"><code class="docutils literal notranslate"><span class="pre">MatrixListDeformedSurface</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.MatrixListDeformedSurface.base_label"><code class="docutils literal notranslate"><span class="pre">MatrixListDeformedSurface.base_label()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.MatrixListDeformedSurface.base_ring"><code class="docutils literal notranslate"><span class="pre">MatrixListDeformedSurface.base_ring()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.MatrixListDeformedSurface.is_finite"><code class="docutils literal notranslate"><span class="pre">MatrixListDeformedSurface.is_finite()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.MatrixListDeformedSurface.opposite_edge"><code class="docutils literal notranslate"><span class="pre">MatrixListDeformedSurface.opposite_edge()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.MatrixListDeformedSurface.polygon"><code class="docutils literal notranslate"><span class="pre">MatrixListDeformedSurface.polygon()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.MatrixListDeformedSurfaceMapping"><code class="docutils literal notranslate"><span class="pre">MatrixListDeformedSurfaceMapping</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.MatrixListDeformedSurfaceMapping.pull_vector_back"><code class="docutils literal notranslate"><span class="pre">MatrixListDeformedSurfaceMapping.pull_vector_back()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.MatrixListDeformedSurfaceMapping.push_vector_forward"><code class="docutils literal notranslate"><span class="pre">MatrixListDeformedSurfaceMapping.push_vector_forward()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.ReindexMapping"><code class="docutils literal notranslate"><span class="pre">ReindexMapping</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.ReindexMapping.pull_vector_back"><code class="docutils literal notranslate"><span class="pre">ReindexMapping.pull_vector_back()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.ReindexMapping.push_vector_forward"><code class="docutils literal notranslate"><span class="pre">ReindexMapping.push_vector_forward()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.SimilarityJoinPolygonsMapping"><code class="docutils literal notranslate"><span class="pre">SimilarityJoinPolygonsMapping</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.SimilarityJoinPolygonsMapping.glued_vertices"><code class="docutils literal notranslate"><span class="pre">SimilarityJoinPolygonsMapping.glued_vertices()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.SimilarityJoinPolygonsMapping.pull_vector_back"><code class="docutils literal notranslate"><span class="pre">SimilarityJoinPolygonsMapping.pull_vector_back()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.SimilarityJoinPolygonsMapping.push_vector_forward"><code class="docutils literal notranslate"><span class="pre">SimilarityJoinPolygonsMapping.push_vector_forward()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.SimilarityJoinPolygonsMapping.removed_label"><code class="docutils literal notranslate"><span class="pre">SimilarityJoinPolygonsMapping.removed_label()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.SplitPolygonsMapping"><code class="docutils literal notranslate"><span class="pre">SplitPolygonsMapping</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.SplitPolygonsMapping.pull_vector_back"><code class="docutils literal notranslate"><span class="pre">SplitPolygonsMapping.pull_vector_back()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.SplitPolygonsMapping.push_vector_forward"><code class="docutils literal notranslate"><span class="pre">SplitPolygonsMapping.push_vector_forward()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.SurfaceMapping"><code class="docutils literal notranslate"><span class="pre">SurfaceMapping</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.SurfaceMapping.codomain"><code class="docutils literal notranslate"><span class="pre">SurfaceMapping.codomain()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.SurfaceMapping.domain"><code class="docutils literal notranslate"><span class="pre">SurfaceMapping.domain()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.SurfaceMapping.pull_vector_back"><code class="docutils literal notranslate"><span class="pre">SurfaceMapping.pull_vector_back()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.SurfaceMapping.push_vector_forward"><code class="docutils literal notranslate"><span class="pre">SurfaceMapping.push_vector_forward()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.SurfaceMappingComposition"><code class="docutils literal notranslate"><span class="pre">SurfaceMappingComposition</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.SurfaceMappingComposition.factors"><code class="docutils literal notranslate"><span class="pre">SurfaceMappingComposition.factors()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.SurfaceMappingComposition.pull_vector_back"><code class="docutils literal notranslate"><span class="pre">SurfaceMappingComposition.pull_vector_back()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.SurfaceMappingComposition.push_vector_forward"><code class="docutils literal notranslate"><span class="pre">SurfaceMappingComposition.push_vector_forward()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.canonical_first_vertex"><code class="docutils literal notranslate"><span class="pre">canonical_first_vertex()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.canonicalize_translation_surface_mapping"><code class="docutils literal notranslate"><span class="pre">canonicalize_translation_surface_mapping()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.delaunay_decomposition_mapping"><code class="docutils literal notranslate"><span class="pre">delaunay_decomposition_mapping()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.delaunay_triangulation_mapping"><code class="docutils literal notranslate"><span class="pre">delaunay_triangulation_mapping()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.flip_edge_mapping"><code class="docutils literal notranslate"><span class="pre">flip_edge_mapping()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.my_sgn"><code class="docutils literal notranslate"><span class="pre">my_sgn()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.one_delaunay_flip_mapping"><code class="docutils literal notranslate"><span class="pre">one_delaunay_flip_mapping()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.polygon_compare"><code class="docutils literal notranslate"><span class="pre">polygon_compare()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.subdivide_a_polygon"><code class="docutils literal notranslate"><span class="pre">subdivide_a_polygon()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.translation_surface_cmp"><code class="docutils literal notranslate"><span class="pre">translation_surface_cmp()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.triangulation_mapping"><code class="docutils literal notranslate"><span class="pre">triangulation_mapping()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-flatsurf.geometry.straight_line_trajectory">Straight-line Flow</a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.AbstractStraightLineTrajectory"><code class="docutils literal notranslate"><span class="pre">AbstractStraightLineTrajectory</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.AbstractStraightLineTrajectory.coding"><code class="docutils literal notranslate"><span class="pre">AbstractStraightLineTrajectory.coding()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.AbstractStraightLineTrajectory.cylinder"><code class="docutils literal notranslate"><span class="pre">AbstractStraightLineTrajectory.cylinder()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.AbstractStraightLineTrajectory.graphical_trajectory"><code class="docutils literal notranslate"><span class="pre">AbstractStraightLineTrajectory.graphical_trajectory()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.AbstractStraightLineTrajectory.initial_tangent_vector"><code class="docutils literal notranslate"><span class="pre">AbstractStraightLineTrajectory.initial_tangent_vector()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.AbstractStraightLineTrajectory.intersections"><code class="docutils literal notranslate"><span class="pre">AbstractStraightLineTrajectory.intersections()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.AbstractStraightLineTrajectory.intersects"><code class="docutils literal notranslate"><span class="pre">AbstractStraightLineTrajectory.intersects()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.AbstractStraightLineTrajectory.plot"><code class="docutils literal notranslate"><span class="pre">AbstractStraightLineTrajectory.plot()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.AbstractStraightLineTrajectory.surface"><code class="docutils literal notranslate"><span class="pre">AbstractStraightLineTrajectory.surface()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.AbstractStraightLineTrajectory.terminal_tangent_vector"><code class="docutils literal notranslate"><span class="pre">AbstractStraightLineTrajectory.terminal_tangent_vector()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.SegmentInPolygon"><code class="docutils literal notranslate"><span class="pre">SegmentInPolygon</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.SegmentInPolygon.edge"><code class="docutils literal notranslate"><span class="pre">SegmentInPolygon.edge()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.SegmentInPolygon.end"><code class="docutils literal notranslate"><span class="pre">SegmentInPolygon.end()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.SegmentInPolygon.end_direction"><code class="docutils literal notranslate"><span class="pre">SegmentInPolygon.end_direction()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.SegmentInPolygon.end_is_singular"><code class="docutils literal notranslate"><span class="pre">SegmentInPolygon.end_is_singular()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.SegmentInPolygon.end_point"><code class="docutils literal notranslate"><span class="pre">SegmentInPolygon.end_point()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.SegmentInPolygon.invert"><code class="docutils literal notranslate"><span class="pre">SegmentInPolygon.invert()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.SegmentInPolygon.is_edge"><code class="docutils literal notranslate"><span class="pre">SegmentInPolygon.is_edge()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.SegmentInPolygon.next"><code class="docutils literal notranslate"><span class="pre">SegmentInPolygon.next()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.SegmentInPolygon.polygon_label"><code class="docutils literal notranslate"><span class="pre">SegmentInPolygon.polygon_label()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.SegmentInPolygon.previous"><code class="docutils literal notranslate"><span class="pre">SegmentInPolygon.previous()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.SegmentInPolygon.start"><code class="docutils literal notranslate"><span class="pre">SegmentInPolygon.start()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.SegmentInPolygon.start_direction"><code class="docutils literal notranslate"><span class="pre">SegmentInPolygon.start_direction()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.SegmentInPolygon.start_is_singular"><code class="docutils literal notranslate"><span class="pre">SegmentInPolygon.start_is_singular()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.SegmentInPolygon.start_point"><code class="docutils literal notranslate"><span class="pre">SegmentInPolygon.start_point()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.StraightLineTrajectory"><code class="docutils literal notranslate"><span class="pre">StraightLineTrajectory</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.StraightLineTrajectory.combinatorial_length"><code class="docutils literal notranslate"><span class="pre">StraightLineTrajectory.combinatorial_length()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.StraightLineTrajectory.flow"><code class="docutils literal notranslate"><span class="pre">StraightLineTrajectory.flow()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.StraightLineTrajectory.is_backward_separatrix"><code class="docutils literal notranslate"><span class="pre">StraightLineTrajectory.is_backward_separatrix()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.StraightLineTrajectory.is_closed"><code class="docutils literal notranslate"><span class="pre">StraightLineTrajectory.is_closed()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.StraightLineTrajectory.is_forward_separatrix"><code class="docutils literal notranslate"><span class="pre">StraightLineTrajectory.is_forward_separatrix()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.StraightLineTrajectory.is_saddle_connection"><code class="docutils literal notranslate"><span class="pre">StraightLineTrajectory.is_saddle_connection()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.StraightLineTrajectory.segment"><code class="docutils literal notranslate"><span class="pre">StraightLineTrajectory.segment()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.StraightLineTrajectory.segments"><code class="docutils literal notranslate"><span class="pre">StraightLineTrajectory.segments()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.StraightLineTrajectory.surface"><code class="docutils literal notranslate"><span class="pre">StraightLineTrajectory.surface()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.StraightLineTrajectoryTranslation"><code class="docutils literal notranslate"><span class="pre">StraightLineTrajectoryTranslation</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.StraightLineTrajectoryTranslation.combinatorial_length"><code class="docutils literal notranslate"><span class="pre">StraightLineTrajectoryTranslation.combinatorial_length()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.StraightLineTrajectoryTranslation.flow"><code class="docutils literal notranslate"><span class="pre">StraightLineTrajectoryTranslation.flow()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.StraightLineTrajectoryTranslation.is_backward_separatrix"><code class="docutils literal notranslate"><span class="pre">StraightLineTrajectoryTranslation.is_backward_separatrix()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.StraightLineTrajectoryTranslation.is_closed"><code class="docutils literal notranslate"><span class="pre">StraightLineTrajectoryTranslation.is_closed()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.StraightLineTrajectoryTranslation.is_forward_separatrix"><code class="docutils literal notranslate"><span class="pre">StraightLineTrajectoryTranslation.is_forward_separatrix()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.StraightLineTrajectoryTranslation.is_saddle_connection"><code class="docutils literal notranslate"><span class="pre">StraightLineTrajectoryTranslation.is_saddle_connection()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.StraightLineTrajectoryTranslation.segment"><code class="docutils literal notranslate"><span class="pre">StraightLineTrajectoryTranslation.segment()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.StraightLineTrajectoryTranslation.segments"><code class="docutils literal notranslate"><span class="pre">StraightLineTrajectoryTranslation.segments()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.get_linearity_coeff"><code class="docutils literal notranslate"><span class="pre">get_linearity_coeff()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-flatsurf.geometry.relative_homology">Homology</a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.relative_homology.RelativeHomology"><code class="docutils literal notranslate"><span class="pre">RelativeHomology</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.relative_homology.RelativeHomology.Element"><code class="docutils literal notranslate"><span class="pre">RelativeHomology.Element</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.relative_homology.RelativeHomology.base_ring"><code class="docutils literal notranslate"><span class="pre">RelativeHomology.base_ring()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.relative_homology.RelativeHomology.edge"><code class="docutils literal notranslate"><span class="pre">RelativeHomology.edge()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.relative_homology.RelativeHomology.zero"><code class="docutils literal notranslate"><span class="pre">RelativeHomology.zero()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flatsurf.geometry.relative_homology.RelativeHomologyClass"><code class="docutils literal notranslate"><span class="pre">RelativeHomologyClass</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.relative_homology.RelativeHomologyClass.edges_with_weights"><code class="docutils literal notranslate"><span class="pre">RelativeHomologyClass.edges_with_weights()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.relative_homology.RelativeHomologyClass.weight"><code class="docutils literal notranslate"><span class="pre">RelativeHomologyClass.weight()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.relative_homology.RelativeHomologyClass.weighted_edges"><code class="docutils literal notranslate"><span class="pre">RelativeHomologyClass.weighted_edges()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-flatsurf.geometry.gl2r_orbit_closure">Orbit Closures</a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.gl2r_orbit_closure.GL2ROrbitClosure"><code class="docutils literal notranslate"><span class="pre">GL2ROrbitClosure</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.gl2r_orbit_closure.GL2ROrbitClosure.absolute_dimension"><code class="docutils literal notranslate"><span class="pre">GL2ROrbitClosure.absolute_dimension()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.gl2r_orbit_closure.GL2ROrbitClosure.absolute_homology"><code class="docutils literal notranslate"><span class="pre">GL2ROrbitClosure.absolute_homology()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.gl2r_orbit_closure.GL2ROrbitClosure.ambient_stratum"><code class="docutils literal notranslate"><span class="pre">GL2ROrbitClosure.ambient_stratum()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.gl2r_orbit_closure.GL2ROrbitClosure.base_ring"><code class="docutils literal notranslate"><span class="pre">GL2ROrbitClosure.base_ring()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.gl2r_orbit_closure.GL2ROrbitClosure.boundaries"><code class="docutils literal notranslate"><span class="pre">GL2ROrbitClosure.boundaries()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.gl2r_orbit_closure.GL2ROrbitClosure.cylinder_circumference"><code class="docutils literal notranslate"><span class="pre">GL2ROrbitClosure.cylinder_circumference()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.gl2r_orbit_closure.GL2ROrbitClosure.cylinder_deformation_subspace"><code class="docutils literal notranslate"><span class="pre">GL2ROrbitClosure.cylinder_deformation_subspace()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.gl2r_orbit_closure.GL2ROrbitClosure.decomposition"><code class="docutils literal notranslate"><span class="pre">GL2ROrbitClosure.decomposition()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.gl2r_orbit_closure.GL2ROrbitClosure.decompositions"><code class="docutils literal notranslate"><span class="pre">GL2ROrbitClosure.decompositions()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.gl2r_orbit_closure.GL2ROrbitClosure.decompositions_breadth_first"><code class="docutils literal notranslate"><span class="pre">GL2ROrbitClosure.decompositions_breadth_first()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.gl2r_orbit_closure.GL2ROrbitClosure.decompositions_depth_first"><code class="docutils literal notranslate"><span class="pre">GL2ROrbitClosure.decompositions_depth_first()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.gl2r_orbit_closure.GL2ROrbitClosure.dimension"><code class="docutils literal notranslate"><span class="pre">GL2ROrbitClosure.dimension()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.gl2r_orbit_closure.GL2ROrbitClosure.field_of_definition"><code class="docutils literal notranslate"><span class="pre">GL2ROrbitClosure.field_of_definition()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.gl2r_orbit_closure.GL2ROrbitClosure.flow_decomposition_kontsevich_zorich_cocycle"><code class="docutils literal notranslate"><span class="pre">GL2ROrbitClosure.flow_decomposition_kontsevich_zorich_cocycle()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.gl2r_orbit_closure.GL2ROrbitClosure.holonomy"><code class="docutils literal notranslate"><span class="pre">GL2ROrbitClosure.holonomy()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.gl2r_orbit_closure.GL2ROrbitClosure.holonomy_dual"><code class="docutils literal notranslate"><span class="pre">GL2ROrbitClosure.holonomy_dual()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.gl2r_orbit_closure.GL2ROrbitClosure.is_teichmueller_curve"><code class="docutils literal notranslate"><span class="pre">GL2ROrbitClosure.is_teichmueller_curve()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.gl2r_orbit_closure.GL2ROrbitClosure.lift"><code class="docutils literal notranslate"><span class="pre">GL2ROrbitClosure.lift()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.gl2r_orbit_closure.GL2ROrbitClosure.tangent_space_basis"><code class="docutils literal notranslate"><span class="pre">GL2ROrbitClosure.tangent_space_basis()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.gl2r_orbit_closure.GL2ROrbitClosure.update_tangent_space_from_flow_decomposition"><code class="docutils literal notranslate"><span class="pre">GL2ROrbitClosure.update_tangent_space_from_flow_decomposition()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.gl2r_orbit_closure.GL2ROrbitClosure.update_tangent_space_from_vector"><code class="docutils literal notranslate"><span class="pre">GL2ROrbitClosure.update_tangent_space_from_vector()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -6459,7 +6972,7 @@ Basis matrix:
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016-2022, the sage-flatsurf authors.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.1.1.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
     </div>
   </body>
 </html>

@@ -8,19 +8,14 @@
     <title>flatsurf.geometry.polygon &#8212; sage-flatsurf 0.4.7 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/classic.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
-    <script>let toggleHintShow = 'Click to show';</script>
-    <script>let toggleHintHide = 'Click to hide';</script>
-    <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="../../../_static/togglebutton.js"></script>
-    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
     
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -1000,7 +995,7 @@
 
 <div class="viewcode-block" id="Polygon.angle"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.polygon.Polygon.angle">[docs]</a>    <span class="k">def</span> <span class="nf">angle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">numerical</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">assume_rational</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return the angle at the begining of the start point of the edge ``e``.</span>
+<span class="sd">        Return the angle at the beginning of the start point of the edge ``e``.</span>
 
 <span class="sd">        EXAMPLES::</span>
 
@@ -1174,17 +1169,17 @@
 
 <span class="sd">            sage: S = polygons((1,0), (sqrt2/2, 3), (-2,3), (-sqrt2/2+1, -6))</span>
 <span class="sd">            sage: T = polygons((sqrt2/2,3), (-2,3), (-sqrt2/2+1, -6), (1,0))</span>
-<span class="sd">            sage: ans, certif = S.is_isometric(T, certificate=True)</span>
-<span class="sd">            sage: assert ans</span>
-<span class="sd">            sage: shift, rot = certif</span>
+<span class="sd">            sage: isometric, cert = S.is_isometric(T, certificate=True)</span>
+<span class="sd">            sage: assert isometric</span>
+<span class="sd">            sage: shift, rot = cert</span>
 <span class="sd">            sage: polygons(edges=[rot * S.edge((k + shift) % 4) for k in range(4)], base_point=T.vertex(0)) == T</span>
 <span class="sd">            True</span>
 
 
 <span class="sd">            sage: T = (matrix(2, [sqrt2/2, -sqrt2/2, sqrt2/2, sqrt2/2]) * S).translate((3,2))</span>
-<span class="sd">            sage: ans, certif = S.is_isometric(T, certificate=True)</span>
-<span class="sd">            sage: assert ans</span>
-<span class="sd">            sage: shift, rot = certif</span>
+<span class="sd">            sage: isometric, cert = S.is_isometric(T, certificate=True)</span>
+<span class="sd">            sage: assert isometric</span>
+<span class="sd">            sage: shift, rot = cert</span>
 <span class="sd">            sage: polygons(edges=[rot * S.edge(k + shift) for k in range(4)], base_point=T.vertex(0)) == T</span>
 <span class="sd">            True</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1276,9 +1271,9 @@
 
 <span class="sd">            sage: S.is_half_translate(T1, certificate=True)</span>
 <span class="sd">            (True, (0, 1))</span>
-<span class="sd">            sage: ans, certif = S.is_half_translate(T2, certificate=True)</span>
-<span class="sd">            sage: assert ans</span>
-<span class="sd">            sage: shift, rot = certif</span>
+<span class="sd">            sage: half_translate, cert = S.is_half_translate(T2, certificate=True)</span>
+<span class="sd">            sage: assert half_translate</span>
+<span class="sd">            sage: shift, rot = cert</span>
 <span class="sd">            sage: polygons(edges=[rot * S.edge(k + shift) for k in range(3)], base_point=T2.vertex(0)) == T2</span>
 <span class="sd">            True</span>
 <span class="sd">            sage: S.is_half_translate(T3, certificate=True)</span>
@@ -2811,7 +2806,7 @@
         <span class="k">if</span> <span class="n">angle</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">angle</span> <span class="o">&gt;</span> <span class="n">QQ</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;angle must be in ]0,1/2]&#39;</span><span class="p">)</span>
 
-        <span class="n">z</span> <span class="o">=</span> <span class="n">QQbar</span><span class="o">.</span><span class="n">zeta</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">angle</span><span class="o">.</span><span class="n">denom</span><span class="p">())</span><span class="o">**</span><span class="n">angle</span><span class="o">.</span><span class="n">numer</span><span class="p">()</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="n">QQbar</span><span class="o">.</span><span class="n">zeta</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">angle</span><span class="o">.</span><span class="n">denom</span><span class="p">())</span><span class="o">**</span><span class="n">angle</span><span class="o">.</span><span class="n">numerator</span><span class="p">()</span>
         <span class="n">c</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">real</span><span class="p">()</span>
         <span class="n">s</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">imag</span><span class="p">()</span>
 
@@ -3085,7 +3080,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016-2022, the sage-flatsurf authors.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.1.1.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
     </div>
   </body>
 </html>
