@@ -327,9 +327,10 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
             for derivative in range(consistency):
                 expected = η._evaluate({triangle: HarmonicDifferential._evaluate_symbolic(HarmonicDifferential._midpoint(self._surface, triangle, edge), derivative, prec)})
                 other = η._evaluate({triangle_: HarmonicDifferential._evaluate_symbolic(HarmonicDifferential._midpoint(self._surface, triangle_, edge_), derivative, prec)})
-                error = abs((expected - other) / expected)
-                if error > 1e-6:
-                    print(f"power series defining harmonic differential are not consistent: {derivative}th derivate does not match between {(triangle, edge)} and {(triangle_, edge_)}; relative error is {error}")
+                abs_error = abs(expected - other)
+                rel_error = abs(abs_error / expected)
+                if abs_error > 1e-9 and rel_error > 1e-6:
+                    print(f"power series defining harmonic differential are not consistent: {derivative}th derivate does not match between {(triangle, edge)} and {(triangle_, edge_)}; relative error is {reL_error:.6f}")
 
         # (2) Check that differential actually integrates like the cohomology class.
         for gen in cocycle.parent().homology().gens():
@@ -337,7 +338,7 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
             actual = η.integrate(gen)
             error = abs((expected - actual) / expected)
             if error > 1e-6:
-                print(f"harmonic differential does not have prescribed integral at {gen}; relative error is {error}")
+                print(f"harmonic differential does not have prescribed integral at {gen}; relative error is {error:.6f}")
 
         # (3) Check that the area is finite.
 
@@ -523,8 +524,8 @@ class PowerSeriesConstraints:
              PowerSeriesConstraints.Constraint(real={}, imag={0: [1.0], 1: [-1.0]}, lagrange=[], value=0),
              PowerSeriesConstraints.Constraint(real={0: [0, 1.0], 1: [0, -1.0]}, imag={}, lagrange=[], value=0),
              PowerSeriesConstraints.Constraint(real={}, imag={0: [0, 1.0], 1: [0, -1.0]}, lagrange=[], value=0),
-             PowerSeriesConstraints.Constraint(real={0: [1.0], 1: [-1.0]}, imag={0: [-0.0, -0.5], 1: [-0.0, -0.5]}, lagrange=[], value=0),
-             PowerSeriesConstraints.Constraint(real={0: [0.0, 0.5], 1: [0.0, 0.5]}, imag={0: [1.0], 1: [-1.0]}, lagrange=[], value=0),
+             PowerSeriesConstraints.Constraint(real={0: [1.0], 1: [-1.0]}, imag={0: [-0.0, -0.5], 1: [0.0, -0.5]}, lagrange=[], value=0),
+             PowerSeriesConstraints.Constraint(real={0: [0.0, 0.5], 1: [-0.0, 0.5]}, imag={0: [1.0], 1: [-1.0]}, lagrange=[], value=0),
              PowerSeriesConstraints.Constraint(real={0: [1.0, -0.5], 1: [-1.0, -0.5]}, imag={}, lagrange=[], value=0),
              PowerSeriesConstraints.Constraint(real={}, imag={0: [1.0, -0.5], 1: [-1.0, -0.5]}, lagrange=[], value=0)]
 
