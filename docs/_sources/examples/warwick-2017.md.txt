@@ -10,7 +10,7 @@ kernelspec:
   display_name: SageMath 9.2
   language: sage
   name: sagemath
-author: Pat Hooper <whooper@ccny.cuny.edu>
+author: W. Patrick Hooper <whooper@ccny.cuny.edu>
 ---
 
 +++ {"deletable": true, "editable": true}
