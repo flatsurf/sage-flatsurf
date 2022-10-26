@@ -46,7 +46,7 @@ sage-flaturf from source and to run our test suite.
 The main authors and current maintainers of sage-flatsurf are:
 
 * Vincent Delecroix (Bordeaux)
-* Pat Hooper (City College of New York and CUNY Graduate Center)
+* W. Patrick Hooper (City College of New York and CUNY Graduate Center)
 * Julian Rüth
 
 We welcome others to [contribute](https://flatsurf.github.io#contact).
@@ -62,7 +62,7 @@ zenodo website](https://zenodo.org/badge/latestdoi/13970050).
   [ICERM](https://icerm.brown.edu).
 * Vincent Delecroix's contribution to the project has been supported by
   OpenDreamKit, Horizon 2020 European Research Infrastructures project #676541.
-* Pat Hooper's contribution to the project has been supported by the National
+* W. Patrick Hooper's contribution to the project has been supported by the National
   Science Foundation under Grant Number DMS-1500965. Any opinions, findings,
   and conclusions or recommendations expressed in this material are those of
   the authors and do not necessarily reflect the views of the National Science

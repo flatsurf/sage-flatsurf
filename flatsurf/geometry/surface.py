@@ -54,7 +54,7 @@ We can recover the underlying surface again::
 # ********************************************************************
 #  This file is part of sage-flatsurf.
 #
-#        Copyright (C) 2016-2020 Pat Hooper
+#        Copyright (C) 2016-2020 W. Patrick Hooper
 #                      2019-2020 Vincent Delecroix
 #                      2020-2021 Julian Rüth
 #
