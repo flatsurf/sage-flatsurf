@@ -304,9 +304,9 @@ class LazyDelaunaySurface(LazyDelaunayTriangulatedSurface):
 
     r"""
     This is an implementation of Surface. It takes a surface (typically
-    infinite) from the constructor. This class respresents the 
-    Delaunay decomposition of this surface. We compute this decomposition
-    lazily so that it works for infinite surfaces.
+    infinite) from the constructor. This class represents the Delaunay
+    decomposition of this surface. We compute this decomposition lazily so that
+    it works for infinite surfaces.
     
     EXAMPLES::
 

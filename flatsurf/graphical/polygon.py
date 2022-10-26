@@ -127,7 +127,7 @@ class GraphicalPolygon:
     def bounding_box(self):
         r"""
         Return the quadruple (x1,y1,x2,y2) where x1 and y1 are the minimal
-        x- and y-coordinates and x2 and y2 are the maximal x-and y- cordinates.
+        x and y coordinates and x2 and y2 are the maximal x and y coordinates.
         """
         return self.xmin(), self.ymin(), self.xmax(), self.ymax()
 

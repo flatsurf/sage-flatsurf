@@ -504,7 +504,7 @@ class GraphicalSurface:
         r"""
         Return the quadruple (x1,y1,x2,y2) where x1 and y1 are the minimal
         x- and y-coordinates of a visible graphical polygon and x2 and y2 are the
-        maximal x-and y- cordinates  of a visible graphical polygon.
+        maximal x-and y- coordinates of a visible graphical polygon.
         """
         return self.xmin(), self.ymin(), self.xmax(), self.ymax()
 
@@ -823,34 +823,34 @@ class GraphicalSurface:
         p = g.base_polygon()
 
         if self._edge_labels == 'gluings':
-            ans = []
+            labels = []
             for e in range(p.num_edges()):
                 if self.is_adjacent(lab, e):
-                    ans.append(None)
+                    labels.append(None)
                 else:
                     llab,ee = s.opposite_edge(lab,e)
-                    ans.append(str(llab))
+                    labels.append(str(llab))
         elif self._edge_labels == 'number':
-            ans = list(map(str, range(p.num_edges())))
+            labels = list(map(str, range(p.num_edges())))
         elif self._edge_labels == 'gluings and number':
-            ans = []
+            labels = []
             for e in range(p.num_edges()):
                 if self.is_adjacent(lab, e):
-                    ans.append(str(e))
+                    labels.append(str(e))
                 else:
-                    ans.append("{} -> {}".format(e, s.opposite_edge(lab,e)))
+                    labels.append("{} -> {}".format(e, s.opposite_edge(lab,e)))
         elif self._edge_labels == "letter":
-            ans = []
+            labels = []
             for e in range(p.num_edges()):
                 llab,ee = s.opposite_edge(lab,e)
                 if not self.is_visible(llab) or self.is_adjacent(lab, e):
-                    ans.append(None)
+                    labels.append(None)
                 else:
-                    ans.append(self._get_letter_for_edge(lab,e))
+                    labels.append(self._get_letter_for_edge(lab,e))
         else:
             raise RuntimeError("invalid option for edge_labels")
 
-        return ans
+        return labels
 
     def plot_polygon(self, label, graphical_polygon, upside_down):
         r"""
