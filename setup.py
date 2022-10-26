@@ -4,7 +4,7 @@ with open('README.md') as f:
     long_description = f.read()
 
 setup(name='sage_flatsurf',
-      author='Vincent Delecroix, Pat Hooper, and Julian Rüth',
+      author='Vincent Delecroix, W. Patrick Hooper, and Julian Rüth',
       author_email='contact@flatsurf.org',
       description="Flat surfaces in SageMath",
       long_description=long_description,

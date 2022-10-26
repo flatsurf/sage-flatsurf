@@ -4,7 +4,7 @@ This package is intended to support graphical output via matplotlib.
 """
 # ****************************************************************************
 #       Copyright (C) 2013-2019 Vincent Delecroix <20100.delecroix@gmail.com>
-#                     2013-2019 Pat Hooper <wphooper@gmail.com>
+#                     2013-2019 W. Patrick Hooper <wphooper@gmail.com>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #  as published by the Free Software Foundation; either version 2 of
