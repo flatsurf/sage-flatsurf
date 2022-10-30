@@ -109,7 +109,7 @@ class HarmonicDifferential(Element):
 
             sage: H = SimplicialHomology(T)
             sage: HarmonicDifferential._integrate_symbolic(H(), prec=5)
-            {}
+            0
 
             sage: a, b = H.gens()
             sage: HarmonicDifferential._integrate_symbolic(a, prec=5)
@@ -138,7 +138,7 @@ class HarmonicDifferential(Element):
         """
         surface = cycle.surface()
 
-        expression = {}
+        linear = {}
 
         for path, multiplicity in cycle.voronoi_path().monomial_coefficients().items():
 
@@ -149,7 +149,7 @@ class HarmonicDifferential(Element):
 
                 # Namely we integrate the power series defined around the Voronoi vertex of S by symbolically integrating each monomial term.
                 cell = S[0]
-                coefficients = expression.get(cell, [0] * prec)
+                coefficients = linear.get(cell, [0] * prec)
 
                 # The midpoints of the edges
                 P = HarmonicDifferential._midpoint(surface, *S)
@@ -159,16 +159,28 @@ class HarmonicDifferential(Element):
                     coefficients[k] -= multiplicity * P**(k + 1) / (k + 1)
                     coefficients[k] += multiplicity * Q**(k + 1) / (k + 1)
 
-                expression[cell] = coefficients
+                linear[cell] = coefficients
 
-        return expression
+        return Term(linear=linear)
 
     @staticmethod
     def _evaluate_symbolic(Δ, derivative, prec):
+        r"""
+        Return the coefficients of a linear combination that expresses the
+        value of the ``derivative``th derivative of a power series at ``z-Δ``.
+        """
         from sage.all import ZZ, factorial
         return [ZZ(0) if k < derivative else factorial(k) / factorial(k - derivative) * Δ**(k - derivative) for k in range(prec)]
 
-    def _evaluate(self, expression):
+    @staticmethod
+    def _taylor_symbolic(Δ, prec):
+        r"""
+        Return the coefficinets of a linear combination that expresses the
+        Taylor expansion around the center Δ.
+        """
+        raise NotImplementedError
+
+    def _evaluate(self, *terms):
         r"""
         Evaluate an expression by plugging in the coefficients of the power
         series defining this differential.
@@ -190,11 +202,22 @@ class HarmonicDifferential(Element):
 
         Compute the sum of the constant coefficients::
 
-            sage: η._evaluate({0: [1], 1: [1]})
+            sage: from flatsurf.geometry.harmonic_differentials import Term
+            sage: η._evaluate(Term(linear={0: [1], 1: [1]}))
             -0.400000000000039 - 1.00000000000142*I
 
         """
-        return sum(c*a for face in expression for (c, a) in zip(expression.get(face, []), self._series[face]._coefficients))
+        value = 0
+
+        def evaluate_linear(expression):
+            return sum(c*a for face in expression for (c, a) in zip(expression.get(face, []), self._series[face]._coefficients))
+
+        for term in terms:
+            value += term.constant
+            value += evaluate_linear(term.linear)
+            value += evaluate_linear(term.quadratic)**2
+
+        return value
 
     def integrate(self, cycle):
         r"""
@@ -357,12 +380,12 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
         for (triangle, edge) in self._surface.edge_iterator():
             triangle_, edge_ = self._surface.opposite_edge(triangle, edge)
             for derivative in range(consistency):
-                expected = η._evaluate({triangle: HarmonicDifferential._evaluate_symbolic(HarmonicDifferential._midpoint(self._surface, triangle, edge), derivative, prec)})
-                other = η._evaluate({triangle_: HarmonicDifferential._evaluate_symbolic(HarmonicDifferential._midpoint(self._surface, triangle_, edge_), derivative, prec)})
+                expected = η._evaluate(Term(linear={triangle: HarmonicDifferential._evaluate_symbolic(HarmonicDifferential._midpoint(self._surface, triangle, edge), derivative, prec)}))
+                other = η._evaluate(Term(linear={triangle_: HarmonicDifferential._evaluate_symbolic(HarmonicDifferential._midpoint(self._surface, triangle_, edge_), derivative, prec)}))
                 abs_error = abs(expected - other)
                 rel_error = abs(abs_error / expected)
                 if abs_error > 1e-9 and rel_error > 1e-6:
-                    print(f"power series defining harmonic differential are not consistent: {derivative}th derivate does not match between {(triangle, edge)} and {(triangle_, edge_)}; relative error is {reL_error:.6f}")
+                    print(f"power series defining harmonic differential are not consistent: {derivative}th derivate does not match between {(triangle, edge)} and {(triangle_, edge_)}; relative error is {rel_error:.6f}")
 
         # (2) Check that differential actually integrates like the cohomology class.
         for gen in cocycle.parent().homology().gens():
@@ -435,6 +458,44 @@ class PowerSeries:
         return PowerSeries(self._surface, self._polygon, [c + d for c, d in zip(self._coefficients, other._coefficients)])
 
 
+class Term:
+    r"""
+    A symbolic expression of the form ``Q^2 + L + C`` where ``C`` is a
+    constant, ``L`` and ``Q`` are linear expression in the coefficients of the
+    power series developed at the vertices of the Voronoi cells of a Delaunay
+    triangulation.
+
+    EXAMPLES::
+
+        sage: from flatsurf import translation_surfaces, SimplicialHomology
+        sage: from flatsurf.geometry.harmonic_differentials import HarmonicDifferential
+        sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+        sage: T.set_immutable()
+
+        sage: H = SimplicialHomology(T)
+        sage: a, b = H.gens()
+        sage: HarmonicDifferential._integrate_symbolic(a, prec=5)
+        {0: [(0.5+0.5j), (-0.25+0j), (0.041666666666666664-0.041666666666666664j), 0j, (0.00625+0.00625j)],
+         1: [(0.5+0.5j), (0.25+0j), (0.041666666666666664-0.041666666666666664j), 0j, (0.00625+0.00625j)]}
+    """
+
+    def __init__(self, constant=None, linear=None, quadratic=None):
+        self.constant = constant or 0
+        self.linear = linear or {}
+        self.quadratic = quadratic or {}
+
+    def __repr__(self):
+        terms = []
+        if self.quadratic:
+            terms.append(f"({self.quadratic})²")
+        if self.linear:
+            terms.append(repr(self.linear))
+        if self.constant:
+            terms.append(repr(self.constant))
+
+        return " + ".join(terms) or "0"
+
+
 class PowerSeriesConstraints:
     r"""
     A collection of (linear) constraints on the coefficients of power series
@@ -474,7 +535,12 @@ class PowerSeriesConstraints:
     def __repr__(self):
         return repr(self._constraints)
 
-    def add_constraint(self, coefficients, value, real=True, imag=True):
+    def add_constraint(self, term, value, real=True, imag=True):
+        if term.quadratic:
+            raise NotImplementedError("non-linear constraints not supported yet")
+
+        value -= term.constant
+
         def _imag(x):
             x = x.imag
             if callable(x):
@@ -495,13 +561,13 @@ class PowerSeriesConstraints:
         #     and Im(Σ c_i a_i) = Σ Im(c_i) Re(a_i) + Re(c_i) Im(a_i).
         if real:
             self._add_constraint(
-                real={triangle: [_real(c) for c in coefficients[triangle]] for triangle in coefficients.keys()},
-                imag={triangle: [-_imag(c) for c in coefficients[triangle]] for triangle in coefficients.keys()},
+                real={triangle: [_real(c) for c in term.linear[triangle]] for triangle in term.linear.keys()},
+                imag={triangle: [-_imag(c) for c in term.linear[triangle]] for triangle in term.linear.keys()},
                 value=_real(value))
         if complex:
             self._add_constraint(
-                real={triangle: [_imag(c) for c in coefficients[triangle]] for triangle in coefficients.keys()},
-                imag={triangle: [_real(c) for c in coefficients[triangle]] for triangle in coefficients.keys()},
+                real={triangle: [_imag(c) for c in term.linear[triangle]] for triangle in term.linear.keys()},
+                imag={triangle: [_real(c) for c in term.linear[triangle]] for triangle in term.linear.keys()},
                 value=_imag(value))
 
     def _add_constraint(self, real, imag, value, lagrange=[]):
@@ -600,11 +666,48 @@ class PowerSeriesConstraints:
 
             # Require that the 0th, ..., prec-1th derivatives are the same at the midpoint of the edge.
             # The series f(z) = Σ a_k z^k has derivative Σ k!/(k-d)! a_k z^{k-d}
-            for d in range(derivatives):
-                self.add_constraint({
-                    triangle0: HarmonicDifferential._evaluate_symbolic(Δ0, d, self._prec),
-                    triangle1: [-c for c in HarmonicDifferential._evaluate_symbolic(Δ1, d, self._prec)],
-                }, ZZ(0))
+            for derivative in range(derivatives):
+                self.add_constraint(Term(linear={
+                    triangle0: HarmonicDifferential._evaluate_symbolic(Δ0, derivative, self._prec),
+                    triangle1: [-c for c in HarmonicDifferential._evaluate_symbolic(Δ1, derivative, self._prec)],
+                }), ZZ(0))
+
+    def require_L2_consistency(self):
+        r"""
+        For each pair of adjacent triangles meeting at and edge `e`, let `v` be
+        the midpoint of `e`. We develop the power series coming from both
+        triangles around that midpoint and check them for agreement. Namely, we
+        integrate the square of their difference on the circle of maximal
+        radius around `v`. (If the power series agree, that integral should be
+        zero.)
+
+        TODO
+
+        """
+        for triangle0, edge0 in self._surface.edge_iterator():
+            triangle1, edge1 = self._surface.opposite_edge(triangle0, edge0)
+
+            if triangle1 < triangle0:
+                # Add each constraint only once.
+                continue
+
+            # The midpoint of the edge where the triangles meet with respect to
+            # the center of the triangle.
+            Δ0 = HarmonicDifferential._midpoint(self._surface, triangle0, edge0)
+            Δ1 = HarmonicDifferential._midpoint(self._surface, triangle1, edge1)
+
+            # Develop both power series around that midpoint, i.e., Taylor expand them.
+            T0 = HarmonicDifferential._taylor_symbolic(Δ0, self._prec)
+            T1 = HarmonicDifferential._taylor_symbolic(Δ0, self._prec)
+
+            # Write b_n for the difference of the n-th coefficient of both power series.
+            # b = [...]
+            # We want to minimize the sum of b_n^2 R^n where R is half the
+            # length of the edge we are on.
+            # Taking a square root of R^n, we merge R^n with b_n^2.
+            raise NotImplementedError
+            # To optimize this error, write it as Lagrange multipliers.
+            raise NotImplementedError # TODO: We need some generic infrastracture to merge quadratic conditions such as this and require_finite_area by weighing both.
 
     def require_finite_area(self):
         r"""
@@ -677,6 +780,11 @@ class PowerSeriesConstraints:
 
         # We form the partial derivatives with respect to the λ_i. This yields
         # the condition -g_i=0 which is already recorded in the linear system.
+
+    def optimize(self, *expressions):
+        r"""
+        Create a constraint that optimizes the sum of the squares of the given quadratic ``expressions``.
+        """
 
     def require_cohomology(self, cocycle):
         r""""
