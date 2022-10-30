@@ -611,7 +611,7 @@ class PowerSeriesConstraints:
         Since the area 1 /(2iπ) ∫ η \wedge \overline{η} must be finite [TODO:
         REFERENCE?] we can optimize for this quantity to be minimal.
 
-        EXPMALES::
+        EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, SimplicialCohomology
             sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
