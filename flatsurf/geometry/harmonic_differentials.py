@@ -531,7 +531,7 @@ class PowerSeriesConstraints:
         if constraint not in self._constraints:
             self._constraints.append(constraint)
 
-    def require_consistency(self, prec):
+    def require_consistency(self, derivatives):
         r"""
         The radius of convergence of the power series is the distance from the
         vertex of the Voronoi cell to the closest singularity of the
@@ -585,8 +585,8 @@ class PowerSeriesConstraints:
              PowerSeriesConstraints.Constraint(real={}, imag={0: [1.0, -0.5], 1: [-1.0, -0.5]}, lagrange=[], value=0)]
 
         """
-        if prec > self._prec:
-            raise ValueError("prec must not exceed global precision")
+        if derivatives > self._prec:
+            raise ValueError("derivatives must not exceed global precision")
 
         for triangle0, edge0 in self._surface.edge_iterator():
             triangle1, edge1 = self._surface.opposite_edge(triangle0, edge0)
@@ -600,7 +600,7 @@ class PowerSeriesConstraints:
 
             # Require that the 0th, ..., prec-1th derivatives are the same at the midpoint of the edge.
             # The series f(z) = Σ a_k z^k has derivative Σ k!/(k-d)! a_k z^{k-d}
-            for d in range(prec):
+            for d in range(derivatives):
                 self.add_constraint({
                     triangle0: HarmonicDifferential._evaluate_symbolic(Δ0, d, self._prec),
                     triangle1: [-c for c in HarmonicDifferential._evaluate_symbolic(Δ1, d, self._prec)],
