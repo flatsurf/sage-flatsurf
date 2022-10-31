@@ -324,10 +324,63 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
 
     @cached_method
     def power_series_ring(self, triangle):
+        r"""
+        Return the power series ring to write down the series describing a
+        harmonic differential in a Voronoi cell.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, HarmonicDifferentials
+            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T.set_immutable()
+
+            sage: Ω = HarmonicDifferentials(T)
+            sage: Ω.power_series_ring(1)
+            Power Series Ring in z1 over Complex Field with 53 bits of precision
+            sage: Ω.power_series_ring(2)
+            Power Series Ring in z2 over Complex Field with 53 bits of precision
+
+        """
         from sage.all import PowerSeriesRing
         # TODO: Should we use self._coefficients in some way?
         from sage.all import CC
         return PowerSeriesRing(CC, f"z{triangle}")
+
+    @cached_method
+    def symbolic_ring(self, prec, triangle=None):
+        r"""
+        Return the power series ring over the polynomial ring in the
+        coefficients of the power series at ``triangle``.
+
+        If ``triangle`` is not set, return the ring over the polynomial ring
+        with the coefficients for all the triangles.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, HarmonicDifferentials
+            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T.set_immutable()
+
+            sage: Ω = HarmonicDifferentials(T)
+            sage: Ω.symbolic_ring(prec=3, triangle=1)
+            Power Series Ring in z over Multivariate Polynomial Ring in a1_0, a1_1, a1_2, Re_a1_0, Re_a1_1, Re_a1_2, Im_a1_0, Im_a1_1, Im_a1_2 over Real Field with 53 bits of precision
+
+            sage: Ω.symbolic_ring(prec=3)
+            Power Series Ring in z over Multivariate Polynomial Ring in a0_0, a0_1, a0_2, Re_a0_0, Re_a0_1, Re_a0_2, Im_a0_0, Im_a0_1, Im_a0_2, a1_0, a1_1, a1_2, Re_a1_0, Re_a1_1, Re_a1_2, Im_a1_0, Im_a1_1, Im_a1_2 over Real Field with 53 bits of precision
+
+        """
+        gens = []
+
+        for t in [triangle] if triangle else self._surface.label_iterator():
+            gens += [f"a{t}_{n}" for n in range(prec)]
+            gens += [f"Re_a{t}_{n}" for n in range(prec)]
+            gens += [f"Im_a{t}_{n}" for n in range(prec)]
+
+        from sage.all import PolynomialRing
+        R = PolynomialRing(self._coefficients, gens)
+        
+        from sage.all import PowerSeriesRing
+        return PowerSeriesRing(R, 'z')
 
     def _repr_(self):
         return f"Ω({self._surface})"
