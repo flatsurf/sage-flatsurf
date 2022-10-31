@@ -581,6 +581,66 @@ class IsoDelaunayTessellation(Parent):
         perturbation = self._point_to_matrix(I1)
         return nondegenerate_triangulation.apply_matrix(perturbation.inverse())
 
+    def vertices(self):
+        r"""
+        Return the vertices of the completed fundamental domain.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: from flatsurf.geometry.iso_delaunay_tessellation import IsoDelaunayTessellation
+            sage: s = translation_surfaces.veech_2n_gon(4)
+            sage: idt = IsoDelaunayTessellation(s)
+            sage: idt.explore()
+            sage: idt.vertices()
+
+        """
+        #TODO: Check that the fundamental domain has been computed.
+
+        half_edges = set((polygon, edge) for polygon in self._faces.vertices() for edge in polygon.edges())
+
+        vertices = []
+
+        while half_edges:
+            vertex = [next(iter(half_edges))]
+
+            while True:
+                (polygon, polygon_edge) = vertex[-1]
+
+                assert polygon_edge in polygon.edges()
+
+                previous_edge = polygon.edges()[polygon.edges().index(polygon_edge) - 1]
+
+                # TODO: Merge this with the code in _cross maybe.
+                for v, w, edges in self._faces.edges(polygon, labels=True):
+
+                    (polygon_source_edge, polygon_target_edge) = edges
+                    if previous_edge == polygon_source_edge:
+                        cross = polygon_target_edge
+                    elif previous_edge == polygon_target_edge:
+                        cross = polygon_source_edge
+                    else:
+                        continue
+
+                    cross = (w if v == polygon else v, cross)
+
+                    vertex.append(cross)
+                    half_edges.remove(cross)
+                    break
+                else:
+                    assert False, f"{previous_edge} of {polygon} not glued to another edge"
+
+                if vertex[0] == vertex[-1]:
+                    vertex.pop()
+                    vertices.append(vertex)
+                    break
+
+        return vertices
+
+    def topological_euler_characteristic(self):
+        # return V - E + F of the fundamental domain
+        raise NotImplementedError
+
     def orbifold_euler_characteristic(self):
         r"""
         chi_top = V - E + F in ZZ
