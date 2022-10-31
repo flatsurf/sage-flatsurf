@@ -21,6 +21,7 @@ TODO: Document this module.
 ######################################################################
 from sage.structure.parent import Parent
 from sage.structure.element import Element
+from sage.misc.cachefunc import cached_method
 from sage.categories.all import SetsWithPartialMaps
 from sage.structure.unique_representation import UniqueRepresentation
 from sage.all import ZZ
@@ -185,6 +186,8 @@ class HarmonicDifferential(Element):
         Evaluate an expression by plugging in the coefficients of the power
         series defining this differential.
 
+        This might not correspond to evaluating the actual power series somewhere.
+
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology, SimplicialCohomology
@@ -198,7 +201,7 @@ class HarmonicDifferential(Element):
 
             sage: Ω = HarmonicDifferentials(T)
             sage: η = Ω(f); η
-            (-0.200000000000082 - 0.500000000000258*I + ... at 0, -0.199999999999957 - 0.500000000001160*I + ... at 1)
+            (-0.200000000000082 - 0.500000000000258*I + ... + O(z0^5), -0.199999999999957 - 0.500000000001160*I + ... + O(z1^5))
 
         Compute the sum of the constant coefficients::
 
@@ -210,7 +213,7 @@ class HarmonicDifferential(Element):
         value = 0
 
         def evaluate_linear(expression):
-            return sum(c*a for face in expression for (c, a) in zip(expression.get(face, []), self._series[face]._coefficients))
+            return sum(c*a for face in expression for (c, a) in zip(expression.get(face, []), self._series[face].list()))
 
         for term in terms:
             value += term.constant
@@ -250,7 +253,7 @@ class HarmonicDifferential(Element):
 
         """
         # TODO: The above outputs are wrong :(
-        return self._evaluate(HarmonicDifferential._integrate_symbolic(cycle, max(series.precision() for series in self._series.values())))
+        return self._evaluate(HarmonicDifferential._integrate_symbolic(cycle, max(series.precision_absolute() for series in self._series.values())))
 
     def _repr_(self):
         return repr(tuple(self._series.values()))
@@ -273,7 +276,7 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
 
         sage: H = SimplicialCohomology(T)
         sage: Ω(H())
-        (O(z^5) at 0, O(z^5) at 1)
+        (O(z0^5), O(z1^5))
 
     ::
 
@@ -318,6 +321,13 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
 
     def surface(self):
         return self._surface
+
+    @cached_method
+    def power_series_ring(self, triangle):
+        from sage.all import PowerSeriesRing
+        # TODO: Should we use self._coefficients in some way?
+        from sage.all import CC
+        return PowerSeriesRing(CC, f"z{triangle}")
 
     def _repr_(self):
         return f"Ω({self._surface})"
@@ -377,85 +387,31 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
 
         # Check whether this is actually a global differential:
         # (1) Check that the series are actually consistent where the Voronoi cells overlap.
+
+        def check(actual, expected, message, abs_error_bound = 1e-9, rel_error_bound = 1e-6):
+            abs_error = abs(expected - actual)
+            if abs_error > abs_error_bound:
+                if expected == 0 or abs_error / abs(expected) > rel_error_bound:
+                    print(f"{message}; expected: {expected}, got: {actual}")
+
         for (triangle, edge) in self._surface.edge_iterator():
             triangle_, edge_ = self._surface.opposite_edge(triangle, edge)
             for derivative in range(consistency):
                 expected = η._evaluate(Term(linear={triangle: HarmonicDifferential._evaluate_symbolic(HarmonicDifferential._midpoint(self._surface, triangle, edge), derivative, prec)}))
                 other = η._evaluate(Term(linear={triangle_: HarmonicDifferential._evaluate_symbolic(HarmonicDifferential._midpoint(self._surface, triangle_, edge_), derivative, prec)}))
-                abs_error = abs(expected - other)
-                rel_error = abs(abs_error / expected)
-                if abs_error > 1e-9 and rel_error > 1e-6:
-                    print(f"power series defining harmonic differential are not consistent: {derivative}th derivate does not match between {(triangle, edge)} and {(triangle_, edge_)}; relative error is {rel_error:.6f}")
+                check(other, expected, f"power series defining harmonic differential are not consistent: {derivative}th derivate does not match between {(triangle, edge)} and {(triangle_, edge_)}")
 
         # (2) Check that differential actually integrates like the cohomology class.
         for gen in cocycle.parent().homology().gens():
             expected = cocycle(gen)
-            actual = η.integrate(gen)
-            error = abs((expected - actual) / expected)
-            if error > 1e-6:
-                print(f"harmonic differential does not have prescribed integral at {gen}; relative error is {error:.6f}")
+            actual = η.integrate(gen).real
+            if callable(actual):
+                actual = actual()
+            check(actual, expected, f"harmonic differential does not have prescribed integral at {gen}")
 
         # (3) Check that the area is finite.
 
         return η
-
-
-class PowerSeries:
-    r"""
-    A power series developed around the center of a Voronoi cell.
-
-    This class is used in the implementation of :class:`HormonicDifferential`.
-    A harmonic differential is a power series developed at each Voronoi cell.
-
-    EXAMPLES::
-
-        sage: from flatsurf import translation_surfaces
-        sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
-        sage: T.set_immutable()
-
-        sage: from flatsurf.geometry.harmonic_differentials import PowerSeries
-        sage: PowerSeries(T, 0, [1, 2, 3, 0, 0])
-        1 + 2*z + 3*z^2 + O(z^5) at 0
-
-    """
-
-    def __init__(self, surface, polygon, coefficients):
-        self._surface = surface
-        self._polygon = polygon
-        self._coefficients = coefficients
-
-    def precision(self):
-        return len(self._coefficients)
-
-    def __repr__(self):
-        from sage.all import Sequence, PowerSeriesRing, O
-        R = Sequence(self._coefficients, immutable=True).universe()
-        R = PowerSeriesRing(R, 'z')
-        f = R(self._coefficients) + O(R.gen()**len(self._coefficients))
-        return f"{f} at {self._polygon}"
-
-    def __add__(self, other):
-        r"""
-        Return the sum of two power series by summing their coefficients.
-
-        EXAMPLES::
-
-        sage: from flatsurf import translation_surfaces
-        sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
-        sage: T.set_immutable()
-
-        sage: from flatsurf.geometry.harmonic_differentials import PowerSeries
-        sage: f = PowerSeries(T, 0, [1, 2, 3, 0, 0])
-        sage: f + f
-        2 + 4*z + 6*z^2 + O(z^5) at 0
-
-        """
-        if self._surface is not other._surface:
-            raise ValueError("power series must be defined on the same surface")
-        if self._polygon != other._polygon:
-            raise ValueError("power series must be defined with respect to the same polygon")
-
-        return PowerSeries(self._surface, self._polygon, [c + d for c, d in zip(self._coefficients, other._coefficients)])
 
 
 class Term:
@@ -739,8 +695,10 @@ class PowerSeriesConstraints:
         # To make our lives easier, we do not optimize this value but instead
         # the sum of the |a_k|^2·radius^k = (Re(a_k)^2 + Im(a_k)^2)·radius^k
         # which are easier to compute. (TODO: Explain why this is reasonable to
-        # do instead.) We rewrite this condition using Langrange multipliers
-        # into a system of linear equations.
+        # do instead.)
+
+        # Since this is a sum of squares, we can rewrite it into a
+        # linear condition using Lagrange multipliers.
 
         # If we let
         #   L(Re(a), Im(a), λ) = f(Re(a), Im(a)) - Σ λ_i g_i(Re(a), Im(a))
@@ -783,7 +741,7 @@ class PowerSeriesConstraints:
 
     def optimize(self, *expressions):
         r"""
-        Create a constraint that optimizes the sum of the squares of the given quadratic ``expressions``.
+        Create a constraint that optimizes the sum of given ``expressions``.
         """
 
     def require_cohomology(self, cocycle):
@@ -867,7 +825,7 @@ class PowerSeriesConstraints:
             sage: C._add_constraint(imag={0: [-1], 1: [1]}, real={}, value=0)
             sage: C._add_constraint(real={0: [1]}, imag={}, value=1)
             sage: C.solve()
-            {0: 1.00000000000000 + O(z) at 0, 1: 1.00000000000000 + O(z) at 1}
+            {0: 1.00000000000000 + O(z0), 1: 1.00000000000000 + O(z1)}
 
         """
         A, b = self.matrix()
@@ -885,6 +843,6 @@ class PowerSeriesConstraints:
 
         from sage.all import CC
         return {
-            triangle: PowerSeries(self._surface, triangle, [CC(solution[k][p], solution[k][p + self._prec]) for p in range(self._prec)])
+            triangle: HarmonicDifferentials(self._surface).power_series_ring(triangle)([CC(solution[k][p], solution[k][p + self._prec]) for p in range(self._prec)]).add_bigoh(self._prec)
             for (k, triangle) in enumerate(self._surface.label_iterator())
         }
