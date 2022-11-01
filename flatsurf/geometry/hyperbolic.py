@@ -3665,46 +3665,12 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
         while normalization:
             strategy = normalization.pop()
 
-            if strategy is None:
+            try:
+                a, b, c = HyperbolicGeodesic._normalize_coefficients(a, b, c, sgn, strategy=strategy)
                 break
-
-            if strategy == "gcd":
-                try:
-                    def gcd(*coefficients):
-                        coefficients = [c for c in coefficients if c]
-                        if len(coefficients) == 1:
-                            return sgn * coefficients[0]
-
-                        from sage.all import gcd
-                        return gcd(coefficients)
-
-                    d = gcd(a, b, c)
-                    assert d > 0
-                    (a, b, c) = (a / d, b / d, c / d)
-                    break
-                except Exception:
-                    if not normalization:
-                        raise
-                    continue
-
-            if strategy == "one":
-                try:
-                    if a:
-                        d = sgn * a
-                    elif b:
-                        d = sgn * b
-                    else:
-                        assert c
-                        d = sgn * c
-
-                    (a, b, c) = (a / d, b / d, c / d)
-                    break
-                except Exception:
-                    if not normalization:
-                        raise
-                    continue
-
-            raise ValueError(f"unknown normalization {strategy}")
+            except Exception:
+                if not normalization:
+                    raise
 
         if not self.is_oriented():
             a *= sgn
@@ -3712,6 +3678,42 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
             c *= sgn
 
         return a, b, c
+
+    @classmethod
+    def _normalize_coefficients(cls, a, b, c, sgn, strategy):
+        # TODO: Check documentation.
+        # TODO: Check INPUT
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        # TODO: Benchmark?
+        if strategy is None:
+            return a, b, c
+
+        if strategy == "gcd":
+            def gcd(*coefficients):
+                coefficients = [c for c in coefficients if c]
+                if len(coefficients) == 1:
+                    return sgn * coefficients[0]
+
+                from sage.all import gcd
+                return gcd(coefficients)
+
+            d = gcd(a, b, c)
+            assert d > 0
+            return a / d, b / d, c / d
+
+        if strategy == "one":
+            if a:
+                d = sgn * a
+            elif b:
+                d = sgn * b
+            else:
+                assert c
+                d = sgn * c
+
+            return a / d, b / d, c / d
+
+        raise ValueError(f"unknown normalization {strategy}")
 
     def half_spaces(self):
         # TODO: Check documentation.
@@ -8025,7 +8027,6 @@ class HyperbolicGraphicalPath(GraphicPrimitive):
     class Command:
         code: str
         args: tuple
-
 
     # TODO: Check documentation
     # TODO: Check INPUTS
