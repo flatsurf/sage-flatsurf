@@ -165,15 +165,6 @@ class HarmonicDifferential(Element):
         return Term(linear=linear)
 
     @staticmethod
-    def _evaluate_symbolic(Δ, derivative, prec):
-        r"""
-        Return the coefficients of a linear combination that expresses the
-        value of the ``derivative``th derivative of a power series at ``z-Δ``.
-        """
-        from sage.all import ZZ, factorial
-        return [ZZ(0) if k < derivative else factorial(k) / factorial(k - derivative) * Δ**(k - derivative) for k in range(prec)]
-
-    @staticmethod
     def _taylor_symbolic(Δ, prec):
         r"""
         Return the coefficinets of a linear combination that expresses the
@@ -181,7 +172,7 @@ class HarmonicDifferential(Element):
         """
         raise NotImplementedError
 
-    def _evaluate(self, *terms):
+    def _evaluate(self, expression):
         r"""
         Evaluate an expression by plugging in the coefficients of the power
         series defining this differential.
@@ -205,22 +196,20 @@ class HarmonicDifferential(Element):
 
         Compute the sum of the constant coefficients::
 
-            sage: from flatsurf.geometry.harmonic_differentials import Term
-            sage: η._evaluate(Term(linear={0: [1], 1: [1]}))
+            sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
+            sage: C = PowerSeriesConstraints(T, 5)
+            sage: η._evaluate(C.gen(0, 0) + C.gen(1, 0))
             -0.400000000000039 - 1.00000000000142*I
 
         """
-        value = 0
+        coefficients = {}
+        for triangle in self._surface.label_iterator():
+            for k, a_k in enumerate(self._series[triangle].list()):
+                coefficients['a{triangle}_{k}'] = a_k
+                coefficients['Re_a{triangle}_{k}'] = a_k.real()
+                coefficients['Im_a{triangle}_{k}'] = a_k.imag()
 
-        def evaluate_linear(expression):
-            return sum(c*a for face in expression for (c, a) in zip(expression.get(face, []), self._series[face].list()))
-
-        for term in terms:
-            value += term.constant
-            value += evaluate_linear(term.linear)
-            value += evaluate_linear(term.quadratic)**2
-
-        return value
+        return expression.specialization(coefficients)
 
     def integrate(self, cycle):
         r"""
@@ -346,42 +335,6 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
         from sage.all import CC
         return PowerSeriesRing(CC, f"z{triangle}")
 
-    @cached_method
-    def symbolic_ring(self, prec, triangle=None):
-        r"""
-        Return the power series ring over the polynomial ring in the
-        coefficients of the power series at ``triangle``.
-
-        If ``triangle`` is not set, return the ring over the polynomial ring
-        with the coefficients for all the triangles.
-
-        EXAMPLES::
-
-            sage: from flatsurf import translation_surfaces, HarmonicDifferentials
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
-            sage: T.set_immutable()
-
-            sage: Ω = HarmonicDifferentials(T)
-            sage: Ω.symbolic_ring(prec=3, triangle=1)
-            Power Series Ring in z over Multivariate Polynomial Ring in a1_0, a1_1, a1_2, Re_a1_0, Re_a1_1, Re_a1_2, Im_a1_0, Im_a1_1, Im_a1_2 over Real Field with 53 bits of precision
-
-            sage: Ω.symbolic_ring(prec=3)
-            Power Series Ring in z over Multivariate Polynomial Ring in a0_0, a0_1, a0_2, Re_a0_0, Re_a0_1, Re_a0_2, Im_a0_0, Im_a0_1, Im_a0_2, a1_0, a1_1, a1_2, Re_a1_0, Re_a1_1, Re_a1_2, Im_a1_0, Im_a1_1, Im_a1_2 over Real Field with 53 bits of precision
-
-        """
-        gens = []
-
-        for t in [triangle] if triangle else self._surface.label_iterator():
-            gens += [f"a{t}_{n}" for n in range(prec)]
-            gens += [f"Re_a{t}_{n}" for n in range(prec)]
-            gens += [f"Im_a{t}_{n}" for n in range(prec)]
-
-        from sage.all import PolynomialRing
-        R = PolynomialRing(self._coefficients, gens)
-        
-        from sage.all import PowerSeriesRing
-        return PowerSeriesRing(R, 'z')
-
     def _repr_(self):
         return f"Ω({self._surface})"
 
@@ -467,44 +420,6 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
         return η
 
 
-class Term:
-    r"""
-    A symbolic expression of the form ``Q^2 + L + C`` where ``C`` is a
-    constant, ``L`` and ``Q`` are linear expression in the coefficients of the
-    power series developed at the vertices of the Voronoi cells of a Delaunay
-    triangulation.
-
-    EXAMPLES::
-
-        sage: from flatsurf import translation_surfaces, SimplicialHomology
-        sage: from flatsurf.geometry.harmonic_differentials import HarmonicDifferential
-        sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
-        sage: T.set_immutable()
-
-        sage: H = SimplicialHomology(T)
-        sage: a, b = H.gens()
-        sage: HarmonicDifferential._integrate_symbolic(a, prec=5)
-        {0: [(0.5+0.5j), (-0.25+0j), (0.041666666666666664-0.041666666666666664j), 0j, (0.00625+0.00625j)],
-         1: [(0.5+0.5j), (0.25+0j), (0.041666666666666664-0.041666666666666664j), 0j, (0.00625+0.00625j)]}
-    """
-
-    def __init__(self, constant=None, linear=None, quadratic=None):
-        self.constant = constant or 0
-        self.linear = linear or {}
-        self.quadratic = quadratic or {}
-
-    def __repr__(self):
-        terms = []
-        if self.quadratic:
-            terms.append(f"({self.quadratic})²")
-        if self.linear:
-            terms.append(repr(self.linear))
-        if self.constant:
-            terms.append(repr(self.constant))
-
-        return " + ".join(terms) or "0"
-
-
 class PowerSeriesConstraints:
     r"""
     A collection of (linear) constraints on the coefficients of power series
@@ -544,40 +459,275 @@ class PowerSeriesConstraints:
     def __repr__(self):
         return repr(self._constraints)
 
-    def add_constraint(self, term, value, real=True, imag=True):
-        if term.quadratic:
-            raise NotImplementedError("non-linear constraints not supported yet")
+    @cached_method
+    def symbolic_ring(self, triangle=None):
+        r"""
+        Return the polynomial ring in the coefficients of the power series at
+        ``triangle``.
 
-        value -= term.constant
+        If ``triangle`` is not set, return the polynomial ring with the
+        coefficients for all the triangles.
 
-        def _imag(x):
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
+            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T.set_immutable()
+
+            sage: C = PowerSeriesConstraints(T, prec=3)
+            sage: C.symbolic_ring(triangle=1)
+            Multivariate Polynomial Ring in a1_0, a1_1, a1_2, Re_a1_0, Re_a1_1, Re_a1_2, Im_a1_0, Im_a1_1, Im_a1_2 over Complex Field with 53 bits of precision
+
+            sage: C.symbolic_ring()
+            Multivariate Polynomial Ring in a0_0, a0_1, a0_2, Re_a0_0, Re_a0_1, Re_a0_2, Im_a0_0, Im_a0_1, Im_a0_2, a1_0, a1_1, a1_2, Re_a1_0, Re_a1_1, Re_a1_2, Im_a1_0, Im_a1_1, Im_a1_2 over Complex Field with 53 bits of precision
+
+        """
+        gens = []
+
+        for t in [triangle] if triangle else self._surface.label_iterator():
+            gens += [f"a{t}_{n}" for n in range(self._prec)]
+            gens += [f"Re_a{t}_{n}" for n in range(self._prec)]
+            gens += [f"Im_a{t}_{n}" for n in range(self._prec)]
+
+        # TODO: Should we use a better/configured base ring here?
+
+        from sage.all import PolynomialRing, CC
+        return PolynomialRing(CC, gens)
+
+    def gen(self, triangle, k):
+        r"""
+        Return the kth generator of the :meth:`symbolic_ring` for ``triangle``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
+            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T.set_immutable()
+
+            sage: C = PowerSeriesConstraints(T, prec=3)
+            sage: C.gen(0, 0)
+            a0_0
+            sage: C.gen(0, 1)
+            a0_1
+            sage: C.gen(1, 2)
+            a1_2
+
+        """
+        if k >= self._prec:
+            raise ValueError("symbolic ring has no k-th generator")
+        return self.symbolic_ring(triangle).gen(k)
+
+    def real(self, triangle, k):
+        r"""
+        Return the real part of the kth generator of the :meth:`symbolic_ring`
+        for ``triangle``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
+            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T.set_immutable()
+
+            sage: C = PowerSeriesConstraints(T, prec=3)
+            sage: C.real(0, 0)
+            Re_a0_0
+            sage: C.real(0, 1)
+            Re_a0_1
+            sage: C.real(1, 2)
+            Re_a1_2
+
+        """
+        if k >= self._prec:
+            raise ValueError("symbolic ring has no k-th generator")
+        return self.symbolic_ring(triangle).gen(self._prec + k)
+
+    def imag(self, triangle, k):
+        r"""
+        Return the imaginary part of the kth generator of the :meth:`symbolic_ring`
+        for ``triangle``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T.set_immutable()
+
+            sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
+            sage: C = PowerSeriesConstraints(T, prec=3)
+            sage: C.imag(0, 0)
+            Im_a0_0
+            sage: C.imag(0, 1)
+            Im_a0_1
+            sage: C.imag(1, 2)
+            Im_a1_2
+
+        """
+        if k >= self._prec:
+            raise ValueError("symbolic ring has no k-th generator")
+        return self.symbolic_ring(triangle).gen(2*self._prec + k)
+
+    def real_part(self, x):
+        r"""
+        Return the real part of ``x``.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
+            sage: from flatsurf import translation_surfaces
+            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T.set_immutable()
+            sage: C = PowerSeriesConstraints(T, prec=3)
+
+            sage: C.real_part(1 + I)  # tol 1e-9
+            1
+            sage: C.real_part(1.)  # tol 1e-9
+            1
+
+        ::
+
+            sage: C.real_part(C.gen(0, 0))
+            Re_a0_0
+            sage: C.real_part(C.real(0, 0))
+            Re_a0_0
+            sage: C.real_part(C.imag(0, 0))
+            Im_a0_0
+            sage: C.real_part(2*C.gen(0, 0))  # tol 1e-9
+            2*Re_a0_0
+            sage: C.real_part(2*I*C.gen(0, 0))  # tol 1e-9
+            (-2)*Im_a0_0
+
+        """
+        # Return the real part of a complex number.
+        if hasattr(x, 'real'):
+            x = x.real
+            if callable(x):
+                x = x()
+            return x
+
+        # If this is just a constant, return it.
+        # TODO: Is there a more generic ring than RR?
+        from sage.all import RR
+        if x in RR:
+            return RR(x)
+
+        # Eliminate the generators a_k by rewriting them as Re(a_k) + I*Im(a_k)
+        x = self.symbolic_ring()(x)
+
+        from sage.all import I
+        x = x.substitute({
+            x.parent()(self.gen(triangle, k)): self.real(triangle, k) + I*self.imag(triangle, k)
+            for triangle in self._surface.label_iterator() for k in range(self._prec)
+        })
+
+        # We use Re(c*Re(a_k)) = Re(c) * Re(a_k) and Re(c*Im(a_k)) = Re(c) * Im(a_k)
+        terms = [
+            self.real_part(x[x.parent()(self.real(triangle, k))]) * self.real(triangle, k)
+            for triangle in self._surface.label_iterator() for k in range(self._prec)
+        ] + [
+            self.real_part(x[x.parent()(self.imag(triangle, k))]) * self.imag(triangle, k)
+            for triangle in self._surface.label_iterator() for k in range(self._prec)
+        ] + [
+            self.real_part(x.constant_coefficient())
+        ]
+
+        return sum(terms)
+
+    def imaginary_part(self, x):
+        r"""
+        Return the imaginary part of ``x``.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
+            sage: from flatsurf import translation_surfaces
+            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T.set_immutable()
+            sage: C = PowerSeriesConstraints(T, prec=3)
+
+            sage: C.imaginary_part(1 + I)  # tol 1e-9
+            1
+            sage: C.imaginary_part(1.)  # tol 1e-9
+            0
+
+        ::
+
+            sage: C.imaginary_part(C.gen(0, 0))
+            Im_a0_0
+            sage: C.imaginary_part(C.real(0, 0))
+            0
+            sage: C.imaginary_part(C.imag(0, 0))
+            0
+            sage: C.imaginary_part(2*C.gen(0, 0))  # tol 1e-9
+            2*Im_a0_0
+            sage: C.imaginary_part(2*I*C.gen(0, 0))  # tol 1e-9
+            2*Re_a0_0
+
+        """
+        # Return the imaginary part of a complex number.
+        if hasattr(x, 'imag'):
             x = x.imag
             if callable(x):
                 x = x()
             return x
 
-        def _real(x):
-            if hasattr(x, "real"):
-                x = x.real
-            if callable(x):
-                x = x()
-            return x
+        # If this is just a real constant, return 0
+        # TODO: Is there a more generic ring than RR?
+        from sage.all import RR
+        if x in RR:
+            return RR.zero()
+
+        # Eliminate the generators a_k by rewriting them as Re(a_k) + I*Im(a_k)
+        x = self.symbolic_ring()(x)
+
+        from sage.all import I
+        x = x.substitute({
+            x.parent()(self.gen(triangle, k)): self.real(triangle, k) + I*self.imag(triangle, k)
+            for triangle in self._surface.label_iterator() for k in range(self._prec)
+        })
+
+        # We use Im(c*Re(a_k)) = Im(c) * Re(a_k) and Im(c*Im(a_k)) = Im(c) * Im(a_k)
+        terms = [
+            self.imaginary_part(x[x.parent()(self.real(triangle, k))]) * self.real(triangle, k)
+            for triangle in self._surface.label_iterator() for k in range(self._prec)
+        ] + [
+            self.imaginary_part(x[x.parent()(self.imag(triangle, k))]) * self.imag(triangle, k)
+            for triangle in self._surface.label_iterator() for k in range(self._prec)
+        ] + [
+            self.imaginary_part(x.constant_coefficient())
+        ]
+
+        return sum(terms)
+
+    def add_constraint(self, expression, value=ZZ(0)):
+        expression = self.symbolic_ring()(expression)
+
+        expression -= value
+
+        if expression == 0:
+            return
+
+        if expression.total_degree() == 0:
+            raise ValueError("cannot solve for constraints c == 0")
+
+        if expression.total_degree() > 1:
+            raise NotImplementedError("can only encode linear constraints")
+
+        value = expression.constant_coefficient()
 
         # We encode a constraint Σ c_i a_i = v as its real and imaginary part.
         # (Our solver can handle complex systems but we also want to add
         # constraints that only concern the real part of the a_i.)
-        # We have Re(Σ c_i a_i) = Σ Re(c_i) Re(a_i) - Im(c_i) Im(a_i)
-        #     and Im(Σ c_i a_i) = Σ Im(c_i) Re(a_i) + Re(c_i) Im(a_i).
-        if real:
+
+        for part in [self.real_part, self.imaginary_part]:
+            e = part(expression)
+
             self._add_constraint(
-                real={triangle: [_real(c) for c in term.linear[triangle]] for triangle in term.linear.keys()},
-                imag={triangle: [-_imag(c) for c in term.linear[triangle]] for triangle in term.linear.keys()},
-                value=_real(value))
-        if complex:
-            self._add_constraint(
-                real={triangle: [_imag(c) for c in term.linear[triangle]] for triangle in term.linear.keys()},
-                imag={triangle: [_real(c) for c in term.linear[triangle]] for triangle in term.linear.keys()},
-                value=_imag(value))
+                real={triangle: [e[e.parent()(self.real(triangle, k))] for k in range(self._prec)] for triangle in self._surface.label_iterator()},
+                imag={triangle: [e[e.parent()(self.imag(triangle, k))] for k in range(self._prec)] for triangle in self._surface.label_iterator()},
+                value=part(value))
 
     def _add_constraint(self, real, imag, value, lagrange=[]):
         # Simplify constraint by dropping zero coefficients.
@@ -606,6 +756,60 @@ class PowerSeriesConstraints:
         if constraint not in self._constraints:
             self._constraints.append(constraint)
 
+    def develop(self, triangle, Δ=0):
+        r"""
+        Return the power series obtained by developing at z + Δ.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T.set_immutable()
+
+            sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
+            sage: C = PowerSeriesConstraints(T, prec=3)
+            sage: C.develop(0)
+            a0_0 + a0_1*z + a0_2*z^2
+            sage: C.develop(1, 1)  # tol 1e-9
+            a1_0 + a1_1 + a1_2 + (a1_1 + 2*a1_2)*z + a1_2*z^2
+
+        """
+        # TODO: Check that Δ is within the radius of convergence.
+        from sage.all import PowerSeriesRing
+        R = PowerSeriesRing(self.symbolic_ring(triangle=triangle), 'z')
+
+        f = R([self.gen(triangle, n) for n in range(self._prec)])
+        return f(R.gen() + Δ)
+
+    def evaluate(self, triangle, Δ, derivative=0):
+        r"""
+        Return the value of the power series evaluated at Δ in terms of
+        symbolic variables.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T.set_immutable()
+
+            sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
+            sage: C = PowerSeriesConstraints(T, prec=3)
+            sage: C.evaluate(0, 0)
+            a0_0
+            sage: C.evaluate(1, 0)
+            a1_0
+            sage: C.evaluate(1, 2)  # tol 1e-9
+            a1_0 + 2*a1_1 + 4*a1_2
+
+        """
+        # TODO: Check that Δ is within the radius of convergence.
+
+        if derivative >= self._prec:
+            raise ValueError
+
+        from sage.all import factorial
+        return self.develop(triangle=triangle, Δ=Δ)[derivative] * factorial(derivative)
+
     def require_consistency(self, derivatives):
         r"""
         The radius of convergence of the power series is the distance from the
@@ -628,16 +832,16 @@ class PowerSeriesConstraints:
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
             sage: C = PowerSeriesConstraints(T, 1)
             sage: C.require_consistency(1)
-            sage: C
-            [PowerSeriesConstraints.Constraint(real={0: [1.0], 1: [-1.0]}, imag={}, lagrange=[], value=0),
-             PowerSeriesConstraints.Constraint(real={}, imag={0: [1.0], 1: [-1.0]}, lagrange=[], value=0)]
+            sage: C  # tol 1e-9
+            [PowerSeriesConstraints.Constraint(real={0: [1], 1: [-1]}, imag={}, lagrange=[], value=0),
+             PowerSeriesConstraints.Constraint(real={}, imag={0: [1], 1: [-1]}, lagrange=[], value=0)]
 
         If we add more coefficients, we get three pairs of contraints for the
         three edges surrounding a face::
 
             sage: C = PowerSeriesConstraints(T, 2)
             sage: C.require_consistency(1)
-            sage: C
+            sage: C  # tol 1e-9
             [PowerSeriesConstraints.Constraint(real={0: [1.0], 1: [-1.0]}, imag={}, lagrange=[], value=0),
              PowerSeriesConstraints.Constraint(real={}, imag={0: [1.0], 1: [-1.0]}, lagrange=[], value=0),
              PowerSeriesConstraints.Constraint(real={0: [1.0], 1: [-1.0]}, imag={0: [-0.0, -0.5], 1: [0.0, -0.5]}, lagrange=[], value=0),
@@ -649,7 +853,7 @@ class PowerSeriesConstraints:
 
             sage: C = PowerSeriesConstraints(T, 2)
             sage: C.require_consistency(2)
-            sage: C
+            sage: C  # tol 1e-9
             [PowerSeriesConstraints.Constraint(real={0: [1.0], 1: [-1.0]}, imag={}, lagrange=[], value=0),
              PowerSeriesConstraints.Constraint(real={}, imag={0: [1.0], 1: [-1.0]}, lagrange=[], value=0),
              PowerSeriesConstraints.Constraint(real={0: [0, 1.0], 1: [0, -1.0]}, imag={}, lagrange=[], value=0),
@@ -674,12 +878,9 @@ class PowerSeriesConstraints:
             Δ1 = HarmonicDifferential._midpoint(self._surface, triangle1, edge1)
 
             # Require that the 0th, ..., prec-1th derivatives are the same at the midpoint of the edge.
-            # The series f(z) = Σ a_k z^k has derivative Σ k!/(k-d)! a_k z^{k-d}
             for derivative in range(derivatives):
-                self.add_constraint(Term(linear={
-                    triangle0: HarmonicDifferential._evaluate_symbolic(Δ0, derivative, self._prec),
-                    triangle1: [-c for c in HarmonicDifferential._evaluate_symbolic(Δ1, derivative, self._prec)],
-                }), ZZ(0))
+                self.add_constraint(
+                    self.evaluate(triangle0, Δ0, derivative) - self.evaluate(triangle1, Δ1, derivative))
 
     def require_L2_consistency(self):
         r"""
@@ -749,53 +950,62 @@ class PowerSeriesConstraints:
         # the sum of the |a_k|^2·radius^k = (Re(a_k)^2 + Im(a_k)^2)·radius^k
         # which are easier to compute. (TODO: Explain why this is reasonable to
         # do instead.)
+        area = self.symbolic_ring().zero()
 
-        # Since this is a sum of squares, we can rewrite it into a
-        # linear condition using Lagrange multipliers.
-
-        # If we let
-        #   L(Re(a), Im(a), λ) = f(Re(a), Im(a)) - Σ λ_i g_i(Re(a), Im(a))
-        # and denote by f(Re(a), Im(a)) the above sum, and by g_i=0 all the
-        # affine linear conditions collected so far, then we get two
-        # constraints for each a_k, one real, one imaginary, namely that the
-        # partial derivative wrt Re(a_k) and Im(a_k) vanishes. Note that we
-        # have one Lagrange multiplier for each affine linear constraint
-        # collected so far.
-        lagranges = len(self._constraints)
-
-        # if any(constraint.value for constraint in self._constraints):
-        #     raise Exception("cannot add Lagrange Multiplier constraint when non-linear constraints have been added")
-
-        g = self._constraints
-
-        # We form the partial derivative with respect to the variables Re(a_k)
-        # and Im(a_k):
         for triangle in range(self._surface.num_polygons()):
             R = float(self._surface.polygon(triangle).circumscribing_circle().radius_squared().sqrt())
 
             for k in range(self._prec):
-                # We get a constraint by forming dL/dRe(a_k) = 0, namely
-                # 2 Re(a_k) R^k - Σ λ_i dg_i/dRe(a_k) = 0
-                self._add_constraint(
-                    real={triangle: [ZZ(0) if j != k else 2*R**k for j in range(k+1)]},
-                    imag={},
-                    lagrange=[-g[i].get(triangle, k).real for i in range(lagranges)],
-                    value=ZZ(0))
-                # We get another constraint by forming dL/dIm(a_k) = 0, namely
-                # 2 Im(a_k) R^k + λ^t dg/dIm(a_k) = 0
-                self._add_constraint(
-                    real={},
-                    imag={triangle: [ZZ(0) if j != k else 2*R**k for j in range(k+1)]},
-                    lagrange=[-g[i].get(triangle, k).imag for i in range(lagranges)],
-                    value=ZZ(0))
+                area += (self.real(triangle, k)**2 + self.imag(triangle, k)**2) * R**k
+
+        self.optimize(area)
+
+    def optimize(self, f):
+        r"""
+        Add constraints that optimize the symbolic expression ``f``.
+        """
+        # We cannot optimize if there is an unbound z in the expression.
+        f = self.symbolic_ring()(f)
+
+        # We rewrite a_k as Re(a_k) + i Im(a_k).
+        for triangle in range(self._surface.num_polygons()):
+            for k in range(self._prec):
+                a_k = self.gen(triangle, k)
+                if f.degree(a_k):
+                    raise NotImplementedError("cannot rewrite a_k as Re(a_k) + i Im(a_k) yet")
+
+        # We use Lagrange multipliers to rewrite this expression.
+        # If we let
+        #   L(Re(a), Im(a), λ) = f(Re(a), Im(a)) - Σ λ_i g_i(Re(a), Im(a))
+        # and denote by g_i=0 all the affine linear conditions collected so
+        # far, then we get two constraints for each a_k, one real, one
+        # imaginary, namely that the partial derivative wrt Re(a_k) and Im(a_k)
+        # vanishes. Note that we have one Lagrange multiplier for each affine
+        # linear constraint collected so far.
+        lagranges = len(self._constraints)
+
+        g = self._constraints
+
+        # We form the partial derivative with respect to the variables Re(a_k)
+        # and Im(a_k).
+        for triangle in range(self._surface.num_polygons()):
+            for k in range(self._prec):
+                for gen in [self.real(triangle, k), self.imag(triangle, k)]:
+                    # Rewrite f as a polynomial in Re(a_k), i.e., h=c0 + c1 * Re(a_k) + c2 * Re(a_k)^2
+                    h = f.polynomial(gen)
+                    if h.degree() > 2:
+                        raise NotImplementedError("cannot solve optimization problems which do not reduce to something linear yet")
+
+                    if not h[2].is_constant():
+                        raise NotImplementedError("cannot solve optimization problems which do not reduce to something of total degree one yet")
+
+                    # Add the constraint dL/dRe(a_k) = 0, namely
+                    # c1 + 2 * c2 * Re(a_k) - Σ λ_i dg_i/dRe(a_k) = 0
+                    self.add_constraint(h[1] + 2 * h[2] * gen, lagrange=[-g[i].get(triangle, k).real for i in range(lagranges)], value=ZZ(0))
+
 
         # We form the partial derivatives with respect to the λ_i. This yields
         # the condition -g_i=0 which is already recorded in the linear system.
-
-    def optimize(self, *expressions):
-        r"""
-        Create a constraint that optimizes the sum of given ``expressions``.
-        """
 
     def require_cohomology(self, cocycle):
         r""""
