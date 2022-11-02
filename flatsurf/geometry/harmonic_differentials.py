@@ -766,7 +766,6 @@ class PowerSeriesConstraints:
                 assert S[0] == T[0], f"consecutive elements of a path must be attached to the same face in {path} but {S} and {T} do not have that property"
 
                 # Namely we integrate the power series defined around the Voronoi vertex of S by symbolically integrating each monomial term.
-                cell = S[0]
 
                 # The midpoints of the edges
                 P = HarmonicDifferential._midpoint(surface, *S)
