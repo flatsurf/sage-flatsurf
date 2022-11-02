@@ -83,10 +83,6 @@ from sage.misc.cachefunc import cached_method
 
 
 class IsoDelaunayTessellation(Parent):
-    r"""
-    TODO
-    """
-
     def __init__(self, surface):
         from sage.all import Graph
         self._surface_original = surface
