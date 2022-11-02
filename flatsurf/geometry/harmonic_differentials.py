@@ -1038,7 +1038,7 @@ class PowerSeriesConstraints:
             R = float(self._surface.polygon(triangle).circumscribing_circle().radius_squared().sqrt())
 
             for k in range(self._prec):
-                area += (self.real(triangle, k)**2 + self.imag(triangle, k)**2) * R**(k+2)
+                area += (self.real(triangle, k)**2 + self.imag(triangle, k)**2) * R**(k + 2)
 
         return area/2
 
