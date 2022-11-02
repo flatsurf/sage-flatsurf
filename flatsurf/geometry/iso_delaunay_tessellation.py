@@ -124,8 +124,6 @@ class IsoDelaunayTessellation(Parent):
 
         from sage.all import oo
 
-        print(len(self._faces))
-
         limit = oo if limit is None else limit
         if limit <= 0:
             return
