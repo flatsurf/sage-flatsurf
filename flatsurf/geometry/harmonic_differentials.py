@@ -1122,14 +1122,9 @@ class PowerSeriesConstraints:
                     if f.degree(gen) <= 0:
                         continue
 
-                    # Rewrite f as a polynomial in gen, e.g., h=h[0] + h[1] * Re(a_k) + h[2] * Re(a_k)^2
-                    h = f.polynomial(f.parent()(gen))
-                    if h.degree() > 2:
-                        raise NotImplementedError("cannot solve optimization problems which do not reduce to something linear yet")
-                    if not h[1].total_degree() <= 1 or not h[2].is_constant():
-                        raise NotImplementedError("cannot solve optimization problems which do not reduce to something of total degree one yet")
+                    gen = f.parent()(gen)
 
-                    self.add_constraint(h[1] + 2 * h[2] * gen, lagrange=[-g[i].get(gen) for i in range(lagranges)], value=ZZ(0))
+                    self.add_constraint(f.derivative(gen), lagrange=[-g[i].get(gen) for i in range(lagranges)], value=ZZ(0))
 
         # We form the partial derivatives with respect to the λ_i. This yields
         # the condition -g_i=0 which is already recorded in the linear system.
