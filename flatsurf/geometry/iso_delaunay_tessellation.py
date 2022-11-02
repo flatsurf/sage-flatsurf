@@ -127,7 +127,7 @@ class IsoDelaunayTessellation(Parent):
             tessellation_face = self.root()
 
         if tessellation_face not in self._dual_graph:
-            raise ValueError("tessellation_face must be a polygon of the explored tesselation")
+            raise ValueError("tessellation_face must be a polygon of the explored tessellation")
 
         queued_tessellation_faces = set()
 
@@ -145,7 +145,11 @@ class IsoDelaunayTessellation(Parent):
                     queue.append((distance + 1, other_tessellation_face))
 
     def _explore(self, tessellation_face, tessellation_edge):
+        assert tessellation_face.dimension() == 2
+        assert tessellation_edge.dimension() == 1
+
         cross_tessellation_face = self._cross(tessellation_face, tessellation_edge)
+
         # nothing to do if we have already explored across this polygon edge
         if cross_tessellation_face is not None:
             return cross_tessellation_face
@@ -218,7 +222,7 @@ class IsoDelaunayTessellation(Parent):
             [{2*l*(x^2 + y^2) + (-8*l + 4)*x ≥ 0} ∩ {(8*l - 4)*x - 4*l + 2 ≤ 0} ∩ {x ≥ 0} ∪ {I}]
 
         """
-        # TODO: Should this mutate the tesselation or create a copy instead?
+        # TODO: Should this mutate the tessellation or create a copy instead?
         for tessellation_face in self._dual_graph.vertices():
             for source_tessellation_face, target_tessellation_face, tessellation_edges in self._dual_graph.edges(tessellation_face, labels=True):
                 # crossing edge of the polygon cycles back to the very edge in the
@@ -406,9 +410,7 @@ class IsoDelaunayTessellation(Parent):
 
     def face(self, point):
         r"""
-        Return a tessellation face this translation surface is in.
-
-        If ``edge`` is oriented, return the bounding face.
+        Return a tessellation face the hyperbolic ``point`` is in.
 
         EXAMPLES::
 
@@ -416,7 +418,6 @@ class IsoDelaunayTessellation(Parent):
             sage: from flatsurf.geometry.iso_delaunay_tessellation import IsoDelaunayTessellation
             sage: s = translation_surfaces.veech_2n_gon(4)
             sage: idt = IsoDelaunayTessellation(s)
-            sage: i = idt._hyperbolic_plane(i) # TODO Automatically coerce
             sage: idt.face(i)
             {(6*a + 8)*(x^2 + y^2) + (-20*a - 28)*x + 14*a + 20 ≥ 0} ∩ {(2*a + 3)*(x^2 + y^2) + (-4*a - 6)*x - 2*a - 3 ≤ 0} ∩ {(4*a + 6)*(x^2 + y^2) - 4*a - 6 ≥ 0}
 
@@ -441,11 +442,11 @@ class IsoDelaunayTessellation(Parent):
             epsilon = QQ(1)/2
             while True:
                 x, y = point.coordinates()
-                z1 = self._hyperbolic_plane.point(
+                shifted = self._hyperbolic_plane.point(
                     x + epsilon, y, model="half_plane")
-                face1 = self.face(z1)
-                if point in face1:
-                    return face1
+                face = self.face(shifted)
+                if point in face:
+                    return face
                 epsilon /= 2
 
         return iso_delaunay_region
