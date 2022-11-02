@@ -950,25 +950,33 @@ class PowerSeriesConstraints:
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
             sage: area = PowerSeriesConstraints(T, η.precision())._area()
             sage: area  # tol 2e-2
-            Re_a0_0^2 + 0.70710678*Re_a0_1^2 + 0.5*Re_a0_2^2 + 0.353*Re_a0_3^2 + 0.25*Re_a0_4^2 + 0.176*Re_a0_5^2 + 0.125*Re_a0_6^2 + 0.0883*Re_a0_7^2 + 0.0625*Re_a0_8^2 + 0.0441*Re_a0_9^2 + Im_a0_0^2 + 0.70710678*Im_a0_1^2 + 0.5*Im_a0_2^2 + 0.353*Im_a0_3^2 + 0.25*Im_a0_4^2 + 0.176*Im_a0_5^2 + 0.125*Im_a0_6^2 + 0.0883*Im_a0_7^2 + 0.0625*Im_a0_8^2 + 0.0441*Im_a0_9^2 + Re_a1_0^2 + 0.70710678*Re_a1_1^2 + 0.5*Re_a1_2^2 + 0.353*Re_a1_3^2 + 0.25*Re_a1_4^2 + 0.176*Re_a1_5^2 + 0.125*Re_a1_6^2 + 0.0883*Re_a1_7^2 + 0.0625*Re_a1_8^2 + 0.0441*Re_a1_9^2 + Im_a1_0^2 + 0.70710678*Im_a1_1^2 + 0.5*Im_a1_2^2 + 0.353*Im_a1_3^2 + 0.25*Im_a1_4^2 + 0.176*Im_a1_5^2 + 0.125*Im_a1_6^2 + 0.0883*Im_a1_7^2 + 0.0625*Im_a1_8^2 + 0.0441*Im_a1_9^2
+            0.250*Re_a0_0^2 + 0.176*Re_a0_1^2 + 0.125*Re_a0_2^2 + 0.0883*Re_a0_3^2 + 0.0625*Re_a0_4^2 + 0.0441*Re_a0_5^2 + 0.0312*Re_a0_6^2 + 0.0220*Re_a0_7^2 + 0.0156*Re_a0_8^2 + 0.0110*Re_a0_9^2
+            + 0.250*Im_a0_0^2 + 0.176*Im_a0_1^2 + 0.125*Im_a0_2^2 + 0.0883*Im_a0_3^2 + 0.0625*Im_a0_4^2 + 0.0441*Im_a0_5^2 + 0.0312*Im_a0_6^2 + 0.0220*Im_a0_7^2 + 0.0156*Im_a0_8^2 + 0.0110*Im_a0_9^2
+            + 0.250*Re_a1_0^2 + 0.176*Re_a1_1^2 + 0.125*Re_a1_2^2 + 0.0883*Re_a1_3^2 + 0.0625*Re_a1_4^2 + 0.0441*Re_a1_5^2 + 0.0312*Re_a1_6^2 + 0.0220*Re_a1_7^2 + 0.0156*Re_a1_8^2 + 0.0110*Re_a1_9^2
+            + 0.250*Im_a1_0^2 + 0.176*Im_a1_1^2 + 0.125*Im_a1_2^2 + 0.0883*Im_a1_3^2 + 0.0625*Im_a1_4^2 + 0.0441*Im_a1_5^2 + 0.0312*Im_a1_6^2 + 0.0220*Im_a1_7^2 + 0.0156*Im_a1_8^2 + 0.0110*Im_a1_9^2
+
+
+        The correct area would be 1/2π here. However, we are overcounting
+        because we sum the single Voronoi cell twice. And also, we approximate
+        the square with a circle for another factor π/2::
 
             sage: η._evaluate(area)  # tol 1e-2
-            2
+            .5
 
         """
         # To make our lives easier, we do not optimize this value but instead
-        # the sum of the |a_k|^2·radius^k = (Re(a_k)^2 + Im(a_k)^2)·radius^k
-        # which are easier to compute. (TODO: Explain why this is reasonable to
-        # do instead.)
+        # half the sum of the |a_k|^2·radius^(k+2) = (Re(a_k)^2 +
+        # Im(a_k)^2)·radius^(k+2) which is a very rough upper bound for the
+        # area.
         area = self.symbolic_ring().zero()
 
         for triangle in range(self._surface.num_polygons()):
             R = float(self._surface.polygon(triangle).circumscribing_circle().radius_squared().sqrt())
 
             for k in range(self._prec):
-                area += (self.real(triangle, k)**2 + self.imag(triangle, k)**2) * R**k
+                area += (self.real(triangle, k)**2 + self.imag(triangle, k)**2) * R**(k+2)
 
-        return area
+        return area/2
 
     def require_finite_area(self):
         r"""
@@ -991,10 +999,10 @@ class PowerSeriesConstraints:
             sage: C  # tol 1e-9
             [PowerSeriesConstraints.Constraint(real={0: [1.0], 1: [-1.0]}, imag={}, lagrange=[], value=0),
              PowerSeriesConstraints.Constraint(real={}, imag={0: [1.0], 1: [-1.0]}, lagrange=[], value=0),
-             PowerSeriesConstraints.Constraint(real={0: [2.0]}, imag={}, lagrange=[-1.0], value=0),
-             PowerSeriesConstraints.Constraint(real={}, imag={0: [2.0]}, lagrange=[0, -1.0], value=0),
-             PowerSeriesConstraints.Constraint(real={1: [2.0]}, imag={}, lagrange=[1.0], value=0),
-             PowerSeriesConstraints.Constraint(real={}, imag={1: [2.0]}, lagrange=[0, 1.0], value=0)]
+             PowerSeriesConstraints.Constraint(real={0: [1.0]}, imag={}, lagrange=[-1.0], value=0),
+             PowerSeriesConstraints.Constraint(real={}, imag={0: [1.0]}, lagrange=[0, -1.0], value=0),
+             PowerSeriesConstraints.Constraint(real={1: [1.0]}, imag={}, lagrange=[1.0], value=0),
+             PowerSeriesConstraints.Constraint(real={}, imag={1: [1.0]}, lagrange=[0, 1.0], value=0)]
 
         """
         self.optimize(self._area())
