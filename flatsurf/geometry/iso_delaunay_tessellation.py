@@ -84,7 +84,7 @@ from sage.misc.cachefunc import cached_method
 
 class IsoDelaunayTessellation(Parent):
     r"""
-    A HyperbolicPlaneTessellation + more data
+    TODO
     """
 
     def __init__(self, surface):
