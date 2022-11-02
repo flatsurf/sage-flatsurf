@@ -638,7 +638,7 @@ class IsoDelaunayTessellation(Parent):
 
         chi_orb = 1 + (-1 + 1/2) + (-1 + 1/3) = -1 + 5/6 = -1/6
         """
-        pass
+        raise NotImplementedError
 
     def genus(self):
         r"""
