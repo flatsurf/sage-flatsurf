@@ -588,10 +588,9 @@ class PowerSeriesConstraints:
             if x.degree(gen) <= 0:
                 continue
 
-            from sage.all import I
             real = self.real(triangle, k)
             imag = self.imag(triangle, k)
-            imag *= imag.parent()(I)
+            imag *= imag.parent().base_ring().gen()
             x = x.substitute({gen: real + imag})
 
         if part == "real":
