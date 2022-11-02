@@ -131,15 +131,24 @@ class HarmonicDifferential(Element):
 
         """
         coefficients = {}
-        for triangle in self.parent().surface().label_iterator():
-            for k in range(self.precision()):
-                a_k = self._series[triangle][k]
-                # TODO: Should we use magic strings here?
-                coefficients[f'a{triangle}_{k}'] = a_k
-                coefficients[f'Re_a{triangle}_{k}'] = a_k.real()
-                coefficients[f'Im_a{triangle}_{k}'] = a_k.imag()
 
-        return expression.specialization(coefficients)
+        C = PowerSeriesConstraints(self.parent().surface(), self.precision())
+
+        for gen in expression.variables():
+            kind, triangle, k = C._describe_generator(gen)
+            coefficient = self._series[triangle][k]
+
+            if kind == "gen":
+                coefficients[gen] = coefficient
+            elif kind == "real":
+                coefficients[gen] = coefficient.real()
+            else:
+                assert kind == "imag"
+                coefficients[gen] = coefficient.imag()
+
+        value = expression.parent()(expression.substitute(coefficients))
+        assert value.degree() <= 0
+        return value.constant_coefficient()
 
     @cached_method
     def precision(self):
@@ -618,7 +627,7 @@ class PowerSeriesConstraints:
 
         terms.append(self.project(x.constant_coefficient(), part))
 
-        return sum(self.symbolic_ring()(t) for t in terms)
+        return sum(terms)
 
     def real_part(self, x):
         r"""
@@ -818,7 +827,7 @@ class PowerSeriesConstraints:
         """
         surface = cycle.surface()
 
-        expression = self.symbolic_ring().zero()
+        expression = 0
 
         for path, multiplicity in cycle.voronoi_path().monomial_coefficients().items():
 
@@ -1027,7 +1036,7 @@ class PowerSeriesConstraints:
         # half the sum of the |a_k|^2·radius^(k+2) = (Re(a_k)^2 +
         # Im(a_k)^2)·radius^(k+2) which is a very rough upper bound for the
         # area.
-        area = self.symbolic_ring().zero()
+        area = 0
 
         for triangle in range(self._surface.num_polygons()):
             R = float(self._surface.polygon(triangle).circumscribing_circle().radius_squared().sqrt())
