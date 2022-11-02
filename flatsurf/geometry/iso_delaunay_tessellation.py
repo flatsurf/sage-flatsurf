@@ -46,7 +46,7 @@ TODO: Implement this surface in sage-flatsurf.
     sage: from flatsurf.geometry.iso_delaunay_tessellation import IsoDelaunayTessellation
     sage: idt = IsoDelaunayTessellation(t)
     sage: idt.explore()
-    sage: idt.plot().show()
+    sage: idt.plot()
     Graphics object consisting of 110 graphics primitives
 
 REFERENCES:
