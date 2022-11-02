@@ -90,12 +90,16 @@ class IsoDelaunayTessellation(Parent):
     def __init__(self, surface):
         from sage.all import Graph
         self._surface_original = surface
+
         self._hyperbolic_plane = HyperbolicPlane(surface.base_ring())
+
         self._surface = surface.delaunay_triangulation()
         self._surface = self._delaunay_triangulation(surface)
-        self._faces = Graph(multiedges=True, loops=True)
         self._surface.set_immutable()
-        self._ensure_vertex(self.root(), self._surface, self.root().edges()[0])
+
+        self._dual_graph = Graph(multiedges=True, loops=True)
+
+        self._ensure_dual_graph_vertex(self.root(), self._surface, self.root().edges()[0])
 
     def _repr_(self):
         return f"IsoDelaunay Tessellation of {self._surface_original}"
@@ -118,7 +122,7 @@ class IsoDelaunayTessellation(Parent):
 
         """
         # TODO: distinguish between triangulation edges, hyperbolic polygon edges, graph edges, ... in variable naming.
-        # We could try to adopt bowman notation: he calls our _faces "tiles"
+        # We could try to adopt bowman notation: he calls our _dual_graph "tiles"
         # and uses "tessellation edge" and "tessellation vertex" for the
         # subsets of H.
 
@@ -131,7 +135,7 @@ class IsoDelaunayTessellation(Parent):
         if vertex is None:
             vertex = self.root()
 
-        if vertex not in self._faces:
+        if vertex not in self._dual_graph:
             raise ValueError("vertex must be a polygon of the explored tesselation")
 
         enqueued = set()
@@ -155,7 +159,7 @@ class IsoDelaunayTessellation(Parent):
         if target is not None:
             return target
 
-        _, source_triangulation = self._faces.get_vertex(vertex)
+        _, source_triangulation = self._dual_graph.get_vertex(vertex)
         target_triangulation = source_triangulation.copy()
 
         while True:
@@ -180,14 +184,14 @@ class IsoDelaunayTessellation(Parent):
         assert -edge in target.edges(), f"edge {-edge} is not in the polygon {target} after crossing {edge} from {vertex}"
 
         target_triangulation.set_immutable()
-        target, polygon_edge, is_new = self._ensure_vertex(target, target_triangulation, -edge)
+        target, polygon_edge, is_new = self._ensure_dual_graph_vertex(target, target_triangulation, -edge)
 
-        self._faces.add_edge(vertex, target, label={edge, polygon_edge})
+        self._dual_graph.add_edge(vertex, target, label={edge, polygon_edge})
 
         return target
 
     def _cross(self, vertex, edge):
-        mod, _ = self._faces.get_vertex(vertex)
+        mod, _ = self._dual_graph.get_vertex(vertex)
 
         if mod is not None:
             edges = list(vertex.edges())
@@ -195,7 +199,7 @@ class IsoDelaunayTessellation(Parent):
         else:
             edge = {edge}
 
-        for v, w, edges in self._faces.edges(vertex, labels=True):
+        for v, w, edges in self._dual_graph.edges(vertex, labels=True):
             if any(e in edges for e in edge):
                 if v == vertex:
                     return w
@@ -217,16 +221,16 @@ class IsoDelaunayTessellation(Parent):
             sage: z = idt._hyperbolic_plane(i)
             sage: idt.explore()
 
-            sage: idt._faces.vertices()
+            sage: idt._dual_graph.vertices()
             [{2*l*(x^2 + y^2) + (-8*l + 4)*x ≥ 0} ∩ {(8*l - 4)*x - 4*l + 2 ≤ 0} ∩ {x ≥ 0}]
             sage: idt.insert_orbifold_points()
-            sage: idt._faces.vertices()
+            sage: idt._dual_graph.vertices()
             [{2*l*(x^2 + y^2) + (-8*l + 4)*x ≥ 0} ∩ {(8*l - 4)*x - 4*l + 2 ≤ 0} ∩ {x ≥ 0} ∪ {I}]
 
         """
         # TODO: Should this mutate the tesselation or create a copy instead?
-        for vertex in self._faces.vertices():
-            for source, target, edges in self._faces.edges(vertex, labels=True):
+        for vertex in self._dual_graph.vertices():
+            for source, target, edges in self._dual_graph.edges(vertex, labels=True):
                 # crossing edge of the polygon cycles back to the very edge in the
                 # polygon, so there is an orbifold point on that edge.
                 # We patch the polygon by inserting a marked point.
@@ -256,18 +260,18 @@ class IsoDelaunayTessellation(Parent):
 
         assert polygon != vertex
 
-        self._faces.add_vertex(polygon)
-        self._faces.set_vertex(polygon, self._faces.get_vertex(vertex))
-        for source, target, label in list(self._faces.edges(vertex, labels=True)):
-            self._faces.delete_edge(source, target, label)
+        self._dual_graph.add_vertex(polygon)
+        self._dual_graph.set_vertex(polygon, self._dual_graph.get_vertex(vertex))
+        for source, target, label in list(self._dual_graph.edges(vertex, labels=True)):
+            self._dual_graph.delete_edge(source, target, label)
             if source == vertex:
                 source = polygon
             if target == vertex:
                 target = polygon
 
-            self._faces.add_edge(source, target, label=label)
+            self._dual_graph.add_edge(source, target, label=label)
 
-        self._faces.delete_vertex(vertex)
+        self._dual_graph.delete_vertex(vertex)
 
         for e in polygon.edges():
             if e.start() == edge.start():
@@ -291,11 +295,11 @@ class IsoDelaunayTessellation(Parent):
         from flatsurf.geometry.pyflatsurf_conversion import to_pyflatsurf
         return to_pyflatsurf(triangulation)
 
-    def _ensure_vertex(self, target_polygon, target_triangulation, target_polygon_edge):
+    def _ensure_dual_graph_vertex(self, target_polygon, target_triangulation, target_polygon_edge):
         r"""
         Return vertex and edge of hyperbolic polygon TODO
         """
-        for vertex in self._faces:
+        for vertex in self._dual_graph:
             if vertex == target_polygon:
                 return vertex, target_polygon_edge, False
 
@@ -329,13 +333,13 @@ class IsoDelaunayTessellation(Parent):
             mod = len(target_polygon.edges()) // order
 
             # add new vertex
-            self._faces.add_vertex(target_polygon)
+            self._dual_graph.add_vertex(target_polygon)
             assert target_triangulation is not None
-            self._faces.set_vertex(target_polygon, (mod, target_triangulation))
+            self._dual_graph.set_vertex(target_polygon, (mod, target_triangulation))
             return target_polygon, target_polygon_edge, True
 
         # TODO vertex is an awful name
-        for vertex in self._faces:
+        for vertex in self._dual_graph:
             isomorphism = None
 
             def capture_matrix(a, b, c, d):
@@ -356,7 +360,7 @@ class IsoDelaunayTessellation(Parent):
                 # TODO: This optimization is not correct after insert_orbifold_points() has been called.
                 continue
 
-            triangulation = self._to_pyflatsurf(self._faces.get_vertex(vertex)[1])
+            triangulation = self._to_pyflatsurf(self._dual_graph.get_vertex(vertex)[1])
             if flat_target_triangulation.isomorphism(triangulation, filter_matrix=capture_matrix).has_value():
                 assert isomorphism is not None
                 a, b, c, d = isomorphism
@@ -368,9 +372,9 @@ class IsoDelaunayTessellation(Parent):
                 return vertex, image_edge, False
 
         # add new vertex
-        self._faces.add_vertex(target_polygon)
+        self._dual_graph.add_vertex(target_polygon)
         assert target_triangulation is not None
-        self._faces.set_vertex(target_polygon, (None, target_triangulation))
+        self._dual_graph.set_vertex(target_polygon, (None, target_triangulation))
         return target_polygon, target_polygon_edge, True
 
     def is_vertex(self, translation_surface):
@@ -488,7 +492,7 @@ class IsoDelaunayTessellation(Parent):
 
     def plot(self):
         # TODO: Why is plotting so slow?
-        return sum(idr.plot() for idr in self._faces)
+        return sum(idr.plot() for idr in self._dual_graph)
 
     def polygon(self, vertex_or_edge):
         r"""
@@ -591,7 +595,7 @@ class IsoDelaunayTessellation(Parent):
         """
         #TODO: Check that the fundamental domain has been computed.
 
-        half_edges = set((polygon, edge) for polygon in self._faces.vertices() for edge in polygon.edges())
+        half_edges = set((polygon, edge) for polygon in self._dual_graph.vertices() for edge in polygon.edges())
 
         vertices = []
 
@@ -606,7 +610,7 @@ class IsoDelaunayTessellation(Parent):
                 previous_edge = polygon.edges()[polygon.edges().index(polygon_edge) - 1]
 
                 # TODO: Merge this with the code in _cross maybe.
-                for v, w, edges in self._faces.edges(polygon, labels=True):
+                for v, w, edges in self._dual_graph.edges(polygon, labels=True):
 
                     (polygon_source_edge, polygon_target_edge) = edges
                     if previous_edge == polygon_source_edge:
