@@ -579,6 +579,7 @@ class PowerSeriesConstraints:
             assert False  # unreachable
 
         # Eliminate the generators a_k by rewriting them as Re(a_k) + I*Im(a_k)
+        substitutions = {}
         for gen in x.parent().gens():
             kind, triangle, k = self._describe_generator(gen)
 
@@ -591,7 +592,10 @@ class PowerSeriesConstraints:
             real = self.real(triangle, k)
             imag = self.imag(triangle, k)
             imag *= imag.parent().base_ring().gen()
-            x = x.substitute({gen: real + imag})
+            substitutions[gen] = real + imag
+
+        if substitutions:
+            x = x.substitute(substitutions)
 
         if part == "real":
             # We use Re(c*Re(a_k)) = Re(c) * Re(a_k) and Re(c*Im(a_k)) = Re(c) * Im(a_k)
