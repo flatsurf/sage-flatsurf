@@ -285,15 +285,15 @@ class IsoDelaunayTessellation(Parent):
         from flatsurf.geometry.pyflatsurf_conversion import to_pyflatsurf
         return to_pyflatsurf(triangulation)
 
-    def _ensure_dual_graph_vertex(self, target_polygon, target_triangulation, target_polygon_edge):
+    def _ensure_dual_graph_vertex(self, tessellation_face, surface, tessellation_edge):
         r"""
         Return vertex and edge of hyperbolic polygon TODO
         """
-        for vertex in self._dual_graph:
-            if vertex == target_polygon:
-                return vertex, target_polygon_edge, False
+        for tessellation_face_ in self._dual_graph:
+            if tessellation_face_ == tessellation_face:
+                return tessellation_face_, tessellation_edge, False
 
-        flat_target_triangulation = self._to_pyflatsurf(target_triangulation)
+        surface_ = self._to_pyflatsurf(surface)
 
         def filter_matrix(a, b, c, d):
             # TODO fix interface for isomorphisms
@@ -312,24 +312,23 @@ class IsoDelaunayTessellation(Parent):
 
         while True:
             isomorphisms.append(())
-            if not flat_target_triangulation.isomorphism(flat_target_triangulation, filter_matrix=filter_matrix).has_value():
+            if not surface_.isomorphism(surface_, filter_matrix=filter_matrix).has_value():
                 isomorphisms.pop()
                 break
 
         if set(isomorphisms) != {(1, 0, 0, 1), (-1, 0, 0, -1)}:
             assert len(isomorphisms) % 2 == 0
             order = len(isomorphisms) // 2
-            assert len(target_polygon.edges()) % order == 0
-            mod = len(target_polygon.edges()) // order
+            assert len(tessellation_face.edges()) % order == 0
+            mod = len(tessellation_face.edges()) // order
 
             # add new vertex
-            self._dual_graph.add_vertex(target_polygon)
-            assert target_triangulation is not None
-            self._dual_graph.set_vertex(target_polygon, (mod, target_triangulation))
-            return target_polygon, target_polygon_edge, True
+            self._dual_graph.add_vertex(tessellation_face)
+            assert surface is not None
+            self._dual_graph.set_vertex(tessellation_face, (mod, surface))
+            return tessellation_face, tessellation_edge, True
 
-        # TODO vertex is an awful name
-        for vertex in self._dual_graph:
+        for tessellation_face_ in self._dual_graph:
             isomorphism = None
 
             def capture_matrix(a, b, c, d):
@@ -346,26 +345,26 @@ class IsoDelaunayTessellation(Parent):
                 isomorphism = (a, b, c, d)
                 return True
 
-            if len(vertex.edges()) != len(target_polygon.edges()):
+            if len(tessellation_face_.edges()) != len(tessellation_face.edges()):
                 # TODO: This optimization is not correct after insert_orbifold_points() has been called.
                 continue
 
-            triangulation = self._to_pyflatsurf(self._dual_graph.get_vertex(vertex)[1])
-            if flat_target_triangulation.isomorphism(triangulation, filter_matrix=capture_matrix).has_value():
+            surface__ = self._to_pyflatsurf(self._dual_graph.get_vertex(tessellation_face_)[1])
+            if surface_.isomorphism(surface__, filter_matrix=capture_matrix).has_value():
                 assert isomorphism is not None
                 a, b, c, d = isomorphism
                 from sage.all import matrix
                 mob = matrix(2, [a, -b, -c, d])
-                image_edge = target_polygon_edge.apply_isometry(mob, model='half_plane')
+                image_edge = tessellation_edge.apply_isometry(mob, model='half_plane')
 
-                assert image_edge in vertex.edges()
-                return vertex, image_edge, False
+                assert image_edge in tessellation_face_.edges()
+                return tessellation_face_, image_edge, False
 
         # add new vertex
-        self._dual_graph.add_vertex(target_polygon)
-        assert target_triangulation is not None
-        self._dual_graph.set_vertex(target_polygon, (None, target_triangulation))
-        return target_polygon, target_polygon_edge, True
+        self._dual_graph.add_vertex(tessellation_face)
+        assert surface is not None
+        self._dual_graph.set_vertex(tessellation_face, (None, surface))
+        return tessellation_face, tessellation_edge, True
 
     def is_vertex(self, translation_surface):
         r"""
@@ -375,7 +374,7 @@ class IsoDelaunayTessellation(Parent):
 
     def root(self):
         r"""
-        Return the vertex from which we started to build the IsoDelaunay tessellation.
+        Return the tessellation face from which we started to build the IsoDelaunay tessellation.
 
         EXAMPLES::
 
@@ -405,7 +404,7 @@ class IsoDelaunayTessellation(Parent):
         """
         raise NotImplementedError
 
-    def face(self, point_or_edge):
+    def face(self, point):
         r"""
         Return a tessellation face this translation surface is in.
 
@@ -422,18 +421,8 @@ class IsoDelaunayTessellation(Parent):
             {(6*a + 8)*(x^2 + y^2) + (-20*a - 28)*x + 14*a + 20 ≥ 0} ∩ {(2*a + 3)*(x^2 + y^2) + (-4*a - 6)*x - 2*a - 3 ≤ 0} ∩ {(4*a + 6)*(x^2 + y^2) - 4*a - 6 ≥ 0}
 
         """
-
-        if point_or_edge in self._hyperbolic_plane:
-            point_or_edge = self._hyperbolic_plane(point_or_edge)
-            if point_or_edge.dimension() == 1:
-                z = point_or_edge.an_element()
-            else:
-                z = point_or_edge
-
-        else:  # point_or_edge is a surface
-            raise NotImplementedError
-
-        A = self._point_to_matrix(z)
+        point = self._hyperbolic_plane(point)
+        A = self._point_to_matrix(point)
         A_T = self._surface.apply_matrix(
             A, in_place=False).delaunay_triangulation(in_place=False)
         T = A_T.apply_matrix(~A, in_place=False)
@@ -451,11 +440,11 @@ class IsoDelaunayTessellation(Parent):
             from sage.all import QQ
             epsilon = QQ(1)/2
             while True:
-                x, y = z.coordinates()
+                x, y = point.coordinates()
                 z1 = self._hyperbolic_plane.point(
                     x + epsilon, y, model="half_plane")
                 face1 = self.face(z1)
-                if z in face1:
+                if point in face1:
                     return face1
                 epsilon /= 2
 
@@ -501,15 +490,8 @@ class IsoDelaunayTessellation(Parent):
 
         raise NotImplementedError
 
-    def _surface_to_point(self, surface):
-        t0 = self._surface.polygon(0)
-        t1 = surface.p
-        v0, v1, _ = t0.edges()
-        w0, w1, _ = t1.edges()
-
-        assert False
-
-    def _point_to_matrix(self, point):
+    @classmethod
+    def _point_to_matrix(cls, point):
         from sage.all import matrix
 
         x, y = point.coordinates(model="half_plane")
