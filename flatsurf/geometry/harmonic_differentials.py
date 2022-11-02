@@ -589,7 +589,10 @@ class PowerSeriesConstraints:
                 continue
 
             from sage.all import I
-            x = x.substitute({gen: self.real(triangle, k) + I*self.imag(triangle, k)})
+            real = self.real(triangle, k)
+            imag = self.imag(triangle, k)
+            imag *= imag.parent()(I)
+            x = x.substitute({gen: real + imag})
 
         if part == "real":
             # We use Re(c*Re(a_k)) = Re(c) * Re(a_k) and Re(c*Im(a_k)) = Re(c) * Im(a_k)
