@@ -476,7 +476,7 @@ class IsoDelaunayTessellation(Parent):
         from sage.all import matrix
 
         x, y = point.coordinates(model="half_plane")
-        return self._surface.apply_matrix(matrix([[1, x], [0, y]], in_place=False))
+        return self._surface.apply_matrix(matrix([[1, x], [0, y]]), in_place=False)
 
     def fundamental_domain(self):
         r"""
@@ -520,10 +520,6 @@ class IsoDelaunayTessellation(Parent):
 
         x, y = point.coordinates(model="half_plane")
         return matrix(2, [1, x, 0, y])
-
-    def _point_to_surface(self, point):
-        m = self._point_to_matrix(point)
-        return self._surface.apply_matrix(m)
 
     def _iso_delaunay_region(self, triangulation):
         return [half_plane for edge in triangulation.edge_iterator()
@@ -574,10 +570,9 @@ class IsoDelaunayTessellation(Parent):
                 break
             epsilon /= 2
 
-        nondegenerate_triangulation = self._point_to_surface(
-            I1).delaunay_triangulation()
+        nondegenerate_triangulation = self.surface(I1).delaunay_triangulation()
         perturbation = self._point_to_matrix(I1)
-        return nondegenerate_triangulation.apply_matrix(perturbation.inverse())
+        return nondegenerate_triangulation.apply_matrix(perturbation.inverse(), in_place=False)
 
     def vertices(self):
         r"""
