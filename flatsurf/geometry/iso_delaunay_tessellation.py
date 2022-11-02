@@ -565,9 +565,9 @@ class IsoDelaunayTessellation(Parent):
             3
 
         """
-        #TODO: Check that the fundamental domain has been computed.
+        # TODO: Check that the fundamental domain has been computed.
 
-        half_edges = set((polygon, edge) for polygon in self._dual_graph.vertices() for edge in polygon.edges())
+        half_edges = set((tessellation_face, tessellation_edge) for tessellation_face in self._dual_graph.vertices() for tessellation_edge in tessellation_face.edges())
 
         vertices = []
 
@@ -575,30 +575,30 @@ class IsoDelaunayTessellation(Parent):
             vertex = [next(iter(half_edges))]
 
             while True:
-                (polygon, polygon_edge) = vertex[-1]
+                (tessellation_face, tessellation_edge) = vertex[-1]
 
-                assert polygon_edge in polygon.edges()
+                assert tessellation_edge in tessellation_face.edges()
 
-                previous_edge = polygon.edges()[polygon.edges().index(polygon_edge) - 1]
+                previous_tessellation_edge = tessellation_face.edges()[tessellation_face.edges().index(tessellation_edge) - 1]
 
                 # TODO: Merge this with the code in _cross maybe.
-                for v, w, edges in self._dual_graph.edges(polygon, labels=True):
+                for source_tessellation_face, target_tessellation_face, tessellation_edges in self._dual_graph.edges(tessellation_face, labels=True):
 
-                    (polygon_source_edge, polygon_target_edge) = edges
-                    if previous_edge == polygon_source_edge:
-                        cross = polygon_target_edge
-                    elif previous_edge == polygon_target_edge:
-                        cross = polygon_source_edge
+                    (source_tessellation_edge, target_tessellation_edge) = tessellation_edges
+                    if previous_tessellation_edge == source_tessellation_edge:
+                        cross_tessellation_edge = target_tessellation_edge
+                    elif previous_tessellation_edge == target_tessellation_edge:
+                        cross_tessellation_edge = source_tessellation_edge
                     else:
                         continue
 
-                    cross = (w if v == polygon else v, cross)
+                    cross_tessellation_edge = (target_tessellation_face if source_tessellation_face == tessellation_face else source_tessellation_face, cross_tessellation_edge)
 
-                    vertex.append(cross)
-                    half_edges.remove(cross)
+                    vertex.append(cross_tessellation_edge)
+                    half_edges.remove(cross_tessellation_edge)
                     break
                 else:
-                    assert False, f"{previous_edge} of {polygon} not glued to another edge"
+                    assert False, f"{previous_tessellation_edge} of {tessellation_face} not glued to another edge"
 
                 if vertex[0] == vertex[-1]:
                     vertex.pop()
