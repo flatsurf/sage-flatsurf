@@ -590,7 +590,8 @@ class IsoDelaunayTessellation(Parent):
             sage: s = translation_surfaces.veech_2n_gon(4)
             sage: idt = IsoDelaunayTessellation(s)
             sage: idt.explore()
-            sage: idt.vertices()
+            sage: len(idt.vertices())
+            3
 
         """
         #TODO: Check that the fundamental domain has been computed.
