@@ -581,12 +581,12 @@ class PowerSeriesConstraints:
         # Eliminate the generators a_k by rewriting them as Re(a_k) + I*Im(a_k)
         substitutions = {}
         for gen in x.parent().gens():
+            if x.degree(gen) <= 0:
+                continue
+
             kind, triangle, k = self._describe_generator(gen)
 
             if kind != "gen":
-                continue
-
-            if x.degree(gen) <= 0:
                 continue
 
             real = self.real(triangle, k)
@@ -597,30 +597,26 @@ class PowerSeriesConstraints:
         if substitutions:
             x = x.substitute(substitutions)
 
-        if part == "real":
-            # We use Re(c*Re(a_k)) = Re(c) * Re(a_k) and Re(c*Im(a_k)) = Re(c) * Im(a_k)
-            terms = [
-                self.real_part(x[x.parent()(self.real(triangle, k))]) * self.real(triangle, k)
-                for triangle in self._surface.label_iterator() for k in range(self._prec)
-            ] + [
-                self.real_part(x[x.parent()(self.imag(triangle, k))]) * self.imag(triangle, k)
-                for triangle in self._surface.label_iterator() for k in range(self._prec)
-            ] + [
-                self.real_part(x.constant_coefficient())
-            ]
-        elif part == "imag":
-            # We use Im(c*Re(a_k)) = Im(c) * Re(a_k) and Im(c*Im(a_k)) = Im(c) * Im(a_k)
-            terms = [
-                self.imaginary_part(x[x.parent()(self.real(triangle, k))]) * self.real(triangle, k)
-                for triangle in self._surface.label_iterator() for k in range(self._prec)
-            ] + [
-                self.imaginary_part(x[x.parent()(self.imag(triangle, k))]) * self.imag(triangle, k)
-                for triangle in self._surface.label_iterator() for k in range(self._prec)
-            ] + [
-                self.imaginary_part(x.constant_coefficient())
-            ]
-        else:
-            assert False  # unreachable
+        terms = []
+
+        # We use Re(c*Re(a_k)) = Re(c) * Re(a_k) and Re(c*Im(a_k)) = Re(c) * Im(a_k)
+        # and Im(c*Re(a_k)) = Im(c) * Re(a_k) and Im(c*Im(a_k)) = Im(c) * Im(a_k), respectively.
+        for gen in x.parent().gens():
+            degree = x.degree(gen)
+
+            if degree <= 0:
+                continue
+
+            if degree > 1:
+                raise NotImplementedError
+
+            kind, triangle, k = self._describe_generator(gen)
+
+            assert kind != "gen"
+
+            terms.append(self.project(x[gen], part) * gen)
+
+        terms.append(self.project(x.constant_coefficient(), part))
 
         return sum(self.symbolic_ring()(t) for t in terms)
 
