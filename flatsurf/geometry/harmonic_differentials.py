@@ -50,11 +50,11 @@ class HarmonicDifferential(Element):
             sage: f = H({a: 1})
 
             sage: Ω = HarmonicDifferentials(T)
-            sage: η = Ω(f); η
-            (-0.200000000000082 - 0.500000000000258*I + ...)
+            sage: η = Ω(f); η  # tol 1e-2
+            (-0.000588 - 0.997*I + (-9.714e-17 - 2.757e-16*I)*z0 + (0.00759 + 0.0442*I)*z0^2 + (-0.00716 + 0.0283*I)*z0^3 + (-0.00536 + 0.00564*I)*z0^4 + (0.0480112 + 0.0351*I)*z0^5 + (0.00575 - 0.0736*I)*z0^6 + (-0.0445 + 0.0165*I)*z0^7 + (-0.00267 + 0.020826*I)*z0^8 + (0.030412 + 0.0157*I)*z0^9 + O(z0^10), -0.000588 - 0.997*I + (3.386e-15 - 4.0060327e-16*I)*z1 + (0.00759 + 0.0442*I)*z1^2 + (0.00716 - 0.0283*I)*z1^3 + (-0.00536 + 0.00564*I)*z1^4 + (-0.0480112 - 0.0351*I)*z1^5 + (0.00575 - 0.0736*I)*z1^6 + (0.0445 - 0.0165*I)*z1^7 + (-0.00267 + 0.020826*I)*z1^8 + (-0.030412 - 0.0157*I)*z1^9 + O(z1^10))
 
-            sage: η + η
-            (-0.400000000000164 - 1.00000000000052*I + ...)
+            sage: η + η  # tol 2e-2
+            (-0.00117 - 1.994*I + (-1.942e-16 - 5.514e-16*I)*z0 + (0.0151 + 0.0885*I)*z0^2 + (-0.0143 + 0.0566*I)*z0^3 + (-0.010724 + 0.0112*I)*z0^4 + (0.0960224 + 0.070220151*I)*z0^5 + (0.0115 - 0.147*I)*z0^6 + (-0.0891 + 0.0330394*I)*z0^7 + (-0.00534 + 0.0416*I)*z0^8 + (0.060825 + 0.0315*I)*z0^9 + O(z0^10), -0.00117 - 1.994*I + (6.773e-15 - 8.0120655e-16*I)*z1 + (0.0151 + 0.0885*I)*z1^2 + (0.0143 - 0.0566*I)*z1^3 + (-0.010724 + 0.0112*I)*z1^4 + (-0.0960224 - 0.070220151*I)*z1^5 + (0.0115 - 0.147*I)*z1^6 + (0.0891 - 0.0330394*I)*z1^7 + (-0.00534 + 0.0416*I)*z1^8 + (-0.060825 - 0.0315*I)*z1^9 + O(z1^10))
 
         """
         return self.parent()({
@@ -116,15 +116,14 @@ class HarmonicDifferential(Element):
             sage: f = H({a: 1})
 
             sage: Ω = HarmonicDifferentials(T)
-            sage: η = Ω(f); η
-            (-0.200000000000082 - 0.500000000000258*I + ... + O(z0^5), -0.199999999999957 - 0.500000000001160*I + ... + O(z1^5))
+            sage: η = Ω(f)
 
         Compute the sum of the constant coefficients::
 
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
             sage: C = PowerSeriesConstraints(T, 5)
-            sage: η._evaluate(C.gen(0, 0) + C.gen(1, 0))
-            -0.400000000000039 - 1.00000000000142*I
+            sage: η._evaluate(C.gen(0, 0) + C.gen(1, 0))  # tol 1e-6
+            -0.00117738455985695 - 1.99415890970436*I
 
         """
         coefficients = {}
@@ -198,7 +197,7 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
 
         sage: H = SimplicialCohomology(T)
         sage: Ω(H())
-        (O(z0^5), O(z1^5))
+        (O(z0^10), O(z1^10))
 
     ::
 
@@ -286,7 +285,7 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
 
         raise NotImplementedError()
 
-    def _element_from_cohomology(self, cocycle, /, prec=5, consistency=2):
+    def _element_from_cohomology(self, cocycle, /, prec=10, consistency=3):
         # We develop a consistent system of Laurent series at each vertex of the Voronoi diagram
         # to describe a differential.
 
@@ -915,6 +914,46 @@ class PowerSeriesConstraints:
             # To optimize this error, write it as Lagrange multipliers.
             raise NotImplementedError # TODO: We need some generic infrastracture to merge quadratic conditions such as this and require_finite_area by weighing both.
 
+    def _area(self):
+        r"""
+        Return an upper bound for the area 1 /(2iπ) ∫ η \wedge \overline{η}.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, SimplicialCohomology, HarmonicDifferentials
+            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T.set_immutable()
+
+            sage: H = SimplicialCohomology(T)
+            sage: a, b = H.homology().gens()
+            sage: f = H({a: 1})
+
+            sage: Ω = HarmonicDifferentials(T)
+            sage: η = Ω(f)
+
+            sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
+            sage: area = PowerSeriesConstraints(T, η.precision())._area()
+            sage: area  # tol 2e-2
+            Re_a0_0^2 + 0.70710678*Re_a0_1^2 + 0.5*Re_a0_2^2 + 0.353*Re_a0_3^2 + 0.25*Re_a0_4^2 + 0.176*Re_a0_5^2 + 0.125*Re_a0_6^2 + 0.0883*Re_a0_7^2 + 0.0625*Re_a0_8^2 + 0.0441*Re_a0_9^2 + Im_a0_0^2 + 0.70710678*Im_a0_1^2 + 0.5*Im_a0_2^2 + 0.353*Im_a0_3^2 + 0.25*Im_a0_4^2 + 0.176*Im_a0_5^2 + 0.125*Im_a0_6^2 + 0.0883*Im_a0_7^2 + 0.0625*Im_a0_8^2 + 0.0441*Im_a0_9^2 + Re_a1_0^2 + 0.70710678*Re_a1_1^2 + 0.5*Re_a1_2^2 + 0.353*Re_a1_3^2 + 0.25*Re_a1_4^2 + 0.176*Re_a1_5^2 + 0.125*Re_a1_6^2 + 0.0883*Re_a1_7^2 + 0.0625*Re_a1_8^2 + 0.0441*Re_a1_9^2 + Im_a1_0^2 + 0.70710678*Im_a1_1^2 + 0.5*Im_a1_2^2 + 0.353*Im_a1_3^2 + 0.25*Im_a1_4^2 + 0.176*Im_a1_5^2 + 0.125*Im_a1_6^2 + 0.0883*Im_a1_7^2 + 0.0625*Im_a1_8^2 + 0.0441*Im_a1_9^2
+
+            sage: η._evaluate(area)  # tol 1e-2
+            2
+
+        """
+        # To make our lives easier, we do not optimize this value but instead
+        # the sum of the |a_k|^2·radius^k = (Re(a_k)^2 + Im(a_k)^2)·radius^k
+        # which are easier to compute. (TODO: Explain why this is reasonable to
+        # do instead.)
+        area = self.symbolic_ring().zero()
+
+        for triangle in range(self._surface.num_polygons()):
+            R = float(self._surface.polygon(triangle).circumscribing_circle().radius_squared().sqrt())
+
+            for k in range(self._prec):
+                area += (self.real(triangle, k)**2 + self.imag(triangle, k)**2) * R**k
+
+        return area
+
     def require_finite_area(self):
         r"""
         Since the area 1 /(2iπ) ∫ η \wedge \overline{η} must be finite [TODO:
@@ -926,7 +965,7 @@ class PowerSeriesConstraints:
             sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
             sage: T.set_immutable()
 
-        EXAMPLES::
+        ::
 
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
             sage: C = PowerSeriesConstraints(T, 1)
@@ -942,23 +981,32 @@ class PowerSeriesConstraints:
              PowerSeriesConstraints.Constraint(real={}, imag={1: [2.0]}, lagrange=[0, 1.0], value=0)]
 
         """
-        # To make our lives easier, we do not optimize this value but instead
-        # the sum of the |a_k|^2·radius^k = (Re(a_k)^2 + Im(a_k)^2)·radius^k
-        # which are easier to compute. (TODO: Explain why this is reasonable to
-        # do instead.)
-        area = self.symbolic_ring().zero()
-
-        for triangle in range(self._surface.num_polygons()):
-            R = float(self._surface.polygon(triangle).circumscribing_circle().radius_squared().sqrt())
-
-            for k in range(self._prec):
-                area += (self.real(triangle, k)**2 + self.imag(triangle, k)**2) * R**k
-
-        self.optimize(area)
+        self.optimize(self._area())
 
     def optimize(self, f):
         r"""
         Add constraints that optimize the symbolic expression ``f``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, SimplicialCohomology
+            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T.set_immutable()
+
+        ::
+
+            sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
+            sage: C = PowerSeriesConstraints(T, 1)
+            sage: C.require_consistency(1)
+            sage: f = 3*C.real(0, 0)^2 + 5*C.imag(0, 0)^2 + 7*C.real(1, 0)^2 + 11*C.imag(1, 0)^2
+            sage: C.optimize(f)
+            sage: C
+            ...
+            PowerSeriesConstraints.Constraint(real={0: [6.00000000000000]}, imag={}, lagrange=[-1.00000000000000], value=-0.000000000000000),
+            PowerSeriesConstraints.Constraint(real={}, imag={0: [10.0000000000000]}, lagrange=[0, -1.00000000000000], value=-0.000000000000000),
+            PowerSeriesConstraints.Constraint(real={1: [14.0000000000000]}, imag={}, lagrange=[1.00000000000000], value=-0.000000000000000),
+            PowerSeriesConstraints.Constraint(real={}, imag={1: [22.0000000000000]}, lagrange=[0, 1.00000000000000], value=-0.000000000000000)]
+
         """
         # We cannot optimize if there is an unbound z in the expression.
         f = self.symbolic_ring()(f)
@@ -990,36 +1038,14 @@ class PowerSeriesConstraints:
                     if f.degree(gen) <= 0:
                         continue
 
-                    index = gen.parent().gens().index(gen)
+                    # Rewrite f as a polynomial in gen, e.g., h=h[0] + h[1] * Re(a_k) + h[2] * Re(a_k)^2
+                    h = f.polynomial(gen)
+                    if h.degree() > 2:
+                        raise NotImplementedError("cannot solve optimization problems which do not reduce to something linear yet")
+                    if not h[1].total_degree() <= 1 or not h[2].is_constant():
+                        raise NotImplementedError("cannot solve optimization problems which do not reduce to something of total degree one yet")
 
-                    # Rewrite f as a polynomial in Re(a_k), i.e., h=c0 + c1 * Re(a_k) + c2 * Re(a_k)^2
-                    linear = gen.parent().zero()
-                    quadratic = gen.parent().zero()
-
-                    for c, monomial in list(f):
-                        degree = monomial.degree(gen)
-                        exponents = monomial.exponents(False)[0]
-                        monomial = monomial.parent()({exponents[:index] + (0,) + exponents[index+1:]: 1})
-
-                        if degree <= 0:
-                            continue
-                        elif degree == 1:
-                            linear += c * monomial
-                        elif degree == 2:
-                            quadratic += c * monomial
-                        if degree > 2:
-                            raise NotImplementedError("cannot solve optimization problems which do not reduce to something linear yet")
-
-                    if linear.total_degree() > 1:
-                        raise NotImplementedError(f"cannot solve optimization problems which do not reduce to something of total degree one yet; linear part with respect to {gen} was {linear}")
-
-                    if not quadratic.is_constant():
-                        raise NotImplementedError(f"cannot solve optimization problems which do not reduce to something of total degree one yet; quadratic part with respect to {gen} was {quadratic}")
-
-                    # Add the constraint dL/dRe(a_k) = 0, namely
-                    # c1 + 2 * c2 * Re(a_k) - Σ λ_i dg_i/dRe(a_k) = 0
-                    self.add_constraint(linear + 2 * quadratic * gen, lagrange=[-g[i].get(gen) for i in range(lagranges)], value=ZZ(0))
-
+                    self.add_constraint(h[1] + 2 * h[2] * gen, lagrange=[-g[i].get(gen) for i in range(lagranges)], value=ZZ(0))
 
         # We form the partial derivatives with respect to the λ_i. This yields
         # the condition -g_i=0 which is already recorded in the linear system.
