@@ -50,13 +50,17 @@ class HarmonicDifferential(Element):
             sage: f = H({a: 1})
 
             sage: Ω = HarmonicDifferentials(T)
-            sage: η = Ω(f); η  # tol 1e-2
-            (-0.000588 - 0.997*I + (-9.714e-17 - 2.757e-16*I)*z0 + (0.00759 + 0.0442*I)*z0^2 + (-0.00716 + 0.0283*I)*z0^3 + (-0.00536 + 0.00564*I)*z0^4 + (0.0480112 + 0.0351*I)*z0^5 + (0.00575 - 0.0736*I)*z0^6 + (-0.0445 + 0.0165*I)*z0^7 + (-0.00267 + 0.020826*I)*z0^8 + (0.030412 + 0.0157*I)*z0^9 + O(z0^10), -0.000588 - 0.997*I + (3.386e-15 - 4.0060327e-16*I)*z1 + (0.00759 + 0.0442*I)*z1^2 + (0.00716 - 0.0283*I)*z1^3 + (-0.00536 + 0.00564*I)*z1^4 + (-0.0480112 - 0.0351*I)*z1^5 + (0.00575 - 0.0736*I)*z1^6 + (0.0445 - 0.0165*I)*z1^7 + (-0.00267 + 0.020826*I)*z1^8 + (-0.030412 - 0.0157*I)*z1^9 + O(z1^10))
+            sage: η = Ω(f); η  # tol 1e-6
+            (0 - 1*I + (0 + 0*I)*z0 + (0 + 0*I)*z0^2 + (0 + 0*I)*z0^3 + (0 + 0*I)*z0^4 + (0 + 0*I)*z0^5 + (0 + 0*I)*z0^6 + (0 + 0*I)*z0^7 + (0 + 0*I)*z0^8 + (0 + 0*I)*z0^9 + O(z0^10),
+             0 - 1*I + (0 + 0*I)*z1 + (0 + 0*I)*z1^2 + (0 + 0*I)*z1^3 + (0 + 0*I)*z1^4 + (0 + 0*I)*z1^5 + (0 + 0*I)*z1^6 + (0 + 0*I)*z1^7 + (0 + 0*I)*z1^8 + (0 + 0*I)*z1^9 + O(z1^10))
 
-            sage: η + η  # tol 2e-2
-            (-0.00117 - 1.994*I + (-1.942e-16 - 5.514e-16*I)*z0 + (0.0151 + 0.0885*I)*z0^2 + (-0.0143 + 0.0566*I)*z0^3 + (-0.010724 + 0.0112*I)*z0^4 + (0.0960224 + 0.070220151*I)*z0^5 + (0.0115 - 0.147*I)*z0^6 + (-0.0891 + 0.0330394*I)*z0^7 + (-0.00534 + 0.0416*I)*z0^8 + (0.060825 + 0.0315*I)*z0^9 + O(z0^10), -0.00117 - 1.994*I + (6.773e-15 - 8.0120655e-16*I)*z1 + (0.0151 + 0.0885*I)*z1^2 + (0.0143 - 0.0566*I)*z1^3 + (-0.010724 + 0.0112*I)*z1^4 + (-0.0960224 - 0.070220151*I)*z1^5 + (0.0115 - 0.147*I)*z1^6 + (0.0891 - 0.0330394*I)*z1^7 + (-0.00534 + 0.0416*I)*z1^8 + (-0.060825 - 0.0315*I)*z1^9 + O(z1^10))
+            sage: η + η  # tol 1e-6
+            (0 - 2*I + (0 + 0*I)*z0 + (0 + 0*I)*z0^2 + (0 + 0*I)*z0^3 + (0 + 0*I)*z0^4 + (0 + 0*I)*z0^5 + (0 + 0*I)*z0^6 + (0 + 0*I)*z0^7 + (0 + 0*I)*z0^8 + (0 + 0*I)*z0^9 + O(z0^10),
+             0 - 2*I + (0 + 0*I)*z1 + (0 + 0*I)*z1^2 + (0 + 0*I)*z1^3 + (0 + 0*I)*z1^4 + (0 + 0*I)*z1^5 + (0 + 0*I)*z1^6 + (0 + 0*I)*z1^7 + (0 + 0*I)*z1^8 + (0 + 0*I)*z1^9 + O(z1^10))
 
         """
+        # TODO: Some of the imaginary parts of the above output are not correct.
+
         return self.parent()({
             triangle: self._series[triangle] + other._series[triangle]
             for triangle in self._series
@@ -123,7 +127,7 @@ class HarmonicDifferential(Element):
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
             sage: C = PowerSeriesConstraints(T, 5)
             sage: η._evaluate(C.gen(0, 0) + C.gen(1, 0))  # tol 1e-6
-            -0.00117738455985695 - 1.99415890970436*I
+            0 - 2*I
 
         """
         coefficients = {}
@@ -832,17 +836,22 @@ class PowerSeriesConstraints:
              PowerSeriesConstraints.Constraint(real={}, imag={0: [1], 1: [-1]}, lagrange=[], value=0)]
 
         If we add more coefficients, we get three pairs of contraints for the
-        three edges surrounding a face::
+        three edges surrounding a face; for the edge on which the centers of
+        the Voronoi cells fall, we get a more restrictive constraint forcing
+        all the coefficients to be equal (these are the first four constraints
+        recorded below.)::
 
             sage: C = PowerSeriesConstraints(T, 2)
             sage: C.require_consistency(1)
             sage: C  # tol 1e-9
-            [PowerSeriesConstraints.Constraint(real={0: [1.0], 1: [-1.0]}, imag={}, lagrange=[], value=0),
-             PowerSeriesConstraints.Constraint(real={}, imag={0: [1.0], 1: [-1.0]}, lagrange=[], value=0),
-             PowerSeriesConstraints.Constraint(real={0: [1.0], 1: [-1.0]}, imag={0: [-0.0, -0.5], 1: [0.0, -0.5]}, lagrange=[], value=0),
-             PowerSeriesConstraints.Constraint(real={0: [0.0, 0.5], 1: [-0.0, 0.5]}, imag={0: [1.0], 1: [-1.0]}, lagrange=[], value=0),
-             PowerSeriesConstraints.Constraint(real={0: [1.0, -0.5], 1: [-1.0, -0.5]}, imag={}, lagrange=[], value=0),
-             PowerSeriesConstraints.Constraint(real={}, imag={0: [1.0, -0.5], 1: [-1.0, -0.5]}, lagrange=[], value=0)]
+            [PowerSeriesConstraints.Constraint(real={0: [1.0], 1: [-1.0]}, imag={}, lagrange=[], value=-0.0),
+             PowerSeriesConstraints.Constraint(real={}, imag={0: [1.0], 1: [-1.0]}, lagrange=[], value=-0.0),
+             PowerSeriesConstraints.Constraint(real={0: [0.0, 1.0], 1: [0.0, -1.0]}, imag={}, lagrange=[], value=-0.0),
+             PowerSeriesConstraints.Constraint(real={}, imag={0: [0.0, 1.0], 1: [0.0, -1.0]}, lagrange=[], value=-0.0),
+             PowerSeriesConstraints.Constraint(real={0: [1.0], 1: [-1.0]}, imag={0: [0.0, -0.50], 1: [0.0, -0.50]}, lagrange=[], value=-0.0),
+             PowerSeriesConstraints.Constraint(real={0: [0.0, 0.50], 1: [0.0, 0.50]}, imag={0: [1.0], 1: [-1.0]}, lagrange=[], value=-0.0),
+             PowerSeriesConstraints.Constraint(real={0: [1.0, -0.50], 1: [-1.0, -0.50]}, imag={}, lagrange=[], value=-0.0),
+             PowerSeriesConstraints.Constraint(real={}, imag={0: [1.0, -0.50], 1: [-1.0, -0.50]}, lagrange=[], value=-0.0)]
 
         ::
 
@@ -872,7 +881,14 @@ class PowerSeriesConstraints:
             Δ0 = HarmonicDifferential._midpoint(self._surface, triangle0, edge0)
             Δ1 = HarmonicDifferential._midpoint(self._surface, triangle1, edge1)
 
-            # Require that the 0th, ..., prec-1th derivatives are the same at the midpoint of the edge.
+            if abs(Δ0) < 1e-6 and abs(Δ1) < 1e-6:
+                # Force power series to be identical if the Delaunay triangulation is ambiguous at this edge.
+                for k in range(self._prec):
+                    self.add_constraint(self.gen(triangle0, k) - self.gen(triangle1, k))
+
+                continue
+
+            # Require that the 0th, ..., derivatives-1th derivatives are the same at the midpoint of the edge.
             for derivative in range(derivatives):
                 self.add_constraint(
                     self.evaluate(triangle0, Δ0, derivative) - self.evaluate(triangle1, Δ1, derivative))
