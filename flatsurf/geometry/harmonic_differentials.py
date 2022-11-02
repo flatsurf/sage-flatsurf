@@ -589,10 +589,7 @@ class PowerSeriesConstraints:
 
         # Eliminate the generators a_k by rewriting them as Re(a_k) + I*Im(a_k)
         substitutions = {}
-        for gen in x.parent().gens():
-            if x.degree(gen) <= 0:
-                continue
-
+        for gen in x.variables():
             kind, triangle, k = self._describe_generator(gen)
 
             if kind != "gen":
@@ -610,13 +607,8 @@ class PowerSeriesConstraints:
 
         # We use Re(c*Re(a_k)) = Re(c) * Re(a_k) and Re(c*Im(a_k)) = Re(c) * Im(a_k)
         # and Im(c*Re(a_k)) = Im(c) * Re(a_k) and Im(c*Im(a_k)) = Im(c) * Im(a_k), respectively.
-        for gen in x.parent().gens():
-            degree = x.degree(gen)
-
-            if degree <= 0:
-                continue
-
-            if degree > 1:
+        for gen in x.variables():
+            if x.degree(gen) > 1:
                 raise NotImplementedError
 
             kind, triangle, k = self._describe_generator(gen)
@@ -719,10 +711,7 @@ class PowerSeriesConstraints:
             real = {}
             imag = {}
 
-            for gen in e.parent().gens():
-                if e.degree(gen) <= 0:
-                    continue
-
+            for gen in e.variables():
                 kind, triangle, k = self._describe_generator(gen)
 
                 assert kind in ["real", "imag"]
