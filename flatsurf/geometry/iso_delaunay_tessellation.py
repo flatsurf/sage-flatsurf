@@ -89,8 +89,7 @@ class IsoDelaunayTessellation(Parent):
 
         self._hyperbolic_plane = HyperbolicPlane(surface.base_ring())
 
-        self._surface = surface.delaunay_triangulation(in_place=False)
-        self._surface = self._delaunay_triangulation(surface)
+        self._surface = self._nondegenerate_delaunay_triangulation(surface)
         self._surface.set_immutable()
 
         self._dual_graph = Graph(multiedges=True, loops=True)
@@ -417,24 +416,8 @@ class IsoDelaunayTessellation(Parent):
         half_planes = cls._iso_delaunay_region(T)
         iso_delaunay_region = point.parent().polygon(half_planes)
 
-        # Let M_i be starting surf with arbitrary DT producing potentially degen IDR
-        # Consider T_e * M_i until it has a nondegenerate IDR
-        # let M_{i+e} be the Delaunay triangulated surface with a nondegen IDR
-        # then T_{-e} * M_{i + e} is a new DT of M_i with a nondegen IDR
-
-        # If M_i has a degenerate IDR, do flips until not the case
-        # e.g. only 8 / 250 of the triangulations of the regular octagon lead to a nondegen IDR
         if iso_delaunay_region.dimension() < 2:
-            from sage.all import QQ
-            epsilon = QQ(1)/2
-            while True:
-                x, y = point.coordinates()
-                shifted = point.parent().point(
-                    x + epsilon, y, model="half_plane")
-                face = cls._face(surface, shifted)
-                if point in face:
-                    return face
-                epsilon /= 2
+            return None
 
         return iso_delaunay_region
 
@@ -453,7 +436,17 @@ class IsoDelaunayTessellation(Parent):
 
         """
         point = self._hyperbolic_plane(point)
-        return self._face(self._surface, point)
+        x, y = point.coordinates()
+
+        from sage.all import QQ
+        shift = QQ(1)/2
+
+        while True:
+            shifted = point.parent().point(x + shift, y, model="half_plane")
+            face = self._face(self._surface, shifted)
+            if point in face:
+                return face
+            shift /= 2
 
     def surface(self, point):
         r"""
@@ -540,22 +533,36 @@ class IsoDelaunayTessellation(Parent):
         return H.geodesic(a, 2 * b, c, model="half_plane").left_half_space()
 
     @classmethod
-    def _delaunay_triangulation(cls, surface):
+    def _nondegenerate_delaunay_triangulation(cls, surface):
         r"""
         Return a Delaunay triangulation for `_surface` whose IDR is 2-dimensional
         """
-        from sage.all import QQ, I
+        # Let M_i be starting surf with arbitrary DT producing potentially degen IDR
+        # Consider T_e * M_i until it has a nondegenerate IDR
+        # let M_{i+e} be the Delaunay triangulated surface with a nondegen IDR
+        # then T_{-e} * M_{i + e} is a new DT of M_i with a nondegen IDR
+
+        # If M_i has a degenerate IDR, do flips until not the case
+        # e.g. only 8 / 250 of the triangulations of the regular octagon lead to a nondegen IDR
+
+        surface = surface.delaunay_triangulation(in_place=False)
 
         H = HyperbolicPlane(surface.base_ring())
 
-        epsilon = QQ(1/2)
+        shift = 0
         while True:
-            shifted = H.point(epsilon, 1, model="half_plane")
-            shifted_face = cls._face(surface, shifted)
-            # if z1 in face1.interior() and I in face1: TODO add interior()
-            if I in shifted_face:
+            shifted = H.point(shift, 1, model="half_plane")
+            face = cls._face(surface, shifted)
+
+            from sage.all import I
+            if face is not None and I in face:
                 break
-            epsilon /= 2
+
+            if shift == 0:
+                from sage.all import QQ
+                shift = QQ(1)
+
+            shift /= 2
 
         perturbation = cls._point_to_matrix(shifted)
         return surface.apply_matrix(perturbation, in_place=False).delaunay_triangulation(in_place=False).apply_matrix(~perturbation, in_place=False)
