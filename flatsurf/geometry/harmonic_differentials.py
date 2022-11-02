@@ -463,7 +463,7 @@ class PowerSeriesConstraints:
         """
         if k >= self._prec:
             raise ValueError("symbolic ring has no k-th generator")
-        return self.symbolic_ring()(self.symbolic_ring(triangle).gen(k))
+        return self.symbolic_ring(triangle).gen(k)
 
     @cached_method
     def real(self, triangle, k):
@@ -489,7 +489,7 @@ class PowerSeriesConstraints:
         """
         if k >= self._prec:
             raise ValueError("symbolic ring has no k-th generator")
-        return self.symbolic_ring()(self.symbolic_ring(triangle).gen(self._prec + k))
+        return self.symbolic_ring(triangle).gen(self._prec + k)
 
     @cached_method
     def imag(self, triangle, k):
@@ -515,7 +515,43 @@ class PowerSeriesConstraints:
         """
         if k >= self._prec:
             raise ValueError("symbolic ring has no k-th generator")
-        return self.symbolic_ring()(self.symbolic_ring(triangle).gen(2*self._prec + k))
+        return self.symbolic_ring(triangle).gen(2*self._prec + k)
+
+    @cached_method
+    def _describe_generator(self, gen):
+        r"""
+        Return which kind of symbolic generator ``gen`` is.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T.set_immutable()
+
+            sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
+            sage: C = PowerSeriesConstraints(T, prec=3)
+            sage: C._describe_generator(C.gen(0, 0))
+            ('gen', 0, 0)
+            sage: C._describe_generator(C.imag(1, 2))
+            ('imag', 1, 2)
+            sage: C._describe_generator(C.real(2, 1))
+            ('real', 2, 1)
+
+        """
+        gen = str(gen)
+        if gen.startswith("a"):
+            kind = "gen"
+            gen = gen[1:]
+        elif gen.startswith("Re_a"):
+            kind = "real"
+            gen = gen[4:]
+        elif gen.startswith("Im_a"):
+            kind = "imag"
+            gen = gen[4:]
+
+        triangle, k = gen.split('_')
+
+        return kind, int(triangle), int(k)
 
     def project(self, x, part):
         r"""
@@ -543,18 +579,17 @@ class PowerSeriesConstraints:
             assert False  # unreachable
 
         # Eliminate the generators a_k by rewriting them as Re(a_k) + I*Im(a_k)
-        x = self.symbolic_ring()(x)
+        for gen in x.parent().gens():
+            kind, triangle, k = self._describe_generator(gen)
 
-        for triangle in self._surface.label_iterator():
-            for k in range(self._prec):
-                gen = self.gen(triangle, k)
-                if x[gen]:
-                    c = x[gen]
-                    x -= c * gen
-                    x += c * self.real(triangle, k)
+            if kind != "gen":
+                continue
 
-                    from sage.all import I
-                    x += c * I * self.imag(triangle, k)
+            if x.degree(gen) <= 0:
+                continue
+
+            from sage.all import I
+            x = x.substitute({gen: self.real(triangle, k) + I*self.imag(triangle, k)})
 
         if part == "real":
             # We use Re(c*Re(a_k)) = Re(c) * Re(a_k) and Re(c*Im(a_k)) = Re(c) * Im(a_k)
@@ -650,8 +685,6 @@ class PowerSeriesConstraints:
         return self.project(x, "imag")
 
     def add_constraint(self, expression, value=ZZ(0), lagrange=[]):
-        expression = self.symbolic_ring()(expression)
-
         expression -= value
 
         if expression == 0:
@@ -672,9 +705,29 @@ class PowerSeriesConstraints:
         for part in [self.real_part, self.imaginary_part]:
             e = part(expression)
 
+            real = {}
+            imag = {}
+
+            for gen in e.parent().gens():
+                if e.degree(gen) <= 0:
+                    continue
+
+                kind, triangle, k = self._describe_generator(gen)
+
+                assert kind in ["real", "imag"]
+
+                bucket = real if kind == "real" else imag
+
+                coefficients = bucket.setdefault(triangle, [])
+
+                if len(coefficients) <= k:
+                    coefficients.extend([0]*(k + 1 - len(coefficients)))
+
+                coefficients[k] = e[gen]
+
             self._add_constraint(
-                real={triangle: [e[self.real(triangle, k)] for k in range(self._prec)] for triangle in self._surface.label_iterator()},
-                imag={triangle: [e[self.imag(triangle, k)] for k in range(self._prec)] for triangle in self._surface.label_iterator()},
+                real=real,
+                imag=imag,
                 lagrange=[part(l) for l in lagrange],
                 value=part(value))
 
@@ -705,6 +758,13 @@ class PowerSeriesConstraints:
         if constraint not in self._constraints:
             self._constraints.append(constraint)
 
+    @cached_method
+    def _formal_power_series(self, triangle):
+        from sage.all import PowerSeriesRing
+        R = PowerSeriesRing(self.symbolic_ring(triangle=triangle), 'z')
+
+        return R([self.gen(triangle, n) for n in range(self._prec)])
+
     def develop(self, triangle, Δ=0):
         r"""
         Return the power series obtained by developing at z + Δ.
@@ -724,11 +784,8 @@ class PowerSeriesConstraints:
 
         """
         # TODO: Check that Δ is within the radius of convergence.
-        from sage.all import PowerSeriesRing
-        R = PowerSeriesRing(self.symbolic_ring(triangle=triangle), 'z')
-
-        f = R([self.gen(triangle, n) for n in range(self._prec)])
-        return f(R.gen() + Δ)
+        f = self._formal_power_series(triangle)
+        return f(f.parent().gen() + Δ)
 
     def integrate(self, cycle):
         r"""
@@ -1063,7 +1120,7 @@ class PowerSeriesConstraints:
                         continue
 
                     # Rewrite f as a polynomial in gen, e.g., h=h[0] + h[1] * Re(a_k) + h[2] * Re(a_k)^2
-                    h = f.polynomial(gen)
+                    h = f.polynomial(f.parent()(gen))
                     if h.degree() > 2:
                         raise NotImplementedError("cannot solve optimization problems which do not reduce to something linear yet")
                     if not h[1].total_degree() <= 1 or not h[2].is_constant():
