@@ -809,6 +809,10 @@ class PowerSeriesConstraints:
 
         expression = R.zero()
 
+        from sage.misc import cachefunc
+        def midpoint(edge):
+            return R(HarmonicDifferential._midpoint(surface, *edge))
+
         for path, multiplicity in cycle.voronoi_path().monomial_coefficients().items():
 
             for S, T in zip((path[-1],) + path, path):
@@ -819,8 +823,8 @@ class PowerSeriesConstraints:
                 # Namely we integrate the power series defined around the Voronoi vertex of S by symbolically integrating each monomial term.
 
                 # The midpoints of the edges
-                P = R(HarmonicDifferential._midpoint(surface, *S))
-                Q = R(HarmonicDifferential._midpoint(surface, *T))
+                P = midpoint(S)
+                Q = midpoint(T)
 
                 for k in range(self._prec):
                     gen = self.gen(S[0], k, R)
