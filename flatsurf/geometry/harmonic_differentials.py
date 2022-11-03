@@ -147,7 +147,7 @@ class HarmonicDifferential(Element):
                 assert kind == "imag"
                 coefficients[gen] = coefficient.imag()
 
-        value = expression.parent()(expression.substitute(coefficients))
+        value = expression.parent()(C._subs(expression, coefficients))
         assert value.degree() <= 0
         return value.constant_coefficient()
 
@@ -611,7 +611,7 @@ class PowerSeriesConstraints:
             substitutions[gen] = real + imag
 
         if substitutions:
-            x = x.substitute(substitutions)
+            x = self._subs(x, substitutions)
 
         terms = []
 
@@ -630,6 +630,43 @@ class PowerSeriesConstraints:
         terms.append(self.project(x.constant_coefficient(), part))
 
         return sum(terms)
+
+    @staticmethod
+    def _subs(polynomial, substitutions):
+        r"""
+        A faster version of multivariate polynomial's ``subs``.
+
+        Unfortunately, ``subs`` is extremely slow for polynomials with lots of
+        variables. Part of this are trivialities, namely, ``subs`` stringifies
+        all of the generators of the polynomial ring. But also due to the
+        evaluation algorithm that is not very fast when most variables are
+        unchanged.
+        """
+        R = polynomial.parent()
+        gens = R.gens()
+
+        result = R.zero()
+
+        substituted_generator_indexes = [i for i, gen in enumerate(gens) if gen in substitutions]
+
+        for coefficient, monomial, exponents in zip(polynomial.coefficients(), polynomial.monomials(), polynomial.exponents()):
+            for index in substituted_generator_indexes:
+                if exponents[index]:
+                    break
+            else:
+                # monomial is unaffected by this substitution
+                result += coefficient * monomial
+                continue
+
+            for i, (gen, exponent) in enumerate(zip(gens, exponents)):
+                if not exponent:
+                    continue
+                if gen in substitutions:
+                    coefficient *= substitutions[gen] ** exponent
+
+            result += coefficient
+
+        return result
 
     def real_part(self, x):
         r"""
