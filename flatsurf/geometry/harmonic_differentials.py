@@ -821,7 +821,9 @@ class PowerSeriesConstraints:
         """
         surface = cycle.surface()
 
-        expression = self.symbolic_ring(*[triangle for path in cycle.voronoi_path().monomial_coefficients().keys() for triangle, _ in path]).zero()
+        R = self.symbolic_ring(*[triangle for path in cycle.voronoi_path().monomial_coefficients().keys() for triangle, _ in path])
+
+        expression = R.zero()
 
         for path, multiplicity in cycle.voronoi_path().monomial_coefficients().items():
 
@@ -833,12 +835,13 @@ class PowerSeriesConstraints:
                 # Namely we integrate the power series defined around the Voronoi vertex of S by symbolically integrating each monomial term.
 
                 # The midpoints of the edges
-                P = HarmonicDifferential._midpoint(surface, *S)
-                Q = HarmonicDifferential._midpoint(surface, *T)
+                P = R(HarmonicDifferential._midpoint(surface, *S))
+                Q = R(HarmonicDifferential._midpoint(surface, *T))
 
                 for k in range(self._prec):
-                    expression -= self.gen(S[0], k) * multiplicity * P**(k + 1) / (k + 1)
-                    expression += self.gen(T[0], k) * multiplicity * Q**(k + 1) / (k + 1)
+                    gen = R(self.gen(S[0], k))
+                    expression -= gen * multiplicity * P**(k + 1) / (k + 1)
+                    expression += gen * multiplicity * Q**(k + 1) / (k + 1)
 
         return expression
 
