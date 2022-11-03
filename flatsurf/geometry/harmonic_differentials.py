@@ -985,7 +985,7 @@ class PowerSeriesConstraints:
             # To optimize this error, write it as Lagrange multipliers.
             raise NotImplementedError # TODO: We need some generic infrastracture to merge quadratic conditions such as this and require_finite_area by weighing both.
 
-    def _area(self):
+    def _area_upper_bound(self):
         r"""
         Return an upper bound for the area 1 /(2iπ) ∫ η \wedge \overline{η}.
 
@@ -1003,13 +1003,10 @@ class PowerSeriesConstraints:
             sage: η = Ω(f)
 
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
-            sage: area = PowerSeriesConstraints(T, η.precision())._area()
+            sage: area = PowerSeriesConstraints(T, η.precision())._area_upper_bound()
             sage: area  # tol 2e-2
-            0.250*Re_a0_0^2 + 0.176*Re_a0_1^2 + 0.125*Re_a0_2^2 + 0.0883*Re_a0_3^2 + 0.0625*Re_a0_4^2 + 0.0441*Re_a0_5^2 + 0.0312*Re_a0_6^2 + 0.0220*Re_a0_7^2 + 0.0156*Re_a0_8^2 + 0.0110*Re_a0_9^2
-            + 0.250*Im_a0_0^2 + 0.176*Im_a0_1^2 + 0.125*Im_a0_2^2 + 0.0883*Im_a0_3^2 + 0.0625*Im_a0_4^2 + 0.0441*Im_a0_5^2 + 0.0312*Im_a0_6^2 + 0.0220*Im_a0_7^2 + 0.0156*Im_a0_8^2 + 0.0110*Im_a0_9^2
-            + 0.250*Re_a1_0^2 + 0.176*Re_a1_1^2 + 0.125*Re_a1_2^2 + 0.0883*Re_a1_3^2 + 0.0625*Re_a1_4^2 + 0.0441*Re_a1_5^2 + 0.0312*Re_a1_6^2 + 0.0220*Re_a1_7^2 + 0.0156*Re_a1_8^2 + 0.0110*Re_a1_9^2
-            + 0.250*Im_a1_0^2 + 0.176*Im_a1_1^2 + 0.125*Im_a1_2^2 + 0.0883*Im_a1_3^2 + 0.0625*Im_a1_4^2 + 0.0441*Im_a1_5^2 + 0.0312*Im_a1_6^2 + 0.0220*Im_a1_7^2 + 0.0156*Im_a1_8^2 + 0.0110*Im_a1_9^2
-
+            0.250*Re_a0_0^2 + 0.125*Re_a0_1^2 + 0.0625*Re_a0_2^2 + 0.0312*Re_a0_3^2 + 0.0156*Re_a0_4^2 + 0.00781*Re_a0_5^2 + 0.00390*Re_a0_6^2 + 0.00195*Re_a0_7^2 + 0.000976*Re_a0_8^2 + 0.000488*Re_a0_9^2 + 0.250*Im_a0_0^2 + 0.125*Im_a0_1^2 + 0.0625*Im_a0_2^2 + 0.0312*Im_a0_3^2 + 0.0156*Im_a0_4^2 + 0.00781*Im_a0_5^2 + 0.00390*Im_a0_6^2 + 0.00195*Im_a0_7^2 + 0.000976*Im_a0_8^2 + 0.000488*Im_a0_9^2
+            + 0.250*Re_a1_0^2 + 0.125*Re_a1_1^2 + 0.0625*Re_a1_2^2 + 0.0312*Re_a1_3^2 + 0.0156*Re_a1_4^2 + 0.00781*Re_a1_5^2 + 0.00390*Re_a1_6^2 + 0.00195*Re_a1_7^2 + 0.000976*Re_a1_8^2 + 0.000488*Re_a1_9^2 + 0.250*Im_a1_0^2 + 0.125*Im_a1_1^2 + 0.0625*Im_a1_2^2 + 0.0312*Im_a1_3^2 + 0.0156*Im_a1_4^2 + 0.00781*Im_a1_5^2 + 0.00390*Im_a1_6^2 + 0.00195*Im_a1_7^2 + 0.000976*Im_a1_8^2 + 0.000488*Im_a1_9^2
 
         The correct area would be 1/2π here. However, we are overcounting
         because we sum the single Voronoi cell twice. And also, we approximate
@@ -1019,6 +1016,9 @@ class PowerSeriesConstraints:
             .5
 
         """
+        # TODO: Verify that this is actually correct. I think the formula below
+        # is offf. It's certainly not in sync with the documentation.
+
         # To make our lives easier, we do not optimize this value but instead
         # half the sum of the |a_k|^2·radius^(k+2) = (Re(a_k)^2 +
         # Im(a_k)^2)·radius^(k+2) which is a very rough upper bound for the
@@ -1029,7 +1029,7 @@ class PowerSeriesConstraints:
             R = float(self._surface.polygon(triangle).circumscribing_circle().radius_squared().sqrt())
 
             for k in range(self._prec):
-                area += (self.real(triangle, k)**2 + self.imag(triangle, k)**2) * R**(k + 2)
+                area += (self.real(triangle, k)**2 + self.imag(triangle, k)**2) * R**(2*k + 2)
 
         return area/2
 
@@ -1060,7 +1060,7 @@ class PowerSeriesConstraints:
              PowerSeriesConstraints.Constraint(real={}, imag={1: [0.500]}, lagrange=[0, 1], value=-0)]
 
         """
-        self.optimize(self._area())
+        self.optimize(self._area_upper_bound())
 
     def optimize(self, f):
         r"""
