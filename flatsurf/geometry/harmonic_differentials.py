@@ -452,12 +452,19 @@ class PowerSeriesConstraints:
         return PolynomialRing(CC, gens)
 
     @cached_method
-    def gen(self, triangle, k, ring=None):
+    def gen(self, triangle, k, ring=None, conjugate=False):
         real = self.real(triangle, k, ring=ring)
         imag = self.imag(triangle, k, ring=ring)
+
         I = imag.parent().base_ring().gen()
+
+        if conjugate:
+            I = -I
+
         assert I*I == -1
+
         return real + I*imag
+
 
     @cached_method
     def real(self, triangle, k, ring=None):
@@ -985,6 +992,139 @@ class PowerSeriesConstraints:
             # To optimize this error, write it as Lagrange multipliers.
             raise NotImplementedError # TODO: We need some generic infrastracture to merge quadratic conditions such as this and require_finite_area by weighing both.
 
+    @cached_method
+    def _elementary_line_integrals(self, triangle, n, m):
+        r"""
+        Return the integrals f(z)dx and f(z)dy where f(z) = z^n\overline{z}^m
+        along the boundary of the ``triangle``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, SimplicialCohomology, HarmonicDifferentials
+            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T.set_immutable()
+
+            sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
+            sage: C = PowerSeriesConstraints(T, 3)
+
+            sage: C._elementary_line_integrals(0, 0, 0)
+            (0.0, 0.0)
+            sage: C._elementary_line_integrals(0, 1, 0)  # tol 1e-9
+            (0 - 0.5*I, 0.5 + 0.0*I)
+            sage: C._elementary_line_integrals(0, 0, 1)  # tol 1e-9
+            (0.0 + 0.5*I, 0.5 - 0.0*I)
+            sage: C._elementary_line_integrals(0, 1, 1)  # tol 1e-9
+            (-0.1666666667, -0.1666666667)
+
+        """
+        from sage.all import I
+
+        ix = 0
+        iy = 0
+
+        triangle = self._surface.polygon(triangle)
+        center = triangle.circumscribing_circle().center()
+
+        for v, e in zip(triangle.vertices(), triangle.edges()):
+            Δx, Δy = e
+            x0, y0 = -center + v
+
+            def f(x, y):
+                from sage.all import I
+                return complex((x + I*y)**n * (x - I*y)**m)
+
+            def fx(t):
+                if abs(Δx) < 1e-6:
+                    return complex(0)
+                return f(x0 + t, y0 + t * Δy/Δx)
+
+            def fy(t):
+                if abs(Δy) < 1e-6:
+                    return complex(0)
+                return f(x0 + t * Δx/Δy, y0 + t)
+
+            def integrate(value, t0, t1):
+                from scipy.integrate import quad
+                return quad(value, t0, t1)[0]
+
+            ix += integrate(lambda t: fx(t).real, 0, Δx) + I * integrate(lambda t: fx(t).imag, 0, Δx)
+            iy += integrate(lambda t: fy(t).real, 0, Δy) + I * integrate(lambda t: fy(t).imag, 0, Δy)
+
+        return ix, iy
+
+    @cached_method
+    def _elementary_area_integral(self, triangle, n, m):
+        r"""
+        Return the integral of z^n\overline{z}^m on the ``triangle``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, SimplicialCohomology, HarmonicDifferentials
+            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T.set_immutable()
+
+            sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
+            sage: C = PowerSeriesConstraints(T, 3)
+            sage: C._elementary_area_integral(0, 0, 0)  # tol 1e-9
+            0.5 + 0.0*I
+
+            sage: C._elementary_area_integral(0, 1, 0)  # tol 1e-6
+            -0.083333333 + 0.083333333*I
+
+        """
+        # Write f(n, m) for z^n\overline{z}^m.
+        # Then 1/(2m + 1) [d/dx f(n, m+1) - d/dy -i f(n, m+1)] = f(n, m).
+
+        # So we can use Green's theorem to compute this integral by integrating
+        # on the boundary of the triangle:
+        # -i/(2m + 1) f(n, m + 1) dx + 1/(2m + 1) f(n, m + 1) dy
+
+        ix, iy = self._elementary_line_integrals(triangle, n, m+1)
+
+        from sage.all import I
+        return -I/(2*(m + 1)) * ix + 1/(2*(m + 1)) * iy
+
+    def _area(self):
+        r"""
+        Return a formula for the area ∫ η \wedge \overline{η}.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, SimplicialCohomology, HarmonicDifferentials
+            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T.set_immutable()
+
+            sage: H = SimplicialCohomology(T)
+            sage: a, b = H.homology().gens()
+            sage: f = H({a: 1})
+
+            sage: Ω = HarmonicDifferentials(T)
+            sage: η = Ω(f, prec=6)
+
+            sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
+            sage: area = PowerSeriesConstraints(T, η.precision())._area()
+
+            sage: η._evaluate(area)  # tol 1e-9
+            1.0 + 0.0*I
+
+        """
+        R = self.symbolic_ring()
+
+        area = R.zero()
+
+        # We eveluate the integral of |f|^2 on each triangle where f is the
+        # power series on the Voronoy cell containing that triangle.
+        for triangle in self._surface.label_iterator():
+            # We expand the integrand Σa_nz^n · \overline{Σa_mz^m} naively as
+            # the sum of a_n \overline{a_m} z^n \overline{z^m}.
+            for n in range(self._prec):
+                for m in range(self._prec):
+                    coefficient = self.gen(triangle, n, R) * self.gen(triangle, m, R, conjugate=True)
+                    # Now we have to integrate z^n \overline{z^m} on the triangle.
+                    area += coefficient * self._elementary_area_integral(triangle, n, m)
+
+        return area
+
     def _area_upper_bound(self):
         r"""
         Return an upper bound for the area 1 /(2iπ) ∫ η \wedge \overline{η}.
@@ -1025,7 +1165,7 @@ class PowerSeriesConstraints:
         # area.
         area = self.symbolic_ring().zero()
 
-        for triangle in range(self._surface.num_polygons()):
+        for triangle in self._surface.label_iterator():
             R = float(self._surface.polygon(triangle).circumscribing_circle().radius_squared().sqrt())
 
             for k in range(self._prec):
@@ -1060,7 +1200,7 @@ class PowerSeriesConstraints:
              PowerSeriesConstraints.Constraint(real={}, imag={1: [0.500]}, lagrange=[0, 1], value=-0)]
 
         """
-        self.optimize(self._area_upper_bound())
+        self.optimize(self._area())
 
     def optimize(self, f):
         r"""
