@@ -139,9 +139,7 @@ class HarmonicDifferential(Element):
             kind, triangle, k = C._describe_generator(gen)
             coefficient = self._series[triangle][k]
 
-            if kind == "gen":
-                coefficients[gen] = coefficient
-            elif kind == "real":
+            if kind == "real":
                 coefficients[gen] = coefficient.real()
             else:
                 assert kind == "imag"
@@ -444,7 +442,6 @@ class PowerSeriesConstraints:
             triangles = list(self._surface.label_iterator())
 
         for t in sorted(set(triangles)):
-            gens += [f"a{t}_{n}" for n in range(self._prec)]
             gens += [f"Re_a{t}_{n}" for n in range(self._prec)]
             gens += [f"Im_a{t}_{n}" for n in range(self._prec)]
 
@@ -455,30 +452,11 @@ class PowerSeriesConstraints:
 
     @cached_method
     def gen(self, triangle, k, ring=None):
-        r"""
-        Return the kth generator of the :meth:`symbolic_ring` for ``triangle``.
-
-        EXAMPLES::
-
-            sage: from flatsurf import translation_surfaces
-            sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
-            sage: T.set_immutable()
-
-            sage: C = PowerSeriesConstraints(T, prec=3)
-            sage: C.gen(0, 0)
-            a0_0
-            sage: C.gen(0, 1)
-            a0_1
-            sage: C.gen(1, 2)
-            a1_2
-
-        """
-        if k >= self._prec:
-            raise ValueError("symbolic ring has no k-th generator")
-        if ring is None:
-            return self.symbolic_ring(triangle).gen(k)
-        return ring(f"a{triangle}_{k}")
+        real = self.real(triangle, k, ring=ring)
+        imag = self.imag(triangle, k, ring=ring)
+        I = imag.parent().base_ring().gen()
+        assert I*I == -1
+        return real + I*imag
 
     @cached_method
     def real(self, triangle, k, ring=None):
@@ -505,7 +483,7 @@ class PowerSeriesConstraints:
         if k >= self._prec:
             raise ValueError("symbolic ring has no k-th generator")
         if ring is None:
-            return self.symbolic_ring(triangle).gen(self._prec + k)
+            return self.symbolic_ring(triangle).gen(k)
         return ring(f"Re_a{triangle}_{k}")
 
     @cached_method
@@ -533,7 +511,7 @@ class PowerSeriesConstraints:
         if k >= self._prec:
             raise ValueError("symbolic ring has no k-th generator")
         if ring is None:
-            return self.symbolic_ring(triangle).gen(2*self._prec + k)
+            return self.symbolic_ring(triangle).gen(self._prec + k)
         return ring(f"Im_a{triangle}_{k}")
 
     @cached_method
@@ -549,8 +527,6 @@ class PowerSeriesConstraints:
 
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
             sage: C = PowerSeriesConstraints(T, prec=3)
-            sage: C._describe_generator(C.gen(0, 0))
-            ('gen', 0, 0)
             sage: C._describe_generator(C.imag(1, 2))
             ('imag', 1, 2)
             sage: C._describe_generator(C.real(2, 1))
@@ -558,10 +534,7 @@ class PowerSeriesConstraints:
 
         """
         gen = str(gen)
-        if gen.startswith("a"):
-            kind = "gen"
-            gen = gen[1:]
-        elif gen.startswith("Re_a"):
+        if gen.startswith("Re_a"):
             kind = "real"
             gen = gen[4:]
         elif gen.startswith("Im_a"):
@@ -597,22 +570,6 @@ class PowerSeriesConstraints:
 
             assert False  # unreachable
 
-        # Eliminate the generators a_k by rewriting them as Re(a_k) + I*Im(a_k)
-        substitutions = {}
-        for gen in x.variables():
-            kind, triangle, k = self._describe_generator(gen)
-
-            if kind != "gen":
-                continue
-
-            real = self.real(triangle, k, x.parent())
-            imag = self.imag(triangle, k, x.parent())
-            imag *= imag.parent().base_ring().gen()
-            substitutions[gen] = real + imag
-
-        if substitutions:
-            x = self._subs(x, substitutions)
-
         terms = []
 
         # We use Re(c*Re(a_k)) = Re(c) * Re(a_k) and Re(c*Im(a_k)) = Re(c) * Im(a_k)
@@ -620,10 +577,6 @@ class PowerSeriesConstraints:
         for gen in x.variables():
             if x.degree(gen) > 1:
                 raise NotImplementedError
-
-            kind, triangle, k = self._describe_generator(gen)
-
-            assert kind != "gen"
 
             terms.append(self.project(x[gen], part) * gen)
 
@@ -1145,13 +1098,6 @@ class PowerSeriesConstraints:
         # We cannot optimize if there is an unbound z in the expression.
         R = self.symbolic_ring()
         f = R(f)
-
-        # We rewrite a_k as Re(a_k) + i Im(a_k).
-        for triangle in range(self._surface.num_polygons()):
-            for k in range(self._prec):
-                a_k = self.gen(triangle, k, R)
-                if f.degree(a_k):
-                    raise NotImplementedError(f"cannot rewrite a_k as Re(a_k) + i Im(a_k) yet in expression {f}")
 
         # We use Lagrange multipliers to rewrite this expression.
         # If we let
