@@ -1200,7 +1200,7 @@ class PowerSeriesConstraints:
              PowerSeriesConstraints.Constraint(real={}, imag={1: [0.500]}, lagrange=[0, 1], value=-0)]
 
         """
-        self.optimize(self._area())
+        self.optimize(self._area_upper_bound())
 
     def optimize(self, f):
         r"""
