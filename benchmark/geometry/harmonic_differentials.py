@@ -25,7 +25,7 @@ def time_harmonic_differential(surface):
     Ω = flatsurf.HarmonicDifferentials(surface)
     a = flatsurf.SimplicialHomology(surface).gens()[0]
     H = flatsurf.SimplicialCohomology(surface)
-    Ω(H({a: 1}))
+    Ω(H({a: 1}), check=False)
 
 
 def _3413():

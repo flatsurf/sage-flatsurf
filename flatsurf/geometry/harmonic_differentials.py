@@ -297,7 +297,7 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
 
         raise NotImplementedError()
 
-    def _element_from_cohomology(self, cocycle, /, prec=10, consistency=3):
+    def _element_from_cohomology(self, cocycle, /, prec=10, consistency=3, check=True):
         # We develop a consistent system of Laurent series at each vertex of the Voronoi diagram
         # to describe a differential.
 
@@ -338,28 +338,29 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
         # Check whether this is actually a global differential:
         # (1) Check that the series are actually consistent where the Voronoi cells overlap.
 
-        def check(actual, expected, message, abs_error_bound = 1e-9, rel_error_bound = 1e-6):
-            abs_error = abs(expected - actual)
-            if abs_error > abs_error_bound:
-                if expected == 0 or abs_error / abs(expected) > rel_error_bound:
-                    print(f"{message}; expected: {expected}, got: {actual}")
+        if check:
+            def check(actual, expected, message, abs_error_bound = 1e-9, rel_error_bound = 1e-6):
+                abs_error = abs(expected - actual)
+                if abs_error > abs_error_bound:
+                    if expected == 0 or abs_error / abs(expected) > rel_error_bound:
+                        print(f"{message}; expected: {expected}, got: {actual}")
 
-        for (triangle, edge) in self._surface.edge_iterator():
-            triangle_, edge_ = self._surface.opposite_edge(triangle, edge)
-            for derivative in range(consistency):
-                expected = η.evaluate(triangle, HarmonicDifferential._midpoint(self._surface, triangle, edge), derivative)
-                other = η.evaluate(triangle_, HarmonicDifferential._midpoint(self._surface, triangle_, edge_), derivative)
-                check(other, expected, f"power series defining harmonic differential are not consistent: {derivative}th derivate does not match between {(triangle, edge)} and {(triangle_, edge_)}")
+            for (triangle, edge) in self._surface.edge_iterator():
+                triangle_, edge_ = self._surface.opposite_edge(triangle, edge)
+                for derivative in range(consistency):
+                    expected = η.evaluate(triangle, HarmonicDifferential._midpoint(self._surface, triangle, edge), derivative)
+                    other = η.evaluate(triangle_, HarmonicDifferential._midpoint(self._surface, triangle_, edge_), derivative)
+                    check(other, expected, f"power series defining harmonic differential are not consistent: {derivative}th derivate does not match between {(triangle, edge)} and {(triangle_, edge_)}")
 
-        # (2) Check that differential actually integrates like the cohomology class.
-        for gen in cocycle.parent().homology().gens():
-            expected = cocycle(gen)
-            actual = η.integrate(gen).real
-            if callable(actual):
-                actual = actual()
-            check(actual, expected, f"harmonic differential does not have prescribed integral at {gen}")
+            # (2) Check that differential actually integrates like the cohomology class.
+            for gen in cocycle.parent().homology().gens():
+                expected = cocycle(gen)
+                actual = η.integrate(gen).real
+                if callable(actual):
+                    actual = actual()
+                check(actual, expected, f"harmonic differential does not have prescribed integral at {gen}")
 
-        # (3) Check that the area is finite.
+            # (3) Check that the area is finite.
 
         return η
 
