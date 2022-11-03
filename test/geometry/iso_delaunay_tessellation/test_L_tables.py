@@ -20,8 +20,8 @@ def test_L_tables(discriminant, chi, genus, ncusps, nu2):
     assert idt.genus() == genus
     assert len(idt.cusps()) == ncusps
     assert len(idt.orbifold_points(2)) == nu2
-    assert len(idt.orbifold_points(3) == 0
-    
+    assert len(idt.orbifold_points(3)) == 0
+
     # idt.veech_group() TODO: implement?
     # matching elements + orbifold symmetries = gen. set for Veech group
     # TODO: How do we iterate over IDRs?

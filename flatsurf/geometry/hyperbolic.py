@@ -3123,7 +3123,7 @@ class HyperbolicConvexSet(Element):
         # TODO: Benchmark?
         # TODO: Implement by iterating vertices.
         # TODO: Test that other implementation are consistent with vertices()
-        raise NotImplementedError
+        raise NotImplementedError(f"the hyperbolic set {self} does not implement .edges() yet")
 
     def __hash__(self):
         r"""
