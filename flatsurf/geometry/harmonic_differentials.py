@@ -454,7 +454,7 @@ class PowerSeriesConstraints:
         return PolynomialRing(CC, gens)
 
     @cached_method
-    def gen(self, triangle, k):
+    def gen(self, triangle, k, ring=None):
         r"""
         Return the kth generator of the :meth:`symbolic_ring` for ``triangle``.
 
@@ -476,10 +476,12 @@ class PowerSeriesConstraints:
         """
         if k >= self._prec:
             raise ValueError("symbolic ring has no k-th generator")
-        return self.symbolic_ring(triangle).gen(k)
+        if ring is None:
+            return self.symbolic_ring(triangle).gen(k)
+        return ring(f"a{triangle}_{k}")
 
     @cached_method
-    def real(self, triangle, k):
+    def real(self, triangle, k, ring=None):
         r"""
         Return the real part of the kth generator of the :meth:`symbolic_ring`
         for ``triangle``.
@@ -502,10 +504,12 @@ class PowerSeriesConstraints:
         """
         if k >= self._prec:
             raise ValueError("symbolic ring has no k-th generator")
-        return self.symbolic_ring(triangle).gen(self._prec + k)
+        if ring is None:
+            return self.symbolic_ring(triangle).gen(self._prec + k)
+        return ring(f"Re_a{triangle}_{k}")
 
     @cached_method
-    def imag(self, triangle, k):
+    def imag(self, triangle, k, ring=None):
         r"""
         Return the imaginary part of the kth generator of the :meth:`symbolic_ring`
         for ``triangle``.
@@ -528,7 +532,9 @@ class PowerSeriesConstraints:
         """
         if k >= self._prec:
             raise ValueError("symbolic ring has no k-th generator")
-        return self.symbolic_ring(triangle).gen(2*self._prec + k)
+        if ring is None:
+            return self.symbolic_ring(triangle).gen(2*self._prec + k)
+        return ring(f"Im_a{triangle}_{k}")
 
     @cached_method
     def _describe_generator(self, gen):
@@ -599,10 +605,9 @@ class PowerSeriesConstraints:
             if kind != "gen":
                 continue
 
-            real = x.parent()(self.real(triangle, k))
-            imag = self.imag(triangle, k)
+            real = self.real(triangle, k, x.parent())
+            imag = self.imag(triangle, k, x.parent())
             imag *= imag.parent().base_ring().gen()
-            imag = x.parent()(imag)
             substitutions[gen] = real + imag
 
         if substitutions:
@@ -839,7 +844,7 @@ class PowerSeriesConstraints:
                 Q = R(HarmonicDifferential._midpoint(surface, *T))
 
                 for k in range(self._prec):
-                    gen = R(self.gen(S[0], k))
+                    gen = self.gen(S[0], k, R)
                     expression -= gen * multiplicity * P**(k + 1) / (k + 1)
                     expression += gen * multiplicity * Q**(k + 1) / (k + 1)
 
@@ -951,7 +956,7 @@ class PowerSeriesConstraints:
             if abs(Δ0) < 1e-6 and abs(Δ1) < 1e-6:
                 # Force power series to be identical if the Delaunay triangulation is ambiguous at this edge.
                 for k in range(self._prec):
-                    self.add_constraint(parent(self.gen(triangle0, k)) - parent(self.gen(triangle1, k)))
+                    self.add_constraint(self.gen(triangle0, k, parent) - self.gen(triangle1, k, parent))
 
                 continue
 
@@ -1090,7 +1095,7 @@ class PowerSeriesConstraints:
             sage: C = PowerSeriesConstraints(T, 1)
             sage: C.require_consistency(1)
             sage: R = C.symbolic_ring()
-            sage: f = 3*R(C.real(0, 0))^2 + 5*C.imag(0, 0)^2 + 7*C.real(1, 0)^2 + 11*C.imag(1, 0)^2
+            sage: f = 3*C.real(0, 0, R)^2 + 5*C.imag(0, 0, R)^2 + 7*C.real(1, 0, R)^2 + 11*C.imag(1, 0, R)^2
             sage: C.optimize(f)
             sage: C
             ...
@@ -1101,12 +1106,13 @@ class PowerSeriesConstraints:
 
         """
         # We cannot optimize if there is an unbound z in the expression.
-        f = self.symbolic_ring()(f)
+        R = self.symbolic_ring()
+        f = R(f)
 
         # We rewrite a_k as Re(a_k) + i Im(a_k).
         for triangle in range(self._surface.num_polygons()):
             for k in range(self._prec):
-                a_k = self.gen(triangle, k)
+                a_k = self.gen(triangle, k, R)
                 if f.degree(a_k):
                     raise NotImplementedError(f"cannot rewrite a_k as Re(a_k) + i Im(a_k) yet in expression {f}")
 
