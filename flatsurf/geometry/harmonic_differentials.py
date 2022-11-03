@@ -571,19 +571,7 @@ class PowerSeriesConstraints:
 
             assert False  # unreachable
 
-        terms = []
-
-        # We use Re(c*Re(a_k)) = Re(c) * Re(a_k) and Re(c*Im(a_k)) = Re(c) * Im(a_k)
-        # and Im(c*Re(a_k)) = Im(c) * Re(a_k) and Im(c*Im(a_k)) = Im(c) * Im(a_k), respectively.
-        for gen in x.variables():
-            if x.degree(gen) > 1:
-                raise NotImplementedError
-
-            terms.append(self.project(x[gen], part) * gen)
-
-        terms.append(self.project(x.constant_coefficient(), part))
-
-        return sum(terms)
+        return x.map_coefficients(lambda c: self.project(c, part))
 
     @staticmethod
     def _subs(polynomial, substitutions):
