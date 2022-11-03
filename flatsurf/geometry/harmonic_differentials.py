@@ -51,8 +51,8 @@ class HarmonicDifferential(Element):
 
             sage: Ω = HarmonicDifferentials(T)
             sage: η = Ω(f); η  # tol 1e-6
-            (0 - 1*I + (0 + 0*I)*z0 + (0 + 0*I)*z0^2 + (0 + 0*I)*z0^3 + (0 + 0*I)*z0^4 + (0 + 0*I)*z0^5 + (0 + 0*I)*z0^6 + (0 + 0*I)*z0^7 + (0 + 0*I)*z0^8 + (0 + 0*I)*z0^9 + O(z0^10),
-             0 - 1*I + (0 + 0*I)*z1 + (0 + 0*I)*z1^2 + (0 + 0*I)*z1^3 + (0 + 0*I)*z1^4 + (0 + 0*I)*z1^5 + (0 + 0*I)*z1^6 + (0 + 0*I)*z1^7 + (0 + 0*I)*z1^8 + (0 + 0*I)*z1^9 + O(z1^10))
+            (0 - 1.*I + (0 + 0*I)*z0 + (0 + 0*I)*z0^2 + (0 + 0*I)*z0^3 + (0 + 0*I)*z0^4 + (0 + 0*I)*z0^5 + (0 + 0*I)*z0^6 + (0 + 0*I)*z0^7 + (0 + 0*I)*z0^8 + (0 + 0*I)*z0^9 + O(z0^10),
+             0 - 1.*I + (0 + 0*I)*z1 + (0 + 0*I)*z1^2 + (0 + 0*I)*z1^3 + (0 + 0*I)*z1^4 + (0 + 0*I)*z1^5 + (0 + 0*I)*z1^6 + (0 + 0*I)*z1^7 + (0 + 0*I)*z1^8 + (0 + 0*I)*z1^9 + O(z1^10))
 
             sage: η + η  # tol 1e-6
             (0 - 2*I + (0 + 0*I)*z0 + (0 + 0*I)*z0^2 + (0 + 0*I)*z0^3 + (0 + 0*I)*z0^4 + (0 + 0*I)*z0^5 + (0 + 0*I)*z0^6 + (0 + 0*I)*z0^7 + (0 + 0*I)*z0^8 + (0 + 0*I)*z0^9 + O(z0^10),
@@ -431,10 +431,10 @@ class PowerSeriesConstraints:
 
             sage: C = PowerSeriesConstraints(T, prec=3)
             sage: C.symbolic_ring(1)
-            Multivariate Polynomial Ring in a1_0, a1_1, a1_2, Re_a1_0, Re_a1_1, Re_a1_2, Im_a1_0, Im_a1_1, Im_a1_2 over Complex Field with 53 bits of precision
+            Multivariate Polynomial Ring in Re_a1_0, Re_a1_1, Re_a1_2, Im_a1_0, Im_a1_1, Im_a1_2 over Complex Field with 53 bits of precision
 
             sage: C.symbolic_ring()
-            Multivariate Polynomial Ring in a0_0, a0_1, a0_2, Re_a0_0, Re_a0_1, Re_a0_2, Im_a0_0, Im_a0_1, Im_a0_2, a1_0, a1_1, a1_2, Re_a1_0, Re_a1_1, Re_a1_2, Im_a1_0, Im_a1_1, Im_a1_2 over Complex Field with 53 bits of precision
+            Multivariate Polynomial Ring in Re_a0_0, Re_a0_1, Re_a0_2, Im_a0_0, Im_a0_1, Im_a0_2, Re_a1_0, Re_a1_1, Re_a1_2, Im_a1_0, Im_a1_1, Im_a1_2 over Complex Field with 53 bits of precision
 
         """
         gens = []
@@ -779,9 +779,9 @@ class PowerSeriesConstraints:
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
             sage: C = PowerSeriesConstraints(T, prec=3)
             sage: C.develop(0)
-            a0_0 + a0_1*z + a0_2*z^2
-            sage: C.develop(1, 1)  # tol 1e-9
-            a1_0 + a1_1 + a1_2 + (a1_1 + 2*a1_2)*z + a1_2*z^2
+            Re_a0_0 + 1.00000000000000*I*Im_a0_0 + (Re_a0_1 + 1.00000000000000*I*Im_a0_1)*z + (Re_a0_2 + 1.00000000000000*I*Im_a0_2)*z^2
+            sage: C.develop(1, 1)
+            Re_a1_0 + Re_a1_1 + Re_a1_2 + 1.00000000000000*I*Im_a1_0 + 1.00000000000000*I*Im_a1_1 + 1.00000000000000*I*Im_a1_2 + (Re_a1_1 + 2.00000000000000*Re_a1_2 + 1.00000000000000*I*Im_a1_1 + 2.00000000000000*I*Im_a1_2)*z + (Re_a1_2 + 1.00000000000000*I*Im_a1_2)*z^2
 
         """
         # TODO: Check that Δ is within the radius of convergence.
@@ -810,9 +810,9 @@ class PowerSeriesConstraints:
 
             sage: a, b = H.gens()
             sage: C.integrate(a)  # tol 2e-3
-            (0.500 + 0.500*I)*a0_0 + (-0.250)*a0_1 + (0.0416 - 0.0416*I)*a0_2 + (0.00625 + 0.00625*I)*a0_4 + (0.500 + 0.500*I)*a1_0 + 0.250*a1_1 + (0.0416 - 0.0416*I)*a1_2 + (0.00625 + 0.00625*I)*a1_4
+            (0.500 + 0.500*I)*Re_a0_0 + (-0.250)*Re_a0_1 + (0.0416 - 0.0416*I)*Re_a0_2 + (0.00625 + 0.00625*I)*Re_a0_4 + (-0.500 + 0.500*I)*Im_a0_0 + (-0.250*I)*Im_a0_1 + (0.0416 + 0.0416*I)*Im_a0_2 + (-0.00625 + 0.00625*I)*Im_a0_4 + (0.500 + 0.500*I)*Re_a1_0 + 0.250*Re_a1_1 + (0.0416 - 0.0416*I)*Re_a1_2 + (0.00625 + 0.00625*I)*Re_a1_4 + (-0.500 + 0.500*I)*Im_a1_0 + 0.250*I*Im_a1_1 + (0.0416 + 0.0416*I)*Im_a1_2 + (-0.00625 + 0.00625*I)*Im_a1_4
             sage: C.integrate(b)  # tol 2e-3
-            (-0.500)*a0_0 + 0.125*a0_1 + (-0.0416)*a0_2 + 0.0156*a0_3 + (-0.00625)*a0_4 + (-0.500)*a1_0 + (-0.125)*a1_1 + (-0.0416)*a1_2 + (-0.0156)*a1_3 + (-0.00625)*a1_4
+            (-0.500)*Re_a0_0 + 0.125*Re_a0_1 + (-0.0416)*Re_a0_2 + 0.0156*Re_a0_3 + (-0.00625)*Re_a0_4 + (-0.500*I)*Im_a0_0 + 0.125*I*Im_a0_1 + (-0.0416*I)*Im_a0_2 + 0.0156*I*Im_a0_3 + (-0.00625*I)*Im_a0_4 + (-0.500)*Re_a1_0 + (-0.125)*Re_a1_1 + (-0.0416)*Re_a1_2 + (-0.0156)*Re_a1_3 + (-0.00625)*Re_a1_4 + (-0.500*I)*Im_a1_0 + (-0.125*I)*Im_a1_1 + (-0.0416*I)*Im_a1_2 + (-0.0156*I)*Im_a1_3 + (-0.00625*I)*Im_a1_4
 
         """
         surface = cycle.surface()
@@ -855,11 +855,11 @@ class PowerSeriesConstraints:
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
             sage: C = PowerSeriesConstraints(T, prec=3)
             sage: C.evaluate(0, 0)
-            a0_0
+            Re_a0_0 + 1.00000000000000*I*Im_a0_0
             sage: C.evaluate(1, 0)
-            a1_0
-            sage: C.evaluate(1, 2)  # tol 1e-9
-            a1_0 + 2*a1_1 + 4*a1_2
+            Re_a1_0 + 1.00000000000000*I*Im_a1_0
+            sage: C.evaluate(1, 2)
+            Re_a1_0 + 2.00000000000000*Re_a1_1 + 4.00000000000000*Re_a1_2 + 1.00000000000000*I*Im_a1_0 + 2.00000000000000*I*Im_a1_1 + 4.00000000000000*I*Im_a1_2
 
         """
         # TODO: Check that Δ is within the radius of convergence.
@@ -1060,12 +1060,12 @@ class PowerSeriesConstraints:
 
             sage: C.require_finite_area()
             sage: C  # tol 1e-9
-            [PowerSeriesConstraints.Constraint(real={0: [1.0], 1: [-1.0]}, imag={}, lagrange=[], value=0),
-             PowerSeriesConstraints.Constraint(real={}, imag={0: [1.0], 1: [-1.0]}, lagrange=[], value=0),
-             PowerSeriesConstraints.Constraint(real={0: [1.0]}, imag={}, lagrange=[-1.0], value=0),
-             PowerSeriesConstraints.Constraint(real={}, imag={0: [1.0]}, lagrange=[0, -1.0], value=0),
-             PowerSeriesConstraints.Constraint(real={1: [1.0]}, imag={}, lagrange=[1.0], value=0),
-             PowerSeriesConstraints.Constraint(real={}, imag={1: [1.0]}, lagrange=[0, 1.0], value=0)]
+            [PowerSeriesConstraints.Constraint(real={0: [1], 1: [-1]}, imag={}, lagrange=[], value=-0),
+             PowerSeriesConstraints.Constraint(real={}, imag={0: [1], 1: [-1]}, lagrange=[], value=-0),
+             PowerSeriesConstraints.Constraint(real={0: [0.500]}, imag={}, lagrange=[-1], value=-0),
+             PowerSeriesConstraints.Constraint(real={}, imag={0: [0.500]}, lagrange=[0, -1], value=-0),
+             PowerSeriesConstraints.Constraint(real={1: [0.500]}, imag={}, lagrange=[1], value=-0),
+             PowerSeriesConstraints.Constraint(real={}, imag={1: [0.500]}, lagrange=[0, 1], value=-0)]
 
         """
         self.optimize(self._area())
