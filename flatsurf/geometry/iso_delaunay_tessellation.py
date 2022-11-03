@@ -601,11 +601,15 @@ class IsoDelaunayTessellation(Parent):
                 # TODO: Merge this with the code in _cross maybe.
                 for source_tessellation_face, target_tessellation_face, tessellation_edges in self._dual_graph.edges(tessellation_face, labels=True):
 
-                    (source_tessellation_edge, target_tessellation_edge) = tessellation_edges
-                    if previous_tessellation_edge == source_tessellation_edge:
-                        cross_tessellation_edge = target_tessellation_edge
-                    elif previous_tessellation_edge == target_tessellation_edge:
-                        cross_tessellation_edge = source_tessellation_edge
+                    if previous_tessellation_edge in tessellation_edges:
+                        if len(tessellation_edges) == 1:
+                            cross_tessellation_edge = previous_tessellation_edge
+                        else:
+                            tessellation_edges = list(tessellation_edges)
+                            if previous_tessellation_edge == tessellation_edges[0]:
+                                cross_tessellation_edge = tessellation_edges[1]
+                            else:
+                                cross_tessellation_edge = tessellation_edges[0]           
                     else:
                         continue
 
@@ -626,7 +630,11 @@ class IsoDelaunayTessellation(Parent):
 
     def topological_euler_characteristic(self):
         # return V - E + F of the fundamental domain
-        raise NotImplementedError
+        v = len(self.vertices())
+        e = len(self._dual_graph.edges())
+        f = len(self._dual_graph.vertices())
+
+        return v - e + f - len(self.cusps())
 
     def orbifold_euler_characteristic(self):
         r"""
@@ -648,9 +656,10 @@ class IsoDelaunayTessellation(Parent):
 
     def cusps(self):
         r"""
-        Return the number of punctures of the quotient H^2/Gamma
+        Return the punctures of the quotient H^2/Gamma
         """
-        pass
+        return [vertex_equivalence_class for vertex_equivalence_class in self.vertices()
+                       if vertex_equivalence_class[0][1].start().is_ideal()]
 
     def orbifold_points(self, order=None):
         r"""
