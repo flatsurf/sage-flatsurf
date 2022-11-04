@@ -848,7 +848,7 @@ class PowerSeriesConstraints:
 
         expression = R.zero()
 
-        from sage.misc import cachefunc
+        @cached_method
         def midpoint(edge):
             return R(HarmonicDifferential._midpoint(surface, *edge))
 
