@@ -295,7 +295,13 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
 
         raise NotImplementedError()
 
-    def _element_from_cohomology(self, cocycle, /, prec=10, consistency=3, check=True):
+    def _element_from_cohomology(self, cocycle, /, prec=10, algorithm=["midpoint_derivatives", "area_upper_bound"], check=True):
+        # TODO: In practice we could speed things up a lot with some smarter
+        # caching. A lot of the quantities used in the computations only depend
+        # on the surface & precision. When computing things for many cocycles
+        # we do not need to recompute them. (But currently, we probably do
+        # because they live in the constraints instance.)
+
         # We develop a consistent system of Laurent series at each vertex of the Voronoi diagram
         # to describe a differential.
 
@@ -305,41 +311,62 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
         # Away from the vertices of the triangulation, ω has no zeros, so f has no poles there and is
         # thus given by a power series.
 
-        # At each vertex of the Voronoi diagram, write f=Σ a_k x^k + O(x^prec). Our task is now to determine
+        # At each vertex of the Voronoi diagram, write f=Σ a_k z^k + O(z^prec). Our task is now to determine
         # the a_k.
 
         constraints = PowerSeriesConstraints(self.surface(), prec=prec)
+
+        # We use a variety of constraints. Which ones to use exactly is
+        # determined by the "algorithm" parameter. If algorithm is a dict, it
+        # can be used to configure aspects of the constraints.
+        def get_parameter(alg, default):
+            assert alg in algorithm
+            if isinstance(algorithm, dict):
+                return algorithm[alg]
+            return default
+
+        # (0) If two power series are developed around essentially the same
+        # point (because the Delaunay triangulation is ambiguous) we force them
+        # to coincide.
+        constraints.require_equality()
 
         # (1) The radius of convergence of the power series is the distance from the vertex of the Voronoi
         # cell to the closest vertex of the triangulation (since we use a Delaunay triangulation, all vertices
         # are at the same distance in fact.) So the radii of convergence of two neigbhouring cells overlap
         # and the power series must coincide there. Note that this constraint is unrelated to the cohomology
         # class Φ.
-        # constraints.require_consistency(consistency)
+        if "midpoint_derivatives" in algorithm:
+            derivatives = get_parameter("midpoint_derivatives", prec//3)
+            constraints.require_midpoint_derivatives(derivatives)
 
-        # TODO: What should the rank be after this step?
-        # from numpy.linalg import matrix_rank
-        # A = constraints.matrix()[0]
-        # print(len(A), len(A[0]), matrix_rank(A))
+        # (1') TODO: Describe L2 optimization.
+        if "L2" in algorithm:
+            weight = get_parameter("L2", 1)
+            constraints.optimize(weight * constraints._L2_consistency())
 
         # (2) We have that for any cycle γ, Re(∫fω) = Re(∫η) = Φ(γ). We can turn this into constraints
         # on the coefficients as we integrate numerically following the path γ as it intersects the radii of
         # convergence.
         constraints.require_cohomology(cocycle)
 
-        # (3) Since the area 1 /(2iπ) ∫ η \wedge \overline{η} must be finite [TODO: REFERENCE?] we optimize for
-        # this quantity to be minimal.
-        # TODO: We are using a mix now. constraints.require_finite_area()
+        # (3) Since the area ∫ η \wedge \overline{η} must be finite [TODO:
+        # REFERENCE?] we optimize for a proxy of this quantity to be minimal.
+        if "area_upper_bound" in algorithm:
+            weight = get_parameter("area_upper_bound", 1)
+            constraints.optimize(weight * constraints._area_upper_bound())
 
-        # TODO: How should we weigh them?
-        constraints.optimize(constraints._area_upper_bound() + 32 * constraints._L2_consistency())
+        # (3') We can also optimize for the exact quantity to be minimal but
+        # this is much slower.
+        if "area" in algorithm:
+            weight = get_parameter("area", 1)
+            constraints.optimize(weight * self._area())
 
         η = self.element_class(self, constraints.solve())
 
-        # Check whether this is actually a global differential:
-        # (1) Check that the series are actually consistent where the Voronoi cells overlap.
-
+        # TODO: Factor this out so we can use it in reporting.
         if check:
+            # Check whether this is actually a global differential:
+            # (1) Check that the series are actually consistent where the Voronoi cells overlap.
             def check(actual, expected, message, abs_error_bound = 1e-9, rel_error_bound = 1e-6):
                 abs_error = abs(expected - actual)
                 if abs_error > abs_error_bound:
@@ -348,7 +375,7 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
 
             for (triangle, edge) in self._surface.edge_iterator():
                 triangle_, edge_ = self._surface.opposite_edge(triangle, edge)
-                for derivative in range(consistency):
+                for derivative in range(prec//3):
                     expected = η.evaluate(triangle, HarmonicDifferential._midpoint(self._surface, triangle, edge), derivative)
                     other = η.evaluate(triangle_, HarmonicDifferential._midpoint(self._surface, triangle_, edge_), derivative)
                     check(other, expected, f"power series defining harmonic differential are not consistent: {derivative}th derivate does not match between {(triangle, edge)} and {(triangle_, edge_)}")
@@ -410,6 +437,7 @@ class PowerSeriesConstraints:
         self._surface = surface
         self._prec = prec
         self._constraints = []
+        self._cost = self.symbolic_ring().zero()
 
     def __repr__(self):
         return repr(self._constraints)
@@ -873,7 +901,25 @@ class PowerSeriesConstraints:
         from sage.all import factorial
         return self.develop(triangle=triangle, Δ=Δ)[derivative] * factorial(derivative)
 
-    def require_consistency(self, derivatives):
+    def require_equality(self):
+        for triangle0, edge0 in self._surface.edge_iterator():
+            triangle1, edge1 = self._surface.opposite_edge(triangle0, edge0)
+
+            if triangle1 < triangle0:
+                # Add each constraint only once.
+                continue
+
+            parent = self.symbolic_ring(triangle0, triangle1)
+
+            Δ0 = HarmonicDifferential._midpoint(self._surface, triangle0, edge0)
+            Δ1 = HarmonicDifferential._midpoint(self._surface, triangle1, edge1)
+
+            if abs(Δ0) < 1e-6 and abs(Δ1) < 1e-6:
+                # Force power series to be identical if the Delaunay triangulation is ambiguous at this edge.
+                for k in range(self._prec):
+                    self.add_constraint(self.gen(triangle0, k, parent) - self.gen(triangle1, k, parent))
+
+    def require_midpoint_derivatives(self, derivatives):
         r"""
         The radius of convergence of the power series is the distance from the
         vertex of the Voronoi cell to the closest singularity of the
@@ -896,7 +942,7 @@ class PowerSeriesConstraints:
 
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
             sage: C = PowerSeriesConstraints(T, 1)
-            sage: C.require_consistency(1)
+            sage: C.require_midpoint_derivatives(1)
             sage: C  # tol 1e-9
             [PowerSeriesConstraints.Constraint(real={0: [1], 1: [-1]}, imag={}, lagrange=[], value=0),
              PowerSeriesConstraints.Constraint(real={}, imag={0: [1], 1: [-1]}, lagrange=[], value=0)]
@@ -908,13 +954,9 @@ class PowerSeriesConstraints:
         recorded below.)::
 
             sage: C = PowerSeriesConstraints(T, 2)
-            sage: C.require_consistency(1)
+            sage: C.require_midpoint_derivatives(1)
             sage: C  # tol 1e-9
-            [PowerSeriesConstraints.Constraint(real={0: [1.0], 1: [-1.0]}, imag={}, lagrange=[], value=-0.0),
-             PowerSeriesConstraints.Constraint(real={}, imag={0: [1.0], 1: [-1.0]}, lagrange=[], value=-0.0),
-             PowerSeriesConstraints.Constraint(real={0: [0.0, 1.0], 1: [0.0, -1.0]}, imag={}, lagrange=[], value=-0.0),
-             PowerSeriesConstraints.Constraint(real={}, imag={0: [0.0, 1.0], 1: [0.0, -1.0]}, lagrange=[], value=-0.0),
-             PowerSeriesConstraints.Constraint(real={0: [1.0], 1: [-1.0]}, imag={0: [0.0, -0.50], 1: [0.0, -0.50]}, lagrange=[], value=-0.0),
+            [PowerSeriesConstraints.Constraint(real={0: [1.0], 1: [-1.0]}, imag={0: [0.0, -0.50], 1: [0.0, -0.50]}, lagrange=[], value=-0.0),
              PowerSeriesConstraints.Constraint(real={0: [0.0, 0.50], 1: [0.0, 0.50]}, imag={0: [1.0], 1: [-1.0]}, lagrange=[], value=-0.0),
              PowerSeriesConstraints.Constraint(real={0: [1.0, -0.50], 1: [-1.0, -0.50]}, imag={}, lagrange=[], value=-0.0),
              PowerSeriesConstraints.Constraint(real={}, imag={0: [1.0, -0.50], 1: [-1.0, -0.50]}, lagrange=[], value=-0.0)]
@@ -922,16 +964,14 @@ class PowerSeriesConstraints:
         ::
 
             sage: C = PowerSeriesConstraints(T, 2)
-            sage: C.require_consistency(2)
+            sage: C.require_midpoint_derivatives(2)
             sage: C  # tol 1e-9
-            [PowerSeriesConstraints.Constraint(real={0: [1.0], 1: [-1.0]}, imag={}, lagrange=[], value=0),
-             PowerSeriesConstraints.Constraint(real={}, imag={0: [1.0], 1: [-1.0]}, lagrange=[], value=0),
-             PowerSeriesConstraints.Constraint(real={0: [0, 1.0], 1: [0, -1.0]}, imag={}, lagrange=[], value=0),
-             PowerSeriesConstraints.Constraint(real={}, imag={0: [0, 1.0], 1: [0, -1.0]}, lagrange=[], value=0),
-             PowerSeriesConstraints.Constraint(real={0: [1.0], 1: [-1.0]}, imag={0: [-0.0, -0.5], 1: [0.0, -0.5]}, lagrange=[], value=0),
-             PowerSeriesConstraints.Constraint(real={0: [0.0, 0.5], 1: [-0.0, 0.5]}, imag={0: [1.0], 1: [-1.0]}, lagrange=[], value=0),
-             PowerSeriesConstraints.Constraint(real={0: [1.0, -0.5], 1: [-1.0, -0.5]}, imag={}, lagrange=[], value=0),
-             PowerSeriesConstraints.Constraint(real={}, imag={0: [1.0, -0.5], 1: [-1.0, -0.5]}, lagrange=[], value=0)]
+            [PowerSeriesConstraints.Constraint(real={0: [1.0], 1: [-1.0]}, imag={0: [0, -0.50], 1: [0, -0.50]}, lagrange=[], value=-0.0),
+            PowerSeriesConstraints.Constraint(real={0: [0, 0.50], 1: [0, 0.50]}, imag={0: [1.0], 1: [-1.0]}, lagrange=[], value=-0.0),
+            PowerSeriesConstraints.Constraint(real={0: [0, 1.0], 1: [0, -1.0]}, imag={}, lagrange=[], value=-0.0),
+            PowerSeriesConstraints.Constraint(real={}, imag={0: [0, 1.0], 1: [0, -1.0]}, lagrange=[], value=-0.0),
+            PowerSeriesConstraints.Constraint(real={0: [1.0, -0.50], 1: [-1.0, -0.50]}, imag={}, lagrange=[], value=-0.0),
+            PowerSeriesConstraints.Constraint(real={}, imag={0: [1.0, -0.50], 1: [-1.0, -0.50]}, lagrange=[], value=-0.0)]
 
         """
         if derivatives > self._prec:
@@ -949,11 +989,8 @@ class PowerSeriesConstraints:
             Δ0 = HarmonicDifferential._midpoint(self._surface, triangle0, edge0)
             Δ1 = HarmonicDifferential._midpoint(self._surface, triangle1, edge1)
 
+            # TODO: Are these good constants?
             if abs(Δ0) < 1e-6 and abs(Δ1) < 1e-6:
-                # Force power series to be identical if the Delaunay triangulation is ambiguous at this edge.
-                for k in range(self._prec):
-                    self.add_constraint(self.gen(triangle0, k, parent) - self.gen(triangle1, k, parent))
-
                 continue
 
             # Require that the 0th, ..., derivatives-1th derivatives are the same at the midpoint of the edge.
@@ -991,7 +1028,8 @@ class PowerSeriesConstraints:
 
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
             sage: consistency = PowerSeriesConstraints(T, η.precision())._L2_consistency()
-            sage: η._evaluate(consistency)
+            sage: η._evaluate(consistency)  # tol 1e-9
+            0
 
         """
         R = self.symbolic_ring()
@@ -1010,12 +1048,8 @@ class PowerSeriesConstraints:
             Δ0 = HarmonicDifferential._midpoint(self._surface, triangle0, edge0)
             Δ1 = HarmonicDifferential._midpoint(self._surface, triangle1, edge1)
 
-            if abs(Δ0) < 1e-6 and abs(Δ1) < 1e-6:
-                # Force power series to be identical if the Delaunay triangulation is ambiguous at this edge.
-                for k in range(self._prec):
-                    self.add_constraint(self.gen(triangle0, k, R) - self.gen(triangle1, k, R))
-
-                continue
+            # TODO: Should we skip such steps here?
+            # if abs(Δ0) < 1e-6 and abs(Δ1) < 1e-6:
 
             # Develop both power series around that midpoint, i.e., Taylor expand them.
             T0 = self.develop(triangle0, Δ0, base_ring=R)
@@ -1026,10 +1060,11 @@ class PowerSeriesConstraints:
             # length of the edge we are on.
             # TODO: What is the correct exponent here actually?
             b = (T0 - T1).list()
-            r = abs(self._surface.polygon(triangle0).edges()[edge0]) / 2
+            edge = self._surface.polygon(triangle0).edges()[edge0]
+            r2 = (edge[0]**2 + edge[1]**2) / 4
 
             for n, b_n in enumerate(b):
-                cost += (self.real_part(b_n)**2 + self.imaginary_part(b_n)**2) * r**(2*n + 2)
+                cost += (self.real_part(b_n)**2 + self.imaginary_part(b_n)**2) * r2**(n + 1)
 
         return cost
 
@@ -1214,35 +1249,6 @@ class PowerSeriesConstraints:
 
         return area/2
 
-    def require_finite_area(self):
-        r"""
-        Since the area 1 /(2iπ) ∫ η \wedge \overline{η} must be finite [TODO:
-        REFERENCE?] we can optimize for this quantity to be minimal.
-
-        EXAMPLES::
-
-            sage: from flatsurf import translation_surfaces, SimplicialCohomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
-            sage: T.set_immutable()
-
-        ::
-
-            sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
-            sage: C = PowerSeriesConstraints(T, 1)
-            sage: C.require_consistency(1)
-
-            sage: C.require_finite_area()
-            sage: C  # tol 1e-9
-            [PowerSeriesConstraints.Constraint(real={0: [1], 1: [-1]}, imag={}, lagrange=[], value=-0),
-             PowerSeriesConstraints.Constraint(real={}, imag={0: [1], 1: [-1]}, lagrange=[], value=-0),
-             PowerSeriesConstraints.Constraint(real={0: [0.500]}, imag={}, lagrange=[-1], value=-0),
-             PowerSeriesConstraints.Constraint(real={}, imag={0: [0.500]}, lagrange=[0, -1], value=-0),
-             PowerSeriesConstraints.Constraint(real={1: [0.500]}, imag={}, lagrange=[1], value=-0),
-             PowerSeriesConstraints.Constraint(real={}, imag={1: [0.500]}, lagrange=[0, 1], value=-0)]
-
-        """
-        self.optimize(self._area_upper_bound())
-
     def optimize(self, f):
         r"""
         Add constraints that optimize the symbolic expression ``f``.
@@ -1257,10 +1263,11 @@ class PowerSeriesConstraints:
 
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
             sage: C = PowerSeriesConstraints(T, 1)
-            sage: C.require_consistency(1)
+            sage: C.require_midpoint_derivatives(1)
             sage: R = C.symbolic_ring()
             sage: f = 3*C.real(0, 0, R)^2 + 5*C.imag(0, 0, R)^2 + 7*C.real(1, 0, R)^2 + 11*C.imag(1, 0, R)^2
             sage: C.optimize(f)
+            sage: C._optimize_cost()
             sage: C
             ...
             PowerSeriesConstraints.Constraint(real={0: [6.00000000000000]}, imag={}, lagrange=[-1.00000000000000], value=-0.000000000000000),
@@ -1269,10 +1276,9 @@ class PowerSeriesConstraints:
             PowerSeriesConstraints.Constraint(real={}, imag={1: [22.0000000000000]}, lagrange=[0, 1.00000000000000], value=-0.000000000000000)]
 
         """
-        # We cannot optimize if there is an unbound z in the expression.
-        R = self.symbolic_ring()
-        f = R(f)
+        self._cost += self.symbolic_ring()(f)
 
+    def _optimize_cost(self):
         # We use Lagrange multipliers to rewrite this expression.
         # If we let
         #   L(Re(a), Im(a), λ) = f(Re(a), Im(a)) - Σ λ_i g_i(Re(a), Im(a))
@@ -1290,15 +1296,18 @@ class PowerSeriesConstraints:
         for triangle in range(self._surface.num_polygons()):
             for k in range(self._prec):
                 for gen in [self.real(triangle, k), self.imag(triangle, k)]:
-                    if f.degree(gen) <= 0:
+                    if self._cost.degree(gen) <= 0:
                         continue
 
-                    gen = f.parent()(gen)
+                    gen = self._cost.parent()(gen)
 
-                    self.add_constraint(f.derivative(gen), lagrange=[-g[i].get(gen) for i in range(lagranges)], value=ZZ(0))
+                    self.add_constraint(self._cost.derivative(gen), lagrange=[-g[i].get(gen) for i in range(lagranges)], value=ZZ(0))
 
         # We form the partial derivatives with respect to the λ_i. This yields
         # the condition -g_i=0 which is already recorded in the linear system.
+
+        # Prevent us from calling this method again.
+        self._cost = None
 
     def require_cohomology(self, cocycle):
         r""""
@@ -1379,6 +1388,8 @@ class PowerSeriesConstraints:
             {0: 1.00000000000000 + O(z0), 1: 1.00000000000000 + O(z1)}
 
         """
+        self._optimize_cost()
+
         A, b = self.matrix()
 
         import scipy.linalg
