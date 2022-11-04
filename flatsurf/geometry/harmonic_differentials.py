@@ -359,7 +359,7 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
         # this is much slower.
         if "area" in algorithm:
             weight = get_parameter("area", 1)
-            constraints.optimize(weight * self._area())
+            constraints.optimize(weight * constraints._area())
 
         η = self.element_class(self, constraints.solve())
 
