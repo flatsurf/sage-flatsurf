@@ -317,7 +317,7 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
         # are at the same distance in fact.) So the radii of convergence of two neigbhouring cells overlap
         # and the power series must coincide there. Note that this constraint is unrelated to the cohomology
         # class Φ.
-        constraints.require_consistency(consistency)
+        # constraints.require_consistency(consistency)
 
         # TODO: What should the rank be after this step?
         # from numpy.linalg import matrix_rank
@@ -331,7 +331,10 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
 
         # (3) Since the area 1 /(2iπ) ∫ η \wedge \overline{η} must be finite [TODO: REFERENCE?] we optimize for
         # this quantity to be minimal.
-        constraints.require_finite_area()
+        # TODO: We are using a mix now. constraints.require_finite_area()
+
+        # TODO: How should we weigh them?
+        constraints.optimize(constraints._area_upper_bound() + 32 * constraints._L2_consistency())
 
         η = self.element_class(self, constraints.solve())
 
@@ -755,13 +758,16 @@ class PowerSeriesConstraints:
             self._constraints.append(constraint)
 
     @cached_method
-    def _formal_power_series(self, triangle):
+    def _formal_power_series(self, triangle, base_ring=None):
+        if base_ring is None:
+            base_ring = self.symbolic_ring(triangle)
+
         from sage.all import PowerSeriesRing
-        R = PowerSeriesRing(self.symbolic_ring(triangle), 'z')
+        R = PowerSeriesRing(base_ring, 'z')
 
-        return R([self.gen(triangle, n) for n in range(self._prec)])
+        return R([self.gen(triangle, n, ring=base_ring) for n in range(self._prec)])
 
-    def develop(self, triangle, Δ=0):
+    def develop(self, triangle, Δ=0, base_ring=None):
         r"""
         Return the power series obtained by developing at z + Δ.
 
@@ -780,7 +786,7 @@ class PowerSeriesConstraints:
 
         """
         # TODO: Check that Δ is within the radius of convergence.
-        f = self._formal_power_series(triangle)
+        f = self._formal_power_series(triangle, base_ring=base_ring)
         return f(f.parent().gen() + Δ)
 
     def integrate(self, cycle):
@@ -885,8 +891,10 @@ class PowerSeriesConstraints:
 
         This example is a bit artificial. Both power series are developed
         around the same point since a common edge is ambiguous in the Delaunay
-        triangulation. Therefore, it would be better to just require all
-        coefficients to be identical in the first place::
+        triangulation. Therefore, we require all coefficients to be identical.
+        However, we also require the power series to be compatible with itself
+        away from the midpoint which cannot be seen in this example because the
+        precision is too low::
 
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
             sage: C = PowerSeriesConstraints(T, 1)
@@ -955,18 +963,43 @@ class PowerSeriesConstraints:
                 self.add_constraint(
                     parent(self.evaluate(triangle0, Δ0, derivative)) - parent(self.evaluate(triangle1, Δ1, derivative)))
 
-    def require_L2_consistency(self):
+    def _L2_consistency(self):
         r"""
         For each pair of adjacent triangles meeting at and edge `e`, let `v` be
         the midpoint of `e`. We develop the power series coming from both
         triangles around that midpoint and check them for agreement. Namely, we
         integrate the square of their difference on the circle of maximal
-        radius around `v`. (If the power series agree, that integral should be
-        zero.)
+        radius around `v` as a line integral. (If the power series agree, that
+        integral should be zero.)
 
-        TODO
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, SimplicialCohomology, HarmonicDifferentials
+            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T.set_immutable()
+
+        This example is a bit artificial. Both power series are developed
+        around the same point since a common edge is ambiguous in the Delaunay
+        triangulation. Therefore, we require all coefficients to be identical.
+        However, we also require the power series to be compatible with itself
+        away from the midpoint::
+
+            sage: H = SimplicialCohomology(T)
+            sage: a, b = H.homology().gens()
+            sage: f = H({a: 1})
+
+            sage: Ω = HarmonicDifferentials(T)
+            sage: η = Ω(f, prec=6)
+
+            sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
+            sage: consistency = PowerSeriesConstraints(T, η.precision())._L2_consistency()
+            sage: η._evaluate(consistency)
 
         """
+        R = self.symbolic_ring()
+
+        cost = R.zero()
+
         for triangle0, edge0 in self._surface.edge_iterator():
             triangle1, edge1 = self._surface.opposite_edge(triangle0, edge0)
 
@@ -979,18 +1012,28 @@ class PowerSeriesConstraints:
             Δ0 = HarmonicDifferential._midpoint(self._surface, triangle0, edge0)
             Δ1 = HarmonicDifferential._midpoint(self._surface, triangle1, edge1)
 
+            if abs(Δ0) < 1e-6 and abs(Δ1) < 1e-6:
+                # Force power series to be identical if the Delaunay triangulation is ambiguous at this edge.
+                for k in range(self._prec):
+                    self.add_constraint(self.gen(triangle0, k, R) - self.gen(triangle1, k, R))
+
+                continue
+
             # Develop both power series around that midpoint, i.e., Taylor expand them.
-            T0 = HarmonicDifferential._taylor_symbolic(Δ0, self._prec)
-            T1 = HarmonicDifferential._taylor_symbolic(Δ0, self._prec)
+            T0 = self.develop(triangle0, Δ0, base_ring=R)
+            T1 = self.develop(triangle1, Δ1, base_ring=R)
 
             # Write b_n for the difference of the n-th coefficient of both power series.
-            # b = [...]
-            # We want to minimize the sum of b_n^2 R^n where R is half the
+            # We want to minimize the sum of |b_n|^2 r^2n where r is half the
             # length of the edge we are on.
-            # Taking a square root of R^n, we merge R^n with b_n^2.
-            raise NotImplementedError
-            # To optimize this error, write it as Lagrange multipliers.
-            raise NotImplementedError # TODO: We need some generic infrastracture to merge quadratic conditions such as this and require_finite_area by weighing both.
+            # TODO: What is the correct exponent here actually?
+            b = (T0 - T1).list()
+            r = abs(self._surface.polygon(triangle0).edges()[edge0]) / 2
+
+            for n, b_n in enumerate(b):
+                cost += (self.real_part(b_n)**2 + self.imaginary_part(b_n)**2) * r**(2*n + 2)
+
+        return cost
 
     @cached_method
     def _elementary_line_integrals(self, triangle, n, m):
