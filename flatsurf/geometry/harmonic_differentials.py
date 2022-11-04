@@ -1345,27 +1345,26 @@ class PowerSeriesConstraints:
             self.add_constraint(self.real_part(self.integrate(cycle)), self.real_part(cocycle(cycle)))
 
     def matrix(self):
-        A = []
-        b = []
-
         lagranges = max(len(constraint.lagrange) for constraint in self._constraints)
+        triangles = list(self._surface.label_iterator())
 
-        for constraint in self._constraints:
-            A.append([])
-            b.append(constraint.value)
-            for triangle in self._surface.label_iterator():
-                real = constraint.real.get(triangle, [])
-                real.extend([ZZ(0)] * (self._prec - len(real)))
-                A[-1].extend(real)
+        prec = int(self._prec)
 
-                imag = constraint.imag.get(triangle, [])
-                imag.extend([ZZ(0)] * (self._prec - len(imag)))
-                A[-1].extend(imag)
+        import numpy
 
-            lagrange = constraint.lagrange
-            lagrange.extend([ZZ(0)] * (lagranges - len(lagrange)))
+        A = numpy.zeros((len(self._constraints), 2*len(triangles)*prec + lagranges))
+        b = numpy.zeros((len(self._constraints),))
 
-            A[-1].extend(lagrange)
+        for row, constraint in enumerate(self._constraints):
+            b[row] = constraint.value
+            for block, triangle in enumerate(triangles):
+                for column, value in enumerate(constraint.real.get(triangle, [])):
+                    A[row, block * (2*prec) + column] = value
+                for column, value in enumerate(constraint.imag.get(triangle, [])):
+                    A[row, block * (2*prec) + prec + column] = value
+
+            for column, value in enumerate(constraint.lagrange):
+                A[row, 2*len(triangles)*prec + column] = value
 
         return A, b
 
@@ -1393,8 +1392,7 @@ class PowerSeriesConstraints:
         A, b = self.matrix()
 
         import scipy.linalg
-        import numpy
-        solution, residues, _, _ = scipy.linalg.lstsq(numpy.matrix(A), numpy.array(b))
+        solution, residues, _, _ = scipy.linalg.lstsq(A, b, check_finite=False, overwrite_a=True, overwrite_b=True)
 
         lagranges = max(len(constraint.lagrange) for constraint in self._constraints)
 
