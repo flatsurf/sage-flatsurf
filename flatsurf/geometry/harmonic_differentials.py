@@ -59,8 +59,6 @@ class HarmonicDifferential(Element):
              0 - 2*I + (0 + 0*I)*z1 + (0 + 0*I)*z1^2 + (0 + 0*I)*z1^3 + (0 + 0*I)*z1^4 + (0 + 0*I)*z1^5 + (0 + 0*I)*z1^6 + (0 + 0*I)*z1^7 + (0 + 0*I)*z1^8 + (0 + 0*I)*z1^9 + O(z1^10))
 
         """
-        # TODO: Some of the imaginary parts of the above output are not correct.
-
         return self.parent()({
             triangle: self._series[triangle] + other._series[triangle]
             for triangle in self._series
