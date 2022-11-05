@@ -507,9 +507,11 @@ class PowerSeriesConstraints:
         """
         if k >= self._prec:
             raise ValueError("symbolic ring has no k-th generator")
+
         if ring is None:
             return self.symbolic_ring(triangle).gen(k)
-        return ring(f"Re_a{triangle}_{k}")
+
+        return ring.gen(ring.variable_names().index(f"Re_a{triangle}_{k}"))
 
     @cached_method
     def imag(self, triangle, k, ring=None):
@@ -535,9 +537,11 @@ class PowerSeriesConstraints:
         """
         if k >= self._prec:
             raise ValueError("symbolic ring has no k-th generator")
+
         if ring is None:
             return self.symbolic_ring(triangle).gen(self._prec + k)
-        return ring(f"Im_a{triangle}_{k}")
+
+        return ring.gen(ring.variable_names().index(f"Im_a{triangle}_{k}"))
 
     @cached_method
     def _describe_generator(self, gen):
