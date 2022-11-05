@@ -761,8 +761,11 @@ class PowerSeriesConstraints:
 
         constraint = PowerSeriesConstraints.Constraint(real=real, imag=imag, value=value, lagrange=lagrange)
 
-        if constraint not in self._constraints:
-            self._constraints.append(constraint)
+        # We could deduplicate constraints here. But it turned out to be more
+        # expensive to deduplicate then the price we pay for adding constraints
+        # twice. (However, duplicate constraints also increase the weight of
+        # that constraint for the lstsq solver which is probably beneficial.)
+        self._constraints.append(constraint)
 
     @cached_method
     def _formal_power_series(self, triangle, base_ring=None):
