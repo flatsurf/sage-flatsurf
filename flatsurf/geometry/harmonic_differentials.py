@@ -584,17 +584,6 @@ class PowerSeriesConstraints:
                 x = x()
             return x
 
-        # TODO: Is there a more generic ring than RR?
-        from sage.all import RR
-        if x in RR:
-            if part == "real":
-                # If this is just a constant, return it.
-                return RR(x)
-            elif part == "image":
-                return RR.zero()
-
-            assert False  # unreachable
-
         return x.map_coefficients(lambda c: self.project(c, part))
 
     @staticmethod
