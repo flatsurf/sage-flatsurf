@@ -799,7 +799,7 @@ class PowerSeriesConstraints:
     def integrate(self, cycle):
         r"""
         Return the linear combination of the power series coefficients that
-        decsribe the integral of a differential along the homology class
+        describe the integral of a differential along the homology class
         ``cycle``.
 
         EXAMPLES::
@@ -842,10 +842,14 @@ class PowerSeriesConstraints:
                 P = self._geometry.midpoint(*S)
                 Q = self._geometry.midpoint(*T)
 
+                P_power = P
+                Q_power = Q
+
                 for k in range(self._prec):
-                    gen = self.gen(S[0], k, R)
-                    expression -= gen * multiplicity * P**(k + 1) / (k + 1)
-                    expression += gen * multiplicity * Q**(k + 1) / (k + 1)
+                    expression += multiplicity * self.gen(S[0], k, R) / (k + 1) * (Q_power - P_power)
+
+                    P_power *= P
+                    Q_power *= Q
 
         return expression
 
