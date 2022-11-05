@@ -407,32 +407,6 @@ class PowerSeriesConstraints:
         lagrange: list
         value: complex
 
-        def get(self, gen):
-            r"""
-            Return the coefficients that are multiplied with the coefficient
-            ``gen`` of the power series.
-            """
-            gen = str(gen)
-
-            # TODO: This use of magic strings is not great.
-            if gen.startswith("Re_a"):
-                coefficients = self.real
-            elif gen.startswith("Im_a"):
-                coefficients = self.imag
-            else:
-                raise NotImplementedError
-
-            gen = gen[4:]
-            triangle, k = gen.split('_')
-            triangle = int(triangle)
-            k = int(k)
-
-            coefficients = coefficients.get(triangle, [])[k:k+1]
-            if not coefficients:
-                from sage.all import ZZ
-                return ZZ(0)
-            return coefficients[0]
-
     def __init__(self, surface, prec):
         self._surface = surface
         self._prec = prec
@@ -1295,13 +1269,19 @@ class PowerSeriesConstraints:
         # and Im(a_k).
         for triangle in range(self._surface.num_polygons()):
             for k in range(self._prec):
-                for gen in [self.real(triangle, k), self.imag(triangle, k)]:
+                for part in ["real", "imag"]:
+                    gen = getattr(self, part)(triangle, k)
+
                     if self._cost.degree(gen) <= 0:
                         continue
 
                     gen = self._cost.parent()(gen)
 
-                    self.add_constraint(self._cost.derivative(gen), lagrange=[-g[i].get(gen) for i in range(lagranges)], value=ZZ(0))
+                    from more_itertools import nth
+
+                    lagrange = [nth(getattr(g[i], part).get(triangle, []), k, 0) for i in range(lagranges)]
+
+                    self.add_constraint(self._cost.derivative(gen), lagrange=lagrange)
 
         # We form the partial derivatives with respect to the λ_i. This yields
         # the condition -g_i=0 which is already recorded in the linear system.
