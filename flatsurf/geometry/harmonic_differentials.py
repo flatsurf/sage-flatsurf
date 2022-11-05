@@ -64,39 +64,8 @@ class HarmonicDifferential(Element):
             for triangle in self._series
         })
 
-    @staticmethod
-    def _midpoint(surface, triangle, edge):
-        r"""
-        Return the (complex) vector from the center of the circumcircle to
-        the center of the edge.
-
-        EXAMPLES::
-
-            sage: from flatsurf import translation_surfaces
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
-            sage: T.set_immutable()
-
-            sage: from flatsurf.geometry.harmonic_differentials import HarmonicDifferential
-            sage: HarmonicDifferential._midpoint(T, 0, 0)
-            0j
-            sage: HarmonicDifferential._midpoint(T, 0, 1)
-            0.5j
-            sage: HarmonicDifferential._midpoint(T, 0, 2)
-            (-0.5+0j)
-            sage: HarmonicDifferential._midpoint(T, 1, 0)
-            0j
-            sage: HarmonicDifferential._midpoint(T, 1, 1)
-            -0.5j
-            sage: HarmonicDifferential._midpoint(T, 1, 2)
-            (0.5+0j)
-
-        """
-        P = surface.polygon(triangle)
-        Δ = -P.circumscribing_circle().center() + P.vertex(edge) + P.edge(edge) / 2
-        return complex(*Δ)
-
     def evaluate(self, triangle, Δ, derivative=0):
-        C = PowerSeriesConstraints(self.parent().surface(), self.precision())
+        C = PowerSeriesConstraints(self.parent().surface(), self.precision(), geometry=self.parent()._geometry)
         return self._evaluate(C.evaluate(triangle, Δ, derivative=derivative))
 
     def _evaluate(self, expression):
@@ -131,7 +100,7 @@ class HarmonicDifferential(Element):
         """
         coefficients = {}
 
-        C = PowerSeriesConstraints(self.parent().surface(), self.precision())
+        C = PowerSeriesConstraints(self.parent().surface(), self.precision(), self.parent()._geometry)
 
         for gen in expression.variables():
             kind, triangle, k = C._describe_generator(gen)
@@ -183,7 +152,7 @@ class HarmonicDifferential(Element):
             0
 
         """
-        C = PowerSeriesConstraints(self.parent().surface(), self.precision())
+        C = PowerSeriesConstraints(self.parent().surface(), self.precision(), self.parent()._geometry)
         return self._evaluate(C.integrate(cycle))
 
     def _repr_(self):
@@ -250,6 +219,8 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
         # TODO: Coefficients must be reals of some sort?
         self._coefficients = coefficients
 
+        self._geometry = GeometricPrimitives(surface)
+
     def surface(self):
         return self._surface
 
@@ -314,7 +285,7 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
         # At each vertex of the Voronoi diagram, write f=Σ a_k z^k + O(z^prec). Our task is now to determine
         # the a_k.
 
-        constraints = PowerSeriesConstraints(self.surface(), prec=prec)
+        constraints = PowerSeriesConstraints(self.surface(), prec=prec, geometry=self._geometry)
 
         # We use a variety of constraints. Which ones to use exactly is
         # determined by the "algorithm" parameter. If algorithm is a dict, it
@@ -376,8 +347,8 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
             for (triangle, edge) in self._surface.edge_iterator():
                 triangle_, edge_ = self._surface.opposite_edge(triangle, edge)
                 for derivative in range(prec//3):
-                    expected = η.evaluate(triangle, HarmonicDifferential._midpoint(self._surface, triangle, edge), derivative)
-                    other = η.evaluate(triangle_, HarmonicDifferential._midpoint(self._surface, triangle_, edge_), derivative)
+                    expected = η.evaluate(triangle, self._geometry.midpoint(triangle, edge), derivative)
+                    other = η.evaluate(triangle_, self._geometry.midpoint(triangle_, edge_), derivative)
                     check(other, expected, f"power series defining harmonic differential are not consistent: {derivative}th derivate does not match between {(triangle, edge)} and {(triangle_, edge_)}")
 
             # (2) Check that differential actually integrates like the cohomology class.
@@ -391,6 +362,48 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
             # (3) Check that the area is finite.
 
         return η
+
+
+class GeometricPrimitives:
+    def __init__(self, surface):
+        # TODO: Require immutable.
+        self._surface = surface
+
+    @cached_method
+    def midpoint(self, triangle, edge):
+        r"""
+        Return the vector to go from the center of the circumcircle of
+        ``triangle`` to the midpoint of ``edge``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T.set_immutable()
+
+            sage: from flatsurf.geometry.harmonic_differentials import GeometricPrimitives
+            sage: G = GeometricPrimitives(T)
+
+            sage: G.midpoint(0, 0)
+            0j
+            sage: G.midpoint(0, 1)
+            0.5j
+            sage: G.midpoint(0, 2)
+            (-0.5+0j)
+            sage: G.midpoint(1, 0)
+            0j
+            sage: G.midpoint(1, 1)
+            -0.5j
+            sage: G.midpoint(1, 2)
+            (0.5+0j)
+
+        """
+        polygon = self._surface.polygon(triangle)
+        return -self.center(triangle) + complex(*polygon.vertex(edge)) + complex(*polygon.edge(edge)) / 2
+
+    @cached_method
+    def center(self, triangle):
+        return complex(*self._surface.polygon(triangle).circumscribing_circle().center())
 
 
 class PowerSeriesConstraints:
@@ -407,9 +420,10 @@ class PowerSeriesConstraints:
         lagrange: list
         value: complex
 
-    def __init__(self, surface, prec):
+    def __init__(self, surface, prec, geometry=None):
         self._surface = surface
         self._prec = prec
+        self._geometry = geometry or GeometricPrimitives(surface)
         self._constraints = []
         self._cost = self.symbolic_ring().zero()
 
@@ -822,10 +836,6 @@ class PowerSeriesConstraints:
 
         expression = R.zero()
 
-        @cached_method
-        def midpoint(edge):
-            return R(HarmonicDifferential._midpoint(surface, *edge))
-
         for path, multiplicity in cycle.voronoi_path().monomial_coefficients().items():
 
             for S, T in zip((path[-1],) + path, path):
@@ -836,8 +846,8 @@ class PowerSeriesConstraints:
                 # Namely we integrate the power series defined around the Voronoi vertex of S by symbolically integrating each monomial term.
 
                 # The midpoints of the edges
-                P = midpoint(S)
-                Q = midpoint(T)
+                P = self._geometry.midpoint(*S)
+                Q = self._geometry.midpoint(*T)
 
                 for k in range(self._prec):
                     gen = self.gen(S[0], k, R)
@@ -885,8 +895,8 @@ class PowerSeriesConstraints:
 
             parent = self.symbolic_ring(triangle0, triangle1)
 
-            Δ0 = HarmonicDifferential._midpoint(self._surface, triangle0, edge0)
-            Δ1 = HarmonicDifferential._midpoint(self._surface, triangle1, edge1)
+            Δ0 = self._geometry.midpoint(triangle0, edge0)
+            Δ1 = self._geometry.midpoint(triangle1, edge1)
 
             if abs(Δ0) < 1e-6 and abs(Δ1) < 1e-6:
                 # Force power series to be identical if the Delaunay triangulation is ambiguous at this edge.
@@ -960,8 +970,8 @@ class PowerSeriesConstraints:
 
             parent = self.symbolic_ring(triangle0, triangle1)
 
-            Δ0 = HarmonicDifferential._midpoint(self._surface, triangle0, edge0)
-            Δ1 = HarmonicDifferential._midpoint(self._surface, triangle1, edge1)
+            Δ0 = self._geometry.midpoint(triangle0, edge0)
+            Δ1 = self._geometry.midpoint(triangle1, edge1)
 
             # TODO: Are these good constants?
             if abs(Δ0) < 1e-6 and abs(Δ1) < 1e-6:
@@ -1019,8 +1029,8 @@ class PowerSeriesConstraints:
 
             # The midpoint of the edge where the triangles meet with respect to
             # the center of the triangle.
-            Δ0 = HarmonicDifferential._midpoint(self._surface, triangle0, edge0)
-            Δ1 = HarmonicDifferential._midpoint(self._surface, triangle1, edge1)
+            Δ0 = self._geometry.midpoint(triangle0, edge0)
+            Δ1 = self._geometry.midpoint(triangle1, edge1)
 
             # TODO: Should we skip such steps here?
             # if abs(Δ0) < 1e-6 and abs(Δ1) < 1e-6:
