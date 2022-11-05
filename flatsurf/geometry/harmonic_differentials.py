@@ -882,8 +882,24 @@ class PowerSeriesConstraints:
         if derivative >= self._prec:
             raise ValueError
 
+        parent = self.symbolic_ring(triangle)
+
+        value = parent.zero()
+
+        z = 1
+
         from sage.all import factorial
-        return self.develop(triangle=triangle, Δ=Δ)[derivative] * factorial(derivative)
+        factor = factorial(derivative)
+
+        for k in range(derivative, self._prec):
+            value += factor * self.gen(triangle, k) * z
+
+            factor *= k + 1
+            factor /= k - derivative + 1
+
+            z *= Δ
+
+        return value
 
     def require_equality(self):
         for triangle0, edge0 in self._surface.edge_iterator():
