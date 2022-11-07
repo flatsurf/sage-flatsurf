@@ -1535,9 +1535,10 @@ class PowerSeriesConstraints:
 
                     gen = self._cost.parent()(gen)
 
-                    from more_itertools import nth
+                    def nth(L, n, default):
+                        return (L[n:n+1] or [default])[0]
 
-                    lagrange = [nth(getattr(g[i], part).get(triangle, []), k, 0) for i in range(lagranges)]
+                    lagrange = [nth(getattr(g[i], part).get(triangle, []),k, 0) for i in range(lagranges)]
 
                     self.add_constraint(self._cost.derivative(gen), lagrange=lagrange)
 
