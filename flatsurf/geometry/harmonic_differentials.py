@@ -492,16 +492,15 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
     def _add_(self, other):
         parent = self.parent()
 
-        if not other:
-            return self
+        if len(self._coefficients) < len(other._coefficients):
+            self, other = other, self
 
-        from copy import copy
-        coefficients = copy(self._coefficients)
-        for key, coefficient in other._coefficients.items():
-            coefficients.setdefault(key, 0)
-            coefficients[key] += coefficient
+        coefficients = self._coefficients | other._coefficients
 
-        coefficients = {key: value for (key, value) in coefficients.items() if value}
+        for key in other._coefficients:
+            c = self._coefficients.get(key)
+            if c is not None:
+                coefficients[key] += c
 
         return parent.element_class(parent, coefficients, self._constant + other._constant)
 
