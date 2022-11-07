@@ -24,7 +24,9 @@ from sage.structure.element import Element
 from sage.misc.cachefunc import cached_method
 from sage.categories.all import SetsWithPartialMaps
 from sage.structure.unique_representation import UniqueRepresentation
-from sage.all import ZZ
+from sage.all import ZZ, CC
+from sage.rings.ring import CommutativeRing
+from sage.structure.element import CommutativeRingElement
 from dataclasses import dataclass
 
 
@@ -103,7 +105,7 @@ class HarmonicDifferential(Element):
         C = PowerSeriesConstraints(self.parent().surface(), self.precision(), self.parent()._geometry)
 
         for gen in expression.variables():
-            kind, triangle, k = C._describe_generator(gen)
+            triangle, k, kind = gen.gen()
             coefficient = self._series[triangle][k]
 
             if kind == "real":
@@ -112,9 +114,12 @@ class HarmonicDifferential(Element):
                 assert kind == "imag"
                 coefficients[gen] = coefficient.imag()
 
-        value = expression.parent()(C._subs(expression, coefficients))
-        assert value.degree() <= 0
-        return value.constant_coefficient()
+        value = expression(coefficients)
+        if isinstance(value, SymbolicCoefficientExpression):
+            assert value.total_degree() <= 0
+            value = value.constant_coefficient()
+
+        return value
 
     @cached_method
     def precision(self):
@@ -365,6 +370,9 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
 
 
 class GeometricPrimitives:
+    # TODO: Run test suite
+    # TODO: Make sure that we never have zero coefficients as these would break degree computations.
+
     def __init__(self, surface):
         # TODO: Require immutable.
         self._surface = surface
@@ -406,6 +414,324 @@ class GeometricPrimitives:
         return complex(*self._surface.polygon(triangle).circumscribing_circle().center())
 
 
+class SymbolicCoefficientExpression(CommutativeRingElement):
+    def __init__(self, parent, coefficients, constant):
+        super().__init__(parent)
+
+        self._coefficients = coefficients
+        self._constant = constant
+
+        if not self._coefficients:
+            import logging
+            # TODO: Throw when this happens to eliminate these.
+            # logging.warning("created constant expression; this is usually bad for performance")
+
+    def _repr_(self):
+        terms = self.items()
+
+        if self.is_constant():
+            return repr(self._constant)
+
+        def variable_name(triangle, k, kind):
+            if kind == "real":
+                prefix = "Re"
+            elif kind == "imag":
+                prefix = "Im"
+            else:
+                assert False
+
+            return f"{prefix}_a{triangle}_{k}"
+
+        variable_names = [variable_name(*gen) for gen in sorted(set(gen for (monomial, coefficient) in terms for gen in monomial))]
+
+        from sage.all import PolynomialRing
+        R = PolynomialRing(self.base_ring(), tuple(variable_names))
+
+        def polynomial_monomial(monomial):
+            from sage.all import prod
+            return prod([R(variable_name(*gen))**exponent for (gen, exponent) in monomial.items()])
+
+        f = sum(coefficient * polynomial_monomial(monomial) for (monomial, coefficient) in terms)
+
+        return repr(f)
+
+    def degree(self, gen):
+        if not isinstance(gen, SymbolicCoefficientExpression):
+            raise NotImplementedError
+
+        if not gen.is_monomial():
+            raise ValueError
+
+        if self.is_zero():
+            return -1
+
+        key = next(iter(gen._coefficients))
+
+        degree = 0
+
+        while isinstance(self, SymbolicCoefficientExpression):
+            self = self._coefficients.get(key, None)
+
+            if self is None:
+                break
+
+            degree += 1
+
+        return degree
+
+    def is_monomial(self):
+        return len(self._coefficients) == 1 and not self._constant and next(iter(self._coefficients.values())) == 1
+
+    def is_constant(self):
+        return not self._coefficients
+
+    def _neg_(self):
+        parent = self.parent()
+        return parent.element_class(parent, {key: -coefficient for (key, coefficient) in self._coefficients.items()}, -self._constant)
+
+    def _add_(self, other):
+        parent = self.parent()
+
+        if not other:
+            return self
+
+        from copy import copy
+        coefficients = copy(self._coefficients)
+        for key, coefficient in other._coefficients.items():
+            coefficients.setdefault(key, 0)
+            coefficients[key] += coefficient
+
+        coefficients = {key: value for (key, value) in coefficients.items() if value}
+
+        return parent.element_class(parent, coefficients, self._constant + other._constant)
+
+    def _sub_(self, other):
+        return self._add_(-other)
+
+    def _mul_(self, other):
+        try:
+            parent = self.parent()
+
+            if other.is_zero() or self.is_zero():
+                return parent.zero()
+
+            if other.is_one():
+                return self
+
+            if self.is_one():
+                return other
+
+            if other.is_constant():
+                constant = other._constant
+                return parent({key: constant * value for (key, value) in self._coefficients.items()}, constant * self._constant)
+
+            if self.is_constant():
+                return other * self
+
+            value = parent.zero()
+
+            for (monomial, coefficient) in self.items():
+                for (monomial_, coefficient_) in other.items():
+                    if not monomial and not monomial_:
+                        value += coefficient * coefficient_
+                        continue
+
+                    from copy import copy
+                    monomial__ = copy(monomial)
+
+                    for (gen, exponent) in monomial_.items():
+                        monomial__.setdefault(gen, 0)
+                        monomial__[gen] += exponent
+
+                    coefficient__ = coefficient * coefficient_
+
+                    if not monomial__:
+                        value += coefficient__
+                        continue
+
+                    def unfold(monomial, coefficient):
+                        if not monomial:
+                            return coefficient
+
+                        unfolded = {}
+                        for gen, exponent in monomial.items():
+                            unfolded[gen] = unfold({
+                                g: e if g != gen else e - 1
+                                for (g, e) in monomial.items()
+                                if g != gen or e != 1
+                            }, coefficient)
+
+                        return parent(unfolded)
+
+                    value += unfold(monomial__, coefficient__)
+
+            return value
+        except:
+            raise Exception
+
+    def _rmul_(self, right):
+        return self._lmul_(right)
+
+    def _lmul_(self, left):
+        return self.parent()({key: left * value for (key, value) in self._coefficients.items()}, self._constant * left)
+
+    def constant_coefficient(self):
+        return self._constant
+
+    def variables(self):
+        return [self.parent()({variable: 1}) for variable in self._coefficients]
+
+    def __getitem__(self, gen):
+        if not gen.is_monomial():
+            raise ValueError
+
+        return self._coefficients.get(next(iter(gen._coefficients.keys())), 0)
+
+    def __hash__(self):
+        return hash((tuple(sorted(self._coefficients.items())), self._constant))
+
+    def total_degree(self):
+        if not self._coefficients:
+            if not self._constant:
+                return -1
+            return 0
+
+        degree = 1
+
+        for key, coefficient in self._coefficients.items():
+            if not isinstance(coefficient, SymbolicCoefficientExpression):
+                continue
+            degree = max(degree, 1 + coefficient.total_degree())
+
+        return degree
+
+    def derivative(self, gen):
+        key = gen.gen()
+
+        # Compute derivative with product rule
+        value = self._coefficients.get(key, self.parent().zero())
+        if value and isinstance(value, SymbolicCoefficientExpression):
+            value += gen * value.derivative(gen)
+
+        return value
+
+    def gen(self):
+        if not self.is_monomial():
+            raise ValueError
+
+        gen, coefficient = next(iter(self._coefficients.items()))
+
+        if coefficient != 1:
+            raise ValueError
+
+        return gen
+
+    def map_coefficients(self, f):
+        def g(coefficient):
+            if isinstance(coefficient, SymbolicCoefficientExpression):
+                return coefficient.map_coefficients(f)
+            return f(coefficient)
+
+        return self.parent()({key: g(value) for (key, value) in self._coefficients.items()}, g(self._constant))
+
+    def items(self):
+        items = []
+
+        def collect(element, prefix=()):
+            if not isinstance(element, SymbolicCoefficientExpression):
+                if element:
+                    items.append((prefix, element))
+                return
+
+            if element._constant:
+                items.append((prefix, element._constant))
+
+            for key, value in element._coefficients.items():
+                if prefix and key < prefix[-1]:
+                    # Don't add the same monomial twice.
+                    continue
+
+                collect(value, prefix + (key,))
+
+        collect(self)
+
+        def monomial(gens):
+            monomial = {}
+            for gen in gens:
+                monomial.setdefault(gen, 0)
+                monomial[gen] += 1
+
+            return monomial
+
+        return [(monomial(gens), coefficient) for (gens, coefficient) in items]
+
+    def __call__(self, values):
+        parent = self.parent()
+
+        values = {gen.gen(): value for (gen, value) in values.items()}
+
+        from sage.all import prod
+        return sum([
+            coefficient * prod([
+                (parent({gen: 1}) if gen not in values else values[gen])**e for (gen, e) in monomial.items()
+            ]) for (monomial, coefficient) in self.items()])
+
+
+class SymbolicCoefficientRing(UniqueRepresentation, CommutativeRing):
+    def __init__(self, surface, base_ring=CC, category=None):
+        r"""
+        TESTS::
+
+            sage: from flatsurf import translation_surfaces
+            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T.set_immutable()
+
+            sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing
+            sage: R = SymbolicCoefficientRing(T)
+            sage: R.has_coerce_map_from(CC)
+            True
+
+        """
+        self._surface = surface
+
+        from sage.categories.all import CommutativeRings
+        CommutativeRing.__init__(self, base_ring, category=category or CommutativeRings())
+        self.register_coercion(base_ring)
+
+    Element = SymbolicCoefficientExpression
+
+    def _repr_(self):
+        return r"Ring of Power Series Coefficients"
+
+    def base_ring(self):
+        return self.base()
+
+    def _element_constructor_(self, x, constant=None):
+        if isinstance(x, tuple) and len(x) == 3:
+            assert constant is None
+
+            # x describes a monomial
+            return self.element_class(self, {x: self.base_ring().one()}, self.base_ring().zero())
+
+        if isinstance(x, dict):
+            constant = constant or 0
+
+            return self.element_class(self, x, constant)
+
+        if x in self.base_ring():
+            return self.element_class(self, {}, self.base_ring()(x))
+
+        raise NotImplementedError(f"symbolic expression from {x}")
+
+    @cached_method
+    def imaginary_unit(self):
+        from sage.all import I
+        return self(self.base_ring()(I))
+
+    def ngens(self):
+        raise NotImplementedError
+
+
 class PowerSeriesConstraints:
     r"""
     A collection of (linear) constraints on the coefficients of power series
@@ -431,13 +757,10 @@ class PowerSeriesConstraints:
         return repr(self._constraints)
 
     @cached_method
-    def symbolic_ring(self, *triangles):
+    def symbolic_ring(self):
         r"""
-        Return the polynomial ring in the coefficients of the power series at
-        ``triangle``.
-
-        If ``triangle`` is not set, return the polynomial ring with the
-        coefficients for all the triangles.
+        Return the polynomial ring in the coefficients of the power series of
+        the triangles.
 
         EXAMPLES::
 
@@ -447,44 +770,27 @@ class PowerSeriesConstraints:
             sage: T.set_immutable()
 
             sage: C = PowerSeriesConstraints(T, prec=3)
-            sage: C.symbolic_ring(1)
-            Multivariate Polynomial Ring in Re_a1_0, Re_a1_1, Re_a1_2, Im_a1_0, Im_a1_1, Im_a1_2 over Complex Field with 53 bits of precision
-
             sage: C.symbolic_ring()
-            Multivariate Polynomial Ring in Re_a0_0, Re_a0_1, Re_a0_2, Im_a0_0, Im_a0_1, Im_a0_2, Re_a1_0, Re_a1_1, Re_a1_2, Im_a1_0, Im_a1_1, Im_a1_2 over Complex Field with 53 bits of precision
+            Ring of Power Series Coefficients
 
         """
-        gens = []
-
-        if not triangles:
-            triangles = list(self._surface.label_iterator())
-
-        for t in sorted(set(triangles)):
-            gens += [f"Re_a{t}_{n}" for n in range(self._prec)]
-            gens += [f"Im_a{t}_{n}" for n in range(self._prec)]
-
-        # TODO: Should we use a better/configured base ring here?
-
-        from sage.all import PolynomialRing, CC
-        return PolynomialRing(CC, gens)
+        return SymbolicCoefficientRing(self._surface)
 
     @cached_method
-    def gen(self, triangle, k, ring=None, conjugate=False):
-        real = self.real(triangle, k, ring=ring)
-        imag = self.imag(triangle, k, ring=ring)
+    def gen(self, triangle, k, conjugate=False):
+        real = self.real(triangle, k)
+        imag = self.imag(triangle, k)
 
-        I = imag.parent().base_ring().gen()
+        I = self.symbolic_ring().imaginary_unit()
 
         if conjugate:
             I = -I
-
-        assert I*I == -1
 
         return real + I*imag
 
 
     @cached_method
-    def real(self, triangle, k, ring=None):
+    def real(self, triangle, k):
         r"""
         Return the real part of the kth generator of the :meth:`symbolic_ring`
         for ``triangle``.
@@ -508,13 +814,10 @@ class PowerSeriesConstraints:
         if k >= self._prec:
             raise ValueError("symbolic ring has no k-th generator")
 
-        if ring is None:
-            return self.symbolic_ring(triangle).gen(k)
-
-        return ring.gen(ring.variable_names().index(f"Re_a{triangle}_{k}"))
+        return self.symbolic_ring()((triangle, k, "real"))
 
     @cached_method
-    def imag(self, triangle, k, ring=None):
+    def imag(self, triangle, k):
         r"""
         Return the imaginary part of the kth generator of the :meth:`symbolic_ring`
         for ``triangle``.
@@ -538,41 +841,7 @@ class PowerSeriesConstraints:
         if k >= self._prec:
             raise ValueError("symbolic ring has no k-th generator")
 
-        if ring is None:
-            return self.symbolic_ring(triangle).gen(self._prec + k)
-
-        return ring.gen(ring.variable_names().index(f"Im_a{triangle}_{k}"))
-
-    @cached_method
-    def _describe_generator(self, gen):
-        r"""
-        Return which kind of symbolic generator ``gen`` is.
-
-        EXAMPLES::
-
-            sage: from flatsurf import translation_surfaces
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
-            sage: T.set_immutable()
-
-            sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
-            sage: C = PowerSeriesConstraints(T, prec=3)
-            sage: C._describe_generator(C.imag(1, 2))
-            ('imag', 1, 2)
-            sage: C._describe_generator(C.real(2, 1))
-            ('real', 2, 1)
-
-        """
-        gen = str(gen)
-        if gen.startswith("Re_a"):
-            kind = "real"
-            gen = gen[4:]
-        elif gen.startswith("Im_a"):
-            kind = "imag"
-            gen = gen[4:]
-
-        triangle, k = gen.split('_')
-
-        return kind, int(triangle), int(k)
+        return self.symbolic_ring()((triangle, k, "imag"))
 
     def project(self, x, part):
         r"""
@@ -589,43 +858,6 @@ class PowerSeriesConstraints:
             return x
 
         return x.map_coefficients(lambda c: self.project(c, part))
-
-    @staticmethod
-    def _subs(polynomial, substitutions):
-        r"""
-        A faster version of multivariate polynomial's ``subs``.
-
-        Unfortunately, ``subs`` is extremely slow for polynomials with lots of
-        variables. Part of this are trivialities, namely, ``subs`` stringifies
-        all of the generators of the polynomial ring. But also due to the
-        evaluation algorithm that is not very fast when most variables are
-        unchanged.
-        """
-        R = polynomial.parent()
-        gens = R.gens()
-
-        result = R.zero()
-
-        substituted_generator_indexes = [i for i, gen in enumerate(gens) if gen in substitutions]
-
-        for coefficient, monomial, exponents in zip(polynomial.coefficients(), polynomial.monomials(), polynomial.exponents()):
-            for index in substituted_generator_indexes:
-                if exponents[index]:
-                    break
-            else:
-                # monomial is unaffected by this substitution
-                result += coefficient * monomial
-                continue
-
-            for i, (gen, exponent) in enumerate(zip(gens, exponents)):
-                if not exponent:
-                    continue
-                if gen in substitutions:
-                    coefficient *= substitutions[gen] ** exponent
-
-            result += coefficient
-
-        return result
 
     def real_part(self, x):
         r"""
@@ -655,7 +887,7 @@ class PowerSeriesConstraints:
             sage: C.real_part(2*C.gen(0, 0))  # tol 1e-9
             2*Re_a0_0
             sage: C.real_part(2*I*C.gen(0, 0))  # tol 1e-9
-            (-2)*Im_a0_0
+            -2.0000000000000*Im_a0_0
 
         """
         return self.project(x, "real")
@@ -699,10 +931,12 @@ class PowerSeriesConstraints:
         if expression == 0:
             return
 
-        if expression.total_degree() == 0:
-            raise ValueError("cannot solve for constraints c == 0")
+        total_degree = expression.total_degree()
 
-        if expression.total_degree() > 1:
+        if total_degree == 0:
+            raise ValueError(f"cannot solve for constraint {expression} == 0")
+
+        if total_degree > 1:
             raise NotImplementedError("can only encode linear constraints")
 
         value = -expression.constant_coefficient()
@@ -718,7 +952,7 @@ class PowerSeriesConstraints:
             imag = {}
 
             for gen in e.variables():
-                kind, triangle, k = self._describe_generator(gen)
+                triangle, k, kind = gen.gen()
 
                 assert kind in ["real", "imag"]
 
@@ -770,12 +1004,12 @@ class PowerSeriesConstraints:
     @cached_method
     def _formal_power_series(self, triangle, base_ring=None):
         if base_ring is None:
-            base_ring = self.symbolic_ring(triangle)
+            base_ring = self.symbolic_ring()
 
         from sage.all import PowerSeriesRing
         R = PowerSeriesRing(base_ring, 'z')
 
-        return R([self.gen(triangle, n, ring=base_ring) for n in range(self._prec)])
+        return R([self.gen(triangle, n) for n in range(self._prec)])
 
     def develop(self, triangle, Δ=0, base_ring=None):
         r"""
@@ -790,9 +1024,9 @@ class PowerSeriesConstraints:
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
             sage: C = PowerSeriesConstraints(T, prec=3)
             sage: C.develop(0)
-            Re_a0_0 + 1.00000000000000*I*Im_a0_0 + (Re_a0_1 + 1.00000000000000*I*Im_a0_1)*z + (Re_a0_2 + 1.00000000000000*I*Im_a0_2)*z^2
+            1.00000000000000*I*Im_a0_0 + Re_a0_0 + (1.00000000000000*I*Im_a0_1 + Re_a0_1)*z + (1.00000000000000*I*Im_a0_2 + Re_a0_2)*z^2
             sage: C.develop(1, 1)
-            Re_a1_0 + Re_a1_1 + Re_a1_2 + 1.00000000000000*I*Im_a1_0 + 1.00000000000000*I*Im_a1_1 + 1.00000000000000*I*Im_a1_2 + (Re_a1_1 + 2.00000000000000*Re_a1_2 + 1.00000000000000*I*Im_a1_1 + 2.00000000000000*I*Im_a1_2)*z + (Re_a1_2 + 1.00000000000000*I*Im_a1_2)*z^2
+            1.00000000000000*I*Im_a1_0 + Re_a1_0 + 1.00000000000000*I*Im_a1_1 + Re_a1_1 + 1.00000000000000*I*Im_a1_2 + Re_a1_2 + (1.00000000000000*I*Im_a1_1 + Re_a1_1 + 2.00000000000000*I*Im_a1_2 + 2.00000000000000*Re_a1_2)*z + (1.00000000000000*I*Im_a1_2 + Re_a1_2)*z^2
 
         """
         # TODO: Check that Δ is within the radius of convergence.
@@ -817,18 +1051,18 @@ class PowerSeriesConstraints:
             sage: C = PowerSeriesConstraints(T, prec=5)
 
             sage: C.integrate(H())
-            0
+            0.000000000000000
 
             sage: a, b = H.gens()
-            sage: C.integrate(a)  # tol 2e-3
-            (0.500 + 0.500*I)*Re_a0_0 + (-0.250)*Re_a0_1 + (0.0416 - 0.0416*I)*Re_a0_2 + (0.00625 + 0.00625*I)*Re_a0_4 + (-0.500 + 0.500*I)*Im_a0_0 + (-0.250*I)*Im_a0_1 + (0.0416 + 0.0416*I)*Im_a0_2 + (-0.00625 + 0.00625*I)*Im_a0_4 + (0.500 + 0.500*I)*Re_a1_0 + 0.250*Re_a1_1 + (0.0416 - 0.0416*I)*Re_a1_2 + (0.00625 + 0.00625*I)*Re_a1_4 + (-0.500 + 0.500*I)*Im_a1_0 + 0.250*I*Im_a1_1 + (0.0416 + 0.0416*I)*Im_a1_2 + (-0.00625 + 0.00625*I)*Im_a1_4
-            sage: C.integrate(b)  # tol 2e-3
-            (-0.500)*Re_a0_0 + 0.125*Re_a0_1 + (-0.0416)*Re_a0_2 + 0.0156*Re_a0_3 + (-0.00625)*Re_a0_4 + (-0.500*I)*Im_a0_0 + 0.125*I*Im_a0_1 + (-0.0416*I)*Im_a0_2 + 0.0156*I*Im_a0_3 + (-0.00625*I)*Im_a0_4 + (-0.500)*Re_a1_0 + (-0.125)*Re_a1_1 + (-0.0416)*Re_a1_2 + (-0.0156)*Re_a1_3 + (-0.00625)*Re_a1_4 + (-0.500*I)*Im_a1_0 + (-0.125*I)*Im_a1_1 + (-0.0416*I)*Im_a1_2 + (-0.0156*I)*Im_a1_3 + (-0.00625*I)*Im_a1_4
+            sage: C.integrate(a)  # tol 1e-6
+            (0.500000000000000 - 0.500000000000000*I)*Im_a0_0 + (0.500000000000000 + 0.500000000000000*I)*Re_a0_0 + 0.250000000000000*I*Im_a0_1 + (-0.250000000000000)*Re_a0_1 + (-0.0416666666666667 - 0.0416666666666667*I)*Im_a0_2 + (0.0416666666666667 - 0.0416666666666667*I)*Re_a0_2 + (0.00625000000000000 - 0.00625000000000000*I)*Im_a0_4 + (0.00625000000000000 + 0.00625000000000000*I)*Re_a0_4 + (0.500000000000000 - 0.500000000000000*I)*Im_a1_0 + (0.500000000000000 + 0.500000000000000*I)*Re_a1_0 + (-0.250000000000000*I)*Im_a1_1 + 0.250000000000000*Re_a1_1 + (-0.0416666666666667 - 0.0416666666666667*I)*Im_a1_2 + (0.0416666666666667 - 0.0416666666666667*I)*Re_a1_2 + (0.00625000000000000 - 0.00625000000000000*I)*Im_a1_4 + (0.00625000000000000 + 0.00625000000000000*I)*Re_a1_4
+            sage: C.integrate(b)  # tol 1e-6
+            0.500000000000000*I*Im_a0_0 + (-0.500000000000000)*Re_a0_0 + (-0.125000000000000*I)*Im_a0_1 + 0.125000000000000*Re_a0_1 + 0.0416666666666667*I*Im_a0_2 + (-0.0416666666666667)*Re_a0_2 + (-0.0156250000000000*I)*Im_a0_3 + 0.0156250000000000*Re_a0_3 + 0.00625000000000000*I*Im_a0_4 + (-0.00625000000000000)*Re_a0_4 + 0.500000000000000*I*Im_a1_0 + (-0.500000000000000)*Re_a1_0 + 0.125000000000000*I*Im_a1_1 + (-0.125000000000000)*Re_a1_1 + 0.0416666666666667*I*Im_a1_2 + (-0.0416666666666667)*Re_a1_2 + 0.0156250000000000*I*Im_a1_3 + (-0.0156250000000000)*Re_a1_3 + 0.00625000000000000*I*Im_a1_4 + (-0.00625000000000000)*Re_a1_4
 
         """
         surface = cycle.surface()
 
-        R = self.symbolic_ring(*[triangle for path in cycle.voronoi_path().monomial_coefficients().keys() for triangle, _ in path])
+        R = self.symbolic_ring()
 
         expression = R.zero()
 
@@ -870,7 +1104,7 @@ class PowerSeriesConstraints:
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
             sage: C = PowerSeriesConstraints(T, prec=3)
             sage: C.evaluate(0, 0)
-            Re_a0_0 + 1.00000000000000*I*Im_a0_0
+            1.00000000000000*I*Im_a0_0 + Re_a0_0
             sage: C.evaluate(1, 0)
             Re_a1_0 + 1.00000000000000*I*Im_a1_0
             sage: C.evaluate(1, 2)
@@ -882,7 +1116,7 @@ class PowerSeriesConstraints:
         if derivative >= self._prec:
             raise ValueError
 
-        parent = self.symbolic_ring(triangle)
+        parent = self.symbolic_ring()
 
         value = parent.zero()
 
@@ -909,7 +1143,7 @@ class PowerSeriesConstraints:
                 # Add each constraint only once.
                 continue
 
-            parent = self.symbolic_ring(triangle0, triangle1)
+            parent = self.symbolic_ring()
 
             Δ0 = self._geometry.midpoint(triangle0, edge0)
             Δ1 = self._geometry.midpoint(triangle1, edge1)
@@ -984,7 +1218,7 @@ class PowerSeriesConstraints:
                 # Add each constraint only once.
                 continue
 
-            parent = self.symbolic_ring(triangle0, triangle1)
+            parent = self.symbolic_ring()
 
             Δ0 = self._geometry.midpoint(triangle0, edge0)
             Δ1 = self._geometry.midpoint(triangle1, edge1)
@@ -1195,7 +1429,7 @@ class PowerSeriesConstraints:
             # the sum of a_n \overline{a_m} z^n \overline{z^m}.
             for n in range(self._prec):
                 for m in range(self._prec):
-                    coefficient = self.gen(triangle, n, R) * self.gen(triangle, m, R, conjugate=True)
+                    coefficient = self.gen(triangle, n) * self.gen(triangle, m, conjugate=True)
                     # Now we have to integrate z^n \overline{z^m} on the triangle.
                     area += coefficient * self._elementary_area_integral(triangle, n, m)
 
@@ -1220,9 +1454,8 @@ class PowerSeriesConstraints:
 
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
             sage: area = PowerSeriesConstraints(T, η.precision())._area_upper_bound()
-            sage: area  # tol 2e-2
-            0.250*Re_a0_0^2 + 0.125*Re_a0_1^2 + 0.0625*Re_a0_2^2 + 0.0312*Re_a0_3^2 + 0.0156*Re_a0_4^2 + 0.00781*Re_a0_5^2 + 0.00390*Re_a0_6^2 + 0.00195*Re_a0_7^2 + 0.000976*Re_a0_8^2 + 0.000488*Re_a0_9^2 + 0.250*Im_a0_0^2 + 0.125*Im_a0_1^2 + 0.0625*Im_a0_2^2 + 0.0312*Im_a0_3^2 + 0.0156*Im_a0_4^2 + 0.00781*Im_a0_5^2 + 0.00390*Im_a0_6^2 + 0.00195*Im_a0_7^2 + 0.000976*Im_a0_8^2 + 0.000488*Im_a0_9^2
-            + 0.250*Re_a1_0^2 + 0.125*Re_a1_1^2 + 0.0625*Re_a1_2^2 + 0.0312*Re_a1_3^2 + 0.0156*Re_a1_4^2 + 0.00781*Re_a1_5^2 + 0.00390*Re_a1_6^2 + 0.00195*Re_a1_7^2 + 0.000976*Re_a1_8^2 + 0.000488*Re_a1_9^2 + 0.250*Im_a1_0^2 + 0.125*Im_a1_1^2 + 0.0625*Im_a1_2^2 + 0.0312*Im_a1_3^2 + 0.0156*Im_a1_4^2 + 0.00781*Im_a1_5^2 + 0.00390*Im_a1_6^2 + 0.00195*Im_a1_7^2 + 0.000976*Im_a1_8^2 + 0.000488*Im_a1_9^2
+            sage: area  # tol 1e-6
+            0.250000000000000*Im_a0_0^2 + 0.250000000000000*Re_a0_0^2 + 0.125000000000000*Im_a0_1^2 + 0.125000000000000*Re_a0_1^2 + 0.0625000000000000*Im_a0_2^2 + 0.0625000000000000*Re_a0_2^2 + 0.0312500000000000*Im_a0_3^2 + 0.0312500000000000*Re_a0_3^2 + 0.0156250000000000*Im_a0_4^2 + 0.0156250000000000*Re_a0_4^2 + 0.00781250000000001*Im_a0_5^2 + 0.00781250000000001*Re_a0_5^2 + 0.00390625000000000*Im_a0_6^2 + 0.00390625000000000*Re_a0_6^2 + 0.00195312500000000*Im_a0_7^2 + 0.00195312500000000*Re_a0_7^2 + 0.000976562500000001*Im_a0_8^2 + 0.000976562500000001*Re_a0_8^2 + 0.000488281250000001*Im_a0_9^2 + 0.000488281250000001*Re_a0_9^2 + 0.250000000000000*Im_a1_0^2 + 0.250000000000000*Re_a1_0^2 + 0.125000000000000*Im_a1_1^2 + 0.125000000000000*Re_a1_1^2 + 0.0625000000000000*Im_a1_2^2 + 0.0625000000000000*Re_a1_2^2 + 0.0312500000000000*Im_a1_3^2 + 0.0312500000000000*Re_a1_3^2 + 0.0156250000000000*Im_a1_4^2 + 0.0156250000000000*Re_a1_4^2 + 0.00781250000000001*Im_a1_5^2 + 0.00781250000000001*Re_a1_5^2 + 0.00390625000000000*Im_a1_6^2 + 0.00390625000000000*Re_a1_6^2 + 0.00195312500000000*Im_a1_7^2 + 0.00195312500000000*Re_a1_7^2 + 0.000976562500000001*Im_a1_8^2 + 0.000976562500000001*Re_a1_8^2 + 0.000488281250000001*Im_a1_9^2 + 0.000488281250000001*Re_a1_9^2
 
         The correct area would be 1/2π here. However, we are overcounting
         because we sum the single Voronoi cell twice. And also, we approximate
@@ -1265,7 +1498,7 @@ class PowerSeriesConstraints:
             sage: C = PowerSeriesConstraints(T, 1)
             sage: C.require_midpoint_derivatives(1)
             sage: R = C.symbolic_ring()
-            sage: f = 3*C.real(0, 0, R)^2 + 5*C.imag(0, 0, R)^2 + 7*C.real(1, 0, R)^2 + 11*C.imag(1, 0, R)^2
+            sage: f = 3*C.real(0, 0)^2 + 5*C.imag(0, 0)^2 + 7*C.real(1, 0)^2 + 11*C.imag(1, 0)^2
             sage: C.optimize(f)
             sage: C._optimize_cost()
             sage: C
