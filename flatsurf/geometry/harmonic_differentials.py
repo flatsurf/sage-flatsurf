@@ -433,7 +433,6 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
 
         raise NotImplementedError
 
-
     def _repr_(self):
         terms = self.items()
 
@@ -516,65 +515,62 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
         return self._add_(-other)
 
     def _mul_(self, other):
-        try:
-            parent = self.parent()
+        parent = self.parent()
 
-            if other.is_zero() or self.is_zero():
-                return parent.zero()
+        if other.is_zero() or self.is_zero():
+            return parent.zero()
 
-            if other.is_one():
-                return self
+        if other.is_one():
+            return self
 
-            if self.is_one():
-                return other
+        if self.is_one():
+            return other
 
-            if other.is_constant():
-                constant = other._constant
-                return parent({key: constant * value for (key, value) in self._coefficients.items()}, constant * self._constant)
+        if other.is_constant():
+            constant = other._constant
+            return parent({key: constant * value for (key, value) in self._coefficients.items()}, constant * self._constant)
 
-            if self.is_constant():
-                return other * self
+        if self.is_constant():
+            return other * self
 
-            value = parent.zero()
+        value = parent.zero()
 
-            for (monomial, coefficient) in self.items():
-                for (monomial_, coefficient_) in other.items():
-                    if not monomial and not monomial_:
-                        value += coefficient * coefficient_
-                        continue
+        for (monomial, coefficient) in self.items():
+            for (monomial_, coefficient_) in other.items():
+                if not monomial and not monomial_:
+                    value += coefficient * coefficient_
+                    continue
 
-                    from copy import copy
-                    monomial__ = copy(monomial)
+                from copy import copy
+                monomial__ = copy(monomial)
 
-                    for (gen, exponent) in monomial_.items():
-                        monomial__.setdefault(gen, 0)
-                        monomial__[gen] += exponent
+                for (gen, exponent) in monomial_.items():
+                    monomial__.setdefault(gen, 0)
+                    monomial__[gen] += exponent
 
-                    coefficient__ = coefficient * coefficient_
+                coefficient__ = coefficient * coefficient_
 
-                    if not monomial__:
-                        value += coefficient__
-                        continue
+                if not monomial__:
+                    value += coefficient__
+                    continue
 
-                    def unfold(monomial, coefficient):
-                        if not monomial:
-                            return coefficient
+                def unfold(monomial, coefficient):
+                    if not monomial:
+                        return coefficient
 
-                        unfolded = {}
-                        for gen, exponent in monomial.items():
-                            unfolded[gen] = unfold({
-                                g: e if g != gen else e - 1
-                                for (g, e) in monomial.items()
-                                if g != gen or e != 1
-                            }, coefficient)
+                    unfolded = {}
+                    for gen, exponent in monomial.items():
+                        unfolded[gen] = unfold({
+                            g: e if g != gen else e - 1
+                            for (g, e) in monomial.items()
+                            if g != gen or e != 1
+                        }, coefficient)
 
-                        return parent(unfolded)
+                    return parent(unfolded)
 
-                    value += unfold(monomial__, coefficient__)
+                value += unfold(monomial__, coefficient__)
 
-            return value
-        except:
-            raise Exception
+        return value
 
     def _rmul_(self, right):
         return self._lmul_(right)
