@@ -100,6 +100,56 @@ class HarmonicDifferential(Element):
         C = PowerSeriesConstraints(self.parent().surface(), self.precision(), geometry=self.parent()._geometry)
         return self._evaluate(C.evaluate(triangle, Δ, derivative=derivative))
 
+    def roots(self):
+        r"""
+        Return the roots of this harmonic differential.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology, SimplicialCohomology
+            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T.set_immutable()
+
+            sage: H = SimplicialHomology(T)
+            sage: a, b = H.gens()
+            sage: H = SimplicialCohomology(T)
+            sage: f = H({a: 1})
+
+            sage: Ω = HarmonicDifferentials(T)
+            sage: η = Ω(f)
+            sage: η.roots()
+            []
+
+        """
+        roots = []
+
+        surface = self.parent().surface()
+
+        for triangle in surface.label_iterator():
+            series = self._series[triangle]
+            series = series.truncate(series.prec())
+            for (root, multiplicity) in series.roots():
+                if multiplicity != 1:
+                    raise NotImplementedError
+
+                root -= self.parent()._geometry.center(triangle)
+
+                from sage.all import vector
+                root = vector(root)
+
+                # TODO: Keep roots that are within the circumcircle for sanity checking.
+                # TODO: Make sure that roots on the edges are picked up by exactly one triangle.
+
+                if not surface.polygon(triangle).contains_point(root):
+                    continue
+
+                roots.append((triangle, vector(root)))
+
+        # TODO: Deduplicate roots.
+        # TODO: Compute roots at the vertices.
+
+        return roots
+
     def _evaluate(self, expression):
         r"""
         Evaluate an expression by plugging in the coefficients of the power
@@ -155,6 +205,112 @@ class HarmonicDifferential(Element):
         precisions = set(series.precision_absolute() for series in self._series.values())
         assert len(precisions) == 1
         return next(iter(precisions))
+
+    def cauchy_residue(self, vertex, n, angle):
+        r"""
+        Return the n-th coefficient of the power series expansion around the
+        ``vertex`` in local coordinates of that vertex.
+
+        Let ``d`` be the degree of the vertex and pick a (d+1)-th root z' of z such
+        that this differential can be written as a power series Σb_n z'^n. This
+        method returns the `b_n` by evaluating the Cauchy residue formula,
+        i.e., 1/2πi ∫ f/z'^{n+1} integrating along a loop around the vertex.
+
+        EXAMPLES:
+
+        For the square torus, the vertices are no singularities, so harmonic
+        differentials have no pole at the vertex::
+
+            sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology, SimplicialCohomology
+            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T.set_immutable()
+
+            sage: H = SimplicialHomology(T)
+            sage: a, b = H.gens()
+            sage: H = SimplicialCohomology(T)
+            sage: f = H({a: 1})
+
+            sage: Ω = HarmonicDifferentials(T)
+            sage: η = Ω(f)
+
+            sage: vertex = [(0, 1), (1, 0), (0, 2), (1, 1), (0, 0), (1, 2)]
+            sage: angle = 1
+
+            sage: η.cauchy_residue(vertex, 0, 1)
+            ?
+            sage: η.cauchy_residue(vertex, 1, 1)
+            0
+            sage: η.cauchy_residue(vertex, 2, 1)
+            0
+            sage: η.cauchy_residue(vertex, 3, 1)
+            0
+
+        """
+        # TODO: Determine angle automatically
+
+        surface = self.parent().surface()
+
+        parts = []
+
+        # Integrate real & complex part independently.
+        for part in ["real", "imag"]:
+            integral = 0
+
+            # We integrate along a path homotopic to a (counterclockwise) unit
+            # circle centered at the vertex.
+
+            # We keep track of our last choice of a (d+1)-st root and pick the next
+            # root that is closest while walking counterclockwise on that cincle.
+            arg = 0
+
+            def root(z):
+                n = angle + 1
+
+                from sage.all import CC
+                roots = CC(z).nth_root(n, all=True)
+
+                candidates = [root for root in roots if (root.arg() - arg) % (2*3.14159265358979) > -1e-6]
+
+                return min(candidates)
+
+            for triangle, edge in vertex:
+                # We integrate on the line segment from the midpoint of edge to
+                # the midpoint of the previous edge in triangle, i.e., the next
+                # edge in counterclockwise order walking around the vertex.
+                edge_ = (edge - 1) % 3
+
+                P = self.parent()._geometry.midpoint(triangle, edge)
+                Q = self.parent()._geometry.midpoint(triangle, edge_)
+
+                # The vector from z=0, the center of the Voronoi cell, to the vertex.
+                δ = P - complex(*surface.polygon(triangle).edge(edge)) / 2
+
+                def at(t):
+                    z = (1 - t) * P + t * Q
+                    root_at_z = root(z - δ)
+                    return z, root_at_z
+
+                root_at_P = at(0)[1]
+                arg = root_at_P.arg()
+
+                def integrand(t):
+                    z, root_at_z = at(t)
+                    denominator = root_at_z ** (n + 1)
+                    numerator = self.evaluate(triangle, z)
+                    integrand = numerator / denominator * (Q - P)
+                    return getattr(integrand, part)()
+
+                from sage.all import numerical_integral
+                integral_on_segment, error = numerical_integral(integrand, 0, 1)
+                # TODO: What should be do about the error?
+                integral += integral_on_segment
+
+                root_at_Q = at(1)[1]
+                arg = root_at_Q.arg()
+
+            parts.append(integral)
+
+        return complex(*parts)
 
     def integrate(self, cycle):
         r"""
