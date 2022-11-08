@@ -1,5 +1,39 @@
 r"""
 TODO: Document this module.
+
+EXAMPLES:
+
+We compute harmonic differentials on the square torus::
+
+    sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology, SimplicialCohomology
+    sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+    sage: T.set_immutable()
+
+    sage: H = SimplicialHomology(T)
+    sage: a, b = H.gens()
+
+First, the harmonic differentials that sends the diagonal `a` to 1 and the negative
+horizontal `b` to zero. Note that integrating the differential given by the
+power series Σa_n z^n along `a` yields `Re(a_0) - Im(a_0)` and along `b` we get
+`-Re(a_0)`. Therefore, this must have Re(a_0) = 0 and Im(a_0) = -1::
+
+    sage: H = SimplicialCohomology(T)
+    sage: f = H({a: 1})
+    sage: Ω = HarmonicDifferentials(T)
+    sage: Ω(f)
+    (-1.02907963995315e-15 + 0.992449699487969*I + (-1.05471187339390e-15 + 3.46944695195361e-16*I)*z0 + (1.22124532708767e-15 - 0.102080540518758*I)*z0^2 + (2.55351295663786e-15 + 4.08006961549745e-15*I)*z0^3 + (-1.55431223447522e-15 + 0.0286707690963231*I)*z0^4 + (-8.32667268468867e-15 - 5.82867087928207e-16*I)*z0^5 + (-8.16013923099490e-15 + 0.544429549433375*I)*z0^6 + (-5.32907051820075e-15 - 9.08995101411847e-15*I)*z0^7 + (7.04991620636974e-15 - 0.229366152770579*I)*z0^8 + (3.65263375101677e-14 + 4.88498130835069e-15*I)*z0^9 + O(z0^10), -4.02455846426619e-16 + 0.992449699487968*I + (2.49800180540660e-16*I)*z1 + (1.60982338570648e-15 - 0.102080540518759*I)*z1^2 + (1.91513471747840e-15 + 3.96904731303493e-15*I)*z1^3 + (-1.27675647831893e-15 + 0.0286707690963231*I)*z1^4 + (-7.88258347483861e-15 - 6.38378239159465e-16*I)*z1^5 + (-8.33361157859258e-15 + 0.544429549433375*I)*z1^6 + (-4.90579799006241e-15 - 8.95117313604032e-15*I)*z1^7 + (6.90593415786367e-15 - 0.229366152770578*I)*z1^8 + (3.65540930857833e-14 + 4.54324078358326e-15*I)*z1^9 + O(z1^10))
+
+TODO: This output was wrong. We expect all higher order coefficients to vanish.
+
+The harmonic differential that integrates as 0 along `a` but 1 along `b` must
+similarly have Re(a_0) = -1 but Im(a_0) = -1::
+
+    sage: g = H({b: 1})
+    sage: Ω(g)
+    (-0.992449699487971 + 0.992449699487970*I + (-1.77635683940025e-15)*z0 + (-0.102080540518760 - 0.102080540518757*I)*z0^2 + (5.44009282066327e-15*I)*z0^3 + (-0.0286707690963241 + 0.0286707690963244*I)*z0^4 + (8.88178419700125e-16 - 1.40165656858926e-14*I)*z0^5 + (0.544429549433384 + 0.544429549433372*I)*z0^6 + (-6.66133814775094e-16 - 1.07136521876328e-14*I)*z0^7 + (0.229366152770587 - 0.229366152770592*I)*z0^8 + (-2.88657986402541e-15 + 6.35047570085590e-14*I)*z0^9 + O(z0^10), -0.992449699487971 + 0.992449699487968*I + (-8.88178419700125e-16 + 7.21644966006352e-16*I)*z1 + (-0.102080540518760 - 0.102080540518759*I)*z1^2 + (-9.15933995315754e-16 + 5.49560397189452e-15*I)*z1^3 + (-0.0286707690963229 + 0.0286707690963242*I)*z1^4 + (4.44089209850063e-16 - 1.37112543541207e-14*I)*z1^5 + (0.544429549433383 + 0.544429549433371*I)*z1^6 + (-6.10622663543836e-16 - 1.06520695042356e-14*I)*z1^7 + (0.229366152770587 - 0.229366152770591*I)*z1^8 + (-3.17801340798951e-15 + 6.36062383319036e-14*I)*z1^9 + O(z1^10))
+
+TODO: This output was wrong. We expect all higher order terms to vanish.
+
 """
 ######################################################################
 #  This file is part of sage-flatsurf.
@@ -24,10 +58,9 @@ from sage.structure.element import Element
 from sage.misc.cachefunc import cached_method
 from sage.categories.all import SetsWithPartialMaps
 from sage.structure.unique_representation import UniqueRepresentation
-from sage.all import ZZ, CC
+from sage.all import CC
 from sage.rings.ring import CommutativeRing
 from sage.structure.element import CommutativeRingElement
-from dataclasses import dataclass
 
 
 class HarmonicDifferential(Element):
@@ -52,15 +85,9 @@ class HarmonicDifferential(Element):
             sage: f = H({a: 1})
 
             sage: Ω = HarmonicDifferentials(T)
-            sage: η = Ω(f); η  # TODO: WRONG OUTPUT
-            (-1.02907963995315e-15 + 0.992449699487969*I + (-1.05471187339390e-15 + 3.46944695195361e-16*I)*z0 + (1.22124532708767e-15 - 0.102080540518758*I)*z0^2 + (2.55351295663786e-15 + 4.08006961549745e-15*I)*z0^3 + (-1.55431223447522e-15 + 0.0286707690963231*I)*z0^4 + (-8.32667268468867e-15 - 5.82867087928207e-16*I)*z0^5 + (-8.16013923099490e-15 + 0.544429549433375*I)*z0^6 + (-5.32907051820075e-15 - 9.08995101411847e-15*I)*z0^7 + (7.04991620636974e-15 - 0.229366152770579*I)*z0^8 + (3.65263375101677e-14 + 4.88498130835069e-15*I)*z0^9 + O(z0^10), -4.02455846426619e-16 + 0.992449699487968*I + (2.49800180540660e-16*I)*z1 + (1.60982338570648e-15 - 0.102080540518759*I)*z1^2 + (1.91513471747840e-15 + 3.96904731303493e-15*I)*z1^3 + (-1.27675647831893e-15 + 0.0286707690963231*I)*z1^4 + (-7.88258347483861e-15 - 6.38378239159465e-16*I)*z1^5 + (-8.33361157859258e-15 + 0.544429549433375*I)*z1^6 + (-4.90579799006241e-15 - 8.95117313604032e-15*I)*z1^7 + (6.90593415786367e-15 - 0.229366152770578*I)*z1^8 + (3.65540930857833e-14 + 4.54324078358326e-15*I)*z1^9 + O(z1^10))
-            sage: # (0 - 1.*I + (0 + 0*I)*z0 + (0 + 0*I)*z0^2 + (0 + 0*I)*z0^3 + (0 + 0*I)*z0^4 + (0 + 0*I)*z0^5 + (0 + 0*I)*z0^6 + (0 + 0*I)*z0^7 + (0 + 0*I)*z0^8 + (0 + 0*I)*z0^9 + O(z0^10),
-            ....: #  0 - 1.*I + (0 + 0*I)*z1 + (0 + 0*I)*z1^2 + (0 + 0*I)*z1^3 + (0 + 0*I)*z1^4 + (0 + 0*I)*z1^5 + (0 + 0*I)*z1^6 + (0 + 0*I)*z1^7 + (0 + 0*I)*z1^8 + (0 + 0*I)*z1^9 + O(z1^10))
 
-            sage: η + η  # TODO: WRONG OUTPUT
-            (-2.05815927990630e-15 + 1.98489939897594*I + (-2.10942374678780e-15 + 6.93889390390723e-16*I)*z0 + (2.44249065417534e-15 - 0.204161081037516*I)*z0^2 + (5.10702591327572e-15 + 8.16013923099490e-15*I)*z0^3 + (-3.10862446895044e-15 + 0.0573415381926462*I)*z0^4 + (-1.66533453693773e-14 - 1.16573417585641e-15*I)*z0^5 + (-1.63202784619898e-14 + 1.08885909886675*I)*z0^6 + (-1.06581410364015e-14 - 1.81799020282369e-14*I)*z0^7 + (1.40998324127395e-14 - 0.458732305541158*I)*z0^8 + (7.30526750203353e-14 + 9.76996261670138e-15*I)*z0^9 + O(z0^10), -8.04911692853238e-16 + 1.98489939897594*I + (4.99600361081320e-16*I)*z1 + (3.21964677141295e-15 - 0.204161081037517*I)*z1^2 + (3.83026943495679e-15 + 7.93809462606987e-15*I)*z1^3 + (-2.55351295663786e-15 + 0.0573415381926463*I)*z1^4 + (-1.57651669496772e-14 - 1.27675647831893e-15*I)*z1^5 + (-1.66672231571852e-14 + 1.08885909886675*I)*z1^6 + (-9.81159598012482e-15 - 1.79023462720806e-14*I)*z1^7 + (1.38118683157273e-14 - 0.458732305541157*I)*z1^8 + (7.31081861715666e-14 + 9.08648156716652e-15*I)*z1^9 + O(z1^10))
-            sage: # (0 - 2*I + (0 + 0*I)*z0 + (0 + 0*I)*z0^2 + (0 + 0*I)*z0^3 + (0 + 0*I)*z0^4 + (0 + 0*I)*z0^5 + (0 + 0*I)*z0^6 + (0 + 0*I)*z0^7 + (0 + 0*I)*z0^8 + (0 + 0*I)*z0^9 + O(z0^10),
-            ....: #  0 - 2*I + (0 + 0*I)*z1 + (0 + 0*I)*z1^2 + (0 + 0*I)*z1^3 + (0 + 0*I)*z1^4 + (0 + 0*I)*z1^5 + (0 + 0*I)*z1^6 + (0 + 0*I)*z1^7 + (0 + 0*I)*z1^8 + (0 + 0*I)*z1^9 + O(z1^10))
+            sage: Ω(f) + Ω(f) + Ω(H({a: -2}))
+            (O(z0^10), O(z1^10))
 
         """
         return self.parent()({
@@ -1030,16 +1057,22 @@ class PowerSeriesConstraints:
             sage: H = SimplicialHomology(T)
 
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
-            sage: C = PowerSeriesConstraints(T, prec=5)
+            sage: C = PowerSeriesConstraints(T, prec=1)
 
             sage: C.integrate(H())
             0.000000000000000
 
             sage: a, b = H.gens()
-            sage: C.integrate(a)  # tol 1e-6
-            (0.500000000000000 + 0.500000000000000*I)*Re(a0,0) + (0.500000000000000 - 0.500000000000000*I)*Im(a0,0) + (-0.250000000000000)*Re(a0,1) + 0.250000000000000*I*Im(a0,1) + (0.0416666666666667 - 0.0416666666666667*I)*Re(a0,2) + (-0.0416666666666667 - 0.0416666666666667*I)*Im(a0,2) + (0.00625000000000000 + 0.00625000000000000*I)*Re(a0,4) + (0.00625000000000000 - 0.00625000000000000*I)*Im(a0,4) + (0.500000000000000 + 0.500000000000000*I)*Re(a1,0) + (0.500000000000000 - 0.500000000000000*I)*Im(a1,0) + 0.250000000000000*Re(a1,1) + (-0.250000000000000*I)*Im(a1,1) + (0.0416666666666667 - 0.0416666666666667*I)*Re(a1,2) + (-0.0416666666666667 - 0.0416666666666667*I)*Im(a1,2) + (0.00625000000000000 + 0.00625000000000000*I)*Re(a1,4) + (0.00625000000000000 - 0.00625000000000000*I)*Im(a1,4)
-            sage: C.integrate(b)  # tol 1e-6
-            (-0.500000000000000)*Re(a0,0) + 0.500000000000000*I*Im(a0,0) + 0.125000000000000*Re(a0,1) + (-0.125000000000000*I)*Im(a0,1) + (-0.0416666666666667)*Re(a0,2) + 0.0416666666666667*I*Im(a0,2) + 0.0156250000000000*Re(a0,3) + (-0.0156250000000000*I)*Im(a0,3) + (-0.00625000000000000)*Re(a0,4) + 0.00625000000000000*I*Im(a0,4) + (-0.500000000000000)*Re(a1,0) + 0.500000000000000*I*Im(a1,0) + (-0.125000000000000)*Re(a1,1) + 0.125000000000000*I*Im(a1,1) + (-0.0416666666666667)*Re(a1,2) + 0.0416666666666667*I*Im(a1,2) + (-0.0156250000000000)*Re(a1,3) + 0.0156250000000000*I*Im(a1,3) + (-0.00625000000000000)*Re(a1,4) + 0.00625000000000000*I*Im(a1,4)
+            sage: C.integrate(a)
+            (0.500000000000000 + 0.500000000000000*I)*Re(a0,0) + (0.500000000000000 - 0.500000000000000*I)*Im(a0,0) + (0.500000000000000 + 0.500000000000000*I)*Re(a1,0) + (0.500000000000000 - 0.500000000000000*I)*Im(a1,0)
+            sage: C.integrate(b)
+            (-0.500000000000000)*Re(a0,0) + 0.500000000000000*I*Im(a0,0) + (-0.500000000000000)*Re(a1,0) + 0.500000000000000*I*Im(a1,0)
+
+            sage: C = PowerSeriesConstraints(T, prec=5)
+            sage: C.integrate(a) + C.integrate(-a)
+            0
+            sage: C.integrate(b) + C.integrate(-b)
+            0
 
         """
         surface = cycle.surface()
@@ -1051,7 +1084,8 @@ class PowerSeriesConstraints:
         for path, multiplicity in cycle.voronoi_path().monomial_coefficients().items():
 
             for S, T in zip((path[-1],) + path, path):
-                # Integrate from the midpoint of the edge of S to the midpoint of the edge of T
+                # Integrate from the midpoint of the edge of S to the midpoint
+                # of the edge of T by crossing over the face of T.
                 S = surface.opposite_edge(*S)
                 assert S[0] == T[0], f"consecutive elements of a path must be attached to the same face in {path} but {S} and {T} do not have that property"
 
@@ -1501,7 +1535,7 @@ class PowerSeriesConstraints:
     def _optimize_cost(self):
         # We use Lagrange multipliers to rewrite this expression.
         # If we let
-        #   L(Re(a), Im(a), λ) = f(Re(a), Im(a)) - Σ λ_i g_i(Re(a), Im(a))
+        #   L(Re(a), Im(a), λ) = f(Re(a), Im(a)) + Σ λ_i g_i(Re(a), Im(a))
         # and denote by g_i=0 all the affine linear conditions collected so
         # far, then we get two constraints for each a_k, one real, one
         # imaginary, namely that the partial derivative wrt Re(a_k) and Im(a_k)
@@ -1553,21 +1587,35 @@ class PowerSeriesConstraints:
             sage: H = SimplicialCohomology(T)
             sage: a, b = H.homology().gens()
 
-        ::
+        Integrating along the (negative horizontal) cycle `b`, produces
+        something with `-Re(a_0)` in the real part.
+        Integration along the diagonal `a`, produces essentially `Re(a_0) -
+        Im(a_0)`. Note that the two variables ``a0`` and ``a1`` are the same
+        because the centers of the Voronoi cells for the two triangles are
+        identical::
 
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
-            sage: C = PowerSeriesConstraints(T, 2)
-            sage: C.require_cohomology(H({a: 1}))
+            sage: C = PowerSeriesConstraints(T, 1)
+            sage: C.require_cohomology(H({b: 1}))
             sage: C  # tol 1e-9
-            [0.500000000000000*Re(a0,0) + 0.500000000000000*Im(a0,0) - 0.250000000000000*Re(a0,1) + 0.500000000000000*Re(a1,0) + 0.500000000000000*Im(a1,0) + 0.250000000000000*Re(a1,1) - 1.00000000000000, -0.500000000000000*Re(a0,0) + 0.125000000000000*Re(a0,1) - 0.500000000000000*Re(a1,0) - 0.125000000000000*Re(a1,1)]
+            [0.500000000000000*Re(a0,0) + 0.500000000000000*Im(a0,0) + 0.500000000000000*Re(a1,0) + 0.500000000000000*Im(a1,0),
+            -0.500000000000000*Re(a0,0) - 0.500000000000000*Re(a1,0) - 1.00000000000000]
 
-        ::
+        If we increase precision, we see additional higher imaginary parts.
+        These depend on the choice of base point of the integration and will be
+        found to be zero by other constraints::
 
             sage: C = PowerSeriesConstraints(T, 2)
             sage: C.require_cohomology(H({b: 1}))
             sage: C  # tol 1e-9
-            [PowerSeriesConstraints.Constraint(real={0: [0.5, -0.25], 1: [0.5, 0.25]}, imag={0: [-0.5], 1: [-0.5]}, lagrange=[], value=0),
-             PowerSeriesConstraints.Constraint(real={0: [-0.5, 0.125], 1: [-0.5, -0.125]}, imag={}, lagrange=[], value=1)]
+            [0.500000000000000*Re(a0,0) + 0.500000000000000*Im(a0,0) - 0.250000000000000*Re(a0,1) + 0.500000000000000*Re(a1,0) + 0.500000000000000*Im(a1,0) + 0.250000000000000*Re(a1,1),
+            -0.500000000000000*Re(a0,0) + 0.125000000000000*Re(a0,1) - 0.500000000000000*Re(a1,0) - 0.125000000000000*Re(a1,1) - 1.00000000000000]
+
+            sage: C = PowerSeriesConstraints(T, 2)
+            sage: C.require_cohomology(H({b: 1}))
+            sage: C  # tol 1e-9
+            [0.500000000000000*Re(a0,0) + 0.500000000000000*Im(a0,0) - 0.250000000000000*Re(a0,1) + 0.500000000000000*Re(a1,0) + 0.500000000000000*Im(a1,0) + 0.250000000000000*Re(a1,1),
+            -0.500000000000000*Re(a0,0) + 0.125000000000000*Re(a0,1) - 0.500000000000000*Re(a1,0) - 0.125000000000000*Re(a1,1) - 1.00000000000000]
 
         """
         for cycle in cocycle.parent().homology().gens():

@@ -121,7 +121,10 @@ class SimplicialHomologyClass(Element):
             sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
             sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
-            sage: a,b = H.gens()
+            sage: a, b = H.gens()
+
+        The cycle ``a`` is the diagonal (1, 1) in the square torus. 
+
             sage: a.voronoi_path()
             B[((0, 0), (1, 2), (0, 1), (1, 0))]
             sage: b.voronoi_path()
@@ -133,6 +136,42 @@ class SimplicialHomologyClass(Element):
         homology, _, _ = self.parent()._homology()
         M = FreeModule(self.parent()._coefficients, self.parent()._paths(voronoi=True))
         return M.from_vector(vector(self._homology()))
+
+    def _add_(self, other):
+        r"""
+        Return the formal sum of homology classes.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, SimplicialHomology
+            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T.set_immutable()
+            sage: H = SimplicialHomology(T)
+            sage: a, b = H.gens()
+            sage: a + b
+            B[(0, 0)] + B[(0, 1)]
+
+        """
+        return self.parent()(self._chain + other._chain)
+
+    def _neg_(self):
+        r"""
+        Return the negative of this homology class.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, SimplicialHomology
+            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T.set_immutable()
+            sage: H = SimplicialHomology(T)
+            sage: a, b = H.gens()
+            sage: a + b
+            B[(0, 0)] + B[(0, 1)]
+            sage: -(a + b)
+            -B[(0, 0)] - B[(0, 1)]
+
+        """
+        return self.parent()(-self._chain)
 
     def _path(self, voronoi=False):
         r"""
@@ -147,14 +186,41 @@ class SimplicialHomologyClass(Element):
             sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
             sage: a, b = H.gens()
+
+        The chosen generators of homology, correspond to the edge (0, 0), i.e.,
+        the diagonal with vector (1, 1), and the top horizontal edge (0, 1)
+        with vector (-1, 0)::
+
             sage: a._path()
             ((0, 0),)
             sage: b._path()
             ((0, 1),)
+
+        Lifting the former to a path in Voronoi cells, we consider the midpoint
+        of (0, 0) as the midpoint of (1, 0) and walk across the triangle 1 to
+        get to the midpoint of (1, 2). We consider the midpoint of (1, 2) as
+        the midpoint of (0, 2) and walk across the triangle 0 to the midpoint
+        of (0, 1). Finally, we consider that midpoint to be the midpoint of (1,
+        1) and walk across 1 to the midpoint of (1, 0) which is where we
+        started::
+
             sage: a._path(voronoi=True)
             ((0, 0), (1, 2), (0, 1), (1, 0))
+
+        Similarly, to write the other path as a path inside Voronoi cells, we
+        start from the midpoint of (0, 1) and consider it as the midpoint of
+        (1, 1). We walk across triangle 1 to get to the midpoint of (1, 0). We
+        consider that to be the midpoint of (0, 0) and walk across 0 to the
+        midpoint of (0, 2). We consider that to be the midpoint of (1, 2) and
+        walk across triangle 1 to get to the midpoint of (1, 1) which closes
+        the loop::
+
             sage: b._path(voronoi=True)
             ((0, 1), (1, 0), (0, 2), (1, 1))
+
+        TODO: Note from the above discussion that we can have consecutive steps
+        in the same triangle; in the above the last and the first. We should
+        collapse these.
 
         ::
 
