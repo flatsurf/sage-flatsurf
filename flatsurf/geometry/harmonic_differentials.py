@@ -1,5 +1,6 @@
 r"""
 TODO: Document this module.
+TODO: We should probably never use hard-coded RR and CC in this module.
 
 EXAMPLES:
 
@@ -125,7 +126,7 @@ class HarmonicDifferential(Element):
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
             sage: C = PowerSeriesConstraints(T, 5)
             sage: R = C.symbolic_ring()
-            sage: η._evaluate(R(C.gen(0, 0)) + R(C.gen(1, 0)))  # TODO: WRONG OUTPUT, too much imprecision
+            sage: η._evaluate(R(C.gen(0, 0)) + R(C.gen(1, 0)))  # TODO: wrong output because η is wrong; see module documentation.
             -1.43153548637977e-15 + 1.98489939897594*I
             sage: # 0 - 2*I
 
@@ -249,7 +250,7 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
         Parent.__init__(self, category=category, base=coefficients)
 
         self._surface = surface
-        # TODO: Coefficients must be reals of some sort?
+        # TODO: What are the allowed base rings for the coefficients here?
         self._coefficients = coefficients
 
         self._geometry = GeometricPrimitives(surface)
@@ -277,7 +278,6 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
 
         """
         from sage.all import PowerSeriesRing
-        # TODO: Should we use self._coefficients in some way?
         from sage.all import CC
         return PowerSeriesRing(CC, f"z{triangle}")
 
@@ -398,7 +398,6 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
 
 
 class GeometricPrimitives:
-    # TODO: Run test suite
     # TODO: Make sure that we never have zero coefficients as these would break degree computations.
 
     def __init__(self, surface):
