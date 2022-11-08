@@ -841,12 +841,12 @@ class PowerSeriesConstraints:
         real = self.real(triangle, k)
         imag = self.imag(triangle, k)
 
-        I = self.symbolic_ring().imaginary_unit()
+        i = self.symbolic_ring().imaginary_unit()
 
         if conjugate:
-            I = -I
+            i = -i
 
-        return real + I*imag
+        return real + i*imag
 
     @cached_method
     def real(self, triangle, k):
