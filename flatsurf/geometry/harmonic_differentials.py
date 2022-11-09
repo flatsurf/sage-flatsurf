@@ -1512,12 +1512,14 @@ class PowerSeriesConstraints:
             # Write b_n for the difference of the n-th coefficient of both power series.
             # We want to minimize the sum of |b_n|^2 r^2n where r is half the
             # length of the edge we are on.
-            # TODO: What is the correct exponent here actually?
             b = (T0 - T1).list()
             edge = self._surface.polygon(triangle0).edges()[edge0]
             r2 = (edge[0]**2 + edge[1]**2) / 4
 
             for n, b_n in enumerate(b):
+                # TODO: In the article it says that it should be R^n as a
+                # factor but R^{2n+2} is actually more reasonable. See
+                # https://sagemath.zulipchat.com/#narrow/stream/271193-polygon/topic/Harmonic.20Differentials/near/308863913
                 cost += (b_n.real()**2 + b_n.imag()**2) * r2**(n + 1)
 
         return cost
