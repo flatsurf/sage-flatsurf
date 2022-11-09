@@ -21,17 +21,15 @@ power series Σa_n z^n along `a` yields `Re(a_0) - Im(a_0)` and along `b` we get
     sage: H = SimplicialCohomology(T)
     sage: f = H({a: 1})
     sage: Ω = HarmonicDifferentials(T)
-    sage: Ω(f)
-    (-1.98424405623218e-15 + 0.964531753972453*I + (-2.41473507855972e-15 + 8.43769498715119e-15*I)*z0 + (2.87270207621759e-14 - 0.469231664094712*I)*z0^2 + (3.33066907387547e-16 + 2.33146835171283e-15*I)*z0^3 + (3.84414722276460e-14 + 0.216188151752488*I)*z0^4 + (7.00550728538474e-14 - 1.43218770176645e-13*I)*z0^5 + (-1.46604950401752e-13 + 2.50256887517180*I)*z0^6 + (1.33226762955019e-15 - 1.02695629777827e-15*I)*z0^7 + (-2.91155988207947e-13 - 1.72950521401989*I)*z0^8 + (-3.06421554796543e-13 + 6.36019015232137e-13*I)*z0^9 + O(z0^10), -2.60902410786912e-15 + 0.964531753972456*I + (-1.83186799063151e-15 + 5.82867087928207e-15*I)*z1 + (2.68812749837366e-14 - 0.469231664094711*I)*z1^2 + (5.27355936696949e-16 - 1.11022302462516e-16*I)*z1^3 + (3.70814490224802e-14 + 0.216188151752488*I)*z1^4 + (6.91391388585316e-14 - 1.42996725571720e-13*I)*z1^5 + (-1.46355150221211e-13 + 2.50256887517180*I)*z1^6 + (9.99200722162641e-16 - 1.80411241501588e-15*I)*z1^7 + (-2.90378832090710e-13 - 1.72950521401989*I)*z1^8 + (-3.07476266669937e-13 + 6.34020613787811e-13*I)*z1^9 + O(z1^10))
-
-TODO: This output was wrong. We expect all higher order coefficients to vanish.
+    sage: Ω(f)  # tol 1e-9
+    (9.39144612803298e-16 + 1.00000000000000*I + (1.38777878078145e-17 + 4.16333634234434e-16*I)*z0 + (6.66133814775094e-16 - 2.77555756156289e-16*I)*z0^2 + (-4.44089209850063e-16 + 1.38777878078145e-17*I)*z0^3 + (-5.55111512312578e-17 - 2.78423117894278e-16*I)*z0^4 + (-1.66533453693773e-16 + 4.07660016854550e-17*I)*z0^5 + (-2.77555756156289e-17 - 2.77555756156289e-17*I)*z0^6 + (-1.11022302462516e-16 + 2.15105711021124e-16*I)*z0^7 + (-1.66533453693773e-16 + 8.67361737988404e-17*I)*z0^8 + (7.63278329429795e-17 + 9.71445146547012e-17*I)*z0^9 + O(z0^10), 1.06858966120171e-15 + 1.00000000000000*I + (1.24900090270330e-16 + 5.55111512312578e-17*I)*z1 + (-9.71445146547012e-17 - 2.35922392732846e-16*I)*z1^2 + (7.24247051220317e-17 - 1.38777878078145e-16*I)*z1^3 + (2.08166817117217e-17 - 4.04190569902596e-16*I)*z1^4 + (2.49800180540660e-16 + 2.96637714392034e-16*I)*z1^5 + (4.16333634234434e-17 - 1.17961196366423e-16*I)*z1^6 + (-1.04083408558608e-17 + 9.02056207507940e-17*I)*z1^7 + (-1.38777878078145e-16 + 1.11022302462516e-16*I)*z1^8 + (1.38777878078145e-16 - 1.04083408558608e-17*I)*z1^9 + O(z1^10))
 
 The harmonic differential that integrates as 0 along `a` but 1 along `b` must
 similarly have Re(a_0) = -1 but Im(a_0) = -1::
 
     sage: g = H({b: 1})
-    sage: Ω(g)
-    (-0.964531753972454 + 0.964531753972453*I + (-8.88178419700125e-15 + 1.35447209004269e-14*I)*z0 + (-0.469231664094716 - 0.469231664094738*I)*z0^2 + (7.32747196252603e-15 + 4.88498130835069e-15*I)*z0^3 + (-0.216188151752430 + 0.216188151752450*I)*z0^4 + (2.08055794814754e-13 - 2.17298401494759e-13*I)*z0^5 + (2.50256887517182 + 2.50256887517195*I)*z0^6 + (-1.62092561595273e-14 + 8.88178419700125e-16*I)*z0^7 + (1.72950521401945 - 1.72950521401959*I)*z0^8 + (-9.21485110438880e-13 + 9.64117674584486e-13*I)*z0^9 + O(z0^10), -0.964531753972454 + 0.964531753972452*I + (-9.65894031423886e-15 + 9.99200722162641e-15*I)*z1 + (-0.469231664094718 - 0.469231664094739*I)*z1^2 + (8.88178419700125e-15 + 7.77156117237610e-16*I)*z1^3 + (-0.216188151752430 + 0.216188151752450*I)*z1^4 + (2.07056594092592e-13 - 2.18158824338843e-13*I)*z1^5 + (2.50256887517182 + 2.50256887517195*I)*z1^6 + (-1.76525460915400e-14 - 3.21964677141295e-15*I)*z1^7 + (1.72950521401946 - 1.72950521401959*I)*z1^8 + (-9.23289222853896e-13 + 9.63590318647789e-13*I)*z1^9 + O(z1^10))
+    sage: Ω(g)  # tol 1e-9
+    (-1.00000000000000 + 1.00000000000000*I + (-6.66133814775094e-16 + 2.77555756156289e-16*I)*z0 + (-1.11022302462516e-16 - 3.88578058618805e-16*I)*z0^2 + (3.88578058618805e-16 + 5.55111512312578e-17*I)*z0^3 + (-7.21644966006352e-16 + 3.50414142147315e-16*I)*z0^4 + (5.55111512312578e-17 + 9.71445146547012e-17*I)*z0^5 + (8.32667268468867e-16 + 1.11022302462516e-16*I)*z0^6 + (-1.11022302462516e-16 + 1.94289029309402e-16*I)*z0^7 + (5.55111512312578e-17 - 1.52655665885959e-16*I)*z0^8 + (4.57966997657877e-16 + 1.11022302462516e-16*I)*z0^9 + O(z0^10), -1.00000000000000 + 1.00000000000000*I + (-6.93889390390723e-17 + 1.94289029309402e-16*I)*z1 + (-2.22044604925031e-16 + 4.16333634234434e-17*I)*z1^2 + (4.37150315946155e-16 - 2.91433543964104e-16*I)*z1^3 + (-3.26128013483640e-16 + 2.04697370165263e-16*I)*z1^4 + (-4.85722573273506e-16 + 3.48679418671338e-16*I)*z1^5 + (7.07767178198537e-16 - 2.28983498828939e-16*I)*z1^6 + (-6.24500451351651e-17 + 2.70616862252382e-16*I)*z1^7 + (-4.16333634234434e-17 - 2.20309881449055e-16*I)*z1^8 + (5.55111512312578e-17 - 8.32667268468867e-17*I)*z1^9 + O(z1^10))
 
 TODO: This output was wrong. We expect all higher order terms to vanish.
 
@@ -176,9 +174,8 @@ class HarmonicDifferential(Element):
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
             sage: C = PowerSeriesConstraints(T, 5)
             sage: R = C.symbolic_ring()
-            sage: η._evaluate(R(C.gen(0, 0)) + R(C.gen(1, 0)))  # TODO: wrong output because η is wrong; see module documentation.
-            -4.59326816410130e-15 + 1.92906350794491*I
-            sage: # 0 - 2*I
+            sage: η._evaluate(R(C.gen(0, 0)) + R(C.gen(1, 0)))  # tol 1e-9
+            0 + 2*I
 
         """
         coefficients = {}
@@ -455,7 +452,7 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
 
         raise NotImplementedError()
 
-    def _element_from_cohomology(self, cocycle, /, prec=10, algorithm=["midpoint_derivatives", "area_upper_bound"], check=True):
+    def _element_from_cohomology(self, cocycle, /, prec=10, algorithm=["L2"], check=True):
         # TODO: In practice we could speed things up a lot with some smarter
         # caching. A lot of the quantities used in the computations only depend
         # on the surface & precision. When computing things for many cocycles
@@ -836,7 +833,6 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
         def g(coefficient):
             if isinstance(coefficient, SymbolicCoefficientExpression):
                 return coefficient.map_coefficients(f)
-            assert coefficient.parent() is self.parent().base_ring(), f"{coefficient} is not defined in the base ring {self.parent().base_ring()} but in {coefficient.parent()}"
             return f(coefficient)
 
         return ring({key: v for (key, value) in self._coefficients.items() if (v := g(value))}, g(self._constant))
@@ -927,7 +923,14 @@ class SymbolicCoefficientRing(UniqueRepresentation, CommutativeRing):
     def base_ring(self):
         return self._base_ring
 
+    def _coerce_map_from_(self, other):
+        if isinstance(other, SymbolicCoefficientRing):
+            return self.base_ring().has_coerce_map_from(other.base_ring())
+
     def _element_constructor_(self, x, constant=None):
+        if isinstance(x, SymbolicCoefficientExpression):
+            return x.map_coefficients(self.base_ring(), ring=self)
+
         if isinstance(x, tuple):
             assert constant is None
 
@@ -1632,11 +1635,8 @@ class PowerSeriesConstraints:
         because we sum the single Voronoi cell twice. And also, we approximate
         the square with a circle of radius 1/sqrt(2) for another factor π/2::
 
-            sage: η._evaluate(area)
-            0.964531753972456
-
-        TODO: The above output is wrong. We find a "better" solution than the
-        correct harmonic differential. The correct output would be 1.
+            sage: η._evaluate(area)  # tol 1e-9
+            1.0
 
         """
         # Our upper bound is integrating the quantity over the circumcircles of
@@ -1686,7 +1686,7 @@ class PowerSeriesConstraints:
              22.0000000000000*Im(a1,0) - λ1 - λ3]
 
         """
-        self._cost += self.symbolic_ring()(f)
+        self._cost += f
 
     def _optimize_cost(self):
         # We use Lagrange multipliers to rewrite this expression.
