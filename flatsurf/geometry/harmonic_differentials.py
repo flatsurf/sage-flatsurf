@@ -203,7 +203,7 @@ class HarmonicDifferential(Element):
         assert len(precisions) == 1
         return next(iter(precisions))
 
-    def cauchy_residue(self, vertex, n, angle):
+    def cauchy_residue(self, vertex, n, angle=None):
         r"""
         Return the n-th coefficient of the power series expansion around the
         ``vertex`` in local coordinates of that vertex.
@@ -233,19 +233,29 @@ class HarmonicDifferential(Element):
             sage: vertex = [(0, 1), (1, 0), (0, 2), (1, 1), (0, 0), (1, 2)]
             sage: angle = 1
 
-            sage: η.cauchy_residue(vertex, 0, 1)
-            ?
-            sage: η.cauchy_residue(vertex, 1, 1)
-            0
-            sage: η.cauchy_residue(vertex, 2, 1)
-            0
-            sage: η.cauchy_residue(vertex, 3, 1)
-            0
+            sage: η.cauchy_residue(vertex, 0, 1)  # tol 1e-9
+            (0+1.0j)
+            sage: abs(η.cauchy_residue(vertex, -1, 1)) < 1e-9
+            True
+            sage: abs(η.cauchy_residue(vertex, -2, 1)) < 1e-9
+            True
+            sage: abs(η.cauchy_residue(vertex, 1, 1)) < 1e-9
+            True
+            sage: abs(η.cauchy_residue(vertex, 2, 1)) < 1e-9
+            True
 
         """
-        # TODO: Determine angle automatically
-
         surface = self.parent().surface()
+
+        if angle is None:
+            vertex = set(vertex)
+            for angle, v in surface.angles(return_adjacent_edges=True):
+                if vertex & set(v):
+                    assert vertex == set(v)
+                    vertex = v
+                    break
+            else:
+                raise ValueError("not a vertex in this surface")
 
         parts = []
 
@@ -253,28 +263,33 @@ class HarmonicDifferential(Element):
         for part in ["real", "imag"]:
             integral = 0
 
+            # TODO print(f"Building {part} part")
+
             # We integrate along a path homotopic to a (counterclockwise) unit
             # circle centered at the vertex.
 
             # We keep track of our last choice of a (d+1)-st root and pick the next
-            # root that is closest while walking counterclockwise on that cincle.
+            # root that is closest while walking counterclockwise on that circle.
             arg = 0
 
             def root(z):
-                n = angle + 1
-
                 from sage.all import CC
-                roots = CC(z).nth_root(n, all=True)
+                if angle == 1:
+                    return CC(z)
 
-                candidates = [root for root in roots if (root.arg() - arg) % (2*3.14159265358979) > -1e-6]
+                roots = CC(z).nth_root(angle, all=True)
 
-                return min(candidates)
+                positives = [root for root in roots if (root.arg() - arg) % (2*3.14159265358979) > -1e-6]
+
+                return min(positives)
 
             for triangle, edge in vertex:
                 # We integrate on the line segment from the midpoint of edge to
                 # the midpoint of the previous edge in triangle, i.e., the next
                 # edge in counterclockwise order walking around the vertex.
                 edge_ = (edge - 1) % 3
+
+                # TODO print(f"integrating across {triangle} from the midpoint of {edge} to {edge_}")
 
                 P = self.parent()._geometry.midpoint(triangle, edge)
                 Q = self.parent()._geometry.midpoint(triangle, edge_)
@@ -290,12 +305,16 @@ class HarmonicDifferential(Element):
                 root_at_P = at(0)[1]
                 arg = root_at_P.arg()
 
+                # TODO print(f"in terms of the Voronoi cell midpoint, this is integrating from {P} to {Q} which lift to {at(0)[1]} and {at(1)[1]} relative to the vertex which is at {δ} from the center of the Voronoi cell")
+
                 def integrand(t):
                     z, root_at_z = at(t)
                     denominator = root_at_z ** (n + 1)
                     numerator = self.evaluate(triangle, z)
                     integrand = numerator / denominator * (Q - P)
-                    return getattr(integrand, part)()
+                    # TODO print(f"evaluating at {z} resp its root {root_at_z} produced ({numerator}) / ({denominator}) * ({Q - P}) = {integrand}")
+                    integrand = getattr(integrand, part)()
+                    return integrand
 
                 from sage.all import numerical_integral
                 integral_on_segment, error = numerical_integral(integrand, 0, 1)
@@ -307,7 +326,7 @@ class HarmonicDifferential(Element):
 
             parts.append(integral)
 
-        return complex(*parts)
+        return complex(*parts) / complex(0, 2*3.14159265358979)
 
     def integrate(self, cycle):
         r"""
