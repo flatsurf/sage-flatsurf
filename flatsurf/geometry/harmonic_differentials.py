@@ -94,6 +94,31 @@ class HarmonicDifferential(Element):
             for triangle in self._series
         })
 
+    def series(self, triangle):
+        r"""
+        Return the power series describing this harmonic differential at the
+        center of the circumcircle of the given Delaunay ``triangle``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology, SimplicialCohomology
+            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T.set_immutable()
+
+            sage: H = SimplicialHomology(T)
+            sage: a, b = H.gens()
+            sage: H = SimplicialCohomology(T)
+            sage: f = H({a: 1})
+
+            sage: Ω = HarmonicDifferentials(T)
+            sage: η = Ω(f)
+
+            sage: η.series(0)  # tol 1e-9
+            9.39144612803298e-16 + 1.00000000000000*I + (1.38777878078145e-17 + 4.16333634234434e-16*I)*z0 + (6.66133814775094e-16 - 2.77555756156289e-16*I)*z0^2 + (-4.44089209850063e-16 + 1.38777878078145e-17*I)*z0^3 + (-5.55111512312578e-17 - 2.78423117894278e-16*I)*z0^4 + (-1.66533453693773e-16 + 4.07660016854550e-17*I)*z0^5 + (-2.77555756156289e-17 - 2.77555756156289e-17*I)*z0^6 + (-1.11022302462516e-16 + 2.15105711021124e-16*I)*z0^7 + (-1.66533453693773e-16 + 8.67361737988404e-17*I)*z0^8 + (7.63278329429795e-17 + 9.71445146547012e-17*I)*z0^9 + O(z0^10)
+
+        """
+        return self._series[triangle]
+
     def evaluate(self, triangle, Δ, derivative=0):
         C = PowerSeriesConstraints(self.parent().surface(), self.precision(), geometry=self.parent()._geometry)
         return self._evaluate(C.evaluate(triangle, Δ, derivative=derivative))
