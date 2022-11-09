@@ -1503,7 +1503,8 @@ class PowerSeriesConstraints:
             Δ1 = self._geometry.midpoint(triangle1, edge1)
 
             # TODO: Should we skip such steps here?
-            # if abs(Δ0) < 1e-6 and abs(Δ1) < 1e-6:
+            if abs(Δ0) < 1e-6 and abs(Δ1) < 1e-6:
+                continue
 
             # Develop both power series around that midpoint, i.e., Taylor expand them.
             T0 = self.develop(triangle0, Δ0)
