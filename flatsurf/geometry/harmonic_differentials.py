@@ -725,6 +725,26 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
     def is_constant(self):
         return not self._coefficients
 
+    def norm(self, p=2):
+        r"""
+        Return the p-norm of the coefficient vector.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T.set_immutable()
+
+            sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing
+            sage: R = SymbolicCoefficientRing(T)
+            sage: x = R(('imag', 0, 0)) + 1; x
+            sage: x.norm(1)
+            sage: x.norm(oo)
+
+        """
+        from sage.all import vector
+        return vector([v for (k, v) in self.items()]).norm(p)
+
     def _neg_(self):
         parent = self.parent()
         return parent.element_class(parent, {key: -coefficient for (key, coefficient) in self._coefficients.items()}, -self._constant)
@@ -1205,7 +1225,9 @@ class PowerSeriesConstraints:
 
         from sage.all import RR, CC
         if expression.parent().base_ring() is RR:
-            self._constraints.append(expression)
+            # TODO: Should we normalize here? Which norm should we use?
+            from sage.all import oo
+            self._constraints.append(expression / expression.norm(oo))
         elif expression.parent().base_ring() is CC:
             self.add_constraint(expression.real())
             self.add_constraint(expression.imag())
