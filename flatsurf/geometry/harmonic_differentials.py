@@ -21,14 +21,14 @@ power series Σa_n z^n along `a` yields `Re(a_0) - Im(a_0)` and along `b` we get
     sage: H = SimplicialCohomology(T)
     sage: f = H({a: 1})
     sage: Ω = HarmonicDifferentials(T)
-    sage: Ω(f)  # tol 1e-9
+    sage: Ω(f)  # abs tol 1e-9
     (9.39144612803298e-16 + 1.00000000000000*I + (1.38777878078145e-17 + 4.16333634234434e-16*I)*z0 + (6.66133814775094e-16 - 2.77555756156289e-16*I)*z0^2 + (-4.44089209850063e-16 + 1.38777878078145e-17*I)*z0^3 + (-5.55111512312578e-17 - 2.78423117894278e-16*I)*z0^4 + (-1.66533453693773e-16 + 4.07660016854550e-17*I)*z0^5 + (-2.77555756156289e-17 - 2.77555756156289e-17*I)*z0^6 + (-1.11022302462516e-16 + 2.15105711021124e-16*I)*z0^7 + (-1.66533453693773e-16 + 8.67361737988404e-17*I)*z0^8 + (7.63278329429795e-17 + 9.71445146547012e-17*I)*z0^9 + O(z0^10), 1.06858966120171e-15 + 1.00000000000000*I + (1.24900090270330e-16 + 5.55111512312578e-17*I)*z1 + (-9.71445146547012e-17 - 2.35922392732846e-16*I)*z1^2 + (7.24247051220317e-17 - 1.38777878078145e-16*I)*z1^3 + (2.08166817117217e-17 - 4.04190569902596e-16*I)*z1^4 + (2.49800180540660e-16 + 2.96637714392034e-16*I)*z1^5 + (4.16333634234434e-17 - 1.17961196366423e-16*I)*z1^6 + (-1.04083408558608e-17 + 9.02056207507940e-17*I)*z1^7 + (-1.38777878078145e-16 + 1.11022302462516e-16*I)*z1^8 + (1.38777878078145e-16 - 1.04083408558608e-17*I)*z1^9 + O(z1^10))
 
 The harmonic differential that integrates as 0 along `a` but 1 along `b` must
 similarly have Re(a_0) = -1 but Im(a_0) = -1::
 
     sage: g = H({b: 1})
-    sage: Ω(g)  # tol 1e-9
+    sage: Ω(g)  # abs tol 1e-9
     (-1.00000000000000 + 1.00000000000000*I + (-6.66133814775094e-16 + 2.77555756156289e-16*I)*z0 + (-1.11022302462516e-16 - 3.88578058618805e-16*I)*z0^2 + (3.88578058618805e-16 + 5.55111512312578e-17*I)*z0^3 + (-7.21644966006352e-16 + 3.50414142147315e-16*I)*z0^4 + (5.55111512312578e-17 + 9.71445146547012e-17*I)*z0^5 + (8.32667268468867e-16 + 1.11022302462516e-16*I)*z0^6 + (-1.11022302462516e-16 + 1.94289029309402e-16*I)*z0^7 + (5.55111512312578e-17 - 1.52655665885959e-16*I)*z0^8 + (4.57966997657877e-16 + 1.11022302462516e-16*I)*z0^9 + O(z0^10), -1.00000000000000 + 1.00000000000000*I + (-6.93889390390723e-17 + 1.94289029309402e-16*I)*z1 + (-2.22044604925031e-16 + 4.16333634234434e-17*I)*z1^2 + (4.37150315946155e-16 - 2.91433543964104e-16*I)*z1^3 + (-3.26128013483640e-16 + 2.04697370165263e-16*I)*z1^4 + (-4.85722573273506e-16 + 3.48679418671338e-16*I)*z1^5 + (7.07767178198537e-16 - 2.28983498828939e-16*I)*z1^6 + (-6.24500451351651e-17 + 2.70616862252382e-16*I)*z1^7 + (-4.16333634234434e-17 - 2.20309881449055e-16*I)*z1^8 + (5.55111512312578e-17 - 8.32667268468867e-17*I)*z1^9 + O(z1^10))
 
 TODO: This output was wrong. We expect all higher order terms to vanish.
@@ -113,7 +113,7 @@ class HarmonicDifferential(Element):
             sage: Ω = HarmonicDifferentials(T)
             sage: η = Ω(f)
 
-            sage: η.series(0)  # tol 1e-9
+            sage: η.series(0)  # abs tol 1e-9
             9.39144612803298e-16 + 1.00000000000000*I + (1.38777878078145e-17 + 4.16333634234434e-16*I)*z0 + (6.66133814775094e-16 - 2.77555756156289e-16*I)*z0^2 + (-4.44089209850063e-16 + 1.38777878078145e-17*I)*z0^3 + (-5.55111512312578e-17 - 2.78423117894278e-16*I)*z0^4 + (-1.66533453693773e-16 + 4.07660016854550e-17*I)*z0^5 + (-2.77555756156289e-17 - 2.77555756156289e-17*I)*z0^6 + (-1.11022302462516e-16 + 2.15105711021124e-16*I)*z0^7 + (-1.66533453693773e-16 + 8.67361737988404e-17*I)*z0^8 + (7.63278329429795e-17 + 9.71445146547012e-17*I)*z0^9 + O(z0^10)
 
         """
@@ -155,7 +155,7 @@ class HarmonicDifferential(Element):
             sage: f = H({a: 1})
 
             sage: Ω = HarmonicDifferentials(T)
-            sage: η = Ω(f)
+            sage: η = Ω(f, prec=16)  # random output, TODO: we have stability issues here.
             sage: η.roots()  # TODO: This is wrong. We expect some roots here. Where should the roots be?
             []
 
@@ -755,8 +755,11 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing
             sage: R = SymbolicCoefficientRing(T)
             sage: x = R(('imag', 0, 0)) + 1; x
+            Im(a0,0) + 1.00000000000000
             sage: x.norm(1)
+            2.00000000000000
             sage: x.norm(oo)
+            1.00000000000000
 
         """
         from sage.all import vector
@@ -1243,8 +1246,9 @@ class PowerSeriesConstraints:
         from sage.all import RR, CC
         if expression.parent().base_ring() is RR:
             # TODO: Should we normalize here? Which norm should we use?
-            from sage.all import oo
-            self._constraints.append(expression / expression.norm(oo))
+            # from sage.all import oo
+            # self._constraints.append(expression / expression.norm(oo))
+            self._constraints.append(expression)
         elif expression.parent().base_ring() is CC:
             self.add_constraint(expression.real())
             self.add_constraint(expression.imag())
