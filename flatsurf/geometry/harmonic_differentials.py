@@ -143,6 +143,23 @@ class HarmonicDifferential(Element):
             sage: η.roots()
             []
 
+        ::
+
+            sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology, SimplicialCohomology
+            sage: T = translation_surfaces.regular_octagon().delaunay_triangulation()
+            sage: T.set_immutable()
+
+            sage: H = SimplicialHomology(T)
+            sage: a = H.gens()[0]
+            sage: H = SimplicialCohomology(T)
+            sage: f = H({a: 1})
+
+            sage: Ω = HarmonicDifferentials(T)
+            sage: η = Ω(f)
+            sage: η.roots()  # TODO: This is wrong. We expect some roots here. Where should the roots be?
+            []
+
+
         """
         roots = []
 
