@@ -155,7 +155,7 @@ class HarmonicDifferential(Element):
                 if multiplicity != 1:
                     raise NotImplementedError
 
-                root -= self.parent()._geometry.center(triangle)
+                root += self.parent()._geometry.center(triangle)
 
                 from sage.all import vector
                 root = vector(root)
