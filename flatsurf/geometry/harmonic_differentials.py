@@ -1924,7 +1924,14 @@ class PowerSeriesConstraints:
 
         A, b = self.matrix()
 
-        solution = A.solve_right(b)
+        from sage.all import ComplexBallField
+        C = ComplexBallField(self.complex_field().prec())
+        CA = A.change_ring(C)
+        Cb = b.change_ring(C)
+
+        solution = CA.solve_right(Cb)
+
+        solution = solution.change_ring(self.real_field())
 
         lagranges = len(set(gen for constraint in self._constraints for gen in constraint.variables() if gen.gen()[0] == "lagrange"))
 
