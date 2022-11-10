@@ -1,6 +1,5 @@
 r"""
 TODO: Document this module.
-TODO: We should probably never use hard-coded RR and CC in this module.
 
 EXAMPLES:
 
@@ -21,17 +20,15 @@ power series Σa_n z^n along `a` yields `Re(a_0) - Im(a_0)` and along `b` we get
     sage: H = SimplicialCohomology(T)
     sage: f = H({a: 1})
     sage: Ω = HarmonicDifferentials(T)
-    sage: Ω(f)  # abs tol 1e-9
-    (9.39144612803298e-16 + 1.00000000000000*I + (1.38777878078145e-17 + 4.16333634234434e-16*I)*z0 + (6.66133814775094e-16 - 2.77555756156289e-16*I)*z0^2 + (-4.44089209850063e-16 + 1.38777878078145e-17*I)*z0^3 + (-5.55111512312578e-17 - 2.78423117894278e-16*I)*z0^4 + (-1.66533453693773e-16 + 4.07660016854550e-17*I)*z0^5 + (-2.77555756156289e-17 - 2.77555756156289e-17*I)*z0^6 + (-1.11022302462516e-16 + 2.15105711021124e-16*I)*z0^7 + (-1.66533453693773e-16 + 8.67361737988404e-17*I)*z0^8 + (7.63278329429795e-17 + 9.71445146547012e-17*I)*z0^9 + O(z0^10), 1.06858966120171e-15 + 1.00000000000000*I + (1.24900090270330e-16 + 5.55111512312578e-17*I)*z1 + (-9.71445146547012e-17 - 2.35922392732846e-16*I)*z1^2 + (7.24247051220317e-17 - 1.38777878078145e-16*I)*z1^3 + (2.08166817117217e-17 - 4.04190569902596e-16*I)*z1^4 + (2.49800180540660e-16 + 2.96637714392034e-16*I)*z1^5 + (4.16333634234434e-17 - 1.17961196366423e-16*I)*z1^6 + (-1.04083408558608e-17 + 9.02056207507940e-17*I)*z1^7 + (-1.38777878078145e-16 + 1.11022302462516e-16*I)*z1^8 + (1.38777878078145e-16 - 1.04083408558608e-17*I)*z1^9 + O(z1^10))
+    sage: Ω(f)
+    (1.000000000000000000000*I + O(z0^10), 1.000000000000000000000*I + O(z1^10))
 
 The harmonic differential that integrates as 0 along `a` but 1 along `b` must
 similarly have Re(a_0) = -1 but Im(a_0) = -1::
 
     sage: g = H({b: 1})
-    sage: Ω(g)  # abs tol 1e-9
-    (-1.00000000000000 + 1.00000000000000*I + (-6.66133814775094e-16 + 2.77555756156289e-16*I)*z0 + (-1.11022302462516e-16 - 3.88578058618805e-16*I)*z0^2 + (3.88578058618805e-16 + 5.55111512312578e-17*I)*z0^3 + (-7.21644966006352e-16 + 3.50414142147315e-16*I)*z0^4 + (5.55111512312578e-17 + 9.71445146547012e-17*I)*z0^5 + (8.32667268468867e-16 + 1.11022302462516e-16*I)*z0^6 + (-1.11022302462516e-16 + 1.94289029309402e-16*I)*z0^7 + (5.55111512312578e-17 - 1.52655665885959e-16*I)*z0^8 + (4.57966997657877e-16 + 1.11022302462516e-16*I)*z0^9 + O(z0^10), -1.00000000000000 + 1.00000000000000*I + (-6.93889390390723e-17 + 1.94289029309402e-16*I)*z1 + (-2.22044604925031e-16 + 4.16333634234434e-17*I)*z1^2 + (4.37150315946155e-16 - 2.91433543964104e-16*I)*z1^3 + (-3.26128013483640e-16 + 2.04697370165263e-16*I)*z1^4 + (-4.85722573273506e-16 + 3.48679418671338e-16*I)*z1^5 + (7.07767178198537e-16 - 2.28983498828939e-16*I)*z1^6 + (-6.24500451351651e-17 + 2.70616862252382e-16*I)*z1^7 + (-4.16333634234434e-17 - 2.20309881449055e-16*I)*z1^8 + (5.55111512312578e-17 - 8.32667268468867e-17*I)*z1^9 + O(z1^10))
-
-TODO: This output was wrong. We expect all higher order terms to vanish.
+    sage: Ω(g)
+    (-1.000000000000000000000 + 1.000000000000000000000*I + O(z0^10), -1.000000000000000000000 + 1.000000000000000000000*I + O(z1^10))
 
 """
 ######################################################################
@@ -57,7 +54,6 @@ from sage.structure.element import Element
 from sage.misc.cachefunc import cached_method
 from sage.categories.all import SetsWithPartialMaps
 from sage.structure.unique_representation import UniqueRepresentation
-from sage.all import CC
 from sage.rings.ring import CommutativeRing
 from sage.structure.element import CommutativeRingElement
 
@@ -113,8 +109,8 @@ class HarmonicDifferential(Element):
             sage: Ω = HarmonicDifferentials(T)
             sage: η = Ω(f)
 
-            sage: η.series(0)  # abs tol 1e-9
-            9.39144612803298e-16 + 1.00000000000000*I + (1.38777878078145e-17 + 4.16333634234434e-16*I)*z0 + (6.66133814775094e-16 - 2.77555756156289e-16*I)*z0^2 + (-4.44089209850063e-16 + 1.38777878078145e-17*I)*z0^3 + (-5.55111512312578e-17 - 2.78423117894278e-16*I)*z0^4 + (-1.66533453693773e-16 + 4.07660016854550e-17*I)*z0^5 + (-2.77555756156289e-17 - 2.77555756156289e-17*I)*z0^6 + (-1.11022302462516e-16 + 2.15105711021124e-16*I)*z0^7 + (-1.66533453693773e-16 + 8.67361737988404e-17*I)*z0^8 + (7.63278329429795e-17 + 9.71445146547012e-17*I)*z0^9 + O(z0^10)
+            sage: η.series(0)
+            1.000000000000000000000*I + O(z0^10)
 
         """
         return self._series[triangle]
@@ -155,10 +151,12 @@ class HarmonicDifferential(Element):
             sage: f = H({a: 1})
 
             sage: Ω = HarmonicDifferentials(T)
-            sage: η = Ω(f, prec=16)  # random output, TODO: we have stability issues here.
-            sage: η.roots()  # TODO: This is wrong. We expect some roots here. Where should the roots be?
-            []
-
+            sage: η = Ω(f, prec=16)
+            sage: η.roots()  # TODO: Where should the roots be?
+            [(1, (-0.87449839367527977892471874547, -0.40641777291752519325992142910)),
+             (2, (-0.87874645012914575749435949233, -1.1316108163971494196117078592)),
+             (3, (0.10644302656546669742540506666, -0.50960235439620784468173290036)),
+             (5, (0.40699487589371050446083306414, -0.40791191995722469647078132145))]
 
         """
         roots = []
@@ -172,7 +170,7 @@ class HarmonicDifferential(Element):
                 if multiplicity != 1:
                     raise NotImplementedError
 
-                root += self.parent()._geometry.center(triangle)
+                root += root.parent()(*self.parent()._geometry.center(triangle))
 
                 from sage.all import vector
                 root = vector(root)
@@ -217,7 +215,7 @@ class HarmonicDifferential(Element):
             sage: C = PowerSeriesConstraints(T, 5)
             sage: R = C.symbolic_ring()
             sage: η._evaluate(R(C.gen(0, 0)) + R(C.gen(1, 0)))  # tol 1e-9
-            0 + 2*I
+            2.0000000000000000*I
 
         """
         coefficients = {}
@@ -276,7 +274,7 @@ class HarmonicDifferential(Element):
             sage: angle = 1
 
             sage: η.cauchy_residue(vertex, 0, 1)  # tol 1e-9
-            (0+1.0j)
+            0 + 1.0*I
             sage: abs(η.cauchy_residue(vertex, -1, 1)) < 1e-9
             True
             sage: abs(η.cauchy_residue(vertex, -2, 1)) < 1e-9
@@ -301,6 +299,8 @@ class HarmonicDifferential(Element):
 
         parts = []
 
+        complex_field = self._series[0].parent().base_ring()
+
         # Integrate real & complex part independently.
         for part in ["real", "imag"]:
             integral = 0
@@ -315,11 +315,10 @@ class HarmonicDifferential(Element):
             arg = 0
 
             def root(z):
-                from sage.all import CC
                 if angle == 1:
-                    return CC(z)
+                    return complex_field(z)
 
-                roots = CC(z).nth_root(angle, all=True)
+                roots = complex_field(z).nth_root(angle, all=True)
 
                 positives = [root for root in roots if (root.arg() - arg) % (2*3.14159265358979) > -1e-6]
 
@@ -333,11 +332,11 @@ class HarmonicDifferential(Element):
 
                 # TODO print(f"integrating across {triangle} from the midpoint of {edge} to {edge_}")
 
-                P = self.parent()._geometry.midpoint(triangle, edge)
-                Q = self.parent()._geometry.midpoint(triangle, edge_)
+                P = complex_field(*self.parent()._geometry.midpoint(triangle, edge))
+                Q = complex_field(*self.parent()._geometry.midpoint(triangle, edge_))
 
                 # The vector from z=0, the center of the Voronoi cell, to the vertex.
-                δ = P - complex(*surface.polygon(triangle).edge(edge)) / 2
+                δ = P - complex_field(*surface.polygon(triangle).edge(edge)) / 2
 
                 def at(t):
                     z = (1 - t) * P + t * Q
@@ -350,6 +349,7 @@ class HarmonicDifferential(Element):
                 # TODO print(f"in terms of the Voronoi cell midpoint, this is integrating from {P} to {Q} which lift to {at(0)[1]} and {at(1)[1]} relative to the vertex which is at {δ} from the center of the Voronoi cell")
 
                 def integrand(t):
+                    t = complex_field(t)
                     z, root_at_z = at(t)
                     denominator = root_at_z ** (n + 1)
                     numerator = self.evaluate(triangle, z)
@@ -368,7 +368,7 @@ class HarmonicDifferential(Element):
 
             parts.append(integral)
 
-        return complex(*parts) / complex(0, 2*3.14159265358979)
+        return complex_field(*parts) / complex_field(0, 2*3.14159265358979)
 
     def integrate(self, cycle):
         r"""
@@ -400,7 +400,7 @@ class HarmonicDifferential(Element):
             0
 
         """
-        C = PowerSeriesConstraints(self.parent().surface(), self.precision(), self.parent()._geometry)
+        C = PowerSeriesConstraints(self.parent().surface(), self.precision(), geometry=self.parent()._geometry)
         return self._evaluate(C.integrate(cycle))
 
     def _repr_(self):
@@ -440,7 +440,7 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
     Element = HarmonicDifferential
 
     @staticmethod
-    def __classcall__(cls, surface, coefficients=None, category=None):
+    def __classcall__(cls, surface, category=None):
         r"""
         Normalize parameters when creating the space of harmonic differentials.
 
@@ -454,64 +454,32 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
             True
 
         """
-        from sage.all import RR
-        return super().__classcall__(cls, surface, coefficients or RR, category or SetsWithPartialMaps())
+        return super().__classcall__(cls, surface, category or SetsWithPartialMaps())
 
-    def __init__(self, surface, coefficients, category):
+    def __init__(self, surface, category):
         if surface != surface.delaunay_triangulation():
             raise NotImplementedError("Surface must be Delaunay triangulated")
 
-        Parent.__init__(self, category=category, base=coefficients)
+        Parent.__init__(self, category=category)
 
         self._surface = surface
-        # TODO: What are the allowed base rings for the coefficients here?
-        self._coefficients = coefficients
 
         self._geometry = GeometricPrimitives(surface)
 
     def surface(self):
         return self._surface
 
-    @cached_method
-    def power_series_ring(self, triangle):
-        r"""
-        Return the power series ring to write down the series describing a
-        harmonic differential in a Voronoi cell.
-
-        EXAMPLES::
-
-            sage: from flatsurf import translation_surfaces, HarmonicDifferentials
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
-            sage: T.set_immutable()
-
-            sage: Ω = HarmonicDifferentials(T)
-            sage: Ω.power_series_ring(1)
-            Power Series Ring in z1 over Complex Field with 53 bits of precision
-            sage: Ω.power_series_ring(2)
-            Power Series Ring in z2 over Complex Field with 53 bits of precision
-
-        """
-        from sage.all import PowerSeriesRing
-        from sage.all import CC
-        return PowerSeriesRing(CC, f"z{triangle}")
-
     def _repr_(self):
         return f"Ω({self._surface})"
 
     def _element_constructor_(self, x, *args, **kwargs):
-        from flatsurf.geometry.cohomology import SimplicialCohomology
-        cohomology = SimplicialCohomology(self._surface, self._coefficients)
-
         if not x:
-            return self._element_from_cohomology(cohomology(), *args, **kwargs)
+            η = self.element_class(self, None, *args, **kwargs)
 
         if isinstance(x, dict):
             return self.element_class(self, x, *args, **kwargs)
 
-        if x.parent() is cohomology:
-            return self._element_from_cohomology(x, *args, **kwargs)
-
-        raise NotImplementedError()
+        return self._element_from_cohomology(x, *args, **kwargs)
 
     def _element_from_cohomology(self, cocycle, /, prec=10, algorithm=["L2"], check=True):
         # TODO: In practice we could speed things up a lot with some smarter
@@ -594,8 +562,8 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
             for (triangle, edge) in self._surface.edge_iterator():
                 triangle_, edge_ = self._surface.opposite_edge(triangle, edge)
                 for derivative in range(prec//3):
-                    expected = η.evaluate(triangle, self._geometry.midpoint(triangle, edge), derivative)
-                    other = η.evaluate(triangle_, self._geometry.midpoint(triangle_, edge_), derivative)
+                    expected = η.evaluate(triangle, constraints.complex_field()(*self._geometry.midpoint(triangle, edge)), derivative)
+                    other = η.evaluate(triangle_, constraints.complex_field()(*self._geometry.midpoint(triangle_, edge_)), derivative)
                     check(other, expected, f"power series defining harmonic differential are not consistent: {derivative}th derivate does not match between {(triangle, edge)} and {(triangle_, edge_)}")
 
             # (2) Check that differential actually integrates like the cohomology class.
@@ -612,7 +580,6 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
 
 
 class GeometricPrimitives:
-    # TODO: Make sure that we never have zero coefficients as these would break degree computations.
 
     def __init__(self, surface):
         # TODO: Require immutable.
@@ -634,28 +601,30 @@ class GeometricPrimitives:
             sage: G = GeometricPrimitives(T)
 
             sage: G.midpoint(0, 0)
-            0j
+            (0, 0)
             sage: G.midpoint(0, 1)
-            0.5j
+            (0, 1/2)
             sage: G.midpoint(0, 2)
-            (-0.5+0j)
+            (-1/2, 0)
             sage: G.midpoint(1, 0)
-            0j
+            (0, 0)
             sage: G.midpoint(1, 1)
-            -0.5j
+            (0, -1/2)
             sage: G.midpoint(1, 2)
-            (0.5+0j)
+            (1/2, 0)
 
         """
         polygon = self._surface.polygon(triangle)
-        return -self.center(triangle) + complex(*polygon.vertex(edge)) + complex(*polygon.edge(edge)) / 2
+        return -self.center(triangle) + polygon.vertex(edge) + polygon.edge(edge) / 2
 
     @cached_method
     def center(self, triangle):
-        return complex(*self._surface.polygon(triangle).circumscribing_circle().center())
+        return self._surface.polygon(triangle).circumscribing_circle().center()
 
 
 class SymbolicCoefficientExpression(CommutativeRingElement):
+    # TODO: Make sure that we never have zero coefficients as these would break degree computations.
+
     def __init__(self, parent, coefficients, constant):
         super().__init__(parent)
 
@@ -753,7 +722,7 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
             sage: T.set_immutable()
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing
-            sage: R = SymbolicCoefficientRing(T)
+            sage: R = SymbolicCoefficientRing(T, CC)
             sage: x = R(('imag', 0, 0)) + 1; x
             Im(a0,0) + 1.00000000000000
             sage: x.norm(1)
@@ -858,12 +827,10 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
         return [self.parent()({variable: self.base_ring().one()}) for variable in self._coefficients]
 
     def real(self):
-        from sage.all import RR
-        return self.map_coefficients(lambda c: c.real(), self.parent().change_ring(RR))
+        return self.map_coefficients(lambda c: c.real(), self.parent().change_ring(self.parent().real_field()))
 
     def imag(self):
-        from sage.all import RR
-        return self.map_coefficients(lambda c: c.imag(), self.parent().change_ring(RR))
+        return self.map_coefficients(lambda c: c.imag(), self.parent().change_ring(self.parent().real_field()))
 
     def __getitem__(self, gen):
         if not gen.is_monomial():
@@ -967,7 +934,7 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
 
 class SymbolicCoefficientRing(UniqueRepresentation, CommutativeRing):
     @staticmethod
-    def __classcall__(cls, surface, base_ring=CC, category=None):
+    def __classcall__(cls, surface, base_ring, category=None):
         from sage.categories.all import CommutativeRings
         return super().__classcall__(cls, surface, base_ring, category or CommutativeRings())
 
@@ -980,7 +947,7 @@ class SymbolicCoefficientRing(UniqueRepresentation, CommutativeRing):
             sage: T.set_immutable()
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing
-            sage: R = SymbolicCoefficientRing(T)
+            sage: R = SymbolicCoefficientRing(T, CC)
             sage: R.has_coerce_map_from(CC)
             True
 
@@ -1000,6 +967,10 @@ class SymbolicCoefficientRing(UniqueRepresentation, CommutativeRing):
 
     def change_ring(self, ring):
         return SymbolicCoefficientRing(self._surface, ring, category=self.category())
+
+    def real_field(self):
+        from sage.all import RealField
+        return RealField(self._base_ring.prec())
 
     def is_exact(self):
         return self.base_ring().is_exact()
@@ -1048,9 +1019,12 @@ class PowerSeriesConstraints:
     This is used to create harmonic differentials from cohomology classes.
     """
 
-    def __init__(self, surface, prec, geometry=None):
+    def __init__(self, surface, prec, bitprec=None, geometry=None):
+        from sage.all import log, ceil, factorial
+
         self._surface = surface
         self._prec = prec
+        self._bitprec = bitprec or ceil(log(factorial(prec), 2) + 53)
         self._geometry = geometry or GeometricPrimitives(surface)
         self._constraints = []
         self._cost = self.symbolic_ring().zero()
@@ -1073,11 +1047,20 @@ class PowerSeriesConstraints:
 
             sage: C = PowerSeriesConstraints(T, prec=3)
             sage: C.symbolic_ring()
-            Ring of Power Series Coefficients over Complex Field with 53 bits of precision
+            Ring of Power Series Coefficients over Complex Field with 56 bits of precision
 
         """
-        from sage.all import CC
-        return SymbolicCoefficientRing(self._surface, base_ring=base_ring or CC)
+        return SymbolicCoefficientRing(self._surface, base_ring=base_ring or self.complex_field())
+
+    @cached_method
+    def complex_field(self):
+        from sage.all import ComplexField
+        return ComplexField(self._bitprec)
+
+    @cached_method
+    def real_field(self):
+        from sage.all import RealField
+        return RealField(self._bitprec)
 
     @cached_method
     def gen(self, triangle, k, conjugate=False):
@@ -1220,9 +1203,9 @@ class PowerSeriesConstraints:
             sage: C.imaginary_part(C.gen(0, 0))
             Im(a0,0)
             sage: C.imaginary_part(C.real(0, 0))
-            0.000000000000000
+            0.0000000000000000
             sage: C.imaginary_part(C.imag(0, 0))
-            0.000000000000000
+            0.0000000000000000
             sage: C.imaginary_part(2*C.gen(0, 0))  # tol 1e-9
             2*Im(a0,0)
             sage: C.imaginary_part(2*I*C.gen(0, 0))  # tol 1e-9
@@ -1243,13 +1226,12 @@ class PowerSeriesConstraints:
         if total_degree > 1:
             raise NotImplementedError("can only encode linear constraints")
 
-        from sage.all import RR, CC
-        if expression.parent().base_ring() is RR:
-            # TODO: Should we normalize here? Which norm should we use?
-            # from sage.all import oo
-            # self._constraints.append(expression / expression.norm(oo))
+        if expression.parent().base_ring() is self.real_field():
+            # TODO: Should we scale?
+            #from sage.all import oo
+            #self._constraints.append(expression / expression.norm(oo))
             self._constraints.append(expression)
-        elif expression.parent().base_ring() is CC:
+        elif expression.parent().base_ring() is self.complex_field():
             self.add_constraint(expression.real())
             self.add_constraint(expression.imag())
         else:
@@ -1278,9 +1260,9 @@ class PowerSeriesConstraints:
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
             sage: C = PowerSeriesConstraints(T, prec=3)
             sage: C.develop(0)
-            Re(a0,0) + 1.00000000000000*I*Im(a0,0) + (Re(a0,1) + 1.00000000000000*I*Im(a0,1))*z + (Re(a0,2) + 1.00000000000000*I*Im(a0,2))*z^2
+            Re(a0,0) + 1.000000000000000*I*Im(a0,0) + (Re(a0,1) + 1.000000000000000*I*Im(a0,1))*z + (Re(a0,2) + 1.000000000000000*I*Im(a0,2))*z^2
             sage: C.develop(1, 1)
-            Re(a1,0) + 1.00000000000000*I*Im(a1,0) + Re(a1,1) + 1.00000000000000*I*Im(a1,1) + Re(a1,2) + 1.00000000000000*I*Im(a1,2) + (Re(a1,1) + 1.00000000000000*I*Im(a1,1) + 2.00000000000000*Re(a1,2) + 2.00000000000000*I*Im(a1,2))*z + (Re(a1,2) + 1.00000000000000*I*Im(a1,2))*z^2
+            Re(a1,0) + 1.000000000000000*I*Im(a1,0) + Re(a1,1) + 1.000000000000000*I*Im(a1,1) + Re(a1,2) + 1.000000000000000*I*Im(a1,2) + (Re(a1,1) + 1.000000000000000*I*Im(a1,1) + 2.000000000000000*Re(a1,2) + 2.000000000000000*I*Im(a1,2))*z + (Re(a1,2) + 1.000000000000000*I*Im(a1,2))*z^2
 
         """
         # TODO: Check that Δ is within the radius of convergence.
@@ -1337,8 +1319,8 @@ class PowerSeriesConstraints:
                 # Namely we integrate the power series defined around the Voronoi vertex of S by symbolically integrating each monomial term.
 
                 # The midpoints of the edges
-                P = self._geometry.midpoint(*S)
-                Q = self._geometry.midpoint(*T)
+                P = self.complex_field()(*self._geometry.midpoint(*S))
+                Q = self.complex_field()(*self._geometry.midpoint(*T))
 
                 P_power = P
                 Q_power = Q
@@ -1365,11 +1347,11 @@ class PowerSeriesConstraints:
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
             sage: C = PowerSeriesConstraints(T, prec=3)
             sage: C.evaluate(0, 0)
-            Re(a0,0) + 1.00000000000000*I*Im(a0,0)
+            Re(a0,0) + 1.000000000000000*I*Im(a0,0)
             sage: C.evaluate(1, 0)
-            Re(a1,0) + 1.00000000000000*I*Im(a1,0)
+            Re(a1,0) + 1.000000000000000*I*Im(a1,0)
             sage: C.evaluate(1, 2)
-            Re(a1,0) + 1.00000000000000*I*Im(a1,0) + 2.00000000000000*Re(a1,1) + 2.00000000000000*I*Im(a1,1) + 4.00000000000000*Re(a1,2) + 4.00000000000000*I*Im(a1,2)
+            Re(a1,0) + 1.000000000000000*I*Im(a1,0) + 2.000000000000000*Re(a1,1) + 2.000000000000000*I*Im(a1,1) + 4.000000000000000*Re(a1,2) + 4.000000000000000*I*Im(a1,2)
 
         """
         # TODO: Check that Δ is within the radius of convergence.
@@ -1381,10 +1363,10 @@ class PowerSeriesConstraints:
 
         value = parent.zero()
 
-        z = 1
+        z = self.complex_field().one()
 
         from sage.all import factorial
-        factor = factorial(derivative)
+        factor = self.complex_field()(factorial(derivative))
 
         for k in range(derivative, self._prec):
             value += factor * self.gen(triangle, k) * z
@@ -1482,8 +1464,8 @@ class PowerSeriesConstraints:
 
             parent = self.symbolic_ring()
 
-            Δ0 = self._geometry.midpoint(triangle0, edge0)
-            Δ1 = self._geometry.midpoint(triangle1, edge1)
+            Δ0 = self.complex_field()(*self._geometry.midpoint(triangle0, edge0))
+            Δ1 = self.complex_field()(*self._geometry.midpoint(triangle1, edge1))
 
             # TODO: Are these good constants?
             if abs(Δ0) < 1e-6 and abs(Δ1) < 1e-6:
@@ -1528,8 +1510,7 @@ class PowerSeriesConstraints:
             0
 
         """
-        from sage.all import RR
-        R = self.symbolic_ring(RR)
+        R = self.symbolic_ring(self.real_field())
 
         cost = R.zero()
 
@@ -1542,8 +1523,8 @@ class PowerSeriesConstraints:
 
             # The midpoint of the edge where the triangles meet with respect to
             # the center of the triangle.
-            Δ0 = self._geometry.midpoint(triangle0, edge0)
-            Δ1 = self._geometry.midpoint(triangle1, edge1)
+            Δ0 = self.complex_field()(*self._geometry.midpoint(triangle0, edge0))
+            Δ1 = self.complex_field()(*self._geometry.midpoint(triangle1, edge1))
 
             # TODO: Should we skip such steps here?
             if abs(Δ0) < 1e-6 and abs(Δ1) < 1e-6:
@@ -1584,7 +1565,7 @@ class PowerSeriesConstraints:
             sage: C = PowerSeriesConstraints(T, 3)
 
             sage: C._elementary_line_integrals(0, 0, 0)
-            (0.0, 0.0)
+            (0.0000000000000000, 0.0000000000000000)
             sage: C._elementary_line_integrals(0, 1, 0)  # tol 1e-9
             (0 - 0.5*I, 0.5 + 0.0*I)
             sage: C._elementary_line_integrals(0, 0, 1)  # tol 1e-9
@@ -1593,10 +1574,8 @@ class PowerSeriesConstraints:
             (-0.1666666667, -0.1666666667)
 
         """
-        from sage.all import I
-
-        ix = 0
-        iy = 0
+        ix = self.complex_field().zero()
+        iy = self.complex_field().zero()
 
         triangle = self._surface.polygon(triangle)
         center = triangle.circumscribing_circle().center()
@@ -1607,24 +1586,26 @@ class PowerSeriesConstraints:
 
             def f(x, y):
                 from sage.all import I
-                return complex((x + I*y)**n * (x - I*y)**m)
+                return self.complex_field()((x + I*y)**n * (x - I*y)**m)
 
             def fx(t):
                 if abs(Δx) < 1e-6:
-                    return complex(0)
+                    return self.complex_field().zero()
                 return f(x0 + t, y0 + t * Δy/Δx)
 
             def fy(t):
                 if abs(Δy) < 1e-6:
-                    return complex(0)
+                    return self.complex_field().zero()
                 return f(x0 + t * Δx/Δy, y0 + t)
 
             def integrate(value, t0, t1):
-                from scipy.integrate import quad
-                return quad(value, t0, t1)[0]
+                from sage.all import numerical_integral
+                # TODO: Should we do something about the error that is stored in [1]?
+                return numerical_integral(value, t0, t1)[0]
 
-            ix += integrate(lambda t: fx(t).real, 0, Δx) + I * integrate(lambda t: fx(t).imag, 0, Δx)
-            iy += integrate(lambda t: fy(t).real, 0, Δy) + I * integrate(lambda t: fy(t).imag, 0, Δy)
+            C = self.complex_field()
+            ix += C(integrate(lambda t: fx(t).real(), 0, Δx), integrate(lambda t: fx(t).imag(), 0, Δx))
+            iy += C(integrate(lambda t: fy(t).real(), 0, Δy), integrate(lambda t: fy(t).imag(), 0, Δy))
 
         return ix, iy
 
@@ -1648,6 +1629,7 @@ class PowerSeriesConstraints:
             -0.083333333 + 0.083333333*I
 
         """
+        C = self.complex_field()
         # Write f(n, m) for z^n\overline{z}^m.
         # Then 1/(2m + 1) [d/dx f(n, m+1) - d/dy -i f(n, m+1)] = f(n, m).
 
@@ -1658,7 +1640,7 @@ class PowerSeriesConstraints:
         ix, iy = self._elementary_line_integrals(triangle, n, m+1)
 
         from sage.all import I
-        return -I/(2*(m + 1)) * ix + 1/(2*(m + 1)) * iy
+        return -I/(C(2)*(m + 1)) * ix + C(1)/(2*(m + 1)) * iy
 
     def _area(self):
         r"""
@@ -1739,7 +1721,7 @@ class PowerSeriesConstraints:
         area = self.symbolic_ring().zero()
 
         for triangle in self._surface.label_iterator():
-            R2 = float(self._surface.polygon(triangle).circumscribing_circle().radius_squared())
+            R2 = self.real_field()(self._surface.polygon(triangle).circumscribing_circle().radius_squared())
 
             for k in range(self._prec):
                 area += (self.real(triangle, k)**2 + self.imag(triangle, k)**2) * R2**(k + 1) / (k + 1)
@@ -1873,10 +1855,9 @@ class PowerSeriesConstraints:
 
         prec = int(self._prec)
 
-        import numpy
-
-        A = numpy.zeros((len(self._constraints), 2*len(triangles)*prec + len(lagranges)))
-        b = numpy.zeros((len(self._constraints),))
+        from sage.all import matrix, vector
+        A = matrix(self.real_field(), len(self._constraints), 2*len(triangles)*prec + len(lagranges))
+        b = vector(self.real_field(), len(self._constraints))
 
         for row, constraint in enumerate(self._constraints):
             for monomial, coefficient in constraint.items():
@@ -1897,6 +1878,29 @@ class PowerSeriesConstraints:
                 A[row, column] = coefficient
 
         return A, b
+
+    @cached_method
+    def power_series_ring(self, triangle):
+        r"""
+        Return the power series ring to write down the series describing a
+        harmonic differential in a Voronoi cell.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
+            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T.set_immutable()
+
+            sage: Ω = PowerSeriesConstraints(T, 8)
+            sage: Ω.power_series_ring(1)
+            Power Series Ring in z1 over Complex Field with 69 bits of precision
+            sage: Ω.power_series_ring(2)
+            Power Series Ring in z2 over Complex Field with 69 bits of precision
+
+        """
+        from sage.all import PowerSeriesRing
+        return PowerSeriesRing(self.complex_field(), f"z{triangle}")
 
     def solve(self):
         r"""
@@ -1920,8 +1924,7 @@ class PowerSeriesConstraints:
 
         A, b = self.matrix()
 
-        import scipy.linalg
-        solution, residues, _, _ = scipy.linalg.lstsq(A, b, check_finite=False, overwrite_a=True, overwrite_b=True)
+        solution = A.solve_right(b)
 
         lagranges = len(set(gen for constraint in self._constraints for gen in constraint.variables() if gen.gen()[0] == "lagrange"))
 
@@ -1930,8 +1933,7 @@ class PowerSeriesConstraints:
 
         solution = [solution[2*k*self._prec:2*(k+1)*self._prec] for k in range(self._surface.num_polygons())]
 
-        from sage.all import CC
         return {
-            triangle: HarmonicDifferentials(self._surface).power_series_ring(triangle)([CC(solution[k][p], solution[k][p + self._prec]) for p in range(self._prec)]).add_bigoh(self._prec)
+            triangle: self.power_series_ring(triangle)([self.complex_field()(solution[k][p], solution[k][p + self._prec]) for p in range(self._prec)]).add_bigoh(self._prec)
             for (k, triangle) in enumerate(self._surface.label_iterator())
         }
