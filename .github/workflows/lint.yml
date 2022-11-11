@@ -20,7 +20,7 @@ jobs:
         run: codespell flatsurf
       - name: Run pycodestyle
         shell: bash -l {0}
-        # We currently only check for these warning. We should enable & fix more warnings.
+        # We currently only check for some warnings. We should enable & fix more of them.
         run: pycodestyle --select=E702,E704,E711,E713,E714 flatsurf/
       - uses: flatsurf/actions/show-logs@main
         if: ${{ always() }}
