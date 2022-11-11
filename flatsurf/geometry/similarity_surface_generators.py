@@ -110,7 +110,7 @@ class EInfinitySurface(Surface):
     represent horizontal cylinders.
     """
     def __init__(self,lambda_squared=None, field=None):
-        if lambda_squared==None:
+        if lambda_squared is None:
             from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
             R=PolynomialRing(ZZ,'x')
             x = R.gen()

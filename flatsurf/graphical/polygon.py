@@ -189,7 +189,7 @@ class GraphicalPolygon:
         Options are processed as in sage.plot.polygon.polygon2d except
         that by default axes=False.
         """
-        if not "axes" in options:
+        if "axes" not in options:
             options["axes"] = False
         return polygon2d(self._v, **options)
 

@@ -146,7 +146,7 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
                 s.set_vertex_zero(l,v,in_place=True)
             return s
         else:
-            assert in_place == False, "In place standardization only available for finite surfaces."
+            assert in_place is False, "In place standardization only available for finite surfaces."
             return TranslationSurface(LazyStandardizedPolygonSurface(self))
 
     def cmp(self, s2, limit=None):
