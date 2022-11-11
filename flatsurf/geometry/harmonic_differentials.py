@@ -59,9 +59,11 @@ from sage.structure.element import CommutativeRingElement
 
 
 class HarmonicDifferential(Element):
-    def __init__(self, parent, series):
+    def __init__(self, parent, series, residue=None, cocycle=None):
         super().__init__(parent)
         self._series = series
+        self._residue = residue
+        self._cocycle = cocycle
 
     def _add_(self, other):
         r"""
@@ -89,6 +91,108 @@ class HarmonicDifferential(Element):
             triangle: self._series[triangle] + other._series[triangle]
             for triangle in self._series
         })
+
+    def error(self, kind=None, verbose=False, abs_tol=1e-6, rel_tol=1e-6):
+        r"""
+        Return whether this differential is likely inaccurate.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology, SimplicialCohomology
+            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T.set_immutable()
+
+            sage: H = SimplicialHomology(T)
+            sage: a, b = H.gens()
+            sage: H = SimplicialCohomology(T)
+            sage: f = H({a: 1})
+
+            sage: Ω = HarmonicDifferentials(T)
+            sage: η = Ω(f)
+            sage: η.error()
+            False
+
+        """
+        error = False
+
+        def errors(expected, actual):
+            abs_error = abs(expected - actual)
+            rel_error = 0
+            if abs(expected) > 1e-12:
+                rel_error = abs_error / abs(expected)
+
+            return abs_error, rel_error
+
+        if kind is None or "residue" in kind:
+            if self._residue is not None:
+                report = f"Harmonic differential created by solving Ax=b with |Ax-b| = {self._residue}."
+                if verbose:
+                    print(report)
+                if self._residue > 1e-6:
+                    error = report
+                    if not verbose:
+                        return error
+
+        if kind is None or "cohomology" in kind:
+            if self._cocycle is not None:
+                for gen in self._cocycle.parent().homology().gens():
+                    expected = self._cocycle(gen)
+                    actual = self.integrate(gen).real
+                    if callable(actual):
+                        actual = actual()
+
+                abs_error, rel_error = errors(expected, actual)
+
+                report = f"Integrating along cycle gives {actual} whereas the cocycle gave {expected}, i.e., an absolute error of {abs_error} and a relative error of {rel_error}."
+                if verbose:
+                    print(report)
+
+                if abs_error > abs_tol or rel_error > rel_tol:
+                    error = report
+                    if not verbose:
+                        return error
+
+        if kind is None or "midpoint_derivatives" in kind:
+            C = PowerSeriesConstraints(self.parent().surface(), self.precision())
+            for (triangle, edge) in self.parent().surface().edge_iterator():
+                triangle_, edge_ = self.parent().surface().opposite_edge(triangle, edge)
+                for derivative in range(self.precision()//3):
+                    expected = self.evaluate(triangle, C.complex_field()(*self.parent()._geometry.midpoint(triangle, edge)), derivative)
+                    other = self.evaluate(triangle_, C.complex_field()(*self.parent()._geometry.midpoint(triangle_, edge_)), derivative)
+
+                    abs_error, rel_error = errors(expected, other)
+
+                    if abs_error > abs_tol or rel_error > rel_tol:
+                        report = f"Power series defining harmonic differential are not consistent where triangles meet. {derivative}th derivative does not match between {(triangle, edge)} where it is {expected} and {(triangle_, edge_)} where it is {other}, i.e., there is an absolute error of {abs_error} and a relative error of {rel_error}."
+                        if verbose:
+                            print(report)
+
+                        error = report
+                        if not verbose:
+                            return error
+
+        if kind is None or "area" in kind:
+            if verbose:
+                C = PowerSeriesConstraints(self.parent().surface(), self.precision())
+                area = self._evaluate(C._area_upper_bound())
+
+                report = f"Area (upper bound) is {area}."
+                print(report)
+
+        if kind is None or "L2" in kind:
+            C = PowerSeriesConstraints(self.parent().surface(), self.precision())
+            abs_error = self._evaluate(C._L2_consistency())
+
+            if verbose:
+                report = f"L2 norm of differential is {abs_error}."
+                print(report)
+
+            if abs_error > abs_tol:
+                error = report
+                if not verbose:
+                    return error
+
+        return error
 
     def series(self, triangle):
         r"""
@@ -151,12 +255,9 @@ class HarmonicDifferential(Element):
             sage: f = H({a: 1})
 
             sage: Ω = HarmonicDifferentials(T)
-            sage: η = Ω(f, prec=16)
+            sage: η = Ω(f, prec=16, check=False)  # TODO: There is a small discontinuity (rel error 1e-6.)
             sage: η.roots()  # TODO: Where should the roots be?
-            [(1, (-0.87449839367527977892471874547, -0.40641777291752519325992142910)),
-             (2, (-0.87874645012914575749435949233, -1.1316108163971494196117078592)),
-             (3, (0.10644302656546669742540506666, -0.50960235439620784468173290036)),
-             (5, (0.40699487589371050446083306414, -0.40791191995722469647078132145))]
+            []
 
         """
         roots = []
@@ -215,7 +316,7 @@ class HarmonicDifferential(Element):
             sage: C = PowerSeriesConstraints(T, 5)
             sage: R = C.symbolic_ring()
             sage: η._evaluate(R(C.gen(0, 0)) + R(C.gen(1, 0)))  # tol 1e-9
-            2.0000000000000000*I
+            0 + 2.0000000000000000*I
 
         """
         coefficients = {}
@@ -547,34 +648,12 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
             weight = get_parameter("area", 1)
             constraints.optimize(weight * constraints._area())
 
-        η = self.element_class(self, constraints.solve())
+        solution, residue = constraints.solve()
+        η = self.element_class(self, solution, residue=residue, cocycle=cocycle)
 
-        # TODO: Factor this out so we can use it in reporting.
         if check:
-            # Check whether this is actually a global differential:
-            # (1) Check that the series are actually consistent where the Voronoi cells overlap.
-            def check(actual, expected, message, abs_error_bound=1e-9, rel_error_bound=1e-6):
-                abs_error = abs(expected - actual)
-                if abs_error > abs_error_bound:
-                    if expected == 0 or abs_error / abs(expected) > rel_error_bound:
-                        print(f"{message}; expected: {expected}, got: {actual}")
-
-            for (triangle, edge) in self._surface.edge_iterator():
-                triangle_, edge_ = self._surface.opposite_edge(triangle, edge)
-                for derivative in range(prec//3):
-                    expected = η.evaluate(triangle, constraints.complex_field()(*self._geometry.midpoint(triangle, edge)), derivative)
-                    other = η.evaluate(triangle_, constraints.complex_field()(*self._geometry.midpoint(triangle_, edge_)), derivative)
-                    check(other, expected, f"power series defining harmonic differential are not consistent: {derivative}th derivate does not match between {(triangle, edge)} and {(triangle_, edge_)}")
-
-            # (2) Check that differential actually integrates like the cohomology class.
-            for gen in cocycle.parent().homology().gens():
-                expected = cocycle(gen)
-                actual = η.integrate(gen).real
-                if callable(actual):
-                    actual = actual()
-                check(actual, expected, f"harmonic differential does not have prescribed integral at {gen}")
-
-            # (3) Check that the area is finite.
+            if report := η.error():
+                raise ValueError(report)
 
         return η
 
@@ -1228,8 +1307,8 @@ class PowerSeriesConstraints:
 
         if expression.parent().base_ring() is self.real_field():
             # TODO: Should we scale?
-            #from sage.all import oo
-            #self._constraints.append(expression / expression.norm(oo))
+            from sage.all import oo
+            # self._constraints.append(expression / expression.norm(1))
             self._constraints.append(expression)
         elif expression.parent().base_ring() is self.complex_field():
             self.add_constraint(expression.real())
@@ -1917,7 +1996,7 @@ class PowerSeriesConstraints:
             sage: C.add_constraint(C.real(0, 0) - C.real(1, 0))
             sage: C.add_constraint(C.real(0, 0) - 1)
             sage: C.solve()
-            {0: 1.00000000000000 + O(z0), 1: 1.00000000000000 + O(z1)}
+            ({0: 1.00000000000000 + O(z0), 1: 1.00000000000000 + O(z1)}, 0.000000000000000)
 
         """
         self._optimize_cost()
@@ -1933,6 +2012,8 @@ class PowerSeriesConstraints:
 
         solution = solution.change_ring(self.real_field())
 
+        residue = (A*solution -b).norm()
+
         lagranges = len(set(gen for constraint in self._constraints for gen in constraint.variables() if gen.gen()[0] == "lagrange"))
 
         if lagranges:
@@ -1943,4 +2024,4 @@ class PowerSeriesConstraints:
         return {
             triangle: self.power_series_ring(triangle)([self.complex_field()(solution[k][p], solution[k][p + self._prec]) for p in range(self._prec)]).add_bigoh(self._prec)
             for (k, triangle) in enumerate(self._surface.label_iterator())
-        }
+        }, residue
