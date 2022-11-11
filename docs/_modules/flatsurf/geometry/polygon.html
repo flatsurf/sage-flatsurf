@@ -799,9 +799,13 @@
             <span class="k">return</span> <span class="bp">NotImplemented</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_v</span> <span class="o">!=</span> <span class="n">other</span><span class="o">.</span><span class="n">_v</span>
 
-    <span class="k">def</span> <span class="fm">__lt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span> <span class="k">raise</span> <span class="ne">TypeError</span>
+    <span class="k">def</span> <span class="fm">__lt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span>
+
     <span class="fm">__le__</span> <span class="o">=</span> <span class="fm">__lt__</span>
+
     <span class="fm">__gt__</span> <span class="o">=</span> <span class="fm">__lt__</span>
+
     <span class="fm">__ge__</span> <span class="o">=</span> <span class="fm">__lt__</span>
 
 <div class="viewcode-block" id="Polygon.cmp"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.polygon.Polygon.cmp">[docs]</a>    <span class="k">def</span> <span class="nf">cmp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
@@ -2982,17 +2986,18 @@
     <span class="n">deprecation</span><span class="p">(</span><span class="mi">33</span><span class="p">,</span> <span class="s2">&quot;Do not use this function anymore but regular_ngon(8)&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">polygons</span><span class="o">.</span><span class="n">regular_ngon</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span></div>
 
+
 <div class="viewcode-block" id="PolygonCreator"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.polygon.PolygonCreator">[docs]</a><span class="k">class</span> <span class="nc">PolygonCreator</span><span class="p">():</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class for iteratively constructing a polygon over the field.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span> <span class="o">=</span> <span class="n">QQ</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="o">=</span><span class="n">QQ</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Create a polygon in the provided field.&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_v</span><span class="o">=</span><span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_w</span><span class="o">=</span><span class="p">[]</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">Fields</span><span class="p">():</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_v</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_w</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">field</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">Fields</span><span class="p">():</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;field must be a field&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_field</span><span class="o">=</span><span class="n">field</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_field</span> <span class="o">=</span> <span class="n">field</span>
 
 <div class="viewcode-block" id="PolygonCreator.vector_space"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.polygon.PolygonCreator.vector_space">[docs]</a>    <span class="k">def</span> <span class="nf">vector_space</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>

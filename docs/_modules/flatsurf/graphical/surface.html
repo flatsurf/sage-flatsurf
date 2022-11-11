@@ -551,7 +551,6 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">xmin</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">ymin</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">xmax</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">ymax</span><span class="p">()</span></div>
 
-
 <div class="viewcode-block" id="GraphicalSurface.graphical_polygon"><a class="viewcode-back" href="../../../graphical.html#flatsurf.graphical.surface.GraphicalSurface.graphical_polygon">[docs]</a>    <span class="k">def</span> <span class="nf">graphical_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the graphical_polygon with the given label.</span>
@@ -560,13 +559,13 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_polygons</span><span class="p">[</span><span class="n">label</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">t</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_position_function</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">t</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_default_position_function</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_position_function</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_position_function</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
             <span class="n">p</span> <span class="o">=</span> <span class="n">GraphicalPolygon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">),</span> <span class="n">transformation</span><span class="o">=</span><span class="n">t</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_polygons</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="n">p</span>
             <span class="k">return</span> <span class="n">p</span></div>
 
-<div class="viewcode-block" id="GraphicalSurface.make_adjacent"><a class="viewcode-back" href="../../../graphical.html#flatsurf.graphical.surface.GraphicalSurface.make_adjacent">[docs]</a>    <span class="k">def</span> <span class="nf">make_adjacent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">reverse</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">visible</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="GraphicalSurface.make_adjacent"><a class="viewcode-back" href="../../../graphical.html#flatsurf.graphical.surface.GraphicalSurface.make_adjacent">[docs]</a>    <span class="k">def</span> <span class="nf">make_adjacent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">visible</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Move the polygon across the prescribed edge so that is adjacent.</span>
 <span class="sd">        The polygon moved is obtained from opposite_edge(p,e).</span>

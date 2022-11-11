@@ -189,7 +189,7 @@
                 <span class="n">s</span><span class="o">.</span><span class="n">set_vertex_zero</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="n">v</span><span class="p">,</span><span class="n">in_place</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">s</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">assert</span> <span class="n">in_place</span> <span class="o">==</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;In place standardization only available for finite surfaces.&quot;</span>
+            <span class="k">assert</span> <span class="n">in_place</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;In place standardization only available for finite surfaces.&quot;</span>
             <span class="k">return</span> <span class="n">TranslationSurface</span><span class="p">(</span><span class="n">LazyStandardizedPolygonSurface</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="TranslationSurface.cmp"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.translation_surface.TranslationSurface.cmp">[docs]</a>    <span class="k">def</span> <span class="nf">cmp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s2</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
