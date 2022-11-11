@@ -5,7 +5,7 @@ EXAMPLES::
     sage: flatsurf.translation_surfaces.veech_2n_gon(4).plot()
     Graphics object consisting of 18 graphics primitives
 """
-#*****************************************************************************
+# ****************************************************************************
 #       Copyright (C) 2013-2019 Vincent Delecroix <20100.delecroix@gmail.com>
 #                     2013-2019 W. Patrick Hooper <wphooper@gmail.com>
 #
@@ -13,7 +13,7 @@ EXAMPLES::
 #  as published by the Free Software Foundation; either version 2 of
 #  the License, or (at your option) any later version.
 #                  https://www.gnu.org/licenses/
-#*****************************************************************************
+# ****************************************************************************
 
 from __future__ import absolute_import, print_function, division
 from six.moves import range, map, filter, zip
@@ -504,7 +504,7 @@ class GraphicalSurface:
         r"""
         Return the quadruple (x1,y1,x2,y2) where x1 and y1 are the minimal
         x- and y-coordinates of a visible graphical polygon and x2 and y2 are the
-        maximal x-and y- cordinates  of a visible graphical polygon.
+        maximal x-and y- coordinates of a visible graphical polygon.
         """
         return self.xmin(), self.ymin(), self.xmax(), self.ymax()
 
@@ -823,34 +823,34 @@ class GraphicalSurface:
         p = g.base_polygon()
 
         if self._edge_labels == 'gluings':
-            ans = []
+            labels = []
             for e in range(p.num_edges()):
                 if self.is_adjacent(lab, e):
-                    ans.append(None)
+                    labels.append(None)
                 else:
                     llab,ee = s.opposite_edge(lab,e)
-                    ans.append(str(llab))
+                    labels.append(str(llab))
         elif self._edge_labels == 'number':
-            ans = list(map(str, range(p.num_edges())))
+            labels = list(map(str, range(p.num_edges())))
         elif self._edge_labels == 'gluings and number':
-            ans = []
+            labels = []
             for e in range(p.num_edges()):
                 if self.is_adjacent(lab, e):
-                    ans.append(str(e))
+                    labels.append(str(e))
                 else:
-                    ans.append("{} -> {}".format(e, s.opposite_edge(lab,e)))
+                    labels.append("{} -> {}".format(e, s.opposite_edge(lab,e)))
         elif self._edge_labels == "letter":
-            ans = []
+            labels = []
             for e in range(p.num_edges()):
                 llab,ee = s.opposite_edge(lab,e)
                 if not self.is_visible(llab) or self.is_adjacent(lab, e):
-                    ans.append(None)
+                    labels.append(None)
                 else:
-                    ans.append(self._get_letter_for_edge(lab,e))
+                    labels.append(self._get_letter_for_edge(lab,e))
         else:
             raise RuntimeError("invalid option for edge_labels")
 
-        return ans
+        return labels
 
     def plot_polygon(self, label, graphical_polygon, upside_down):
         r"""

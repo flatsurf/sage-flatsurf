@@ -3,7 +3,7 @@ This file contains classes implementing Surface which are used useful for
 triangulating, Delaunay triangulating, and Delaunay decomposing infinite
 surfaces.
 """
-#*****************************************************************************
+# ****************************************************************************
 #       Copyright (C) 2013-2019 Vincent Delecroix <20100.delecroix@gmail.com>
 #                     2013-2019 W. Patrick Hooper <wphooper@gmail.com>
 #
@@ -11,18 +11,19 @@ surfaces.
 #  as published by the Free Software Foundation; either version 2 of
 #  the License, or (at your option) any later version.
 #                  https://www.gnu.org/licenses/
-#*****************************************************************************
+# ****************************************************************************
 
 from __future__ import absolute_import, print_function, division
 from six.moves import range, map, filter, zip
 
 from flatsurf.geometry.surface import Surface, Surface_list
 
+
 class LazyTriangulatedSurface(Surface):
     r"""
     Surface class used to triangulate an infinite surface.
     
-    EXAMPLES::
+    EXAMPLES:
 
     Example with relabel=False::
 
@@ -80,11 +81,12 @@ class LazyTriangulatedSurface(Surface):
         else:
             return (pp,ee)
 
+
 class LazyDelaunayTriangulatedSurface(Surface):
     r"""
     Surface class used to find a Delaunay triangulation of an infinite surface.
     
-    EXAMPLES::
+    EXAMPLES:
 
     Example with relabel=False::
 
@@ -302,9 +304,9 @@ class LazyDelaunaySurface(LazyDelaunayTriangulatedSurface):
 
     r"""
     This is an implementation of Surface. It takes a surface (typically
-    infinite) from the constructor. This class respresents the 
-    Delaunay decomposition of this surface. We compute this decomposition
-    lazily so that it works for infinite surfaces.
+    infinite) from the constructor. This class represents the Delaunay
+    decomposition of this surface. We compute this decomposition lazily so that
+    it works for infinite surfaces.
     
     EXAMPLES::
 

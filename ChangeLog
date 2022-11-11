@@ -4,6 +4,58 @@ sage-flatsurf Change Log
 
 .. current developments
 
+v0.4.7
+====================
+
+**Changed:**
+
+* SimilaritySurface.edge_matrix becomes a cached_method
+
+**Removed:**
+
+* Removed unused functions from matrix_2x2, namely, `number_field_to_AA`,
+  `homothety_rotation_decomposition`, `is_similarity`, `rotation_matrix_angle`.
+
+
+
+v0.4.6
+====================
+
+**Performance:**
+
+* Improved acting with a matrix on a polygon by not checking convexity of the result.
+
+
+
+v0.4.5
+====================
+
+**Fixed:**
+
+* Fix determining base ring in `from_pyflatsurf` when importing surfaces from pyflatsurf.
+* Include orbit closure module in documentation at https://flatsurf.github.io/sage-flatsurf.
+
+**Performance:**
+
+* Improved performance of erasing marked points by Delaunay triangulating first.
+
+
+
+v0.4.4
+====================
+
+**Changed:**
+
+* Got rid of the FlowDecomposition wrapper in gl2r_orbit_closure.py.
+
+**Performance:**
+
+* Improved performance of rank computations when computing orbit closures by
+  using a faster algorithm for residue fields, see
+  https://trac.sagemath.org/ticket/33273.
+
+
+
 v0.4.3
 ====================
 

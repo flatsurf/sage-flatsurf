@@ -64,7 +64,7 @@ they are generally not parabolic::
 ######################################################################
 #  This file is part of sage-flatsurf.
 #
-#        Copyright (C) 2019-2021 Julian Rüth
+#        Copyright (C) 2019-2022 Julian Rüth
 #                      2020      Vincent Delecroix
 #
 #  sage-flatsurf is free software: you can redistribute it and/or modify
@@ -133,8 +133,14 @@ class GL2ROrbitClosure:
 
     We now illustrate the projection::
 
-        sage: V = O.proj._row_ambient_module() # optional: pyflatsurf
-        sage: H = O.proj._column_ambient_module() # optional: pyflatsurf
+        sage: try: # optional: pyflatsurf
+        ....:     V = O.proj.row_ambient_module()
+        ....: except AttributeError:
+        ....:     V = O.proj._row_ambient_module()
+        sage: try: # optional: pyflatsurf
+        ....:     H = O.proj.column_ambient_module()
+        ....: except AttributeError:
+        ....:     H = O.proj._column_ambient_module()
         sage: assert O.proj.rank() == H.dimension() # optional: pyflatsurf
         sage: for b in O.boundaries(): # optional: pyflatsurf
         ....:    assert (O.proj * b).is_zero()
@@ -148,8 +154,8 @@ class GL2ROrbitClosure:
             from flatsurf.geometry.pyflatsurf_conversion import to_pyflatsurf
             self._surface = to_pyflatsurf(surface)
         else:
-            from flatsurf.geometry.pyflatsurf_conversion import sage_base_ring
-            base_ring, _ = sage_base_ring(surface)
+            from flatsurf.geometry.pyflatsurf_conversion import sage_ring
+            base_ring = sage_ring(surface)
             self._surface = surface
 
         # A model of the vector space R² in libflatsurf, e.g., to represent the
@@ -190,11 +196,13 @@ class GL2ROrbitClosure:
         # Note that we don't use Sage vector spaces because they are usually
         # way too slow (in particular we avoid calling .echelonize())
         self._U = matrix(self.V2._algebraic_ring(), self.d)
-        
-        if self._U.base_ring() is not QQ:
-            from sage.all import next_prime
-            self._good_prime = self._U.base_ring().ideal(next_prime(2**30)).factor()[0][0]
-            self._Ubar = matrix(self._good_prime.residue_field(), self.d)
+
+        # Computing the rank of _U can be very expensive. Therefore, we use
+        # that rank _Ubar ≤ rank _U where _Ubar = _U mod _p for some prime
+        # ideal's valuation _p, see _rank().
+        # Since _p is a bit expensive to compute, it's initialized on demand.
+        self._p = None
+        self._Ubar = None
 
         self._U_rank = 0
 
@@ -466,7 +474,7 @@ class GL2ROrbitClosure:
         r"""
         Return a pair ``(tree, proj)`` where
 
-        - ``tree`` is a tree encoded in a dictionnary. Its keys are the faces
+        - ``tree`` is a tree encoded in a dictionary. Its keys are the faces
           (coded by their minimal adjacent half-edge) and the corresponding
           value is the half-edge to cross to go toward the root face.
 
@@ -758,12 +766,12 @@ class GL2ROrbitClosure:
 
     def cylinder_circumference(self, component, A, sc_index, proj):
         r"""
-        Return the circumference of the cylindre ``component`` in the homology
+        Return the circumference of the cylinder ``component`` in the homology
         of the underlying surface.
 
         INPUT:
 
-        - ``component`` - a cylinder
+        - ``component`` -- a cylinder
 
         - ``A``, ``sc_index``, ``proj`` -- the output of
           ``flow_decomposition_kontsevich_zorich_cocycle``
@@ -784,7 +792,7 @@ class GL2ROrbitClosure:
             sage: O.cylinder_circumference(c1, *kz) # optional: pyflatsurf
             (0, 0, -1, 0)
         """
-        if component.cylinder() != True:
+        if component.cylinder() != True:  # cannot be replaced by "is not True"
             raise ValueError
 
         perimeters = [p for p in component.perimeter()]
@@ -1094,34 +1102,25 @@ class GL2ROrbitClosure:
             self.update_tangent_space_from_vector(v)
             if self._U_rank == self._U.nrows(): return
 
-    def _rank(self, v):
+    def _rank(self):
         r"""
-        Return a lower bound for the rank of the matrix U.
+        Return a lower bound for the rank of the matrix _U.
         """
-        self._U[self._U_rank] = v
-
-        K = self._U.base_ring()
-        if K is QQ:
-            return self._U.rank()
-
-        k = K.residue_field(self._good_prime)
-        try:
-            self._Ubar[self._U_rank] = v.change_ring(k)
-        except ValueError:
-            # Some denominator in v is not a unit mod q.
-            while True:
-                from sage.all import next_prime
-                self._good_prime = next_prime(self._good_prime.residue_field().characteristic())
-                self._good_prime = K.ideal(self._good_prime).factor()[0][0]
-                k = K.residue_field(self._good_prime)
+        while True:
+            if self._p is not None:
                 try:
-                    self._Ubar = self._U.change_ring(k)
+                    self._Ubar = self._U.apply_map(phi=self._p.reduce, R=self._p.residue_field())
+                    break
                 except ValueError:
-                    continue
+                    # The matrix _U cannot be reduced mod p because some entries have negative valuation.
+                    pass
 
-        if self._Ubar.rank() == self._U_rank + 1:
-            return self._U_rank + 1
-        return self._U_rank
+            p = 2**30 if self._p is None else self._p.p()
+            
+            from sage.all import next_prime
+            self._p = ZZ.valuation(next_prime(p)).extensions(self._U.base_ring())[0]
+
+        return self._Ubar.rank()
 
     def update_tangent_space_from_vector(self, v):
         if self._U_rank == self._U.nrows():
@@ -1134,9 +1133,10 @@ class GL2ROrbitClosure:
                 self.update_tangent_space_from_vector(p)
             return
 
-        r = self._rank(v)
-        if r > self._U_rank:
-            assert r == self._U_rank + 1
+        self._U[self._U_rank] = v
+        rank = self._rank()
+        if rank > self._U_rank:
+            assert rank == self._U_rank + 1
             self._U_rank += 1
 
     def __eq__(self, other):
