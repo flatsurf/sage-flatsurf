@@ -5,9 +5,9 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.10.3
+    jupytext_version: 1.14.0
 kernelspec:
-  display_name: SageMath 9.2
+  display_name: SageMath 9.6
   language: sage
   name: sagemath
 ---
@@ -25,7 +25,7 @@ from flatsurf.geometry.polyhedra import *
 s = platonic_dodecahedron()[1]
 ```
 
-The default way plotting looks:
+The default plot of this surface:
 
 ```{code-cell} ipython3
 s.plot()
@@ -39,7 +39,7 @@ Plotting the surface is controlled by a GraphicalSurface object. You can get the
 gs = s.graphical_surface()
 ```
 
-The graphical surface controls where polygons are drawn. You can glue a polygon across an edge using `gs.make_adjacent(label,edge)`. A difficulty is that you need to know which edge is which. You can enable `zero_flags` to see the zero vertex of each polygon.
+The graphical surface controls where polygons are drawn. You can glue a polygon across an edge using `gs.make_adjacent(label, edge)`. A difficulty is that you need to know which edge is which. You can enable `zero_flags` to see the zero vertex of each polygon.
 
 ```{code-cell} ipython3
 gs.will_plot_zero_flags = True
@@ -49,16 +49,16 @@ gs.will_plot_zero_flags = True
 gs.plot()
 ```
 
-FlatSurf just uses some simple algorithm to layout polygons. Sometimes they overlap for example. I'm troubled by that the picture is asymmetric: Polygon 4 should have a pentagon 10 sticking to it. We can see by counting counterclockwise from the red flag in polygon 4 that the 10 appears on edge 3. We can verify that with:
+sage-flatsurf uses a simple algorithm to layout polygons. Sometimes polygons overlap. But in this example the main concern is maybe that the picture is not as symmetric as we would like it to be. For example, we could aim for things to be symmetric around the polygons 0 and 1. Let's say we would like to move polygon 2 so that it's glued to 10 instead of being glued to 0. We count the edges on polygon 10 until we reach the edge glued to 2. It's the first one. We can verify that this is correct:
 
 ```{code-cell} ipython3
-s.opposite_edge(4,3)
+s.opposite_edge(10, 0)
 ```
 
-We can move polygon 10 so that it is adjacent to polygon 4 with the command:
+We can move polygon 2 so that it is adjacent to polygon 10 with the command:
 
 ```{code-cell} ipython3
-gs.make_adjacent(4,3)
+gs.make_adjacent(10, 0)
 ```
 
 Lets check that it worked:
@@ -67,32 +67,27 @@ Lets check that it worked:
 s.plot()
 ```
 
-Oops. Lets also move polygon 11.
+Let's build the symmetric widget at polygon 1 by moving 7 to be adjacent to 5 and 3 to be adjacent to 7. Note that the order of the movements matter. If we do it in the wrong order, we detach things:
 
 ```{code-cell} ipython3
-gs.make_adjacent(7,4)
+gs.make_adjacent(7, 3)
+gs.make_adjacent(5, 4)
+s.plot()
 ```
 
+Indeed, we moved 3 to be adjacent to 7 but then moved 7 away. Let's do it in the correct order:
+
 ```{code-cell} ipython3
-gs.plot()
+gs.make_adjacent(5, 4)
+gs.make_adjacent(7, 3)
+s.plot()
 ```
 
-There are other options which can change what is displayed on an edge. The option can also be passed to `s.graphical_surface()`.
+Finally, glue 9 to 8 for a symmetric picture:
 
 ```{code-cell} ipython3
-gs.process_options(edge_labels="gluings and number")
-```
-
-```{code-cell} ipython3
-gs.plot()
-```
-
-```{code-cell} ipython3
-gs.process_options(edge_labels="number")
-```
-
-```{code-cell} ipython3
-gs.plot()
+gs.make_adjacent(8, 0)
+s.plot()
 ```
 
 ## Moving between coordinate systems
@@ -115,34 +110,34 @@ Lets now look at "graphical coordinates" i.e., the coordinates in which `gs` wor
 show(gs.plot(), axes=True)
 ```
 
-I can tell that the point `(3,5)` is in the unfolding, but I can't tell if it is in polygon 3 or 7. The GraphicalSurface `gs` is made out of GraphicalPolygons which we can use to deal with this sort of thing.
+We can tell that the point `(4, -4)` is in the unfolding, but we can't immediately tell if it is in polygon 5 or 7. The GraphicalSurface `gs` is made out of GraphicalPolygons which we can use to deal with this sort of thing.
 
 ```{code-cell} ipython3
-gs.graphical_polygon(3).contains((3,5))
+gs.graphical_polygon(5).contains((4, -4))
 ```
 
 ```{code-cell} ipython3
-gs.graphical_polygon(7).contains((3,5))
+gs.graphical_polygon(7).contains((4, -4))
 ```
 
 Great. Now we can get the position of the point on the surface!
 
 ```{code-cell} ipython3
 gp = gs.graphical_polygon(7)
-pt = gp.transform_back((3,5))
+pt = gp.transform_back((4, -4))
 pt
 ```
 
-Here we plot polygon 6 in its geometric coordinates with `pt`.
+Here we plot polygon 7 in its geometric coordinates with `pt`.
 
 ```{code-cell} ipython3
-s.polygon(6).plot()+point2d([pt],zorder=100)
+s.polygon(7).plot() + point2d([pt], zorder=100, color="red")
 ```
 
 Lets convert it to a surface point and plot it!
 
 ```{code-cell} ipython3
-spt = s.surface_point(7,pt)
+spt = s.surface_point(7, pt)
 spt
 ```
 
@@ -150,11 +145,10 @@ spt
 s.plot() + spt.plot(color="red", size=20)
 ```
 
-Now I want to plot an upward trajectory through this point. Again, I have to deal with the fact that the coordinates might not match. You can get access to the transformation (a similarity) from geometric coordinates
-to graphical coordinates:
+Now we want to plot an upward trajectory through this point. Again, we have to deal with the fact that the coordinates might not match. You can get access to the transformation (a similarity) from geometric coordinates to graphical coordinates:
 
 ```{code-cell} ipython3
-transformation = gs.graphical_polygon(6).transformation()
+transformation = gs.graphical_polygon(7).transformation()
 transformation
 ```
 
@@ -172,7 +166,7 @@ show(inverse_transformation.derivative())
 ```
 
 ```{code-cell} ipython3
-direction = inverse_transformation.derivative()*vector((0,1))
+direction = inverse_transformation.derivative() * vector((0,1))
 direction
 ```
 
@@ -190,7 +184,7 @@ traj.is_closed()
 ```
 
 ```{code-cell} ipython3
-s.plot()+spt.plot(color="red")+traj.plot()
+s.plot() + spt.plot(color="red") + traj.plot(color="orange")
 ```
 
 ## Multiple graphical surfaces
@@ -230,7 +224,7 @@ pretty_gs.plot()
 To use a non-default graphical surface you need to pass the graphical surface as a parameter.
 
 ```{code-cell} ipython3
-pretty_gs.plot()+spt.plot(pretty_gs, color="red")+traj.plot(pretty_gs)
+pretty_gs.plot() + spt.plot(pretty_gs, color="red") + traj.plot(pretty_gs)
 ```
 
 Lets make it prettier by drawing some stars on the faces!
@@ -312,42 +306,6 @@ gs.edge_label_options["push_off"]=0.02
 gs.edge_label_options["color"]="green"
 gs.adjacent_edge_options["thickness"]=0.5
 gs.non_adjacent_edge_options["thickness"]=0.25
-```
-
-```{code-cell} ipython3
-gs.plot()
-```
-
-## Hacking GraphicalSurface
-
-```{code-cell} ipython3
-s = translation_surfaces.infinite_staircase()
-```
-
-```{code-cell} ipython3
-gs = s.graphical_surface(polygon_labels=False, edge_labels=False)
-```
-
-```{code-cell} ipython3
-gs.plot()
-```
-
-The methods `plot_polygon`, `plot_polygon_label`, `plot_edge`, `plot_edge_label`, `plot_zero_flag` are fairly
-simple. They just call methods in a GraphicalPolygon which was passed as a parameter. We can replace any of these functions to customize their behaviour.
-
-```{code-cell} ipython3
-# Define a replacement method.
-def plot_polygon(self, label, graphical_polygon, upside_down):
-    if label%2==0:
-        return graphical_polygon.plot_polygon(color="lightgreen")
-    else:
-        return graphical_polygon.plot_polygon(color="yellow")        
-```
-
-```{code-cell} ipython3
-# Replace the method in gs.
-from types import MethodType
-gs.plot_polygon = MethodType(plot_polygon, gs)
 ```
 
 ```{code-cell} ipython3
