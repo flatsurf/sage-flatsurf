@@ -1,0 +1,674 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Graphics Configuration &#8212; sage-flatsurf 0.4.7 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="The GL(2,R) Action, the Veech Group, Delaunay Decomposition" href="linear_action_and_delaunay.html" />
+    <link rel="prev" title="Defining Surfaces" href="defining_surfaces.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="linear_action_and_delaunay.html" title="The GL(2,R) Action, the Veech Group, Delaunay Decomposition"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="defining_surfaces.html" title="Defining Surfaces"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">sage-flatsurf 0.4.7 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Graphics Configuration</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="graphics-configuration">
+<h1>Graphics Configuration<a class="headerlink" href="#graphics-configuration" title="Permalink to this heading">¶</a></h1>
+<section id="rearranging-polygons">
+<h2>Rearranging Polygons<a class="headerlink" href="#rearranging-polygons" title="Permalink to this heading">¶</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">flatsurf.geometry.polyhedra</span> <span class="kn">import</span> <span class="o">*</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s</span> <span class="o">=</span> <span class="n">platonic_dodecahedron</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The default plot of this surface:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/3b921798d2d8742217e84d7ff1b9315d826c2bf9da7d9f7089575f578f6dabd2.png" src="../_images/3b921798d2d8742217e84d7ff1b9315d826c2bf9da7d9f7089575f578f6dabd2.png" />
+</div>
+</div>
+<p>Labels in the center of each polygon indicate the label of the polygon. Edge labels above indicate which polygon the edge is glued to.</p>
+<p>Plotting the surface is controlled by a GraphicalSurface object. You can get the surface as follows:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gs</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">graphical_surface</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The graphical surface controls where polygons are drawn. You can glue a polygon across an edge using <code class="docutils literal notranslate"><span class="pre">gs.make_adjacent(label,</span> <span class="pre">edge)</span></code>. A difficulty is that you need to know which edge is which. You can enable <code class="docutils literal notranslate"><span class="pre">zero_flags</span></code> to see the zero vertex of each polygon.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gs</span><span class="o">.</span><span class="n">will_plot_zero_flags</span> <span class="o">=</span> <span class="kc">True</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gs</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/91a2c4a99567bfb445bcf0cdb3be3ba07ff677fb7c4246d264781ed374e8b6fb.png" src="../_images/91a2c4a99567bfb445bcf0cdb3be3ba07ff677fb7c4246d264781ed374e8b6fb.png" />
+</div>
+</div>
+<p>sage-flatsurf uses a simple algorithm to layout polygons. Sometimes polygons overlap. But in this example the main concern is maybe that the picture is not as symmetric as we would like it to be. For example, we could aim for things to be symmetric around the polygons 0 and 1. Let’s say we would like to move polygon 2 so that it’s glued to 10 instead of being glued to 0. We count the edges on polygon 10 until we reach the edge glued to 2. It’s the first one. We can verify that this is correct:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(2, 3)
+</pre></div>
+</div>
+</div>
+</div>
+<p>We can move polygon 2 so that it is adjacent to polygon 10 with the command:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gs</span><span class="o">.</span><span class="n">make_adjacent</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Lets check that it worked:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/653de57ff3fd74429fd63350be87b63f6c320b8c5e922ae41f5c68439ec63a74.png" src="../_images/653de57ff3fd74429fd63350be87b63f6c320b8c5e922ae41f5c68439ec63a74.png" />
+</div>
+</div>
+<p>Let’s build the symmetric widget at polygon 1 by moving 7 to be adjacent to 5 and 3 to be adjacent to 7. Note that the order of the movements matter. If we do it in the wrong order, we detach things:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gs</span><span class="o">.</span><span class="n">make_adjacent</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="n">gs</span><span class="o">.</span><span class="n">make_adjacent</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+<span class="n">s</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/157beee917e6e2abdd57f0c5143ea9419c2b388b3d90720f82fa71c498fee384.png" src="../_images/157beee917e6e2abdd57f0c5143ea9419c2b388b3d90720f82fa71c498fee384.png" />
+</div>
+</div>
+<p>Indeed, we moved 3 to be adjacent to 7 but then moved 7 away. Let’s do it in the correct order:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gs</span><span class="o">.</span><span class="n">make_adjacent</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+<span class="n">gs</span><span class="o">.</span><span class="n">make_adjacent</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="n">s</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/03d13edf157bb03243cfaacbc36c25bc82e7104f977ef02ccc7c986572be643e.png" src="../_images/03d13edf157bb03243cfaacbc36c25bc82e7104f977ef02ccc7c986572be643e.png" />
+</div>
+</div>
+<p>Finally, glue 9 to 8 for a symmetric picture:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gs</span><span class="o">.</span><span class="n">make_adjacent</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">s</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/85b22c802fa8c9b47c034e10fa646916ad6b2095f5122d6c567394bb8496c4c9.png" src="../_images/85b22c802fa8c9b47c034e10fa646916ad6b2095f5122d6c567394bb8496c4c9.png" />
+</div>
+</div>
+</section>
+<section id="moving-between-coordinate-systems">
+<h2>Moving between coordinate systems<a class="headerlink" href="#moving-between-coordinate-systems" title="Permalink to this heading">¶</a></h2>
+<p>The Euclidean Cone Surface <code class="docutils literal notranslate"><span class="pre">s</span></code> works in a different coordinate system then the graphical surface <code class="docutils literal notranslate"><span class="pre">gs</span></code>. So, when we moved the polygon above, we had no affect on <code class="docutils literal notranslate"><span class="pre">s</span></code>. In fact, the polygons of <code class="docutils literal notranslate"><span class="pre">s</span></code> are all the same:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Polygon: (0, 0), (2, 0), (a^2 - 1, -a), (1, -a^3 + 2*a), (-a^2 + 3, -a)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Polygon: (0, 0), (2, 0), (a^2 - 1, -a), (1, -a^3 + 2*a), (-a^2 + 3, -a)
+</pre></div>
+</div>
+</div>
+</div>
+<p>So really <code class="docutils literal notranslate"><span class="pre">s</span></code> is a disjoint union of twelve copies of a standard pentagon with some edge gluings.</p>
+<p>Lets now look at “graphical coordinates” i.e., the coordinates in which <code class="docutils literal notranslate"><span class="pre">gs</span></code> works.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">show</span><span class="p">(</span><span class="n">gs</span><span class="o">.</span><span class="n">plot</span><span class="p">(),</span> <span class="n">axes</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/1fb8ce83f753cde8906651b7c1dc764b2e52e5ef682ff7e69efd5b0f1a680b0a.png" src="../_images/1fb8ce83f753cde8906651b7c1dc764b2e52e5ef682ff7e69efd5b0f1a680b0a.png" />
+</div>
+</div>
+<p>We can tell that the point <code class="docutils literal notranslate"><span class="pre">(4,</span> <span class="pre">-4)</span></code> is in the unfolding, but we can’t immediately tell if it is in polygon 5 or 7. The GraphicalSurface <code class="docutils literal notranslate"><span class="pre">gs</span></code> is made out of GraphicalPolygons which we can use to deal with this sort of thing.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gs</span><span class="o">.</span><span class="n">graphical_polygon</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span><span class="o">.</span><span class="n">contains</span><span class="p">((</span><span class="mi">4</span><span class="p">,</span> <span class="o">-</span><span class="mi">4</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>False
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gs</span><span class="o">.</span><span class="n">graphical_polygon</span><span class="p">(</span><span class="mi">7</span><span class="p">)</span><span class="o">.</span><span class="n">contains</span><span class="p">((</span><span class="mi">4</span><span class="p">,</span> <span class="o">-</span><span class="mi">4</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>True
+</pre></div>
+</div>
+</div>
+</div>
+<p>Great. Now we can get the position of the point on the surface!</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gp</span> <span class="o">=</span> <span class="n">gs</span><span class="o">.</span><span class="n">graphical_polygon</span><span class="p">(</span><span class="mi">7</span><span class="p">)</span>
+<span class="n">pt</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">transform_back</span><span class="p">((</span><span class="mi">4</span><span class="p">,</span> <span class="o">-</span><span class="mi">4</span><span class="p">))</span>
+<span class="n">pt</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(-2*a^3 - a^2 + 6*a + 1, -2*a^3 - 2*a^2 + 5*a + 4)
+</pre></div>
+</div>
+</div>
+</div>
+<p>Here we plot polygon 7 in its geometric coordinates with <code class="docutils literal notranslate"><span class="pre">pt</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="mi">7</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span> <span class="o">+</span> <span class="n">point2d</span><span class="p">([</span><span class="n">pt</span><span class="p">],</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/69a6107d7214b4ef82da1e5eea15421f58e23ed88438f908c62544fc6ae3b748.png" src="../_images/69a6107d7214b4ef82da1e5eea15421f58e23ed88438f908c62544fc6ae3b748.png" />
+</div>
+</div>
+<p>Lets convert it to a surface point and plot it!</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">spt</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">surface_point</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="n">pt</span><span class="p">)</span>
+<span class="n">spt</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Surface point located at (-2*a^3 - a^2 + 6*a + 1, -2*a^3 - 2*a^2 + 5*a + 4) in polygon 7
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span> <span class="o">+</span> <span class="n">spt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/0c427fed5439b3dbf52229b70ebe686846398b0b3047112bf7bd414cec3208d0.png" src="../_images/0c427fed5439b3dbf52229b70ebe686846398b0b3047112bf7bd414cec3208d0.png" />
+</div>
+</div>
+<p>Now we want to plot an upward trajectory through this point. Again, we have to deal with the fact that the coordinates might not match. You can get access to the transformation (a similarity) from geometric coordinates to graphical coordinates:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">transformation</span> <span class="o">=</span> <span class="n">gs</span><span class="o">.</span><span class="n">graphical_polygon</span><span class="p">(</span><span class="mi">7</span><span class="p">)</span><span class="o">.</span><span class="n">transformation</span><span class="p">()</span>
+<span class="n">transformation</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(x, y) |-&gt; ((1/2*a^2 - 1)*x + (-1/2*a^3 + 3/2*a)*y + (a^2), (1/2*a^3 - 3/2*a)*x + (1/2*a^2 - 1)*y + (a^3 - a))
+</pre></div>
+</div>
+</div>
+</div>
+<p>Really we want the inverse:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">inverse_transformation</span> <span class="o">=</span> <span class="o">~</span><span class="n">transformation</span>
+<span class="n">inverse_transformation</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(x, y) |-&gt; ((1/2*a^2 - 1)*x + (1/2*a^3 - 3/2*a)*y + (-3*a^2 + 5), (-1/2*a^3 + 3/2*a)*x + (1/2*a^2 - 1)*y + (-a))
+</pre></div>
+</div>
+</div>
+</div>
+<p>We just want the derivative of this similarity to transform the vertical direction. The derivative is a $2 \times 2$ matrix.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">show</span><span class="p">(</span><span class="n">inverse_transformation</span><span class="o">.</span><span class="n">derivative</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><html>\(\displaystyle \left(\begin{array}{rr}
+\frac{1}{2} a^{2} - 1 & \frac{1}{2} a^{3} - \frac{3}{2} a \\
+-\frac{1}{2} a^{3} + \frac{3}{2} a & \frac{1}{2} a^{2} - 1
+\end{array}\right)\)</html></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">direction</span> <span class="o">=</span> <span class="n">inverse_transformation</span><span class="o">.</span><span class="n">derivative</span><span class="p">()</span> <span class="o">*</span> <span class="n">vector</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+<span class="n">direction</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(1/2*a^3 - 3/2*a, 1/2*a^2 - 1)
+</pre></div>
+</div>
+</div>
+</div>
+<p>We can use the point and the direction to get a tangent vector, which we convert to a trajectory, flow and plot.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tangent_vector</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">tangent_vector</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="n">pt</span><span class="p">,</span> <span class="n">direction</span><span class="p">)</span>
+<span class="n">tangent_vector</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>SimilaritySurfaceTangentVector in polygon 7 based at (-2*a^3 - a^2 + 6*a + 1, -2*a^3 - 2*a^2 + 5*a + 4) with vector (1/2*a^3 - 3/2*a, 1/2*a^2 - 1)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">traj</span> <span class="o">=</span> <span class="n">tangent_vector</span><span class="o">.</span><span class="n">straight_line_trajectory</span><span class="p">()</span>
+<span class="n">traj</span><span class="o">.</span><span class="n">flow</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">traj</span><span class="o">.</span><span class="n">is_closed</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>True
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span> <span class="o">+</span> <span class="n">spt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="n">traj</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;orange&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/40fbc5db39041e3d873575bc7fda242dd2d08408fd5c67a0c40103670c3cfe26.png" src="../_images/40fbc5db39041e3d873575bc7fda242dd2d08408fd5c67a0c40103670c3cfe26.png" />
+</div>
+</div>
+</section>
+<section id="multiple-graphical-surfaces">
+<h2>Multiple graphical surfaces<a class="headerlink" href="#multiple-graphical-surfaces" title="Permalink to this heading">¶</a></h2>
+<p>It is possible to have more than one graphical surface. Maybe you want to have one where things look better.
+To get a new suface, you can call <code class="docutils literal notranslate"><span class="pre">s.graphical_surface()</span></code> again but with a <code class="docutils literal notranslate"><span class="pre">cached=False</span></code> parameter.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pretty_gs</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">graphical_surface</span><span class="p">(</span><span class="n">polygon_labels</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">edge_labels</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">cached</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pretty_gs</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/29e1be6603085101d0f9a04775aa9688a48585393973b61520e1a20aec7cf54f.png" src="../_images/29e1be6603085101d0f9a04775aa9688a48585393973b61520e1a20aec7cf54f.png" />
+</div>
+</div>
+<p>Current polygon printing options:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pretty_gs</span><span class="o">.</span><span class="n">polygon_options</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;color&#39;: &#39;lightgray&#39;}
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">del</span> <span class="n">pretty_gs</span><span class="o">.</span><span class="n">polygon_options</span><span class="p">[</span><span class="s2">&quot;color&quot;</span><span class="p">]</span>
+<span class="n">pretty_gs</span><span class="o">.</span><span class="n">polygon_options</span><span class="p">[</span><span class="s2">&quot;rgbcolor&quot;</span><span class="p">]</span><span class="o">=</span><span class="s2">&quot;#ffeeee&quot;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pretty_gs</span><span class="o">.</span><span class="n">non_adjacent_edge_options</span><span class="p">[</span><span class="s2">&quot;thickness&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span>
+<span class="n">pretty_gs</span><span class="o">.</span><span class="n">non_adjacent_edge_options</span><span class="p">[</span><span class="s2">&quot;color&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;lightblue&quot;</span>
+<span class="n">pretty_gs</span><span class="o">.</span><span class="n">will_plot_adjacent_edges</span> <span class="o">=</span> <span class="kc">False</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pretty_gs</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/25423f99bac06cac4028b6eb2b78c0033b6159c2d7c4d6eecee0afd7362f2045.png" src="../_images/25423f99bac06cac4028b6eb2b78c0033b6159c2d7c4d6eecee0afd7362f2045.png" />
+</div>
+</div>
+<p>To use a non-default graphical surface you need to pass the graphical surface as a parameter.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pretty_gs</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span> <span class="o">+</span> <span class="n">spt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">pretty_gs</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="n">traj</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">pretty_gs</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/d35d5485db4f80ea9d1795a8b8eca3c47c4a36da61d9f361e58be46977aca1da.png" src="../_images/d35d5485db4f80ea9d1795a8b8eca3c47c4a36da61d9f361e58be46977aca1da.png" />
+</div>
+</div>
+<p>Lets make it prettier by drawing some stars on the faces!</p>
+<p>Find all saddle connections of length at most $\sqrt{16}$:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">saddle_connections</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">saddle_connections</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The edges have length two so we will keep anything that has a different length.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">saddle_connections2</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">sc</span> <span class="ow">in</span> <span class="n">saddle_connections</span><span class="p">:</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">holonomy</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">h</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">h</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">!=</span> <span class="mi">4</span><span class="p">:</span>
+        <span class="n">saddle_connections2</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sc</span><span class="p">)</span>
+<span class="nb">len</span><span class="p">(</span><span class="n">saddle_connections2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>120
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot</span> <span class="o">=</span> <span class="n">pretty_gs</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">sc</span> <span class="ow">in</span> <span class="n">saddle_connections2</span><span class="p">:</span>
+    <span class="n">plot</span> <span class="o">+=</span> <span class="n">sc</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">pretty_gs</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">)</span>
+<span class="n">plot</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/b29b810e26c5e689d095fcd35f8a4bba6e2141a9e97729a31e7952ba1c99b503.png" src="../_images/b29b810e26c5e689d095fcd35f8a4bba6e2141a9e97729a31e7952ba1c99b503.png" />
+</div>
+</div>
+<p>Plot using the original graphical surface.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">sc</span> <span class="ow">in</span> <span class="n">saddle_connections2</span><span class="p">:</span>
+    <span class="n">plot</span> <span class="o">+=</span> <span class="n">sc</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">)</span>
+<span class="n">plot</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/7ab53526895d5c4bcac7a168f29d2b30204d59e9d033cd3675eb08e0afd3f15c.png" src="../_images/7ab53526895d5c4bcac7a168f29d2b30204d59e9d033cd3675eb08e0afd3f15c.png" />
+</div>
+</div>
+</section>
+<section id="manipulating-edge-labels">
+<h2>Manipulating edge labels<a class="headerlink" href="#manipulating-edge-labels" title="Permalink to this heading">¶</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">arnoux_yoccoz</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/1d0d972f00a2f9f9436eb01280af8e629fae2636f8c8b67f13c099d5c08e4a63.png" src="../_images/1d0d972f00a2f9f9436eb01280af8e629fae2636f8c8b67f13c099d5c08e4a63.png" />
+</div>
+</div>
+<p>Here is an example with the edge labels centered on the edge.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gs</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">graphical_surface</span><span class="p">(</span><span class="n">cached</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">del</span> <span class="n">gs</span><span class="o">.</span><span class="n">polygon_options</span><span class="p">[</span><span class="s2">&quot;color&quot;</span><span class="p">]</span>
+<span class="n">gs</span><span class="o">.</span><span class="n">polygon_options</span><span class="p">[</span><span class="s2">&quot;rgbcolor&quot;</span><span class="p">]</span><span class="o">=</span><span class="s2">&quot;#eee&quot;</span>
+<span class="n">gs</span><span class="o">.</span><span class="n">edge_label_options</span><span class="p">[</span><span class="s2">&quot;position&quot;</span><span class="p">]</span><span class="o">=</span><span class="s2">&quot;edge&quot;</span>
+<span class="n">gs</span><span class="o">.</span><span class="n">edge_label_options</span><span class="p">[</span><span class="s2">&quot;t&quot;</span><span class="p">]</span><span class="o">=</span><span class="mf">0.5</span>
+<span class="n">gs</span><span class="o">.</span><span class="n">edge_label_options</span><span class="p">[</span><span class="s2">&quot;push_off&quot;</span><span class="p">]</span><span class="o">=</span><span class="mi">0</span>
+<span class="n">gs</span><span class="o">.</span><span class="n">edge_label_options</span><span class="p">[</span><span class="s2">&quot;color&quot;</span><span class="p">]</span><span class="o">=</span><span class="s2">&quot;green&quot;</span>
+<span class="n">gs</span><span class="o">.</span><span class="n">adjacent_edge_options</span><span class="p">[</span><span class="s2">&quot;thickness&quot;</span><span class="p">]</span><span class="o">=</span><span class="mf">0.5</span>
+<span class="n">gs</span><span class="o">.</span><span class="n">will_plot_non_adjacent_edges</span><span class="o">=</span><span class="kc">False</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gs</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/7f90397090ad35a50bc47ec4370da616c21248d98ebe91b5cd45dfcca8091f6f.png" src="../_images/7f90397090ad35a50bc47ec4370da616c21248d98ebe91b5cd45dfcca8091f6f.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gs</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">graphical_surface</span><span class="p">(</span><span class="n">cached</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">del</span> <span class="n">gs</span><span class="o">.</span><span class="n">polygon_options</span><span class="p">[</span><span class="s2">&quot;color&quot;</span><span class="p">]</span>
+<span class="n">gs</span><span class="o">.</span><span class="n">polygon_options</span><span class="p">[</span><span class="s2">&quot;rgbcolor&quot;</span><span class="p">]</span><span class="o">=</span><span class="s2">&quot;#eef&quot;</span>
+<span class="n">gs</span><span class="o">.</span><span class="n">edge_label_options</span><span class="p">[</span><span class="s2">&quot;position&quot;</span><span class="p">]</span><span class="o">=</span><span class="s2">&quot;outside&quot;</span>
+<span class="n">gs</span><span class="o">.</span><span class="n">edge_label_options</span><span class="p">[</span><span class="s2">&quot;t&quot;</span><span class="p">]</span><span class="o">=</span><span class="mf">0.5</span>
+<span class="n">gs</span><span class="o">.</span><span class="n">edge_label_options</span><span class="p">[</span><span class="s2">&quot;push_off&quot;</span><span class="p">]</span><span class="o">=</span><span class="mf">0.02</span>
+<span class="n">gs</span><span class="o">.</span><span class="n">edge_label_options</span><span class="p">[</span><span class="s2">&quot;color&quot;</span><span class="p">]</span><span class="o">=</span><span class="s2">&quot;green&quot;</span>
+<span class="n">gs</span><span class="o">.</span><span class="n">adjacent_edge_options</span><span class="p">[</span><span class="s2">&quot;thickness&quot;</span><span class="p">]</span><span class="o">=</span><span class="mf">0.5</span>
+<span class="n">gs</span><span class="o">.</span><span class="n">non_adjacent_edge_options</span><span class="p">[</span><span class="s2">&quot;thickness&quot;</span><span class="p">]</span><span class="o">=</span><span class="mf">0.25</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gs</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/53b36aed5e4de5b060e39fe89b2632a17f021aac8adf316c1c1b285e853763f5.png" src="../_images/53b36aed5e4de5b060e39fe89b2632a17f021aac8adf316c1c1b285e853763f5.png" />
+</div>
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Graphics Configuration</a><ul>
+<li><a class="reference internal" href="#rearranging-polygons">Rearranging Polygons</a></li>
+<li><a class="reference internal" href="#moving-between-coordinate-systems">Moving between coordinate systems</a></li>
+<li><a class="reference internal" href="#multiple-graphical-surfaces">Multiple graphical surfaces</a></li>
+<li><a class="reference internal" href="#manipulating-edge-labels">Manipulating edge labels</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="defining_surfaces.html"
+                          title="previous chapter">Defining Surfaces</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="linear_action_and_delaunay.html"
+                          title="next chapter">The GL(2,R) Action, the Veech Group, Delaunay Decomposition</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/examples/graphics_configuration.md.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="linear_action_and_delaunay.html" title="The GL(2,R) Action, the Veech Group, Delaunay Decomposition"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="defining_surfaces.html" title="Defining Surfaces"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">sage-flatsurf 0.4.7 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Graphics Configuration</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2016-2022, the sage-flatsurf authors.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+    </div>
+  </body>
+</html>
