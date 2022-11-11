@@ -1817,9 +1817,9 @@ class SimilaritySurface(SageObject):
                     if (lc.lt(l1,l2) or (l1==l2 and e1<=e2)) and s._edge_needs_flip(l1,e1):
                         s.triangle_flip(l1, e1, in_place=True, direction=direction)
                         count += 1
-                        if not limit is None and count>=limit:
+                        if limit is not None and count >= limit:
                             return s
-                        loop=True
+                        loop = True
                         break
             return s
 

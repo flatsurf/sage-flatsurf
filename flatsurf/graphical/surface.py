@@ -508,7 +508,6 @@ class GraphicalSurface:
         """
         return self.xmin(), self.ymin(), self.xmax(), self.ymax()
 
-
     def graphical_polygon(self, label):
         r"""
         Return the graphical_polygon with the given label.
@@ -517,13 +516,13 @@ class GraphicalSurface:
             return self._polygons[label]
         else:
             t = None
-            if not self._default_position_function is None:
-                t=self._default_position_function(label)
+            if self._default_position_function is not None:
+                t = self._default_position_function(label)
             p = GraphicalPolygon(self._ss.polygon(label), transformation=t)
             self._polygons[label] = p
             return p
 
-    def make_adjacent(self, p, e, reverse = False, visible = True):
+    def make_adjacent(self, p, e, reverse=False, visible=True):
         r"""
         Move the polygon across the prescribed edge so that is adjacent.
         The polygon moved is obtained from opposite_edge(p,e).

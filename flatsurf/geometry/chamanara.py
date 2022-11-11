@@ -27,10 +27,11 @@ from .surface import Surface
 from .half_dilation_surface import HalfDilationSurface
 from sage.rings.integer_ring import ZZ
 
+
 def ChamanaraPolygon(alpha):
     from sage.categories.fields import Fields
-    field=alpha.parent()
-    if not field in Fields():
+    field = alpha.parent()
+    if field not in Fields():
         ValueError("The value of alpha must lie in a field.")
     if alpha<=0 or alpha>=1:
         ValueError("The value of alpha must be between zero and one.")

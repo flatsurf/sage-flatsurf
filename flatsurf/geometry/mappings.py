@@ -787,7 +787,7 @@ class ReindexMapping(SurfaceMapping):
         self._f=f
         self._b=b
         
-        if new_base_label==None:
+        if new_base_label is None:
             if s.base_label() in f:                
                 new_base_label = f[s.base_label()]
             else:

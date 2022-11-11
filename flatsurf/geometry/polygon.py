@@ -756,9 +756,13 @@ class Polygon(Element):
             return NotImplemented
         return self._v != other._v
 
-    def __lt__(self, other): raise TypeError
+    def __lt__(self, other):
+        raise TypeError
+
     __le__ = __lt__
+
     __gt__ = __lt__
+
     __ge__ = __lt__
 
     def cmp(self, other):
@@ -2939,17 +2943,18 @@ def regular_octagon(field=None):
     deprecation(33, "Do not use this function anymore but regular_ngon(8)")
     return polygons.regular_ngon(8)
 
+
 class PolygonCreator():
     r"""
     Class for iteratively constructing a polygon over the field.
     """
-    def __init__(self, field = QQ):
+    def __init__(self, field=QQ):
         r"""Create a polygon in the provided field."""
-        self._v=[]
-        self._w=[]
-        if not field in Fields():
+        self._v = []
+        self._w = []
+        if field not in Fields():
             raise TypeError("field must be a field")
-        self._field=field
+        self._field = field
 
     def vector_space(self):
         r"""
