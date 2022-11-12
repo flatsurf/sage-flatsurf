@@ -21,7 +21,6 @@ Thurston-Veech constructions
 # along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 ######################################################################
 
-import sys
 import pytest
 
 pytest.importorskip('pyflatsurf')
@@ -31,23 +30,26 @@ from sage.all import QQ
 from flatsurf import GL2ROrbitClosure
 from flatsurf.geometry.thurston_veech import ThurstonVeech
 
+
 def test_H2():
     # Calta-Mcmullen theorem: TV constructions in H(2) are Veech surfaces
     TV = ThurstonVeech('(1,2)', '(1,3)')
-    
-    for hm, vm, bound, discriminant in [((1,1),(1,1),5,5),
-                    ((1,3),(2,5),5,1), ((1,1),(2,1),5,17)]:
+
+    for hm, vm, bound, discriminant in [((1, 1), (1, 1), 5, 5),
+                                        ((1, 3), (2, 5), 5, 1),
+                                        ((1, 1), (2, 1), 5, 17)]:
         S = TV(hm, vm)
         O = GL2ROrbitClosure(S)
-        dh = O.decomposition((1,0))
-        assert dh.parabolic() is True
-        dv = O.decomposition((0,1))
-        assert dv.parabolic() is True
+        dh = O.decomposition((1, 0))
+        assert dh.parabolic() == True   # cannot be "is True" ?
+        dv = O.decomposition((0, 1))
+        assert dv.parabolic() == True   # cannot be "is True" ?
         if discriminant == 1:
             assert O.field_of_definition() is QQ
         else:
             assert O.field_of_definition().discriminant().squarefree_part() == discriminant
         assert O.is_teichmueller_curve(bound) is not False
+
 
 def test_H11():
     # McMullen theorem: TV constructions in H(1,1) are either Veech (discriminant 5) or
@@ -55,14 +57,16 @@ def test_H11():
     TV = ThurstonVeech('(1,2)(3,4)', '(2,3)')
 
     for hm, vm, bound, discriminant in [((1, 1), (1, 1, 1), 5, 1),
-            ((1,2), (1,1,1), 5, 3), ((1,1),(2,1,1), 5, 5),
-            ((1,1),(1,2,1),5, 1), ((1,2),(1,2,1), 5, 41)]:
+                                        ((1, 2), (1, 1, 1), 5, 3),
+                                        ((1, 1), (2, 1, 1), 5, 5),
+                                        ((1, 1), (1, 2, 1), 5, 1),
+                                        ((1, 2), (1, 2, 1), 5, 41)]:
         S = TV(hm, vm)
         O = GL2ROrbitClosure(S)
-        dh = O.decomposition((1,0))
-        assert dh.parabolic() is True
-        dv = O.decomposition((0,1))
-        assert dv.parabolic() is True
+        dh = O.decomposition((1, 0))
+        assert dh.parabolic() == True  # cannot be "is True" ?
+        dv = O.decomposition((0, 1))
+        assert dv.parabolic() == True  # cannot be "is True" ?
 
         if discriminant == 1:
             assert O.field_of_definition() is QQ
