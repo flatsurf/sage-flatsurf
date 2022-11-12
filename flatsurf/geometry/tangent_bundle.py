@@ -555,8 +555,7 @@ class SimilaritySurfaceTangentBundle:
             sage: print(tb.clockwise_edge(0,0))
             SimilaritySurfaceTangentVector in polygon 1 based at (2, 0) with vector (-1, 3)
         """
-        polygon=self.surface().polygon(polygon_label)
-        point=polygon.vertex(edge_index+1)
-        vector=-polygon.edge(edge_index)
+        polygon = self.surface().polygon(polygon_label)
+        point = polygon.vertex(edge_index + 1)
+        vector = -polygon.edge(edge_index)
         return SimilaritySurfaceTangentVector(self, polygon_label, point, vector)
-

@@ -743,9 +743,9 @@ class GraphicalSurface:
         Given the label ``p`` of a polygon and an edge ``e`` in that polygon
         returns the pair (``pp``, ``ee``) to which this edge is glued.
         """
-        return self._ss.opposite_edge(p,e)
+        return self._ss.opposite_edge(p, e)
 
-    def reset_letters(self,p,e):
+    def reset_letters(self, p, e):
         r"""
         Resets the letter dictionary for storing letters used in
         edge labeling if edge_labels="letter" is used.
@@ -753,15 +753,15 @@ class GraphicalSurface:
         try:
             del self._letters
             del self._next_letter
-        except:
+        except AttributeError:
             pass
 
     def _get_letter_for_edge(self, p, e):
-        if not hasattr(self,"_letters"):
-            self._letters={}
-            self._next_letter=1
+        if not hasattr(self, "_letters"):
+            self._letters = {}
+            self._next_letter = 1
         try:
-            return self._letters[(p,e)]
+            return self._letters[(p, e)]
         except KeyError:
             # convert number to string
             nl = self._next_letter
@@ -1035,5 +1035,3 @@ class GraphicalSurface:
                         if edge_labels[i] is not None:
                             p += self.plot_edge_label(label, i, edge_labels[i], polygon)
         return p
-
-

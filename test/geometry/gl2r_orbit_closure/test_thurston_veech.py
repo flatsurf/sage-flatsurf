@@ -40,9 +40,9 @@ def test_H2():
         S = TV(hm, vm)
         O = GL2ROrbitClosure(S)
         dh = O.decomposition((1,0))
-        assert dh.parabolic() == True
+        assert dh.parabolic() is True
         dv = O.decomposition((0,1))
-        assert dv.parabolic() == True
+        assert dv.parabolic() is True
         if discriminant == 1:
             assert O.field_of_definition() is QQ
         else:
@@ -60,9 +60,9 @@ def test_H11():
         S = TV(hm, vm)
         O = GL2ROrbitClosure(S)
         dh = O.decomposition((1,0))
-        assert dh.parabolic() == True
+        assert dh.parabolic() is True
         dv = O.decomposition((0,1))
-        assert dv.parabolic() == True
+        assert dv.parabolic() is True
 
         if discriminant == 1:
             assert O.field_of_definition() is QQ

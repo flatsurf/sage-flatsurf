@@ -55,6 +55,5 @@ class GraphicalSurfacePoint:
         If no "zorder" option is provided then we set "zorder" to 50.
         """
         if "zorder" not in options:
-            options["zorder"]=50
+            options["zorder"] = 50
         return point2d(points=self.points(), **options)
-

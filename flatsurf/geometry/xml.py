@@ -193,42 +193,41 @@ def _surface_from_ElementTree(tree):
             node=edge.find("y")
             if node is None:
                 raise ValueError('Failed to find tag <y> in <edge> in <polygon> with label='+str(label))
-            y=base_ring(node.text)
-            edges.append((x,y))
-        p=P(edges=edges)
-        s.add_polygon(p,label=label)
-    if s.num_polygons()==0:
+            y = base_ring(node.text)
+            edges.append((x, y))
+        p = P(edges=edges)
+        s.add_polygon(p, label=label)
+    if s.num_polygons() == 0:
         raise ValueError("Failed to add any polygons.")
-    
+
     # Glue the edges
-    gluings=tree.find("gluings")
+    gluings = tree.find("gluings")
     if gluings is None:
         raise ValueError('Failed to find tag named "gluings"')
     for glue in gluings.findall("glue"):
-        node=glue.find("l")
+        node = glue.find("l")
         if node is None:
             raise ValueError('Failed to find tag <l> in <glue>.')
-        l=int(node.text)
-        node=glue.find("e")
+        l = int(node.text)
+        node = glue.find("e")
         if node is None:
             raise ValueError('Failed to find tag <e> in <glue>.')
-        e=int(node.text)
-        node=glue.find("ll")
+        e = int(node.text)
+        node = glue.find("ll")
         if node is None:
             raise ValueError('Failed to find tag <ll> in <glue>.')
-        ll=int(node.text)
-        node=glue.find("ee")
+        ll = int(node.text)
+        node = glue.find("ee")
         if node is None:
             raise ValueError('Failed to find tag <ee> in <glue>.')
-        ee=int(node.text)
-        s.change_edge_gluing(l,e,ll,ee)
+        ee = int(node.text)
+        s.change_edge_gluing(l, e, ll, ee)
 
-    node=tree.find("base_label")
+    node = tree.find("base_label")
     if node is None:
         raise ValueError('Failed to find tag named "base_label"')
     base_label = int(node.text)
     s.change_base_label(base_label)
-        
+
     # Return the surface:
     return s
-
