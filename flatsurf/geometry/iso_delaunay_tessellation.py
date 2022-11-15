@@ -630,11 +630,17 @@ class IsoDelaunayTessellation(Parent):
 
     def topological_euler_characteristic(self):
         # return V - E + F of the fundamental domain
-        v = len(self.vertices())
+        e_self_glued = 0
+        for _, _, tessellation_edges in self._dual_graph.edges(labels=True):
+            if len(list(tessellation_edges)) == 1:
+                e_self_glued += 1
+
+        # when an edge is self glued, the midpoint is an order 2 orbifold point
+        v = len(self.vertices()) + e_self_glued
         e = len(self._dual_graph.edges())
         f = len(self._dual_graph.vertices())
 
-        return v - e + f - len(self.cusps())
+        return (v - len(self.cusps())) - e + f
 
     def orbifold_euler_characteristic(self):
         r"""
