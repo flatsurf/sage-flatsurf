@@ -153,7 +153,19 @@ class IsoDelaunayTessellation(Parent):
         if cross_tessellation_face is not None:
             return cross_tessellation_face
 
-        _, source_triangulation = self._dual_graph.get_vertex(tessellation_face)
+        cross_tessellation_face, target_triangulation = self._develop(tessellation_face, tessellation_edge)
+
+        target_triangulation.set_immutable()
+        cross_tessellation_face, cross_tessellation_edge, is_new = self._ensure_dual_graph_vertex(cross_tessellation_face, target_triangulation, -tessellation_edge)
+
+        self._dual_graph.add_edge(tessellation_face, cross_tessellation_face, label={tessellation_edge, cross_tessellation_edge})
+
+        return cross_tessellation_face
+
+    def _develop(self, tessellation_face, tessellation_edge, source_triangulation=None):
+        if source_triangulation is None:
+            _, source_triangulation = self._dual_graph.get_vertex(tessellation_face)
+
         target_triangulation = source_triangulation.copy()
 
         while True:
@@ -176,12 +188,7 @@ class IsoDelaunayTessellation(Parent):
 
         assert -tessellation_edge in cross_tessellation_face.edges(), f"edge {-tessellation_edge} is not in the polygon {cross_tessellation_face} after crossing {tessellation_edge} from {tessellation_face}"
 
-        target_triangulation.set_immutable()
-        cross_tessellation_face, cross_tessellation_edge, is_new = self._ensure_dual_graph_vertex(cross_tessellation_face, target_triangulation, -tessellation_edge)
-
-        self._dual_graph.add_edge(tessellation_face, cross_tessellation_face, label={tessellation_edge, cross_tessellation_edge})
-
-        return cross_tessellation_face
+        return cross_tessellation_face, target_triangulation
 
     def _cross(self, tessellation_face, tessellation_edge):
         r"""
@@ -636,7 +643,7 @@ class IsoDelaunayTessellation(Parent):
 
         return vertices
 
-    def angle(self, vertex):
+    def angle(self, vertex, algorithm="develop"):
         r"""
         Return the total angle at ``vertex`` divided by 2π.
 
@@ -663,6 +670,7 @@ class IsoDelaunayTessellation(Parent):
             sage: vertices = idt.vertices()
             sage: angles = [idt.angle(vertex) for vertex in vertices]
             sage: angles
+            [1/4, 0, 0]
 
         """
         R = self._surface.base_ring()
@@ -674,43 +682,67 @@ class IsoDelaunayTessellation(Parent):
             edges = polygon.edges()
             return -edges[edges.index(edge) - 1]
 
-        # Rotate the polygons so that they are joined at their edges.
-        widget = []
-        for polygon, edge in vertex:
-            if not widget:
+        if algorithm == "isometry":
+            # TODO: This is wrong in the above example.
+            # Rotate the polygons so that they are joined at their edges.
+            widget = []
+            for polygon, edge in vertex:
+                if not widget:
+                    widget.append((polygon, edge))
+                    continue
+
+                previous_polygon, previous_edge = widget[-1]
+
+                # Determine the edge in the previous polygon that is glued to edge
+                # so we know by how much we need to rotate polygon to make it line
+                # up with previous_polygon.
+                previous_edge = next_edge(previous_polygon, previous_edge)
+
+                from sage.all import AA
+                isometry = edge.change_ring(AA).isometry(previous_edge.change_ring(AA)).change_ring(R)
+                polygon = polygon.apply_isometry(isometry)
+                edge = previous_edge
+
                 widget.append((polygon, edge))
-                continue
 
-            previous_polygon, previous_edge = widget[-1]
+            # Now all the polygons are glued correctly into one "widget". We only
+            # need the first and the last half edge of this glued widget.
+            start = widget[0][1]
+            end = next_edge(*widget[-1])
 
-            # Determine the edge in the previous polygon that is glued to edge
-            # so we know by how much we need to rotate polygon to make it line
-            # up with previous_polygon.
-            previous_edge = next_edge(previous_polygon, previous_edge)
+            # We determine how many copies of widget we need to go around vertex in a full circle.
+            copies = 1
 
             from sage.all import AA
-            isometry = edge.change_ring(AA).isometry(previous_edge.change_ring(AA)).change_ring(R)
-            polygon = polygon.apply_isometry(isometry)
-            edge = previous_edge
+            rotation = start.change_ring(AA).isometry(end.change_ring(AA)).change_ring(R)
+            while start != end:
+                copies += 1
+                end = end.apply_isometry(rotation)
 
-            widget.append((polygon, edge))
+            from sage.all import QQ
+            return QQ(1) / copies
 
-        # Now all the polygons are glued correctly into one "widget". We only
-        # need the first and the last half edge of this glued widget.
-        start = widget[0][1]
-        end = next_edge(*widget[-1])
+        elif algorithm == "develop":
+            start = vertex[0]
+            current = start
+            triangulation = None
+            polygons = [start[0]]
+            while True:
+                cross_edge = next_edge(*current)
 
-        # We determine how many copies of widget we need to go around vertex in a full circle.
-        copies = 1
+                if cross_edge == start[1]:
+                    break
 
-        from sage.all import AA
-        rotation = start.change_ring(AA).isometry(end.change_ring(AA)).change_ring(R)
-        while start != end:
-            copies += 1
-            end = end.apply_isometry(rotation)
+                cross_polygon, triangulation = self._develop(current[0], -cross_edge, triangulation)
+                polygons.append(cross_polygon)
+                current = cross_polygon, cross_edge
 
-        from sage.all import QQ
-        return QQ(1) / copies
+            assert len(polygons) % len(vertex) == 0
+
+            from sage.all import QQ
+            return QQ(1) / (len(polygons) // len(vertex))
+        else:
+            raise ValueError
 
     def topological_euler_characteristic(self):
         # return V - E + F of the fundamental domain
