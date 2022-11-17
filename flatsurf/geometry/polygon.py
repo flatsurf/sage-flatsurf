@@ -28,7 +28,7 @@ EXAMPLES::
 #  This file is part of sage-flatsurf.
 #
 #        Copyright (C) 2016-2020 Vincent Delecroix
-#                      2020      Julian Rüth
+#                      2020-2022 Julian Rüth
 #
 #  sage-flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -943,16 +943,41 @@ class Polygon(Element):
         """
         return self.vertex(i+1) - self.vertex(i)
 
-    def plot(self, translation=None):
+    def plot(self, translation=None, polygon_options={}, edge_options={}, vertex_options={}):
         r"""
         Plot the polygon with the origin at ``translation``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import polygons
+            sage: S = polygons.square()
+            sage: S.plot()
+            Graphics object consisting of 3 graphics primitives
+
+        We can specify an explicit ``zorder`` to render edges and vertices on
+        top of the axes which are rendered at z-order 3::
+
+            sage: S.plot(edge_options={'zorder': 3}, vertex_options={'zorder': 3})
+            Graphics object consisting of 3 graphics primitives
+
+        We can control the colors, e.g., we can render transparent polygons,
+        with red edges and blue vertices::
+
+            sage: S.plot(polygon_options={'fill': None}, edge_options={'color': 'red'}, vertex_options={'color': 'blue'})
+            Graphics object consisting of 3 graphics primitives
+
         """
         from sage.plot.point import point2d
         from sage.plot.line import line2d
         from sage.plot.polygon import polygon2d
         V = VectorSpace(RR,2)
         P = self.vertices(translation)
-        return point2d(P, color='red') + line2d(P + (P[0],), color='orange') + polygon2d(P, alpha=0.3)
+
+        polygon_options = {'alpha':0.3, 'zorder':1, **polygon_options}
+        edge_options = {'color':'orange', 'zorder':2, **edge_options}
+        vertex_options = {'color':'red', 'zorder':2, **vertex_options}
+
+        return polygon2d(P, **polygon_options) + line2d(P + (P[0],), **edge_options) + point2d(P, **vertex_options)
 
     def angle(self, e, numerical=False, assume_rational=False):
         r"""
