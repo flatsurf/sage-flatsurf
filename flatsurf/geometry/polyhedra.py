@@ -212,23 +212,24 @@ def polyhedron_to_cone_surface(polyhedron, use_AA=False, scaling_factor=ZZ(1)):
                 print(e1)
                 print(edge)
                 raise RuntimeError("Failed to find glued edge")
-    polygon_vertices_AA=[]
-    for p,vs in enumerate(face_vertices):
-        trans=face_map_data[p][2]
-        m=face_map_data[p][3]
-        polygon_vertices_AA.append([trans+m*v for v in vs])
-        
-    
-    if use_AA==True:
-        Polys=ConvexPolygons(AA)
-        polygons=[]
+
+    polygon_vertices_AA = []
+    for p, vs in enumerate(face_vertices):
+        trans = face_map_data[p][2]
+        m = face_map_data[p][3]
+        polygon_vertices_AA.append([trans + m * v for v in vs])
+
+    if use_AA is True:
+        Polys = ConvexPolygons(AA)
+        polygons = []
         for vs in polygon_vertices_AA:
             polygons.append(Polys(vertices=vs))
-        S=ConeSurface(surface_list_from_polygons_and_gluings(polygons,gluings))
+        S = ConeSurface(surface_list_from_polygons_and_gluings(polygons,
+                                                               gluings))
         return S, \
-            ConeSurfaceToPolyhedronMap(S,polyhedron,face_map_data)
+            ConeSurfaceToPolyhedronMap(S, polyhedron, face_map_data)
     else:
-        elts=[]
+        elts = []
         for vs in polygon_vertices_AA:
             for v in vs:
                 elts.append(v[0])

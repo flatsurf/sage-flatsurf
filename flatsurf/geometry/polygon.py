@@ -370,7 +370,7 @@ def projectivization(x, y, signed=True, denominator=None):
     """
     if y:
         z = x / y
-        if denominator == True or (denominator is None and hasattr(z, 'denominator')):
+        if denominator is True or (denominator is None and hasattr(z, 'denominator')):
             d = z.denominator()
         else:
             d = 1
@@ -669,7 +669,8 @@ class Polygon(Element):
         Element.__init__(self, parent)
         V = parent.module()
         self._v = tuple(map(V, vertices))
-        for vv in self._v: vv.set_immutable()
+        for vv in self._v:
+            vv.set_immutable()
         if check:
             self._non_intersection_check()
             self._inside_outside_check()
@@ -1584,13 +1585,17 @@ class ConvexPolygon(Polygon):
         lengths = [t.dot_product(e) for e in self.edges()]
         n = len(lengths)
         for i in range(n):
-            j = (i+1)%len(lengths)
+            j = (i + 1) % len(lengths)
             l0 = lengths[i]
             l1 = lengths[j]
-            if l0 >= 0 and l1 <  0: rt = j
-            if l0 >  0 and l1 <= 0: rb = j
-            if l0 <= 0 and l1 >  0: lb = j
-            if l0 <  0 and l1 >= 0: lt = j
+            if l0 >= 0 and l1 <  0:
+                rt = j
+            if l0 >  0 and l1 <= 0:
+                rb = j
+            if l0 <= 0 and l1 >  0:
+                lb = j
+            if l0 <  0 and l1 >= 0:
+                lt = j
 
         if rt < lt:
             top_lengths = lengths[rt:lt]
@@ -2084,6 +2089,7 @@ class EquiangularPolygons:
         # Construct the cosine and sine of each angle as an element of our number field.
         def cosine(a):
             return chebyshev_T(abs(a), c) / 2
+
         def sine(a):
             # Use sin(x) = cos(π/2 - x)
             return cosine(N//4 - a)
@@ -2298,6 +2304,7 @@ class EquiangularPolygons:
             ring = QQ
 
         rays = [r.vector() for r in self.lengths_polytope().rays()]
+
         def random_element():
             while True:
                 coeffs = []

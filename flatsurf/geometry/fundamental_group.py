@@ -394,13 +394,12 @@ class FundamentalGroup(UniqueRepresentation, Group):
 
                 basis.append((polys, edges, edges_rev))
 
-            else: # new branch
-                tree[p1] = (p2,e1,e2)
+            else:  # new branch
+                tree[p1] = (p2, e1, e2)
                 for e in range(s.polygon(p1).num_edges()):
                     if e != e1:
-                        pp,ee = s.opposite_edge(p1,e)
-                        wait.append((pp,ee,p1,e))
+                        pp, ee = s.opposite_edge(p1, e)
+                        wait.append((pp, ee, p1, e))
 
         basis.sort()
-        return tuple([self.element_class(self,p,e,er) for p,e,er in basis])
-
+        return tuple([self.element_class(self, p, e, er) for p, e, er in basis])

@@ -133,7 +133,8 @@ class LInfinityMarkedTriangulation:
         self._n = ZZ(num_faces)
         self._edge_identifications = edge_identifications
         self._edge_types = edge_types
-        if check: self._check()
+        if check:
+            self._check()
 
     def _check(self):
         if self._n % 2:
@@ -154,8 +155,8 @@ class LInfinityMarkedTriangulation:
 
         seen = [False] * self._n
         for p in range(self._n):
-            if seen[p]: continue
-            
+            if seen[p]:
+                continue
             sh = sum(self._edge_types[p][r] == V_LEFT or self._edge_types[p][r] == V_RIGHT for r in (0,1,2))
             sv = sum(self._edge_types[p][r] == V_BOT or self._edge_types[p][r] == V_TOP for r in (0,1,2))
             if sh != 1 or sv != 1:
@@ -164,12 +165,12 @@ class LInfinityMarkedTriangulation:
 
     def num_faces(self):
         return self._n
-    
+
     def num_edges(self):
         return 3 * self._n // 2
-        
+
     def opposite_edge(self, p, e):
-        return self._edge_identifications[(p,e)]
+        return self._edge_identifications[(p, e)]
 
     def __repr__(self):
         return "Marked triangulation made of {} triangles".format(self.num_faces())
