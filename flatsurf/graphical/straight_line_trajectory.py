@@ -99,4 +99,3 @@ class GraphicalStraightLineTrajectory:
         for seg in self._segments:
             p += seg.plot(**options)
         return p
-
