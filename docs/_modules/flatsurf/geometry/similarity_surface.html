@@ -744,7 +744,7 @@
         <span class="n">s</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># This will be the surface we copy. (Likely we will set s=self below.)</span>
         <span class="k">if</span> <span class="n">new_field</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">optimal_number_field</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;You can not set a new_field and also set optimal_number_field=True.&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">optimal_number_field</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">optimal_number_field</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
             <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_finite</span><span class="p">(),</span> <span class="s2">&quot;Can only optimize_number_field for a finite surface.&quot;</span>
             <span class="k">assert</span> <span class="ow">not</span> <span class="n">lazy</span><span class="p">,</span> <span class="s2">&quot;Lazy copying is unavailable when optimize_number_field=True.&quot;</span>
             <span class="n">coordinates_AA</span> <span class="o">=</span> <span class="p">[]</span>
@@ -795,7 +795,7 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="n">Surface_dict</span><span class="p">(</span><span class="n">surface</span><span class="o">=</span><span class="n">s</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="ow">not</span> <span class="n">lazy</span><span class="p">,</span> <span class="n">mutable</span><span class="o">=</span><span class="n">mutable</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">lazy</span><span class="o">==</span><span class="kc">False</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">lazy</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Only lazy copying available for infinite surfaces.&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">underlying_surface</span><span class="p">()</span><span class="o">.</span><span class="n">is_mutable</span><span class="p">():</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;An infinite surface can only be copied if it is immutable.&quot;</span><span class="p">)</span>
@@ -1170,8 +1170,8 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">glue_list</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">p4</span><span class="p">,</span><span class="n">e4</span><span class="p">))</span>
 
-        <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">base_label</span><span class="p">()</span><span class="o">==</span><span class="n">p2</span><span class="p">:</span>
-             <span class="n">s</span><span class="o">.</span><span class="n">change_base_label</span><span class="p">(</span><span class="n">p1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">base_label</span><span class="p">()</span> <span class="o">==</span> <span class="n">p2</span><span class="p">:</span>
+            <span class="n">s</span><span class="o">.</span><span class="n">change_base_label</span><span class="p">(</span><span class="n">p1</span><span class="p">)</span>
 
         <span class="n">s</span><span class="o">.</span><span class="n">remove_polygon</span><span class="p">(</span><span class="n">p2</span><span class="p">)</span>
 

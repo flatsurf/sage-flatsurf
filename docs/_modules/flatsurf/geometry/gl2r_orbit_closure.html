@@ -1140,10 +1140,12 @@
 <span class="sd">            (5, 4, 4): 7</span>
 <span class="sd">            (5, 5, 3): 4</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_U_rank</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_U</span><span class="o">.</span><span class="n">nrows</span><span class="p">():</span> <span class="k">return</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_U_rank</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_U</span><span class="o">.</span><span class="n">nrows</span><span class="p">():</span>
+            <span class="k">return</span>
         <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cylinder_deformation_subspace</span><span class="p">(</span><span class="n">decomposition</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">update_tangent_space_from_vector</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_U_rank</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_U</span><span class="o">.</span><span class="n">nrows</span><span class="p">():</span> <span class="k">return</span></div>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_U_rank</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_U</span><span class="o">.</span><span class="n">nrows</span><span class="p">():</span>
+                <span class="k">return</span></div>
 
     <span class="k">def</span> <span class="nf">_rank</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
