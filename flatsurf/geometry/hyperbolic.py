@@ -2941,7 +2941,7 @@ class HyperbolicConvexSet(Element):
         ):
             raise ValueError("invalid isometry")
 
-    def _apply_isometry_klein(self, isometry):
+    def _apply_isometry_klein(self, isometry, on_right=False):
         # TODO: Check documentation.
         # TODO: Check INPUT
         # TODO: Check SEEALSO
@@ -3476,6 +3476,9 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
         # Add the type to the hash value to distinguish the hash value from an
         # actual geodesic.
         return hash((type(self), self._geodesic))
+
+    def _apply_isometry_klein(self, isometry, on_right=False):
+        return self.boundary()._apply_isometry_klein(isometry, on_right=on_right).left_half_space()
 
 
 class HyperbolicGeodesic(HyperbolicConvexSet):
@@ -4595,6 +4598,50 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
         # TODO: Benchmark?
         return HyperbolicVertices([self.start(), self.end()])
 
+    def isometry(self, other):
+        r"""
+        Return an isometry that maps this geodesic to ``other``.
+        """
+        H = self.parent()
+        R = H.base_ring()
+
+        if other != H.vertical(0):
+            isometry = ~other.isometry(H.vertical(0)) * self.isometry(H.vertical(0))
+            assert self.apply_isometry(isometry) == other
+            return isometry
+
+        # TODO: Is it possible to do this without the start and end point which
+        # might not be defined over the base field?
+
+        # Send the start of the geodesic to 0 and the end point to ∞.
+        from sage.all import matrix, identity_matrix
+        isometry = identity_matrix(R, 2)
+
+        start = self.start()
+        end = self.end()
+
+        if start == H.infinity():
+            # Swap 0 and ∞.
+            isometry = matrix(R, [[0, 1], [-1, 0]]) * isometry
+            start = H.real(0)
+            end = H.real(1/end.real()) if end != H(0) else H.infinity()
+
+        if end == H.infinity():
+            # Translate so that start is 0.
+            isometry = matrix(R, [[1, -start.real()], [0, 1]]) * isometry
+            start = H.real(0)
+        else:
+            # Map start to 0 and end to ∞.
+            isometry = matrix(R, [[1, -start.real()], [1, -end.real()]]) * isometry
+            if self.apply_isometry(isometry) == -H.vertical(0):
+                isometry = matrix(R, [[0, 1], [-1, 0]]) * isometry
+
+            start = H.real(0)
+            end = H.infinity()
+
+        assert self.apply_isometry(isometry) == H.vertical(0)
+        return isometry
+
 
 class HyperbolicPoint(HyperbolicConvexSet):
     # TODO: Check documentation
@@ -4848,9 +4895,7 @@ class HyperbolicPoint(HyperbolicConvexSet):
         r"""
         INPUT:
 
-        - ``isometry`` -- a 2x2 matrix in `PGL(2,\mathbb{R})` or a 3x3 matrix in `SO(1, 2)`
-
-        - ``model`` (optional) -- either ``"half_plane"`` (default) or ``"klein"``
+        - ``isometry`` -- a 3x3 matrix in `SO(1, 2)`
 
         - ``on_right`` (optional; default to ``False``) -- set it to ``True`` if you want
           the right action.
@@ -5178,7 +5223,6 @@ class HyperbolicPointFromGeodesic(HyperbolicPoint):
 
             # TODO: Use specialized predicates instead of the _methods.
             if self.parent().geometry._zero(a):
-                point = None
                 # TODO: Use specialized predicates instead of the _methods.
                 if self.parent().geometry._sgn(b) > 0:
                     point = self.parent().point(0, 1, model="klein", check=False)
@@ -6569,6 +6613,11 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
                 return False
             return self._half_spaces == other._half_spaces and self._marked_vertices == other._marked_vertices
 
+    def _apply_isometry_klein(self, isometry, on_right=False):
+        # TODO: What flags do we need to pass here?
+        # TODO: We need to handle marked vertices.
+        return self.parent().polygon([half_space._apply_isometry_klein(isometry, on_right=on_right) for half_space in self.half_spaces()], check=False)
+
     def __hash__(self):
         r"""
         Return a hash value for this polygon.
@@ -7229,6 +7278,30 @@ class HyperbolicOrientedSegment(HyperbolicSegment, HyperbolicOrientedConvexSet):
 
         """
         return hash((self._start, self._end, self.geodesic()))
+
+    def isometry(self, other):
+        H = self.parent()
+        R = self.parent().base_ring()
+
+        from sage.all import I, oo
+        if other.geodesic() != H.vertical(0) or other.start() != H(I):
+            vertical = H(I).segment(oo)
+            isometry = ~(other.start().segment(other.geodesic().end())).isometry(vertical) * self.start().segment(self.geodesic().end()).isometry(vertical)
+            if self.apply_isometry(isometry) != other:
+                raise ValueError
+
+            return isometry
+
+        # Move the geodesic on which we are to the vertical at 0.
+        isometry = self.geodesic().isometry(H.vertical(0))
+        # Scale such that the start point goes to I.
+        from sage.all import matrix
+        isometry = matrix(R, [[1, 0], [0, self.apply_isometry(isometry).start().imag() / other.start().imag()]]) * isometry
+
+        if self.apply_isometry(isometry) != other:
+            raise ValueError
+
+        return isometry
 
 
 class HyperbolicEmptySet(HyperbolicConvexSet):

@@ -184,6 +184,14 @@ class IsoDelaunayTessellation(Parent):
         return cross_tessellation_face
 
     def _cross(self, tessellation_face, tessellation_edge):
+        r"""
+        Return the hyperbolic polygon obtained by crossing from
+        ``tessellation_face`` over ``tessellation_edge``.
+
+        This method returns a polygon that forms part of the
+        :meth:`fundamental_domain`. If we have not explored what is on the
+        other side of ``tesselation_edge`` yet, returns ``None``.
+        """
         mod, _ = self._dual_graph.get_vertex(tessellation_face)
 
         if mod is not None:
@@ -609,7 +617,7 @@ class IsoDelaunayTessellation(Parent):
                             if previous_tessellation_edge == tessellation_edges[0]:
                                 cross_tessellation_edge = tessellation_edges[1]
                             else:
-                                cross_tessellation_edge = tessellation_edges[0]           
+                                cross_tessellation_edge = tessellation_edges[0]
                     else:
                         continue
 
@@ -627,6 +635,82 @@ class IsoDelaunayTessellation(Parent):
                     break
 
         return vertices
+
+    def angle(self, vertex):
+        r"""
+        Return the total angle at ``vertex`` divided by 2π.
+
+        The returned angle will be of the form 1/n or 0.
+
+        INPUT:
+
+        - ``vertex`` -- a vertex description as provided by :meth:`vertices`.
+
+        ALGORITHM:
+
+        We arrange the polygons in ``vertex`` by gluing them at their that
+        touch the vertex. We copy this widget, rotate it and glue it to itself.
+        We repeat the process until we have completed a full circle around the
+        vertex. If we needed n copies, then the angle is 1/n.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: from flatsurf.geometry.iso_delaunay_tessellation import IsoDelaunayTessellation
+            sage: s = translation_surfaces.veech_2n_gon(4)
+            sage: idt = IsoDelaunayTessellation(s)
+            sage: idt.explore()
+            sage: vertices = idt.vertices()
+            sage: angles = [idt.angle(vertex) for vertex in vertices]
+            sage: angles
+
+        """
+        R = self._surface.base_ring()
+
+        if vertex[0][1].start().is_ideal():
+            return 0
+
+        def next_edge(polygon, edge):
+            edges = polygon.edges()
+            return -edges[edges.index(edge) - 1]
+
+        # Rotate the polygons so that they are joined at their edges.
+        widget = []
+        for polygon, edge in vertex:
+            if not widget:
+                widget.append((polygon, edge))
+                continue
+
+            previous_polygon, previous_edge = widget[-1]
+
+            # Determine the edge in the previous polygon that is glued to edge
+            # so we know by how much we need to rotate polygon to make it line
+            # up with previous_polygon.
+            previous_edge = next_edge(previous_polygon, previous_edge)
+
+            from sage.all import AA
+            isometry = edge.change_ring(AA).isometry(previous_edge.change_ring(AA)).change_ring(R)
+            polygon = polygon.apply_isometry(isometry)
+            edge = previous_edge
+
+            widget.append((polygon, edge))
+
+        # Now all the polygons are glued correctly into one "widget". We only
+        # need the first and the last half edge of this glued widget.
+        start = widget[0][1]
+        end = next_edge(*widget[-1])
+
+        # We determine how many copies of widget we need to go around vertex in a full circle.
+        copies = 1
+
+        from sage.all import AA
+        rotation = start.change_ring(AA).isometry(end.change_ring(AA)).change_ring(R)
+        while start != end:
+            copies += 1
+            end = end.apply_isometry(rotation)
+
+        from sage.all import QQ
+        return QQ(1) / copies
 
     def topological_euler_characteristic(self):
         # return V - E + F of the fundamental domain
