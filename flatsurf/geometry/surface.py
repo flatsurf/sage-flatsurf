@@ -1192,11 +1192,11 @@ class Surface_dict(Surface):
         try:
             data = self._p[p]
         except KeyError:
-             self.polygon(p)
-             data=self._p[p]
+            self.polygon(p)
+            data = self._p[p]
         if data is None:
             raise ValueError("Label "+str(p)+" was removed from the surface.")
-        gluing_data=data[1]
+        gluing_data = data[1]
         try:
             return gluing_data[e]
         except IndexError:

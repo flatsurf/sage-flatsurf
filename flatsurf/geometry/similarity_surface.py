@@ -701,7 +701,7 @@ class SimilaritySurface(SageObject):
         s = None  # This will be the surface we copy. (Likely we will set s=self below.)
         if new_field is not None and optimal_number_field:
             raise ValueError("You can not set a new_field and also set optimal_number_field=True.")
-        if optimal_number_field == True:
+        if optimal_number_field is True:
             assert self.is_finite(), "Can only optimize_number_field for a finite surface."
             assert not lazy, "Lazy copying is unavailable when optimize_number_field=True."
             coordinates_AA = []
@@ -752,7 +752,7 @@ class SimilaritySurface(SageObject):
             else:
                 return self.__class__(Surface_dict(surface=s, copy=not lazy, mutable=mutable))
         else:
-            if lazy==False:
+            if lazy is False:
                 raise ValueError("Only lazy copying available for infinite surfaces.")
             if self.underlying_surface().is_mutable():
                 raise ValueError("An infinite surface can only be copied if it is immutable.")
@@ -1127,8 +1127,8 @@ class SimilaritySurface(SageObject):
             else:
                 glue_list.append((p4,e4))
 
-        if s.base_label()==p2:
-             s.change_base_label(p1)
+        if s.base_label() == p2:
+            s.change_base_label(p1)
 
         s.remove_polygon(p2)
 

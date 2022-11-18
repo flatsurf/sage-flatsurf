@@ -1097,10 +1097,12 @@ class GL2ROrbitClosure:
             (5, 4, 4): 7
             (5, 5, 3): 4
         """
-        if self._U_rank == self._U.nrows(): return
+        if self._U_rank == self._U.nrows():
+            return
         for v in self.cylinder_deformation_subspace(decomposition):
             self.update_tangent_space_from_vector(v)
-            if self._U_rank == self._U.nrows(): return
+            if self._U_rank == self._U.nrows():
+                return
 
     def _rank(self):
         r"""
