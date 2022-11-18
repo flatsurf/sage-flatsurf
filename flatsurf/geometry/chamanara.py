@@ -132,15 +132,14 @@ def chamanara_surface(alpha,n=8):
     """
     s = chamanara_half_dilation_surface(alpha).minimal_cover(cover_type="translation")
     l = s.base_label()
-    adjacencies = [(l,1)]
+    adjacencies = [(l, 1)]
     for i in range(n):
-        adjacencies.append((l,3))
-        l = s.opposite_edge(l,3)[0]
+        adjacencies.append((l, 3))
+        l = s.opposite_edge(l, 3)[0]
     l = s.base_label()
-    l = s.opposite_edge(l,1)[0]
+    l = s.opposite_edge(l, 1)[0]
     for i in range(n):
-        adjacencies.append((l,3))
-        l = s.opposite_edge(l,3)[0]
+        adjacencies.append((l, 3))
+        l = s.opposite_edge(l, 3)[0]
     s.graphical_surface(adjacencies=adjacencies)
     return s
-

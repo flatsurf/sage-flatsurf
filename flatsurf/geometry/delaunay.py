@@ -387,14 +387,13 @@ class LazyDelaunaySurface(LazyDelaunayTriangulatedSurface):
             return self._s.polygon(label)
         else:
             raise ValueError("Asked for polygon not known to be Delaunay. Make sure you obtain polygon labels by walking through the surface.")
-    
+
     def opposite_edge(self, label, edge):
         if label in self._decomposition_certified_labels:
-            ll,ee = self._s.opposite_edge(label,edge)
+            ll, ee = self._s.opposite_edge(label, edge)
             if ll in self._decomposition_certified_labels:
-                return ll,ee
+                return ll, ee
             self._certify_decomposition(ll)
-            return self._s.opposite_edge(label,edge)
+            return self._s.opposite_edge(label, edge)
         else:
             raise ValueError("Asked for polygon not known to be Delaunay. Make sure you obtain polygon labels by walking through the surface.")
-

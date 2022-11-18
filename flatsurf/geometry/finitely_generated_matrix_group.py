@@ -303,8 +303,8 @@ class FinitelyGenerated2x2MatrixGroup(Group):
         for m in self._generators:
             if (m.det() != 1 and m.det() != -1) or \
                m.trace().abs() > 2 or \
-               (m.trace().abs() == 2 and (m[0,1] or m[1,0])):
-                   return False
+               (m.trace().abs() == 2 and (m[0, 1] or m[1, 0])):
+                return False
 
         gens = [g for g in self._generators if not g.is_scalar()]
 

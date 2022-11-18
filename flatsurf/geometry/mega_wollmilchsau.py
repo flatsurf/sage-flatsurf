@@ -134,17 +134,16 @@ class MegaWollmilchsau(AbstractOrigami):
         self._bi=~self._b
 
     def up(self, label):
-        return self._b*label
+        return self._b * label
 
     def down(self, label):
-        return self._bi*label
+        return self._bi * label
 
     def right(self, label):
-        return self._a*label
+        return self._a * label
 
     def left(self, label):
-        return self._ai*label
+        return self._ai * label
 
     def _repr_(self):
         return "MegaWollmilchsau Origami"
-

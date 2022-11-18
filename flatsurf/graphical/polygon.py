@@ -342,14 +342,12 @@ class GraphicalPolygon:
         to use graphical coordinates instead.
         """
         if "zorder" not in options:
-            options["zorder"]=50
+            options["zorder"] = 50
         if "coordinates" not in options:
             points2 = [self.transform(point) for point in points]
-        elif options["coordinates"]=="graphical":
-            points2=[V(point) for point in points]
+        elif options["coordinates"] == "graphical":
+            points2 = [V(point) for point in points]
             del options["coordinates"]
         else:
             raise ValueError("Invalid value of 'coordinates' option")
         return point2d(points=points2, **options)
-   
-
