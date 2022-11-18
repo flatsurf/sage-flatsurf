@@ -1,3 +1,3 @@
 **Fixed:**
 
-* Fixed problems with automated plotting tests in CI.
+* Fixed processing of `plot(edge_labels=True)` option which was ignored before.
