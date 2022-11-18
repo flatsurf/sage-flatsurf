@@ -2074,10 +2074,11 @@ class SimilaritySurface(SageObject):
 
             sage: from flatsurf import *
             sage: s = translation_surfaces.octagon_and_squares()
-            sage: s.plot()     # not tested (problem with matplotlib font caches on Travis)
+            sage: s.plot()
             Graphics object consisting of 32 graphics primitives
-            sage: s.graphical_surface(cached=False,adjacencies=[]).plot()   # not tested (problem with matplotlib font caches on Travis)
+            sage: s.graphical_surface(cached=False,adjacencies=[]).plot()
             Graphics object consisting of 18 graphics primitives
+
         """
         from flatsurf.graphical.surface import GraphicalSurface
         if "cached" in kwds:
@@ -2177,9 +2178,9 @@ class SimilaritySurface(SageObject):
 
             sage: from flatsurf import *
             sage: s = similarity_surfaces.example()
-            sage: s.plot() # not tested (problem with matplotlib font caches on Travis)
+            sage: s.plot()
             Graphics object consisting of 13 graphics primitives
-            s.plot_polygon(1) # not tested (problem with matplotlib font caches on Travis)
+            s.plot_polygon(1)
             Graphics object consisting of 7 graphics primitives
 
             sage: labels = []
@@ -2187,7 +2188,7 @@ class SimilaritySurface(SageObject):
             sage: for e in range(p.num_edges()): \
                 labels.append(str(p.edge(e)))
             sage: s.plot_polygon(1, polygon_options=None, plot_edges=False, \
-                edge_labels=labels, edge_label_options={"color":"red"}) # not tested (problem with matplotlib font caches on Travis)
+                edge_labels=labels, edge_label_options={"color":"red"})
             Graphics object consisting of 4 graphics primitives
         """
         if graphical_surface is None:
