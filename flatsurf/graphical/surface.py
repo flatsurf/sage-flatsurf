@@ -990,7 +990,6 @@ class GraphicalSurface:
             sage: s = similarity_surfaces.example()
             sage: from flatsurf.graphical.surface import GraphicalSurface
             sage: gs = GraphicalSurface(s)
-            sage: gs.make_visible(1)
             sage: gs.plot()
             ...
             Graphics object consisting of 13 graphics primitives
