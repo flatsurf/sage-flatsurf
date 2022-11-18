@@ -970,12 +970,11 @@ class Polygon(Element):
         from sage.plot.point import point2d
         from sage.plot.line import line2d
         from sage.plot.polygon import polygon2d
-        V = VectorSpace(RR,2)
         P = self.vertices(translation)
 
-        polygon_options = {'alpha':0.3, 'zorder':1, **polygon_options}
-        edge_options = {'color':'orange', 'zorder':2, **edge_options}
-        vertex_options = {'color':'red', 'zorder':2, **vertex_options}
+        polygon_options = {'alpha': 0.3, 'zorder': 1, **polygon_options}
+        edge_options = {'color': 'orange', 'zorder': 2, **edge_options}
+        vertex_options = {'color': 'red', 'zorder': 2, **vertex_options}
 
         return polygon2d(P, **polygon_options) + line2d(P + (P[0],), **edge_options) + point2d(P, **vertex_options)
 
