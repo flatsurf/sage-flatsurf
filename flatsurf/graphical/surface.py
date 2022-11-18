@@ -298,11 +298,10 @@ class GraphicalSurface:
                 raise ValueError("polygon_labels must be True, False or None.")
             self.will_plot_polygon_labels = polygon_labels
 
-        if edge_labels is not None:
-            if edge_labels is True:
-                edge_labels = 'gluings'
-            elif edge_labels is False:
-                edge_labels = None
+        if edge_labels is True:
+            edge_labels = 'gluings'
+        elif edge_labels is False:
+            edge_labels = None
 
         if edge_labels is None:
             self._edge_labels = None
