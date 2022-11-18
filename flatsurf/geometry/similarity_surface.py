@@ -2183,7 +2183,7 @@ class SimilaritySurface(SageObject):
             sage: s.plot()
             ...
             Graphics object consisting of 13 graphics primitives
-            s.plot_polygon(1)
+            sage: s.plot_polygon(1)
             ...
             Graphics object consisting of 7 graphics primitives
 
