@@ -10,7 +10,7 @@ EXAMPLES::
     sage: s.plot()     # not tested (problem with matplotlib font caches on Travis)
     Graphics object consisting of 129 graphics primitives
 """
-#*****************************************************************************
+# ****************************************************************************
 #       Copyright (C) 2013-2019 Vincent Delecroix <20100.delecroix@gmail.com>
 #                     2013-2019 W. Patrick Hooper <wphooper@gmail.com>
 #
@@ -18,7 +18,7 @@ EXAMPLES::
 #  as published by the Free Software Foundation; either version 2 of
 #  the License, or (at your option) any later version.
 #                  https://www.gnu.org/licenses/
-#*****************************************************************************
+# ****************************************************************************
 
 from __future__ import absolute_import, print_function, division
 from six.moves import range, map, filter, zip
@@ -27,10 +27,11 @@ from .surface import Surface
 from .half_dilation_surface import HalfDilationSurface
 from sage.rings.integer_ring import ZZ
 
+
 def ChamanaraPolygon(alpha):
     from sage.categories.fields import Fields
-    field=alpha.parent()
-    if not field in Fields():
+    field = alpha.parent()
+    if field not in Fields():
         ValueError("The value of alpha must lie in a field.")
     if alpha<=0 or alpha>=1:
         ValueError("The value of alpha must be between zero and one.")
@@ -130,15 +131,14 @@ def chamanara_surface(alpha,n=8):
     """
     s = chamanara_half_dilation_surface(alpha).minimal_cover(cover_type="translation")
     l = s.base_label()
-    adjacencies = [(l,1)]
+    adjacencies = [(l, 1)]
     for i in range(n):
-        adjacencies.append((l,3))
-        l = s.opposite_edge(l,3)[0]
+        adjacencies.append((l, 3))
+        l = s.opposite_edge(l, 3)[0]
     l = s.base_label()
-    l = s.opposite_edge(l,1)[0]
+    l = s.opposite_edge(l, 1)[0]
     for i in range(n):
-        adjacencies.append((l,3))
-        l = s.opposite_edge(l,3)[0]
+        adjacencies.append((l, 3))
+        l = s.opposite_edge(l, 3)[0]
     s.graphical_surface(adjacencies=adjacencies)
     return s
-

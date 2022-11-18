@@ -52,7 +52,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'sage-flatsurf'
-copyright = u'2016-2021, Vincent Delecroix and Pat Hooper'
+copyright = u'2016-2022, the sage-flatsurf authors'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -207,7 +207,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
   ('index', 'sage-flatsurf.tex', u'sage-flatsurf Documentation',
-   u'Vincent Delecroix and Pat Hooper', 'manual'),
+   u'the sage-flatsurf authors', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -237,7 +237,7 @@ latex_documents = [
 # (source start file, name, description, authors, manual section).
 man_pages = [
     ('index', 'sage-flatsurf', u'sage-flatsurf Documentation',
-     [u'Vincent Delecroix and Pat Hooper'], 1)
+     [u'the sage-flatsurf authors'], 1)
 ]
 
 # If true, show URL addresses after external links.
@@ -251,7 +251,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
   ('index', 'sage-flatsurf', u'sage-flatsurf Documentation',
-   u'Vincent Delecroix and Pat Hooper', 'sage-flatsurf', 'One line description of project.',
+   u'the sage-flatsurf authors', 'sage-flatsurf', 'One line description of project.',
    'Miscellaneous'),
 ]
 

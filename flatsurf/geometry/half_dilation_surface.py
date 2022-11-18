@@ -1,4 +1,4 @@
-#*****************************************************************************
+# ****************************************************************************
 #       Copyright (C) 2013-2019 Vincent Delecroix <20100.delecroix@gmail.com>
 #                     2013-2019 W. Patrick Hooper <wphooper@gmail.com>
 #
@@ -6,7 +6,7 @@
 #  as published by the Free Software Foundation; either version 2 of
 #  the License, or (at your option) any later version.
 #                  https://www.gnu.org/licenses/
-#*****************************************************************************
+# ****************************************************************************
 
 from __future__ import absolute_import, print_function, division
 from six.moves import range, map, filter, zip
@@ -23,6 +23,7 @@ if SAGE_VERSION >= '8.2':
 else:
     from sage.matrix.matrix import is_Matrix
 
+
 class HalfDilationSurface(SimilaritySurface):
     r"""
     Half dilation surface.
@@ -35,7 +36,7 @@ class HalfDilationSurface(SimilaritySurface):
     def GL2R_mapping(self, matrix):
         r"""
         Deprecated. Use apply_matrix instead.
-        
+
         Apply a 2x2 matrix to the polygons making up this surface. 
         Returns the flatsurf.geometry.SurfaceMapping from this surface to its image.
         """
@@ -85,8 +86,8 @@ class HalfDilationSurface(SimilaritySurface):
         
         If in_place=False, then a copy is made before the deformation.
         """
-        if mapping==True:
-            assert in_place==False, "Can not modify in place and return a mapping."
+        if mapping is True:
+            assert in_place is False, "Can not modify in place and return a mapping."
             return GL2RMapping(self, m)
         if not in_place:
             if self.is_finite():
