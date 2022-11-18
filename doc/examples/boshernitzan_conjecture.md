@@ -65,13 +65,6 @@ S = similarity_surfaces.billiard(Δ).minimal_cover(cover_type="translation")
 S.plot(edge_labels=False, polygon_labels=False)
 ```
 
-Currently, the builtin plot is not terribly useful here. We can visualize this unfolding if [ipyvue-flatsurf](https://github.com/flatsurf/ipyvue-flatsurf) is available.
-
-```{code-cell} ipython3
-from ipyvue_flatsurf import Widget
-Widget(S)
-```
-
 We construct the flow decomposition in direction (0, 1), orthogonal to one of the sides of the triangle.
 
 ```{code-cell} ipython3
