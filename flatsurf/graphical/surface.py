@@ -3,8 +3,7 @@ EXAMPLES::
 
     sage: import flatsurf
     sage: flatsurf.translation_surfaces.veech_2n_gon(4).plot()
-    ...
-    Graphics object consisting of 18 graphics primitives
+    ...Graphics object consisting of 18 graphics primitives
 
 """
 # ****************************************************************************
@@ -120,8 +119,7 @@ class GraphicalSurface:
         sage: gs = GraphicalSurface(s)
         sage: gs.polygon_options["color"]="red"
         sage: gs.plot()
-        ...
-        Graphics object consisting of 13 graphics primitives
+        ...Graphics object consisting of 13 graphics primitives
     """
 
     def __init__(self, similarity_surface, adjacencies=None, polygon_labels=True, \
@@ -419,15 +417,13 @@ class GraphicalSurface:
             sage: g = s.graphical_surface()
             sage: g.make_all_visible()
             sage: g.plot()
-            ...
-            Graphics object consisting of 13 graphics primitives
+            ...Graphics object consisting of 13 graphics primitives
 
             sage: s = similarity_surfaces.example()
             sage: g = s.graphical_surface(cached=False, adjacencies=[])
             sage: g.make_all_visible(adjacent=False)
             sage: g.plot()
-            ...
-            Graphics object consisting of 16 graphics primitives
+            ...Graphics object consisting of 16 graphics primitives
         """
         if adjacent is None:
             adjacent = (self._default_position_function is None)
@@ -991,25 +987,20 @@ class GraphicalSurface:
             sage: from flatsurf.graphical.surface import GraphicalSurface
             sage: gs = GraphicalSurface(s)
             sage: gs.plot()
-            ...
-            Graphics object consisting of 13 graphics primitives
+            ...Graphics object consisting of 13 graphics primitives
 
 
         Check that label options are handled correctly::
 
             sage: S = translation_surfaces.square_torus()
             sage: S.plot(polygon_labels=True, edge_labels=True)
-            ...
-            Graphics object consisting of 10 graphics primitives
+            ...Graphics object consisting of 10 graphics primitives
             sage: S.plot(polygon_labels=False, edge_labels=True)
-            ...
-            Graphics object consisting of 9 graphics primitives
+            ...Graphics object consisting of 9 graphics primitives
             sage: S.plot(polygon_labels=True, edge_labels=False)
-            ...
-            Graphics object consisting of 6 graphics primitives
+            ...Graphics object consisting of 6 graphics primitives
             sage: S.plot(polygon_labels=False, edge_labels=False)
-            ...
-            Graphics object consisting of 5 graphics primitives
+            ...Graphics object consisting of 5 graphics primitives
         """
         from sage.plot.graphics import Graphics
         p = Graphics()

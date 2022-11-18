@@ -2075,11 +2075,9 @@ class SimilaritySurface(SageObject):
             sage: from flatsurf import *
             sage: s = translation_surfaces.octagon_and_squares()
             sage: s.plot()
-            ...
-            Graphics object consisting of 32 graphics primitives
+            ...Graphics object consisting of 32 graphics primitives
             sage: s.graphical_surface(cached=False,adjacencies=[]).plot()
-            ...
-            Graphics object consisting of 18 graphics primitives
+            ...Graphics object consisting of 18 graphics primitives
 
         """
         from flatsurf.graphical.surface import GraphicalSurface
@@ -2181,11 +2179,9 @@ class SimilaritySurface(SageObject):
             sage: from flatsurf import *
             sage: s = similarity_surfaces.example()
             sage: s.plot()
-            ...
-            Graphics object consisting of 13 graphics primitives
+            ...Graphics object consisting of 13 graphics primitives
             sage: s.plot_polygon(1)
-            ...
-            Graphics object consisting of 7 graphics primitives
+            ...Graphics object consisting of 7 graphics primitives
 
             sage: labels = []
             sage: p = s.polygon(1)
@@ -2193,8 +2189,7 @@ class SimilaritySurface(SageObject):
                 labels.append(str(p.edge(e)))
             sage: s.plot_polygon(1, polygon_options=None, plot_edges=False, \
                 edge_labels=labels, edge_label_options={"color":"red"})
-            ...
-            Graphics object consisting of 4 graphics primitives
+            ...Graphics object consisting of 4 graphics primitives
         """
         if graphical_surface is None:
             graphical_surface = self.graphical_surface()
