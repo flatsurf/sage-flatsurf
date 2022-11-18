@@ -3,6 +3,7 @@ EXAMPLES::
 
     sage: import flatsurf
     sage: flatsurf.translation_surfaces.veech_2n_gon(4).plot()
+    ...
     Graphics object consisting of 18 graphics primitives
 
 """
@@ -108,6 +109,7 @@ class GraphicalSurface:
         sage: gs = GraphicalSurface(s)
         sage: gs.polygon_options["color"]="red"
         sage: gs.plot()
+        ...
         Graphics object consisting of 13 graphics primitives
     """
 
@@ -402,12 +404,14 @@ class GraphicalSurface:
             sage: g = s.graphical_surface()
             sage: g.make_all_visible()
             sage: g.plot()
+            ...
             Graphics object consisting of 13 graphics primitives
 
             sage: s = similarity_surfaces.example()
             sage: g = s.graphical_surface(cached=False, adjacencies=[])
             sage: g.make_all_visible(adjacent=False)
             sage: g.plot()
+            ...
             Graphics object consisting of 16 graphics primitives
         """
         if adjacent is None:
@@ -973,6 +977,7 @@ class GraphicalSurface:
             sage: gs = GraphicalSurface(s)
             sage: gs.make_visible(1)
             sage: gs.plot()
+            ...
             Graphics object consisting of 13 graphics primitives
 
 
@@ -980,12 +985,16 @@ class GraphicalSurface:
 
             sage: S = translation_surfaces.square_torus()
             sage: S.plot(polygon_labels=True, edge_labels=True)
+            ...
             Graphics object consisting of 10 graphics primitives
             sage: S.plot(polygon_labels=False, edge_labels=True)
+            ...
             Graphics object consisting of 9 graphics primitives
             sage: S.plot(polygon_labels=True, edge_labels=False)
+            ...
             Graphics object consisting of 6 graphics primitives
             sage: S.plot(polygon_labels=False, edge_labels=False)
+            ...
             Graphics object consisting of 5 graphics primitives
         """
         from sage.plot.graphics import Graphics

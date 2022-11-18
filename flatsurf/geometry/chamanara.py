@@ -8,6 +8,7 @@ EXAMPLES::
     sage: from flatsurf import translation_surfaces
     sage: s = translation_surfaces.chamanara(1/2)
     sage: s.plot()
+    ...
     Graphics object consisting of 129 graphics primitives
 
 """
