@@ -197,7 +197,7 @@ large
 
 ##### Flowing from the Large Edge to Construct an Interval Exchange Transformation
 
-We (unfortunately do not) see in the above plot how the half edges on the left get shuffled by to be become the half edges on the right if we follow the flow across the ``large`` edge.
+We (unfortunately do not) see in the above plot how the half edges on the left get shuffled to be become the half edges on the right if we follow the flow across the ``large`` edge.
 
 This defines an Interval Exchange Transformation.
 
@@ -252,7 +252,7 @@ iet.zorichInduction()
 iet
 ```
 
-Therefore, we can simplify the interval exchange transformation by dropping thop label `f`.
+Therefore, we can simplify the interval exchange transformation by dropping the label `f`.
 
 ```{code-cell} ipython3
 iet.induce(0R)
