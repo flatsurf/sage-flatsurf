@@ -20,6 +20,15 @@ import flatsurf
 
 
 def time_harmonic_differential(surface):
+    if surface == "TORUS":
+        surface = flatsurf.translation_surfaces.torus((1, 0), (0, 1))
+    elif surface == "3413":
+        E = flatsurf.EquiangularPolygons(3, 4, 13)
+        P = E.an_element()
+        surface = flatsurf.similarity_surfaces.billiard(P, rational=True).minimal_cover(cover_type="translation")
+    else:
+        raise NotImplementedError
+
     surface = surface.delaunay_triangulation()
     surface.set_immutable()
     Ω = flatsurf.HarmonicDifferentials(surface)
@@ -28,13 +37,7 @@ def time_harmonic_differential(surface):
     Ω(H({a: 1}), check=False)
 
 
-def _3413():
-    E = flatsurf.EquiangularPolygons(3, 4, 13)
-    P = E.an_element()
-    return flatsurf.similarity_surfaces.billiard(P, rational=True).minimal_cover(cover_type="translation")
-
-
 time_harmonic_differential.params = ([
-    flatsurf.translation_surfaces.torus((1, 0), (0, 1)),
-    _3413(),
+    "TORUS",
+    "3413",
 ])

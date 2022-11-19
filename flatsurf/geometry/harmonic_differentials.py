@@ -1620,11 +1620,15 @@ class PowerSeriesConstraints:
             edge = self._surface.polygon(triangle0).edges()[edge0]
             r2 = (edge[0]**2 + edge[1]**2) / 4
 
-            for n, b_n in enumerate(b):
+            r2n = r2
+            for b_n in b:
                 # TODO: In the article it says that it should be R^n as a
                 # factor but R^{2n+2} is actually more reasonable. See
                 # https://sagemath.zulipchat.com/#narrow/stream/271193-polygon/topic/Harmonic.20Differentials/near/308863913
-                cost += (b_n.real()**2 + b_n.imag()**2) * r2**(n + 1)
+                real = b_n.real()
+                imag = b_n.imag()
+                cost += (real * real + imag * imag) * r2n
+                r2n *= r2
 
         return cost
 
