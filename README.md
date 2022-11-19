@@ -1,5 +1,5 @@
 <p align="center">
-    <img alt="logo" src="https://github.com/flatsurf/sage-flatsurf/raw/master/doc/logo.svg?sanitize=true" width="300px">
+    <img alt="logo" src="https://github.com/flatsurf/sage-flatsurf/raw/master/doc/static/logo.svg?sanitize=true">
 </p>
 
 <h1><p align="center">sage-flatsurf</p></h1>
