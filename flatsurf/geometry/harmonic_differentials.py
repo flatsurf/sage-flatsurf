@@ -321,15 +321,16 @@ class HarmonicDifferential(Element):
         """
         coefficients = {}
 
-        for gen in expression.variables():
-            kind, triangle, k = gen.gen()
+        for variable in expression.variables():
+            kind, triangle, k = variable.describe()
+
             coefficient = self._series[triangle][k]
 
             if kind == "real":
-                coefficients[gen] = coefficient.real()
+                coefficients[variable] = coefficient.real()
             else:
                 assert kind == "imag"
-                coefficients[gen] = coefficient.imag()
+                coefficients[variable] = coefficient.imag()
 
         value = expression(coefficients)
         if isinstance(value, SymbolicCoefficientExpression):
@@ -704,91 +705,210 @@ class GeometricPrimitives:
 class SymbolicCoefficientExpression(CommutativeRingElement):
     # TODO: Make sure that we never have zero coefficients as these would break degree computations.
 
-    def __init__(self, parent, coefficients, constant):
+    def __init__(self, parent, coefficients):
         super().__init__(parent)
 
         self._coefficients = coefficients
-        self._constant = constant
 
     def _richcmp_(self, other, op):
+        r"""
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T.set_immutable()
+
+            sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing
+            sage: R = SymbolicCoefficientRing(T, CC)
+            sage: a = R.gen(('imag', 0, 0))
+            sage: b = R.gen(('real', 0, 0))
+            sage: a == a
+            True
+            sage: a == b
+            False
+
+        """
         from sage.structure.richcmp import op_EQ, op_NE
 
         if op == op_NE:
             return not (self == other)
 
         if op == op_EQ:
-            return self._constant == other._constant and self._coefficients == other._coefficients
+            return self._coefficients == other._coefficients
 
         raise NotImplementedError
 
     def _repr_(self):
-        terms = self.items()
+        r"""
+        EXAMPLES::
 
+            sage: from flatsurf import translation_surfaces
+            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T.set_immutable()
+
+            sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing
+            sage: R = SymbolicCoefficientRing(T, CC)
+            sage: a = R.gen(('imag', 0, 0))
+            sage: b = R.gen(('real', 0, 0))
+            sage: a
+            Im(a0,0)
+            sage: b
+            Re(a0,0)
+            sage: a + b
+            Re(a0,0) + Im(a0,0)
+            sage: a + b + 1
+            Re(a0,0) + Im(a0,0) + 1.00000000000000
+
+        """
         if self.is_constant():
-            return repr(self._constant)
+            return repr(self.constant_coefficient())
+
+        def decode(gen):
+            if gen < 0:
+                return -gen-1,
+
+            kind = "Im" if gen % 2 else "Re"
+            gen //= 2
+            polygon = gen % self.parent()._surface.num_polygons()
+            gen //= self.parent()._surface.num_polygons()
+            k = gen
+
+            return kind, polygon, k
 
         def variable_name(gen):
-            kind = gen[0]
-            if kind == "real":
-                return f"Re__open__a{gen[1]}__comma__{gen[2]}__close__"
-            elif kind == "imag":
-                return f"Im__open__a{gen[1]}__comma__{gen[2]}__close__"
-            elif kind == "lagrange":
-                return f"λ{gen[1]}"
+            gen = decode(gen)
 
-            assert False, gen
+            if len(gen) == 1:
+                return f"λ{gen[0]}"
+
+            kind, polygon, k = gen
+            return f"{kind}__open__a{polygon}__comma__{k}__close__"
 
         def key(gen):
-            if gen[0] == "real":
-                return gen[1], gen[2], 0
-            if gen[0] == "imag":
-                return gen[1], gen[2], 1
-            if gen[0] == "lagrange":
-                return 1e9, gen[1]
-            assert False, gen
+            gen = decode(gen)
 
-        variable_names = [variable_name(gen) for gen in sorted(set(gen for (monomial, coefficient) in terms for gen in monomial), key=key)]
+            if len(gen) == 1:
+                n = gen[0]
+                return 1e9, n
+
+            kind, polygon, k = gen
+            return polygon, k, 0 if kind == "Re" else 1
+
+        gens = list({gen for monomial in self._coefficients.keys() for gen in monomial})
+        gens.sort(key=key)
+
+        variable_names = tuple(variable_name(gen) for gen in gens)
 
         from sage.all import PolynomialRing
-        R = PolynomialRing(self.base_ring(), tuple(variable_names))
+        R = PolynomialRing(self.base_ring(), variable_names)
 
-        def polynomial_monomial(monomial):
-            from sage.all import prod
-            return prod([R(variable_name(gen))**exponent for (gen, exponent) in monomial.items()])
+        def monomial(variables):
+            monomial = R.one()
+            for variable in variables:
+                monomial *= R.gen(gens.index(variable))
+            return monomial
 
-        f = sum(coefficient * polynomial_monomial(monomial) for (monomial, coefficient) in terms)
+        f = sum(coefficient * monomial(gens) for (gens, coefficient) in self._coefficients.items())
 
         return repr(f).replace('__open__', '(').replace('__close__', ')').replace('__comma__', ',')
 
     def degree(self, gen):
-        if not isinstance(gen, SymbolicCoefficientExpression):
-            raise NotImplementedError
+        r"""
+        EXAMPLES::
 
-        if not gen.is_monomial():
-            raise ValueError
+            sage: from flatsurf import translation_surfaces
+            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T.set_immutable()
 
-        if self.is_zero():
-            return -1
+            sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing
+            sage: R = SymbolicCoefficientRing(T, CC)
+            sage: a = R.gen(('imag', 0, 0))
+            sage: b = R.gen(('real', 0, 0))
+            sage: a.degree(a)
+            1
+            sage: (a + b).degree(a)
+            1
+            sage: (a * b + a).degree(a)
+            1
+            sage: R.one().degree(a)
+            0
+            sage: R.zero().degree(a)
+            -1
 
-        key = next(iter(gen._coefficients))
+        """
+        if not gen.is_variable():
+            raise ValueError(f"gen must be a monomial not {gen}")
 
-        degree = 0
+        variable = next(iter(gen._coefficients))[0]
 
-        while isinstance(self, SymbolicCoefficientExpression):
-            self = self._coefficients.get(key, None)
-
-            if self is None:
-                break
-
-            degree += 1
-
-        return degree
+        return max([monomial.count(variable) for monomial in self._coefficients], default=-1)
 
     def is_monomial(self):
-        return len(self._coefficients) == 1 and not self._constant and next(iter(self._coefficients.values())).is_one()
+        r"""
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T.set_immutable()
+
+            sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing
+            sage: R = SymbolicCoefficientRing(T, CC)
+            sage: a = R.gen(('imag', 0, 0))
+            sage: b = R.gen(('real', 0, 0))
+            sage: a.is_monomial()
+            True
+            sage: (a + b).is_monomial()
+            False
+            sage: R.one().is_monomial()
+            False
+            sage: R.zero().is_monomial()
+            False
+            sage: (a * a).is_monomial()
+            True
+
+        """
+        if len(self._coefficients) != 1:
+            return False
+
+        ((key, value),) = self._coefficients.items()
+
+        return bool(key) and value.is_one()
 
     def is_constant(self):
-        return not self._coefficients
+        r"""
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T.set_immutable()
+
+            sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing
+            sage: R = SymbolicCoefficientRing(T, CC)
+            sage: a = R.gen(('imag', 0, 0))
+            sage: b = R.gen(('real', 0, 0))
+            sage: a.is_constant()
+            False
+            sage: (a + b).is_constant()
+            False
+            sage: R.one().is_constant()
+            True
+            sage: R.zero().is_constant()
+            True
+            sage: (a * a).is_constant()
+            False
+
+        """
+        coefficients = len(self._coefficients)
+
+        if coefficients == 0:
+            return True
+
+        if coefficients > 1:
+            return False
+
+        monomial = next(iter(self._coefficients.keys()))
+
+        return not monomial
 
     def norm(self, p=2):
         r"""
@@ -802,7 +922,7 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing
             sage: R = SymbolicCoefficientRing(T, CC)
-            sage: x = R(('imag', 0, 0)) + 1; x
+            sage: x = R.gen(('imag', 0, 0)) + 1; x
             Im(a0,0) + 1.00000000000000
             sage: x.norm(1)
             2.00000000000000
@@ -811,31 +931,122 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
 
         """
         from sage.all import vector
-        return vector([v for (k, v) in self.items()]).norm(p)
+        return vector(self._coefficients.values()).norm(p)
 
     def _neg_(self):
+        r"""
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T.set_immutable()
+
+            sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing
+            sage: R = SymbolicCoefficientRing(T, CC)
+            sage: a = R.gen(('imag', 0, 0))
+            sage: b = R.gen(('real', 0, 0))
+            sage: -a
+            -Im(a0,0)
+            sage: -(a + b)
+            -Re(a0,0) - Im(a0,0)
+            sage: -(a * a)
+            -Im(a0,0)^2
+            sage: -R.one()
+            -1.00000000000000
+            sage: -R.zero()
+            0.000000000000000
+
+        """
         parent = self.parent()
-        return parent.element_class(parent, {key: -coefficient for (key, coefficient) in self._coefficients.items()}, -self._constant)
+        return type(self)(parent, {key: -coefficient for (key, coefficient) in self._coefficients.items()})
 
     def _add_(self, other):
+        r"""
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T.set_immutable()
+
+            sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing
+            sage: R = SymbolicCoefficientRing(T, CC)
+            sage: a = R.gen(('imag', 0, 0))
+            sage: b = R.gen(('real', 0, 0))
+            sage: a + 1
+            Im(a0,0) + 1.00000000000000
+            sage: a + (-a)
+            0.000000000000000
+            sage: a + b
+            Re(a0,0) + Im(a0,0)
+            sage: a * a + b * b
+            Re(a0,0)^2 + Im(a0,0)^2
+
+        """
         parent = self.parent()
 
         if len(self._coefficients) < len(other._coefficients):
             self, other = other, self
 
-        coefficients = self._coefficients | other._coefficients
+        coefficients = dict(self._coefficients)
 
-        for key in other._coefficients:
-            c = self._coefficients.get(key)
-            if c is not None:
-                coefficients[key] += c
+        for monomial, coefficient in other._coefficients.items():
+            assert coefficient
+            if monomial not in coefficients:
+                coefficients[monomial] = coefficient
+            else:
+                coefficients[monomial] += coefficient
 
-        return parent.element_class(parent, coefficients, self._constant + other._constant)
+                if not coefficients[monomial]:
+                    del coefficients[monomial]
+
+        return type(self)(parent, coefficients)
 
     def _sub_(self, other):
+        r"""
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T.set_immutable()
+
+            sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing
+            sage: R = SymbolicCoefficientRing(T, CC)
+            sage: a = R.gen(('imag', 0, 0))
+            sage: b = R.gen(('real', 0, 0))
+            sage: a - 1
+            Im(a0,0) - 1.00000000000000
+            sage: a - a
+            0.000000000000000
+            sage: a * a - b * b
+            -Re(a0,0)^2 + Im(a0,0)^2
+
+        """
         return self._add_(-other)
 
     def _mul_(self, other):
+        r"""
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T.set_immutable()
+
+            sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing
+            sage: R = SymbolicCoefficientRing(T, CC)
+            sage: a = R.gen(('imag', 0, 0))
+            sage: b = R.gen(('real', 0, 0))
+            sage: a * a
+            Im(a0,0)^2
+            sage: a * b
+            Re(a0,0)*Im(a0,0)
+            sage: a * R.one()
+            Im(a0,0)
+            sage: a * R.zero()
+            0.000000000000000
+            sage: (a + b) * (a - b)
+            -Re(a0,0)^2 + Im(a0,0)^2
+
+        """
         parent = self.parent()
 
         if other.is_zero() or self.is_zero():
@@ -847,168 +1058,425 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
         if self.is_one():
             return other
 
-        if other.is_constant():
-            constant = other._constant
-            return parent({key: constant * value for (key, value) in self._coefficients.items()}, constant * self._constant)
+        coefficients = {}
 
-        if self.is_constant():
-            return other * self
+        for self_monomial, self_coefficient in self._coefficients.items():
+            assert self_coefficient
+            for other_monomial, other_coefficient in other._coefficients.items():
+                assert other_coefficient
 
-        value = parent.zero()
+                monomial = tuple(sorted(self_monomial + other_monomial))
+                coefficient = self_coefficient * other_coefficient
 
-        for (monomial, coefficient) in self.items():
-            for (monomial_, coefficient_) in other.items():
-                if not monomial and not monomial_:
-                    value += coefficient * coefficient_
-                    continue
+                if monomial not in coefficients:
+                    coefficients[monomial] = coefficient
+                else:
+                    coefficients[monomial] += coefficient
+                    if not coefficients[monomial]:
+                        del coefficients[monomial]
 
-                from copy import copy
-                monomial__ = copy(monomial)
-
-                for (gen, exponent) in monomial_.items():
-                    monomial__.setdefault(gen, 0)
-                    monomial__[gen] += exponent
-
-                coefficient__ = coefficient * coefficient_
-
-                if not monomial__:
-                    value += coefficient__
-                    continue
-
-                def unfold(monomial, coefficient):
-                    if not monomial:
-                        return coefficient
-
-                    unfolded = {}
-                    for gen, exponent in monomial.items():
-                        unfolded[gen] = unfold({
-                            g: e if g != gen else e - 1
-                            for (g, e) in monomial.items()
-                            if g != gen or e != 1
-                        }, coefficient)
-
-                    return parent(unfolded)
-
-                value += unfold(monomial__, coefficient__)
-
-        return value
+        return type(self)(self.parent(), coefficients)
 
     def _rmul_(self, right):
+        r"""
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T.set_immutable()
+
+            sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing
+            sage: R = SymbolicCoefficientRing(T, CC)
+            sage: a = R.gen(('imag', 0, 0))
+            sage: a * 0
+            0.000000000000000
+            sage: a * 1
+            Im(a0,0)
+            sage: a * 2
+            2.00000000000000*Im(a0,0)
+
+        """
         return self._lmul_(right)
 
     def _lmul_(self, left):
-        return type(self)(self.parent(), {key: left * value for (key, value) in self._coefficients.items()}, self._constant * left)
+        r"""
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T.set_immutable()
+
+            sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing
+            sage: R = SymbolicCoefficientRing(T, CC)
+            sage: a = R.gen(('imag', 0, 0))
+            sage: 0 * a
+            0.000000000000000
+            sage: 1 * a
+            Im(a0,0)
+            sage: 2 * a
+            2.00000000000000*Im(a0,0)
+
+        """
+        return type(self)(self.parent(), {key: coefficient for (key, value) in self._coefficients.items() if (coefficient := left * value)})
 
     def constant_coefficient(self):
-        return self._constant
+        r"""
+        EXAMPLES::
 
-    def variables(self):
-        return [self.parent()({variable: self.base_ring().one()}) for variable in self._coefficients]
+            sage: from flatsurf import translation_surfaces
+            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T.set_immutable()
+
+            sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing
+            sage: R = SymbolicCoefficientRing(T, CC)
+            sage: a = R.gen(('imag', 0, 0))
+            sage: b = R.gen(('real', 0, 0))
+            sage: a.constant_coefficient()
+            0.000000000000000
+            sage: (a + b).constant_coefficient()
+            0.000000000000000
+            sage: R.one().constant_coefficient()
+            1.00000000000000
+            sage: R.zero().constant_coefficient()
+            0.000000000000000
+
+        """
+        return self._coefficients.get((), self.parent().base_ring().zero())
+
+    def variables(self, kind=None):
+        r"""
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T.set_immutable()
+
+            sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing
+            sage: R = SymbolicCoefficientRing(T, CC)
+            sage: a = R.gen(('imag', 0, 0))
+            sage: b = R.gen(('real', 0, 0))
+            sage: a.variables()
+            {Im(a0,0)}
+            sage: (a + b).variables()
+            {Im(a0,0), Re(a0,0)}
+            sage: (a * a).variables()
+            {Im(a0,0)}
+            sage: (a * b).variables()
+            {Im(a0,0), Re(a0,0)}
+            sage: R.one().variables()
+            set()
+            sage: R.zero().variables()
+            set()
+
+        """
+        if kind == "lagrange":
+            def filter(gen):
+                return gen < 0
+        elif kind is None:
+            def filter(gen):
+                return True
+        else:
+            raise ValueError("unsupported kind")
+
+        return set(self.parent()((gen,)) for monomial in self._coefficients.keys() for gen in monomial if filter(gen))
+
+    def polygon(self):
+        r"""
+        Return the label of the polygon affected by this variable.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T.set_immutable()
+
+            sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing
+            sage: R = SymbolicCoefficientRing(T, CC)
+            sage: a = R.gen(('imag', 0, 0))
+            sage: b = R.gen(('real', 0, 0))
+            sage: a.polygon()
+            0
+            sage: b.polygon()
+            0
+            sage: (a*b).polygon()
+            Traceback (most recent call last):
+            ...
+            ValueError: element must be a variable
+
+        """
+        if not self.is_variable():
+            raise ValueError("element must be a variable")
+
+        variable = next(iter(self._coefficients.keys()))[0]
+
+        if variable < 0:
+            raise ValueError("Lagrange multipliers are not associated to a polygon")
+
+        return variable % (2*self.parent()._surface.num_polygons()) // 2
+
+    def is_variable(self):
+        r"""
+        Return the label of the polygon affected by this variable.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T.set_immutable()
+
+            sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing
+            sage: R = SymbolicCoefficientRing(T, CC)
+            sage: a = R.gen(('imag', 0, 0))
+            sage: b = R.gen(('real', 0, 0))
+            sage: a.is_variable()
+            True
+            sage: R.zero().is_variable()
+            False
+            sage: R.one().is_variable()
+            False
+            sage: (a + 1).is_variable()
+            False
+            sage: (a*b).is_variable()
+            False
+
+        """
+        if not self.is_monomial():
+            return False
+
+        monomial = next(iter(self._coefficients.keys()))
+
+        if len(monomial) != 1:
+            return False
+
+        return True
+
+    def describe(self):
+        r"""
+        Return a tuple describing the nature of this variable.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T.set_immutable()
+
+            sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing
+            sage: R = SymbolicCoefficientRing(T, CC)
+            sage: a = R.gen(('imag', 0, 0))
+            sage: b = R.gen(('real', 0, 0))
+            sage: a.describe()
+            ('imag', 0, 0)
+            sage: b.describe()
+            ('real', 0, 0)
+            sage: (a + b).describe()
+            Traceback (most recent call last):
+            ...
+            ValueError: element must be a variable
+
+        """
+        if not self.is_variable():
+            raise ValueError("element must be a variable")
+
+        variable = next(iter(self._coefficients.keys()))[0]
+
+        if variable < 0:
+            return ("lagrange", -variable-1)
+
+        triangle = self.polygon()
+        k = variable // (2*self.parent()._surface.num_polygons())
+        if variable % 2:
+            return ("imag", triangle, k)
+        else:
+            return ("real", triangle, k)
 
     def real(self):
+        r"""
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T.set_immutable()
+
+            sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing
+            sage: R = SymbolicCoefficientRing(T, CC)
+            sage: a = R.gen(('imag', 0, 0))
+            sage: b = R.gen(('real', 0, 0))
+            sage: c = (a + b)**2
+            sage: c.real()
+            Re(a0,0)^2 + 2.00000000000000*Re(a0,0)*Im(a0,0) + Im(a0,0)^2
+
+        """
         return self.map_coefficients(lambda c: c.real(), self.parent().change_ring(self.parent().real_field()))
 
     def imag(self):
+        r"""
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T.set_immutable()
+
+            sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing
+            sage: R = SymbolicCoefficientRing(T, CC)
+            sage: a = R.gen(('imag', 0, 0))
+            sage: b = R.gen(('real', 0, 0))
+            sage: c = (a + b)**2
+            sage: c.imag()
+            0.000000000000000
+
+            sage: c = (I*a + b)**2
+            sage: c.imag()
+            2.00000000000000*Re(a0,0)*Im(a0,0)
+
+        """
         return self.map_coefficients(lambda c: c.imag(), self.parent().change_ring(self.parent().real_field()))
 
     def __getitem__(self, gen):
+        r"""
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T.set_immutable()
+
+            sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing
+            sage: R = SymbolicCoefficientRing(T, CC)
+            sage: a = R.gen(('imag', 0, 0))
+            sage: b = R.gen(('real', 0, 0))
+            sage: a[a]
+            1.00000000000000
+            sage: a[b]
+            0.000000000000000
+            sage: (a + b)[a]
+            1.00000000000000
+            sage: (a * b)[a]
+            0.000000000000000
+            sage: (a * b)[a * b]
+            1.00000000000000
+
+        """
         if not gen.is_monomial():
             raise ValueError
 
-        return self._coefficients.get(next(iter(gen._coefficients.keys())), 0)
+        return self._coefficients.get(next(iter(gen._coefficients.keys())), self.parent().base_ring().zero())
 
     def __hash__(self):
-        return hash((tuple(sorted(self._coefficients.items())), self._constant))
+        return hash(tuple(sorted(self._coefficients.items())))
 
     def total_degree(self):
-        if not self._coefficients:
-            if not self._constant:
-                return -1
-            return 0
+        r"""
+        EXAMPLES::
 
-        degree = 1
+            sage: from flatsurf import translation_surfaces
+            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T.set_immutable()
 
-        for key, coefficient in self._coefficients.items():
-            if not isinstance(coefficient, SymbolicCoefficientExpression):
-                continue
-            degree = max(degree, 1 + coefficient.total_degree())
+            sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing
+            sage: R = SymbolicCoefficientRing(T, CC)
+            sage: a = R.gen(('imag', 0, 0))
+            sage: b = R.gen(('real', 0, 0))
+            sage: R.zero().total_degree()
+            -1
+            sage: R.one().total_degree()
+            0
+            sage: a.total_degree()
+            1
+            sage: (a * a + b).total_degree()
+            2
 
-        return degree
+        """
+        degrees = [len(monomial) for monomial in self._coefficients]
+        return max(degrees, default=-1)
 
     def derivative(self, gen):
-        key = gen.gen()
+        r"""
+        EXAMPLES::
 
-        # Compute derivative with product rule
-        value = self._coefficients.get(key, self.parent().zero())
-        if value and isinstance(value, SymbolicCoefficientExpression):
-            value += gen * value.derivative(gen)
+            sage: from flatsurf import translation_surfaces
+            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T.set_immutable()
 
-        return value
+            sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing
+            sage: R = SymbolicCoefficientRing(T, CC)
+            sage: a = R.gen(('imag', 0, 0))
+            sage: b = R.gen(('real', 0, 0))
+            sage: R.zero().derivative(a)
+            0.000000000000000
+            sage: R.one().derivative(a)
+            0.000000000000000
+            sage: a.derivative(a)
+            1.00000000000000
+            sage: a.derivative(b)
+            0.000000000000000
+            sage: c = (a + b) * (a - b)
+            sage: c.derivative(a)
+            2.00000000000000*Im(a0,0)
+            sage: c.derivative(b)
+            -2.00000000000000*Re(a0,0)
 
-    def gen(self):
-        if not self.is_monomial():
+        """
+        if not gen.is_variable():
             raise ValueError
 
-        gen, coefficient = next(iter(self._coefficients.items()))
+        gen = next(iter(gen._coefficients.keys()))[0]
 
-        if coefficient != 1:
-            raise ValueError
+        derivative = self.parent().zero()
 
-        return gen
+        for monomial, coefficient in self._coefficients.items():
+            assert coefficient
+
+            exponent = monomial.count(gen)
+
+            if not exponent:
+                continue
+
+            monomial = list(monomial)
+            monomial.remove(gen)
+            monomial = tuple(monomial)
+
+            derivative += self.parent()({monomial: exponent * coefficient})
+
+        return derivative
 
     def map_coefficients(self, f, ring=None):
         if ring is None:
             ring = self.parent()
 
-        def g(coefficient):
-            if isinstance(coefficient, SymbolicCoefficientExpression):
-                return coefficient.map_coefficients(f)
-            return f(coefficient)
-
-        return ring({key: v for (key, value) in self._coefficients.items() if (v := g(value))}, g(self._constant))
-
-    def items(self):
-        items = []
-
-        def collect(element, prefix=()):
-            if not isinstance(element, SymbolicCoefficientExpression):
-                if element:
-                    items.append((prefix, element))
-                return
-
-            if element._constant:
-                items.append((prefix, element._constant))
-
-            for key, value in element._coefficients.items():
-                if prefix and key < prefix[-1]:
-                    # Don't add the same monomial twice.
-                    continue
-
-                collect(value, prefix + (key,))
-
-        collect(self)
-
-        def monomial(gens):
-            monomial = {}
-            for gen in gens:
-                monomial.setdefault(gen, 0)
-                monomial[gen] += 1
-
-            return monomial
-
-        # TODO: Swap the order here.
-        return [(monomial(gens), coefficient) for (gens, coefficient) in items]
+        return ring({key: image for key, value in self._coefficients.items() if (image := f(value))})
 
     def __call__(self, values):
-        parent = self.parent()
+        r"""
+        Return the value of this symbolic expression.
 
-        values = {gen.gen(): value for (gen, value) in values.items()}
+        EXAMPLES::
 
-        from sage.all import prod
+            sage: from flatsurf import translation_surfaces
+            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T.set_immutable()
+
+            sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing
+            sage: R = SymbolicCoefficientRing(T, CC)
+            sage: a = R.gen(('imag', 0, 0))
+            sage: b = R.gen(('real', 0, 0))
+            sage: a({a: 1})
+            1.00000000000000
+            sage: a({a: 2, b: 1})
+            2.00000000000000
+            sage: (2 * a * b)({a: 3, b: 5})
+            30.0000000000000
+
+        """
+        def evaluate(monomial):
+            product = self.parent().base_ring().one()
+
+            for variable in monomial:
+                product *= values[self.parent().gen(variable)]
+
+            return product
+
         return sum([
-            coefficient * prod([
-                (parent({gen: 1}) if gen not in values else values[gen])**e for (gen, e) in monomial.items()
-            ]) for (monomial, coefficient) in self.items()])
+            coefficient * evaluate(monomial) for (monomial, coefficient) in self._coefficients.items()
+            ])
 
 
 class SymbolicCoefficientRing(UniqueRepresentation, CommutativeRing):
@@ -1061,23 +1529,23 @@ class SymbolicCoefficientRing(UniqueRepresentation, CommutativeRing):
         if isinstance(other, SymbolicCoefficientRing):
             return self.base_ring().has_coerce_map_from(other.base_ring())
 
-    def _element_constructor_(self, x, constant=None):
+    def _element_constructor_(self, x):
         if isinstance(x, SymbolicCoefficientExpression):
             return x.map_coefficients(self.base_ring(), ring=self)
 
         if isinstance(x, tuple):
-            assert constant is None
-
-            # x describes a monomial
-            return self.element_class(self, {x: self._base_ring.one()}, self._base_ring.zero())
+            # x describes a variable
+            assert x == tuple(sorted(x))
+            return self.element_class(self, {x: self._base_ring.one()})
 
         if isinstance(x, dict):
-            constant = constant or self._base_ring.zero()
+            return self.element_class(self, x)
 
-            return self.element_class(self, x, constant)
-
-        if x in self._base_ring:
-            return self.element_class(self, {}, self._base_ring(x))
+        from sage.all import parent
+        if parent(x) is self._base_ring:
+            if not x:
+                return self.element_class(self, {})
+            return self.element_class(self, {(): x})
 
         raise NotImplementedError(f"symbolic expression from {x}")
 
@@ -1085,6 +1553,40 @@ class SymbolicCoefficientRing(UniqueRepresentation, CommutativeRing):
     def imaginary_unit(self):
         from sage.all import I
         return self(self._base_ring(I))
+
+    def gen(self, n):
+        if isinstance(n, tuple):
+            if len(n) == 3:
+                kind, polygon, k = n
+
+                if kind == "real":
+                    kind = 0
+                elif kind == "imag":
+                    kind = 1
+                else:
+                    raise NotImplementedError
+
+                n = k * 2 * self._surface.num_polygons() + 2 * polygon + kind
+            elif len(n) == 2:
+                kind, k = n
+
+                if kind != "lagrange":
+                    raise ValueError
+                if k < 0:
+                    raise ValueError
+
+                n = -k-1
+            else:
+                raise ValueError
+
+        from sage.all import parent, ZZ
+        if parent(n) is ZZ:
+            n = int(n)
+
+        if not isinstance(n, int):
+            raise ValueError
+
+        return self((n,))
 
     def ngens(self):
         raise NotImplementedError
@@ -1178,7 +1680,7 @@ class PowerSeriesConstraints:
         if k >= self._prec:
             raise ValueError(f"symbolic ring has no {k}-th generator for this triangle")
 
-        return self.symbolic_ring()(("real", triangle, k))
+        return self.symbolic_ring().gen(("real", triangle, k))
 
     @cached_method
     def imag(self, triangle, k):
@@ -1205,11 +1707,11 @@ class PowerSeriesConstraints:
         if k >= self._prec:
             raise ValueError(f"symbolic ring has no {k}-th generator for this triangle")
 
-        return self.symbolic_ring()(("imag", triangle, k))
+        return self.symbolic_ring().gen(("imag", triangle, k))
 
     @cached_method
     def lagrange(self, k):
-        return self.symbolic_ring()(("lagrange", k))
+        return self.symbolic_ring().gen(("lagrange", k))
 
     def project(self, x, part):
         r"""
@@ -1376,9 +1878,9 @@ class PowerSeriesConstraints:
 
             sage: C = PowerSeriesConstraints(T, prec=5)
             sage: C.integrate(a) + C.integrate(-a)
-            0
+            0.00000000000000000
             sage: C.integrate(b) + C.integrate(-b)
-            0
+            0.00000000000000000
 
         """
         surface = cycle.surface()
@@ -1821,8 +2323,6 @@ class PowerSeriesConstraints:
             sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
             sage: T.set_immutable()
 
-        ::
-
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
             sage: C = PowerSeriesConstraints(T, 1)
             sage: C.require_midpoint_derivatives(1)
@@ -1867,9 +2367,6 @@ class PowerSeriesConstraints:
                         continue
 
                     gen = self._cost.parent()(gen)
-
-                    def nth(L, n, default):
-                        return (L[n:n+1] or [default])[0]
 
                     L = self._cost.derivative(gen)
 
@@ -1932,31 +2429,68 @@ class PowerSeriesConstraints:
         for cycle in cocycle.parent().homology().gens():
             self.add_constraint(self.real_part(self.integrate(cycle)) - self.real_part(cocycle(cycle)))
 
+    def lagrange_variables(self):
+        return set(variable for constraint in self._constraints for variable in constraint.variables("lagrange"))
+
     def matrix(self):
-        lagranges = list((set(gen for constraint in self._constraints for gen in constraint.variables() if gen.gen()[0] == "lagrange")))
+        r"""
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, SimplicialCohomology
+            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T.set_immutable()
+
+            sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
+            sage: C = PowerSeriesConstraints(T, 1)
+            sage: C.require_midpoint_derivatives(1)
+            sage: C.matrix()
+            (
+            [ 1.00000000000000 0.000000000000000 -1.00000000000000 0.000000000000000]
+            [0.000000000000000  1.00000000000000 0.000000000000000 -1.00000000000000]
+            [ 1.00000000000000 0.000000000000000 -1.00000000000000 0.000000000000000]
+            [0.000000000000000  1.00000000000000 0.000000000000000 -1.00000000000000], (0.000000000000000, 0.000000000000000, 0.000000000000000, 0.000000000000000)
+            )
+
+        ::
+
+            sage: R = C.symbolic_ring()
+            sage: f = 3*C.real(0, 0)^2 + 5*C.imag(0, 0)^2 + 7*C.real(1, 0)^2 + 11*C.imag(1, 0)^2
+            sage: C.optimize(f)
+            sage: C._optimize_cost()
+            sage: C.matrix()
+            (
+            [ 1.00000000000000 0.000000000000000 -1.00000000000000 0.000000000000000 0.000000000000000 0.000000000000000 0.000000000000000 0.000000000000000]
+            [0.000000000000000  1.00000000000000 0.000000000000000 -1.00000000000000 0.000000000000000 0.000000000000000 0.000000000000000 0.000000000000000]
+            [ 1.00000000000000 0.000000000000000 -1.00000000000000 0.000000000000000 0.000000000000000 0.000000000000000 0.000000000000000 0.000000000000000]
+            [0.000000000000000  1.00000000000000 0.000000000000000 -1.00000000000000 0.000000000000000 0.000000000000000 0.000000000000000 0.000000000000000]
+            [ 6.00000000000000 0.000000000000000 0.000000000000000 0.000000000000000  1.00000000000000 0.000000000000000  1.00000000000000 0.000000000000000]
+            [0.000000000000000  10.0000000000000 0.000000000000000 0.000000000000000 0.000000000000000  1.00000000000000 0.000000000000000  1.00000000000000]
+            [0.000000000000000 0.000000000000000  14.0000000000000 0.000000000000000 -1.00000000000000 0.000000000000000 -1.00000000000000 0.000000000000000]
+            [0.000000000000000 0.000000000000000 0.000000000000000  22.0000000000000 0.000000000000000 -1.00000000000000 0.000000000000000 -1.00000000000000], (0.000000000000000, 0.000000000000000, 0.000000000000000, 0.000000000000000, 0.000000000000000, 0.000000000000000, 0.000000000000000, 0.000000000000000)
+            )
+
+        """
         triangles = list(self._surface.label_iterator())
 
         prec = int(self._prec)
 
         from sage.all import matrix, vector
-        A = matrix(self.real_field(), len(self._constraints), 2*len(triangles)*prec + len(lagranges))
+        A = matrix(self.real_field(), len(self._constraints), 2*len(triangles)*prec + len(self.lagrange_variables()))
         b = vector(self.real_field(), len(self._constraints))
 
         for row, constraint in enumerate(self._constraints):
-            for monomial, coefficient in constraint.items():
+            for monomial, coefficient in constraint._coefficients.items():
                 if not monomial:
                     b[row] = -coefficient
                     continue
 
-                assert len(monomial) == 1 and list(monomial.values()) == [1]
-                monomial = next(iter(monomial.keys()))
-                if monomial[0] == "real":
-                    column = monomial[1] * 2*prec + monomial[2]
-                elif monomial[0] == "imag":
-                    column = monomial[1] * 2*prec + prec + monomial[2]
+                assert len(monomial) == 1
+
+                gen = monomial[0]
+                if gen < 0:
+                    column = 2*len(triangles)*prec + (-gen-1)
                 else:
-                    assert monomial[0] == "lagrange"
-                    column = 2*len(triangles)*prec + monomial[1]
+                    column = gen
 
                 A[row, column] = coefficient
 
@@ -2018,14 +2552,16 @@ class PowerSeriesConstraints:
 
         residue = (A*solution -b).norm()
 
-        lagranges = len(set(gen for constraint in self._constraints for gen in constraint.variables() if gen.gen()[0] == "lagrange"))
+        lagranges = len(self.lagrange_variables())
 
         if lagranges:
             solution = solution[:-lagranges]
 
-        solution = [solution[2*k*self._prec:2*(k+1)*self._prec] for k in range(self._surface.num_polygons())]
+        P = self._surface.num_polygons()
+        real_solution = [solution[2*p::2*P] for p in range(P)]
+        imag_solution = [solution[2*p + 1::2*P] for p in range(P)]
 
         return {
-            triangle: self.power_series_ring(triangle)([self.complex_field()(solution[k][p], solution[k][p + self._prec]) for p in range(self._prec)]).add_bigoh(self._prec)
-            for (k, triangle) in enumerate(self._surface.label_iterator())
+            triangle: self.power_series_ring(triangle)([self.complex_field()(real_solution[p][k], imag_solution[p][k]) for k in range(self._prec)], self._prec)
+            for (p, triangle) in enumerate(self._surface.label_iterator())
         }, residue
