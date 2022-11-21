@@ -11,3 +11,4 @@ dependencies:
   - jupytext
   - myst-nb
   - tachyon
+  - furo
