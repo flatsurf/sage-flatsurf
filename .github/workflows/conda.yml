@@ -29,8 +29,8 @@ jobs:
         wget -O repo2docker.yml https://github.com/jupyterhub/repo2docker/raw/main/repo2docker/buildpacks/conda/environment.yml
         mamba install -n test --quiet -y pytest pytest-xdist
         mamba env update -n test --quiet -f repo2docker.yml
-        conda config --set custom_channels.build file://${{ github.workspace }}/conda-build
-        sed 's/  - sage-flatsurf=.*/  - build::sage-flatsurf/' < binder/environment.yml > environment.binder.yml
+        conda config --set 'custom_channels.conda-build' file://${{ github.workspace }}
+        sed 's/  - sage-flatsurf=.*/  - conda-build::sage-flatsurf/' < binder/environment.yml > environment.binder.yml
         mamba env update -n test --quiet -f environment.binder.yml
         conda list
     - name: Initialize cppyy
