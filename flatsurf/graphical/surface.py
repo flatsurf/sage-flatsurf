@@ -3,16 +3,28 @@ EXAMPLES::
 
     sage: import flatsurf
     sage: flatsurf.translation_surfaces.veech_2n_gon(4).plot()
-    Graphics object consisting of 18 graphics primitives
+    ...Graphics object consisting of 18 graphics primitives
+
 """
 # ****************************************************************************
+#  This file is part of sage-flatsurf.
+#
 #       Copyright (C) 2013-2019 Vincent Delecroix <20100.delecroix@gmail.com>
 #                     2013-2019 W. Patrick Hooper <wphooper@gmail.com>
+#                          2022 Julian Rüth <julian.rueth@fsfe.org>
 #
-#  Distributed under the terms of the GNU General Public License (GPL)
-#  as published by the Free Software Foundation; either version 2 of
-#  the License, or (at your option) any later version.
-#                  https://www.gnu.org/licenses/
+#  sage-flatsurf is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  sage-flatsurf is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ****************************************************************************
 
 from __future__ import absolute_import, print_function, division
@@ -106,8 +118,8 @@ class GraphicalSurface:
         sage: s = similarity_surfaces.example()
         sage: gs = GraphicalSurface(s)
         sage: gs.polygon_options["color"]="red"
-        sage: gs.plot()     # not tested (problem with matplotlib font caches on Travis)
-        Graphics object consisting of 13 graphics primitives
+        sage: gs.plot()
+        ...Graphics object consisting of 13 graphics primitives
     """
 
     def __init__(self, similarity_surface, adjacencies=None, polygon_labels=True, \
@@ -285,18 +297,21 @@ class GraphicalSurface:
             if not isinstance(polygon_labels, bool):
                 raise ValueError("polygon_labels must be True, False or None.")
             self.will_plot_polygon_labels = polygon_labels
-        if edge_labels is not None:
-            if edge_labels is True:
-                self.will_plot_edge_labels = True
-                edge_labels = 'gluings'
-            elif edge_labels is False:
-                self.will_plot_edge_labels = False
-                edge_labels = None
-            elif edge_labels in ['gluings', 'number', 'gluings and number', 'letter']:
-                self._edge_labels = edge_labels
-                self.will_plot_edge_labels = True
-            else:
-                raise ValueError("invalid value for edge_labels (={!r})".format(edge_labels))
+
+        if edge_labels is True:
+            edge_labels = 'gluings'
+        elif edge_labels is False:
+            edge_labels = None
+
+        if edge_labels is None:
+            self._edge_labels = None
+            self.will_plot_edge_labels = False
+        elif edge_labels in ['gluings', 'number', 'gluings and number', 'letter']:
+            self._edge_labels = edge_labels
+            self.will_plot_edge_labels = True
+        else:
+            raise ValueError("invalid value for edge_labels (={!r})".format(edge_labels))
+
         if default_position_function is not None:
             self._default_position_function = default_position_function
 
@@ -400,14 +415,14 @@ class GraphicalSurface:
             sage: s = similarity_surfaces.example()
             sage: g = s.graphical_surface()
             sage: g.make_all_visible()
-            sage: g.plot()      # not tested (problem with matplotlib font caches on Travis)
-            Graphics object consisting of 13 graphics primitives
+            sage: g.plot()
+            ...Graphics object consisting of 13 graphics primitives
 
             sage: s = similarity_surfaces.example()
             sage: g = s.graphical_surface(cached=False, adjacencies=[])
             sage: g.make_all_visible(adjacent=False)
-            sage: g.plot()      # not tested (problem with matplotlib font caches on Travis)
-            Graphics object consisting of 16 graphics primitives
+            sage: g.plot()
+            ...Graphics object consisting of 16 graphics primitives
         """
         if adjacent is None:
             adjacent = (self._default_position_function is None)
@@ -960,7 +975,6 @@ class GraphicalSurface:
         """
         return graphical_polygon.plot_zero_flag(**self.zero_flag_options)
 
-
     def plot(self):
         r"""
         Returns a plot of the GraphicalSurface
@@ -971,22 +985,21 @@ class GraphicalSurface:
             sage: s = similarity_surfaces.example()
             sage: from flatsurf.graphical.surface import GraphicalSurface
             sage: gs = GraphicalSurface(s)
-            sage: gs.make_visible(1)
-            sage: gs.plot()      # not tested (problem with matplotlib font caches on Travis)
-            Graphics object consisting of 13 graphics primitives
+            sage: gs.plot()
+            ...Graphics object consisting of 13 graphics primitives
 
 
         Check that label options are handled correctly::
 
             sage: S = translation_surfaces.square_torus()
-            sage: S.plot(polygon_labels=True, edge_labels=True)     # not tested (problem with matplotlib font caches on Travis)
-            Graphics object consisting of 10 graphics primitives
-            sage: S.plot(polygon_labels=False, edge_labels=True)    # not tested (problem with matplotlib font caches on Travis)
-            Graphics object consisting of 9 graphics primitives
-            sage: S.plot(polygon_labels=True, edge_labels=False)    # not tested (problem with matplotlib font caches on Travis)
-            Graphics object consisting of 6 graphics primitives
-            sage: S.plot(polygon_labels=False, edge_labels=False)   # not tested (problem with matplotlib font caches on Travis)
-            Graphics object consisting of 5 graphics primitives
+            sage: S.plot(polygon_labels=True, edge_labels=True)
+            ...Graphics object consisting of 10 graphics primitives
+            sage: S.plot(polygon_labels=False, edge_labels=True)
+            ...Graphics object consisting of 9 graphics primitives
+            sage: S.plot(polygon_labels=True, edge_labels=False)
+            ...Graphics object consisting of 6 graphics primitives
+            sage: S.plot(polygon_labels=False, edge_labels=False)
+            ...Graphics object consisting of 5 graphics primitives
         """
         from sage.plot.graphics import Graphics
         p = Graphics()
