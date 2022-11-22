@@ -474,13 +474,14 @@ class GL2ROrbitClosure:
         r"""
         Return a pair ``(tree, proj)`` where
 
-        - ``tree`` is a tree encoded in a dictionnary. Its keys are the faces
+        - ``tree`` is a spanning tree of the dual graph of the triangulation
+          encoded as a dictionnary. Its keys are faces of the triangulation
           (coded by their minimal adjacent half-edge) and the corresponding
           value is the half-edge to cross to go toward the root face.
 
-        - ``proj`` a projection matrix : for a vector ``v``, the vector
-          ``v * proj`` is cohomologous to ``v`` and only takes values on the
-          spanning set.
+        - ``proj`` a projection matrix : for a vector ``v``, the vector ``v *
+          proj`` is cohomologous to ``v`` and only takes values on the spanning
+          set, i.e., on the triangulation edges not crossed by the ``tree``.
 
         EXAMPLES:
 
