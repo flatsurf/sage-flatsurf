@@ -370,7 +370,7 @@ def projectivization(x, y, signed=True, denominator=None):
     """
     if y:
         z = x / y
-        if denominator == True or (denominator is None and hasattr(z, 'denominator')):
+        if denominator is True or (denominator is None and hasattr(z, 'denominator')):
             d = z.denominator()
         else:
             d = 1
@@ -585,13 +585,13 @@ class MatrixActionOnPolygons(Action):
         """
         det = g.det()
         if det > 0:
-            return x.parent()(vertices=[g*v for v in x.vertices()])
+            return x.parent()(vertices=[g*v for v in x.vertices()], check=False)
         if det < 0:
             # Note that in this case we reverse the order
             vertices = [g*x.vertex(0)]
             for i in range(x.num_edges() - 1, 0, -1):
                 vertices.append(g * x.vertex(i))
-            return x.parent()(vertices=vertices)
+            return x.parent()(vertices=vertices, check=False)
         raise ValueError("Can not act on a polygon with matrix with zero determinant")
 
 class PolygonPosition:
@@ -669,7 +669,8 @@ class Polygon(Element):
         Element.__init__(self, parent)
         V = parent.module()
         self._v = tuple(map(V, vertices))
-        for vv in self._v: vv.set_immutable()
+        for vv in self._v:
+            vv.set_immutable()
         if check:
             self._non_intersection_check()
             self._inside_outside_check()
@@ -756,9 +757,13 @@ class Polygon(Element):
             return NotImplemented
         return self._v != other._v
 
-    def __lt__(self, other): raise TypeError
+    def __lt__(self, other):
+        raise TypeError
+
     __le__ = __lt__
+
     __gt__ = __lt__
+
     __ge__ = __lt__
 
     def cmp(self, other):
@@ -952,7 +957,7 @@ class Polygon(Element):
 
     def angle(self, e, numerical=False, assume_rational=False):
         r"""
-        Return the angle at the begining of the start point of the edge ``e``.
+        Return the angle at the beginning of the start point of the edge ``e``.
 
         EXAMPLES::
 
@@ -1126,17 +1131,17 @@ class Polygon(Element):
 
             sage: S = polygons((1,0), (sqrt2/2, 3), (-2,3), (-sqrt2/2+1, -6))
             sage: T = polygons((sqrt2/2,3), (-2,3), (-sqrt2/2+1, -6), (1,0))
-            sage: ans, certif = S.is_isometric(T, certificate=True)
-            sage: assert ans
-            sage: shift, rot = certif
+            sage: isometric, cert = S.is_isometric(T, certificate=True)
+            sage: assert isometric
+            sage: shift, rot = cert
             sage: polygons(edges=[rot * S.edge((k + shift) % 4) for k in range(4)], base_point=T.vertex(0)) == T
             True
 
 
             sage: T = (matrix(2, [sqrt2/2, -sqrt2/2, sqrt2/2, sqrt2/2]) * S).translate((3,2))
-            sage: ans, certif = S.is_isometric(T, certificate=True)
-            sage: assert ans
-            sage: shift, rot = certif
+            sage: isometric, cert = S.is_isometric(T, certificate=True)
+            sage: assert isometric
+            sage: shift, rot = cert
             sage: polygons(edges=[rot * S.edge(k + shift) for k in range(4)], base_point=T.vertex(0)) == T
             True
         """
@@ -1228,9 +1233,9 @@ class Polygon(Element):
 
             sage: S.is_half_translate(T1, certificate=True)
             (True, (0, 1))
-            sage: ans, certif = S.is_half_translate(T2, certificate=True)
-            sage: assert ans
-            sage: shift, rot = certif
+            sage: half_translate, cert = S.is_half_translate(T2, certificate=True)
+            sage: assert half_translate
+            sage: shift, rot = cert
             sage: polygons(edges=[rot * S.edge(k + shift) for k in range(3)], base_point=T2.vertex(0)) == T2
             True
             sage: S.is_half_translate(T3, certificate=True)
@@ -1555,13 +1560,17 @@ class ConvexPolygon(Polygon):
         lengths = [t.dot_product(e) for e in self.edges()]
         n = len(lengths)
         for i in range(n):
-            j = (i+1)%len(lengths)
+            j = (i + 1) % len(lengths)
             l0 = lengths[i]
             l1 = lengths[j]
-            if l0 >= 0 and l1 <  0: rt = j
-            if l0 >  0 and l1 <= 0: rb = j
-            if l0 <= 0 and l1 >  0: lb = j
-            if l0 <  0 and l1 >= 0: lt = j
+            if l0 >= 0 and l1 <  0:
+                rt = j
+            if l0 >  0 and l1 <= 0:
+                rb = j
+            if l0 <= 0 and l1 >  0:
+                lb = j
+            if l0 <  0 and l1 >= 0:
+                lt = j
 
         if rt < lt:
             top_lengths = lengths[rt:lt]
@@ -2055,6 +2064,7 @@ class EquiangularPolygons:
         # Construct the cosine and sine of each angle as an element of our number field.
         def cosine(a):
             return chebyshev_T(abs(a), c) / 2
+
         def sine(a):
             # Use sin(x) = cos(π/2 - x)
             return cosine(N//4 - a)
@@ -2269,6 +2279,7 @@ class EquiangularPolygons:
             ring = QQ
 
         rays = [r.vector() for r in self.lengths_polytope().rays()]
+
         def random_element():
             while True:
                 coeffs = []
@@ -2763,7 +2774,7 @@ class PolygonsConstructor:
         if angle <= 0 or angle > QQ((1,2)):
             raise ValueError('angle must be in ]0,1/2]')
 
-        z = QQbar.zeta(2*angle.denom())**angle.numer()
+        z = QQbar.zeta(2*angle.denom())**angle.numerator()
         c = z.real()
         s = z.imag()
 
@@ -2939,17 +2950,18 @@ def regular_octagon(field=None):
     deprecation(33, "Do not use this function anymore but regular_ngon(8)")
     return polygons.regular_ngon(8)
 
+
 class PolygonCreator():
     r"""
     Class for iteratively constructing a polygon over the field.
     """
-    def __init__(self, field = QQ):
+    def __init__(self, field=QQ):
         r"""Create a polygon in the provided field."""
-        self._v=[]
-        self._w=[]
-        if not field in Fields():
+        self._v = []
+        self._w = []
+        if field not in Fields():
             raise TypeError("field must be a field")
-        self._field=field
+        self._field = field
 
     def vector_space(self):
         r"""

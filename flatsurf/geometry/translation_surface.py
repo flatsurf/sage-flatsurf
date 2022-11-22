@@ -37,7 +37,7 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
             p = self.polygon(lab)
             for e in range(p.num_edges()):
                 # Warning: check the matrices computed from the edges,
-                # rather the ones overriden by TranslationSurface.
+                # rather the ones overridden by TranslationSurface.
                 m=SimilaritySurface.edge_matrix(self,lab,e)
                 tester.assertTrue(m.is_one(), \
                     "edge_matrix of edge "+str((lab,e))+" is not a translation.")
@@ -146,7 +146,7 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
                 s.set_vertex_zero(l,v,in_place=True)
             return s
         else:
-            assert in_place == False, "In place standardization only available for finite surfaces."
+            assert in_place is False, "In place standardization only available for finite surfaces."
             return TranslationSurface(LazyStandardizedPolygonSurface(self))
 
     def cmp(self, s2, limit=None):
@@ -306,7 +306,7 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
           the triangles making up the surface without destroying any of them.
           So, the area of the triangle must be positive along the full interval
           of time of the deformation.  If false, then the deformation must have
-          a particular form: all vectors for the deformation must be paralell.
+          a particular form: all vectors for the deformation must be parallel.
           In this case we achieve the deformation with the help of the SL(2,R)
           action and Delaunay triangulations.
 
@@ -314,10 +314,10 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
           deformations considered. The algorithm should be roughly worst time
           linear in limit.
 
-        TODO:
+        .. TODO::
 
-        - Support arbitrary rel deformations.
-        - Remove the requirement that triangles be used.
+            - Support arbitrary rel deformations.
+            - Remove the requirement that triangles be used.
 
         EXAMPLES::
 
@@ -473,6 +473,70 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
             Jyy += yy
             Jxy += xy
         return (Jxx, Jyy, Jxy)
+
+    def erase_marked_points(self):
+        r"""
+        Return an isometric or similar surface with a minimal number of regular
+        vertices of angle 2π.
+
+        EXAMPLES::
+
+            sage: import flatsurf
+
+            sage: G = SymmetricGroup(4)
+            sage: S = flatsurf.translation_surfaces.origami(G('(1,2,3,4)'), G('(1,4,2,3)'))
+            sage: S.stratum()
+            H_2(2, 0)
+            sage: S.erase_marked_points().stratum() # optional: pyflatsurf  # long time (1s)
+            H_2(2)
+
+            sage: for (a,b,c) in [(1,4,11), (1,4,15), (3,4,13)]: # long time (10s), optional: pyflatsurf
+            ....:     T = flatsurf.polygons.triangle(a,b,c)
+            ....:     S = flatsurf.similarity_surfaces.billiard(T)
+            ....:     S = S.minimal_cover("translation")
+            ....:     print(S.erase_marked_points().stratum())
+            H_6(10)
+            H_6(2^5)
+            H_8(12, 2)
+
+        If the surface had no marked points then it is returned unchanged by this
+        function::
+
+            sage: O = flatsurf.translation_surfaces.regular_octagon()
+            sage: O.erase_marked_points() is O
+            True
+
+        TESTS:
+
+        Verify that https://github.com/flatsurf/flatsurf/issues/263 has been resolved::
+
+            sage: from flatsurf import EquiangularPolygons, similarity_surfaces
+            sage: E = EquiangularPolygons((10, 8, 3, 1, 1, 1))
+            sage: P = E((1, 1, 2, 4), normalized=True)
+            sage: B = similarity_surfaces.billiard(P, rational=True)
+            sage: S = B.minimal_cover(cover_type="translation")
+            sage: S = S.erase_marked_points() # long time (3s), optional: pyflatsurf
+
+        ::
+
+            sage: from flatsurf import EquiangularPolygons, similarity_surfaces
+            sage: E = EquiangularPolygons((10, 7, 2, 2, 2, 1))
+            sage: P = E((1, 1, 2, 3), normalized=True)
+            sage: B = similarity_surfaces.billiard(P, rational=True)
+            sage: S_mp = B.minimal_cover(cover_type="translation")
+            sage: S = S_mp.erase_marked_points() # long time (3s), optional: pyflatsurf
+
+        """
+        if all(a != 1 for a in self.angles()):
+            # no 2π angle
+            return self
+        from .pyflatsurf_conversion import from_pyflatsurf, to_pyflatsurf
+        S = to_pyflatsurf(self)
+        S.delaunay()
+        S = S.eliminateMarkedPoints().surface()
+        S.delaunay()
+        return from_pyflatsurf(S)
+
 
 class MinimalTranslationCover(Surface):
     r"""
@@ -638,6 +702,7 @@ class Origami(AbstractOrigami):
     def _repr_(self):
         return "Origami defined by r=%s and u=%s"%(self._r,self._u)
 
+
 class LazyStandardizedPolygonSurface(Surface):
     r"""
     This class handles standardizing polygons for infinite translation surfaces.
@@ -669,7 +734,7 @@ class LazyStandardizedPolygonSurface(Surface):
         r"""
         Return the polygon with the provided label.
 
-        This method must be overriden in subclasses.
+        This method must be overridden in subclasses.
         """
         if label in self._labels:
             return self._s.polygon(label)
@@ -682,13 +747,12 @@ class LazyStandardizedPolygonSurface(Surface):
         Given the label ``l`` of a polygon and an edge ``e`` in that polygon
         returns the pair (``ll``, ``ee``) to which this edge is glued.
 
-        This method must be overriden in subclasses.
+        This method must be overridden in subclasses.
         """
         if l not in self._labels:
             self.standardize(l)
         ll,ee = self._s.opposite_edge(l,e)
         if ll in self._labels:
             return (ll,ee)
-        else:
-            self.standardize(ll)
-            return self._s.opposite_edge(l,e)
+        self.standardize(ll)
+        return self._s.opposite_edge(l,e)

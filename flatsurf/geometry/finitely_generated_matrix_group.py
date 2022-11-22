@@ -29,7 +29,7 @@ EXAMPLES::
 
     sage: G = FinitelyGenerated2x2MatrixGroup([identity_matrix(2)])
 """
-#*****************************************************************************
+# ****************************************************************************
 #       Copyright (C) 2013-2019 Vincent Delecroix <20100.delecroix@gmail.com>
 #                     2013-2019 W. Patrick Hooper <wphooper@gmail.com>
 #
@@ -37,7 +37,7 @@ EXAMPLES::
 #  as published by the Free Software Foundation; either version 2 of
 #  the License, or (at your option) any later version.
 #                  https://www.gnu.org/licenses/
-#*****************************************************************************
+# ****************************************************************************
 
 from __future__ import absolute_import, print_function, division
 from six.moves import range, map, filter, zip
@@ -303,8 +303,8 @@ class FinitelyGenerated2x2MatrixGroup(Group):
         for m in self._generators:
             if (m.det() != 1 and m.det() != -1) or \
                m.trace().abs() > 2 or \
-               (m.trace().abs() == 2 and (m[0,1] or m[1,0])):
-                   return False
+               (m.trace().abs() == 2 and (m[0, 1] or m[1, 0])):
+                return False
 
         gens = [g for g in self._generators if not g.is_scalar()]
 
