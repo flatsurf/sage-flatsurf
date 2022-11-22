@@ -28,6 +28,10 @@ from sage.misc.cachefunc import cached_method
 
 
 class SimplicialHomologyClass(Element):
+    # TODO: Use the algorithm from GL2ROrbitClosure._spanning_tree to compute a basis of homology and a projection map.
+    # TODO: Use https://github.com/flatsurf/sage-flatsurf/pull/114/files to
+    # force the representatives to live in particular subgraph of the dual
+    # graph.
     def __init__(self, parent, chain):
         super().__init__(parent)
 
