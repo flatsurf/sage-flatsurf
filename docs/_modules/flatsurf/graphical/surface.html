@@ -218,16 +218,28 @@
 
 <span class="sd">    sage: import flatsurf</span>
 <span class="sd">    sage: flatsurf.translation_surfaces.veech_2n_gon(4).plot()</span>
-<span class="sd">    Graphics object consisting of 18 graphics primitives</span>
+<span class="sd">    ...Graphics object consisting of 18 graphics primitives</span>
+
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="c1"># ****************************************************************************</span>
+<span class="c1">#  This file is part of sage-flatsurf.</span>
+<span class="c1">#</span>
 <span class="c1">#       Copyright (C) 2013-2019 Vincent Delecroix &lt;20100.delecroix@gmail.com&gt;</span>
 <span class="c1">#                     2013-2019 W. Patrick Hooper &lt;wphooper@gmail.com&gt;</span>
+<span class="c1">#                          2022 Julian Rüth &lt;julian.rueth@fsfe.org&gt;</span>
 <span class="c1">#</span>
-<span class="c1">#  Distributed under the terms of the GNU General Public License (GPL)</span>
-<span class="c1">#  as published by the Free Software Foundation; either version 2 of</span>
-<span class="c1">#  the License, or (at your option) any later version.</span>
-<span class="c1">#                  https://www.gnu.org/licenses/</span>
+<span class="c1">#  sage-flatsurf is free software: you can redistribute it and/or modify</span>
+<span class="c1">#  it under the terms of the GNU General Public License as published by</span>
+<span class="c1">#  the Free Software Foundation, either version 2 of the License, or</span>
+<span class="c1">#  (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1">#  sage-flatsurf is distributed in the hope that it will be useful,</span>
+<span class="c1">#  but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1">#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1">#  GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1">#  You should have received a copy of the GNU General Public License</span>
+<span class="c1">#  along with sage-flatsurf. If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
 <span class="c1"># ****************************************************************************</span>
 
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span><span class="p">,</span> <span class="n">print_function</span><span class="p">,</span> <span class="n">division</span>
@@ -321,8 +333,8 @@
 <span class="sd">        sage: s = similarity_surfaces.example()</span>
 <span class="sd">        sage: gs = GraphicalSurface(s)</span>
 <span class="sd">        sage: gs.polygon_options[&quot;color&quot;]=&quot;red&quot;</span>
-<span class="sd">        sage: gs.plot()     # not tested (problem with matplotlib font caches on Travis)</span>
-<span class="sd">        Graphics object consisting of 13 graphics primitives</span>
+<span class="sd">        sage: gs.plot()</span>
+<span class="sd">        ...Graphics object consisting of 13 graphics primitives</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">similarity_surface</span><span class="p">,</span> <span class="n">adjacencies</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">polygon_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> \
@@ -500,18 +512,21 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">polygon_labels</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;polygon_labels must be True, False or None.&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">will_plot_polygon_labels</span> <span class="o">=</span> <span class="n">polygon_labels</span>
-        <span class="k">if</span> <span class="n">edge_labels</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">edge_labels</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">will_plot_edge_labels</span> <span class="o">=</span> <span class="kc">True</span>
-                <span class="n">edge_labels</span> <span class="o">=</span> <span class="s1">&#39;gluings&#39;</span>
-            <span class="k">elif</span> <span class="n">edge_labels</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">will_plot_edge_labels</span> <span class="o">=</span> <span class="kc">False</span>
-                <span class="n">edge_labels</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="k">elif</span> <span class="n">edge_labels</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;gluings&#39;</span><span class="p">,</span> <span class="s1">&#39;number&#39;</span><span class="p">,</span> <span class="s1">&#39;gluings and number&#39;</span><span class="p">,</span> <span class="s1">&#39;letter&#39;</span><span class="p">]:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_edge_labels</span> <span class="o">=</span> <span class="n">edge_labels</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">will_plot_edge_labels</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;invalid value for edge_labels (=</span><span class="si">{!r}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">edge_labels</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">edge_labels</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">edge_labels</span> <span class="o">=</span> <span class="s1">&#39;gluings&#39;</span>
+        <span class="k">elif</span> <span class="n">edge_labels</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="n">edge_labels</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">edge_labels</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_edge_labels</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">will_plot_edge_labels</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">elif</span> <span class="n">edge_labels</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;gluings&#39;</span><span class="p">,</span> <span class="s1">&#39;number&#39;</span><span class="p">,</span> <span class="s1">&#39;gluings and number&#39;</span><span class="p">,</span> <span class="s1">&#39;letter&#39;</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_edge_labels</span> <span class="o">=</span> <span class="n">edge_labels</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">will_plot_edge_labels</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;invalid value for edge_labels (=</span><span class="si">{!r}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">edge_labels</span><span class="p">))</span>
+
         <span class="k">if</span> <span class="n">default_position_function</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_default_position_function</span> <span class="o">=</span> <span class="n">default_position_function</span></div>
 
@@ -615,14 +630,14 @@
 <span class="sd">            sage: s = similarity_surfaces.example()</span>
 <span class="sd">            sage: g = s.graphical_surface()</span>
 <span class="sd">            sage: g.make_all_visible()</span>
-<span class="sd">            sage: g.plot()      # not tested (problem with matplotlib font caches on Travis)</span>
-<span class="sd">            Graphics object consisting of 13 graphics primitives</span>
+<span class="sd">            sage: g.plot()</span>
+<span class="sd">            ...Graphics object consisting of 13 graphics primitives</span>
 
 <span class="sd">            sage: s = similarity_surfaces.example()</span>
 <span class="sd">            sage: g = s.graphical_surface(cached=False, adjacencies=[])</span>
 <span class="sd">            sage: g.make_all_visible(adjacent=False)</span>
-<span class="sd">            sage: g.plot()      # not tested (problem with matplotlib font caches on Travis)</span>
-<span class="sd">            Graphics object consisting of 16 graphics primitives</span>
+<span class="sd">            sage: g.plot()</span>
+<span class="sd">            ...Graphics object consisting of 16 graphics primitives</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">adjacent</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">adjacent</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_default_position_function</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span>
@@ -1175,7 +1190,6 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">graphical_polygon</span><span class="o">.</span><span class="n">plot_zero_flag</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">zero_flag_options</span><span class="p">)</span></div>
 
-
 <div class="viewcode-block" id="GraphicalSurface.plot"><a class="viewcode-back" href="../../../graphical.html#flatsurf.graphical.surface.GraphicalSurface.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a plot of the GraphicalSurface</span>
@@ -1186,22 +1200,21 @@
 <span class="sd">            sage: s = similarity_surfaces.example()</span>
 <span class="sd">            sage: from flatsurf.graphical.surface import GraphicalSurface</span>
 <span class="sd">            sage: gs = GraphicalSurface(s)</span>
-<span class="sd">            sage: gs.make_visible(1)</span>
-<span class="sd">            sage: gs.plot()      # not tested (problem with matplotlib font caches on Travis)</span>
-<span class="sd">            Graphics object consisting of 13 graphics primitives</span>
+<span class="sd">            sage: gs.plot()</span>
+<span class="sd">            ...Graphics object consisting of 13 graphics primitives</span>
 
 
 <span class="sd">        Check that label options are handled correctly::</span>
 
 <span class="sd">            sage: S = translation_surfaces.square_torus()</span>
-<span class="sd">            sage: S.plot(polygon_labels=True, edge_labels=True)     # not tested (problem with matplotlib font caches on Travis)</span>
-<span class="sd">            Graphics object consisting of 10 graphics primitives</span>
-<span class="sd">            sage: S.plot(polygon_labels=False, edge_labels=True)    # not tested (problem with matplotlib font caches on Travis)</span>
-<span class="sd">            Graphics object consisting of 9 graphics primitives</span>
-<span class="sd">            sage: S.plot(polygon_labels=True, edge_labels=False)    # not tested (problem with matplotlib font caches on Travis)</span>
-<span class="sd">            Graphics object consisting of 6 graphics primitives</span>
-<span class="sd">            sage: S.plot(polygon_labels=False, edge_labels=False)   # not tested (problem with matplotlib font caches on Travis)</span>
-<span class="sd">            Graphics object consisting of 5 graphics primitives</span>
+<span class="sd">            sage: S.plot(polygon_labels=True, edge_labels=True)</span>
+<span class="sd">            ...Graphics object consisting of 10 graphics primitives</span>
+<span class="sd">            sage: S.plot(polygon_labels=False, edge_labels=True)</span>
+<span class="sd">            ...Graphics object consisting of 9 graphics primitives</span>
+<span class="sd">            sage: S.plot(polygon_labels=True, edge_labels=False)</span>
+<span class="sd">            ...Graphics object consisting of 6 graphics primitives</span>
+<span class="sd">            sage: S.plot(polygon_labels=False, edge_labels=False)</span>
+<span class="sd">            ...Graphics object consisting of 5 graphics primitives</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span> <span class="nn">sage.plot.graphics</span> <span class="kn">import</span> <span class="n">Graphics</span>
         <span class="n">p</span> <span class="o">=</span> <span class="n">Graphics</span><span class="p">()</span>

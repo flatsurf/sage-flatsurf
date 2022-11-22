@@ -268,10 +268,10 @@
 <span class="sd">            sage: seg = SegmentInPolygon(v)</span>
 <span class="sd">            sage: from flatsurf.graphical.straight_line_trajectory import *</span>
 <span class="sd">            sage: gseg = GraphicalSegmentInPolygon(seg, s.graphical_surface())</span>
-<span class="sd">            sage: gseg.plot()                # not tested (problem with matplotlib font caches on Travis)</span>
-<span class="sd">            Graphics object consisting of 1 graphics primitive</span>
-<span class="sd">            sage: gseg.plot(color=&#39;red&#39;)     # not tested (problem with matplotlib font caches on Travis)</span>
-<span class="sd">            Graphics object consisting of 1 graphics primitive</span>
+<span class="sd">            sage: gseg.plot()</span>
+<span class="sd">            ...Graphics object consisting of 1 graphics primitive</span>
+<span class="sd">            sage: gseg.plot(color=&#39;red&#39;)</span>
+<span class="sd">            ...Graphics object consisting of 1 graphics primitive</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gs</span><span class="o">.</span><span class="n">is_visible</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">polygon_label</span><span class="p">()):</span>
             <span class="kn">from</span> <span class="nn">sage.plot.line</span> <span class="kn">import</span> <span class="n">line2d</span>
@@ -306,8 +306,8 @@
 <span class="sd">            sage: traj.flow(100)</span>
 <span class="sd">            sage: traj.flow(-5)</span>
 <span class="sd">            sage: gtraj = traj.graphical_trajectory(gs)</span>
-<span class="sd">            sage: gs.plot() + gtraj.plot()      # not tested (problem with matplotlib font caches on Travis)</span>
-<span class="sd">            Graphics object consisting of 119 graphics primitives</span>
+<span class="sd">            sage: gs.plot() + gtraj.plot()</span>
+<span class="sd">            ...Graphics object consisting of 119 graphics primitives</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span> <span class="nn">sage.plot.graphics</span> <span class="kn">import</span> <span class="n">Graphics</span>
         <span class="n">p</span> <span class="o">=</span> <span class="n">Graphics</span><span class="p">()</span>

@@ -455,10 +455,10 @@
 <span class="sd">            sage: T = translation_surfaces.square_torus()</span>
 <span class="sd">            sage: v = T.tangent_vector(0, (0,0), (5,7))</span>
 <span class="sd">            sage: L = v.straight_line_trajectory()</span>
-<span class="sd">            sage: L.plot()               # not tested (problem with matplotlib font caches on Travis)</span>
-<span class="sd">            Graphics object consisting of 1 graphics primitive</span>
-<span class="sd">            sage: L.plot(color=&#39;red&#39;)    # not tested (problem with matplotlib font caches on Travis)</span>
-<span class="sd">            Graphics object consisting of 1 graphics primitive</span>
+<span class="sd">            sage: L.plot()</span>
+<span class="sd">            ...Graphics object consisting of 1 graphics primitive</span>
+<span class="sd">            sage: L.plot(color=&#39;red&#39;)</span>
+<span class="sd">            ...Graphics object consisting of 1 graphics primitive</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;SimilaritySurface.plot() can take at most one non-keyword argument.&quot;</span><span class="p">)</span>
