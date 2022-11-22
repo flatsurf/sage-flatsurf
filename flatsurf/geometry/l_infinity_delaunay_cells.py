@@ -133,7 +133,8 @@ class LInfinityMarkedTriangulation:
         self._n = ZZ(num_faces)
         self._edge_identifications = edge_identifications
         self._edge_types = edge_types
-        if check: self._check()
+        if check:
+            self._check()
 
     def _check(self):
         if self._n % 2:
@@ -154,8 +155,8 @@ class LInfinityMarkedTriangulation:
 
         seen = [False] * self._n
         for p in range(self._n):
-            if seen[p]: continue
-            
+            if seen[p]:
+                continue
             sh = sum(self._edge_types[p][r] == V_LEFT or self._edge_types[p][r] == V_RIGHT for r in (0,1,2))
             sv = sum(self._edge_types[p][r] == V_BOT or self._edge_types[p][r] == V_TOP for r in (0,1,2))
             if sh != 1 or sv != 1:
@@ -164,12 +165,12 @@ class LInfinityMarkedTriangulation:
 
     def num_faces(self):
         return self._n
-    
+
     def num_edges(self):
         return 3 * self._n // 2
-        
+
     def opposite_edge(self, p, e):
-        return self._edge_identifications[(p,e)]
+        return self._edge_identifications[(p, e)]
 
     def __repr__(self):
         return "Marked triangulation made of {} triangles".format(self.num_faces())
@@ -190,7 +191,7 @@ class LInfinityMarkedTriangulation:
             sage: T.bottom_top_pairs()
             [(0, 0, 1, 2)]
         """
-        ans = []
+        pairs = []
         for p1 in range(self._n):
             for e1 in range(3):
                 if self._edge_types[p1][e1] == V_BOT:
@@ -198,8 +199,8 @@ class LInfinityMarkedTriangulation:
                     p2,e2 = self.opposite_edge(p1,e1p1)
                     e2m1 = (e2-1)%3
                     if self._edge_types[p2][e2m1] == V_TOP:
-                        ans.append((p1,e1,p2,e2m1))
-        return ans
+                        pairs.append((p1,e1,p2,e2m1))
+        return pairs
 
     def right_left_pairs(self):
         r"""
@@ -217,7 +218,7 @@ class LInfinityMarkedTriangulation:
             sage: T.right_left_pairs()
             [(1, 1, 0, 2)]
         """
-        ans = []
+        pairs = []
         for p1 in range(self._n):
             for e1 in range(3):
                 if self._edge_types[p1][e1] == V_RIGHT:
@@ -225,8 +226,8 @@ class LInfinityMarkedTriangulation:
                     p2,e2 = self.opposite_edge(p1,e1p1)
                     e2m1 = (e2-1)%3
                     if self._edge_types[p2][e2m1] == V_LEFT:
-                        ans.append((p1,e1,p2,e2m1))
-        return ans
+                        pairs.append((p1,e1,p2,e2m1))
+        return pairs
 
     @cached_method
     def polytope(self):

@@ -113,6 +113,9 @@ class SimilaritySurfaceTangentVector:
         else:
             raise ValueError("Provided point lies outside the indexed polygon")
 
+        self._point.set_immutable()
+        self._vector.set_immutable()
+
     def __repr__(self):
         return "SimilaritySurfaceTangentVector in polygon "+repr(self._polygon_label)+\
             " based at "+repr(self._point)+" with vector "+repr(self._vector)
@@ -129,7 +132,16 @@ class SimilaritySurfaceTangentVector:
         return not self.__eq__(other)
 
     def __hash__(self):
-        return hash(tuple(sorted(self.__dict__.items())))
+        r"""
+        TESTS::
+
+            sage: from flatsurf import translation_surfaces
+            sage: s = translation_surfaces.square_torus()
+            sage: for y in [0,1]:
+            ....:     for d in [1,-1]:
+            ....:         h = hash(s.tangent_vector(0, (1/2, y), (d, 0)))
+        """
+        return hash((self._bundle, self._polygon_label, self._point, self._vector))
 
     def surface(self):
         r"""Return the underlying surface."""
@@ -465,7 +477,7 @@ class SimilaritySurfaceTangentBundle:
     r"""
     Construct the tangent bundle of a given similarity surface.
 
-    Needs work: We should check for coersion from the base_ring of the surface
+    Needs work: We should check for coercion from the base_ring of the surface
     """
     def __init__(self, similarity_surface, ring=None):
         self._s=similarity_surface
@@ -526,7 +538,7 @@ class SimilaritySurfaceTangentBundle:
         r"""Return the vector leaving a vertex of the polygon which under straight-line flow travels
         *clockwise* around the boundary of the polygon along the edge with the provided index.
         The length of the vector matches the length of the indexed edge.
-        Note that the point will be based in the polgon opposite the provided edge.
+        Note that the point will be based in the polygon opposite the provided edge.
 
         EXAMPLES::
 
@@ -543,8 +555,7 @@ class SimilaritySurfaceTangentBundle:
             sage: print(tb.clockwise_edge(0,0))
             SimilaritySurfaceTangentVector in polygon 1 based at (2, 0) with vector (-1, 3)
         """
-        polygon=self.surface().polygon(polygon_label)
-        point=polygon.vertex(edge_index+1)
-        vector=-polygon.edge(edge_index)
+        polygon = self.surface().polygon(polygon_label)
+        point = polygon.vertex(edge_index + 1)
+        vector = -polygon.edge(edge_index)
         return SimilaritySurfaceTangentVector(self, polygon_label, point, vector)
-

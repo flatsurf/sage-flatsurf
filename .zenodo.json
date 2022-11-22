@@ -1,0 +1,21 @@
+{
+    "creators": [
+        {
+            "orcid": "0000-0002-9608-782X",
+            "name": "Delecroix, Vincent",
+            "affiliation": "CNRS - Université de Bordeaux"
+        },
+        {
+            "name": "W. Patrick Hooper",
+            "affiliation": "The City College of New York"
+        },
+        {
+            "orcid": "0000-0002-3930-9107",
+            "name": "Rüth, Julian"
+        }
+    ],
+
+    "license": "GPL-2.0-or-later",
+    "title": "sage-flatsurf",
+    "description": "<p>sage-flatsurf is a Python package for working with flat surfaces in SageMath</p>"
+}

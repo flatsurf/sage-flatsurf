@@ -11,27 +11,31 @@ jobs:
         include:
           - optionals: "sage,flipper"
             sagelib: "8.8"
+            environment: "environment.yml"
             python: "3.7.12"
           - optionals: "sage,flipper"
             sagelib: "8.9"
+            environment: "environment.yml"
             python: "3.7.12"
           - optionals: "sage,flipper"
             sagelib: "9.1"
+            environment: "environment.yml"
             python: "3.7.12"
           - optionals: "sage,flipper"
             sagelib: "9.2"
+            environment: "environment.yml"
             python: "3.9.10"
           - optionals: "sage,flipper,eantic,exactreal"
             sagelib: "9.3"
+            environment: "environment.yml"
             python: "3.9.10"
           - optionals: "sage,flipper,eantic,exactreal,pyflatsurf"
             sagelib: "9.4"
+            environment: "environment.yml"
             python: "3.9.10"
           - optionals: "sage,flipper,eantic,exactreal,pyflatsurf"
-            environment: "binder"
-            # Default Python version for binder:
-            # https://github.com/jupyterhub/repo2docker/blob/master/repo2docker/buildpacks/conda/environment.yml
-            python: "3.7.12"
+            environment: "flatsurf.yml"
+            python: "3.9.10"
     steps:
       - uses: actions/checkout@v2
         with: { submodules: recursive }
@@ -45,19 +49,18 @@ jobs:
           while read; do
             optional=$(echo "$REPLY" | grep -o '# optional: [^ ]*' | awk '{ print $3; }') || true
             (test "$optional" == '' || (echo "${{ matrix.optionals }}" | grep -E '\b'"$optional"'\b') > /dev/null) && echo "$REPLY" || true
-          done < flatsurf/environment.yml > flatsurf/environment.test.yml
-          mamba env update -n test --quiet -f flatsurf/environment.test.yml
+          done < environment.yml > environment.test.yml
+          mamba env update -n test --quiet -f environment.test.yml
           conda list
-        if: ${{ matrix.environment != 'binder' }}
-      - name: Create binder environment
+        if: ${{ matrix.environment == 'environment.yml' }}
+      - name: Install dependencies (flatsurf stack)
         shell: bash -l {0}
         run: |
-          wget -O repo2docker.yml https://github.com/jupyterhub/repo2docker/raw/main/repo2docker/buildpacks/conda/environment.yml
-          mamba install -n test --quiet -y pytest pytest-xdist
-          mamba env update -n test --quiet -f repo2docker.yml
-          mamba env update -n test --quiet -f binder/environment.yml
+          # This can fail when a new version of sage-flatsurf is released but
+          # the package has not been built on conda-forge yet.
+          mamba env update -n test --quiet -f flatsurf.yml
           conda list
-        if: ${{ matrix.environment == 'binder' }}
+        if: ${{ matrix.environment == 'flatsurf.yml' }}
       - name: Install sage-flatsurf
         shell: bash -l {0}
         run: |
@@ -75,6 +78,7 @@ jobs:
       - name: Run pytest
         shell: bash -l {0}
         run: pytest -n auto
+        if: ${{ matrix.environment == 'environment.yml' }}
       - uses: flatsurf/actions/show-logs@main
         if: ${{ always() }}
 
