@@ -75,8 +75,9 @@ D
 
 We can visualize the complement of the minimal components if ipvue-flatsurf is available. (Note that visualizing the minimal components themselves might not work correctly until [#62](https://github.com/flatsurf/ipyvue-flatsurf/issues/62) has ben resolved.)
 
-```{code-cell} ipython3
+```python
 from ipyvue_flatsurf import Widget
+
 cylinders = [c for c in D.components() if c.cylinder()]
 Widget(cylinders)
 ```
@@ -120,7 +121,9 @@ D
 
 We can visualize these cylinders if ipyvue-flatsurf is available:
 
-```{code-cell} ipython3
+```python
+from ipyvue_flatsurf import Widget
+
 Widget(D)
 ```
 
@@ -156,7 +159,7 @@ D
 
 Using ipyvue-flatsurf, we can visualize the minimal components:
 
-```{code-cell} ipython3
+```python
 from ipyvue_flatsurf import Widget
 
 Widget([component for component in D.components() if component.withoutPeriodicTrajectory()])
@@ -305,6 +308,11 @@ from flatsurf import EquiangularPolygons, similarity_surfaces, GL2ROrbitClosure
 
 Δ = EquiangularPolygons(2, 2, 3).an_element()
 S = similarity_surfaces.billiard(Δ).minimal_cover(cover_type="translation")
+```
+
+```python
+from ipyvue_flatsurf import Widget
+
 Widget(S)
 ```
 
@@ -320,7 +328,9 @@ for connection in S.saddle_connections(4):
 
 We can try to visualize the minimal components. There might be some rendering errors due to [#62](https://github.com/flatsurf/ipyvue-flatsurf/issues/62) however:
 
-```{code-cell} ipython3
+```python
+from ipyvue_flatsurf import Widget
+
 Widget(decomposition)
 ```
 
@@ -337,6 +347,11 @@ from flatsurf import EquiangularPolygons, similarity_surfaces, GL2ROrbitClosure
 
 Δ = EquiangularPolygons(7, 8, 15).an_element()
 S = similarity_surfaces.billiard(Δ).minimal_cover(cover_type="translation")
+```
+
+```python
+from ipyvue_flatsurf import Widget
+
 Widget(S)
 ```
 
