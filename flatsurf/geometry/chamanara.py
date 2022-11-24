@@ -1,14 +1,15 @@
-r""" 
+r"""
 Construction of Chamanara's surfaces which depend on a parameter alpha less than one.
-See the paper "Affine automorphism groups of surfaces of infinite type" in which the surface 
+See the paper "Affine automorphism groups of surfaces of infinite type" in which the surface
 is called $X_\alpha$.
 
 EXAMPLES::
 
     sage: from flatsurf import translation_surfaces
     sage: s = translation_surfaces.chamanara(1/2)
-    sage: s.plot()     # not tested (problem with matplotlib font caches on Travis)
-    Graphics object consisting of 129 graphics primitives
+    sage: s.plot()
+    ...Graphics object consisting of 91 graphics primitives
+
 """
 # ****************************************************************************
 #       Copyright (C) 2013-2019 Vincent Delecroix <20100.delecroix@gmail.com>
