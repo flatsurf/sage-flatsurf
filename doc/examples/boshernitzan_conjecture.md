@@ -17,7 +17,7 @@ Let $\Delta$ be a rational triangle and let $P_0:=P_0(\Delta)$ be the directions
 
 In *Billiards and Rational Periodic Directions in Polygons*, Boshernitzan states the following conjecture:
 
-> ##### Conjecture 2.2
+> **Conjecture 2.2**
 Assume that a rational triangle $\Delta=(\alpha, \beta, \chi)$ [is embedded into $\mathbb{R}^2$ such that one of its sides is horizontal or vertical]. Then:\
 (a) If $d$ [with $d:=\alpha+\beta+\chi$] is even, we have $S^1(2d')\subset P_0$ [where $d':=\mathrm{lcm}(2, d)$ and $S^1(n):=\{z\in S^1\mid|z^n=1\}$].\
 (b) If $d$ is odd, we have $S^1(2d')\setminus S^1(d')\subset P_0$.\
