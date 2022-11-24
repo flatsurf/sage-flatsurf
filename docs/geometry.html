@@ -847,7 +847,7 @@ have marked regular points</p></li>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="flatsurf.geometry.polygon.EquiangularPolygons.lengths_polytope">
 <span class="sig-name descname"><span class="pre">lengths_polytope</span></span><a class="reference internal" href="_modules/flatsurf/geometry/polygon.html#EquiangularPolygons.lengths_polytope"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.polygon.EquiangularPolygons.lengths_polytope" title="Permalink to this definition">#</a></dt>
-<dd><p>File: /usr/share/miniconda/envs/test/lib/python3.10/site-packages/flatsurf/geometry/polygon.py (starting at line 2223)</p>
+<dd><p>File: /usr/share/miniconda/envs/test/lib/python3.10/site-packages/flatsurf/geometry/polygon.py (starting at line 2247)</p>
 <p>Return the polytope parametrizing the admissible vectors data.</p>
 <p>This polytope parametrizes the tangent space to the set of these
 equiangular polygons. Be careful that even though the lengths are
@@ -863,7 +863,7 @@ A 2-dimensional polyhedron in (Number Field in c with defining polynomial x^2 - 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="flatsurf.geometry.polygon.EquiangularPolygons.module">
 <span class="sig-name descname"><span class="pre">module</span></span><a class="reference internal" href="_modules/flatsurf/geometry/polygon.html#EquiangularPolygons.module"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.polygon.EquiangularPolygons.module" title="Permalink to this definition">#</a></dt>
-<dd><p>File: /usr/share/miniconda/envs/test/lib/python3.10/site-packages/flatsurf/geometry/polygon.py (starting at line 2163)</p>
+<dd><p>File: /usr/share/miniconda/envs/test/lib/python3.10/site-packages/flatsurf/geometry/polygon.py (starting at line 2187)</p>
 <p>Return the free module of rank 2 in which these polygons embed.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>sage: from flatsurf import EquiangularPolygons
@@ -921,7 +921,7 @@ Vector space of dimension 2 over Number Field in c with defining polynomial x^2 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="flatsurf.geometry.polygon.EquiangularPolygons.vector_space">
 <span class="sig-name descname"><span class="pre">vector_space</span></span><a class="reference internal" href="_modules/flatsurf/geometry/polygon.html#EquiangularPolygons.vector_space"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.polygon.EquiangularPolygons.vector_space" title="Permalink to this definition">#</a></dt>
-<dd><p>File: /usr/share/miniconda/envs/test/lib/python3.10/site-packages/flatsurf/geometry/polygon.py (starting at line 2178)</p>
+<dd><p>File: /usr/share/miniconda/envs/test/lib/python3.10/site-packages/flatsurf/geometry/polygon.py (starting at line 2202)</p>
 <p>Return the vector space of dimension 2 in which these polygons embed.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>sage: from flatsurf import EquiangularPolygons
@@ -1261,8 +1261,27 @@ the Sah-Arnoux-Fathi invariant of the horizontal flow and the <cite>xy</cite>-ma
 
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.polygon.Polygon.plot">
-<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">translation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/polygon.html#Polygon.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.polygon.Polygon.plot" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">translation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">polygon_options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vertex_options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/polygon.html#Polygon.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.polygon.Polygon.plot" title="Permalink to this definition">#</a></dt>
 <dd><p>Plot the polygon with the origin at <code class="docutils literal notranslate"><span class="pre">translation</span></code>.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">polygons</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">polygons</span><span class="o">.</span><span class="n">square</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+<span class="o">...</span><span class="n">Graphics</span> <span class="nb">object</span> <span class="n">consisting</span> <span class="n">of</span> <span class="mi">3</span> <span class="n">graphics</span> <span class="n">primitives</span>
+</pre></div>
+</div>
+<p>We can specify an explicit <code class="docutils literal notranslate"><span class="pre">zorder</span></code> to render edges and vertices on
+top of the axes which are rendered at z-order 3:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">edge_options</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;zorder&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">},</span> <span class="n">vertex_options</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;zorder&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">})</span>
+<span class="o">...</span><span class="n">Graphics</span> <span class="nb">object</span> <span class="n">consisting</span> <span class="n">of</span> <span class="mi">3</span> <span class="n">graphics</span> <span class="n">primitives</span>
+</pre></div>
+</div>
+<p>We can control the colors, e.g., we can render transparent polygons,
+with red edges and blue vertices:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">polygon_options</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;fill&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">},</span> <span class="n">edge_options</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;red&#39;</span><span class="p">},</span> <span class="n">vertex_options</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;blue&#39;</span><span class="p">})</span>
+<span class="o">...</span><span class="n">Graphics</span> <span class="nb">object</span> <span class="n">consisting</span> <span class="n">of</span> <span class="mi">3</span> <span class="n">graphics</span> <span class="n">primitives</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -1496,7 +1515,7 @@ in a bigger ring, the <code class="docutils literal notranslate"><span class="pr
 <dl class="py attribute">
 <dt class="sig sig-object py" id="flatsurf.geometry.polygon.Polygons.module">
 <span class="sig-name descname"><span class="pre">module</span></span><a class="reference internal" href="_modules/flatsurf/geometry/polygon.html#Polygons.module"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.polygon.Polygons.module" title="Permalink to this definition">#</a></dt>
-<dd><p>File: /usr/share/miniconda/envs/test/lib/python3.10/site-packages/flatsurf/geometry/polygon.py (starting at line 1719)</p>
+<dd><p>File: /usr/share/miniconda/envs/test/lib/python3.10/site-packages/flatsurf/geometry/polygon.py (starting at line 1743)</p>
 <p>Return the free module of rank 2 in which these polygons embed.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">Polygons</span>
@@ -1510,7 +1529,7 @@ in a bigger ring, the <code class="docutils literal notranslate"><span class="pr
 <dl class="py attribute">
 <dt class="sig sig-object py" id="flatsurf.geometry.polygon.Polygons.vector_space">
 <span class="sig-name descname"><span class="pre">vector_space</span></span><a class="reference internal" href="_modules/flatsurf/geometry/polygon.html#Polygons.vector_space"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.polygon.Polygons.vector_space" title="Permalink to this definition">#</a></dt>
-<dd><p>File: /usr/share/miniconda/envs/test/lib/python3.10/site-packages/flatsurf/geometry/polygon.py (starting at line 1734)</p>
+<dd><p>File: /usr/share/miniconda/envs/test/lib/python3.10/site-packages/flatsurf/geometry/polygon.py (starting at line 1758)</p>
 <p>Return the vector space of dimension 2 in which these polygons embed.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">Polygons</span>
