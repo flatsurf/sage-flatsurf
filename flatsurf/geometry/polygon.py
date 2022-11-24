@@ -953,19 +953,19 @@ class Polygon(Element):
             sage: from flatsurf import polygons
             sage: S = polygons.square()
             sage: S.plot()
-            Graphics object consisting of 3 graphics primitives
+            ...Graphics object consisting of 3 graphics primitives
 
         We can specify an explicit ``zorder`` to render edges and vertices on
         top of the axes which are rendered at z-order 3::
 
             sage: S.plot(edge_options={'zorder': 3}, vertex_options={'zorder': 3})
-            Graphics object consisting of 3 graphics primitives
+            ...Graphics object consisting of 3 graphics primitives
 
         We can control the colors, e.g., we can render transparent polygons,
         with red edges and blue vertices::
 
             sage: S.plot(polygon_options={'fill': None}, edge_options={'color': 'red'}, vertex_options={'color': 'blue'})
-            Graphics object consisting of 3 graphics primitives
+            ...Graphics object consisting of 3 graphics primitives
 
         """
         from sage.plot.point import point2d
