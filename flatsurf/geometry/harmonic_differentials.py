@@ -21,14 +21,14 @@ power series Σa_n z^n along `a` yields `Re(a_0) - Im(a_0)` and along `b` we get
     sage: f = H({a: 1})
     sage: Ω = HarmonicDifferentials(T)
     sage: Ω(f)
-    (1.000000000000000000000*I + O(z0^10), 1.000000000000000000000*I + O(z1^10))
+    (-1.000000000000000000000*I + O(z0^10), -1.000000000000000000000*I + O(z1^10))
 
 The harmonic differential that integrates as 0 along `a` but 1 along `b` must
 similarly have Re(a_0) = -1 but Im(a_0) = -1::
 
     sage: g = H({b: 1})
     sage: Ω(g)
-    (-1.000000000000000000000 + 1.000000000000000000000*I + O(z0^10), -1.000000000000000000000 + 1.000000000000000000000*I + O(z1^10))
+    (-1.000000000000000000000 - 1.000000000000000000000*I + O(z0^10), -1.000000000000000000000 - 1.000000000000000000000*I + O(z1^10))
 
 """
 ######################################################################
@@ -214,7 +214,7 @@ class HarmonicDifferential(Element):
             sage: η = Ω(f)
 
             sage: η.series(0)
-            1.000000000000000000000*I + O(z0^10)
+            -1.000000000000000000000*I + O(z0^10)
 
         """
         return self._series[triangle]
@@ -316,7 +316,7 @@ class HarmonicDifferential(Element):
             sage: C = PowerSeriesConstraints(T, 5)
             sage: R = C.symbolic_ring()
             sage: η._evaluate(R(C.gen(0, 0)) + R(C.gen(1, 0)))  # tol 1e-9
-            0 + 2.0000000000000000*I
+            0 - 2.0000000000000000*I
 
         """
         coefficients = {}
@@ -376,7 +376,7 @@ class HarmonicDifferential(Element):
             sage: angle = 1
 
             sage: η.cauchy_residue(vertex, 0, 1)  # tol 1e-9
-            0 + 1.0*I
+            0 - 1.0*I
             sage: abs(η.cauchy_residue(vertex, -1, 1)) < 1e-9
             True
             sage: abs(η.cauchy_residue(vertex, -2, 1)) < 1e-9
@@ -1644,7 +1644,8 @@ class PowerSeriesConstraints:
         return RealField(self._bitprec)
 
     @cached_method
-    def gen(self, triangle, k, conjugate=False):
+    def gen(self, triangle, k, /, conjugate=False):
+        assert conjugate is True or conjugate is False
         real = self.real(triangle, k)
         imag = self.imag(triangle, k)
 
@@ -1907,7 +1908,7 @@ class PowerSeriesConstraints:
                 Q_power = Q
 
                 for k in range(self._prec):
-                    expression += multiplicity * self.gen(S[0], k, R) / (k + 1) * (Q_power - P_power)
+                    expression += multiplicity * self.gen(S[0], k) / (k + 1) * (Q_power - P_power)
 
                     P_power *= P
                     Q_power *= Q
@@ -1975,7 +1976,7 @@ class PowerSeriesConstraints:
             if abs(Δ0 - Δ1) < 1e-6:
                 # Force power series to be identical if they have the same center of Voronoi cell.
                 for k in range(self._prec):
-                    self.add_constraint(self.gen(triangle0, k, parent) - self.gen(triangle1, k, parent))
+                    self.add_constraint(self.gen(triangle0, k) - self.gen(triangle1, k))
 
     def require_midpoint_derivatives(self, derivatives):
         r"""
