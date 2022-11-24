@@ -34,11 +34,6 @@ jobs:
             environment: "environment.yml"
             python: "3.9.10"
           - optionals: "sage,flipper,eantic,exactreal,pyflatsurf"
-            environment: "binder"
-            # Default Python version for binder:
-            # https://github.com/jupyterhub/repo2docker/blob/master/repo2docker/buildpacks/conda/environment.yml
-            python: "3.7.12"
-          - optionals: "sage,flipper,eantic,exactreal,pyflatsurf"
             environment: "flatsurf.yml"
             python: "3.9.10"
     steps:
@@ -66,15 +61,6 @@ jobs:
           mamba env update -n test --quiet -f flatsurf.yml
           conda list
         if: ${{ matrix.environment == 'flatsurf.yml' }}
-      - name: Install dependencies (binder)
-        shell: bash -l {0}
-        run: |
-          wget -O repo2docker.yml https://github.com/jupyterhub/repo2docker/raw/main/repo2docker/buildpacks/conda/environment.yml
-          mamba install -n test --quiet -y pytest pytest-xdist
-          mamba env update -n test --quiet -f repo2docker.yml
-          mamba env update -n test --quiet -f binder/environment.yml
-          conda list
-        if: ${{ matrix.environment == 'binder' }}
       - name: Install sage-flatsurf
         shell: bash -l {0}
         run: |
