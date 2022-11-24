@@ -23,5 +23,5 @@ dependencies:
   - pyeantic>=1,<2  # optional: eantic
   - pyexactreal>=2,<3  # optional: exactreal
   - pyflatsurf>=3.10.1,<4  # optional: pyflatsurf
-  - pyintervalxt>=3.3.1,<4  # optional: pyflatsurf
+  - pyintervalxt>=3,<4  # optional: pyflatsurf
   - pip: [flipper]  # optional: flipper
