@@ -1972,8 +1972,8 @@ class PowerSeriesConstraints:
             Δ0 = self._geometry.midpoint(triangle0, edge0)
             Δ1 = self._geometry.midpoint(triangle1, edge1)
 
-            if abs(Δ0) < 1e-6 and abs(Δ1) < 1e-6:
-                # Force power series to be identical if the Delaunay triangulation is ambiguous at this edge.
+            if abs(Δ0 - Δ1) < 1e-6:
+                # Force power series to be identical if they have the same center of Voronoi cell.
                 for k in range(self._prec):
                     self.add_constraint(self.gen(triangle0, k, parent) - self.gen(triangle1, k, parent))
 
@@ -2049,7 +2049,7 @@ class PowerSeriesConstraints:
             Δ1 = self.complex_field()(*self._geometry.midpoint(triangle1, edge1))
 
             # TODO: Are these good constants?
-            if abs(Δ0) < 1e-6 and abs(Δ1) < 1e-6:
+            if abs(Δ0 - Δ1) < 1e-6:
                 continue
 
             # Require that the 0th, ..., derivatives-1th derivatives are the same at the midpoint of the edge.
@@ -2107,8 +2107,9 @@ class PowerSeriesConstraints:
             Δ0 = self.complex_field()(*self._geometry.midpoint(triangle0, edge0))
             Δ1 = self.complex_field()(*self._geometry.midpoint(triangle1, edge1))
 
-            # TODO: Should we skip such steps here?
-            if abs(Δ0) < 1e-6 and abs(Δ1) < 1e-6:
+            # TODO: Is this a good constant?
+            if abs(Δ0 - Δ1) < 1e-6:
+                # Do not add trivial constraints here.
                 continue
 
             # Develop both power series around that midpoint, i.e., Taylor expand them.
