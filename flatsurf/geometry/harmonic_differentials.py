@@ -128,7 +128,7 @@ class HarmonicDifferential(Element):
                 report = f"Harmonic differential created by solving Ax=b with |Ax-b| = {self._residue}."
                 if verbose:
                     print(report)
-                if self._residue > 1e-6:
+                if self._residue > abs_tol:
                     error = report
                     if not verbose:
                         return error
@@ -141,16 +141,16 @@ class HarmonicDifferential(Element):
                     if callable(actual):
                         actual = actual()
 
-                abs_error, rel_error = errors(expected, actual)
+                    abs_error, rel_error = errors(expected, actual)
 
-                report = f"Integrating along cycle gives {actual} whereas the cocycle gave {expected}, i.e., an absolute error of {abs_error} and a relative error of {rel_error}."
-                if verbose:
-                    print(report)
+                    report = f"Integrating along cycle gives {actual} whereas the cocycle gave {expected}, i.e., an absolute error of {abs_error} and a relative error of {rel_error}."
+                    if verbose:
+                        print(report)
 
-                if abs_error > abs_tol or rel_error > rel_tol:
-                    error = report
-                    if not verbose:
-                        return error
+                    if abs_error > abs_tol or rel_error > rel_tol:
+                        error = report
+                        if not verbose:
+                            return error
 
         if kind is None or "midpoint_derivatives" in kind:
             C = PowerSeriesConstraints(self.parent().surface(), self.precision())
@@ -183,8 +183,8 @@ class HarmonicDifferential(Element):
             C = PowerSeriesConstraints(self.parent().surface(), self.precision())
             abs_error = self._evaluate(C._L2_consistency())
 
+            report = f"L2 norm of differential is {abs_error}."
             if verbose:
-                report = f"L2 norm of differential is {abs_error}."
                 print(report)
 
             if abs_error > abs_tol:
