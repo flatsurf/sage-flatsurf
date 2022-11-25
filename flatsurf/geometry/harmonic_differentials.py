@@ -2481,6 +2481,8 @@ class PowerSeriesConstraints:
 
         prec = int(self._prec)
 
+        lagranges = {}
+
         from sage.all import matrix, vector
         A = matrix(self.real_field(), len(self._constraints), 2*len(triangles)*prec + len(self.lagrange_variables()))
         b = vector(self.real_field(), len(self._constraints))
@@ -2495,7 +2497,9 @@ class PowerSeriesConstraints:
 
                 gen = monomial[0]
                 if gen < 0:
-                    column = 2*len(triangles)*prec + (-gen-1)
+                    if gen not in lagranges:
+                        lagranges[gen] = 2*len(triangles)*prec + len(lagranges)
+                    column = lagranges[gen]
                 else:
                     column = gen
 
