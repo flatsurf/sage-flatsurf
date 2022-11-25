@@ -2058,6 +2058,40 @@ class PowerSeriesConstraints:
                 self.add_constraint(
                     parent(self.evaluate(triangle0, Δ0, derivative)) - parent(self.evaluate(triangle1, Δ1, derivative)))
 
+    def _L2_consistency_edge(self, triangle0, edge0):
+        cost = self.symbolic_ring(self.real_field()).zero()
+
+        triangle1, edge1 = self._surface.opposite_edge(triangle0, edge0)
+
+        # The midpoint of the edge where the triangles meet with respect to
+        # the center of the triangle.
+        Δ0 = self.complex_field()(*self._geometry.midpoint(triangle0, edge0))
+        Δ1 = self.complex_field()(*self._geometry.midpoint(triangle1, edge1))
+
+        # Develop both power series around that midpoint, i.e., Taylor expand them.
+        T0 = self.develop(triangle0, Δ0)
+        T1 = self.develop(triangle1, Δ1)
+
+        # Write b_n for the difference of the n-th coefficient of both power series.
+        # We want to minimize the sum of |b_n|^2 r^2n where r is half the
+        # length of the edge we are on.
+        b = (T0 - T1).list()
+        edge = self._surface.polygon(triangle0).edges()[edge0]
+        r2 = (edge[0]**2 + edge[1]**2) / 4
+
+        r2n = r2
+        for n, b_n in enumerate(b):
+            # TODO: In the article it says that it should be R^n as a
+            # factor but R^{2n+2} is actually more reasonable. See
+            # https://sagemath.zulipchat.com/#narrow/stream/271193-polygon/topic/Harmonic.20Differentials/near/308863913
+            real = b_n.real()
+            imag = b_n.imag()
+            cost += (real * real + imag * imag) * r2n
+
+            r2n *= r2
+
+        return cost
+
     def _L2_consistency(self):
         r"""
         For each pair of adjacent triangles meeting at and edge `e`, let `v` be
@@ -2103,36 +2137,7 @@ class PowerSeriesConstraints:
                 # Add each constraint only once.
                 continue
 
-            # The midpoint of the edge where the triangles meet with respect to
-            # the center of the triangle.
-            Δ0 = self.complex_field()(*self._geometry.midpoint(triangle0, edge0))
-            Δ1 = self.complex_field()(*self._geometry.midpoint(triangle1, edge1))
-
-            # TODO: Is this a good constant?
-            if abs(Δ0 - Δ1) < 1e-6:
-                # Do not add trivial constraints here.
-                continue
-
-            # Develop both power series around that midpoint, i.e., Taylor expand them.
-            T0 = self.develop(triangle0, Δ0)
-            T1 = self.develop(triangle1, Δ1)
-
-            # Write b_n for the difference of the n-th coefficient of both power series.
-            # We want to minimize the sum of |b_n|^2 r^2n where r is half the
-            # length of the edge we are on.
-            b = (T0 - T1).list()
-            edge = self._surface.polygon(triangle0).edges()[edge0]
-            r2 = (edge[0]**2 + edge[1]**2) / 4
-
-            r2n = r2
-            for b_n in b:
-                # TODO: In the article it says that it should be R^n as a
-                # factor but R^{2n+2} is actually more reasonable. See
-                # https://sagemath.zulipchat.com/#narrow/stream/271193-polygon/topic/Harmonic.20Differentials/near/308863913
-                real = b_n.real()
-                imag = b_n.imag()
-                cost += (real * real + imag * imag) * r2n
-                r2n *= r2
+            cost += self._L2_consistency_edge(triangle0, edge0)
 
         return cost
 
