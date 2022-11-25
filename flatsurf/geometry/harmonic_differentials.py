@@ -2530,7 +2530,7 @@ class PowerSeriesConstraints:
         from sage.all import PowerSeriesRing
         return PowerSeriesRing(self.complex_field(), f"z{triangle}")
 
-    def solve(self):
+    def solve(self, algorithm="scipy"):
         r"""
         Return a solution for the system of constraints with minimal error.
 
@@ -2552,14 +2552,22 @@ class PowerSeriesConstraints:
 
         A, b = self.matrix()
 
-        from sage.all import ComplexBallField
-        C = ComplexBallField(self.complex_field().prec())
-        CA = A.change_ring(C)
-        Cb = b.change_ring(C)
+        if algorithm == "arb":
+            from sage.all import ComplexBallField
+            C = ComplexBallField(self.complex_field().prec())
+            CA = A.change_ring(C)
+            Cb = b.change_ring(C)
 
-        solution = CA.solve_right(Cb)
+            solution = CA.solve_right(Cb)
 
-        solution = solution.change_ring(self.real_field())
+            solution = solution.change_ring(self.real_field())
+        elif algorithm == "scipy":
+            from sage.all import RDF
+            CA = A.change_ring(RDF)
+            Cb = b.change_ring(RDF)
+            solution = CA.solve_right(Cb)
+        else:
+            raise NotImplementedError
 
         residue = (A*solution -b).norm()
 
