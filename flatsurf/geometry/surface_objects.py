@@ -19,6 +19,7 @@ from sage.structure.sage_object import SageObject
 from .polygon import dot_product, ConvexPolygons, wedge_product
 from .similarity import SimilarityGroup
 
+
 class Singularity(SageObject):
     r"""
     Represents a combinatorial singularity on a surface.
@@ -58,7 +59,7 @@ class Singularity(SageObject):
         next = (edge[0], (edge[1]+1)%self._ss.polygon(edge[0]).num_edges() )
         while start!=next:
             self._s.add(next)
-            if not limit is None and len(self._s)>limit:
+            if limit is not None and len(self._s) > limit:
                 raise ValueError("Number of vertices in singularities exceeds limit.")
             edge=self._ss.opposite_edge(next)
             next = (edge[0], (edge[1]+1)%self._ss.polygon(edge[0]).num_edges() )
@@ -225,8 +226,10 @@ class SurfacePoint(SageObject):
 
     def plot(self, *args, **options):
         r"""
-        Plot this point. There may be one argument which provides a graphical surface.
-        All options are passed two the ploting method of GraphicalSurfacePoint.
+        Plot this point.
+
+        There may be one argument which provides a graphical surface.
+        All options are passed two the plotting method of GraphicalSurfacePoint.
         """
         if len(args) > 1:
             raise ValueError("SurfacePoint.plot() can take at most one argument.")
@@ -280,7 +283,7 @@ class SaddleConnection(SageObject):
             holonomy=None, end_holonomy=None,
             check=True, limit=1000):
         r"""
-        Construct a saddle connecton on a SimilaritySurface.
+        Construct a saddle connection on a SimilaritySurface.
 
         The only necessary parameters are the surface, start_data, and direction
         (to start). If there is missing data that can not be inferred from the surface
@@ -654,7 +657,7 @@ class Cylinder(SageObject):
         Parameters
         ----------
         s: A SimilaritySurface
-            the surface conaining the cylinder
+            the surface containing the cylinder
         label0: An initial label
             representing a polygon the cylinder passes through.
         edges: a list

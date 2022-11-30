@@ -3,7 +3,7 @@ This file contains classes implementing Surface which are used useful for
 triangulating, Delaunay triangulating, and Delaunay decomposing infinite
 surfaces.
 """
-#*****************************************************************************
+# ****************************************************************************
 #       Copyright (C) 2013-2019 Vincent Delecroix <20100.delecroix@gmail.com>
 #                     2013-2019 W. Patrick Hooper <wphooper@gmail.com>
 #
@@ -11,7 +11,7 @@ surfaces.
 #  as published by the Free Software Foundation; either version 2 of
 #  the License, or (at your option) any later version.
 #                  https://www.gnu.org/licenses/
-#*****************************************************************************
+# ****************************************************************************
 
 from __future__ import absolute_import, print_function, division
 from six.moves import range, map, filter, zip
@@ -304,9 +304,9 @@ class LazyDelaunaySurface(LazyDelaunayTriangulatedSurface):
 
     r"""
     This is an implementation of Surface. It takes a surface (typically
-    infinite) from the constructor. This class respresents the 
-    Delaunay decomposition of this surface. We compute this decomposition
-    lazily so that it works for infinite surfaces.
+    infinite) from the constructor. This class represents the Delaunay
+    decomposition of this surface. We compute this decomposition lazily so that
+    it works for infinite surfaces.
     
     EXAMPLES::
 
@@ -387,14 +387,13 @@ class LazyDelaunaySurface(LazyDelaunayTriangulatedSurface):
             return self._s.polygon(label)
         else:
             raise ValueError("Asked for polygon not known to be Delaunay. Make sure you obtain polygon labels by walking through the surface.")
-    
+
     def opposite_edge(self, label, edge):
         if label in self._decomposition_certified_labels:
-            ll,ee = self._s.opposite_edge(label,edge)
+            ll, ee = self._s.opposite_edge(label, edge)
             if ll in self._decomposition_certified_labels:
-                return ll,ee
+                return ll, ee
             self._certify_decomposition(ll)
-            return self._s.opposite_edge(label,edge)
+            return self._s.opposite_edge(label, edge)
         else:
             raise ValueError("Asked for polygon not known to be Delaunay. Make sure you obtain polygon labels by walking through the surface.")
-

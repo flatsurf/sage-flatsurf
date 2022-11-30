@@ -475,7 +475,7 @@ class GL2ROrbitClosure:
         Return a pair ``(tree, proj)`` where
 
         - ``tree`` is a spanning tree of the dual graph of the triangulation
-          encoded as a dictionnary. Its keys are faces of the triangulation
+          encoded as a dictionary. Its keys are faces of the triangulation
           (coded by their minimal adjacent half-edge) and the corresponding
           value is the half-edge to cross to go toward the root face.
 
@@ -767,12 +767,12 @@ class GL2ROrbitClosure:
 
     def cylinder_circumference(self, component, A, sc_index, proj):
         r"""
-        Return the circumference of the cylindre ``component`` in the homology
+        Return the circumference of the cylinder ``component`` in the homology
         of the underlying surface.
 
         INPUT:
 
-        - ``component`` - a cylinder
+        - ``component`` -- a cylinder
 
         - ``A``, ``sc_index``, ``proj`` -- the output of
           ``flow_decomposition_kontsevich_zorich_cocycle``
@@ -793,7 +793,7 @@ class GL2ROrbitClosure:
             sage: O.cylinder_circumference(c1, *kz) # optional: pyflatsurf
             (0, 0, -1, 0)
         """
-        if component.cylinder() != True:
+        if component.cylinder() != True:  # cannot be replaced by "is not True"
             raise ValueError
 
         perimeters = [p for p in component.perimeter()]
@@ -1098,10 +1098,12 @@ class GL2ROrbitClosure:
             (5, 4, 4): 7
             (5, 5, 3): 4
         """
-        if self._U_rank == self._U.nrows(): return
+        if self._U_rank == self._U.nrows():
+            return
         for v in self.cylinder_deformation_subspace(decomposition):
             self.update_tangent_space_from_vector(v)
-            if self._U_rank == self._U.nrows(): return
+            if self._U_rank == self._U.nrows():
+                return
 
     def _rank(self):
         r"""

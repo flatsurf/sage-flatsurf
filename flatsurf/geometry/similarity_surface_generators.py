@@ -110,7 +110,7 @@ class EInfinitySurface(Surface):
     represent horizontal cylinders.
     """
     def __init__(self,lambda_squared=None, field=None):
-        if lambda_squared==None:
+        if lambda_squared is None:
             from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
             R=PolynomialRing(ZZ,'x')
             x = R.gen()
@@ -320,45 +320,69 @@ class TFractalSurface(Surface):
         i = int(i)
         e = int(e)
 
-        if e==0: f=2
-        elif e==1: f=3
-        elif e==2: f=0
-        elif e==3: f=1
+        if e == 0:
+            f = 2
+        elif e == 1:
+            f = 3
+        elif e == 2:
+            f = 0
+        elif e == 3:
+            f = 1
         else:
             raise ValueError("e (={!r}) must be either 0,1,2 or 3".format(e))
 
         if i == 0:
             if e == 0:
-                if w.is_empty():   lab=(w,2)
-                elif w[-1] == 'L': lab=(w[:-1],1)
-                elif w[-1] == 'R': lab=(w[:-1],3)
-            if e == 1: lab=(w,0)
-            if e == 2: lab=(w,2)
-            if e == 3: lab=(w,0)
-        elif i == 1:
-            if e == 0: lab=(w + self._wL, 2)
-            if e == 1: lab=(w,2)
-            if e == 2: lab=(w + self._wL, 0)
-            if e == 3: lab=(w,3)
-        elif i == 2:
-            if e == 0: lab=(w,0)
-            if e == 1: lab=(w,3)
+                if w.is_empty():
+                    lab=(w,2)
+                elif w[-1] == 'L':
+                    lab=(w[:-1],1)
+                elif w[-1] == 'R':
+                    lab=(w[:-1],3)
+            if e == 1:
+                lab=(w,0)
             if e == 2:
-                if w.is_empty():   lab=(w,0)
-                elif w[-1] == 'L': lab=(w[:-1],1)
-                elif w[-1] == 'R': lab=(w[:-1],3)
-            if e == 3: lab=(w,1)
+                lab=(w,2)
+            if e == 3:
+                lab=(w,0)
+        elif i == 1:
+            if e == 0:
+                lab=(w + self._wL, 2)
+            if e == 1:
+                lab=(w,2)
+            if e == 2:
+                lab=(w + self._wL, 0)
+            if e == 3:
+                lab=(w,3)
+        elif i == 2:
+            if e == 0:
+                lab=(w,0)
+            if e == 1:
+                lab=(w,3)
+            if e == 2:
+                if w.is_empty():
+                    lab=(w,0)
+                elif w[-1] == 'L':
+                    lab=(w[:-1],1)
+                elif w[-1] == 'R':
+                    lab=(w[:-1],3)
+            if e == 3:
+                lab=(w,1)
         elif i == 3:
-            if e == 0: lab=(w + self._wR, 2)
-            if e == 1: lab=(w,1)
-            if e == 2: lab=(w + self._wR, 0)
-            if e == 3: lab=(w,2)
+            if e == 0:
+                lab=(w + self._wR, 2)
+            if e == 1:
+                lab=(w,1)
+            if e == 2:
+                lab=(w + self._wR, 0)
+            if e == 3:
+                lab=(w,2)
         else:
             raise ValueError("i (={!r}) must be either 0,1,2 or 3".format(i))
 
         # the fastest label constructor
         lab = self.polygon_labels()._cartesian_product_of_elements(lab)
-        return lab,f
+        return lab, f
 
     def polygon(self, lab):
         r"""
@@ -1426,11 +1450,12 @@ class TranslationSurfaceGenerators:
         s = TranslationSurface(o)
         from flatsurf.geometry.similarity import SimilarityGroup
         SG = SimilarityGroup(QQ)
+
         def pos(n):
-            if n%2 == 0:
-                return SG((n/2,n/2))
+            if n % 2 == 0:
+                return SG((n//2, n//2))
             else:
-                return SG((n//2,n//2+1))
+                return SG((n//2, n//2+1))
         gs=s.graphical_surface(default_position_function = pos)
         gs.make_all_visible(limit = 10)
         return s

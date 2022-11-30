@@ -316,12 +316,12 @@ def cos_minpoly_odd_prime(p, var):
     T1 = var
     k = (p-1)//2
     s = (-1)**k
-    ans = s * (1 - T1)
+    minpoly = s * (1 - T1)
     for i in range(k-1):
         T0, T1 = T1, var * T1 - T0
-        ans += s * T1
+        minpoly += s * T1
         s *= -1
-    return ans
+    return minpoly
 
 def cos_minpoly(n, var='x'):
     r"""

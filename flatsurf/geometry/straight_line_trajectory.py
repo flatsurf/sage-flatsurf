@@ -58,6 +58,7 @@ def get_linearity_coeff(u, v):
     else:
         raise ValueError("zero vector")
 
+
 class SegmentInPolygon:
     r"""
     Maximal segment in a polygon of a similarity surface
@@ -72,7 +73,7 @@ class SegmentInPolygon:
         Segment in polygon 0 starting at (1/3, -1/3) and ending at (1/3, 0)
     """
     def __init__(self, start, end=None):
-        if not end is None:
+        if end is not None:
             # WARNING: here we assume that both start and end are on the
             # boundary
             self._start = start
@@ -239,10 +240,10 @@ class AbstractStraightLineTrajectory:
             sage: T = translation_surfaces.square_torus()
             sage: v = T.tangent_vector(0, (0,0), (5,7))
             sage: L = v.straight_line_trajectory()
-            sage: L.plot()               # not tested (problem with matplotlib font caches on Travis)
-            Graphics object consisting of 1 graphics primitive
-            sage: L.plot(color='red')    # not tested (problem with matplotlib font caches on Travis)
-            Graphics object consisting of 1 graphics primitive
+            sage: L.plot()
+            ...Graphics object consisting of 1 graphics primitive
+            sage: L.plot(color='red')
+            ...Graphics object consisting of 1 graphics primitive
         """
         if len(args) > 1:
             raise ValueError("SimilaritySurface.plot() can take at most one non-keyword argument.")
@@ -356,7 +357,7 @@ class AbstractStraightLineTrajectory:
             ....:     assert w.count('a') == y-1
             ....:     assert w.count('b') == x-1
         """
-        ans = []
+        coding = []
 
         segments = self.segments()
 
@@ -367,7 +368,7 @@ class AbstractStraightLineTrajectory:
             e = start._position.get_edge()
             lab = (p,e) if alphabet is None else alphabet.get((p,e))
             if lab is not None:
-                ans.append(lab)
+                coding.append(lab)
 
         for i in range(len(segments)-1):
             s = segments[i]
@@ -376,7 +377,7 @@ class AbstractStraightLineTrajectory:
             e = end._position.get_edge()
             lab = (p,e) if alphabet is None else alphabet.get((p,e))
             if lab is not None:
-                ans.append(lab)
+                coding.append(lab)
 
         s = segments[-1]
         end = s.end()
@@ -386,9 +387,9 @@ class AbstractStraightLineTrajectory:
             e = end._position.get_edge()
             lab = (p,e) if alphabet is None else alphabet.get((p,e))
             if lab is not None:
-                ans.append(lab)
+                coding.append(lab)
 
-        return ans
+        return coding
 
     def initial_tangent_vector(self):
         return self.segment(0).start()
@@ -620,7 +621,7 @@ class StraightLineTrajectory(AbstractStraightLineTrajectory):
 
     def flow(self, steps):
         r"""
-        Append or preprend segments to the trajectory.
+        Append or prepend segments to the trajectory.
         If steps is positive, attempt to append this many segments.
         If steps is negative, attempt to prepend this many segments.
         Will fail gracefully the trajectory hits a singularity or closes up.

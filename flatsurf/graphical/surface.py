@@ -3,17 +3,29 @@ EXAMPLES::
 
     sage: import flatsurf
     sage: flatsurf.translation_surfaces.veech_2n_gon(4).plot()
-    Graphics object consisting of 18 graphics primitives
+    ...Graphics object consisting of 18 graphics primitives
+
 """
-#*****************************************************************************
+# ****************************************************************************
+#  This file is part of sage-flatsurf.
+#
 #       Copyright (C) 2013-2019 Vincent Delecroix <20100.delecroix@gmail.com>
 #                     2013-2019 W. Patrick Hooper <wphooper@gmail.com>
+#                          2022 Julian Rüth <julian.rueth@fsfe.org>
 #
-#  Distributed under the terms of the GNU General Public License (GPL)
-#  as published by the Free Software Foundation; either version 2 of
-#  the License, or (at your option) any later version.
-#                  https://www.gnu.org/licenses/
-#*****************************************************************************
+#  sage-flatsurf is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  sage-flatsurf is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
+# ****************************************************************************
 
 from __future__ import absolute_import, print_function, division
 from six.moves import range, map, filter, zip
@@ -106,8 +118,8 @@ class GraphicalSurface:
         sage: s = similarity_surfaces.example()
         sage: gs = GraphicalSurface(s)
         sage: gs.polygon_options["color"]="red"
-        sage: gs.plot()     # not tested (problem with matplotlib font caches on Travis)
-        Graphics object consisting of 13 graphics primitives
+        sage: gs.plot()
+        ...Graphics object consisting of 13 graphics primitives
     """
 
     def __init__(self, similarity_surface, adjacencies=None, polygon_labels=True, \
@@ -285,18 +297,21 @@ class GraphicalSurface:
             if not isinstance(polygon_labels, bool):
                 raise ValueError("polygon_labels must be True, False or None.")
             self.will_plot_polygon_labels = polygon_labels
-        if edge_labels is not None:
-            if edge_labels is True:
-                self.will_plot_edge_labels = True
-                edge_labels = 'gluings'
-            elif edge_labels is False:
-                self.will_plot_edge_labels = False
-                edge_labels = None
-            elif edge_labels in ['gluings', 'number', 'gluings and number', 'letter']:
-                self._edge_labels = edge_labels
-                self.will_plot_edge_labels = True
-            else:
-                raise ValueError("invalid value for edge_labels (={!r})".format(edge_labels))
+
+        if edge_labels is True:
+            edge_labels = 'gluings'
+        elif edge_labels is False:
+            edge_labels = None
+
+        if edge_labels is None:
+            self._edge_labels = None
+            self.will_plot_edge_labels = False
+        elif edge_labels in ['gluings', 'number', 'gluings and number', 'letter']:
+            self._edge_labels = edge_labels
+            self.will_plot_edge_labels = True
+        else:
+            raise ValueError("invalid value for edge_labels (={!r})".format(edge_labels))
+
         if default_position_function is not None:
             self._default_position_function = default_position_function
 
@@ -400,14 +415,14 @@ class GraphicalSurface:
             sage: s = similarity_surfaces.example()
             sage: g = s.graphical_surface()
             sage: g.make_all_visible()
-            sage: g.plot()      # not tested (problem with matplotlib font caches on Travis)
-            Graphics object consisting of 13 graphics primitives
+            sage: g.plot()
+            ...Graphics object consisting of 13 graphics primitives
 
             sage: s = similarity_surfaces.example()
             sage: g = s.graphical_surface(cached=False, adjacencies=[])
             sage: g.make_all_visible(adjacent=False)
-            sage: g.plot()      # not tested (problem with matplotlib font caches on Travis)
-            Graphics object consisting of 16 graphics primitives
+            sage: g.plot()
+            ...Graphics object consisting of 16 graphics primitives
         """
         if adjacent is None:
             adjacent = (self._default_position_function is None)
@@ -504,10 +519,9 @@ class GraphicalSurface:
         r"""
         Return the quadruple (x1,y1,x2,y2) where x1 and y1 are the minimal
         x- and y-coordinates of a visible graphical polygon and x2 and y2 are the
-        maximal x-and y- cordinates  of a visible graphical polygon.
+        maximal x-and y- coordinates of a visible graphical polygon.
         """
         return self.xmin(), self.ymin(), self.xmax(), self.ymax()
-
 
     def graphical_polygon(self, label):
         r"""
@@ -517,13 +531,13 @@ class GraphicalSurface:
             return self._polygons[label]
         else:
             t = None
-            if not self._default_position_function is None:
-                t=self._default_position_function(label)
+            if self._default_position_function is not None:
+                t = self._default_position_function(label)
             p = GraphicalPolygon(self._ss.polygon(label), transformation=t)
             self._polygons[label] = p
             return p
 
-    def make_adjacent(self, p, e, reverse = False, visible = True):
+    def make_adjacent(self, p, e, reverse=False, visible=True):
         r"""
         Move the polygon across the prescribed edge so that is adjacent.
         The polygon moved is obtained from opposite_edge(p,e).
@@ -744,9 +758,9 @@ class GraphicalSurface:
         Given the label ``p`` of a polygon and an edge ``e`` in that polygon
         returns the pair (``pp``, ``ee``) to which this edge is glued.
         """
-        return self._ss.opposite_edge(p,e)
+        return self._ss.opposite_edge(p, e)
 
-    def reset_letters(self,p,e):
+    def reset_letters(self, p, e):
         r"""
         Resets the letter dictionary for storing letters used in
         edge labeling if edge_labels="letter" is used.
@@ -754,15 +768,15 @@ class GraphicalSurface:
         try:
             del self._letters
             del self._next_letter
-        except:
+        except AttributeError:
             pass
 
     def _get_letter_for_edge(self, p, e):
-        if not hasattr(self,"_letters"):
-            self._letters={}
-            self._next_letter=1
+        if not hasattr(self, "_letters"):
+            self._letters = {}
+            self._next_letter = 1
         try:
-            return self._letters[(p,e)]
+            return self._letters[(p, e)]
         except KeyError:
             # convert number to string
             nl = self._next_letter
@@ -823,34 +837,34 @@ class GraphicalSurface:
         p = g.base_polygon()
 
         if self._edge_labels == 'gluings':
-            ans = []
+            labels = []
             for e in range(p.num_edges()):
                 if self.is_adjacent(lab, e):
-                    ans.append(None)
+                    labels.append(None)
                 else:
                     llab,ee = s.opposite_edge(lab,e)
-                    ans.append(str(llab))
+                    labels.append(str(llab))
         elif self._edge_labels == 'number':
-            ans = list(map(str, range(p.num_edges())))
+            labels = list(map(str, range(p.num_edges())))
         elif self._edge_labels == 'gluings and number':
-            ans = []
+            labels = []
             for e in range(p.num_edges()):
                 if self.is_adjacent(lab, e):
-                    ans.append(str(e))
+                    labels.append(str(e))
                 else:
-                    ans.append("{} -> {}".format(e, s.opposite_edge(lab,e)))
+                    labels.append("{} -> {}".format(e, s.opposite_edge(lab,e)))
         elif self._edge_labels == "letter":
-            ans = []
+            labels = []
             for e in range(p.num_edges()):
                 llab,ee = s.opposite_edge(lab,e)
                 if not self.is_visible(llab) or self.is_adjacent(lab, e):
-                    ans.append(None)
+                    labels.append(None)
                 else:
-                    ans.append(self._get_letter_for_edge(lab,e))
+                    labels.append(self._get_letter_for_edge(lab,e))
         else:
             raise RuntimeError("invalid option for edge_labels")
 
-        return ans
+        return labels
 
     def plot_polygon(self, label, graphical_polygon, upside_down):
         r"""
@@ -961,7 +975,6 @@ class GraphicalSurface:
         """
         return graphical_polygon.plot_zero_flag(**self.zero_flag_options)
 
-
     def plot(self):
         r"""
         Returns a plot of the GraphicalSurface
@@ -972,22 +985,21 @@ class GraphicalSurface:
             sage: s = similarity_surfaces.example()
             sage: from flatsurf.graphical.surface import GraphicalSurface
             sage: gs = GraphicalSurface(s)
-            sage: gs.make_visible(1)
-            sage: gs.plot()      # not tested (problem with matplotlib font caches on Travis)
-            Graphics object consisting of 13 graphics primitives
+            sage: gs.plot()
+            ...Graphics object consisting of 13 graphics primitives
 
 
         Check that label options are handled correctly::
 
             sage: S = translation_surfaces.square_torus()
-            sage: S.plot(polygon_labels=True, edge_labels=True)     # not tested (problem with matplotlib font caches on Travis)
-            Graphics object consisting of 10 graphics primitives
-            sage: S.plot(polygon_labels=False, edge_labels=True)    # not tested (problem with matplotlib font caches on Travis)
-            Graphics object consisting of 9 graphics primitives
-            sage: S.plot(polygon_labels=True, edge_labels=False)    # not tested (problem with matplotlib font caches on Travis)
-            Graphics object consisting of 6 graphics primitives
-            sage: S.plot(polygon_labels=False, edge_labels=False)   # not tested (problem with matplotlib font caches on Travis)
-            Graphics object consisting of 5 graphics primitives
+            sage: S.plot(polygon_labels=True, edge_labels=True)
+            ...Graphics object consisting of 10 graphics primitives
+            sage: S.plot(polygon_labels=False, edge_labels=True)
+            ...Graphics object consisting of 9 graphics primitives
+            sage: S.plot(polygon_labels=True, edge_labels=False)
+            ...Graphics object consisting of 6 graphics primitives
+            sage: S.plot(polygon_labels=False, edge_labels=False)
+            ...Graphics object consisting of 5 graphics primitives
         """
         from sage.plot.graphics import Graphics
         p = Graphics()
@@ -1036,5 +1048,3 @@ class GraphicalSurface:
                         if edge_labels[i] is not None:
                             p += self.plot_edge_label(label, i, edge_labels[i], polygon)
         return p
-
-
