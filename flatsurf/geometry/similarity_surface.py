@@ -2129,12 +2129,12 @@ class SimilaritySurface(SageObject):
             sage: import flatsurf
             sage: S = flatsurf.translation_surfaces.veech_double_n_gon(5)
             sage: S.plot()
-            Graphics object consisting of 13 graphics primitives
+            Graphics object consisting of 21 graphics primitives
 
         TESTS::
 
             sage: S.plot()
-            Graphics object consisting of 13 graphics primitives
+            Graphics object consisting of 21 graphics primitives
 
         """
         if len(args) > 1:
