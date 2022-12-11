@@ -337,8 +337,7 @@
 <span class="sd">        ...Graphics object consisting of 13 graphics primitives</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">similarity_surface</span><span class="p">,</span> <span class="n">adjacencies</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">polygon_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> \
-                 <span class="n">edge_labels</span><span class="o">=</span><span class="s2">&quot;gluings&quot;</span><span class="p">,</span> <span class="n">default_position_function</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">similarity_surface</span><span class="p">,</span> <span class="n">adjacencies</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">polygon_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">edge_labels</span><span class="o">=</span><span class="s2">&quot;gluings&quot;</span><span class="p">,</span> <span class="n">default_position_function</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Construct a GraphicalSurface from a similarity surface.</span>
 
@@ -389,7 +388,7 @@
 <span class="sd">        Whether to plot polygons which are right-side up.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">polygon_options</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span><span class="s2">&quot;lightgray&quot;</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">polygon_options</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;lightgray&quot;</span><span class="p">}</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Options passed to :func:`graphical_polygon.GraphicalPolygon.plot_polygon` when plotting a polygon right-side up.&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">will_plot_upside_down_polygons</span> <span class="o">=</span> <span class="kc">False</span>
@@ -397,7 +396,7 @@
 <span class="sd">        Whether to plot polygons which are upside down</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">upside_down_polygon_options</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span><span class="s2">&quot;lightgray&quot;</span><span class="p">,</span> <span class="s2">&quot;zorder&quot;</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">upside_down_polygon_options</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;lightgray&quot;</span><span class="p">,</span> <span class="s2">&quot;zorder&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">}</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Options passed to :func:`graphical_polygon.GraphicalPolygon.plot_polygon` when plotting a polygon upside-down.&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">will_plot_polygon_labels</span> <span class="o">=</span> <span class="kc">True</span>
@@ -405,7 +404,7 @@
 <span class="sd">        Whether to plot polygon labels.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">polygon_label_options</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="s2">&quot;vertical_alignment&quot;</span><span class="p">:</span><span class="s2">&quot;center&quot;</span><span class="p">,</span> <span class="s2">&quot;horizontal_alignment&quot;</span><span class="p">:</span><span class="s2">&quot;center&quot;</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">polygon_label_options</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="s2">&quot;vertical_alignment&quot;</span><span class="p">:</span> <span class="s2">&quot;center&quot;</span><span class="p">,</span> <span class="s2">&quot;horizontal_alignment&quot;</span><span class="p">:</span> <span class="s2">&quot;center&quot;</span><span class="p">}</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Options passed to :func:`graphical_polygon.GraphicalPolygon.plot_label` when plotting a polygon label.&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">will_plot_edges</span> <span class="o">=</span> <span class="kc">True</span>
@@ -418,7 +417,7 @@
 <span class="sd">        Whether to plot polygon edges which are not adjacent to the edge it is glued to.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">non_adjacent_edge_options</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span><span class="s2">&quot;blue&quot;</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">non_adjacent_edge_options</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;blue&quot;</span><span class="p">}</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Options passed to :func:`graphical_polygon.GraphicalPolygon.plot_edge` when plotting a polygon edge</span>
 <span class="sd">        which is not adjacent to the edge it is glued to.&quot;&quot;&quot;</span>
 
@@ -427,7 +426,7 @@
 <span class="sd">        Whether to plot polygon edges which are adjacent to the polygon they are glued to.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">adjacent_edge_options</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span><span class="s2">&quot;blue&quot;</span><span class="p">,</span> <span class="s2">&quot;linestyle&quot;</span><span class="p">:</span><span class="s2">&quot;:&quot;</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">adjacent_edge_options</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;blue&quot;</span><span class="p">,</span> <span class="s2">&quot;linestyle&quot;</span><span class="p">:</span> <span class="s2">&quot;:&quot;</span><span class="p">}</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Options passed to :func:`graphical_polygon.GraphicalPolygon.plot_edge`</span>
 <span class="sd">        when plotting a polygon edge which is adjacent to the edge it is glued to.&quot;&quot;&quot;</span>
 
@@ -436,7 +435,7 @@
 <span class="sd">        Whether to plot polygon edges which are glued to themselves.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">self_glued_edge_options</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span><span class="s2">&quot;red&quot;</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">self_glued_edge_options</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;red&quot;</span><span class="p">}</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Options passed to :func:`graphical_polygon.GraphicalPolygon.plot_edge` when plotting a polygon edge</span>
 <span class="sd">        which is glued to itself.&quot;&quot;&quot;</span>
 
@@ -445,7 +444,7 @@
 <span class="sd">        Whether to plot polygon edges which are not adjacent to the polygon they are glued to.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">edge_label_options</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span><span class="s2">&quot;blue&quot;</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edge_label_options</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;blue&quot;</span><span class="p">}</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Options passed to :func:`graphical_polygon.GraphicalPolygon.edge_label` when plotting a polygon label.&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">will_plot_zero_flags</span> <span class="o">=</span> <span class="kc">False</span>
@@ -453,13 +452,12 @@
 <span class="sd">        Whether to plot line segments from the baricenter to the zero vertex of each polygon.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">zero_flag_options</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span><span class="s2">&quot;green&quot;</span><span class="p">,</span> <span class="s2">&quot;thickness&quot;</span><span class="p">:</span><span class="mf">0.5</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">zero_flag_options</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;green&quot;</span><span class="p">,</span> <span class="s2">&quot;thickness&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">}</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Options passed to :func:`graphical_polygon.GraphicalPolygon.plot_zero_flag` when plotting a zero_flag.&quot;&quot;&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">process_options</span><span class="p">(</span><span class="n">adjacencies</span><span class="o">=</span><span class="n">adjacencies</span><span class="p">,</span>
-                <span class="n">polygon_labels</span><span class="o">=</span><span class="n">polygon_labels</span><span class="p">,</span> <span class="n">edge_labels</span><span class="o">=</span><span class="n">edge_labels</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">process_options</span><span class="p">(</span><span class="n">adjacencies</span><span class="o">=</span><span class="n">adjacencies</span><span class="p">,</span> <span class="n">polygon_labels</span><span class="o">=</span><span class="n">polygon_labels</span><span class="p">,</span> <span class="n">edge_labels</span><span class="o">=</span><span class="n">edge_labels</span><span class="p">)</span>
 
-<div class="viewcode-block" id="GraphicalSurface.process_options"><a class="viewcode-back" href="../../../graphical.html#flatsurf.graphical.surface.GraphicalSurface.process_options">[docs]</a>    <span class="k">def</span> <span class="nf">process_options</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">adjacencies</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">polygon_labels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">edge_labels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">default_position_function</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="GraphicalSurface.process_options"><a class="viewcode-back" href="../../../graphical.html#flatsurf.graphical.surface.GraphicalSurface.process_options">[docs]</a>    <span class="k">def</span> <span class="nf">process_options</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">adjacencies</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">polygon_labels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">edge_labels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">default_position_function</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Process the options listed as if the graphical_surface was first</span>
 <span class="sd">        created.</span>
@@ -506,26 +504,26 @@
 <span class="sd">            ValueError: invalid value for edge_labels (=&#39;hey&#39;)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">adjacencies</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">p</span><span class="p">,</span><span class="n">e</span> <span class="ow">in</span> <span class="n">adjacencies</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">p</span><span class="p">,</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">adjacencies</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">make_adjacent</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="n">polygon_labels</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">polygon_labels</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;polygon_labels must be True, False or None.&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">will_plot_polygon_labels</span> <span class="o">=</span> <span class="n">polygon_labels</span>
 
-        <span class="k">if</span> <span class="n">edge_labels</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-            <span class="n">edge_labels</span> <span class="o">=</span> <span class="s1">&#39;gluings&#39;</span>
-        <span class="k">elif</span> <span class="n">edge_labels</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
-            <span class="n">edge_labels</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">edge_labels</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">edge_labels</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="n">edge_labels</span> <span class="o">=</span> <span class="s1">&#39;gluings&#39;</span>
 
-        <span class="k">if</span> <span class="n">edge_labels</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_edge_labels</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">will_plot_edge_labels</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="k">elif</span> <span class="n">edge_labels</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;gluings&#39;</span><span class="p">,</span> <span class="s1">&#39;number&#39;</span><span class="p">,</span> <span class="s1">&#39;gluings and number&#39;</span><span class="p">,</span> <span class="s1">&#39;letter&#39;</span><span class="p">]:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_edge_labels</span> <span class="o">=</span> <span class="n">edge_labels</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">will_plot_edge_labels</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;invalid value for edge_labels (=</span><span class="si">{!r}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">edge_labels</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">edge_labels</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_edge_labels</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">will_plot_edge_labels</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">elif</span> <span class="n">edge_labels</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;gluings&#39;</span><span class="p">,</span> <span class="s1">&#39;number&#39;</span><span class="p">,</span> <span class="s1">&#39;gluings and number&#39;</span><span class="p">,</span> <span class="s1">&#39;letter&#39;</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_edge_labels</span> <span class="o">=</span> <span class="n">edge_labels</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">will_plot_edge_labels</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;invalid value for edge_labels (=</span><span class="si">{!r}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">edge_labels</span><span class="p">))</span>
 
         <span class="k">if</span> <span class="n">default_position_function</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_default_position_function</span> <span class="o">=</span> <span class="n">default_position_function</span></div>

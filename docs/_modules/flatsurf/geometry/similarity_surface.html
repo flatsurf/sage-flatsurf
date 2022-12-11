@@ -2338,6 +2338,19 @@
 
 <span class="sd">        - ``default_position_function`` -- a function mapping polygon labels to</span>
 <span class="sd">          similarities describing the position of the corresponding polygon.</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: import flatsurf</span>
+<span class="sd">            sage: S = flatsurf.translation_surfaces.veech_double_n_gon(5)</span>
+<span class="sd">            sage: S.plot()</span>
+<span class="sd">            Graphics object consisting of 21 graphics primitives</span>
+
+<span class="sd">        TESTS::</span>
+
+<span class="sd">            sage: S.plot()</span>
+<span class="sd">            Graphics object consisting of 21 graphics primitives</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;SimilaritySurface.plot() can take at most one non-keyword argument.&quot;</span><span class="p">)</span>
