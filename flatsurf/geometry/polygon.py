@@ -2967,12 +2967,8 @@ class PolygonsConstructor:
         else:
             return Polygons(base_ring)(vertices=vertices, edges=edges, base_point=base_point)
 
-polygons = PolygonsConstructor()
 
-def regular_octagon(field=None):
-    from warnings import warn
-    warn("regular_octagon() has been deprecated and will be removed in a future version of sage-flatsurf. See https://github.com/flatsurf/sage-flatsurf/issues/33.")
-    return polygons.regular_ngon(8)
+polygons = PolygonsConstructor()
 
 
 class PolygonCreator():
