@@ -345,14 +345,6 @@ class Surface(SageObject):
         """
         self._mutable = False
 
-    def make_immutable(self):
-        r"""
-        Mark this surface as immutable.
-        """
-        from warnings import warn
-        warn("Surface.make_immutable() has been deprecated and will be removed in a future version of sage-flatsurf. Use set_immutable() instead.")
-        self._mutable = False
-
     def walker(self):
         r"""
         Return a LabelWalker which walks over the surface in a canonical way.
