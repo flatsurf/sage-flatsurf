@@ -399,28 +399,6 @@ class Similarity(MultiplicativeGroupElement):
         M = self.parent()._matrix_space_2x2()
         return M([self._a, -self._sign*self._b, self._b,  self._sign*self._a])
 
-    # OLD AND DEPRECATED
-
-    def a(self):
-        from warnings import warn
-        warn("SimilarityGroup.a() has been deprecated and will be removed in a future version of sage-flatsurf.")
-
-        return self._a
-
-    def b(self):
-        from warnings import warn
-        warn("SimilarityGroup.b() has been deprecated and will be removed in a future version of sage-flatsurf.")
-        return self._b
-
-    def s(self):
-        from warnings import warn
-        warn("SimilarityGroup.s() has been deprecated and will be removed in a future version of sage-flatsurf.")
-        return self._s
-
-    def t(self):
-        from warnings import warn
-        warn("SimilarityGroup.t() has been deprecated and will be removed in a future version of sage-flatsurf.")
-        return self._t
 
 class SimilarityGroup(UniqueRepresentation, Group):
     r"""
