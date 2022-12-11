@@ -501,12 +501,12 @@ class SimilaritySurfaceTangentVector:
             sage: S = flatsurf.translation_surfaces.veech_double_n_gon(5)
             sage: v = S.tangent_vector(0, (1/8, 1/4), (1/2, 1/4))
             sage: S.plot() + v.plot()
-            Graphics object consisting of 14 graphics primitives
+            Graphics object consisting of 22 graphics primitives
 
         Any keyword arguments are passed on to the underlying plot method from SageMath::
 
             sage: S.plot() + v.plot(color="red")
-            Graphics object consisting of 14 graphics primitives
+            Graphics object consisting of 22 graphics primitives
 
         """
         return self.vector().plot(**{
