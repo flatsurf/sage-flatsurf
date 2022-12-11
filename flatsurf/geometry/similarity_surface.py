@@ -2123,6 +2123,19 @@ class SimilaritySurface(SageObject):
 
         - ``default_position_function`` -- a function mapping polygon labels to
           similarities describing the position of the corresponding polygon.
+
+        EXAMPLES::
+
+            sage: import flatsurf
+            sage: S = flatsurf.translation_surfaces.veech_double_n_gon(5)
+            sage: S.plot()
+            Graphics object consisting of 13 graphics primitives
+
+        TESTS::
+
+            sage: S.plot()
+            Graphics object consisting of 13 graphics primitives
+
         """
         if len(args) > 1:
             raise ValueError("SimilaritySurface.plot() can take at most one non-keyword argument.")
