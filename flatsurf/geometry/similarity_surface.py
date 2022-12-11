@@ -1368,8 +1368,8 @@ class SimilaritySurface(SageObject):
 
         "I disagree with the prior statement. Can you provide an example?" -Pat
         """
-        from sage.misc.superseded import deprecation
-        deprecation(13109, "minimal_translation_cover is deprecated. Use minimal_cover(cover_type = \"translation\") instead.")
+        from warnings import warn
+        warn("SimilaritySurface.minimal_translation_cover() has been deprecated and will be removed in a future version of sage-flatsurf.")
         from flatsurf.geometry.translation_surface import MinimalTranslationCover, TranslationSurface
         return TranslationSurface(MinimalTranslationCover(self))
 

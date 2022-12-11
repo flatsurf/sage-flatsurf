@@ -600,8 +600,8 @@ class GraphicalSurface:
         Move the polygon across the prescribed edge so that is adjacent,
         and make the moved polygon visible.
         """
-        from sage.misc.superseded import deprecation
-        deprecation(42, "Do not use .make_adjacent_and_visible(). Use .make_adjacent() instead.")
+        from warnings import warn
+        warn("GraphicalSurface.make_adjacent_and_visible() has been deprecated and will be removed in a future version of sage-flatsurf. Use make_adjacent() instead.")
         self.make_adjacent(p, e, reverse=reverse)
 
     def is_adjacent(self,p,e):

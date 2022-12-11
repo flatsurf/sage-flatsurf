@@ -402,23 +402,24 @@ class Similarity(MultiplicativeGroupElement):
     # OLD AND DEPRECATED
 
     def a(self):
-        from sage.misc.superseded import deprecation
-        deprecation(42, "Do not use .a()")
+        from warnings import warn
+        warn("SimilarityGroup.a() has been deprecated and will be removed in a future version of sage-flatsurf.")
+
         return self._a
 
     def b(self):
-        from sage.misc.superseded import deprecation
-        deprecation(42, "Do not use .b()")
+        from warnings import warn
+        warn("SimilarityGroup.b() has been deprecated and will be removed in a future version of sage-flatsurf.")
         return self._b
 
     def s(self):
-        from sage.misc.superseded import deprecation
-        deprecation(42, "Do not use .s()")
+        from warnings import warn
+        warn("SimilarityGroup.s() has been deprecated and will be removed in a future version of sage-flatsurf.")
         return self._s
 
     def t(self):
-        from sage.misc.superseded import deprecation
-        deprecation(42, "Do not use .t()")
+        from warnings import warn
+        warn("SimilarityGroup.t() has been deprecated and will be removed in a future version of sage-flatsurf.")
         return self._t
 
 class SimilarityGroup(UniqueRepresentation, Group):

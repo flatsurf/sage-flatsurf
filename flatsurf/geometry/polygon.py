@@ -2970,8 +2970,8 @@ class PolygonsConstructor:
 polygons = PolygonsConstructor()
 
 def regular_octagon(field=None):
-    from sage.misc.superseded import deprecation
-    deprecation(33, "Do not use this function anymore but regular_ngon(8)")
+    from warnings import warn
+    warn("regular_octagon() has been deprecated and will be removed in a future version of sage-flatsurf. See https://github.com/flatsurf/sage-flatsurf/issues/33.")
     return polygons.regular_ngon(8)
 
 

@@ -159,8 +159,8 @@ class SimilaritySurfaceTangentVector:
 
     def singularity(self):
         r"""Return the index of the vertex."""
-        from sage.misc.superseded import deprecation
-        deprecation(42, "Do not use .singularity(). Use .vertex() instead.")
+        from warnings import warn
+        warn("SimilaritySurfaceTangentVector.singularity() has been deprecated and will be removed in a future version of sage-flatsurf. Use verte() instead.")
         # Note: I want to change this to returning the singularity of the surface instead.
         return self._position.get_vertex()
 
