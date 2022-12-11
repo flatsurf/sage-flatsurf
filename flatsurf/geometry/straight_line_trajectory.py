@@ -187,28 +187,6 @@ class SegmentInPolygon:
         return SegmentInPolygon(self._start.invert()).invert()
 
 
-    # DEPRECATED STUFF THAT WILL BE REMOVED
-
-    def start_point(self):
-        from warnings import warn
-        warn("SegmentInPolygon.start_point() has been deprecated and will be removed in a future version of sage-flatsurf. Use start().point() instead.")
-        return self._start.point()
-
-    def start_direction(self):
-        from warnings import warn
-        warn("SegmentInPolygon.start_direction() has been deprecated and will be removed in a future version of sage-flatsurf. Use start().vector() instead.")
-        return self._start.vector()
-
-    def end_point(self):
-        from warnings import warn
-        warn("SegmentInPolygon.end_point() has been deprecated and will be removed in a future version of sage-flatsurf. Use end().point() instead.")
-        return self._end.point()
-
-    def end_direction(self):
-        from warnings import warn
-        warn("SegmentInPolygon.end_direction() has been deprecated and will be removed in a future version of sage-flatsurf. Use end().vector() instead.")
-        return self._end.vector()
-
 class AbstractStraightLineTrajectory:
     r"""
     You need to implement:
