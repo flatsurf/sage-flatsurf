@@ -1805,11 +1805,6 @@ None. Here p1, p2, q1 and q2 should be vectors in the plane.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="flatsurf.geometry.polygon.regular_octagon">
-<span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.polygon.</span></span><span class="sig-name descname"><span class="pre">regular_octagon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/polygon.html#regular_octagon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.polygon.regular_octagon" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
 <dt class="sig sig-object py" id="flatsurf.geometry.polygon.segment_intersect">
 <span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.polygon.</span></span><span class="sig-name descname"><span class="pre">segment_intersect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">e1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_ring</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/polygon.html#segment_intersect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.polygon.segment_intersect" title="Permalink to this definition">#</a></dt>
 <dd><p>Return whether the segments <code class="docutils literal notranslate"><span class="pre">e1</span></code> and <code class="docutils literal notranslate"><span class="pre">e2</span></code> intersect.</p>
@@ -2335,12 +2330,6 @@ performance.</p>
 <dd><p>Iterate over pairs (label, polygon).</p>
 <p>Subclasses should consider overriding this method for increased
 performance.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="flatsurf.geometry.surface.Surface.make_immutable">
-<span class="sig-name descname"><span class="pre">make_immutable</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/surface.html#Surface.make_immutable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface.Surface.make_immutable" title="Permalink to this definition">#</a></dt>
-<dd><p>Mark this surface as immutable.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -3111,15 +3100,6 @@ surface that is naturally a branched cover of the plane.</p>
 <span class="n">Polygon</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 </pre></div>
 </div>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="flatsurf.geometry.similarity_surface.SimilaritySurface.minimal_translation_cover">
-<span class="sig-name descname"><span class="pre">minimal_translation_cover</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/similarity_surface.html#SimilaritySurface.minimal_translation_cover"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.minimal_translation_cover" title="Permalink to this definition">#</a></dt>
-<dd><p>Return the minimal translation cover.</p>
-<p>“Be careful that if the surface is not built from one polygon, this is
-not the smallest translation cover of the surface.” - Vincent</p>
-<p>“I disagree with the prior statement. Can you provide an example?” -Pat</p>
 </dd></dl>
 
 <dl class="py method">
@@ -4060,11 +4040,7 @@ function:</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.translation_surface.TranslationSurface.minimal_translation_cover">
 <span class="sig-name descname"><span class="pre">minimal_translation_cover</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/translation_surface.html#TranslationSurface.minimal_translation_cover"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.translation_surface.TranslationSurface.minimal_translation_cover" title="Permalink to this definition">#</a></dt>
-<dd><p>Return the minimal translation cover.</p>
-<p>“Be careful that if the surface is not built from one polygon, this is
-not the smallest translation cover of the surface.” - Vincent</p>
-<p>“I disagree with the prior statement. Can you provide an example?” -Pat</p>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.translation_surface.TranslationSurface.rel_deformation">
@@ -4328,16 +4304,6 @@ True
 <p>Construct the similarity (x,y) mapsto (ax-by+s,bx+ay+t) if sign=1,
 and (ax+by+s,bx-ay+t) if sign=-1</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="flatsurf.geometry.similarity.Similarity.a">
-<span class="sig-name descname"><span class="pre">a</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/similarity.html#Similarity.a"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity.Similarity.a" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="flatsurf.geometry.similarity.Similarity.b">
-<span class="sig-name descname"><span class="pre">b</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/similarity.html#Similarity.b"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity.Similarity.b" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.similarity.Similarity.derivative">
 <span class="sig-name descname"><span class="pre">derivative</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/similarity.html#Similarity.derivative"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity.Similarity.derivative" title="Permalink to this definition">#</a></dt>
 <dd><p>Return the 2x2 matrix corresponding to the derivative of this element</p>
@@ -4452,18 +4418,8 @@ and (ax+by+s,bx-ay+t) if sign=-1</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="flatsurf.geometry.similarity.Similarity.s">
-<span class="sig-name descname"><span class="pre">s</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/similarity.html#Similarity.s"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity.Similarity.s" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.similarity.Similarity.sign">
 <span class="sig-name descname"><span class="pre">sign</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/similarity.html#Similarity.sign"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity.Similarity.sign" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="flatsurf.geometry.similarity.Similarity.t">
-<span class="sig-name descname"><span class="pre">t</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/similarity.html#Similarity.t"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity.Similarity.t" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -4881,12 +4837,6 @@ belongs to.</p>
 <span class="sig-name descname"><span class="pre">position</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/tangent_bundle.html#SimilaritySurfaceTangentVector.position"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentVector.position" title="Permalink to this definition">#</a></dt>
 <dd><p>Return the PolygonPosition representing the location of
 the basepoint of the vector in the polygon that contains it.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentVector.singularity">
-<span class="sig-name descname"><span class="pre">singularity</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/tangent_bundle.html#SimilaritySurfaceTangentVector.singularity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentVector.singularity" title="Permalink to this definition">#</a></dt>
-<dd><p>Return the index of the vertex.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -5555,18 +5505,8 @@ The keyword arguments in <cite>**options</cite> are passed on to <code class="xr
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="flatsurf.geometry.straight_line_trajectory.SegmentInPolygon.end_direction">
-<span class="sig-name descname"><span class="pre">end_direction</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/straight_line_trajectory.html#SegmentInPolygon.end_direction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.straight_line_trajectory.SegmentInPolygon.end_direction" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.straight_line_trajectory.SegmentInPolygon.end_is_singular">
 <span class="sig-name descname"><span class="pre">end_is_singular</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/straight_line_trajectory.html#SegmentInPolygon.end_is_singular"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.straight_line_trajectory.SegmentInPolygon.end_is_singular" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="flatsurf.geometry.straight_line_trajectory.SegmentInPolygon.end_point">
-<span class="sig-name descname"><span class="pre">end_point</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/straight_line_trajectory.html#SegmentInPolygon.end_point"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.straight_line_trajectory.SegmentInPolygon.end_point" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -5619,18 +5559,8 @@ The keyword arguments in <cite>**options</cite> are passed on to <code class="xr
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="flatsurf.geometry.straight_line_trajectory.SegmentInPolygon.start_direction">
-<span class="sig-name descname"><span class="pre">start_direction</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/straight_line_trajectory.html#SegmentInPolygon.start_direction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.straight_line_trajectory.SegmentInPolygon.start_direction" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.straight_line_trajectory.SegmentInPolygon.start_is_singular">
 <span class="sig-name descname"><span class="pre">start_is_singular</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/straight_line_trajectory.html#SegmentInPolygon.start_is_singular"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.straight_line_trajectory.SegmentInPolygon.start_is_singular" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="flatsurf.geometry.straight_line_trajectory.SegmentInPolygon.start_point">
-<span class="sig-name descname"><span class="pre">start_point</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/straight_line_trajectory.html#SegmentInPolygon.start_point"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.straight_line_trajectory.SegmentInPolygon.start_point" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -6728,7 +6658,6 @@ Basis matrix:
 <li><a class="reference internal" href="#flatsurf.geometry.polygon.is_same_direction"><code class="docutils literal notranslate"><span class="pre">is_same_direction()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.polygon.line_intersection"><code class="docutils literal notranslate"><span class="pre">line_intersection()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.polygon.projectivization"><code class="docutils literal notranslate"><span class="pre">projectivization()</span></code></a></li>
-<li><a class="reference internal" href="#flatsurf.geometry.polygon.regular_octagon"><code class="docutils literal notranslate"><span class="pre">regular_octagon()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.polygon.segment_intersect"><code class="docutils literal notranslate"><span class="pre">segment_intersect()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.polygon.solve"><code class="docutils literal notranslate"><span class="pre">solve()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.polygon.tensor"><code class="docutils literal notranslate"><span class="pre">tensor()</span></code></a></li>
@@ -6786,7 +6715,6 @@ Basis matrix:
 <li><a class="reference internal" href="#flatsurf.geometry.surface.Surface.is_triangulated"><code class="docutils literal notranslate"><span class="pre">Surface.is_triangulated()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.surface.Surface.label_iterator"><code class="docutils literal notranslate"><span class="pre">Surface.label_iterator()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.surface.Surface.label_polygon_iterator"><code class="docutils literal notranslate"><span class="pre">Surface.label_polygon_iterator()</span></code></a></li>
-<li><a class="reference internal" href="#flatsurf.geometry.surface.Surface.make_immutable"><code class="docutils literal notranslate"><span class="pre">Surface.make_immutable()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.surface.Surface.num_edges"><code class="docutils literal notranslate"><span class="pre">Surface.num_edges()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.surface.Surface.num_polygons"><code class="docutils literal notranslate"><span class="pre">Surface.num_polygons()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.surface.Surface.opposite_edge"><code class="docutils literal notranslate"><span class="pre">Surface.opposite_edge()</span></code></a></li>
@@ -6837,7 +6765,6 @@ Basis matrix:
 <li><a class="reference internal" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.join_polygons"><code class="docutils literal notranslate"><span class="pre">SimilaritySurface.join_polygons()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.label_iterator"><code class="docutils literal notranslate"><span class="pre">SimilaritySurface.label_iterator()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.minimal_cover"><code class="docutils literal notranslate"><span class="pre">SimilaritySurface.minimal_cover()</span></code></a></li>
-<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.minimal_translation_cover"><code class="docutils literal notranslate"><span class="pre">SimilaritySurface.minimal_translation_cover()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.num_edges"><code class="docutils literal notranslate"><span class="pre">SimilaritySurface.num_edges()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.num_polygons"><code class="docutils literal notranslate"><span class="pre">SimilaritySurface.num_polygons()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.num_singularities"><code class="docutils literal notranslate"><span class="pre">SimilaritySurface.num_singularities()</span></code></a></li>
@@ -6932,8 +6859,6 @@ Basis matrix:
 </li>
 <li><a class="reference internal" href="#module-flatsurf.geometry.similarity">Similarities and Translations</a><ul>
 <li><a class="reference internal" href="#flatsurf.geometry.similarity.Similarity"><code class="docutils literal notranslate"><span class="pre">Similarity</span></code></a><ul>
-<li><a class="reference internal" href="#flatsurf.geometry.similarity.Similarity.a"><code class="docutils literal notranslate"><span class="pre">Similarity.a()</span></code></a></li>
-<li><a class="reference internal" href="#flatsurf.geometry.similarity.Similarity.b"><code class="docutils literal notranslate"><span class="pre">Similarity.b()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.similarity.Similarity.derivative"><code class="docutils literal notranslate"><span class="pre">Similarity.derivative()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.similarity.Similarity.det"><code class="docutils literal notranslate"><span class="pre">Similarity.det()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.similarity.Similarity.is_half_translation"><code class="docutils literal notranslate"><span class="pre">Similarity.is_half_translation()</span></code></a></li>
@@ -6942,9 +6867,7 @@ Basis matrix:
 <li><a class="reference internal" href="#flatsurf.geometry.similarity.Similarity.is_rotation"><code class="docutils literal notranslate"><span class="pre">Similarity.is_rotation()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.similarity.Similarity.is_translation"><code class="docutils literal notranslate"><span class="pre">Similarity.is_translation()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.similarity.Similarity.matrix"><code class="docutils literal notranslate"><span class="pre">Similarity.matrix()</span></code></a></li>
-<li><a class="reference internal" href="#flatsurf.geometry.similarity.Similarity.s"><code class="docutils literal notranslate"><span class="pre">Similarity.s()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.similarity.Similarity.sign"><code class="docutils literal notranslate"><span class="pre">Similarity.sign()</span></code></a></li>
-<li><a class="reference internal" href="#flatsurf.geometry.similarity.Similarity.t"><code class="docutils literal notranslate"><span class="pre">Similarity.t()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#flatsurf.geometry.similarity.SimilarityGroup"><code class="docutils literal notranslate"><span class="pre">SimilarityGroup</span></code></a><ul>
@@ -6981,7 +6904,6 @@ Basis matrix:
 <li><a class="reference internal" href="#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentVector.polygon"><code class="docutils literal notranslate"><span class="pre">SimilaritySurfaceTangentVector.polygon()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentVector.polygon_label"><code class="docutils literal notranslate"><span class="pre">SimilaritySurfaceTangentVector.polygon_label()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentVector.position"><code class="docutils literal notranslate"><span class="pre">SimilaritySurfaceTangentVector.position()</span></code></a></li>
-<li><a class="reference internal" href="#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentVector.singularity"><code class="docutils literal notranslate"><span class="pre">SimilaritySurfaceTangentVector.singularity()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentVector.straight_line_trajectory"><code class="docutils literal notranslate"><span class="pre">SimilaritySurfaceTangentVector.straight_line_trajectory()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentVector.surface"><code class="docutils literal notranslate"><span class="pre">SimilaritySurfaceTangentVector.surface()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentVector.vector"><code class="docutils literal notranslate"><span class="pre">SimilaritySurfaceTangentVector.vector()</span></code></a></li>
@@ -7074,18 +6996,14 @@ Basis matrix:
 <li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.SegmentInPolygon"><code class="docutils literal notranslate"><span class="pre">SegmentInPolygon</span></code></a><ul>
 <li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.SegmentInPolygon.edge"><code class="docutils literal notranslate"><span class="pre">SegmentInPolygon.edge()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.SegmentInPolygon.end"><code class="docutils literal notranslate"><span class="pre">SegmentInPolygon.end()</span></code></a></li>
-<li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.SegmentInPolygon.end_direction"><code class="docutils literal notranslate"><span class="pre">SegmentInPolygon.end_direction()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.SegmentInPolygon.end_is_singular"><code class="docutils literal notranslate"><span class="pre">SegmentInPolygon.end_is_singular()</span></code></a></li>
-<li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.SegmentInPolygon.end_point"><code class="docutils literal notranslate"><span class="pre">SegmentInPolygon.end_point()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.SegmentInPolygon.invert"><code class="docutils literal notranslate"><span class="pre">SegmentInPolygon.invert()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.SegmentInPolygon.is_edge"><code class="docutils literal notranslate"><span class="pre">SegmentInPolygon.is_edge()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.SegmentInPolygon.next"><code class="docutils literal notranslate"><span class="pre">SegmentInPolygon.next()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.SegmentInPolygon.polygon_label"><code class="docutils literal notranslate"><span class="pre">SegmentInPolygon.polygon_label()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.SegmentInPolygon.previous"><code class="docutils literal notranslate"><span class="pre">SegmentInPolygon.previous()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.SegmentInPolygon.start"><code class="docutils literal notranslate"><span class="pre">SegmentInPolygon.start()</span></code></a></li>
-<li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.SegmentInPolygon.start_direction"><code class="docutils literal notranslate"><span class="pre">SegmentInPolygon.start_direction()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.SegmentInPolygon.start_is_singular"><code class="docutils literal notranslate"><span class="pre">SegmentInPolygon.start_is_singular()</span></code></a></li>
-<li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.SegmentInPolygon.start_point"><code class="docutils literal notranslate"><span class="pre">SegmentInPolygon.start_point()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.StraightLineTrajectory"><code class="docutils literal notranslate"><span class="pre">StraightLineTrajectory</span></code></a><ul>

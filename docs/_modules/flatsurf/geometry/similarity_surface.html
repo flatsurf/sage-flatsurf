@@ -1574,20 +1574,6 @@
             <span class="k">return</span> <span class="n">TranslationSurface</span><span class="p">(</span><span class="n">MinimalPlanarCover</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Provided cover_type is not supported.&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SimilaritySurface.minimal_translation_cover"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity_surface.SimilaritySurface.minimal_translation_cover">[docs]</a>    <span class="k">def</span> <span class="nf">minimal_translation_cover</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return the minimal translation cover.</span>
-
-<span class="sd">        &quot;Be careful that if the surface is not built from one polygon, this is</span>
-<span class="sd">        not the smallest translation cover of the surface.&quot; - Vincent</span>
-
-<span class="sd">        &quot;I disagree with the prior statement. Can you provide an example?&quot; -Pat</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">sage.misc.superseded</span> <span class="kn">import</span> <span class="n">deprecation</span>
-        <span class="n">deprecation</span><span class="p">(</span><span class="mi">13109</span><span class="p">,</span> <span class="s2">&quot;minimal_translation_cover is deprecated. Use minimal_cover(cover_type = </span><span class="se">\&quot;</span><span class="s2">translation</span><span class="se">\&quot;</span><span class="s2">) instead.&quot;</span><span class="p">)</span>
-        <span class="kn">from</span> <span class="nn">flatsurf.geometry.translation_surface</span> <span class="kn">import</span> <span class="n">MinimalTranslationCover</span><span class="p">,</span> <span class="n">TranslationSurface</span>
-        <span class="k">return</span> <span class="n">TranslationSurface</span><span class="p">(</span><span class="n">MinimalTranslationCover</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span></div>
-
 <div class="viewcode-block" id="SimilaritySurface.vector_space"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity_surface.SimilaritySurface.vector_space">[docs]</a>    <span class="k">def</span> <span class="nf">vector_space</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the vector space in which self naturally embeds.</span>

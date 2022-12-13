@@ -810,15 +810,6 @@
         <span class="k">if</span> <span class="n">visible</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">make_visible</span><span class="p">(</span><span class="n">pp</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="GraphicalSurface.make_adjacent_and_visible"><a class="viewcode-back" href="../../../graphical.html#flatsurf.graphical.surface.GraphicalSurface.make_adjacent_and_visible">[docs]</a>    <span class="k">def</span> <span class="nf">make_adjacent_and_visible</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Move the polygon across the prescribed edge so that is adjacent,</span>
-<span class="sd">        and make the moved polygon visible.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">sage.misc.superseded</span> <span class="kn">import</span> <span class="n">deprecation</span>
-        <span class="n">deprecation</span><span class="p">(</span><span class="mi">42</span><span class="p">,</span> <span class="s2">&quot;Do not use .make_adjacent_and_visible(). Use .make_adjacent() instead.&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">make_adjacent</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="n">reverse</span><span class="p">)</span></div>
-
 <div class="viewcode-block" id="GraphicalSurface.is_adjacent"><a class="viewcode-back" href="../../../graphical.html#flatsurf.graphical.surface.GraphicalSurface.is_adjacent">[docs]</a>    <span class="k">def</span> <span class="nf">is_adjacent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">p</span><span class="p">,</span><span class="n">e</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the truth value of the statement</span>

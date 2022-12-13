@@ -560,14 +560,6 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_mutable</span> <span class="o">=</span> <span class="kc">False</span></div>
 
-<div class="viewcode-block" id="Surface.make_immutable"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.surface.Surface.make_immutable">[docs]</a>    <span class="k">def</span> <span class="nf">make_immutable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Mark this surface as immutable.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">sage.misc.superseded</span> <span class="kn">import</span> <span class="n">deprecation</span>
-        <span class="n">deprecation</span><span class="p">(</span><span class="mi">13109</span><span class="p">,</span> <span class="s2">&quot;Do not use .make_immutable(). Use .set_immutable() instead.&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_mutable</span> <span class="o">=</span> <span class="kc">False</span></div>
-
 <div class="viewcode-block" id="Surface.walker"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.surface.Surface.walker">[docs]</a>    <span class="k">def</span> <span class="nf">walker</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a LabelWalker which walks over the surface in a canonical way.</span>
