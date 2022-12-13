@@ -399,27 +399,6 @@ class Similarity(MultiplicativeGroupElement):
         M = self.parent()._matrix_space_2x2()
         return M([self._a, -self._sign*self._b, self._b,  self._sign*self._a])
 
-    # OLD AND DEPRECATED
-
-    def a(self):
-        from sage.misc.superseded import deprecation
-        deprecation(42, "Do not use .a()")
-        return self._a
-
-    def b(self):
-        from sage.misc.superseded import deprecation
-        deprecation(42, "Do not use .b()")
-        return self._b
-
-    def s(self):
-        from sage.misc.superseded import deprecation
-        deprecation(42, "Do not use .s()")
-        return self._s
-
-    def t(self):
-        from sage.misc.superseded import deprecation
-        deprecation(42, "Do not use .t()")
-        return self._t
 
 class SimilarityGroup(UniqueRepresentation, Group):
     r"""

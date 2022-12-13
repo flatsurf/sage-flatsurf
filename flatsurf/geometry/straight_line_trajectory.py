@@ -187,28 +187,6 @@ class SegmentInPolygon:
         return SegmentInPolygon(self._start.invert()).invert()
 
 
-    # DEPRECATED STUFF THAT WILL BE REMOVED
-
-    def start_point(self):
-        from sage.misc.superseded import deprecation
-        deprecation(1, "do not use start_point but start().point()")
-        return self._start.point()
-
-    def start_direction(self):
-        from sage.misc.superseded import deprecation
-        deprecation(1, "do not use start_direction but start().vector()")
-        return self._start.vector()
-
-    def end_point(self):
-        from sage.misc.superseded import deprecation
-        deprecation(1, "do not use end_point but end().point()")
-        return self._end.point()
-
-    def end_direction(self):
-        from sage.misc.superseded import deprecation
-        deprecation(1, "do not use end_direction but end().vector()")
-        return self._end.vector()
-
 class AbstractStraightLineTrajectory:
     r"""
     You need to implement:

@@ -122,8 +122,7 @@ class GraphicalSurface:
         ...Graphics object consisting of 13 graphics primitives
     """
 
-    def __init__(self, similarity_surface, adjacencies=None, polygon_labels=True, \
-                 edge_labels="gluings", default_position_function = None):
+    def __init__(self, similarity_surface, adjacencies=None, polygon_labels=True, edge_labels="gluings", default_position_function=None):
         r"""
         Construct a GraphicalSurface from a similarity surface.
 
@@ -174,7 +173,7 @@ class GraphicalSurface:
         Whether to plot polygons which are right-side up.
         """
 
-        self.polygon_options = {"color":"lightgray"}
+        self.polygon_options = {"color": "lightgray"}
         r"""Options passed to :func:`graphical_polygon.GraphicalPolygon.plot_polygon` when plotting a polygon right-side up."""
 
         self.will_plot_upside_down_polygons = False
@@ -182,7 +181,7 @@ class GraphicalSurface:
         Whether to plot polygons which are upside down
         """
 
-        self.upside_down_polygon_options = {"color":"lightgray", "zorder":-1}
+        self.upside_down_polygon_options = {"color": "lightgray", "zorder": -1}
         r"""Options passed to :func:`graphical_polygon.GraphicalPolygon.plot_polygon` when plotting a polygon upside-down."""
 
         self.will_plot_polygon_labels = True
@@ -190,7 +189,7 @@ class GraphicalSurface:
         Whether to plot polygon labels.
         """
 
-        self.polygon_label_options = {"color":"black", "vertical_alignment":"center", "horizontal_alignment":"center"}
+        self.polygon_label_options = {"color": "black", "vertical_alignment": "center", "horizontal_alignment": "center"}
         r"""Options passed to :func:`graphical_polygon.GraphicalPolygon.plot_label` when plotting a polygon label."""
 
         self.will_plot_edges = True
@@ -203,7 +202,7 @@ class GraphicalSurface:
         Whether to plot polygon edges which are not adjacent to the edge it is glued to.
         """
 
-        self.non_adjacent_edge_options = {"color":"blue"}
+        self.non_adjacent_edge_options = {"color": "blue"}
         r"""Options passed to :func:`graphical_polygon.GraphicalPolygon.plot_edge` when plotting a polygon edge
         which is not adjacent to the edge it is glued to."""
 
@@ -212,7 +211,7 @@ class GraphicalSurface:
         Whether to plot polygon edges which are adjacent to the polygon they are glued to.
         """
 
-        self.adjacent_edge_options = {"color":"blue", "linestyle":":"}
+        self.adjacent_edge_options = {"color": "blue", "linestyle": ":"}
         r"""Options passed to :func:`graphical_polygon.GraphicalPolygon.plot_edge`
         when plotting a polygon edge which is adjacent to the edge it is glued to."""
 
@@ -221,7 +220,7 @@ class GraphicalSurface:
         Whether to plot polygon edges which are glued to themselves.
         """
 
-        self.self_glued_edge_options = {"color":"red"}
+        self.self_glued_edge_options = {"color": "red"}
         r"""Options passed to :func:`graphical_polygon.GraphicalPolygon.plot_edge` when plotting a polygon edge
         which is glued to itself."""
 
@@ -230,7 +229,7 @@ class GraphicalSurface:
         Whether to plot polygon edges which are not adjacent to the polygon they are glued to.
         """
 
-        self.edge_label_options = {"color":"blue"}
+        self.edge_label_options = {"color": "blue"}
         r"""Options passed to :func:`graphical_polygon.GraphicalPolygon.edge_label` when plotting a polygon label."""
 
         self.will_plot_zero_flags = False
@@ -238,13 +237,12 @@ class GraphicalSurface:
         Whether to plot line segments from the baricenter to the zero vertex of each polygon.
         """
 
-        self.zero_flag_options = {"color":"green", "thickness":0.5}
+        self.zero_flag_options = {"color": "green", "thickness": 0.5}
         r"""Options passed to :func:`graphical_polygon.GraphicalPolygon.plot_zero_flag` when plotting a zero_flag."""
 
-        self.process_options(adjacencies=adjacencies,
-                polygon_labels=polygon_labels, edge_labels=edge_labels)
+        self.process_options(adjacencies=adjacencies, polygon_labels=polygon_labels, edge_labels=edge_labels)
 
-    def process_options(self, adjacencies=None, polygon_labels=None, edge_labels=None, default_position_function = None):
+    def process_options(self, adjacencies=None, polygon_labels=None, edge_labels=None, default_position_function=None):
         r"""
         Process the options listed as if the graphical_surface was first
         created.
@@ -291,26 +289,26 @@ class GraphicalSurface:
             ValueError: invalid value for edge_labels (='hey')
         """
         if adjacencies is not None:
-            for p,e in adjacencies:
+            for p, e in adjacencies:
                 self.make_adjacent(p, e)
+
         if polygon_labels is not None:
             if not isinstance(polygon_labels, bool):
                 raise ValueError("polygon_labels must be True, False or None.")
             self.will_plot_polygon_labels = polygon_labels
 
-        if edge_labels is True:
-            edge_labels = 'gluings'
-        elif edge_labels is False:
-            edge_labels = None
+        if edge_labels is not None:
+            if edge_labels is True:
+                edge_labels = 'gluings'
 
-        if edge_labels is None:
-            self._edge_labels = None
-            self.will_plot_edge_labels = False
-        elif edge_labels in ['gluings', 'number', 'gluings and number', 'letter']:
-            self._edge_labels = edge_labels
-            self.will_plot_edge_labels = True
-        else:
-            raise ValueError("invalid value for edge_labels (={!r})".format(edge_labels))
+            if edge_labels is False:
+                self._edge_labels = None
+                self.will_plot_edge_labels = False
+            elif edge_labels in ['gluings', 'number', 'gluings and number', 'letter']:
+                self._edge_labels = edge_labels
+                self.will_plot_edge_labels = True
+            else:
+                raise ValueError("invalid value for edge_labels (={!r})".format(edge_labels))
 
         if default_position_function is not None:
             self._default_position_function = default_position_function
@@ -596,15 +594,6 @@ class GraphicalSurface:
         self.graphical_polygon(pp).set_transformation(h*g)
         if visible:
             self.make_visible(pp)
-
-    def make_adjacent_and_visible(self, p, e, reverse=False):
-        r"""
-        Move the polygon across the prescribed edge so that is adjacent,
-        and make the moved polygon visible.
-        """
-        from sage.misc.superseded import deprecation
-        deprecation(42, "Do not use .make_adjacent_and_visible(). Use .make_adjacent() instead.")
-        self.make_adjacent(p, e, reverse=reverse)
 
     def is_adjacent(self,p,e):
         r"""
