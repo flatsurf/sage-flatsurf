@@ -121,6 +121,16 @@ class Surface(SageObject):
         sage: isinstance(S, Surface)
         True
 
+    TESTS:
+
+    Users are being warned if they try to define a surface over an inexact ring::
+
+        sage: S = Surface_list(RR)
+        ...
+        UserWarning: surface defined over an inexact ring; many operations in sage-flatsurf are not going to work correctly over this ring
+        sage: isinstance(S, Surface)
+        True
+
     """
 
     def __init__(self, base_ring, base_label, finite, mutable):
@@ -130,6 +140,10 @@ class Surface(SageObject):
         from sage.all import Rings
         if base_ring not in Rings():
             raise ValueError("base_ring must be a ring")
+
+        if not base_ring.is_exact():
+            from warnings import warn
+            warn("surface defined over an inexact ring; many operations in sage-flatsurf are not going to work correctly over this ring")
 
         if mutable not in [False, True]:
             raise ValueError("mutable must be either True or False")
