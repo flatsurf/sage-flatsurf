@@ -2195,6 +2195,15 @@ with <a class="reference internal" href="#flatsurf.geometry.surface.Surface.set_
 <span class="kc">True</span>
 </pre></div>
 </div>
+<p>TESTS:</p>
+<p>Users are being warned if they try to define a surface over an inexact ring:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">Surface_list</span><span class="p">(</span><span class="n">RR</span><span class="p">)</span>
+<span class="o">...</span>
+<span class="ne">UserWarning</span><span class="p">:</span> <span class="n">surface</span> <span class="n">defined</span> <span class="n">over</span> <span class="n">an</span> <span class="n">inexact</span> <span class="n">ring</span><span class="p">;</span> <span class="n">many</span> <span class="n">operations</span> <span class="ow">in</span> <span class="n">sage</span><span class="o">-</span><span class="n">flatsurf</span> <span class="n">are</span> <span class="ow">not</span> <span class="n">going</span> <span class="n">to</span> <span class="n">work</span> <span class="n">correctly</span> <span class="n">over</span> <span class="n">this</span> <span class="n">ring</span>
+<span class="n">sage</span><span class="p">:</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">Surface</span><span class="p">)</span>
+<span class="kc">True</span>
+</pre></div>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.surface.Surface.add_polygon">
 <span class="sig-name descname"><span class="pre">add_polygon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_polygon</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gluing_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flatsurf/geometry/surface.html#Surface.add_polygon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface.Surface.add_polygon" title="Permalink to this definition">#</a></dt>
