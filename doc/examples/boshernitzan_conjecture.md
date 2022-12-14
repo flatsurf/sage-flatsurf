@@ -39,9 +39,9 @@ We will find that
 ## (a) Cylinder Periodic Directions of Even Triangles
 Let us first state assertion (a) again:
 
-> Let $d$ be even and let $d=a+b+c$ be a partition into coprime positive integers. Consider the triangle $\Delta = (a, b, c)$, i.e., the triangle with angles $(aπ/d, bπ/d, cπ/d)$, embedded into the complex plane such that one of its sides is horizontal. Let $z\in S^1$ be such that $z^{2d}=1$. Then the flow in direction $z$ on the unfolding of $\Delta$ completely decomposes into cylinders.
+> Let $d$ be even and let $d=α+β+γ$ be a partition into coprime positive integers. Consider the triangle $\Delta = (α, β, γ)$, i.e., the triangle with angles $(απ/d, βπ/d, γπ/d)$, embedded into the complex plane such that one of its sides is horizontal. Let $z\in S^1$ be such that $z^{2d}=1$. Then the flow in direction $z$ on the unfolding of $\Delta$ completely decomposes into cylinders.
 
-To verify this conjecture for a given triangle, we do not need to compute the flow decomposition for each such $z$ due to symmetries in the unfolding. Indeed, identifying the set $S^1(2d):=\{z^{2d}=1\}$ with $\mathbb{Z}/2d\mathbb{Z}$ we see that the assertion holds for a direction $v$ iff it holds for the subset $v + \langle 2a, 2b, 2c\rangle$. Since the angles $a,b,c$ are coprime, it suffices to check two directions; for example two directions orthogonal (or equally parallel) to edges of $\Delta$ that do not meet at the one "even" angle from $a,b,c$.
+To verify this conjecture for a given triangle, we do not need to compute the flow decomposition for each such $z$ due to symmetries in the unfolding. Indeed, identifying the set $S^1(2d):=\{z^{2d}=1\}$ with $\mathbb{Z}/2d\mathbb{Z}$ we see that the assertion holds for a direction $v$ iff it holds for the subset $v + \langle 2α, 2β, 2γ\rangle$. Since the angles $α,β,γ$ are coprime, it suffices to check two directions; for example two directions orthogonal (or equally parallel) to edges of $\Delta$ that do not meet at the one "even" angle from $α,β,γ$.
 
 We performed such a search systematically with [flatsurvey](https://github.com/flatsurf/flatsurvey) which is built upon sage-flatsurf. An exhaustive search up to d=153 found 9 counterexamples to the conjecture, namely (7, 7, 16), (7, 8, 15), (13, 20, 23), (15, 30, 47), (11, 45, 50), (23, 29, 58), (19, 38, 55), (11, 22, 103), (30, 41, 67).
 
@@ -85,9 +85,9 @@ Widget(cylinders)
 ## (b) Cylinder Periodic Directions of Odd Triangles 
 
 Assertion (b) can be phrased as follows:
-> Let $d$ be odd and let $d=a+b+c$ be a partition into coprime positive integers. Consider the triangle $\Delta=(a,b,c)$, i.e., the triangle with angles $(a\pi/d, b\pi/d, c\pi/d)$, embedded into the complex plane such that one of its sides is horizontal. Let $z\in S^1$ be such that $z^{2d}=-1$. Then the flow in direction $z$ on the unfolding of $\Delta$ completely decomposes into cylinders.
+> Let $d$ be odd and let $d=α+β+γ$ be a partition into coprime positive integers. Consider the triangle $\Delta=(α,β,γ)$, i.e., the triangle with angles $(α\pi/d, β\pi/d, γ\pi/d)$, embedded into the complex plane such that one of its sides is horizontal. Let $z\in S^1$ be such that $z^{2d}=-1$. Then the flow in direction $z$ on the unfolding of $\Delta$ completely decomposes into cylinders.
 
-Again, we do not need to compute the flow decomposition for each such $z$ since there are a lot of symmetries. Let us identify the $z\in S^1$ with $z^{4d}=1$ with $\mathbb{Z}/4d\mathbb{Z}$. The assertion then holds for a direction $v$ iff it holds for the subset $v + \langle 4a, 4b, 4c\rangle$. Since the $a,b,c$ are coprime and the assertion excludes directions with $z^{2d}=1$, it suffices to check two directions; for example directions orthogonal to two edges of $\Delta$ that do not meet at an "even" angle.
+Again, we do not need to compute the flow decomposition for each such $z$ since there are a lot of symmetries. Let us identify the $z\in S^1$ with $z^{4d}=1$ with $\mathbb{Z}/4d\mathbb{Z}$. The assertion then holds for a direction $v$ iff it holds for the subset $v + \langle 4α, 4β, 4γ\rangle$. Since the $α,β,γ$ are coprime and the assertion excludes directions with $z^{2d}=1$, it suffices to check two directions; for example directions orthogonal to two edges of $\Delta$ that do not meet at an "even" angle.
 
 We performed such a search systematically with [flatsurvey](https://github.com/flatsurf/flatsurvey) which is built upon sage-flatsurf. An exhaustive search up to d=189 found no counterexamples to the conjecture.
 
@@ -299,7 +299,7 @@ We have found a cylinder and a minimal component. Performing the same steps on t
 
 ## (d) Most Small Triangles are Completely Cylinder Periodic
 Assertion (d) can be phrased as
-> Let $d\le 12$ with a partition $d=a+b+c$ into positive coprime integers with $(a,b,c)\ne(2,3,6)$ and $(a,b,c)\ne(3,4,4)$. Consider a triangle $\Delta=(a,b,c)$, i.e., the triangle with angles $(a\pi/d, b\pi/d, c\pi/d)$. Then $\Delta$ is completely cylinder periodic, i.e., the flow in direction $v$ on the unfolding of $\Delta$ decomposes into cylinders for any direction $v$ given by a saddle connection.
+> Let $d\le 12$ with a partition $d=α+β+γ$ into positive coprime integers with $(α,β,γ)\ne(2,3,6)$ and $(α,β,γ)\ne(3,4,4)$. Consider a triangle $\Delta=(α,β,γ)$, i.e., the triangle with angles $(α\pi/d, β\pi/d, γ\pi/d)$. Then $\Delta$ is completely cylinder periodic, i.e., the flow in direction $v$ on the unfolding of $\Delta$ decomposes into cylinders for any direction $v$ given by a saddle connection.
 
 We can use sage-flatsurf to check this assertion for some small triangles. Let us consider the (2, 2, 3) triangle.
 
@@ -336,7 +336,7 @@ Widget(decomposition)
 
 ## (e) Cylinder Periodic Directions of Isosceles and Right Triangles
 Assertion (e) can be phrased as
-> Let $d=a+b+c$ be a sum of positive coprime integers with $c=a+b$ or $a=b$. Consider the (right) triangle $\Delta=(a,b,c)$ embedded into the complex plane such that one of its sides is horizontal. Let $z\in S^1$ be such that $z^{2\mathrm{lcm}(2,d)}=1$. Then the flow in direction $z$ on the unfolding of $\Delta$ completely decomposes into cylinders.
+> Let $d=α+β+γ$ be a sum of positive coprime integers with $γ=α+β$ or $α=β$. Consider the (right) triangle $\Delta=(α,β,γ)$ embedded into the complex plane such that one of its sides is horizontal. Let $z\in S^1$ be such that $z^{2\mathrm{lcm}(2,d)}=1$. Then the flow in direction $z$ on the unfolding of $\Delta$ completely decomposes into cylinders.
 
 +++
 
