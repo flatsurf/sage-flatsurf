@@ -315,11 +315,13 @@ class IsoDelaunayTessellation(Parent):
 
         def filter_matrix(a, b, c, d):
             # TODO fix interface for isomorphisms
-            from pyeantic import RealEmbeddedNumberField
-            k = RealEmbeddedNumberField(a.parent())
-            a, b, c, d = k(a), k(b), k(c), k(d)
-            k = k.number_field
-            a, b, c, d = k(a), k(b), k(c), k(d)
+            from sage.all import QQ
+            k = QQ
+            if hasattr(a, 'parent'):
+                from pyeantic import RealEmbeddedNumberField
+                k = RealEmbeddedNumberField(a.parent())
+                a, b, c, d = k(a), k(b), k(c), k(d)
+                k = k.number_field
 
             if (a, b, c, d) in isomorphisms or a * d - b * c == -1:
                 return False
