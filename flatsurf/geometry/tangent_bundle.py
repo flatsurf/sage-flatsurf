@@ -157,13 +157,6 @@ class SimilaritySurfaceTangentVector:
         r"""Return the index of the vertex."""
         return self._position.get_vertex()
 
-    def singularity(self):
-        r"""Return the index of the vertex."""
-        from sage.misc.superseded import deprecation
-        deprecation(42, "Do not use .singularity(). Use .vertex() instead.")
-        # Note: I want to change this to returning the singularity of the surface instead.
-        return self._position.get_vertex()
-
     def is_in_boundary_of_polygon(self):
         r"""
         Return the truth value of the statement

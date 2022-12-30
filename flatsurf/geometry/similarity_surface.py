@@ -1359,20 +1359,6 @@ class SimilaritySurface(SageObject):
             return TranslationSurface(MinimalPlanarCover(self))
         raise ValueError("Provided cover_type is not supported.")
 
-    def minimal_translation_cover(self):
-        r"""
-        Return the minimal translation cover.
-
-        "Be careful that if the surface is not built from one polygon, this is
-        not the smallest translation cover of the surface." - Vincent
-
-        "I disagree with the prior statement. Can you provide an example?" -Pat
-        """
-        from sage.misc.superseded import deprecation
-        deprecation(13109, "minimal_translation_cover is deprecated. Use minimal_cover(cover_type = \"translation\") instead.")
-        from flatsurf.geometry.translation_surface import MinimalTranslationCover, TranslationSurface
-        return TranslationSurface(MinimalTranslationCover(self))
-
     def vector_space(self):
         r"""
         Return the vector space in which self naturally embeds.
@@ -2074,10 +2060,11 @@ class SimilaritySurface(SageObject):
 
             sage: from flatsurf import *
             sage: s = translation_surfaces.octagon_and_squares()
-            sage: s.plot()     # not tested (problem with matplotlib font caches on Travis)
-            Graphics object consisting of 32 graphics primitives
-            sage: s.graphical_surface(cached=False,adjacencies=[]).plot()   # not tested (problem with matplotlib font caches on Travis)
-            Graphics object consisting of 18 graphics primitives
+            sage: s.plot()
+            ...Graphics object consisting of 32 graphics primitives
+            sage: s.graphical_surface(cached=False,adjacencies=[]).plot()
+            ...Graphics object consisting of 18 graphics primitives
+
         """
         from flatsurf.graphical.surface import GraphicalSurface
         if "cached" in kwds:
@@ -2122,6 +2109,19 @@ class SimilaritySurface(SageObject):
 
         - ``default_position_function`` -- a function mapping polygon labels to
           similarities describing the position of the corresponding polygon.
+
+        EXAMPLES::
+
+            sage: import flatsurf
+            sage: S = flatsurf.translation_surfaces.veech_double_n_gon(5)
+            sage: S.plot()
+            Graphics object consisting of 21 graphics primitives
+
+        TESTS::
+
+            sage: S.plot()
+            Graphics object consisting of 21 graphics primitives
+
         """
         if len(args) > 1:
             raise ValueError("SimilaritySurface.plot() can take at most one non-keyword argument.")
@@ -2177,18 +2177,18 @@ class SimilaritySurface(SageObject):
 
             sage: from flatsurf import *
             sage: s = similarity_surfaces.example()
-            sage: s.plot() # not tested (problem with matplotlib font caches on Travis)
-            Graphics object consisting of 13 graphics primitives
-            s.plot_polygon(1) # not tested (problem with matplotlib font caches on Travis)
-            Graphics object consisting of 7 graphics primitives
+            sage: s.plot()
+            ...Graphics object consisting of 13 graphics primitives
+            sage: s.plot_polygon(1)
+            ...Graphics object consisting of 7 graphics primitives
 
             sage: labels = []
             sage: p = s.polygon(1)
             sage: for e in range(p.num_edges()): \
                 labels.append(str(p.edge(e)))
             sage: s.plot_polygon(1, polygon_options=None, plot_edges=False, \
-                edge_labels=labels, edge_label_options={"color":"red"}) # not tested (problem with matplotlib font caches on Travis)
-            Graphics object consisting of 4 graphics primitives
+                edge_labels=labels, edge_label_options={"color":"red"})
+            ...Graphics object consisting of 4 graphics primitives
         """
         if graphical_surface is None:
             graphical_surface = self.graphical_surface()

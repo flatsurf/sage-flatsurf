@@ -187,28 +187,6 @@ class SegmentInPolygon:
         return SegmentInPolygon(self._start.invert()).invert()
 
 
-    # DEPRECATED STUFF THAT WILL BE REMOVED
-
-    def start_point(self):
-        from sage.misc.superseded import deprecation
-        deprecation(1, "do not use start_point but start().point()")
-        return self._start.point()
-
-    def start_direction(self):
-        from sage.misc.superseded import deprecation
-        deprecation(1, "do not use start_direction but start().vector()")
-        return self._start.vector()
-
-    def end_point(self):
-        from sage.misc.superseded import deprecation
-        deprecation(1, "do not use end_point but end().point()")
-        return self._end.point()
-
-    def end_direction(self):
-        from sage.misc.superseded import deprecation
-        deprecation(1, "do not use end_direction but end().vector()")
-        return self._end.vector()
-
 class AbstractStraightLineTrajectory:
     r"""
     You need to implement:
@@ -240,10 +218,10 @@ class AbstractStraightLineTrajectory:
             sage: T = translation_surfaces.square_torus()
             sage: v = T.tangent_vector(0, (0,0), (5,7))
             sage: L = v.straight_line_trajectory()
-            sage: L.plot()               # not tested (problem with matplotlib font caches on Travis)
-            Graphics object consisting of 1 graphics primitive
-            sage: L.plot(color='red')    # not tested (problem with matplotlib font caches on Travis)
-            Graphics object consisting of 1 graphics primitive
+            sage: L.plot()
+            ...Graphics object consisting of 1 graphics primitive
+            sage: L.plot(color='red')
+            ...Graphics object consisting of 1 graphics primitive
         """
         if len(args) > 1:
             raise ValueError("SimilaritySurface.plot() can take at most one non-keyword argument.")
