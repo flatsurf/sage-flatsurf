@@ -595,15 +595,6 @@ class GraphicalSurface:
         if visible:
             self.make_visible(pp)
 
-    def make_adjacent_and_visible(self, p, e, reverse=False):
-        r"""
-        Move the polygon across the prescribed edge so that is adjacent,
-        and make the moved polygon visible.
-        """
-        from sage.misc.superseded import deprecation
-        deprecation(42, "Do not use .make_adjacent_and_visible(). Use .make_adjacent() instead.")
-        self.make_adjacent(p, e, reverse=reverse)
-
     def is_adjacent(self,p,e):
         r"""
         Returns the truth value of the statement

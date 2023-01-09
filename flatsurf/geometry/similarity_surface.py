@@ -1359,20 +1359,6 @@ class SimilaritySurface(SageObject):
             return TranslationSurface(MinimalPlanarCover(self))
         raise ValueError("Provided cover_type is not supported.")
 
-    def minimal_translation_cover(self):
-        r"""
-        Return the minimal translation cover.
-
-        "Be careful that if the surface is not built from one polygon, this is
-        not the smallest translation cover of the surface." - Vincent
-
-        "I disagree with the prior statement. Can you provide an example?" -Pat
-        """
-        from sage.misc.superseded import deprecation
-        deprecation(13109, "minimal_translation_cover is deprecated. Use minimal_cover(cover_type = \"translation\") instead.")
-        from flatsurf.geometry.translation_surface import MinimalTranslationCover, TranslationSurface
-        return TranslationSurface(MinimalTranslationCover(self))
-
     def vector_space(self):
         r"""
         Return the vector space in which self naturally embeds.
