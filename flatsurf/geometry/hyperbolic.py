@@ -2479,11 +2479,27 @@ class HyperbolicGeometry:
 
 
 class HyperbolicExactGeometry(UniqueRepresentation, HyperbolicGeometry):
-    # TODO: Check documentation
-    # TODO: Check INPUTS
-    # TODO: Check SEEALSO
-    # TODO: Check for doctests
-    # TODO: Benchmark?
+    r"""
+    Predicates and primitive geometric constructions over an exact base ring.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+        sage: H = HyperbolicPlane()
+        sage: H.geometry
+        Exact geometry over Rational Field
+
+    TESTS::
+
+        sage: from flatsurf.geometry.hyperbolic import HyperbolicExactGeometry
+        sage: isinstance(H.geometry, HyperbolicExactGeometry)
+        True
+
+    .. SEEALSO::
+
+        :class:`HyperbolicEpsilonGeometry` for an implementation over inexact rings
+
+    """
 
     def _equal(self, x, y):
         # TODO: Check documentation.
