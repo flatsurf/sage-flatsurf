@@ -2632,11 +2632,6 @@ class HyperbolicEpsilonGeometry(UniqueRepresentation, HyperbolicGeometry):
 # TODO: Change richcmp to match the description below.
 # TODO: Implement checking whether a point is in the interior.
 class HyperbolicConvexSet(Element):
-    # TODO: Check documentation
-    # TODO: Check INPUTS
-    # TODO: Check SEEALSO
-    # TODO: Check for doctests
-    # TODO: Benchmark?
     r"""
     Base class for convex subsets of :class:`HyperbolicPlane`.
 
@@ -2676,11 +2671,6 @@ class HyperbolicConvexSet(Element):
     """
 
     def half_spaces(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
         r"""
         Return a minimal set of half spaces whose intersection is this convex set.
 
@@ -2704,11 +2694,6 @@ class HyperbolicConvexSet(Element):
         raise NotImplementedError(f"{type(self)} does not implement half_spaces()")
 
     def _test_half_spaces(self, **options):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
         r"""
         Verify that this convex set implements :meth:`half_spaces` correctly.
 
@@ -2732,18 +2717,29 @@ class HyperbolicConvexSet(Element):
             tester.assertTrue(HyperbolicHalfSpaces._lt_(a, b))
 
     def _check(self, require_normalized=True):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
         r"""
         Validate this convex subset.
+
+        Subclasses run specific checks here that can be disabled when creating
+        objects with ``check=False``.
 
         If ``require_normalized``, we also check that the object has the
         correct implementation class, e.g., that a point is a
         :class:`HyperbolicPoint` and not say a
         :class:`HyperbolicOrientedSegment` of length zero.
+
+        EXAMPLES:
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(QQ)
+            sage: P = H.point(0, 0, model="klein")
+            sage: P._check()
+            sage: P = H.point(1, 1, model="klein", check=False)
+            sage: P._check()
+            Traceback (most recent call last):
+            ...
+            ValueError: point (1, 1) is not in the unit disk in the Klein model
+
         """
         pass
 
