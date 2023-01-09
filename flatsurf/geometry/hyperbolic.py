@@ -2881,7 +2881,7 @@ class HyperbolicConvexSet(Element):
             sage: H = HyperbolicPlane(QQ)
 
             sage: H.vertical(0).plot()
-            Graphics object consisting of 1 graphics primitive
+            ...Graphics object consisting of 1 graphics primitive
 
         """
         raise NotImplementedError(f"this {type(self)} does not support plotting")
@@ -6567,14 +6567,14 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
             Circle defined by (0.0,0.0) with r=1.0
             sage: P.plot("klein")[1]
             CartesianPathPlot([CartesianPathPlotCommand(code='MOVETO', args=(0.000000000000000, 0.000000000000000)),
-                               CartesianPathPlotCommand(code='LINETO', args=[(0.666666666666667, 0.333333333333333)]),
-                               CartesianPathPlotCommand(code='LINETO', args=[(0.000000000000000, 0.600000000000000)]),
-                               CartesianPathPlotCommand(code='LINETO', args=[(0.000000000000000, 0.000000000000000)])])
+                               CartesianPathPlotCommand(code='LINETO', args=(0.666666666666667, 0.333333333333333)),
+                               CartesianPathPlotCommand(code='LINETO', args=(0.000000000000000, 0.600000000000000)),
+                               CartesianPathPlotCommand(code='LINETO', args=(0.000000000000000, 0.000000000000000))])
             sage: P.plot("klein")[2]
             CartesianPathPlot([CartesianPathPlotCommand(code='MOVETO', args=(0.000000000000000, 0.000000000000000)),
-                               CartesianPathPlotCommand(code='LINETO', args=[(0.666666666666667, 0.333333333333333)]),
-                               CartesianPathPlotCommand(code='LINETO', args=[(0.000000000000000, 0.600000000000000)]),
-                               CartesianPathPlotCommand(code='LINETO', args=[(0.000000000000000, 0.000000000000000)])])
+                               CartesianPathPlotCommand(code='LINETO', args=(0.666666666666667, 0.333333333333333)),
+                               CartesianPathPlotCommand(code='LINETO', args=(0.000000000000000, 0.600000000000000)),
+                               CartesianPathPlotCommand(code='LINETO', args=(0.000000000000000, 0.000000000000000))])
 
         An ideal triangle plots the same way in the Klein model but now has two
         rays in the upper half plane model::
@@ -6595,9 +6595,9 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
 
             sage: P.plot("klein")[1]
             CartesianPathPlot([CartesianPathPlotCommand(code='MOVETO', args=(0.000000000000000, -1.00000000000000)),
-                               CartesianPathPlotCommand(code='LINETO', args=[(1.00000000000000, 0.000000000000000)]),
-                               CartesianPathPlotCommand(code='LINETO', args=[(0.000000000000000, 1.00000000000000)]),
-                               CartesianPathPlotCommand(code='LINETO', args=[(0.000000000000000, -1.00000000000000)])])
+                               CartesianPathPlotCommand(code='LINETO', args=(1.00000000000000, 0.000000000000000)),
+                               CartesianPathPlotCommand(code='LINETO', args=(0.000000000000000, 1.00000000000000)),
+                               CartesianPathPlotCommand(code='LINETO', args=(0.000000000000000, -1.00000000000000))])
 
         A polygon can contain infinitely many ideal points as is the case in
         this intersection of two half spaces::
@@ -6628,14 +6628,14 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
 
             sage: P.plot("klein")[1]
             CartesianPathPlot([CartesianPathPlotCommand(code='MOVETO', args=(1.00000000000000, 0.000000000000000)),
-                               CartesianPathPlotCommand(code='LINETO', args=[(0.000000000000000, 1.00000000000000)]),
-                               CartesianPathPlotCommand(code='LINETO', args=[(0.000000000000000, -1.00000000000000)]),
+                               CartesianPathPlotCommand(code='LINETO', args=(0.000000000000000, 1.00000000000000)),
+                               CartesianPathPlotCommand(code='LINETO', args=(0.000000000000000, -1.00000000000000)),
                                CartesianPathPlotCommand(code='ARCTO', args=((1.00000000000000, 0.000000000000000), (0, 0)))])
 
             sage: P.plot("klein")[2]
             CartesianPathPlot([CartesianPathPlotCommand(code='MOVETO', args=(1.00000000000000, 0.000000000000000)),
-                               CartesianPathPlotCommand(code='LINETO', args=[(0.000000000000000, 1.00000000000000)]),
-                               CartesianPathPlotCommand(code='LINETO', args=[(0.000000000000000, -1.00000000000000)])])
+                               CartesianPathPlotCommand(code='LINETO', args=(0.000000000000000, 1.00000000000000)),
+                               CartesianPathPlotCommand(code='LINETO', args=(0.000000000000000, -1.00000000000000))])
 
         If the polygon contains unbounded set of reals, we get a horizontal ray
         in the half plane picture::
@@ -8699,13 +8699,13 @@ class HyperbolicPathPlotCommand:
             sage: command.cartesian("half_plane", cursor=H(0))
             [CartesianPathPlotCommand(code='RARCTO', args=((1.00000000000000, 0.000000000000000), (0.500000000000000, 0)))]
             sage: command.cartesian("klein", cursor=H(0))
-            [CartesianPathPlotCommand(code='LINETO', args=[(1.00000000000000, 0.000000000000000)])]
+            [CartesianPathPlotCommand(code='LINETO', args=(1.00000000000000, 0.000000000000000))]
 
             sage: command = HyperbolicPathPlotCommand("LINETO", H(oo))
             sage: command.cartesian("half_plane", cursor=H(1))
             [CartesianPathPlotCommand(code='RAYTO', args=(0, 1))]
             sage: command.cartesian("klein", cursor=H(1))
-            [CartesianPathPlotCommand(code='LINETO', args=[(0.000000000000000, 1.00000000000000)])]
+            [CartesianPathPlotCommand(code='LINETO', args=(0.000000000000000, 1.00000000000000))]
 
         """
         if cursor is None:
@@ -8768,9 +8768,9 @@ hi
 
             sage: HyperbolicPathPlotCommand.make_cartesian(commands, model="klein")
             [CartesianPathPlotCommand(code='MOVETO', args=(0.000000000000000, 0.000000000000000)),
-             CartesianPathPlotCommand(code='LINETO', args=[(0.666666666666667, 0.333333333333333)]),
-             CartesianPathPlotCommand(code='LINETO', args=[(0.000000000000000, 0.600000000000000)]),
-             CartesianPathPlotCommand(code='LINETO', args=[(0.000000000000000, 0.000000000000000)])]
+             CartesianPathPlotCommand(code='LINETO', args=(0.666666666666667, 0.333333333333333)),
+             CartesianPathPlotCommand(code='LINETO', args=(0.000000000000000, 0.600000000000000)),
+             CartesianPathPlotCommand(code='LINETO', args=(0.000000000000000, 0.000000000000000))]
 
         Asking for a polygon that works for both fill and stroke is not always
         possible::
@@ -8857,7 +8857,7 @@ hi
         The corresponding difference in the Klein model::
 
             sage: HyperbolicPathPlotCommand.create_segment_cartesian(H(0), H(oo), model="klein")
-            [CartesianPathPlotCommand(code='LINETO', args=[(0.000000000000000, 1.00000000000000)])]
+            [CartesianPathPlotCommand(code='LINETO', args=(0.000000000000000, 1.00000000000000))]
             sage: HyperbolicPathPlotCommand.create_move_cartesian(H(0), H(oo), model="klein", stroke=True, fill=False)
             [CartesianPathPlotCommand(code='MOVETO', args=(0.000000000000000, 1.00000000000000))]
             sage: HyperbolicPathPlotCommand.create_move_cartesian(H(0), H(oo), model="klein", stroke=False, fill=True)
