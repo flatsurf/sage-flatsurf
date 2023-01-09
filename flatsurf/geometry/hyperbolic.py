@@ -223,7 +223,6 @@ from sage.plot.primitive import GraphicPrimitive
 
 
 class HyperbolicPlane(Parent, UniqueRepresentation):
-    # TODO: Override is_exact()
     r"""
     The hyperbolic plane.
 
@@ -897,6 +896,25 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         """
         return self._base_ring
+
+    def is_exact(self):
+        r"""
+        Return whether hyperbolic subsets have exact coordinates.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+
+            sage: H = HyperbolicPlane()
+            sage: H.is_exact()
+            True
+
+            sage: H = HyperbolicPlane(RR)
+            sage: H.is_exact()
+            False
+
+        """
+        return self.base_ring().is_exact()
 
     def infinity(self):
         r"""
