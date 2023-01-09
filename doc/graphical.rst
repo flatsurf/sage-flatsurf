@@ -21,3 +21,9 @@ Graphical Straight-Line Trajectories
    :members:
    :undoc-members:
 
+Graphical Points
+================
+
+.. automodule:: flatsurf.graphical.surface_point
+   :members
+   :undoc-members:

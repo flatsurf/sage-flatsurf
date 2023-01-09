@@ -2,74 +2,206 @@ The flatsurf.geometry Package
 *****************************
 .. automodule:: flatsurf.geometry
 
-Polygons
-========
-.. automodule:: flatsurf.geometry.polygon
+TODO
+====
+.. automodule:: flatsurf.geometry.chamanara
    :members:
    :undoc-members:
 
-Surface Basics
-==============
-.. automodule:: flatsurf.geometry.surface
+TODO
+====
+.. automodule:: flatsurf.geometry.circle
    :members:
    :undoc-members:
 
-Similarity Surfaces
-===================
-.. automodule:: flatsurf.geometry.similarity_surface
-   :members:
-   :undoc-members:
-
-Cone Surfaces
-=============
+TODO
+====
 .. automodule:: flatsurf.geometry.cone_surface
    :members:
    :undoc-members:
 
-Translation Surfaces
-====================
-.. automodule:: flatsurf.geometry.translation_surface
+TODO
+====
+.. automodule:: flatsurf.geometry.delaunay
    :members:
    :undoc-members:
 
-Matrices (2x2)
-==============
-.. automodule:: flatsurf.geometry.matrix_2x2
+TODO
+====
+.. automodule:: flatsurf.geometry.dilation_surface
    :members:
    :undoc-members:
 
-Similarities and Translations
-=============================
-.. automodule:: flatsurf.geometry.similarity
+TODO
+====
+.. automodule:: flatsurf.geometry.finitely_generated_matrix_group
    :members:
    :undoc-members:
 
-Tangent Bundles
-===============
-.. automodule:: flatsurf.geometry.tangent_bundle
+TODO
+====
+.. automodule:: flatsurf.geometry.fundamental_group
    :members:
    :undoc-members:
 
-Maps between Surfaces
-=====================
+TODO
+====
+.. automodule:: flatsurf.geometry.gl2r_orbit_closure
+   :members:
+   :undoc-members:
+
+TODO
+====
+.. automodule:: flatsurf.geometry.half_dilation_surface
+   :members:
+   :undoc-members:
+
+TODO
+====
+.. automodule:: flatsurf.geometry.half_translation_surface
+   :members:
+   :undoc-members:
+
+TODO
+====
+.. automodule:: flatsurf.geometry.__init__
+   :members:
+   :undoc-members:
+
+TODO
+====
+.. automodule:: flatsurf.geometry.interval_exchange_transformation
+   :members:
+   :undoc-members:
+
+TODO
+====
+.. automodule:: flatsurf.geometry.l_infinity_delaunay_cells
+   :members:
+   :undoc-members:
+
+TODO
+====
 .. automodule:: flatsurf.geometry.mappings
    :members:
    :undoc-members:
 
-Straight-line Flow
-==================
-.. automodule:: flatsurf.geometry.straight_line_trajectory
+TODO
+====
+.. automodule:: flatsurf.geometry.matrix_2x2
    :members:
    :undoc-members:
 
-Homology
-========
+TODO
+====
+.. automodule:: flatsurf.geometry.mega_wollmilchsau
+   :members:
+   :undoc-members:
+
+TODO
+====
+.. automodule:: flatsurf.geometry.minimal_cover
+   :members:
+   :undoc-members:
+
+TODO
+====
+.. automodule:: flatsurf.geometry.polygon
+   :members:
+   :undoc-members:
+
+TODO
+====
+.. automodule:: flatsurf.geometry.polyhedra
+   :members:
+   :undoc-members:
+
+TODO
+====
+.. automodule:: flatsurf.geometry.pyflatsurf_conversion
+   :members:
+   :undoc-members:
+
+TODO
+====
+.. automodule:: flatsurf.geometry.rational_cone_surface
+   :members:
+   :undoc-members:
+
+TODO
+====
+.. automodule:: flatsurf.geometry.rational_similarity_surface
+   :members:
+   :undoc-members:
+
+TODO
+====
 .. automodule:: flatsurf.geometry.relative_homology
    :members:
    :undoc-members:
 
-Orbit Closures
-==============
-.. automodule:: flatsurf.geometry.gl2r_orbit_closure
+TODO
+====
+.. automodule:: flatsurf.geometry.similarity
+   :members:
+   :undoc-members:
+
+TODO
+====
+.. automodule:: flatsurf.geometry.similarity_surface_generators
+   :members:
+   :undoc-members:
+
+TODO
+====
+.. automodule:: flatsurf.geometry.similarity_surface
+   :members:
+   :undoc-members:
+
+TODO
+====
+.. automodule:: flatsurf.geometry.straight_line_trajectory
+   :members:
+   :undoc-members:
+
+TODO
+====
+.. automodule:: flatsurf.geometry.subfield
+   :members:
+   :undoc-members:
+
+TODO
+====
+.. automodule:: flatsurf.geometry.surface_objects
+   :members:
+   :undoc-members:
+
+TODO
+====
+.. automodule:: flatsurf.geometry.surface
+   :members:
+   :undoc-members:
+
+TODO
+====
+.. automodule:: flatsurf.geometry.tangent_bundle
+   :members:
+   :undoc-members:
+
+TODO
+====
+.. automodule:: flatsurf.geometry.thurston_veech
+   :members:
+   :undoc-members:
+
+TODO
+====
+.. automodule:: flatsurf.geometry.translation_surface
+   :members:
+   :undoc-members:
+
+TODO
+====
+.. automodule:: flatsurf.geometry.xml
    :members:
    :undoc-members:
