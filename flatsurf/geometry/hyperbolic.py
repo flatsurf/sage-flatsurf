@@ -2502,19 +2502,53 @@ class HyperbolicExactGeometry(UniqueRepresentation, HyperbolicGeometry):
     """
 
     def _equal(self, x, y):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Return whether the numbers ``x`` and ``y`` should be considered equal
+        in exact geometry.
+
+        .. NOTE::
+
+            This predicate should not be used directly in geometric
+            constructions since it does not specify the context in which this
+            question is asked. This makes it very difficult to override a
+            specific aspect in a custom geometry.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+            sage: H.geometry._equal(0, 1)
+            False
+            sage: H.geometry._equal(0, 1/2**64)
+            False
+            sage: H.geometry._equal(0, 0)
+            True
+
+        """
         return x == y
 
     def change_ring(self, ring):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Return this geometry with the :meth:`base_ring` changed to ``ring``.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+            sage: H.geometry.change_ring(QQ) == H.geometry
+            True
+            sage: H.geometry.change_ring(AA)
+            Exact geometry over Algebraic Real Field
+
+        When presented with the reals, we guess the epsilon for the
+        :class:`HyperbolicEpsilonGeometry` to be consistent with the
+        :class:`HyperbolicGeometry` constructor. (And also, because we use this
+        frequently when plotting.)::
+
+            sage: H.geometry.change_ring(RR)
+            Epsilon geometry with ϵ=1.00000000000000e-6 over Real Field with 53 bits of precision
+
+        """
         from sage.all import RR
         if ring is RR:
             return HyperbolicEpsilonGeometry(ring, 1e-6)
