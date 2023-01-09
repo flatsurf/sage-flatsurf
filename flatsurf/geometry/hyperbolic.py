@@ -2479,6 +2479,11 @@ class HyperbolicGeometry:
 
 
 class HyperbolicExactGeometry(UniqueRepresentation, HyperbolicGeometry):
+    # TODO: Check documentation
+    # TODO: Check INPUTS
+    # TODO: Check SEEALSO
+    # TODO: Check for doctests
+    # TODO: Benchmark?
 
     def _equal(self, x, y):
         # TODO: Check documentation.
@@ -9085,17 +9090,6 @@ class CartesianPathPlotCommand:
         :meth:`HyperbolicPathPlotCommand.make_cartesian` to generate a sequence
         of such commands from a sequence of plot commands in the hyperbolic plane.
 
-    """
-    code: Literal["MOVETO", "MOVETOINFINITY", "LINETO", "RAYTO", "ARCTO", "RARCTO"]
-    args: tuple
-
-
-@dataclass
-class HyperbolicPlotCommand:
-    # TODO: Split into the above two commands.
-    r"""
-    A step on the path, given by a ``code`` and a tuple of parameters,
-    typically coordinates.
     """
     code: Literal["MOVETO", "MOVETOINFINITY", "LINETO", "RAYTO", "ARCTO", "RARCTO"]
     args: tuple
