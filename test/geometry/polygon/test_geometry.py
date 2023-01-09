@@ -25,7 +25,6 @@ import pytest
 
 from sage.all import QQ, randint
 
-
 @pytest.mark.repeat(1024)
 def test_is_same_direction():
     from flatsurf.geometry.polygon import is_same_direction
@@ -36,8 +35,7 @@ def test_is_same_direction():
         v = V.random_element()
         if v:
             break
-
-    assert is_same_direction(v, 2*v)
+    assert is_same_direction(v, 2 * v)
     assert not is_same_direction(v, -v)
 
 
@@ -53,7 +51,7 @@ def test_is_opposite_direction():
             break
 
     assert not is_opposite_direction(v, v)
-    assert not is_opposite_direction(v, 2*v)
+    assert not is_opposite_direction(v, 2 * v)
     assert is_opposite_direction(v, -v)
 
 

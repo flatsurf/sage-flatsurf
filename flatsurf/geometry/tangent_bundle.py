@@ -157,13 +157,6 @@ class SimilaritySurfaceTangentVector:
         r"""Return the index of the vertex."""
         return self._position.get_vertex()
 
-    def singularity(self):
-        r"""Return the index of the vertex."""
-        from sage.misc.superseded import deprecation
-        deprecation(42, "Do not use .singularity(). Use .vertex() instead.")
-        # Note: I want to change this to returning the singularity of the surface instead.
-        return self._position.get_vertex()
-
     def is_in_boundary_of_polygon(self):
         r"""
         Return the truth value of the statement
@@ -477,7 +470,7 @@ class SimilaritySurfaceTangentBundle:
     r"""
     Construct the tangent bundle of a given similarity surface.
 
-    Needs work: We should check for coersion from the base_ring of the surface
+    Needs work: We should check for coercion from the base_ring of the surface
     """
     def __init__(self, similarity_surface, ring=None):
         self._s=similarity_surface
@@ -538,7 +531,7 @@ class SimilaritySurfaceTangentBundle:
         r"""Return the vector leaving a vertex of the polygon which under straight-line flow travels
         *clockwise* around the boundary of the polygon along the edge with the provided index.
         The length of the vector matches the length of the indexed edge.
-        Note that the point will be based in the polgon opposite the provided edge.
+        Note that the point will be based in the polygon opposite the provided edge.
 
         EXAMPLES::
 
@@ -555,8 +548,7 @@ class SimilaritySurfaceTangentBundle:
             sage: print(tb.clockwise_edge(0,0))
             SimilaritySurfaceTangentVector in polygon 1 based at (2, 0) with vector (-1, 3)
         """
-        polygon=self.surface().polygon(polygon_label)
-        point=polygon.vertex(edge_index+1)
-        vector=-polygon.edge(edge_index)
+        polygon = self.surface().polygon(polygon_label)
+        point = polygon.vertex(edge_index + 1)
+        vector = -polygon.edge(edge_index)
         return SimilaritySurfaceTangentVector(self, polygon_label, point, vector)
-

@@ -1,5 +1,5 @@
-The Graphical Package
-*********************
+The flatsurf.graphical Package
+******************************
 .. automodule:: flatsurf.graphical
 
 Graphical Polygons

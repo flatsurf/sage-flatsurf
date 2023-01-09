@@ -216,8 +216,10 @@ def angle(u, v, numerical=False, assume_rational=False):
 
     import math
 
-    u0 = float(u[0]); u1 = float(u[1])
-    v0 = float(v[0]); v1 = float(v[1])
+    u0 = float(u[0])
+    u1 = float(u[1])
+    v0 = float(v[0])
+    v1 = float(v[1])
 
     cos_uv = (u0*v0 + u1*v1) / math.sqrt((u0*u0 + u1*u1)*(v0*v0 + v1*v1))
     if cos_uv < -1.0:
