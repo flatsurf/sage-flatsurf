@@ -8419,66 +8419,88 @@ class CartesianPathPlot(GraphicPrimitive):
             Redraw after the viewport has been rescaled to make sure that
             infinite rays reach the end of the viewport.
             """
-            self._redraw_on_subplot(subplot, patch, fill=fill)
+            patch.set_path(self._create_path(subplot.axes.get_xlim(), subplot.axes.get_ylim(), fill=fill))
 
         subplot.axes.callbacks.connect("ylim_changed", redraw)
         subplot.axes.callbacks.connect("xlim_changed", redraw)
         redraw()
 
-    def _redraw_on_subplot(self, subplot, patch, fill):
+    def _create_path(self, xlim, ylim, fill):
         # TODO: Check documentation.
         # TODO: Check INPUT
         # TODO: Check SEEALSO
         # TODO: Check for doctests
         # TODO: Benchmark?
-        # TODO: Use sage's vector or matplotlib builtins more so we do not need to implement basic geometric primitives manually here.
-        # Note that we throw RuntimeError (instead of NotImplementedError)
-        # since some errors are silently consumed by matplotlib (or SageMath?)
-        # it seems.
+
+        # Handle the first command. This controls how the path starts.
+        command = self._commands[0]
+
+        if command.code == "MOVETO":
+            pos = command.args
+            direction = None
+            vertices = [pos]
+        elif command.code == "MOVETOINFINITY":
+            direction = command.args
+            # TODO: What's pos?
+            vertices = [self._infinity(pos, direction)]
+        else:
+            raise RuntimeError(f"path must not start with a {command.code} command")
 
         from matplotlib.path import Path
 
-        xlim = subplot.axes.get_xlim()
-        ylim = subplot.axes.get_ylim()
+        codes = [Path.MOVETO]
 
-        command = self._commands[0]
+        for command in self._commands[1:]:
+            pos, direction = self._extend_path(vertices, codes, pos, direction, command, fill)
 
-        def vertex(pos, direction):
-            # TODO: Check documentation.
-            # TODO: Check INPUT
-            # TODO: Check SEEALSO
-            # TODO: Check for doctests
-            # TODO: Benchmark?
-            from sage.all import vector
+        return Path(vertices, codes)
 
-            direction = vector(direction)
-            pos = vector(pos)
+    @staticmethod
+    def _infinitiy(pos, direction, xlim, ylim):
+        # TODO: Check documentation.
+        # TODO: Check INPUT
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        # TODO: Benchmark?
+        from sage.all import vector
 
-            from sage.all import infinity
+        direction = vector(direction)
+        pos = vector(pos)
 
-            if direction[0]:
-                λx = max(
-                    (xlim[0] - pos[0]) / direction[0], (xlim[1] - pos[0]) / direction[0]
-                )
-            else:
-                λx = infinity
+        from sage.all import infinity
 
-            if direction[1]:
-                λy = max(
-                    (ylim[0] - pos[1]) / direction[1], (ylim[1] - pos[1]) / direction[1]
-                )
-            else:
-                λy = infinity
+        if direction[0]:
+            λx = max(
+                (xlim[0] - pos[0]) / direction[0], (xlim[1] - pos[0]) / direction[0]
+            )
+        else:
+            λx = infinity
 
-            λ = min(λx, λy)
+        if direction[1]:
+            λy = max(
+                (ylim[0] - pos[1]) / direction[1], (ylim[1] - pos[1]) / direction[1]
+            )
+        else:
+            λy = infinity
 
-            # Additionally, we now move out a full plot size so we are sure
-            # that no artifacts coming from any sweeps (see below) show up in
-            # the final plot.
-            plot_size = (xlim[1] - xlim[0]) + (ylim[1] - ylim[0])
-            λ += plot_size / direction.norm()
+        λ = min(λx, λy)
 
-            return pos + λ * direction
+        # Additionally, we now move out a full plot size so we are sure
+        # that no artifacts coming from any sweeps (see below) show up in
+        # the final plot.
+        plot_size = (xlim[1] - xlim[0]) + (ylim[1] - ylim[0])
+        λ += plot_size / direction.norm()
+
+        return pos + λ * direction
+
+    @staticmethod
+    def _extend_path(vertices, codes, pos, direction, command, fill):
+        # TODO: Check documentation.
+        # TODO: Check INPUT
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        # TODO: Benchmark?
+        from matplotlib.path import Path
 
         def extend(path):
             # TODO: Check documentation.
@@ -8489,81 +8511,66 @@ class CartesianPathPlot(GraphicPrimitive):
             vertices.extend(path.vertices[1:])
             codes.extend(path.codes[1:])
 
-        if command.code == "MOVETO":
-            pos = command.args
-            direction = None
-            vertices = [pos]
-        elif command.code == "MOVETOINFINITY":
-            direction = command.args
-            vertices = [vertex(pos, direction)]
-        else:
-            raise RuntimeError(f"path must not start with a {command.code} command")
+        if command.code == "LINETO":
+            target = command.args
 
-        codes = [Path.MOVETO]
-
-        for command in self._commands[1:]:
-            if command.code == "LINETO":
-                target = command.args
-
-                if direction is not None:
-                    vertices.append(vertex(target, direction))
-                    codes.append(Path.LINETO)
-                    direction = None
-
-                pos = target
-
-                vertices.append(pos)
+            if direction is not None:
+                vertices.append(CartesianPathPlot._infinity(target, direction))
                 codes.append(Path.LINETO)
-            elif command.code == "RAYTO":
-                if direction is None:
-                    direction = command.args
-
-                    vertices.append(vertex(pos, direction))
-                    codes.append(Path.LINETO)
-                else:
-                    start = vertex(pos, direction)
-
-                    direction = command.args
-                    end = vertex(pos, direction)
-
-                    # Sweep the bounding box counterclockwise from start to end
-                    from sage.all import vector
-
-                    # TODO: Is this the correct center?
-                    center = vector(((start[0] + end[0]) / 2, (start[1] + end[1]) / 2))
-
-                    extend(self._arc_path(center, start, end))
-
-                    vertices.append(end)
-                    codes.append(Path.LINETO if fill else Path.MOVETO)
-            elif command.code == "ARCTO":
-                target, center = command.args
-
-                assert direction is None
-
-                extend(self._arc_path(center, pos, target))
-
-                pos = target
-            elif command.code == "RARCTO":
-                target, center = command.args
-
-                assert direction is None
-
-                extend(self._arc_path(center, target, pos, reverse=True))
-
-                pos = target
-            elif command.code == "MOVETO":
-                target = command.args
-                pos = target
                 direction = None
-                vertices.append(pos)
-                codes.append(Path.MOVETO)
+
+            pos = target
+
+            vertices.append(pos)
+            codes.append(Path.LINETO)
+        elif command.code == "RAYTO":
+            if direction is None:
+                direction = command.args
+
+                vertices.append(CartesianPathPlot._infinity(pos, direction))
+                codes.append(Path.LINETO)
             else:
-                raise RuntimeError(f"cannot draw {command.code} yet")
+                start = CartesianPathPlot._infinity(pos, direction)
 
-        from matplotlib.path import Path
+                direction = command.args
+                end = CartesianPathPlot._infinity(pos, direction)
 
-        patch.set_path(Path(vertices, codes))
+                # Sweep the bounding box counterclockwise from start to end
+                from sage.all import vector
+
+                # TODO: Is this the correct center?
+                center = vector(((start[0] + end[0]) / 2, (start[1] + end[1]) / 2))
+
+                extend(CartesianPathPlot._arc_path(center, start, end))
+
+                vertices.append(end)
+                codes.append(Path.LINETO if fill else Path.MOVETO)
+        elif command.code == "ARCTO":
+            target, center = command.args
+
+            assert direction is None
+
+            extend(CartesianPathPlot._arc_path(center, pos, target))
+
+            pos = target
+        elif command.code == "RARCTO":
+            target, center = command.args
+
+            assert direction is None
+
+            extend(CartesianPathPlot._arc_path(center, target, pos, reverse=True))
+
+            pos = target
+        elif command.code == "MOVETO":
+            target = command.args
+            pos = target
+            direction = None
+            vertices.append(pos)
+            codes.append(Path.MOVETO)
+        else:
+            raise RuntimeError(f"cannot draw {command.code} yet")
+
+        return pos, direction
 
     @cached_method
     def get_minmax_data(self):
