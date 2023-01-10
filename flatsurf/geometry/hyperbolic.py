@@ -2850,6 +2850,36 @@ class HyperbolicConvexSet(Element):
 
         return True
 
+    def _test_contains(self, **options):
+        r"""
+        Verify that :meth:`__contains__` is implemented correctly.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(QQ)
+            sage: H.vertical(0)._test_contains()
+
+        """
+        tester = self._tester(**options)
+
+        try:
+            vertices = self.vertices()
+        except ValueError:
+            # The vertex coordinates might not be representable in the base ring.
+            return
+
+        for vertex in vertices:
+            tester.assertIn(vertex, self)
+
+    def vertices(self):
+        # TODO: Check documentation.
+        # TODO: Check INPUT
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        # TODO: Benchmark?
+        return self.parent().polygon(self.half_spaces(), check=False, assume_sorted=True, assume_minimal=True).vertices()
+
     def is_finite(self):
         # TODO: Check documentation.
         # TODO: Check INPUT
@@ -7634,6 +7664,14 @@ class HyperbolicEmptySet(HyperbolicConvexSet):
 
         """
         return 0
+
+    def vertices(self):
+        # TODO: Check documentation.
+        # TODO: Check INPUT
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        # TODO: Benchmark?
+        return HyperbolicVertices([])
 
 
 def sl2_to_so12(m):
