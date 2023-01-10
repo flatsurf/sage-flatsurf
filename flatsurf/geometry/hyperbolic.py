@@ -2784,11 +2784,6 @@ class HyperbolicConvexSet(Element):
         tester.assertEqual(normalization, normalization._normalize())
 
     def unoriented(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
         r"""
         Return the non-oriented version of this set.
 
@@ -2807,11 +2802,6 @@ class HyperbolicConvexSet(Element):
         return self.change(oriented=False)
 
     def _test_unoriented(self, **options):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
         r"""
         Verify that :meth:`unoriented` is implemented correctly.
 
@@ -2828,13 +2818,20 @@ class HyperbolicConvexSet(Element):
         tester.assertEqual(self.unoriented(), self.unoriented().unoriented())
 
     def intersection(self, other):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
         r"""
         Return the intersection with the ``other`` convex set.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(QQ)
+            sage: H.vertical(0).intersection(H.vertical(1))
+            ∞
+
+        ..SEEALSO::
+
+            :meth:`HyperbolicPlane.intersection`
+
         """
         return self.parent().intersection(self, other)
 
