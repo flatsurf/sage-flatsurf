@@ -2744,11 +2744,6 @@ class HyperbolicConvexSet(Element):
         pass
 
     def _normalize(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
         r"""
         Return this set possibly rewritten in a simpler form.
 
@@ -2756,8 +2751,37 @@ class HyperbolicConvexSet(Element):
         Such sets might have been created in a non-canonical way, e.g., when
         creating a :class:`HyperbolicOrientedSegment` whose start and end point are ideal,
         then this is actually a geodesic and it shuold be described as such.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(QQ)
+            sage: segment = H.segment(H.vertical(-1), start=H.infinity(), end=H.infinity(), check=False, assume_normalized=True)
+            sage: segment
+            {-x - 1 = 0} ∩ {x - 1 ≥ 0} ∩ {x - 1 ≤ 0}
+            sage: segment._normalize()
+            ∞
+
         """
         return self
+
+    def _test_normalize(self, **options):
+        r"""
+        Verify that normalization is idempotent.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(QQ)
+            sage: segment = H.segment(H.vertical(-1), start=H.infinity(), end=H.infinity(), check=False, assume_normalized=True)
+            sage: segment._test_normalize()
+
+        """
+        tester = self._tester(**options)
+
+        normalization = self._normalize()
+
+        tester.assertEqual(normalization, normalization._normalize())
 
     def unoriented(self):
         # TODO: Check documentation.
@@ -6898,12 +6922,10 @@ class HyperbolicSegment(HyperbolicConvexSet):
         # TODO: Benchmark?
         # TODO: Should this be in the oriented class? Should there be an equivalent in the unoriented class?
         r"""
-        EXAMPLES::
+        TESTS::
 
             sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
             sage: H = HyperbolicPlane(QQ)
-
-        TESTS:
 
         We define a helper method for easier testing::
 
