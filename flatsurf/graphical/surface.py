@@ -966,7 +966,7 @@ class GraphicalSurface:
 
     def plot(self):
         r"""
-        Returns a plot of the GraphicalSurface
+        Return a plot of this surface.
 
         EXAMPLES::
 
@@ -998,16 +998,16 @@ class GraphicalSurface:
 
         for label in self._visible:
             polygon = self.graphical_polygon(label)
-            upside_down = polygon.transformation().sign()==-1
+            upside_down = polygon.transformation().sign() == -1
 
             # Plot the polygons
             if upside_down and self.will_plot_upside_down_polygons:
-                    p += self.plot_polygon(label, polygon, upside_down)
+                p += self.plot_polygon(label, polygon, upside_down)
             elif self.will_plot_polygons:
                 p += self.plot_polygon(label, polygon, upside_down)
 
             if self.will_plot_zero_flags:
-                p += self.plot_zero_flag(label,polygon)
+                p += self.plot_zero_flag(label, polygon)
 
             # Add the polygon label
             if self.will_plot_polygon_labels:
@@ -1016,11 +1016,11 @@ class GraphicalSurface:
             # Plot the edges
             if self.will_plot_edges:
                 for i in range(self._ss.polygon(label).num_edges()):
-                    if self.is_adjacent(label,i):
-                        if self.will_plot_adjacent_edges and (label,i) not in plotted_adjacent_edges:
-                            plotted_adjacent_edges.add(self._ss.opposite_edge(label,i))
+                    if self.is_adjacent(label, i):
+                        if self.will_plot_adjacent_edges and (label, i) not in plotted_adjacent_edges:
+                            plotted_adjacent_edges.add(self._ss.opposite_edge(label, i))
                             p += self.plot_edge(label, i, polygon, True, False)
-                    elif (label,i) == self._ss.opposite_edge(label,i):
+                    elif (label, i) == self._ss.opposite_edge(label, i):
                         # Self-glued edge
                         if self.will_plot_self_glued_edges:
                             p += self.plot_edge(label, i, polygon, False, True)
