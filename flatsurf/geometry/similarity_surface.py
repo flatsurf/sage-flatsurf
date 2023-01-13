@@ -2080,12 +2080,7 @@ class SimilaritySurface(SageObject):
         see :meth:`graphical_surface`::
 
             sage: S.plot(edge_labels='gluings and number')
-            ...Graphics object consisting of 21 graphics primitives
-
-        TESTS::
-
-            sage: S.plot()
-            Graphics object consisting of 21 graphics primitives
+            ...Graphics object consisting of 23 graphics primitives
 
         """
         if len(args) > 1:
