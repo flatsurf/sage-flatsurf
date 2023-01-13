@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#*********************************************************************
+# ********************************************************************
 #  This file is part of sage-flatsurf.
 #
 #        Copyright (C) 2016-2020 Vincent Delecroix
@@ -17,7 +17,7 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
-#*********************************************************************
+# ********************************************************************
 from __future__ import absolute_import, print_function, division
 from six.moves import range, map, filter, zip
 from six import iteritems, itervalues
@@ -95,17 +95,17 @@ def flipper_nf_element_to_sage(x, K=None):
 
 class EInfinitySurface(Surface):
     r"""
-    The surface based on the $E_\infinity$ graph.
+    The surface based on the `E_\infinity` graph.
 
     The biparite graph is shown below, with edges numbered::
 
-          0   1   2  -2   3  -3   4  -4
-        *---o---*---o---*---o---*---o---*...
-                |
-                |-1
-                o
+    |   0   1   2  -2   3  -3   4  -4
+    | *---o---*---o---*---o---*---o---*...
+    |         |
+    |         |-1
+    |         o
 
-    Here, black vertices are colored *, and white o.
+    Here, black vertices are colored ``*``, and white ``o``.
     Black nodes represent vertical cylinders and white nodes
     represent horizontal cylinders.
     """
@@ -231,15 +231,15 @@ class TFractalSurface(Surface):
     The TFractal surface.
 
     The TFractal surface is a translation surface of finite area built from
-    infinitely many polygons. The basic building block is the following polygon
+    infinitely many polygons. The basic building block is the following polygon::
 
-     w/r    w     w/r
-    +---+------+---+
-    | 1 |   2  | 3 | h2
-    +---+------+---+
-        |   0  | h1
-        +------+
-            w
+    |  w/r    w     w/r
+    | +---+------+---+
+    | | 1 |   2  | 3 | h2
+    | +---+------+---+
+    |     |   0  | h1
+    |     +------+
+    |         w
 
     where ``w``, ``h1``, ``h2``, ``r`` are some positive numbers. Default values
     are ``w=h1=h2=1`` and ``r=2``.
@@ -283,20 +283,19 @@ class TFractalSurface(Surface):
 
     def opposite_edge(self, p, e):
         r"""
+        Labeling of polygons::
 
-        Labeling of polygons
-
-         wl,0             wr,0
-        +-----+---------+------+
-        |     |         |      |
-        | w,1 |   w,2   |  w,3 |
-        |     |         |      |
-        +-----+---------+------+
-              |         |
-              |   w,0   |
-              |         |
-              +---------+
-                   w
+        |  wl,0             wr,0
+        | +-----+---------+------+
+        | |     |         |      |
+        | | w,1 |   w,2   |  w,3 |
+        | |     |         |      |
+        | +-----+---------+------+
+        |       |         |
+        |       |   w,0   |
+        |       |         |
+        |       +---------+
+        |            w
 
         and we always have: bot->0, right->1, top->2, left->3
 
@@ -386,15 +385,16 @@ class TFractalSurface(Surface):
 
     def polygon(self, lab):
         r"""
-        Return the polygon with label ``lab``.
-         w/r         w/r
-        +---+------+---+
-        | 1 |  2   | 3 |
-        |   |      |   |  h2
-        +---+------+---+
-            |  0   | h1
-            +------+
-            w
+        Return the polygon with label ``lab``::
+
+        |  w/r         w/r
+        | +---+------+---+
+        | | 1 |  2   | 3 |
+        | |   |      |   |  h2
+        | +---+------+---+
+        |     |  0   | h1
+        |     +------+
+        |     w
 
         EXAMPLES::
 
@@ -646,10 +646,11 @@ class DilationSurfaceGenerators:
     @staticmethod
     def basic_dilation_torus(a):
         r"""
-        Return a dilation torus built from a $1 \times 1$ square and a $a \times 1$ rectangle.
-        Each edge of the square is glued to the opposite edge of the rectangle. This results
-        in horizontal edges glued by a dilation with a scaling factor of a, and vertical
-        edges being glued by translation::
+        Return a dilation torus built from a `1 \times 1` square and a `a
+        \times 1` rectangle. Each edge of the square is glued to the opposite
+        edge of the rectangle. This results in horizontal edges glued by a
+        dilation with a scaling factor of a, and vertical edges being glued by
+        translation::
 
         |     b       a
         |   +----+---------+
@@ -688,10 +689,9 @@ class DilationSurfaceGenerators:
         each of its edges. Then opposite sides of this octagon are
         glued together by translation. (Since we currently require strictly
         convex polygons, we subdivide the square into a hexagon and two
-        triangles as depicted below.) The parameters $a$, $b$, $c$,
-        and $d$ should be real numbers strictly between zero and one.
-        These represent the lengths of an edge of the resulting octagon,
-        as below:
+        triangles as depicted below.) The parameters ``a``, ``b``, ``c``, and
+        ``d`` should be real numbers strictly between zero and one. These
+        represent the lengths of an edge of the resulting octagon, as below::
 
         |         c
         |   +--+-------+
@@ -703,9 +703,9 @@ class DilationSurfaceGenerators:
         |   +-------+--+
         |      a
 
-        The other edges will have length $1-a$, $1-b$, $1-c$, and $1-d$.
-        Dilations used to glue edges will be by factors $c/a$, $d/b$,
-        $(1-c)/(1-a)$ and $(1-d)/(1-b)$.
+        The other edges will have length `1-a`, `1-b`, `1-c`, and `1-d`.
+        Dilations used to glue edges will be by factors `c/a`, `d/b`,
+        `(1-c)/(1-a)` and `(1-d)/(1-b)`.
 
         EXAMPLES::
 
@@ -1155,7 +1155,7 @@ class TranslationSurfaceGenerators:
 
         |          1
         |        <--->
-
+        |
         |         /\           2a
         |        /  \      +------+
         |    a  b|   | a  /        \
@@ -1477,7 +1477,7 @@ class TranslationSurfaceGenerators:
     @staticmethod
     def e_infinity_surface(lambda_squared=None, field=None):
         r"""
-        The translation surface based on the $E_\infinity$ graph.
+        The translation surface based on the `E_\infinity` graph.
 
         The biparite graph is shown below, with edges numbered::
 
@@ -1487,7 +1487,7 @@ class TranslationSurfaceGenerators:
         |         |-1
         |         o
 
-        Here, black vertices are colored *, and white o.
+        Here, black vertices are colored ``*``, and white ``o``.
         Black nodes represent vertical cylinders and white nodes
         represent horizontal cylinders.
 
@@ -1515,5 +1515,6 @@ class TranslationSurfaceGenerators:
         """
         from .chamanara import chamanara_surface
         return chamanara_surface(alpha)
+
 
 translation_surfaces = TranslationSurfaceGenerators()
