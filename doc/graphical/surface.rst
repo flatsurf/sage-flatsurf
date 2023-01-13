@@ -1,5 +1,5 @@
 flatsurf.graphical.surface
-====
+==========================
 
 .. automodule:: flatsurf.graphical.surface
    :members:

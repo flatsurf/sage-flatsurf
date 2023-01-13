@@ -1,5 +1,5 @@
 flatsurf.geometry.circle
-====
+========================
 
 .. automodule:: flatsurf.geometry.circle
    :members:

@@ -1,5 +1,5 @@
 flatsurf.geometry.mappings
-====
+==========================
 
 .. automodule:: flatsurf.geometry.mappings
    :members:
