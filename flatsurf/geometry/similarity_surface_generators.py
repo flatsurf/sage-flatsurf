@@ -656,12 +656,12 @@ class DilationSurfaceGenerators:
         in horizontal edges glued by a dilation with a scaling factor of a, and vertical
         edges being glued by translation.
 
-            b       a
-          +----+---------+
-          | 0  | 1       |
-        c |    |         | c
-          +----+---------+
-            a       b
+                b       a
+              +----+---------+
+              | 0  | 1       |
+            c |    |         | c
+              +----+---------+
+                a       b
 
         EXAMPLES::
 
@@ -685,7 +685,8 @@ class DilationSurfaceGenerators:
 
     @staticmethod
     def genus_two_square(a, b, c, d):
-        r"""A genus two dilation surface is returned.
+        r"""
+        A genus two dilation surface is returned.
 
         The unit square is made into an octagon by marking a point on
         each of its edges. Then opposite sides of this octagon are
@@ -696,15 +697,15 @@ class DilationSurfaceGenerators:
         These represent the lengths of an edge of the resulting octagon,
         as below.
 
-                 c
-           +--+-------+
-         d |2/        |
-           |/         |
-           +    0     +
-           |         /|
-           |        /1| b
-           +-------+--+
-              a
+                     c
+               +--+-------+
+             d |2/        |
+               |/         |
+               +    0     +
+               |         /|
+               |        /1| b
+               +-------+--+
+                  a
 
         The other edges will have length $1-a$, $1-b$, $1-c$, and $1-d$.
         Dilations used to glue edges will be by factors $c/a$, $d/b$,
@@ -1482,11 +1483,11 @@ class TranslationSurfaceGenerators:
 
         The biparite graph is shown below, with edges numbered:
 
-          0   1   2  -2   3  -3   4  -4
-        *---o---*---o---*---o---*---o---*...
-                |
-                |-1
-                o
+              0   1   2  -2   3  -3   4  -4
+            *---o---*---o---*---o---*---o---*...
+                    |
+                    |-1
+                    o
 
         Here, black vertices are colored *, and white o.
         Black nodes represent vertical cylinders and white nodes
