@@ -99,11 +99,11 @@ class EInfinitySurface(Surface):
 
     The biparite graph is shown below, with edges numbered::
 
-    |   0   1   2  -2   3  -3   4  -4
-    | *---o---*---o---*---o---*---o---*...
-    |         |
-    |         |-1
-    |         o
+          0   1   2  -2   3  -3   4  -4
+        *---o---*---o---*---o---*---o---*...
+                |
+                |-1
+                o
 
     Here, black vertices are colored ``*``, and white ``o``.
     Black nodes represent vertical cylinders and white nodes
@@ -233,13 +233,13 @@ class TFractalSurface(Surface):
     The TFractal surface is a translation surface of finite area built from
     infinitely many polygons. The basic building block is the following polygon::
 
-    |  w/r    w     w/r
-    | +---+------+---+
-    | | 1 |   2  | 3 | h2
-    | +---+------+---+
-    |     |   0  | h1
-    |     +------+
-    |         w
+         w/r    w     w/r
+        +---+------+---+
+        | 1 |   2  | 3 | h2
+        +---+------+---+
+            |   0  | h1
+            +------+
+                w
 
     where ``w``, ``h1``, ``h2``, ``r`` are some positive numbers. Default values
     are ``w=h1=h2=1`` and ``r=2``.
@@ -285,17 +285,17 @@ class TFractalSurface(Surface):
         r"""
         Labeling of polygons::
 
-        |  wl,0             wr,0
-        | +-----+---------+------+
-        | |     |         |      |
-        | | w,1 |   w,2   |  w,3 |
-        | |     |         |      |
-        | +-----+---------+------+
-        |       |         |
-        |       |   w,0   |
-        |       |         |
-        |       +---------+
-        |            w
+             wl,0             wr,0
+            +-----+---------+------+
+            |     |         |      |
+            | w,1 |   w,2   |  w,3 |
+            |     |         |      |
+            +-----+---------+------+
+                  |         |
+                  |   w,0   |
+                  |         |
+                  +---------+
+                       w
 
         and we always have: bot->0, right->1, top->2, left->3
 
@@ -387,14 +387,14 @@ class TFractalSurface(Surface):
         r"""
         Return the polygon with label ``lab``::
 
-        |  w/r         w/r
-        | +---+------+---+
-        | | 1 |  2   | 3 |
-        | |   |      |   |  h2
-        | +---+------+---+
-        |     |  0   | h1
-        |     +------+
-        |     w
+             w/r         w/r
+            +---+------+---+
+            | 1 |  2   | 3 |
+            |   |      |   |  h2
+            +---+------+---+
+                |  0   | h1
+                +------+
+                w
 
         EXAMPLES::
 
@@ -652,12 +652,12 @@ class DilationSurfaceGenerators:
         dilation with a scaling factor of a, and vertical edges being glued by
         translation::
 
-        |     b       a
-        |   +----+---------+
-        |   | 0  | 1       |
-        | c |    |         | c
-        |   +----+---------+
-        |     a       b
+                b       a
+              +----+---------+
+              | 0  | 1       |
+            c |    |         | c
+              +----+---------+
+                a       b
 
         EXAMPLES::
 
@@ -693,15 +693,15 @@ class DilationSurfaceGenerators:
         ``d`` should be real numbers strictly between zero and one. These
         represent the lengths of an edge of the resulting octagon, as below::
 
-        |         c
-        |   +--+-------+
-        | d |2/        |
-        |   |/         |
-        |   +    0     +
-        |   |         /|
-        |   |        /1| b
-        |   +-------+--+
-        |      a
+                    c
+              +--+-------+
+            d |2/        |
+              |/         |
+              +    0     +
+              |         /|
+              |        /1| b
+              +-------+--+
+                 a
 
         The other edges will have length `1-a`, `1-b`, `1-c`, and `1-d`.
         Dilations used to glue edges will be by factors `c/a`, `d/b`,
@@ -1061,17 +1061,17 @@ class TranslationSurfaceGenerators:
 
         Polygon labels and lengths are marked below::
 
-        | +-----+
-        | |     |
-        | |  1  |l1
-        | |     |
-        | |     |    l4
-        | +-----+---------+
-        | |     |         |
-        | |  0  |    2    |l2
-        | |     |         |
-        | +-----+---------+
-        |   l3
+            +-----+
+            |     |
+            |  1  |l1
+            |     |
+            |     |    l4
+            +-----+---------+
+            |     |         |
+            |  0  |    2    |l2
+            |     |         |
+            +-----+---------+
+              l3
 
         EXAMPLES::
 
@@ -1153,20 +1153,20 @@ class TranslationSurfaceGenerators:
         so-called Gothic locus described in McMullen, Mukamel, Wright "Cubic
         curves and totally geodesic subvarieties of moduli space" (2017)::
 
-        |          1
-        |        <--->
-        |
-        |         /\           2a
-        |        /  \      +------+
-        |    a  b|   | a  /        \
-        |  +----+    +---+          +
-        |  |    |    |   |          |
-        | 1| P0 |P1  |P2 |  P3      |
-        |  |    |    |   |          |
-        |  +----+    +---+          +
-        |      b|    |    \        /
-        |        \  /      +------+
-        |         \/
+                     1
+                   <--->
+           
+                    /\           2a
+                   /  \      +------+
+               a  b|   | a  /        \
+             +----+    +---+          +
+             |    |    |   |          |
+            1| P0 |P1  |P2 |  P3      |
+             |    |    |   |          |
+             +----+    +---+          +
+                 b|    |    \        /
+                   \  /      +------+
+                    \/
 
         If a and b satisfies
 
@@ -1481,11 +1481,11 @@ class TranslationSurfaceGenerators:
 
         The biparite graph is shown below, with edges numbered::
 
-        |   0   1   2  -2   3  -3   4  -4
-        | *---o---*---o---*---o---*---o---*...
-        |         |
-        |         |-1
-        |         o
+              0   1   2  -2   3  -3   4  -4
+            *---o---*---o---*---o---*---o---*...
+                    |
+                    |-1
+                    o
 
         Here, black vertices are colored ``*``, and white ``o``.
         Black nodes represent vertical cylinders and white nodes
