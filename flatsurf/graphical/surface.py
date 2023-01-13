@@ -111,6 +111,37 @@ class GraphicalSurface:
     - ``zero_flag_options`` -- Options passed to
         :meth:`graphical_polygon.GraphicalPolygon.plot_zero_flag` when plotting a zero_flag.
 
+    INPUT:
+
+    - ``similarity_surface`` -- a similarity surface
+
+    - ``polygon_labels`` -- a boolean (default ``True``) whether the label
+      of polygons are displayed
+
+    - ``edge_labels`` -- option to control the display of edge labels. It
+      can be one of
+
+        - ``False`` or ``None`` for no labels
+
+        - ``'gluings'`` -- to put on each side of each non-adjacent edge, the
+          name of the polygon to which it is glued
+
+        - ``'number'`` -- to put on each side of each edge the number of the
+          edge
+
+        - ``'gluings and number'`` -- full information
+
+        - ``'letter'`` -- add matching letters to glued edges in an arbitrary way
+
+    - ``adjacencies`` -- a list of pairs ``(p,e)`` to be used to set
+      adjacencies of polygons.
+
+    - ``default_position_function`` -- a function mapping polygon labels to
+      similarities describing the position of the corresponding polygon.
+
+    If adjacencies is not defined and the surface is finite, make_all_visible()
+    is called to make all polygons visible.
+
     EXAMPLES::
 
         sage: from flatsurf import *
@@ -121,43 +152,10 @@ class GraphicalSurface:
         sage: gs.polygon_options["color"]="red"
         sage: gs.plot()
         ...Graphics object consisting of 13 graphics primitives
+
     """
 
     def __init__(self, similarity_surface, adjacencies=None, polygon_labels=True, edge_labels="gluings", default_position_function=None):
-        r"""
-        Construct a GraphicalSurface from a similarity surface.
-
-        INPUT:
-
-        - ``similarity_surface`` -- a similarity surface
-
-        - ``polygon_labels`` -- a boolean (default ``True``) whether the label
-          of polygons are displayed
-
-        - ``edge_labels`` -- option to control the display of edge labels. It
-          can be one of
-
-            - ``False`` or ``None`` for no labels
-
-            - ``'gluings'`` -- to put on each side of each non-adjacent edge, the
-              name of the polygon to which it is glued
-
-            - ``'number'`` -- to put on each side of each edge the number of the
-              edge
-
-            - ``'gluings and number'`` -- full information
-
-            - ``'letter'`` -- add matching letters to glued edges in an arbitrary way
-
-        - ``adjacencies`` -- a list of pairs ``(p,e)`` to be used to set
-          adjacencies of polygons.
-
-        - ``default_position_function`` -- a function mapping polygon labels to
-          similarities describing the position of the corresponding polygon.
-
-        If adjacencies is not defined and the surface is finite, make_all_visible()
-        is called to make all polygons visible.
-        """
         assert isinstance(similarity_surface, SimilaritySurface)
         self._ss = similarity_surface
         self._default_position_function = default_position_function
@@ -250,33 +248,7 @@ class GraphicalSurface:
 
         INPUT:
 
-        - ``adjacencies`` -- a list of pairs ``(p,e)`` to be used to set
-          adjacencies of polygons.
-
-        - ``polygon_labels`` -- a boolean (default ``True``) whether the label
-          of polygons are displayed
-
-        - ``edge_labels`` -- option to control the display of edge labels. It
-          can be one of
-
-            - ``None`` for no change
-
-            - ``False`` for no labels
-
-            - ``'gluings'`` -- to put on each side of each non-adjacent edge, the
-              name of the polygon to which it is glued
-
-            - ``'number'`` -- to put on each side of each edge the number of the
-              edge
-
-            - ``'gluings and number'`` -- full information
-
-            - ``'letter'`` -- add matching letters to glued edges in an arbitrary way
-
-        - ``default_position_function`` -- a function mapping polygon labels to
-          similarities describing the position of the corresponding polygon.
-          Note that this will not affect polygons which have already been
-          positioned.
+        Consult :class:`GraphicalSurface` for the possible arguments.
 
         TESTS::
 
