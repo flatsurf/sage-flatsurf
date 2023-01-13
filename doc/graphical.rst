@@ -25,5 +25,5 @@ Graphical Points
 ================
 
 .. automodule:: flatsurf.graphical.surface_point
-   :members
+   :members:
    :undoc-members:

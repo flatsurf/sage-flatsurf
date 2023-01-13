@@ -458,7 +458,7 @@ class SaddleConnection(SageObject):
         r"""
         Returns a vector parallel to the saddle connection pointing from the start point.
 
-        The will be normalized so that its l_\infty norm is 1.
+        The will be normalized so that its $l_\infty$ norm is 1.
         """
         return self._direction
 
