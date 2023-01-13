@@ -1,5 +1,5 @@
-flatsurf.geometry.pyflatsurf_conversion
-=======================================
+``pyflatsurf_conversion``
+=========================
 
 .. automodule:: flatsurf.geometry.pyflatsurf_conversion
    :members:

@@ -1,5 +1,5 @@
-flatsurf.geometry.subfield
-==========================
+``subfield``
+============
 
 .. automodule:: flatsurf.geometry.subfield
    :members:

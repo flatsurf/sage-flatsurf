@@ -1,5 +1,5 @@
-flatsurf.geometry.dilation_surface
-==================================
+``dilation_surface``
+====================
 
 .. automodule:: flatsurf.geometry.dilation_surface
    :members:

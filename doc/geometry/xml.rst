@@ -1,5 +1,5 @@
-flatsurf.geometry.xml
-=====================
+``xml``
+=======
 
 .. automodule:: flatsurf.geometry.xml
    :members:

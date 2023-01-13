@@ -1,5 +1,5 @@
-flatsurf.geometry.chamanara
-===========================
+``chamanara``
+=============
 
 .. automodule:: flatsurf.geometry.chamanara
    :members:

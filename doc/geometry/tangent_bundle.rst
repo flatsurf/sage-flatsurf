@@ -1,5 +1,5 @@
-flatsurf.geometry.tangent_bundle
-================================
+``tangent_bundle``
+==================
 
 .. automodule:: flatsurf.geometry.tangent_bundle
    :members:

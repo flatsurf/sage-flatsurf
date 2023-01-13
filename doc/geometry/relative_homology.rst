@@ -1,5 +1,5 @@
-flatsurf.geometry.relative_homology
-===================================
+``relative_homology``
+=====================
 
 .. automodule:: flatsurf.geometry.relative_homology
    :members:

@@ -1,5 +1,5 @@
-flatsurf.geometry.surface
-=========================
+``surface``
+===========
 
 .. automodule:: flatsurf.geometry.surface
    :members:

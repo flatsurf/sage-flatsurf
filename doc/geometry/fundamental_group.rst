@@ -1,5 +1,5 @@
-flatsurf.geometry.fundamental_group
-===================================
+``fundamental_group``
+=====================
 
 .. automodule:: flatsurf.geometry.fundamental_group
    :members:

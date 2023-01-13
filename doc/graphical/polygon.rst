@@ -1,5 +1,5 @@
-flatsurf.graphical.polygon
-==========================
+``polygon``
+===========
 
 .. automodule:: flatsurf.graphical.polygon
    :members:

@@ -1,5 +1,5 @@
-flatsurf.geometry.delaunay
-==========================
+``delaunay``
+============
 
 .. automodule:: flatsurf.geometry.delaunay
    :members:

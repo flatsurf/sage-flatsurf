@@ -1,5 +1,5 @@
-flatsurf.geometry.matrix_2x2
-============================
+``matrix_2x2``
+==============
 
 .. automodule:: flatsurf.geometry.matrix_2x2
    :members:

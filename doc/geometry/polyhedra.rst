@@ -1,5 +1,5 @@
-flatsurf.geometry.polyhedra
-===========================
+``polyhedra``
+=============
 
 .. automodule:: flatsurf.geometry.polyhedra
    :members:

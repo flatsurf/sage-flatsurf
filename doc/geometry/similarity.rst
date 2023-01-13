@@ -1,5 +1,5 @@
-flatsurf.geometry.similarity
-============================
+``similarity``
+==============
 
 .. automodule:: flatsurf.geometry.similarity
    :members:

@@ -1,5 +1,5 @@
-flatsurf.geometry.polygon
-=========================
+``polygon``
+===========
 
 .. automodule:: flatsurf.geometry.polygon
    :members:
