@@ -1024,7 +1024,6 @@ class GraphicalSurface:
             # Sort recognized options so we do not pass polygon_label_color to
             # polygon_options as label_color.
             options.sort(key=lambda option: -len(option))
-            print(options)
 
             for key, value in kwargs.items():
                 if key in options:
