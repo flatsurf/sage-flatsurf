@@ -98,7 +98,7 @@ class GraphicalSurface:
         :meth:`graphical_polygon.GraphicalPolygon.plot_edge` when plotting a polygon edge which is not
         adjacent to the edge it is glued to.
 
-    - ``self.adjacent_edge_options`` -- Options passed to
+    - ``adjacent_edge_options`` -- Options passed to
         :meth:`graphical_polygon.GraphicalPolygon.plot_edge` when plotting a polygon edge which is
         adjacent to the edge it is glued to.
 
