@@ -638,14 +638,9 @@ class SimilaritySurfaceGenerators:
         s.set_immutable()
         return ConeSurface(s)
 
-    # Removed because Surface_polygons_and_gluings is gone.
-    #
-    #def __call__(self, *args, **kwds):
-    #    from flatsurf.geometry.surface import Surface_polygons_and_gluings
-    #    from flatsurf.geometry.similarity_surface import SimilaritySurface
-    #    return SimilaritySurface(Surface_polygons_and_gluings(*args, **kwds))
 
 similarity_surfaces = SimilaritySurfaceGenerators()
+
 
 class DilationSurfaceGenerators:
     @staticmethod
@@ -654,14 +649,14 @@ class DilationSurfaceGenerators:
         Return a dilation torus built from a $1 \times 1$ square and a $a \times 1$ rectangle.
         Each edge of the square is glued to the opposite edge of the rectangle. This results
         in horizontal edges glued by a dilation with a scaling factor of a, and vertical
-        edges being glued by translation.
+        edges being glued by translation::
 
-                b       a
-              +----+---------+
-              | 0  | 1       |
-            c |    |         | c
-              +----+---------+
-                a       b
+        |     b       a
+        |   +----+---------+
+        |   | 0  | 1       |
+        | c |    |         | c
+        |   +----+---------+
+        |     a       b
 
         EXAMPLES::
 
@@ -670,6 +665,7 @@ class DilationSurfaceGenerators:
             sage: ds
             DilationSurface built from 2 polygons
             sage: TestSuite(ds).run()
+
         """
         s = Surface_list(base_ring=a.parent().fraction_field())
         CP = ConvexPolygons(s.base_ring())
@@ -695,17 +691,17 @@ class DilationSurfaceGenerators:
         triangles as depicted below.) The parameters $a$, $b$, $c$,
         and $d$ should be real numbers strictly between zero and one.
         These represent the lengths of an edge of the resulting octagon,
-        as below.
+        as below:
 
-                     c
-               +--+-------+
-             d |2/        |
-               |/         |
-               +    0     +
-               |         /|
-               |        /1| b
-               +-------+--+
-                  a
+        |         c
+        |   +--+-------+
+        | d |2/        |
+        |   |/         |
+        |   +    0     +
+        |   |         /|
+        |   |        /1| b
+        |   +-------+--+
+        |      a
 
         The other edges will have length $1-a$, $1-b$, $1-c$, and $1-d$.
         Dilations used to glue edges will be by factors $c/a$, $d/b$,
@@ -738,7 +734,9 @@ class DilationSurfaceGenerators:
         s.set_immutable()
         return DilationSurface(s)
 
+
 dilation_surfaces = DilationSurfaceGenerators()
+
 
 class HalfTranslationSurfaceGenerators:
     # TODO: ideally, we should be able to construct a non-convex polygon and make the construction
@@ -1063,17 +1061,17 @@ class TranslationSurfaceGenerators:
 
         Polygon labels and lengths are marked below::
 
-            +-----+
-            |     |
-            |  1  |l1
-            |     |
-            |     |    l4
-            +-----+---------+
-            |     |         |
-            |  0  |    2    |l2
-            |     |         |
-            +-----+---------+
-              l3
+        | +-----+
+        | |     |
+        | |  1  |l1
+        | |     |
+        | |     |    l4
+        | +-----+---------+
+        | |     |         |
+        | |  0  |    2    |l2
+        | |     |         |
+        | +-----+---------+
+        |   l3
 
         EXAMPLES::
 
@@ -1153,22 +1151,22 @@ class TranslationSurfaceGenerators:
 
         For any parameter ``a`` and ``b``, the cathedral surface belongs to the
         so-called Gothic locus described in McMullen, Mukamel, Wright "Cubic
-        curves and totally geodesic subvarieties of moduli space" (2017).
+        curves and totally geodesic subvarieties of moduli space" (2017)::
 
-                     1
-                   <--->
+        |          1
+        |        <--->
 
-                    /\           2a
-                   /  \      +------+
-               a  b|   | a  /        \
-             +----+    +---+          +
-             |    |    |   |          |
-            1| P0 |P1  |P2 |  P3      |
-             |    |    |   |          |
-             +----+    +---+          +
-                 b|    |    \        /
-                   \  /      +------+
-                    \/
+        |         /\           2a
+        |        /  \      +------+
+        |    a  b|   | a  /        \
+        |  +----+    +---+          +
+        |  |    |    |   |          |
+        | 1| P0 |P1  |P2 |  P3      |
+        |  |    |    |   |          |
+        |  +----+    +---+          +
+        |      b|    |    \        /
+        |        \  /      +------+
+        |         \/
 
         If a and b satisfies
 
@@ -1481,13 +1479,13 @@ class TranslationSurfaceGenerators:
         r"""
         The translation surface based on the $E_\infinity$ graph.
 
-        The biparite graph is shown below, with edges numbered:
+        The biparite graph is shown below, with edges numbered::
 
-              0   1   2  -2   3  -3   4  -4
-            *---o---*---o---*---o---*---o---*...
-                    |
-                    |-1
-                    o
+        |   0   1   2  -2   3  -3   4  -4
+        | *---o---*---o---*---o---*---o---*...
+        |         |
+        |         |-1
+        |         o
 
         Here, black vertices are colored *, and white o.
         Black nodes represent vertical cylinders and white nodes
