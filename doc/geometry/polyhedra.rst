@@ -1,4 +1,4 @@
-TODO
+flatsurf.geometry.polyhedra
 ====
 
 .. automodule:: flatsurf.geometry.polyhedra

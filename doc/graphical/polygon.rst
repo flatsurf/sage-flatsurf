@@ -1,4 +1,4 @@
-TODO
+flatsurf.graphical.polygon
 ====
 
 .. automodule:: flatsurf.graphical.polygon

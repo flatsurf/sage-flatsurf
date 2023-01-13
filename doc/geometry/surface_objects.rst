@@ -1,4 +1,4 @@
-TODO
+flatsurf.geometry.surface_objects
 ====
 
 .. automodule:: flatsurf.geometry.surface_objects

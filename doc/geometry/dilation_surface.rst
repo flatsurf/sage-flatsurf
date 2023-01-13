@@ -1,4 +1,4 @@
-TODO
+flatsurf.geometry.dilation_surface
 ====
 
 .. automodule:: flatsurf.geometry.dilation_surface

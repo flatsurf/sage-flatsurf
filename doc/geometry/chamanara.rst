@@ -1,4 +1,4 @@
-TODO
+flatsurf.geometry.chamanara
 ====
 
 .. automodule:: flatsurf.geometry.chamanara

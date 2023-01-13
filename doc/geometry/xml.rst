@@ -1,4 +1,4 @@
-TODO
+flatsurf.geometry.xml
 ====
 
 .. automodule:: flatsurf.geometry.xml

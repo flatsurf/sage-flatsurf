@@ -1,4 +1,4 @@
-TODO
+flatsurf.geometry.subfield
 ====
 
 .. automodule:: flatsurf.geometry.subfield

@@ -1,4 +1,4 @@
-TODO
+flatsurf.geometry.tangent_bundle
 ====
 
 .. automodule:: flatsurf.geometry.tangent_bundle
