@@ -991,6 +991,7 @@ class GraphicalSurface:
         for a list of all supported ``_options``::
 
             sage: gs.plot(polygon_label_options={"color": "red"})
+            ...Graphics object consisting of 13 graphics primitives
 
         Keyword arguments that are prefixed with such an aspect of plotting,
         are also merged into the corresponding attribute before plotting; see
@@ -998,10 +999,12 @@ class GraphicalSurface:
         ``_options``::
 
             sage: gs.plot(polygon_label_color="red")
+            ...Graphics object consisting of 13 graphics primitives
 
         All other arguments are passed to the polygon plotting itself::
 
             sage: gs.plot(fill=None)
+            ...Graphics object consisting of 13 graphics primitives
 
         TESTS:
 
