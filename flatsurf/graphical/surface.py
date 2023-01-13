@@ -340,7 +340,7 @@ class GraphicalSurface:
             sage: gs2.polygon_options
             {'color': 'yellow'}
         """
-        gs = GraphicalSurface(self.get_surface(), default_position_function = self._default_position_function)
+        gs = GraphicalSurface(self.get_surface(), default_position_function=self._default_position_function)
 
         # Copy plot options
         gs.will_plot_polygons = self.will_plot_polygons
@@ -362,7 +362,7 @@ class GraphicalSurface:
         gs.zero_flag_options = dict(self.zero_flag_options)
 
         # Copy polygons and visible set.
-        gs._polygons = {label:gp.copy() for label,gp in iteritems(self._polygons)}
+        gs._polygons = {label: gp.copy() for label, gp in iteritems(self._polygons)}
         gs._visible = set(self._visible)
         gs._edge_labels = self._edge_labels
 
@@ -896,7 +896,7 @@ class GraphicalSurface:
 
         - ``upside_down`` -- True if and only if the polygon will be rendered upside down.
         """
-        return graphical_polygon.plot_label(label,**self.polygon_label_options)
+        return graphical_polygon.plot_label(label, **self.polygon_label_options)
 
     def plot_edge(self, label, edge, graphical_polygon, is_adjacent, is_self_glued):
         r"""
@@ -965,9 +965,17 @@ class GraphicalSurface:
         """
         return graphical_polygon.plot_zero_flag(**self.zero_flag_options)
 
-    def plot(self):
+    def plot(self, **kwargs):
         r"""
         Return a plot of this surface.
+
+        INPUT:
+
+        - ``kwargs`` -- arguments are normally forwarded to the polygon
+          plotting. However, prefixed arguments, e.g., ``polygon_label_color``,
+          are routed correspondingly. Also, a dictionary suffixed with
+          ``_options`` is merged with the existing options of this surface. See
+          examples below for details.
 
         EXAMPLES::
 
@@ -977,6 +985,23 @@ class GraphicalSurface:
             sage: gs = GraphicalSurface(s)
             sage: gs.plot()
             ...Graphics object consisting of 13 graphics primitives
+
+        Keyword arguments that end in ``_options`` are merged into the
+        corresponding attribute before plotting; see :class:`GraphicalSurface`
+        for a list of all supported ``_options``::
+
+            sage: gs.plot(polygon_label_options={"color": "red"})
+
+        Keyword arguments that are prefixed with such an aspect of plotting,
+        are also merged into the corresponding attribute before plotting; see
+        :class:`GraphicalSurface` for a list of all supported prefixes, i.e.,
+        ``_options``::
+
+            sage: gs.plot(polygon_label_color="red")
+
+        All other arguments are passed to the polygon plotting itself::
+
+            sage: gs.plot(fill=None)
 
         TESTS:
 
@@ -992,6 +1017,30 @@ class GraphicalSurface:
             sage: S.plot(polygon_labels=False, edge_labels=False)
             ...Graphics object consisting of 5 graphics primitives
         """
+        if kwargs:
+            surface = self.copy()
+
+            options = [option for option in surface.__dict__ if option.endswith("_options") and option != "process_options"]
+            # Sort recognized options so we do not pass polygon_label_color to
+            # polygon_options as label_color.
+            options.sort(key=lambda option: -len(option))
+            print(options)
+
+            for key, value in kwargs.items():
+                if key in options:
+                    setattr(surface, key, {**getattr(surface, key), **value})
+                    continue
+
+                for option in options:
+                    prefix = option[:-len("options")]
+                    if key.startswith(prefix) and key != prefix:
+                        getattr(surface, option)[key[len(prefix):]] = value
+                        break
+                else:
+                    surface.polygon_options[key] = value
+
+            return surface.plot()
+
         from sage.plot.graphics import Graphics
         p = Graphics()
 
