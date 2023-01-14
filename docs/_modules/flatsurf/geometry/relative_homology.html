@@ -243,7 +243,7 @@
     <span class="c1"># self._d will be a dictionary mapping mapping pairs (label, edge) to the base_ring</span>
     <span class="c1"># By convention a pair will be in the dictionary only if its image is non-zero.</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Do not call directly!&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Do not call directly!&quot;&quot;&quot;</span>
         <span class="c1"># This should be a dict </span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="nb">dict</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;RelativeHomologyClass.__init__ must be passed a dictionary.&quot;</span><span class="p">)</span>
@@ -298,15 +298,15 @@
         <span class="k">return</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_d</span><span class="p">)</span>
 
 <div class="viewcode-block" id="RelativeHomologyClass.weight"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.relative_homology.RelativeHomologyClass.weight">[docs]</a>    <span class="k">def</span> <span class="nf">weight</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the weight of the indexed edge.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the weight of the indexed edge.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span> <span class="p">(</span><span class="n">label</span><span class="p">,</span><span class="n">e</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span><span class="o">.</span><span class="n">zero</span><span class="p">()</span> <span class="p">)</span></div>
         
 <div class="viewcode-block" id="RelativeHomologyClass.weighted_edges"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.relative_homology.RelativeHomologyClass.weighted_edges">[docs]</a>    <span class="k">def</span> <span class="nf">weighted_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the set of pairs (label,e) representing edges with non-zero weights.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the set of pairs (label,e) representing edges with non-zero weights.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_d</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span></div>
     
 <div class="viewcode-block" id="RelativeHomologyClass.edges_with_weights"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.relative_homology.RelativeHomologyClass.edges_with_weights">[docs]</a>    <span class="k">def</span> <span class="nf">edges_with_weights</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a list of items of the form ((label,e),w) where (label,e) </span>
 <span class="sd">        represents and edge and w represents the non-zero weight assigned.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_d</span><span class="o">.</span><span class="n">items</span><span class="p">()</span></div></div>
@@ -348,7 +348,7 @@
         <span class="k">return</span> <span class="n">cmp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">_s</span><span class="p">)</span>
 
 <div class="viewcode-block" id="RelativeHomology.edge"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.relative_homology.RelativeHomology.edge">[docs]</a>    <span class="k">def</span> <span class="nf">edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">label</span><span class="p">,</span><span class="n">e</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the homology class of the edge with the provided polygon label</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the homology class of the edge with the provided polygon label</span>
 <span class="sd">        and edge index oriented counter-clockwise around the polygon.&quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="c1"># If already cached, return the cached copy.</span>

@@ -235,7 +235,7 @@
 
 <div class="viewcode-block" id="GraphicalSegmentInPolygon"><a class="viewcode-back" href="../../../graphical.html#flatsurf.graphical.straight_line_trajectory.GraphicalSegmentInPolygon">[docs]</a><span class="k">class</span> <span class="nc">GraphicalSegmentInPolygon</span><span class="p">:</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">segment</span><span class="p">,</span> <span class="n">graphical_surface</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a graphical segment from a graphical surface and a SegmentInPolygon.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_gs</span> <span class="o">=</span> <span class="n">graphical_surface</span>
@@ -251,15 +251,15 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_seg</span><span class="o">.</span><span class="n">polygon_label</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="GraphicalSegmentInPolygon.start"><a class="viewcode-back" href="../../../graphical.html#flatsurf.graphical.straight_line_trajectory.GraphicalSegmentInPolygon.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the start point as a RDF Vector.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the start point as a RDF Vector.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_start</span></div>
 
 <div class="viewcode-block" id="GraphicalSegmentInPolygon.end"><a class="viewcode-back" href="../../../graphical.html#flatsurf.graphical.straight_line_trajectory.GraphicalSegmentInPolygon.end">[docs]</a>    <span class="k">def</span> <span class="nf">end</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the end point as a RDF Vector.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the end point as a RDF Vector.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_end</span></div>
 
 <div class="viewcode-block" id="GraphicalSegmentInPolygon.plot"><a class="viewcode-back" href="../../../graphical.html#flatsurf.graphical.straight_line_trajectory.GraphicalSegmentInPolygon.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        EXAMPLES::</span>
 
 <span class="sd">            sage: from flatsurf import *</span>
@@ -282,7 +282,7 @@
             <span class="k">return</span> <span class="n">Graphics</span><span class="p">()</span></div></div>
 
 <div class="viewcode-block" id="GraphicalStraightLineTrajectory"><a class="viewcode-back" href="../../../graphical.html#flatsurf.graphical.straight_line_trajectory.GraphicalStraightLineTrajectory">[docs]</a><span class="k">class</span> <span class="nc">GraphicalStraightLineTrajectory</span><span class="p">:</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Allows for the rendering of a straight-line trajectory through a graphical surface.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trajectory</span><span class="p">,</span> <span class="n">graphical_surface</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
@@ -295,7 +295,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_segments</span> <span class="o">=</span> <span class="p">[</span><span class="n">GraphicalSegmentInPolygon</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gs</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_traj</span><span class="o">.</span><span class="n">segments</span><span class="p">()]</span>
 
 <div class="viewcode-block" id="GraphicalStraightLineTrajectory.plot"><a class="viewcode-back" href="../../../graphical.html#flatsurf.graphical.straight_line_trajectory.GraphicalStraightLineTrajectory.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        EXAMPLES::</span>
 
 <span class="sd">            sage: from flatsurf import *</span>

@@ -214,18 +214,37 @@
         </div>
         <article role="main">
           <h1>Source code for flatsurf.geometry.tangent_bundle</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span><span class="p">,</span> <span class="n">print_function</span><span class="p">,</span> <span class="n">division</span>
-<span class="kn">from</span> <span class="nn">six.moves</span> <span class="kn">import</span> <span class="nb">range</span><span class="p">,</span> <span class="nb">map</span><span class="p">,</span> <span class="nb">filter</span><span class="p">,</span> <span class="nb">zip</span>
+<span></span><span class="c1"># ********************************************************************</span>
+<span class="c1">#  This file is part of sage-flatsurf.</span>
+<span class="c1">#</span>
+<span class="c1">#        Copyright (C) 2016-2022 W. Patrick Hooper</span>
+<span class="c1">#                      2016-2022 Vincent Delecroix</span>
+<span class="c1">#                           2022 Julian Rüth</span>
+<span class="c1">#</span>
+<span class="c1">#  sage-flatsurf is free software: you can redistribute it and/or modify</span>
+<span class="c1">#  it under the terms of the GNU General Public License as published by</span>
+<span class="c1">#  the Free Software Foundation, either version 2 of the License, or</span>
+<span class="c1">#  (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1">#  sage-flatsurf is distributed in the hope that it will be useful,</span>
+<span class="c1">#  but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1">#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1">#  GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1">#  You should have received a copy of the GNU General Public License</span>
+<span class="c1">#  along with sage-flatsurf. If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
+<span class="c1"># ********************************************************************</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span><span class="p">,</span> <span class="n">print_function</span><span class="p">,</span> <span class="n">division</span>
+<span class="kn">from</span> <span class="nn">six.moves</span> <span class="kn">import</span> <span class="nb">range</span>
 
 <span class="kn">from</span> <span class="nn">.polygon</span> <span class="kn">import</span> <span class="n">wedge_product</span><span class="p">,</span> <span class="n">is_same_direction</span><span class="p">,</span> <span class="n">is_opposite_direction</span>
 
-<span class="n">rotate_limit</span><span class="o">=</span><span class="mi">100</span>
-<span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Limit for clockwise_to and counter_clockwise_to in SimilaritySurfaceTangentVector.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="c1"># Limit for clockwise_to and counter_clockwise_to in SimilaritySurfaceTangentVector.</span>
+<span class="n">rotate_limit</span> <span class="o">=</span> <span class="mi">100</span>
+
 
 <div class="viewcode-block" id="SimilaritySurfaceTangentVector"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentVector">[docs]</a><span class="k">class</span> <span class="nc">SimilaritySurfaceTangentVector</span><span class="p">:</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Tangent vector to a similarity surface.</span>
 
 <span class="sd">    EXAMPLES::</span>
@@ -348,7 +367,7 @@
         <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__eq__</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        TESTS::</span>
 
 <span class="sd">            sage: from flatsurf import translation_surfaces</span>
@@ -360,21 +379,21 @@
         <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_bundle</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_polygon_label</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_point</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vector</span><span class="p">))</span>
 
 <div class="viewcode-block" id="SimilaritySurfaceTangentVector.surface"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentVector.surface">[docs]</a>    <span class="k">def</span> <span class="nf">surface</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the underlying surface.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the underlying surface.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bundle</span><span class="o">.</span><span class="n">surface</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="SimilaritySurfaceTangentVector.is_based_at_singularity"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentVector.is_based_at_singularity">[docs]</a>    <span class="k">def</span> <span class="nf">is_based_at_singularity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the truth value of the statement &#39;the base point for this vector is a singularity.&#39;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_position</span><span class="o">.</span><span class="n">is_vertex</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="SimilaritySurfaceTangentVector.vertex"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentVector.vertex">[docs]</a>    <span class="k">def</span> <span class="nf">vertex</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the index of the vertex.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the index of the vertex.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_position</span><span class="o">.</span><span class="n">get_vertex</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="SimilaritySurfaceTangentVector.is_in_boundary_of_polygon"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentVector.is_in_boundary_of_polygon">[docs]</a>    <span class="k">def</span> <span class="nf">is_in_boundary_of_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the truth value of the statement</span>
 <span class="sd">        &#39;the base point for this vector lies on the boundary of</span>
 <span class="sd">        one of the polygons making up the surface.&#39;</span>
@@ -382,14 +401,14 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_position</span><span class="o">.</span><span class="n">is_in_boundary</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="SimilaritySurfaceTangentVector.position"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentVector.position">[docs]</a>    <span class="k">def</span> <span class="nf">position</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the PolygonPosition representing the location of</span>
 <span class="sd">        the basepoint of the vector in the polygon that contains it.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_position</span></div>
 
 <div class="viewcode-block" id="SimilaritySurfaceTangentVector.bundle"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentVector.bundle">[docs]</a>    <span class="k">def</span> <span class="nf">bundle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot; Return the tangent bundle containing this vector. &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot; Return the tangent bundle containing this vector. &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bundle</span></div>
 
 <div class="viewcode-block" id="SimilaritySurfaceTangentVector.polygon_label"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentVector.polygon_label">[docs]</a>    <span class="k">def</span> <span class="nf">polygon_label</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -399,7 +418,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">surface</span><span class="p">()</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">polygon_label</span><span class="p">())</span></div>
 
 <div class="viewcode-block" id="SimilaritySurfaceTangentVector.point"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentVector.point">[docs]</a>    <span class="k">def</span> <span class="nf">point</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the base point of this tangent vector as a vector.</span>
 
 <span class="sd">        The coordinates of output are given with respect to the polygon it</span>
@@ -419,7 +438,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_point</span></div>
 
 <div class="viewcode-block" id="SimilaritySurfaceTangentVector.vector"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentVector.vector">[docs]</a>    <span class="k">def</span> <span class="nf">vector</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the coordinates of this vector within the assigned polygon.</span>
 
 <span class="sd">        EXAMPLES::</span>
@@ -436,7 +455,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vector</span></div>
 
 <div class="viewcode-block" id="SimilaritySurfaceTangentVector.edge_pointing_along"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentVector.edge_pointing_along">[docs]</a>    <span class="k">def</span> <span class="nf">edge_pointing_along</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the pair of (p,e) where p is the polygon label at the base point,</span>
 <span class="sd">        and e is the edge this vector points along or none if it does not point</span>
 <span class="sd">        along an edge. Here pointing along means that the vector is based at</span>
@@ -448,7 +467,7 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
 <div class="viewcode-block" id="SimilaritySurfaceTangentVector.differs_by_scaling"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentVector.differs_by_scaling">[docs]</a>    <span class="k">def</span> <span class="nf">differs_by_scaling</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">another_tangent_vector</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns true if the other vector just differs by scaling. This means they should lie</span>
 <span class="sd">        in the same polygon, be based at the same point, and point in the same direction.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -457,7 +476,7 @@
             <span class="n">is_same_direction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vector</span><span class="p">(),</span><span class="n">another_tangent_vector</span><span class="o">.</span><span class="n">vector</span><span class="p">())</span></div>
 
 <div class="viewcode-block" id="SimilaritySurfaceTangentVector.invert"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentVector.invert">[docs]</a>    <span class="k">def</span> <span class="nf">invert</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the negation of this tangent vector.</span>
 <span class="sd">        Raises a ValueError if the vector is based at a singularity.&#39;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -470,7 +489,7 @@
             <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">vector</span><span class="p">())</span></div>
 
 <div class="viewcode-block" id="SimilaritySurfaceTangentVector.forward_to_polygon_boundary"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentVector.forward_to_polygon_boundary">[docs]</a>    <span class="k">def</span> <span class="nf">forward_to_polygon_boundary</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Flows forward (in the direction of the tangent vector) until the end</span>
 <span class="sd">        of the polygon is reached.</span>
 <span class="sd">        Returns the tangent vector based at the endpoint which point backward along the trajectory.</span>
@@ -512,7 +531,7 @@
         <span class="k">return</span> <span class="n">new_vector</span></div>
 
 <div class="viewcode-block" id="SimilaritySurfaceTangentVector.straight_line_trajectory"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentVector.straight_line_trajectory">[docs]</a>    <span class="k">def</span> <span class="nf">straight_line_trajectory</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the straight line trajectory associated to this vector.</span>
 
 <span class="sd">        EXAMPLES::</span>
@@ -539,7 +558,7 @@
         <span class="k">return</span> <span class="n">StraightLineTrajectory</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SimilaritySurfaceTangentVector.clockwise_to"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentVector.clockwise_to">[docs]</a>    <span class="k">def</span> <span class="nf">clockwise_to</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">code</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the new tangent vector obtained by rotating this one in the clockwise</span>
 <span class="sd">        direction until the vector is parallel to w, and scaling so that the length matches</span>
 <span class="sd">        that of w. </span>
@@ -608,7 +627,7 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">surface</span><span class="p">()</span><span class="o">.</span><span class="n">tangent_vector</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">polygon_label</span><span class="p">(),</span><span class="n">v</span><span class="o">.</span><span class="n">point</span><span class="p">(),</span><span class="n">w</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SimilaritySurfaceTangentVector.counterclockwise_to"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentVector.counterclockwise_to">[docs]</a>    <span class="k">def</span> <span class="nf">counterclockwise_to</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the new tangent vector obtained by rotating this one in the counterclockwise</span>
 <span class="sd">        direction until the vector is parallel to w, and scaling so that the length matches</span>
 <span class="sd">        that of w. </span>
@@ -679,11 +698,36 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">code</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;codes are only implemented when based at a singularity&#39;</span><span class="p">)</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">surface</span><span class="p">()</span><span class="o">.</span><span class="n">tangent_vector</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">polygon_label</span><span class="p">(),</span><span class="n">v</span><span class="o">.</span><span class="n">point</span><span class="p">(),</span><span class="n">w</span><span class="p">)</span></div></div>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">surface</span><span class="p">()</span><span class="o">.</span><span class="n">tangent_vector</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">polygon_label</span><span class="p">(),</span><span class="n">v</span><span class="o">.</span><span class="n">point</span><span class="p">(),</span><span class="n">w</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SimilaritySurfaceTangentVector.plot"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentVector.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a plot of this tangent vector.</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: import flatsurf</span>
+<span class="sd">            sage: S = flatsurf.translation_surfaces.veech_double_n_gon(5)</span>
+<span class="sd">            sage: v = S.tangent_vector(0, (1/8, 1/4), (1/2, 1/4))</span>
+<span class="sd">            sage: S.plot() + v.plot()</span>
+<span class="sd">            Graphics object consisting of 22 graphics primitives</span>
+
+<span class="sd">        Any keyword arguments are passed on to the underlying plot method from SageMath::</span>
+
+<span class="sd">            sage: S.plot() + v.plot(color=&quot;red&quot;)</span>
+<span class="sd">            Graphics object consisting of 22 graphics primitives</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">vector</span><span class="p">()</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="o">**</span><span class="p">{</span>
+            <span class="s1">&#39;start&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">point</span><span class="p">(),</span>
+            <span class="s1">&#39;width&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s1">&#39;arrowsize&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">})</span></div></div>
 
 
 <div class="viewcode-block" id="SimilaritySurfaceTangentBundle"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentBundle">[docs]</a><span class="k">class</span> <span class="nc">SimilaritySurfaceTangentBundle</span><span class="p">:</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Construct the tangent bundle of a given similarity surface.</span>
 
 <span class="sd">    Needs work: We should check for coercion from the base_ring of the surface</span>
@@ -698,10 +742,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_V</span> <span class="o">=</span> <span class="n">VectorSpace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_base_ring</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">polygon_label</span><span class="p">,</span> <span class="n">point</span><span class="p">,</span> <span class="n">vector</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Construct a tangent vector from a polygon label, a point in the polygon and a vector. The point and the vector should have coordinates</span>
 <span class="sd">        in the base field.&quot;&quot;&quot;</span>
-        <span class="n">V</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vector_space</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">SimilaritySurfaceTangentVector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">polygon_label</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_V</span><span class="p">(</span><span class="n">point</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_V</span><span class="p">(</span><span class="n">vector</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -713,17 +756,17 @@
     <span class="n">field</span><span class="o">=</span><span class="n">base_ring</span>
 
 <div class="viewcode-block" id="SimilaritySurfaceTangentBundle.vector_space"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentBundle.vector_space">[docs]</a>    <span class="k">def</span> <span class="nf">vector_space</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the vector space over the field of the bundle.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_V</span></div>
 
 <div class="viewcode-block" id="SimilaritySurfaceTangentBundle.surface"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentBundle.surface">[docs]</a>    <span class="k">def</span> <span class="nf">surface</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the surface this bundle is over.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the surface this bundle is over.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span></div>
 
 <div class="viewcode-block" id="SimilaritySurfaceTangentBundle.edge"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentBundle.edge">[docs]</a>    <span class="k">def</span> <span class="nf">edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">polygon_label</span><span class="p">,</span> <span class="n">edge_index</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the vector leaving a vertex of the polygon which under straight-line flow travels</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the vector leaving a vertex of the polygon which under straight-line flow travels</span>
 <span class="sd">        counterclockwise around the boundary of the polygon along the edge with the provided index.</span>
 <span class="sd">        The length of the vector matches the length of the indexed edge.</span>
 
@@ -744,7 +787,7 @@
         <span class="k">return</span> <span class="n">SimilaritySurfaceTangentVector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">polygon_label</span><span class="p">,</span> <span class="n">point</span><span class="p">,</span> <span class="n">vector</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SimilaritySurfaceTangentBundle.clockwise_edge"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentBundle.clockwise_edge">[docs]</a>    <span class="k">def</span> <span class="nf">clockwise_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">polygon_label</span><span class="p">,</span> <span class="n">edge_index</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the vector leaving a vertex of the polygon which under straight-line flow travels</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the vector leaving a vertex of the polygon which under straight-line flow travels</span>
 <span class="sd">        *clockwise* around the boundary of the polygon along the edge with the provided index.</span>
 <span class="sd">        The length of the vector matches the length of the indexed edge.</span>
 <span class="sd">        Note that the point will be based in the polygon opposite the provided edge.</span>

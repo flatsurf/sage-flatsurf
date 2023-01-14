@@ -296,7 +296,7 @@
 
 
 <div class="viewcode-block" id="Surface"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.surface.Surface">[docs]</a><span class="k">class</span> <span class="nc">Surface</span><span class="p">(</span><span class="n">SageObject</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Abstract base class of all surfaces that are built from a set of polygons</span>
 <span class="sd">    with edges identified. The identifications are compositions of homothety,</span>
 <span class="sd">    rotations and translations, i.e., similarities that ensure that the surface</span>
@@ -372,7 +372,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span> <span class="o">=</span> <span class="p">{}</span>
 
 <div class="viewcode-block" id="Surface.is_triangulated"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.surface.Surface.is_triangulated">[docs]</a>    <span class="k">def</span> <span class="nf">is_triangulated</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        EXAMPLES::</span>
 
 <span class="sd">            sage: import flatsurf</span>
@@ -396,7 +396,7 @@
         <span class="k">return</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="Surface.polygon"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.surface.Surface.polygon">[docs]</a>    <span class="k">def</span> <span class="nf">polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the polygon with the provided label.</span>
 
 <span class="sd">        This method must be overridden in subclasses.</span>
@@ -404,7 +404,7 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="Surface.opposite_edge"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.surface.Surface.opposite_edge">[docs]</a>    <span class="k">def</span> <span class="nf">opposite_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Given the label ``l`` of a polygon and an edge ``e`` in that polygon</span>
 <span class="sd">        returns the pair (``ll``, ``ee``) to which this edge is glued.</span>
 
@@ -413,7 +413,7 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
     <span class="k">def</span> <span class="nf">_change_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">new_polygon</span><span class="p">,</span> <span class="n">gluing_list</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Internal method used by change_polygon(). Should not be called directly.</span>
 
 <span class="sd">        Mutable surfaces should implement this method.</span>
@@ -421,7 +421,7 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
     <span class="k">def</span> <span class="nf">_set_edge_pairing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label1</span><span class="p">,</span> <span class="n">edge1</span><span class="p">,</span> <span class="n">label2</span><span class="p">,</span> <span class="n">edge2</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Internal method used by change_edge_gluing(). Should not be called directly.</span>
 
 <span class="sd">        Mutable surfaces should implement this method.</span>
@@ -429,7 +429,7 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
     <span class="k">def</span> <span class="nf">_add_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_polygon</span><span class="p">,</span> <span class="n">gluing_list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Internal method used by add_polygon(). Should not be called directly.</span>
 
 <span class="sd">        Mutable surfaces should implement this method.</span>
@@ -437,7 +437,7 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
     <span class="k">def</span> <span class="nf">_remove_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Internal method used by remove_polygon(). Should not be called directly.</span>
 
 <span class="sd">        Mutable surfaces should implement this method.</span>
@@ -445,7 +445,7 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
 <div class="viewcode-block" id="Surface.num_polygons"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.surface.Surface.num_polygons">[docs]</a>    <span class="k">def</span> <span class="nf">num_polygons</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the number of polygons making up the surface, or</span>
 <span class="sd">        sage.rings.infinity.Infinity if the surface is infinite.</span>
 
@@ -465,7 +465,7 @@
             <span class="k">return</span> <span class="n">Infinity</span></div>
 
 <div class="viewcode-block" id="Surface.label_iterator"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.surface.Surface.label_iterator">[docs]</a>    <span class="k">def</span> <span class="nf">label_iterator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Iterator over all polygon labels.</span>
 
 <span class="sd">        Subclasses should consider overriding this method for increased</span>
@@ -474,7 +474,7 @@
         <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">walker</span><span class="p">())</span></div>
 
 <div class="viewcode-block" id="Surface.label_polygon_iterator"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.surface.Surface.label_polygon_iterator">[docs]</a>    <span class="k">def</span> <span class="nf">label_polygon_iterator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Iterate over pairs (label, polygon).</span>
 
 <span class="sd">        Subclasses should consider overriding this method for increased</span>
@@ -484,7 +484,7 @@
             <span class="k">yield</span> <span class="n">label</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Surface.num_edges"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.surface.Surface.num_edges">[docs]</a>    <span class="k">def</span> <span class="nf">num_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the total number of edges of all polygons used.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_finite</span><span class="p">():</span>
@@ -499,7 +499,7 @@
             <span class="k">return</span> <span class="n">Infinity</span></div>
 
 <div class="viewcode-block" id="Surface.area"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.surface.Surface.area">[docs]</a>    <span class="k">def</span> <span class="nf">area</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the area of this surface.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_finite</span><span class="p">():</span>
@@ -512,7 +512,7 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;area is not implemented for surfaces built from an infinite number of polygons&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Surface.edge_iterator"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.surface.Surface.edge_iterator">[docs]</a>    <span class="k">def</span> <span class="nf">edge_iterator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Iterate over the edges of polygons, which are pairs (l,e) where l is a polygon label, 0 &lt;= e &lt; N and N is the number of edges of the polygon with label l.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">label</span><span class="p">,</span><span class="n">polygon</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_polygon_iterator</span><span class="p">():</span>
@@ -520,7 +520,7 @@
                 <span class="k">yield</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span></div>
 
 <div class="viewcode-block" id="Surface.edge_gluing_iterator"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.surface.Surface.edge_gluing_iterator">[docs]</a>    <span class="k">def</span> <span class="nf">edge_gluing_iterator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Iterate over the ordered pairs of edges being glued.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">label_edge_pair</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_iterator</span><span class="p">():</span>
@@ -528,7 +528,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">label_edge_pair</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">label_edge_pair</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span></div>
 
 <div class="viewcode-block" id="Surface.base_ring"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.surface.Surface.base_ring">[docs]</a>    <span class="k">def</span> <span class="nf">base_ring</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The field on which the coordinates of ``self`` live.</span>
 
 <span class="sd">        This method must be overridden in subclasses!</span>
@@ -536,7 +536,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_base_ring</span></div>
 
 <div class="viewcode-block" id="Surface.base_label"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.surface.Surface.base_label">[docs]</a>    <span class="k">def</span> <span class="nf">base_label</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the label of a special chosen polygon in the surface.</span>
 
 <span class="sd">        When no specific choice was made with :meth:`set_base_label`, this</span>
@@ -558,25 +558,25 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_base_label</span></div>
 
 <div class="viewcode-block" id="Surface.is_finite"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.surface.Surface.is_finite">[docs]</a>    <span class="k">def</span> <span class="nf">is_finite</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return whether or not the surface is finite.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_finite</span></div>
 
 <div class="viewcode-block" id="Surface.is_mutable"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.surface.Surface.is_mutable">[docs]</a>    <span class="k">def</span> <span class="nf">is_mutable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return if this surface is mutable.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mutable</span></div>
 
 <div class="viewcode-block" id="Surface.set_immutable"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.surface.Surface.set_immutable">[docs]</a>    <span class="k">def</span> <span class="nf">set_immutable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Mark this surface as immutable.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_mutable</span> <span class="o">=</span> <span class="kc">False</span></div>
 
 <div class="viewcode-block" id="Surface.walker"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.surface.Surface.walker">[docs]</a>    <span class="k">def</span> <span class="nf">walker</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a LabelWalker which walks over the surface in a canonical way.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
@@ -587,7 +587,7 @@
             <span class="k">return</span> <span class="n">lw</span></div>
 
     <span class="k">def</span> <span class="nf">__mutate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called before a mutation occurs. Do not call directly.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">assert</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_mutable</span><span class="p">())</span>
@@ -595,7 +595,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span> <span class="o">=</span> <span class="p">{}</span>
 
 <div class="viewcode-block" id="Surface.change_polygon"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.surface.Surface.change_polygon">[docs]</a>    <span class="k">def</span> <span class="nf">change_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">new_polygon</span><span class="p">,</span> <span class="n">gluing_list</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Assuming label is currently in the list of labels, change the</span>
 <span class="sd">        poygon assigned to the provided label to new_polygon, and</span>
 <span class="sd">        glue the edges according to gluing_list (which must be a list</span>
@@ -606,7 +606,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_change_polygon</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">new_polygon</span><span class="p">,</span> <span class="n">gluing_list</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Surface.set_edge_pairing"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.surface.Surface.set_edge_pairing">[docs]</a>    <span class="k">def</span> <span class="nf">set_edge_pairing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label1</span><span class="p">,</span> <span class="n">edge1</span><span class="p">,</span> <span class="n">label2</span><span class="p">,</span> <span class="n">edge2</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Updates the gluing so that (label,edge1) is glued to (label2, edge2).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__mutate</span><span class="p">()</span>
@@ -616,7 +616,7 @@
     <span class="n">change_edge_gluing</span> <span class="o">=</span> <span class="n">set_edge_pairing</span>
 
 <div class="viewcode-block" id="Surface.change_polygon_gluings"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.surface.Surface.change_polygon_gluings">[docs]</a>    <span class="k">def</span> <span class="nf">change_polygon_gluings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">glue_list</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Updates the list of glued polygons according to the provided list,</span>
 <span class="sd">        which is a list of pairs (pp,ee) whose position in the list</span>
 <span class="sd">        describes the edge of the polygon with the provided label.</span>
@@ -637,7 +637,7 @@
         <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">polygons</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="Surface.add_polygon"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.surface.Surface.add_polygon">[docs]</a>    <span class="k">def</span> <span class="nf">add_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_polygon</span><span class="p">,</span> <span class="n">gluing_list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Adds a the provided polygon to the surface. Utilizes gluing_list</span>
 <span class="sd">        for the gluing data for edges (which must be a list</span>
 <span class="sd">        of pairs representing edges of length equal to number of edges</span>
@@ -655,7 +655,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_polygon</span><span class="p">(</span><span class="n">new_polygon</span><span class="p">,</span> <span class="n">gluing_list</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Surface.remove_polygon"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.surface.Surface.remove_polygon">[docs]</a>    <span class="k">def</span> <span class="nf">remove_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove the polygon with the provided label. Causes a ValueError</span>
 <span class="sd">        if the base_label is removed.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -665,14 +665,14 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_remove_polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Surface.change_base_label"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.surface.Surface.change_base_label">[docs]</a>    <span class="k">def</span> <span class="nf">change_base_label</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_base_label</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Change the base_label to the provided label.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__mutate</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_base_label</span><span class="o">=</span><span class="n">new_base_label</span></div>
 
     <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Hash compatible with equals.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="s2">&quot;_hash&quot;</span><span class="p">):</span>
@@ -690,7 +690,7 @@
         <span class="k">return</span> <span class="n">h</span>
 
     <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implements a naive notion of equality where two finite surfaces are equal if:</span>
 <span class="sd">        - their base rings are equal,</span>
 <span class="sd">        - their base labels are equal,</span>
@@ -815,7 +815,7 @@
 
 
 <div class="viewcode-block" id="Surface_list"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.surface.Surface_list">[docs]</a><span class="k">class</span> <span class="nc">Surface_list</span><span class="p">(</span><span class="n">Surface</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A fast mutable :class:`Surface` using a list to store polygons and gluings.</span>
 
 <span class="sd">    ALGORITHM:</span>
@@ -956,7 +956,7 @@
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_validate_init_parameters</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">base_ring</span><span class="p">,</span> <span class="n">surface</span><span class="p">,</span> <span class="n">copy</span><span class="p">,</span> <span class="n">mutable</span><span class="p">,</span> <span class="n">finite</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper method for ``__init__`` that validates the parameters and</span>
 <span class="sd">        returns them in the same order with defaults filled in.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1005,7 +1005,7 @@
         <span class="k">return</span> <span class="n">base_ring</span><span class="p">,</span> <span class="n">surface</span><span class="p">,</span> <span class="n">copy</span><span class="p">,</span> <span class="n">mutable</span><span class="p">,</span> <span class="n">finite</span>
 
     <span class="k">def</span> <span class="nf">__get_label</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ref_label</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a corresponding label. Creates a new label if necessary.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
@@ -1028,7 +1028,7 @@
             <span class="k">return</span> <span class="n">i</span>
 
 <div class="viewcode-block" id="Surface_list.polygon"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.surface.Surface_list.polygon">[docs]</a>    <span class="k">def</span> <span class="nf">polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lab</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the polygon with label ``lab``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
@@ -1052,7 +1052,7 @@
         <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="Surface_list.opposite_edge"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.surface.Surface_list.opposite_edge">[docs]</a>    <span class="k">def</span> <span class="nf">opposite_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Given the label ``p`` of a polygon and an edge ``e`` in that polygon</span>
 <span class="sd">        returns the pair (``pp``, ``ee``) to which this edge is glued.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1085,7 +1085,7 @@
     <span class="c1"># Methods for changing the surface</span>
 
     <span class="k">def</span> <span class="nf">_change_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">new_polygon</span><span class="p">,</span> <span class="n">gluing_list</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Internal method used by change_polygon(). Should not be called directly.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
@@ -1101,7 +1101,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">change_polygon_gluings</span><span class="p">(</span><span class="n">label</span><span class="p">,</span><span class="n">gluing_list</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_set_edge_pairing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label1</span><span class="p">,</span> <span class="n">edge1</span><span class="p">,</span> <span class="n">label2</span><span class="p">,</span> <span class="n">edge2</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Internal method used by change_edge_gluing(). Should not be called directly.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
@@ -1123,7 +1123,7 @@
     <span class="n">_change_edge_gluing</span> <span class="o">=</span> <span class="n">_set_edge_pairing</span>
 
     <span class="k">def</span> <span class="nf">_add_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_polygon</span><span class="p">,</span> <span class="n">gluing_list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Internal method used by add_polygon(). Should not be called directly.</span>
 
 <span class="sd">        EXAMPLES::</span>
@@ -1195,13 +1195,13 @@
         <span class="k">return</span> <span class="n">new_label</span>
 
 <div class="viewcode-block" id="Surface_list.num_polygons"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.surface.Surface_list.num_polygons">[docs]</a>    <span class="k">def</span> <span class="nf">num_polygons</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the number of polygons making up the surface in constant time.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_num_polygons</span></div>
 
 <div class="viewcode-block" id="Surface_list.label_iterator"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.surface.Surface_list.label_iterator">[docs]</a>    <span class="k">def</span> <span class="nf">label_iterator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Iterator over all polygon labels.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reference_surface</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -1221,7 +1221,7 @@
                 <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span></div>
 
     <span class="k">def</span> <span class="nf">_remove_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Internal method used by remove_polygon(). Should not be called directly.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">label</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
@@ -1242,7 +1242,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_num_polygons</span> <span class="o">-=</span> <span class="mi">1</span>
 
 <div class="viewcode-block" id="Surface_list.ramified_cover"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.surface.Surface_list.ramified_cover">[docs]</a>    <span class="k">def</span> <span class="nf">ramified_cover</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Make a ramified cover of this surface.</span>
 
 <span class="sd">        INPUT:</span>
@@ -1285,7 +1285,7 @@
 
 
 <div class="viewcode-block" id="surface_list_from_polygons_and_gluings"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.surface.surface_list_from_polygons_and_gluings">[docs]</a><span class="k">def</span> <span class="nf">surface_list_from_polygons_and_gluings</span><span class="p">(</span><span class="n">polygons</span><span class="p">,</span> <span class="n">gluings</span><span class="p">,</span> <span class="n">mutable</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Take a list of polygons and gluings (given either as a list of pairs of edges, or as a dictionary),</span>
 <span class="sd">    and produce a Surface_list from it. The mutable parameter determines the mutability of the resulting</span>
 <span class="sd">    surface.</span>
@@ -1310,7 +1310,7 @@
 
 
 <div class="viewcode-block" id="Surface_dict"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.surface.Surface_dict">[docs]</a><span class="k">class</span> <span class="nc">Surface_dict</span><span class="p">(</span><span class="n">Surface</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A mutable :class:`Surface` using a dict to store polygons and gluings.</span>
 
 <span class="sd">    Unlike :class:`Surface_list`, this surface is not limited to integer</span>
@@ -1388,7 +1388,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">set_immutable</span><span class="p">()</span>
 
 <div class="viewcode-block" id="Surface_dict.polygon"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.surface.Surface_dict.polygon">[docs]</a>    <span class="k">def</span> <span class="nf">polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lab</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the polygon with label ``lab``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
@@ -1407,7 +1407,7 @@
         <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="Surface_dict.opposite_edge"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.surface.Surface_dict.opposite_edge">[docs]</a>    <span class="k">def</span> <span class="nf">opposite_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Given the label ``p`` of a polygon and an edge ``e`` in that polygon</span>
 <span class="sd">        returns the pair (``pp``, ``ee``) to which this edge is glued.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1427,7 +1427,7 @@
     <span class="c1"># Methods for changing the surface</span>
 
     <span class="k">def</span> <span class="nf">_change_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">new_polygon</span><span class="p">,</span> <span class="n">gluing_list</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Internal method used by change_polygon(). Should not be called directly.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
@@ -1455,7 +1455,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">change_polygon_gluings</span><span class="p">(</span><span class="n">label</span><span class="p">,</span><span class="n">gluing_list</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_set_edge_pairing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label1</span><span class="p">,</span> <span class="n">edge1</span><span class="p">,</span> <span class="n">label2</span><span class="p">,</span> <span class="n">edge2</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Internal method used by set_edge_pairing(). Should not be called directly.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
@@ -1506,7 +1506,7 @@
     <span class="n">_change_edge_gluing</span> <span class="o">=</span> <span class="n">_set_edge_pairing</span>
 
     <span class="k">def</span> <span class="nf">_add_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_polygon</span><span class="p">,</span> <span class="n">gluing_list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Internal method used by add_polygon(). Should not be called directly.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="n">new_polygon</span><span class="p">,</span> <span class="p">[</span><span class="kc">None</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">new_polygon</span><span class="o">.</span><span class="n">num_edges</span><span class="p">())]</span> <span class="p">]</span>
@@ -1534,7 +1534,7 @@
         <span class="k">return</span> <span class="n">new_label</span>
 
 <div class="viewcode-block" id="Surface_dict.num_polygons"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.surface.Surface_dict.num_polygons">[docs]</a>    <span class="k">def</span> <span class="nf">num_polygons</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the number of polygons making up the surface in constant time.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_finite</span><span class="p">():</span>
@@ -1548,7 +1548,7 @@
             <span class="k">return</span> <span class="n">Infinity</span></div>
 
 <div class="viewcode-block" id="Surface_dict.label_iterator"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.surface.Surface_dict.label_iterator">[docs]</a>    <span class="k">def</span> <span class="nf">label_iterator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Iterator over all polygon labels.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reference_surface</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -1559,7 +1559,7 @@
                 <span class="k">yield</span> <span class="n">i</span></div>
 
     <span class="k">def</span> <span class="nf">_remove_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Internal method used by remove_polygon(). Should not be called directly.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reference_surface</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -1581,7 +1581,7 @@
 
 
 <div class="viewcode-block" id="BaseRingChangedSurface"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.surface.BaseRingChangedSurface">[docs]</a><span class="k">class</span> <span class="nc">BaseRingChangedSurface</span><span class="p">(</span><span class="n">Surface</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A surface with a different base_ring.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">surface</span><span class="p">,</span> <span class="n">ring</span><span class="p">):</span>
@@ -1599,7 +1599,7 @@
 
 
 <div class="viewcode-block" id="LabelWalker"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.surface.LabelWalker">[docs]</a><span class="k">class</span> <span class="nc">LabelWalker</span><span class="p">:</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Take a canonical walk around the surface and find the labels of polygons.</span>
 
 <span class="sd">    We start at the base_label().</span>
@@ -1644,13 +1644,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_walk</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">base_label</span><span class="p">(),</span><span class="mi">0</span><span class="p">))</span>
 
 <div class="viewcode-block" id="LabelWalker.label_dictionary"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.surface.LabelWalker.label_dictionary">[docs]</a>    <span class="k">def</span> <span class="nf">label_dictionary</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a dictionary mapping labels to integers which gives a canonical order on labels.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_label_dict</span></div>
 
 <div class="viewcode-block" id="LabelWalker.edge_back"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.surface.LabelWalker.edge_back">[docs]</a>    <span class="k">def</span> <span class="nf">edge_back</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the &quot;canonical&quot; edge to walk through to get closer to the base_label,</span>
 <span class="sd">        or None if label already is the base_label.</span>
 
@@ -1688,13 +1688,13 @@
                 <span class="k">yield</span> <span class="n">label</span><span class="p">,</span><span class="n">e</span></div>
 
     <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the number of labels found.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_labels</span><span class="p">)</span>
 
 <div class="viewcode-block" id="LabelWalker.find_a_new_label"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.surface.LabelWalker.find_a_new_label">[docs]</a>    <span class="k">def</span> <span class="nf">find_a_new_label</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Finds a new label, stores it, and returns it. Returns None if we have already found all labels.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_walk</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
@@ -1713,7 +1713,7 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
 <div class="viewcode-block" id="LabelWalker.find_new_labels"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.surface.LabelWalker.find_new_labels">[docs]</a>    <span class="k">def</span> <span class="nf">find_new_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Look for n new labels. Return the list of labels found.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">new_labels</span> <span class="o">=</span> <span class="p">[]</span>
@@ -1732,13 +1732,13 @@
             <span class="n">label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_a_new_label</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="LabelWalker.number_to_label"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.surface.LabelWalker.number_to_label">[docs]</a>    <span class="k">def</span> <span class="nf">number_to_label</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the n-th label where n is less than the length.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_labels</span><span class="p">[</span><span class="n">n</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="LabelWalker.label_to_number"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.surface.LabelWalker.label_to_number">[docs]</a>    <span class="k">def</span> <span class="nf">label_to_number</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">search</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the number associated to the provided label.</span>
 
 <span class="sd">        Returns an error if the label has not already been found by the walker</span>
@@ -1762,13 +1762,13 @@
 
 
 <div class="viewcode-block" id="ExtraLabel"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.surface.ExtraLabel">[docs]</a><span class="k">class</span> <span class="nc">ExtraLabel</span><span class="p">(</span><span class="n">SageObject</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Used to spit out new labels.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_next</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Construct a new label.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -1795,7 +1795,7 @@
 
 
 <div class="viewcode-block" id="LabelComparator"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.surface.LabelComparator">[docs]</a><span class="k">class</span> <span class="nc">LabelComparator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Implements a total ordering on labels, which may be of varying types.</span>
 
 <span class="sd">    We use hashes, so if hash(label1) &lt; hash(label2) we declare label1 &lt; label2.</span>
@@ -1803,7 +1803,7 @@
 <span class="sd">    For objects with the same hash, we store an arbitrary ordering.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize a label comparator.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_hash_collision_resolver</span> <span class="o">=</span> <span class="p">{}</span>
@@ -1822,7 +1822,7 @@
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">lst</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span>
             
 <div class="viewcode-block" id="LabelComparator.lt"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.surface.LabelComparator.lt">[docs]</a>    <span class="k">def</span> <span class="nf">lt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">l1</span><span class="p">,</span> <span class="n">l2</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the truth value of l1 &lt; l2.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">h1</span> <span class="o">=</span> <span class="nb">hash</span><span class="p">(</span><span class="n">l1</span><span class="p">)</span>
@@ -1837,19 +1837,19 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_resolver_index</span><span class="p">(</span><span class="n">h1</span><span class="p">,</span> <span class="n">l1</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_resolver_index</span><span class="p">(</span><span class="n">h1</span><span class="p">,</span> <span class="n">l2</span><span class="p">)</span></div>
     
 <div class="viewcode-block" id="LabelComparator.le"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.surface.LabelComparator.le">[docs]</a>    <span class="k">def</span> <span class="nf">le</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">l1</span><span class="p">,</span> <span class="n">l2</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the truth value of l1 &lt;= l2.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">lt</span><span class="p">(</span><span class="n">l1</span><span class="p">,</span> <span class="n">l2</span><span class="p">)</span> <span class="ow">or</span> <span class="n">l1</span> <span class="o">==</span> <span class="n">l2</span></div>
     
 <div class="viewcode-block" id="LabelComparator.gt"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.surface.LabelComparator.gt">[docs]</a>    <span class="k">def</span> <span class="nf">gt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">l1</span><span class="p">,</span> <span class="n">l2</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the truth value of l1 &gt; l2.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">lt</span><span class="p">(</span><span class="n">l2</span><span class="p">,</span> <span class="n">l1</span><span class="p">)</span></div>
     
 <div class="viewcode-block" id="LabelComparator.ge"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.surface.LabelComparator.ge">[docs]</a>    <span class="k">def</span> <span class="nf">ge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">l1</span><span class="p">,</span> <span class="n">l2</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the truth value of l1 &gt;= l2.</span>
 <span class="sd">        r&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">lt</span><span class="p">(</span><span class="n">l2</span><span class="p">,</span> <span class="n">l1</span><span class="p">)</span> <span class="ow">or</span> <span class="n">l1</span> <span class="o">==</span> <span class="n">l2</span></div></div>

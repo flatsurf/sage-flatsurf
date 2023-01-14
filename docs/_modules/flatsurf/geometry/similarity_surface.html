@@ -266,7 +266,7 @@
 
 
 <div class="viewcode-block" id="SimilaritySurface"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity_surface.SimilaritySurface">[docs]</a><span class="k">class</span> <span class="nc">SimilaritySurface</span><span class="p">(</span><span class="n">SageObject</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    An oriented surface built from a set of polygons and edges identified with</span>
 <span class="sd">    similarities (i.e. composition of homothety, rotations and translations).</span>
 
@@ -359,7 +359,7 @@
 <span class="sd">    - ``is_finite(self)``: whether the surface is built from finitely many polygons</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">surface</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        TESTS::</span>
 
 <span class="sd">            sage: from flatsurf.geometry.similarity_surface import SimilaritySurface</span>
@@ -381,7 +381,7 @@
         <span class="k">return</span> <span class="n">MatrixSpace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span> <span class="mi">2</span><span class="p">)</span>
 
 <div class="viewcode-block" id="SimilaritySurface.underlying_surface"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity_surface.SimilaritySurface.underlying_surface">[docs]</a>    <span class="k">def</span> <span class="nf">underlying_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the surface underlying this SimilaritySurface.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span></div>
@@ -407,7 +407,7 @@
         <span class="n">tester</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">tester</span><span class="o">.</span><span class="n">_prefix</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
 <div class="viewcode-block" id="SimilaritySurface.base_ring"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity_surface.SimilaritySurface.base_ring">[docs]</a>    <span class="k">def</span> <span class="nf">base_ring</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The field on which the coordinates of ``self`` live.</span>
 
 <span class="sd">        This method must be overridden in subclasses!</span>
@@ -415,19 +415,19 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="SimilaritySurface.polygon"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity_surface.SimilaritySurface.polygon">[docs]</a>    <span class="k">def</span> <span class="nf">polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lab</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the polygon with label ``lab``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">lab</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SimilaritySurface.base_label"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity_surface.SimilaritySurface.base_label">[docs]</a>    <span class="k">def</span> <span class="nf">base_label</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Always returns the same label.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">base_label</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="SimilaritySurface.opposite_edge"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity_surface.SimilaritySurface.opposite_edge">[docs]</a>    <span class="k">def</span> <span class="nf">opposite_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">e</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Given the label ``l`` of a polygon and an edge ``e`` in that polygon</span>
 <span class="sd">        returns the pair (``ll``, ``ee``) to which this edge is glued.</span>
 <span class="sd">        If e is not provided, then it expects the only parameter to be</span>
@@ -438,19 +438,19 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="n">e</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SimilaritySurface.is_finite"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity_surface.SimilaritySurface.is_finite">[docs]</a>    <span class="k">def</span> <span class="nf">is_finite</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return whether or not the surface is finite.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">is_finite</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="SimilaritySurface.is_mutable"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity_surface.SimilaritySurface.is_mutable">[docs]</a>    <span class="k">def</span> <span class="nf">is_mutable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return if the surface is mutable.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">is_mutable</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="SimilaritySurface.set_immutable"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity_surface.SimilaritySurface.set_immutable">[docs]</a>    <span class="k">def</span> <span class="nf">set_immutable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Mark the surface as immutable.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">set_immutable</span><span class="p">()</span></div>
@@ -500,7 +500,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">walker</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="SimilaritySurface.label_iterator"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity_surface.SimilaritySurface.label_iterator">[docs]</a>    <span class="k">def</span> <span class="nf">label_iterator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">polygons</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Iterator over all polygon labels.</span>
 
 <span class="sd">        If the keyword polygons is True then we return pairs (label, polygon)</span>
@@ -512,7 +512,7 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">label_iterator</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="SimilaritySurface.edge_iterator"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity_surface.SimilaritySurface.edge_iterator">[docs]</a>    <span class="k">def</span> <span class="nf">edge_iterator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gluings</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Iterate over the edges of polygons, which are pairs (l,e) where l is a polygon label, 0 &lt;= e &lt; N and N is the number of edges of the polygon with label l.</span>
 
 <span class="sd">        If the keyword gluings is set to true, then we iterate over ordered</span>
@@ -543,19 +543,19 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">edge_iterator</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="SimilaritySurface.num_polygons"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity_surface.SimilaritySurface.num_polygons">[docs]</a>    <span class="k">def</span> <span class="nf">num_polygons</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the number of polygons.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">num_polygons</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="SimilaritySurface.num_edges"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity_surface.SimilaritySurface.num_edges">[docs]</a>    <span class="k">def</span> <span class="nf">num_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the total number of edges of all polygons used.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="SimilaritySurface.num_singularities"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity_surface.SimilaritySurface.num_singularities">[docs]</a>    <span class="k">def</span> <span class="nf">num_singularities</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        EXAMPLES::</span>
 
 <span class="sd">            sage: from flatsurf import *</span>
@@ -610,7 +610,7 @@
 
 <div class="viewcode-block" id="SimilaritySurface.edge_matrix"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity_surface.SimilaritySurface.edge_matrix">[docs]</a>    <span class="nd">@cached_method</span>
     <span class="k">def</span> <span class="nf">edge_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">e</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the 2x2 matrix representing a similarity which when applied to the polygon with label `p`</span>
 <span class="sd">        makes it so the edge `e` can be glued to its opposite edge by translation.</span>
 
@@ -645,7 +645,7 @@
         <span class="k">return</span> <span class="n">similarity_from_vectors</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="o">-</span><span class="n">v</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_matrix_space</span><span class="p">())</span></div>
 
 <div class="viewcode-block" id="SimilaritySurface.edge_transformation"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity_surface.SimilaritySurface.edge_transformation">[docs]</a>    <span class="k">def</span> <span class="nf">edge_transformation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the similarity bringing the provided edge to the opposite edge.</span>
 
 <span class="sd">        EXAMPLES::</span>
@@ -683,7 +683,7 @@
         <span class="k">return</span> <span class="n">gg</span> <span class="o">/</span> <span class="n">g</span></div>
 
 <div class="viewcode-block" id="SimilaritySurface.set_vertex_zero"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity_surface.SimilaritySurface.set_vertex_zero">[docs]</a>    <span class="k">def</span> <span class="nf">set_vertex_zero</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Applies a combinatorial rotation to the polygon with the provided label.</span>
 
 <span class="sd">        This makes what is currently vertex v of this polygon vertex 0. In other words,</span>
@@ -748,7 +748,7 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">mutable</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">set_vertex_zero</span><span class="p">(</span><span class="n">label</span><span class="p">,</span><span class="n">v</span><span class="p">,</span><span class="n">in_place</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_label_comparator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a LabelComparator, which provides a fixed total ordering on the polygon labels.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
@@ -758,7 +758,7 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lc</span>
 
 <div class="viewcode-block" id="SimilaritySurface.relabel"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity_surface.SimilaritySurface.relabel">[docs]</a>    <span class="k">def</span> <span class="nf">relabel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">relabeling_map</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Attempt to relabel the polygons according to a relabeling_map, which takes as input</span>
 <span class="sd">        a current label and outputs a new label for the same polygon. The method returns a pair</span>
 <span class="sd">        (surface,success) where surface is the relabeled surface, and success is a boolean value</span>
@@ -865,7 +865,7 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">mutable</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">relabel</span><span class="p">(</span><span class="n">relabeling_map</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SimilaritySurface.copy"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity_surface.SimilaritySurface.copy">[docs]</a>    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">relabel</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">mutable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">lazy</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">new_field</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">optimal_number_field</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a copy of this surface. The method takes several flags to modify how the copy is taken.</span>
 
 <span class="sd">        If relabel is True, then instead of returning an exact copy, it returns a copy indexed by the</span>
@@ -978,7 +978,7 @@
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="n">Surface_dict</span><span class="p">(</span><span class="n">surface</span><span class="o">=</span><span class="n">s</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">mutable</span><span class="o">=</span><span class="n">mutable</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="SimilaritySurface.triangle_flip"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity_surface.SimilaritySurface.triangle_flip">[docs]</a>    <span class="k">def</span> <span class="nf">triangle_flip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">l1</span><span class="p">,</span> <span class="n">e1</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">test</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Flips the diagonal of the quadrilateral formed by two triangles</span>
 <span class="sd">        glued together along the provided edge (l1,e1). This can be broken</span>
 <span class="sd">        into two steps: join along the edge to form a convex quadilateral,</span>
@@ -1261,7 +1261,7 @@
         <span class="k">return</span> <span class="n">s</span></div>
 
 <div class="viewcode-block" id="SimilaritySurface.join_polygons"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity_surface.SimilaritySurface.join_polygons">[docs]</a>    <span class="k">def</span> <span class="nf">join_polygons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p1</span><span class="p">,</span> <span class="n">e1</span><span class="p">,</span> <span class="n">test</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Join polygons across the provided edge (p1,e1). By default,</span>
 <span class="sd">        it returns the surface obtained by joining the two polygons</span>
 <span class="sd">        together. It raises a ValueError if gluing the two polygons</span>
@@ -1353,7 +1353,7 @@
         <span class="k">return</span> <span class="n">ss</span></div>
 
 <div class="viewcode-block" id="SimilaritySurface.subdivide_polygon"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity_surface.SimilaritySurface.subdivide_polygon">[docs]</a>    <span class="k">def</span> <span class="nf">subdivide_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">,</span> <span class="n">test</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">new_label</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Cut the polygon with label p along the diagonal joining vertex</span>
 <span class="sd">        v1 to vertex v2. This cuts p into two polygons, one will keep the same</span>
 <span class="sd">        label. The other will get a new label, which can be provided</span>
@@ -1425,7 +1425,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">underlying_surface</span><span class="p">()</span><span class="o">.</span><span class="n">change_edge_gluing</span><span class="p">(</span><span class="n">new_label</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">pair</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pair</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span></div>
 
 <div class="viewcode-block" id="SimilaritySurface.singularity"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity_surface.SimilaritySurface.singularity">[docs]</a>    <span class="k">def</span> <span class="nf">singularity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Represents the Singularity associated to the v-th vertex of the polygon with</span>
 <span class="sd">        label l.</span>
 
@@ -1448,7 +1448,7 @@
         <span class="k">return</span> <span class="n">Singularity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">l</span><span class="p">,</span><span class="n">v</span><span class="p">,</span><span class="n">limit</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SimilaritySurface.point"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity_surface.SimilaritySurface.point">[docs]</a>    <span class="k">def</span> <span class="nf">point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">point</span><span class="p">,</span> <span class="n">ring</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a point in this surface.</span>
 
 <span class="sd">        INPUT:</span>
@@ -1483,7 +1483,7 @@
     <span class="n">surface_point</span> <span class="o">=</span> <span class="n">point</span>
 
 <div class="viewcode-block" id="SimilaritySurface.ramified_cover"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity_surface.SimilaritySurface.ramified_cover">[docs]</a>    <span class="k">def</span> <span class="nf">ramified_cover</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">degree</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Build a ramified cover of this surface with given ``degree`` and ramification ``data``.</span>
 
 <span class="sd">        INPUT:</span>
@@ -1519,7 +1519,7 @@
         <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)(</span><span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">ramified_cover</span><span class="p">(</span><span class="n">degree</span><span class="p">,</span> <span class="n">data</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="SimilaritySurface.minimal_cover"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity_surface.SimilaritySurface.minimal_cover">[docs]</a>    <span class="k">def</span> <span class="nf">minimal_cover</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cover_type</span> <span class="o">=</span> <span class="s2">&quot;translation&quot;</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the minimal translation or half-translation cover of the surface.</span>
 
 <span class="sd">        Cover type may be either &quot;translation&quot;, &quot;half-translation&quot; or &quot;planar&quot;.</span>
@@ -1576,14 +1576,14 @@
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Provided cover_type is not supported.&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SimilaritySurface.vector_space"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity_surface.SimilaritySurface.vector_space">[docs]</a>    <span class="k">def</span> <span class="nf">vector_space</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the vector space in which self naturally embeds.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span> <span class="nn">sage.modules.free_module</span> <span class="kn">import</span> <span class="n">VectorSpace</span>
         <span class="k">return</span> <span class="n">VectorSpace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span> <span class="mi">2</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SimilaritySurface.fundamental_group"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity_surface.SimilaritySurface.fundamental_group">[docs]</a>    <span class="k">def</span> <span class="nf">fundamental_group</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_label</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the fundamental group of this surface.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_finite</span><span class="p">():</span>
@@ -1594,7 +1594,7 @@
         <span class="k">return</span> <span class="n">FundamentalGroup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_label</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SimilaritySurface.tangent_bundle"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity_surface.SimilaritySurface.tangent_bundle">[docs]</a>    <span class="k">def</span> <span class="nf">tangent_bundle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ring</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the tangent bundle</span>
 
 <span class="sd">        INPUT:</span>
@@ -1617,7 +1617,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tangent_bundle_cache</span><span class="p">[</span><span class="n">ring</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="SimilaritySurface.tangent_vector"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity_surface.SimilaritySurface.tangent_vector">[docs]</a>    <span class="k">def</span> <span class="nf">tangent_vector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lab</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">ring</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a tangent vector.</span>
 
 <span class="sd">        INPUT:</span>
@@ -1672,7 +1672,7 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tangent_bundle</span><span class="p">(</span><span class="n">ring</span><span class="p">)(</span><span class="n">lab</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SimilaritySurface.reposition_polygons"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity_surface.SimilaritySurface.reposition_polygons">[docs]</a>    <span class="k">def</span> <span class="nf">reposition_polygons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">relabel</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        We choose a maximal tree in the dual graph of the decomposition into</span>
 <span class="sd">        polygons, and ensure that the gluings between two polygons joined by</span>
 <span class="sd">        an edge in this tree is by translation.</span>
@@ -1713,7 +1713,7 @@
         <span class="k">return</span> <span class="n">s</span></div>
 
 <div class="viewcode-block" id="SimilaritySurface.triangulation_mapping"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity_surface.SimilaritySurface.triangulation_mapping">[docs]</a>    <span class="k">def</span> <span class="nf">triangulation_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a ``SurfaceMapping`` triangulating the surface</span>
 <span class="sd">        or ``None`` if the surface is already triangulated.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1721,7 +1721,7 @@
         <span class="k">return</span> <span class="n">triangulation_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SimilaritySurface.triangulate"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity_surface.SimilaritySurface.triangulate">[docs]</a>    <span class="k">def</span> <span class="nf">triangulate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">relabel</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a triangulated version of this surface. (This may be mutable</span>
 <span class="sd">        or not depending on the input.)</span>
 
@@ -1800,7 +1800,7 @@
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Failed to return anything!&quot;</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_edge_needs_flip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">p1</span><span class="p">,</span><span class="n">e1</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns -1 if the the provided edge incident to two triangles which</span>
 <span class="sd">        should be flipped to get closer to the Delaunay decomposition.</span>
 <span class="sd">        Returns 0 if the quadrilateral formed by the triangles is inscribed</span>
@@ -1820,7 +1820,7 @@
         <span class="k">return</span> <span class="n">sim</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">&lt;</span><span class="mi">0</span>
 
     <span class="k">def</span> <span class="nf">_edge_needs_join</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">p1</span><span class="p">,</span><span class="n">e1</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns -1 if the the provided edge incident to two triangles which</span>
 <span class="sd">        should be flipped to get closer to the Delaunay decomposition.</span>
 <span class="sd">        Returns 0 if the quadrilateral formed by the triangles is inscribed</span>
@@ -1841,7 +1841,7 @@
         <span class="k">return</span> <span class="n">sim</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">==</span><span class="mi">0</span>
 
 <div class="viewcode-block" id="SimilaritySurface.delaunay_single_flip"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity_surface.SimilaritySurface.delaunay_single_flip">[docs]</a>    <span class="k">def</span> <span class="nf">delaunay_single_flip</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Does a single in place flip of a triangulated mutable surface.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_finite</span><span class="p">():</span>
@@ -1854,7 +1854,7 @@
         <span class="k">return</span> <span class="kc">False</span></div>
 
 <div class="viewcode-block" id="SimilaritySurface.is_delaunay_triangulated"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity_surface.SimilaritySurface.is_delaunay_triangulated">[docs]</a>    <span class="k">def</span> <span class="nf">is_delaunay_triangulated</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return if the surface is triangulated and the triangulation is Delaunay.</span>
 <span class="sd">        If limit is set, then it checks this only limit many edges.</span>
 <span class="sd">        Limit must be set for infinite surfaces.</span>
@@ -1881,7 +1881,7 @@
         <span class="k">return</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="SimilaritySurface.is_delaunay_decomposed"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity_surface.SimilaritySurface.is_delaunay_decomposed">[docs]</a>    <span class="k">def</span> <span class="nf">is_delaunay_decomposed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return if the decomposition of the surface into polygons is Delaunay.</span>
 <span class="sd">        If limit is set, then it checks this only limit many polygons.</span>
 <span class="sd">        Limit must be set for infinite surfaces.</span>
@@ -1907,7 +1907,7 @@
             <span class="k">return</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="SimilaritySurface.delaunay_triangulation"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity_surface.SimilaritySurface.delaunay_triangulation">[docs]</a>    <span class="k">def</span> <span class="nf">delaunay_triangulation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triangulated</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">relabel</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a Delaunay triangulation of a surface, or make some</span>
 <span class="sd">        triangle flips to get closer to the Delaunay decomposition.</span>
 
@@ -2039,7 +2039,7 @@
 <div class="viewcode-block" id="SimilaritySurface.delaunay_decomposition"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity_surface.SimilaritySurface.delaunay_decomposition">[docs]</a>    <span class="k">def</span> <span class="nf">delaunay_decomposition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triangulated</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> \
             <span class="n">delaunay_triangulated</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>\
             <span class="n">relabel</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the Delaunay Decomposition of this surface.</span>
 
 <span class="sd">        INPUT:</span>
@@ -2126,7 +2126,7 @@
         <span class="k">return</span> <span class="n">s</span></div>
 
 <div class="viewcode-block" id="SimilaritySurface.saddle_connections"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity_surface.SimilaritySurface.saddle_connections">[docs]</a>    <span class="k">def</span> <span class="nf">saddle_connections</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">squared_length_bound</span><span class="p">,</span> <span class="n">initial_label</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">initial_vertex</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sc_list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a list of saddle connections on the surface whose length squared is less than or equal to squared_length_bound.</span>
 <span class="sd">        The length of a saddle connection is measured using holonomy from polygon in which the trajectory starts.</span>
 
@@ -2226,7 +2226,7 @@
         <span class="k">return</span> <span class="n">sc_list</span></div>
 
 <div class="viewcode-block" id="SimilaritySurface.set_default_graphical_surface"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity_surface.SimilaritySurface.set_default_graphical_surface">[docs]</a>    <span class="k">def</span> <span class="nf">set_default_graphical_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graphical_surface</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Replace the default graphical surface with the provided GraphicalSurface.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span> <span class="nn">flatsurf.graphical.surface</span> <span class="kn">import</span> <span class="n">GraphicalSurface</span>
@@ -2237,7 +2237,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_gs</span> <span class="o">=</span>  <span class="n">graphical_surface</span></div>
 
 <div class="viewcode-block" id="SimilaritySurface.graphical_surface"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity_surface.SimilaritySurface.graphical_surface">[docs]</a>    <span class="k">def</span> <span class="nf">graphical_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a GraphicalSurface representing this surface.</span>
 
 <span class="sd">        By default this returns a cached version of the GraphicalSurface. If</span>
@@ -2296,7 +2296,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gs</span></div>
 
 <div class="viewcode-block" id="SimilaritySurface.plot"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity_surface.SimilaritySurface.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a plot of the surface.</span>
 
 <span class="sd">        There may be zero or one argument. If provided the single argument</span>
@@ -2355,7 +2355,7 @@
                      <span class="n">plot_polygon</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">plot_edges</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">plot_edge_labels</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
                      <span class="n">edge_labels</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                      <span class="n">polygon_options</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;axes&quot;</span><span class="p">:</span><span class="kc">True</span><span class="p">},</span> <span class="n">edge_options</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">edge_label_options</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a plot of the polygon with the provided label.</span>
 
 <span class="sd">        Note that this method plots the polygon in its coordinates as opposed to</span>
@@ -2520,7 +2520,7 @@
 <span class="c1">#        return self.minimize_monodromy_mapping().codomain()</span>
 
     <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implements a naive notion of equality where two finite surfaces are equal if:</span>
 <span class="sd">        - their base labels are equal,</span>
 <span class="sd">        - their polygons are equal and labeled and glued in the same way.</span>
@@ -2562,7 +2562,7 @@
         <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span> <span class="o">==</span> <span class="n">other</span>
 
     <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Hash compatible with equals.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">is_mutable</span><span class="p">():</span>

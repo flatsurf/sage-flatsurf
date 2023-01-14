@@ -265,14 +265,14 @@
 <span class="n">ZZ_m1</span> <span class="o">=</span> <span class="o">-</span><span class="n">ZZ_1</span>
 
 <div class="viewcode-block" id="Similarity"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity.Similarity">[docs]</a><span class="k">class</span> <span class="nc">Similarity</span><span class="p">(</span><span class="n">MultiplicativeGroupElement</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class for a similarity of the plane with possible reflection.</span>
 
 <span class="sd">    Construct the similarity (x,y) mapsto (ax-by+s,bx+ay+t) if sign=1,</span>
 <span class="sd">    and (ax+by+s,bx-ay+t) if sign=-1</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">sign</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Construct the similarity (x,y) mapsto (ax-by+s,bx+ay+t) if sign=1,</span>
 <span class="sd">        and (ax+by+s,bx-ay+t) if sign=-1</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -302,7 +302,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sign</span></div>
 
 <div class="viewcode-block" id="Similarity.is_translation"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity.Similarity.is_translation">[docs]</a>    <span class="k">def</span> <span class="nf">is_translation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return whether this element is a translation.</span>
 
 <span class="sd">        EXAMPLES::</span>
@@ -319,7 +319,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sign</span><span class="o">.</span><span class="n">is_one</span><span class="p">()</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_a</span><span class="o">.</span><span class="n">is_one</span><span class="p">()</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_b</span><span class="o">.</span><span class="n">is_zero</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Similarity.is_half_translation"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity.Similarity.is_half_translation">[docs]</a>    <span class="k">def</span> <span class="nf">is_half_translation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return whether this element is a half translation.</span>
 
 <span class="sd">        EXAMPLES::</span>
@@ -339,7 +339,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sign</span><span class="o">.</span><span class="n">is_one</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Similarity.is_rotation"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity.Similarity.is_rotation">[docs]</a>    <span class="k">def</span> <span class="nf">is_rotation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check whether this element is a rotation</span>
 
 <span class="sd">        EXAMPLES::</span>
@@ -356,7 +356,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_one</span><span class="p">()</span> <span class="ow">or</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">det</span><span class="p">()</span><span class="o">.</span><span class="n">is_one</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_translation</span><span class="p">())</span></div>
 
 <div class="viewcode-block" id="Similarity.is_isometry"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity.Similarity.is_isometry">[docs]</a>    <span class="k">def</span> <span class="nf">is_isometry</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check whether this element is an isometry</span>
 
 <span class="sd">        EXAMPLES::</span>
@@ -378,13 +378,13 @@
         <span class="k">return</span> <span class="n">det</span><span class="o">.</span><span class="n">is_one</span><span class="p">()</span> <span class="ow">or</span> <span class="p">(</span><span class="o">-</span><span class="n">det</span><span class="p">)</span><span class="o">.</span><span class="n">is_one</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Similarity.det"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity.Similarity.det">[docs]</a>    <span class="k">def</span> <span class="nf">det</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the determinant of this element</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sign</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_a</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_a</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_b</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_b</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_mul_</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Composition</span>
 
 <span class="sd">        EXAMPLES::</span>
@@ -413,7 +413,7 @@
         <span class="k">return</span> <span class="n">P</span><span class="o">.</span><span class="n">element_class</span><span class="p">(</span><span class="n">P</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">sign</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__invert__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Invert a similarity.</span>
 
 <span class="sd">        TESTS::</span>
@@ -459,7 +459,7 @@
         <span class="k">return</span> <span class="mi">73</span><span class="o">*</span><span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_a</span><span class="p">)</span><span class="o">-</span><span class="mi">19</span><span class="o">*</span><span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_b</span><span class="p">)</span><span class="o">+</span><span class="mi">13</span><span class="o">*</span><span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="p">)</span><span class="o">+</span><span class="mi">53</span><span class="o">*</span><span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_t</span><span class="p">)</span><span class="o">+</span><span class="mi">67</span><span class="o">*</span><span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sign</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">ring</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the image of ``w`` under the similarity. Here ``w`` may be a ConvexPolygon or a vector</span>
 <span class="sd">        (or something that can be indexed in the same way as a vector). If a ring is provided,</span>
 <span class="sd">        the objects returned will be defined over this ring.</span>
@@ -526,7 +526,7 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">_b</span> <span class="o">*</span> <span class="n">w</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_a</span> <span class="o">*</span> <span class="n">w</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_t</span><span class="p">])</span>
 
     <span class="k">def</span> <span class="nf">_repr_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        TESTS::</span>
 
 <span class="sd">            sage: from flatsurf.geometry.similarity import SimilarityGroup</span>
@@ -547,7 +547,7 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">_b</span><span class="o">*</span><span class="n">x</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sign</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_a</span><span class="o">*</span><span class="n">y</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_t</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        TESTS::</span>
 
 <span class="sd">            sage: from flatsurf.geometry.similarity import SimilarityGroup</span>
@@ -577,7 +577,7 @@
         <span class="k">return</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span> <span class="o">==</span> <span class="n">other</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Similarity.matrix"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity.Similarity.matrix">[docs]</a>    <span class="k">def</span> <span class="nf">matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the 3x3 matrix representative of this element</span>
 
 <span class="sd">        EXAMPLES::</span>
@@ -600,7 +600,7 @@
             <span class="n">z</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">o</span><span class="p">])</span></div>
 
 <div class="viewcode-block" id="Similarity.derivative"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity.Similarity.derivative">[docs]</a>    <span class="k">def</span> <span class="nf">derivative</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the 2x2 matrix corresponding to the derivative of this element</span>
 
 <span class="sd">        EXAMPLES::</span>
@@ -617,7 +617,7 @@
 
 
 <div class="viewcode-block" id="SimilarityGroup"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity.SimilarityGroup">[docs]</a><span class="k">class</span> <span class="nc">SimilarityGroup</span><span class="p">(</span><span class="n">UniqueRepresentation</span><span class="p">,</span> <span class="n">Group</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The group of possibly orientation reversing similarities in the plane.</span>
 
 <span class="sd">    This is the group generated by rotations, translations and dilations.</span>
@@ -625,7 +625,7 @@
     <span class="n">Element</span> <span class="o">=</span> <span class="n">Similarity</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_ring</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        TESTS::</span>
 
 <span class="sd">            sage: from flatsurf.geometry.similarity import SimilarityGroup</span>
@@ -651,7 +651,7 @@
         <span class="k">return</span> <span class="n">VectorSpace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ring</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_element_constructor_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        TESTS::</span>
 
 <span class="sd">            sage: from flatsurf.geometry.similarity import SimilarityGroup</span>
@@ -729,7 +729,7 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ring</span><span class="o">.</span><span class="n">has_coerce_map_from</span><span class="p">(</span><span class="n">S</span><span class="o">.</span><span class="n">_ring</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_repr_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        TESTS::</span>
 
 <span class="sd">            sage: from flatsurf.geometry.similarity import SimilarityGroup</span>
@@ -739,7 +739,7 @@
         <span class="k">return</span> <span class="s2">&quot;Similarity group over </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ring</span><span class="p">)</span>
 
 <div class="viewcode-block" id="SimilarityGroup.one"><a class="viewcode-back" href="../../../geometry.html#flatsurf.geometry.similarity.SimilarityGroup.one">[docs]</a>    <span class="k">def</span> <span class="nf">one</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        EXAMPLES::</span>
 
 <span class="sd">            sage: from flatsurf.geometry.similarity import SimilarityGroup</span>
