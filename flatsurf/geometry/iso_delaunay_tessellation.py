@@ -229,16 +229,16 @@ class IsoDelaunayTessellation(Parent):
             sage: z = idt._hyperbolic_plane(i)
             sage: idt.explore()
 
-            sage: idt._dual_graph.vertices()
+            sage: idt._dual_graph.vertices(sort=True)
             [{2*l*(x^2 + y^2) + (-8*l + 4)*x ≥ 0} ∩ {(8*l - 4)*x - 4*l + 2 ≤ 0} ∩ {x ≥ 0}]
             sage: idt.insert_orbifold_points()
-            sage: idt._dual_graph.vertices()
+            sage: idt._dual_graph.vertices(sort=True)
             [{2*l*(x^2 + y^2) + (-8*l + 4)*x ≥ 0} ∩ {(8*l - 4)*x - 4*l + 2 ≤ 0} ∩ {x ≥ 0} ∪ {I}]
 
         """
         # TODO: Should this mutate the tessellation or create a copy instead?
-        for tessellation_face in self._dual_graph.vertices():
-            for source_tessellation_face, target_tessellation_face, tessellation_edges in self._dual_graph.edges(tessellation_face, labels=True):
+        for tessellation_face in self._dual_graph.vertices(sort=False)
+            for source_tessellation_face, target_tessellation_face, tessellation_edges in self._dual_graph.edges(tessellation_face, labels=True, sort=False)
                 # crossing edge of the polygon cycles back to the very edge in the
                 # polygon, so there is an orbifold point on that edge.
                 # We patch the polygon by inserting a marked point.
@@ -270,7 +270,7 @@ class IsoDelaunayTessellation(Parent):
 
         self._dual_graph.add_vertex(tessellation_face_with_marked_vertices)
         self._dual_graph.set_vertex(tessellation_face_with_marked_vertices, self._dual_graph.get_vertex(tessellation_face))
-        for source_tessellation_face, target_tessellation_face, tessellation_edges in list(self._dual_graph.edges(tessellation_face, labels=True)):
+        for source_tessellation_face, target_tessellation_face, tessellation_edges in list(self._dual_graph.edges(tessellation_face, labels=True, sort=False)):
             self._dual_graph.delete_edge(source_tessellation_face, target_tessellation_face, tessellation_edges)
             if source_tessellation_face == tessellation_face:
                 source_tessellation_face = tessellation_face_with_marked_vertices
@@ -601,7 +601,7 @@ class IsoDelaunayTessellation(Parent):
         """
         # TODO: Check that the fundamental domain has been computed.
 
-        half_edges = set((tessellation_face, tessellation_edge) for tessellation_face in self._dual_graph.vertices() for tessellation_edge in tessellation_face.edges())
+        half_edges = set((tessellation_face, tessellation_edge) for tessellation_face in self._dual_graph.vertices(sort=False) for tessellation_edge in tessellation_face.edges())
 
         vertices = []
 
@@ -616,7 +616,7 @@ class IsoDelaunayTessellation(Parent):
                 previous_tessellation_edge = tessellation_face.edges()[tessellation_face.edges().index(tessellation_edge) - 1]
 
                 # TODO: Merge this with the code in _cross maybe.
-                for source_tessellation_face, target_tessellation_face, tessellation_edges in self._dual_graph.edges(tessellation_face, labels=True):
+                for source_tessellation_face, target_tessellation_face, tessellation_edges in self._dual_graph.edges(tessellation_face, labels=True, sort=False):
 
                     if previous_tessellation_edge in tessellation_edges:
                         if len(tessellation_edges) == 1:
@@ -756,7 +756,7 @@ class IsoDelaunayTessellation(Parent):
         # when an edge is self glued, the midpoint is an order 2 orbifold point
         v = len(self.vertices()) + e_self_glued
         e = len(self._dual_graph.edges())
-        f = len(self._dual_graph.vertices())
+        f = len(self._dual_graph.vertices(sort=False))
 
         return (v - len(self.cusps())) - e + f
 
