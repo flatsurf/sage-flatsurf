@@ -317,10 +317,11 @@ class IsoDelaunayTessellation(Parent):
 
         from pyflatsurf import flatsurf
 
-        linear_equivalence = flatsurf.Equivalence.linear()
-        clazz = flatsurf.EquivalenceClass(surface_, linear_equivalence)
+        S = type(surface_)
+        linear_equivalence = flatsurf.Equivalence[S].linear()
+        clazz = flatsurf.EquivalenceClass[S](surface_, linear_equivalence)
 
-        if clazz in self._surface_classes:
+        if any(clazz == clazz_ for clazz_ in self._surface_classes):
             tessellation_face_ = self._surface_classes[clazz]
 
             # TODO: We don't need to run the isomorphism() machinery to recover the isomorphism here.
@@ -776,7 +777,7 @@ class IsoDelaunayTessellation(Parent):
         Return the punctures of the quotient H^2/Gamma
         """
         return [vertex_equivalence_class for vertex_equivalence_class in self.vertices()
-                       if vertex_equivalence_class[0][1].start().is_ideal()]
+                if vertex_equivalence_class[0][1].start().is_ideal()]
 
     def orbifold_points(self, order=None):
         r"""
