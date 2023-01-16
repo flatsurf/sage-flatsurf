@@ -8353,7 +8353,7 @@ class CartesianPathPlot(GraphicPrimitive):
 
             sage: from flatsurf.geometry.hyperbolic import CartesianPathPlot
             sage: P = CartesianPathPlot([])
-            sage: P._allowed_options()
+            sage: P._allowed_options()  # random output depending on the version of SageMath
             {'alpha': 'How transparent the figure is.',
              'edgecolor': 'The color for the border of filled polygons.',
              'fill': 'Whether or not to fill the polygon.',
