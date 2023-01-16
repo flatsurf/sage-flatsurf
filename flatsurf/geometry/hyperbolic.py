@@ -478,11 +478,15 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         import sage.structure.element
         from sage.structure.parent import Parent
+        from sage.all import SR
 
         parent = sage.structure.element.parent(x)
-        if isinstance(parent, Parent) and parent in NumberFields():
+        # Note that in old versions of SageMath (9.1 e.g.), I is not a number field element but a symbolic ring element.
+        # The "parent is SR" part can probably removed at some point.
+        if isinstance(parent, Parent) and parent in NumberFields() or parent is SR:
             if x.real() in self.base_ring() and x.imag() in self.base_ring() and x.imag() >= 0:
                 return True
+
 
         return super().__contains__(x)
 
@@ -1665,7 +1669,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         INPUT:
 
         - ``half_spaces`` -- a non-empty iterable of
-          :class:`HyperbolicHalfSpace`s of this hyperbolic plane.
+          :class:`HyperbolicHalfSpace`\ s of this hyperbolic plane.
 
         - ``check`` -- boolean (default: ``True``), whether the arguments are
           validated.
@@ -1976,7 +1980,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         """
         subsets = [self(subset) for subset in subsets]
 
-        vertices = sum([list(subset.vertices()) for subset in subsets], start=[])
+        vertices = sum([list(subset.vertices()) for subset in subsets], [])
 
         polygon = self.polygon(HyperbolicHalfSpaces.convex_hull(vertices))
 
@@ -8426,7 +8430,7 @@ class CartesianPathPlot(GraphicPrimitive):
 
             sage: from flatsurf.geometry.hyperbolic import CartesianPathPlot
             sage: P = CartesianPathPlot([])
-            sage: P._allowed_options()
+            sage: P._allowed_options()  # random output depending on the version of SageMath
             {'alpha': 'How transparent the figure is.',
              'edgecolor': 'The color for the border of filled polygons.',
              'fill': 'Whether or not to fill the polygon.',
@@ -8922,7 +8926,7 @@ class HyperbolicPathPlotCommand:
             ....: ]
 
         And its corresponding plot in different models::
-hi
+
             sage: HyperbolicPathPlotCommand.make_cartesian(commands, model="half_plane")
             [CartesianPathPlotCommand(code='MOVETO', args=(0.000000000000000, 1.00000000000000)),
              CartesianPathPlotCommand(code='RARCTO', args=((1.00000000000000, 1.00000000000000), (0.500000000000000, 0))),

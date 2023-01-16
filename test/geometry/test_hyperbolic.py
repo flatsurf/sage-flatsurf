@@ -64,7 +64,7 @@ def test_intersection_point():
     assert outside not in intersection, f"{outside} in {intersection} which was found to be the intersection of {half_spaces}"
 
     # Check that polygon is idempotent.
-    assert H.polygon(intersection._half_spaces()) == intersection
+    assert H.polygon(intersection.half_spaces()) == intersection
 
     # Check that the vertices of the intersection are correct.
     for i, e in enumerate(half_spaces):
