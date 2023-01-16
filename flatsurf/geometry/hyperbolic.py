@@ -8623,7 +8623,7 @@ class CartesianPathPlot(GraphicPrimitive):
         elif command.code == "MOVETOINFINITY":
             direction = command.args
             # TODO: What's pos?
-            vertices = [self._infinity(pos, direction)]
+            vertices = [self._infinity(pos, direction, xlim, ylim)]
         else:
             raise RuntimeError(f"path must not start with a {command.code} command")
 
@@ -8632,7 +8632,7 @@ class CartesianPathPlot(GraphicPrimitive):
         codes = [Path.MOVETO]
 
         for command in self._commands[1:]:
-            pos, direction = self._extend_path(vertices, codes, pos, direction, command, fill)
+            pos, direction = self._extend_path(vertices, codes, pos, direction, command, fill, xlim, ylim)
 
         return Path(vertices, codes)
 
@@ -8675,7 +8675,7 @@ class CartesianPathPlot(GraphicPrimitive):
         return pos + λ * direction
 
     @staticmethod
-    def _extend_path(vertices, codes, pos, direction, command, fill):
+    def _extend_path(vertices, codes, pos, direction, command, fill, xlim, ylim):
         # TODO: Check documentation.
         # TODO: Check INPUT
         # TODO: Check SEEALSO
@@ -8696,7 +8696,7 @@ class CartesianPathPlot(GraphicPrimitive):
             target = command.args
 
             if direction is not None:
-                vertices.append(CartesianPathPlot._infinity(target, direction))
+                vertices.append(CartesianPathPlot._infinity(target, direction, xlim, ylim))
                 codes.append(Path.LINETO)
                 direction = None
 
@@ -8708,13 +8708,13 @@ class CartesianPathPlot(GraphicPrimitive):
             if direction is None:
                 direction = command.args
 
-                vertices.append(CartesianPathPlot._infinity(pos, direction))
+                vertices.append(CartesianPathPlot._infinity(pos, direction, xlim, ylim))
                 codes.append(Path.LINETO)
             else:
-                start = CartesianPathPlot._infinity(pos, direction)
+                start = CartesianPathPlot._infinity(pos, direction, xlim, ylim)
 
                 direction = command.args
-                end = CartesianPathPlot._infinity(pos, direction)
+                end = CartesianPathPlot._infinity(pos, direction, xlim, ylim)
 
                 # Sweep the bounding box counterclockwise from start to end
                 from sage.all import vector
