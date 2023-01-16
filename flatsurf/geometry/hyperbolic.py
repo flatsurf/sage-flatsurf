@@ -23,8 +23,8 @@ base has been specified explicitly::
 
 We can use a bigger field instead::
 
-    sage: HAA = HyperbolicPlane(AA)
-    sage: HAA(sqrt(2) + I)
+    sage: H_algebraic = HyperbolicPlane(AA)
+    sage: H_algebraic(sqrt(2) + I)
     1.414213562373095? + 1.000000000000000?*I
 
 Given two points in the hyperbolic plane, we can form the geodesic they lay on::
@@ -982,7 +982,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         - ``q`` -- an element of the :meth:`base_ring`.
 
-        EXMAPLES::
+        EXAMPLES::
 
             sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
 
@@ -1112,7 +1112,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             :meth:`HyperbolicOrientedGeodesic.end` to generate points that do
             not have coordinates over the base ring.
             :meth:`infinity`, :meth:`real`, and :meth:`projective` as shortcuts
-            to generate ideal ponits.
+            to generate ideal points.
 
         """
         x = self.base_ring()(x)
@@ -1674,13 +1674,13 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
           validated.
 
         - ``assume_sorted`` -- boolean (default: ``False``), whether to assume
-          that the ``half_spaces`` are already sorted with respect ot
+          that the ``half_spaces`` are already sorted with respect to
           :meth:`HyperbolicHalfSpace._less_than`. When set, we omit sorting the
           half spaces explicitly, which is asymptotically the most exponsive
           part of the process of creating a polygon.
 
         - ``assume_minimal`` -- boolean (default: ``False``), whether to assume
-          that the ``half_spaces`` provide a minimial representation of the
+          that the ``half_spaces`` provide a minimal representation of the
           polygon, i.e., removing any of them describes a different polygon.
           When set, we omit searching for a minimal subset of half spaces to
           describe the polygon.
@@ -2370,7 +2370,7 @@ class HyperbolicGeometry:
             0
 
         """
-        # TODO: Epsilon Gemetry should override this.
+        # TODO: Epsilon Geometry should override this.
         if self._zero(p) and self._zero(q):
             raise ValueError("one of p and q must not be zero")
 
@@ -2468,7 +2468,7 @@ class HyperbolicGeometry:
 
         """
         if model == "half_plane":
-            # TODO: Epsilon Gemetry should override this.
+            # TODO: Epsilon Geometry should override this.
             return self._sgn(y)
 
         if model == "klein":
@@ -6220,7 +6220,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
         https://www2.cs.arizona.edu/classes/cs437/fall07/Lecture4.prn.pdf
 
         If the only segment we can construct is a point, then the intersection
-        is a single point in the Euclidean plane. The interesction in the
+        is a single point in the Euclidean plane. The intersection in the
         hyperbolic plane might be a single point or empty.
 
         If not even a point exists, the intersection is empty in the Euclidean
