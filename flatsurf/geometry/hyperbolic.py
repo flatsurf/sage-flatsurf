@@ -8564,7 +8564,7 @@ class CartesianPathPlot(GraphicPrimitive):
         return Path(vertices, codes)
 
     @staticmethod
-    def _infinitiy(pos, direction, xlim, ylim):
+    def _infinity(pos, direction, xlim, ylim):
         # TODO: Check documentation.
         # TODO: Check INPUT
         # TODO: Check SEEALSO
