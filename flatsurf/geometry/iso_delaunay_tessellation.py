@@ -207,7 +207,7 @@ class IsoDelaunayTessellation(Parent):
         else:
             edge = {tessellation_edge}
 
-        for v, w, edges in self._dual_graph.edges(tessellation_face, labels=True):
+        for v, w, edges in self._dual_graph.edges(tessellation_face, labels=True, sort=False):
             if any(e in edges for e in edge):
                 if v == tessellation_face:
                     return w
