@@ -1669,7 +1669,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         INPUT:
 
         - ``half_spaces`` -- a non-empty iterable of
-          :class:`HyperbolicHalfSpace`s of this hyperbolic plane.
+          :class:`HyperbolicHalfSpace`\ s of this hyperbolic plane.
 
         - ``check`` -- boolean (default: ``True``), whether the arguments are
           validated.
@@ -8853,7 +8853,7 @@ class HyperbolicPathPlotCommand:
             ....: ]
 
         And its corresponding plot in different models::
-hi
+
             sage: HyperbolicPathPlotCommand.make_cartesian(commands, model="half_plane")
             [CartesianPathPlotCommand(code='MOVETO', args=(0.000000000000000, 1.00000000000000)),
              CartesianPathPlotCommand(code='RARCTO', args=((1.00000000000000, 1.00000000000000), (0.500000000000000, 0))),
