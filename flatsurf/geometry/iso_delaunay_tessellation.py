@@ -47,7 +47,7 @@ TODO: Implement this surface in sage-flatsurf.
     sage: idt = IsoDelaunayTessellation(t)
     sage: idt.explore()
     sage: idt.plot()
-    Graphics object consisting of 110 graphics primitives
+    Graphics object consisting of 218 graphics primitives
 
 REFERENCES:
 
