@@ -478,11 +478,15 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         import sage.structure.element
         from sage.structure.parent import Parent
+        from sage.all import SR
 
         parent = sage.structure.element.parent(x)
-        if isinstance(parent, Parent) and parent in NumberFields():
+        # Note that in old versions of SageMath (9.1 e.g.), I is not a number field element but a symbolic ring element.
+        # The "parent is SR" part can probably removed at some point.
+        if isinstance(parent, Parent) and parent in NumberFields() or parent is SR:
             if x.real() in self.base_ring() and x.imag() in self.base_ring() and x.imag() >= 0:
                 return True
+
 
         return super().__contains__(x)
 
