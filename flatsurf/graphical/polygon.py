@@ -1,4 +1,4 @@
-#*****************************************************************************
+# ****************************************************************************
 #       Copyright (C) 2013-2019 Vincent Delecroix <20100.delecroix@gmail.com>
 #                     2013-2019 W. Patrick Hooper <wphooper@gmail.com>
 #
@@ -6,7 +6,7 @@
 #  as published by the Free Software Foundation; either version 2 of
 #  the License, or (at your option) any later version.
 #                  https://www.gnu.org/licenses/
-#*****************************************************************************
+# ****************************************************************************
 
 from __future__ import absolute_import, print_function, division
 from six.moves import range, map, filter, zip
@@ -127,7 +127,7 @@ class GraphicalPolygon:
     def bounding_box(self):
         r"""
         Return the quadruple (x1,y1,x2,y2) where x1 and y1 are the minimal
-        x- and y-coordinates and x2 and y2 are the maximal x-and y- cordinates.
+        x and y coordinates and x2 and y2 are the maximal x and y coordinates.
         """
         return self.xmin(), self.ymin(), self.xmax(), self.ymax()
 
@@ -189,7 +189,7 @@ class GraphicalPolygon:
         Options are processed as in sage.plot.polygon.polygon2d except
         that by default axes=False.
         """
-        if not "axes" in options:
+        if "axes" not in options:
             options["axes"] = False
         return polygon2d(self._v, **options)
 
@@ -342,14 +342,12 @@ class GraphicalPolygon:
         to use graphical coordinates instead.
         """
         if "zorder" not in options:
-            options["zorder"]=50
+            options["zorder"] = 50
         if "coordinates" not in options:
             points2 = [self.transform(point) for point in points]
-        elif options["coordinates"]=="graphical":
-            points2=[V(point) for point in points]
+        elif options["coordinates"] == "graphical":
+            points2 = [V(point) for point in points]
             del options["coordinates"]
         else:
             raise ValueError("Invalid value of 'coordinates' option")
         return point2d(points=points2, **options)
-   
-

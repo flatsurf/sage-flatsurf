@@ -1,4 +1,4 @@
-#*****************************************************************************
+# ****************************************************************************
 #       Copyright (C) 2013-2019 Vincent Delecroix <20100.delecroix@gmail.com>
 #                     2013-2019 W. Patrick Hooper <wphooper@gmail.com>
 #
@@ -6,7 +6,7 @@
 #  as published by the Free Software Foundation; either version 2 of
 #  the License, or (at your option) any later version.
 #                  https://www.gnu.org/licenses/
-#*****************************************************************************
+# ****************************************************************************
 
 from __future__ import absolute_import, print_function, division
 from six.moves import range, map, filter, zip
@@ -55,6 +55,5 @@ class GraphicalSurfacePoint:
         If no "zorder" option is provided then we set "zorder" to 50.
         """
         if "zorder" not in options:
-            options["zorder"]=50
+            options["zorder"] = 50
         return point2d(points=self.points(), **options)
-

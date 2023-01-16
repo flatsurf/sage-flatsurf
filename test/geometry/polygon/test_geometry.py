@@ -25,7 +25,6 @@ import pytest
 
 from sage.all import QQ, randint
 
-
 @pytest.mark.repeat(1024)
 def test_is_same_direction():
     from flatsurf.geometry.polygon import is_same_direction

@@ -1,4 +1,4 @@
-#*****************************************************************************
+# ****************************************************************************
 #       Copyright (C) 2013-2019 Vincent Delecroix <20100.delecroix@gmail.com>
 #                     2013-2019 W. Patrick Hooper <wphooper@gmail.com>
 #
@@ -6,7 +6,7 @@
 #  as published by the Free Software Foundation; either version 2 of
 #  the License, or (at your option) any later version.
 #                  https://www.gnu.org/licenses/
-#*****************************************************************************
+# ****************************************************************************
 
 from __future__ import absolute_import, print_function, division
 from six.moves import range, map, filter, zip
@@ -53,10 +53,10 @@ class GraphicalSegmentInPolygon:
             sage: seg = SegmentInPolygon(v)
             sage: from flatsurf.graphical.straight_line_trajectory import *
             sage: gseg = GraphicalSegmentInPolygon(seg, s.graphical_surface())
-            sage: gseg.plot()                # not tested (problem with matplotlib font caches on Travis)
-            Graphics object consisting of 1 graphics primitive
-            sage: gseg.plot(color='red')     # not tested (problem with matplotlib font caches on Travis)
-            Graphics object consisting of 1 graphics primitive
+            sage: gseg.plot()
+            ...Graphics object consisting of 1 graphics primitive
+            sage: gseg.plot(color='red')
+            ...Graphics object consisting of 1 graphics primitive
         """
         if self._gs.is_visible(self.polygon_label()):
             from sage.plot.line import line2d
@@ -91,12 +91,11 @@ class GraphicalStraightLineTrajectory:
             sage: traj.flow(100)
             sage: traj.flow(-5)
             sage: gtraj = traj.graphical_trajectory(gs)
-            sage: gs.plot() + gtraj.plot()      # not tested (problem with matplotlib font caches on Travis)
-            Graphics object consisting of 119 graphics primitives
+            sage: gs.plot() + gtraj.plot()
+            ...Graphics object consisting of 119 graphics primitives
         """
         from sage.plot.graphics import Graphics
         p = Graphics()
         for seg in self._segments:
             p += seg.plot(**options)
         return p
-
