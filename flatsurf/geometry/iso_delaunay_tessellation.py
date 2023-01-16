@@ -93,6 +93,7 @@ class IsoDelaunayTessellation(Parent):
         self._surface.set_immutable()
 
         self._dual_graph = Graph(multiedges=True, loops=True)
+        self._surface_classes = {}
 
         self._ensure_dual_graph_vertex(self.root(), self._surface, self.root().edges()[0])
 
@@ -268,6 +269,7 @@ class IsoDelaunayTessellation(Parent):
 
         assert tessellation_face_with_marked_vertices != tessellation_face
 
+        # TODO: This breaks self._surface_classes currently.
         self._dual_graph.add_vertex(tessellation_face_with_marked_vertices)
         self._dual_graph.set_vertex(tessellation_face_with_marked_vertices, self._dual_graph.get_vertex(tessellation_face))
         for source_tessellation_face, target_tessellation_face, tessellation_edges in list(self._dual_graph.edges(tessellation_face, labels=True, sort=False)):
@@ -313,42 +315,15 @@ class IsoDelaunayTessellation(Parent):
 
         surface_ = self._to_pyflatsurf(surface)
 
-        def filter_matrix(a, b, c, d):
-            # TODO fix interface for isomorphisms
-            from sage.all import QQ
-            k = QQ
-            if hasattr(a, 'parent'):
-                from pyeantic import RealEmbeddedNumberField
-                k = RealEmbeddedNumberField(a.parent())
-                a, b, c, d = k(a), k(b), k(c), k(d)
-                k = k.number_field
+        from pyflatsurf import flatsurf
 
-            if (a, b, c, d) in isomorphisms or a * d - b * c == -1:
-                return False
-            isomorphisms[-1] = (a, b, c, d)
-            return True
+        linear_equivalence = flatsurf.Equivalence.linear()
+        clazz = flatsurf.EquivalenceClass(surface_, linear_equivalence)
 
-        isomorphisms = [(1, 0, 0, 1), (-1, 0, 0, -1)]
+        if clazz in self._surface_classes:
+            tessellation_face_ = self._surface_classes[clazz]
 
-        while True:
-            isomorphisms.append(())
-            if not surface_.isomorphism(surface_, filter_matrix=filter_matrix).has_value():
-                isomorphisms.pop()
-                break
-
-        if set(isomorphisms) != {(1, 0, 0, 1), (-1, 0, 0, -1)}:
-            assert len(isomorphisms) % 2 == 0
-            order = len(isomorphisms) // 2
-            assert len(tessellation_face.edges()) % order == 0
-            mod = len(tessellation_face.edges()) // order
-
-            # add new vertex
-            self._dual_graph.add_vertex(tessellation_face)
-            assert surface is not None
-            self._dual_graph.set_vertex(tessellation_face, (mod, surface))
-            return tessellation_face, tessellation_edge, True
-
-        for tessellation_face_ in self._dual_graph:
+            # TODO: We don't need to run the isomorphism() machinery to recover the isomorphism here.
             isomorphism = None
 
             def capture_matrix(a, b, c, d):
@@ -365,24 +340,42 @@ class IsoDelaunayTessellation(Parent):
                 isomorphism = (a, b, c, d)
                 return True
 
-            if len(tessellation_face_.edges()) != len(tessellation_face.edges()):
-                # TODO: This optimization is not correct after insert_orbifold_points() has been called.
-                continue
+            # TODO: This is not correct after insert_orbifold_points() has been called.
+            assert len(tessellation_face_.edges()) == len(tessellation_face.edges())
 
             surface__ = self._to_pyflatsurf(self._dual_graph.get_vertex(tessellation_face_)[1])
-            if surface_.isomorphism(surface__, filter_matrix=capture_matrix).has_value():
-                assert isomorphism is not None
-                a, b, c, d = isomorphism
-                from sage.all import matrix
-                mob = matrix(2, [a, -b, -c, d])
-                image_edge = tessellation_edge.apply_isometry(mob, model='half_plane')
 
-                assert image_edge in tessellation_face_.edges()
-                return tessellation_face_, image_edge, False
+            assert surface_.isomorphism(surface__, filter_matrix=capture_matrix).has_value()
+            assert isomorphism is not None
 
-        # add new vertex
+            a, b, c, d = isomorphism
+            from sage.all import matrix
+            mob = matrix(2, [a, -b, -c, d])
+            image_edge = tessellation_edge.apply_isometry(mob, model='half_plane')
+
+            assert image_edge in tessellation_face_.edges()
+            return tessellation_face_, image_edge, False
+
+        # We have to add a new vertex.
+
+        # First, we check if the new face has self-symmetries.
+        order = clazz.automorphisms() // 2
+
+        if order != 1:
+            assert len(tessellation_face.edges()) % order == 0
+            mod = len(tessellation_face.edges()) // order
+
+            # Add the new vertex.
+            self._dual_graph.add_vertex(tessellation_face)
+            assert surface is not None
+            self._dual_graph.set_vertex(tessellation_face, (mod, surface))
+            self._surface_classes[clazz] = tessellation_face
+            return tessellation_face, tessellation_edge, True
+
+        # Add the new vertex.
         self._dual_graph.add_vertex(tessellation_face)
         assert surface is not None
+        self._surface_classes[clazz] = tessellation_face
         self._dual_graph.set_vertex(tessellation_face, (None, surface))
         return tessellation_face, tessellation_edge, True
 
