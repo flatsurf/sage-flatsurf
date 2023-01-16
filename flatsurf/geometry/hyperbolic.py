@@ -210,7 +210,6 @@ We can also intersect objects that are not half spaces::
 ######################################################################
 
 from dataclasses import dataclass
-from typing import Literal
 
 from sage.structure.parent import Parent
 from sage.structure.element import Element
@@ -8827,7 +8826,7 @@ class HyperbolicPathPlotCommand:
         HyperbolicPathPlotCommand(code='MOVETO', target=0)
 
     """
-    code: Literal["MOVETO", "LINETO"]
+    code: str  # Literal["MOVETO", "LINETO"] requires Python 3.8
     target: HyperbolicPoint
 
     def cartesian(self, model, cursor=None, fill=True, stroke=True):
@@ -9225,7 +9224,7 @@ class CartesianPathPlotCommand:
         of such commands from a sequence of plot commands in the hyperbolic plane.
 
     """
-    code: Literal["MOVETO", "MOVETOINFINITY", "LINETO", "RAYTO", "ARCTO", "RARCTO"]
+    code: str  # Literal["MOVETO", "MOVETOINFINITY", "LINETO", "RAYTO", "ARCTO", "RARCTO"] requires Python 3.8
     args: tuple
 
 
