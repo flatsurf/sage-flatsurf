@@ -23,8 +23,8 @@ base has been specified explicitly::
 
 We can use a bigger field instead::
 
-    sage: HAA = HyperbolicPlane(AA)
-    sage: HAA(sqrt(2) + I)
+    sage: H_algebraic = HyperbolicPlane(AA)
+    sage: H_algebraic(sqrt(2) + I)
     1.414213562373095? + 1.000000000000000?*I
 
 Given two points in the hyperbolic plane, we can form the geodesic they lay on::
@@ -210,6 +210,9 @@ We can also intersect objects that are not half spaces::
 ######################################################################
 
 from dataclasses import dataclass
+from typing import Literal
+
+import matplotlib.path
 
 from sage.structure.parent import Parent
 from sage.structure.element import Element
@@ -220,7 +223,6 @@ from sage.plot.primitive import GraphicPrimitive
 
 
 class HyperbolicPlane(Parent, UniqueRepresentation):
-    # TODO: Override is_exact()
     r"""
     The hyperbolic plane.
 
@@ -895,6 +897,25 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         """
         return self._base_ring
 
+    def is_exact(self):
+        r"""
+        Return whether hyperbolic subsets have exact coordinates.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+
+            sage: H = HyperbolicPlane()
+            sage: H.is_exact()
+            True
+
+            sage: H = HyperbolicPlane(RR)
+            sage: H.is_exact()
+            False
+
+        """
+        return self.base_ring().is_exact()
+
     def infinity(self):
         r"""
         Return the point at infinity in the upper half plane model.
@@ -961,7 +982,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         - ``q`` -- an element of the :meth:`base_ring`.
 
-        EXMAPLES::
+        EXAMPLES::
 
             sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
 
@@ -1091,7 +1112,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             :meth:`HyperbolicOrientedGeodesic.end` to generate points that do
             not have coordinates over the base ring.
             :meth:`infinity`, :meth:`real`, and :meth:`projective` as shortcuts
-            to generate ideal ponits.
+            to generate ideal points.
 
         """
         x = self.base_ring()(x)
@@ -1653,13 +1674,13 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
           validated.
 
         - ``assume_sorted`` -- boolean (default: ``False``), whether to assume
-          that the ``half_spaces`` are already sorted with respect ot
+          that the ``half_spaces`` are already sorted with respect to
           :meth:`HyperbolicHalfSpace._less_than`. When set, we omit sorting the
           half spaces explicitly, which is asymptotically the most exponsive
           part of the process of creating a polygon.
 
         - ``assume_minimal`` -- boolean (default: ``False``), whether to assume
-          that the ``half_spaces`` provide a minimial representation of the
+          that the ``half_spaces`` provide a minimal representation of the
           polygon, i.e., removing any of them describes a different polygon.
           When set, we omit searching for a minimal subset of half spaces to
           describe the polygon.
@@ -2349,7 +2370,7 @@ class HyperbolicGeometry:
             0
 
         """
-        # TODO: Epsilon Gemetry should override this.
+        # TODO: Epsilon Geometry should override this.
         if self._zero(p) and self._zero(q):
             raise ValueError("one of p and q must not be zero")
 
@@ -2447,7 +2468,7 @@ class HyperbolicGeometry:
 
         """
         if model == "half_plane":
-            # TODO: Epsilon Gemetry should override this.
+            # TODO: Epsilon Geometry should override this.
             return self._sgn(y)
 
         if model == "klein":
@@ -2458,21 +2479,76 @@ class HyperbolicGeometry:
 
 
 class HyperbolicExactGeometry(UniqueRepresentation, HyperbolicGeometry):
+    r"""
+    Predicates and primitive geometric constructions over an exact base ring.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+        sage: H = HyperbolicPlane()
+        sage: H.geometry
+        Exact geometry over Rational Field
+
+    TESTS::
+
+        sage: from flatsurf.geometry.hyperbolic import HyperbolicExactGeometry
+        sage: isinstance(H.geometry, HyperbolicExactGeometry)
+        True
+
+    .. SEEALSO::
+
+        :class:`HyperbolicEpsilonGeometry` for an implementation over inexact rings
+
+    """
 
     def _equal(self, x, y):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Return whether the numbers ``x`` and ``y`` should be considered equal
+        in exact geometry.
+
+        .. NOTE::
+
+            This predicate should not be used directly in geometric
+            constructions since it does not specify the context in which this
+            question is asked. This makes it very difficult to override a
+            specific aspect in a custom geometry.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+            sage: H.geometry._equal(0, 1)
+            False
+            sage: H.geometry._equal(0, 1/2**64)
+            False
+            sage: H.geometry._equal(0, 0)
+            True
+
+        """
         return x == y
 
     def change_ring(self, ring):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Return this geometry with the :meth:`base_ring` changed to ``ring``.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+            sage: H.geometry.change_ring(QQ) == H.geometry
+            True
+            sage: H.geometry.change_ring(AA)
+            Exact geometry over Algebraic Real Field
+
+        When presented with the reals, we guess the epsilon for the
+        :class:`HyperbolicEpsilonGeometry` to be consistent with the
+        :class:`HyperbolicGeometry` constructor. (And also, because we use this
+        frequently when plotting.)::
+
+            sage: H.geometry.change_ring(RR)
+            Epsilon geometry with ϵ=1.00000000000000e-6 over Real Field with 53 bits of precision
+
+        """
         from sage.all import RR
         if ring is RR:
             return HyperbolicEpsilonGeometry(ring, 1e-6)
@@ -2556,11 +2632,6 @@ class HyperbolicEpsilonGeometry(UniqueRepresentation, HyperbolicGeometry):
 # TODO: Change richcmp to match the description below.
 # TODO: Implement checking whether a point is in the interior.
 class HyperbolicConvexSet(Element):
-    # TODO: Check documentation
-    # TODO: Check INPUTS
-    # TODO: Check SEEALSO
-    # TODO: Check for doctests
-    # TODO: Benchmark?
     r"""
     Base class for convex subsets of :class:`HyperbolicPlane`.
 
@@ -2600,11 +2671,6 @@ class HyperbolicConvexSet(Element):
     """
 
     def half_spaces(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
         r"""
         Return a minimal set of half spaces whose intersection is this convex set.
 
@@ -2628,11 +2694,6 @@ class HyperbolicConvexSet(Element):
         raise NotImplementedError(f"{type(self)} does not implement half_spaces()")
 
     def _test_half_spaces(self, **options):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
         r"""
         Verify that this convex set implements :meth:`half_spaces` correctly.
 
@@ -2656,27 +2717,33 @@ class HyperbolicConvexSet(Element):
             tester.assertTrue(HyperbolicHalfSpaces._lt_(a, b))
 
     def _check(self, require_normalized=True):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
         r"""
         Validate this convex subset.
+
+        Subclasses run specific checks here that can be disabled when creating
+        objects with ``check=False``.
 
         If ``require_normalized``, we also check that the object has the
         correct implementation class, e.g., that a point is a
         :class:`HyperbolicPoint` and not say a
         :class:`HyperbolicOrientedSegment` of length zero.
+
+        EXAMPLES:
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(QQ)
+            sage: P = H.point(0, 0, model="klein")
+            sage: P._check()
+            sage: P = H.point(1, 1, model="klein", check=False)
+            sage: P._check()
+            Traceback (most recent call last):
+            ...
+            ValueError: point (1, 1) is not in the unit disk in the Klein model
+
         """
         pass
 
     def _normalize(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
         r"""
         Return this set possibly rewritten in a simpler form.
 
@@ -2684,15 +2751,39 @@ class HyperbolicConvexSet(Element):
         Such sets might have been created in a non-canonical way, e.g., when
         creating a :class:`HyperbolicOrientedSegment` whose start and end point are ideal,
         then this is actually a geodesic and it shuold be described as such.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(QQ)
+            sage: segment = H.segment(H.vertical(-1), start=H.infinity(), end=H.infinity(), check=False, assume_normalized=True)
+            sage: segment
+            {-x - 1 = 0} ∩ {x - 1 ≥ 0} ∩ {x - 1 ≤ 0}
+            sage: segment._normalize()
+            ∞
+
         """
         return self
 
+    def _test_normalize(self, **options):
+        r"""
+        Verify that normalization is idempotent.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(QQ)
+            sage: segment = H.segment(H.vertical(-1), start=H.infinity(), end=H.infinity(), check=False, assume_normalized=True)
+            sage: segment._test_normalize()
+
+        """
+        tester = self._tester(**options)
+
+        normalization = self._normalize()
+
+        tester.assertEqual(normalization, normalization._normalize())
+
     def unoriented(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
         r"""
         Return the non-oriented version of this set.
 
@@ -2711,11 +2802,6 @@ class HyperbolicConvexSet(Element):
         return self.change(oriented=False)
 
     def _test_unoriented(self, **options):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
         r"""
         Verify that :meth:`unoriented` is implemented correctly.
 
@@ -2732,13 +2818,20 @@ class HyperbolicConvexSet(Element):
         tester.assertEqual(self.unoriented(), self.unoriented().unoriented())
 
     def intersection(self, other):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
         r"""
         Return the intersection with the ``other`` convex set.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(QQ)
+            sage: H.vertical(0).intersection(H.vertical(1))
+            ∞
+
+        ..SEEALSO::
+
+            :meth:`HyperbolicPlane.intersection`
+
         """
         return self.parent().intersection(self, other)
 
@@ -2756,6 +2849,36 @@ class HyperbolicConvexSet(Element):
                 return False
 
         return True
+
+    def _test_contains(self, **options):
+        r"""
+        Verify that :meth:`__contains__` is implemented correctly.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(QQ)
+            sage: H.vertical(0)._test_contains()
+
+        """
+        tester = self._tester(**options)
+
+        try:
+            vertices = self.vertices()
+        except ValueError:
+            # The vertex coordinates might not be representable in the base ring.
+            return
+
+        for vertex in vertices:
+            tester.assertIn(vertex, self)
+
+    def vertices(self):
+        # TODO: Check documentation.
+        # TODO: Check INPUT
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        # TODO: Benchmark?
+        return self.parent().polygon(self.half_spaces(), check=False, assume_sorted=True, assume_minimal=True).vertices()
 
     def is_finite(self):
         # TODO: Check documentation.
@@ -2862,13 +2985,15 @@ class HyperbolicConvexSet(Element):
             tester.assertEqual(self, self.change(oriented=True))
 
     def plot(self, model="half_plane", **kwds):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
         r"""
         Return a plot of this subset.
+
+        Consult the implementation in the subclasses for a list supported
+        keyword arguments, in particular :meth:`HyperbolicConvexPolygon.plot`.
+
+        INPUT:
+
+        - ``model`` -- one of ``"half_plane"`` and ``"klein"``
 
         EXAMPLES::
 
@@ -2876,18 +3001,12 @@ class HyperbolicConvexSet(Element):
             sage: H = HyperbolicPlane(QQ)
 
             sage: H.vertical(0).plot()
-            Graphics object consisting of 1 graphics primitive
+            ...Graphics object consisting of 1 graphics primitive
 
         """
-        # TODO: This could be implemented generically.
         raise NotImplementedError(f"this {type(self)} does not support plotting")
 
     def _test_plot(self, **options):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
         r"""
         Verify that this set implements :meth:`plot`.
 
@@ -3409,11 +3528,29 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
             return self._geodesic._richcmp_(other._geodesic, op)
 
     def plot(self, model="half_plane", **kwds):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Return a plot of this half space in the hyperbolic ``model``.
+
+        See :meth:`HyperbolicConvexPolygon.plot` for the supported keyword
+        arguments.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(QQ)
+
+            sage: G = H.vertical(0).left_half_space().plot()
+
+        In the half plane model, the half space is rendered as an infinite polygon::
+
+            sage: G = H.vertical(0).left_half_space().plot()
+            sage: G[0]
+            CartesianPathPlot([CartesianPathPlotCommand(code='MOVETO', args=(0.000000000000000, 0.000000000000000)),
+                CartesianPathPlotCommand(code='RAYTO', args=(0, 1)),
+                CartesianPathPlotCommand(code='RAYTO', args=(-1, 0)),
+                CartesianPathPlotCommand(code='LINETO', args=(0.000000000000000, 0.000000000000000))])
+
+        """
         return (
             self.parent()
             .polygon([self], check=False, assume_minimal=True)
@@ -3740,15 +3877,19 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
         return HyperbolicHalfSpaces([self.left_half_space(), self.right_half_space()])
 
     def plot(self, model="half_plane", **kwds):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
         r"""
-        Create a plot of this geodesic in the hyperbolic ``model``.
+        Return a plot of this geodesic in the hyperbolic ``model``.
 
-        Additional arguments are passed on to the underlying SageMath plotting methods.
+        See :meth:`HyperbolicSegment.plot` for the supported keyword arguments.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(QQ)
+
+            sage: H.vertical(0).plot()
+            Graphics object consisting of 1 graphics primitive
+
         """
         return (
             self.parent()
@@ -6123,7 +6264,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
         https://www2.cs.arizona.edu/classes/cs437/fall07/Lecture4.prn.pdf
 
         If the only segment we can construct is a point, then the intersection
-        is a single point in the Euclidean plane. The interesction in the
+        is a single point in the Euclidean plane. The intersection in the
         hyperbolic plane might be a single point or empty.
 
         If not even a point exists, the intersection is empty in the Euclidean
@@ -6541,13 +6682,153 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
         return half_spaces
 
     def plot(self, model="half_plane", **kwds):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Return a plot of this polygon in the hyperbolic ``model``.
+
+        INPUT:
+
+        - ``model`` -- one of ``"half_plane"`` and ``"klein"``
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(QQ)
+
+        A finite triangle::
+
+            sage: P = H.polygon([
+            ....:     H.vertical(0).right_half_space(),
+            ....:     H.geodesic(I, I + 1).left_half_space(),
+            ....:     H.geodesic(I + 1, 2*I).left_half_space()
+            ....: ])
+            sage: P
+            {(x^2 + y^2) - x - 1 ≥ 0} ∩ {(x^2 + y^2) + 2*x - 4 ≤ 0} ∩ {x ≥ 0}
+
+        In the upper half plane model, this plots as a polygon bounded by a
+        segment and two arcs::
+
+            sage: P.plot("half_plane")[0]
+            CartesianPathPlot([CartesianPathPlotCommand(code='MOVETO', args=(0.000000000000000, 1.00000000000000)),
+                               CartesianPathPlotCommand(code='RARCTO', args=((1.00000000000000, 1.00000000000000), (0.500000000000000, 0))),
+                               CartesianPathPlotCommand(code='ARCTO', args=((0.000000000000000, 2.00000000000000), (-1.00000000000000, 0))),
+                               CartesianPathPlotCommand(code='LINETO', args=(0.000000000000000, 1.00000000000000))])
+
+        Technically, the plot consists of two parts, a filled layer with
+        transparent stroke and a transparent layer with solid stroke. The
+        latter shows the (finite) edges of the polygon::
+
+            sage: P.plot("half_plane")[1]
+            CartesianPathPlot([CartesianPathPlotCommand(code='MOVETO', args=(0.000000000000000, 1.00000000000000)),
+                               CartesianPathPlotCommand(code='RARCTO', args=((1.00000000000000, 1.00000000000000), (0.500000000000000, 0))),
+                               CartesianPathPlotCommand(code='ARCTO', args=((0.000000000000000, 2.00000000000000), (-1.00000000000000, 0))),
+                               CartesianPathPlotCommand(code='LINETO', args=(0.000000000000000, 1.00000000000000))])
+
+        In the Klein disk model, this plots as two identical Euclidean
+        triangles (one for the background, one for the edges,) with an added
+        circle representing the ideal points in that model::
+
+            sage: P.plot("klein")[0]
+            Circle defined by (0.0,0.0) with r=1.0
+            sage: P.plot("klein")[1]
+            CartesianPathPlot([CartesianPathPlotCommand(code='MOVETO', args=(0.000000000000000, 0.000000000000000)),
+                               CartesianPathPlotCommand(code='LINETO', args=(0.666666666666667, 0.333333333333333)),
+                               CartesianPathPlotCommand(code='LINETO', args=(0.000000000000000, 0.600000000000000)),
+                               CartesianPathPlotCommand(code='LINETO', args=(0.000000000000000, 0.000000000000000))])
+            sage: P.plot("klein")[2]
+            CartesianPathPlot([CartesianPathPlotCommand(code='MOVETO', args=(0.000000000000000, 0.000000000000000)),
+                               CartesianPathPlotCommand(code='LINETO', args=(0.666666666666667, 0.333333333333333)),
+                               CartesianPathPlotCommand(code='LINETO', args=(0.000000000000000, 0.600000000000000)),
+                               CartesianPathPlotCommand(code='LINETO', args=(0.000000000000000, 0.000000000000000))])
+
+        An ideal triangle plots the same way in the Klein model but now has two
+        rays in the upper half plane model::
+
+            sage: P = H.polygon([
+            ....:     H.vertical(0).right_half_space(),
+            ....:     H.geodesic(0, 1).left_half_space(),
+            ....:     H.vertical(1).left_half_space()
+            ....: ])
+            sage: P
+            {(x^2 + y^2) - x ≥ 0} ∩ {x - 1 ≤ 0} ∩ {x ≥ 0}
+
+            sage: P.plot("half_plane")[0]
+            CartesianPathPlot([CartesianPathPlotCommand(code='MOVETO', args=(0.000000000000000, 0.000000000000000)),
+                               CartesianPathPlotCommand(code='RARCTO', args=((1.00000000000000, 0.000000000000000), (0.500000000000000, 0))),
+                               CartesianPathPlotCommand(code='RAYTO', args=(0, 1)),
+                               CartesianPathPlotCommand(code='LINETO', args=(0.000000000000000, 0.000000000000000))])
+
+            sage: P.plot("klein")[1]
+            CartesianPathPlot([CartesianPathPlotCommand(code='MOVETO', args=(0.000000000000000, -1.00000000000000)),
+                               CartesianPathPlotCommand(code='LINETO', args=(1.00000000000000, 0.000000000000000)),
+                               CartesianPathPlotCommand(code='LINETO', args=(0.000000000000000, 1.00000000000000)),
+                               CartesianPathPlotCommand(code='LINETO', args=(0.000000000000000, -1.00000000000000))])
+
+        A polygon can contain infinitely many ideal points as is the case in
+        this intersection of two half spaces::
+
+            sage: P = H.polygon([
+            ....:     H.vertical(0).right_half_space(),
+            ....:     H.vertical(1).left_half_space()
+            ....: ])
+            sage: P
+            {x - 1 ≤ 0} ∩ {x ≥ 0}
+
+            sage: P.plot("half_plane")[0]
+            CartesianPathPlot([CartesianPathPlotCommand(code='MOVETO', args=(1.00000000000000, 0.000000000000000)),
+                               CartesianPathPlotCommand(code='RAYTO', args=(0, 1)),
+                               CartesianPathPlotCommand(code='LINETO', args=(0.000000000000000, 0.000000000000000)),
+                               CartesianPathPlotCommand(code='LINETO', args=(1.00000000000000, 0.000000000000000))])
+
+            The last part, the line connecting 0 and 1, is missing from the
+            stroke plot since we only stroke finite edges::
+
+            sage: P.plot("half_plane")[1]
+            CartesianPathPlot([CartesianPathPlotCommand(code='MOVETO', args=(1.00000000000000, 0.000000000000000)),
+                               CartesianPathPlotCommand(code='RAYTO', args=(0, 1)),
+                               CartesianPathPlotCommand(code='LINETO', args=(0.000000000000000, 0.000000000000000))])
+
+            Simalarly in the Klein model picture, the arc of infinite points is
+            only part of the fill, not of the stroke::
+
+            sage: P.plot("klein")[1]
+            CartesianPathPlot([CartesianPathPlotCommand(code='MOVETO', args=(1.00000000000000, 0.000000000000000)),
+                               CartesianPathPlotCommand(code='LINETO', args=(0.000000000000000, 1.00000000000000)),
+                               CartesianPathPlotCommand(code='LINETO', args=(0.000000000000000, -1.00000000000000)),
+                               CartesianPathPlotCommand(code='ARCTO', args=((1.00000000000000, 0.000000000000000), (0, 0)))])
+
+            sage: P.plot("klein")[2]
+            CartesianPathPlot([CartesianPathPlotCommand(code='MOVETO', args=(1.00000000000000, 0.000000000000000)),
+                               CartesianPathPlotCommand(code='LINETO', args=(0.000000000000000, 1.00000000000000)),
+                               CartesianPathPlotCommand(code='LINETO', args=(0.000000000000000, -1.00000000000000))])
+
+        If the polygon contains unbounded set of reals, we get a horizontal ray
+        in the half plane picture::
+
+            sage: P = H.polygon([
+            ....:     H.vertical(0).right_half_space(),
+            ....:     H.half_circle(2, 1).left_half_space(),
+            ....: ])
+            sage: P
+            {(x^2 + y^2) - 4*x + 3 ≥ 0} ∩ {x ≥ 0}
+
+            sage: P.plot("half_plane")[0]
+            CartesianPathPlot([CartesianPathPlotCommand(code='MOVETO', args=(1.00000000000000, 0.000000000000000)),
+                               CartesianPathPlotCommand(code='RARCTO', args=((3.00000000000000, 0.000000000000000), (2.00000000000000, 0))),
+                               CartesianPathPlotCommand(code='RAYTO', args=(1, 0)),
+                               CartesianPathPlotCommand(code='RAYTO', args=(0, 1)),
+                               CartesianPathPlotCommand(code='LINETO', args=(0.000000000000000, 0.000000000000000)),
+                               CartesianPathPlotCommand(code='LINETO', args=(1.00000000000000, 0.000000000000000))])
+
+            sage: P.plot("half_plane")[1]
+            CartesianPathPlot([CartesianPathPlotCommand(code='MOVETO', args=(1.00000000000000, 0.000000000000000)),
+                               CartesianPathPlotCommand(code='RARCTO', args=((3.00000000000000, 0.000000000000000), (2.00000000000000, 0))),
+                               CartesianPathPlotCommand(code='MOVETOINFINITY', args=(0, 1)),
+                               CartesianPathPlotCommand(code='LINETO', args=(0.000000000000000, 0.000000000000000))])
+
+        """
+        # TODO: Document keyword arguments.
         kwds.setdefault("color", "#efffff")
-        kwds.setdefault("edgecolor", "#d1d1d1")
+        kwds.setdefault("edgecolor", "blue")
 
         if len(self._half_spaces) == 0:
             raise NotImplementedError("cannot plot full space")
@@ -6556,17 +6837,17 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
 
         pos = edges[0].start()
 
-        commands = [HyperbolicGraphicalPath.Command("MOVETO", [pos])]
+        commands = [HyperbolicPathPlotCommand("MOVETO", pos)]
 
         for edge in edges:
             if edge.start() != pos:
-                commands.append(HyperbolicGraphicalPath.Command("MOVETO", [edge.start()]))
+                commands.append(HyperbolicPathPlotCommand("MOVETO", edge.start()))
 
-            commands.append(HyperbolicGraphicalPath.Command("LINETO", [edge.end()]))
+            commands.append(HyperbolicPathPlotCommand("LINETO", edge.end()))
             pos = edge.end()
 
         if pos != edges[0].start():
-            commands.append(HyperbolicGraphicalPath.Command("MOVETO", [edges[0].start()]))
+            commands.append(HyperbolicPathPlotCommand("MOVETO", edges[0].start()))
 
         plot = hyperbolic_path(commands, model=model, **kwds)
 
@@ -6717,12 +6998,10 @@ class HyperbolicSegment(HyperbolicConvexSet):
         # TODO: Benchmark?
         # TODO: Should this be in the oriented class? Should there be an equivalent in the unoriented class?
         r"""
-        EXAMPLES::
+        TESTS::
 
             sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
             sage: H = HyperbolicPlane(QQ)
-
-        TESTS:
 
         We define a helper method for easier testing::
 
@@ -6878,8 +7157,8 @@ class HyperbolicSegment(HyperbolicConvexSet):
         self = self.change_ring(RR)
         plot = hyperbolic_path(
             [
-                HyperbolicGraphicalPath.Command("MOVETO", [self.start()]),
-                HyperbolicGraphicalPath.Command("LINETO", [self.end()]),
+                HyperbolicPathPlotCommand("MOVETO", self.start()),
+                HyperbolicPathPlotCommand("LINETO", self.end()),
             ],
             model=model,
             **kwds,
@@ -7459,6 +7738,14 @@ class HyperbolicEmptySet(HyperbolicConvexSet):
         """
         return 0
 
+    def vertices(self):
+        # TODO: Check documentation.
+        # TODO: Check INPUT
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        # TODO: Benchmark?
+        return HyperbolicVertices([])
+
 
 def sl2_to_so12(m):
     # TODO: Check documentation.
@@ -8014,7 +8301,7 @@ class HyperbolicHalfSpaces(SortedSet):
         return HyperbolicHalfSpaces(half_spaces)
 
 
-class HyperbolicGraphicalPath(GraphicPrimitive):
+class CartesianPathPlot(GraphicPrimitive):
     r"""
     A plotted path in the hyperbolic plane, i.e., a sequence of commands and
     associated control points in the hyperbolic plane.
@@ -8022,98 +8309,103 @@ class HyperbolicGraphicalPath(GraphicPrimitive):
     The ``plot`` methods of most hyperbolic convex sets rely on such a path.
     Usually, such a path should not be produced directly.
 
+    This can be considered a more generic version of
+    :class:`sage.plot.line.Line` and :class:`sage.plot.polygon.Polygon` since
+    this is not limited to finite line segments. At the same time this
+    generalizes matplotlib's ``Path`` somewhat, again by allowing infinite rays
+    and lines.
+
+    INPUT:
+
+    - ``commands`` -- a sequence of :class:`HyperbolicPath.Command` describing
+      the path.
+
+    - ``options`` -- a dict or ``None`` (the default), options to affect the
+      plotting of the path; the options accepted are the same that
+      :class:`sage.plot.polygon.Polygon` accepts.
+
     EXAMPLES:
 
     A geodesic plot as a single such path (wrapped in a SageMath graphics
     object)::
 
-        sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicGraphicalPath
+        sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, CartesianPathPlot, CartesianPathPlotCommand
         sage: H = HyperbolicPlane(QQ)
         sage: P = H.vertical(0).plot()
-        sage: isinstance(P[0], HyperbolicGraphicalPath)
+        sage: isinstance(P[0], CartesianPathPlot)
         True
 
     The sequence of commands should always start with a move command to
     establish the starting point of the plot; note that coordinates are always
     given in the Cartesian two dimension plot coordinate system::
 
-        sage: P = HyperbolicGraphicalPath([
-        ....:     HyperbolicGraphicalPath.Command("MOVETO", (0, 0))
+        sage: P = CartesianPathPlot([
+        ....:     CartesianPathPlotCommand("MOVETO", (0, 0))
         ....: ])
 
     After the initial move, a sequence of arcs can be drawn to represent
     objects in the upper half plane model; the parameters is the center and the
     end point of the arc::
 
-        sage: P = HyperbolicGraphicalPath([
-        ....:     HyperbolicGraphicalPath.Command("MOVETO", [(-1, 0)]),
-        ....:     HyperbolicGraphicalPath.Command("ARCTO", [(0, 0), (0, 1)]),
+        sage: P = CartesianPathPlot([
+        ....:     CartesianPathPlotCommand("MOVETO", (-1, 0)),
+        ....:     CartesianPathPlotCommand("ARCTO", ((0, 0), (0, 1))),
         ....: ])
 
     We can also draw segments to represent objects in the Klein disk model::
 
-        sage: P = HyperbolicGraphicalPath([
-        ....:     HyperbolicGraphicalPath.Command("MOVETO", [(-1, 0)]),
-        ....:     HyperbolicGraphicalPath.Command("LINETO", [(0, 0)]),
+        sage: P = CartesianPathPlot([
+        ....:     CartesianPathPlotCommand("MOVETO", (-1, 0)),
+        ....:     CartesianPathPlotCommand("LINETO", (0, 0)),
         ....: ])
 
     Additionally, we can draw rays to represent verticals in the upper half
     plane model; the parameter is the direction of the ray, i.e., (0, 1) for
     a vertical::
 
-        sage: P = HyperbolicGraphicalPath([
-        ....:     HyperbolicGraphicalPath.Command("MOVETO", [(0, 0)]),
-        ....:     HyperbolicGraphicalPath.Command("LINETOINFINITY", [(0, 1)]),
+        sage: P = CartesianPathPlot([
+        ....:     CartesianPathPlotCommand("MOVETO", (0, 0)),
+        ....:     CartesianPathPlotCommand("RAYTO", (0, 1)),
         ....: ])
 
     Similarly, we can also move the cursor to an infinitely far point in a
     certain direction. This can be used to plot a half plane, e.g., the point
     with non-negative real part::
 
-        sage: P = HyperbolicGraphicalPath([
-        ....:     HyperbolicGraphicalPath.Command("MOVETO", [(0, 0)]),
-        ....:     HyperbolicGraphicalPath.Command("MOVETOINFINITY", [(1, 0)]),
-        ....:     HyperbolicGraphicalPath.Command("MOVETOINFINITY", [(0, 1)]),
-        ....:     HyperbolicGraphicalPath.Command("LINETO", [(0, 0)]),
+        sage: P = CartesianPathPlot([
+        ....:     CartesianPathPlotCommand("MOVETO", (0, 0)),
+        ....:     CartesianPathPlotCommand("MOVETOINFINITY", (1, 0)),
+        ....:     CartesianPathPlotCommand("MOVETOINFINITY", (0, 1)),
+        ....:     CartesianPathPlotCommand("LINETO", (0, 0)),
         ....: ])
 
     In a similar way, we can also draw an actual line, here the real axis::
 
-        sage: P = HyperbolicGraphicalPath([
-        ....:     HyperbolicGraphicalPath.Command("MOVETOINFINITY", [(-1, 0)]),
-        ....:     HyperbolicGraphicalPath.Command("LINETOINFINITY", [(1, 0)]),
+        sage: P = CartesianPathPlot([
+        ....:     CartesianPathPlotCommand("MOVETOINFINITY", (-1, 0)),
+        ....:     CartesianPathPlotCommand("RAYTO", (1, 0)),
         ....: ])
 
     Finally, we can draw an arc in clockwise direction; here we plot the point
     in the upper half plane of norm between 1 and 2::
 
-        sage: P = HyperbolicGraphicalPath([
-        ....:     HyperbolicGraphicalPath.Command("MOVETO", [(-1, 0)]),
-        ....:     HyperbolicGraphicalPath.Command("ARCTO", [(0, 0), (1, 0)]),
-        ....:     HyperbolicGraphicalPath.Command("MOVETO", [(2, 0)]),
-        ....:     HyperbolicGraphicalPath.Command("RARCTO", [(0, 0), (-2, 0)]),
-        ....:     HyperbolicGraphicalPath.Command("MOVETO", [(-1, 0)]),
+        sage: P = CartesianPathPlot([
+        ....:     CartesianPathPlotCommand("MOVETO", (-1, 0)),
+        ....:     CartesianPathPlotCommand("ARCTO", ((0, 0), (1, 0))),
+        ....:     CartesianPathPlotCommand("MOVETO", (2, 0)),
+        ....:     CartesianPathPlotCommand("RARCTO", ((0, 0), (-2, 0))),
+        ....:     CartesianPathPlotCommand("MOVETO", (-1, 0)),
         ....: ])
 
-    """
-    @dataclass
-    class Command:
-        code: str
-        args: tuple
+    .. SEEALSO::
 
-    # TODO: Check documentation
-    # TODO: Check INPUTS
-    # TODO: Check SEEALSO
-    # TODO: Check for doctests
-    # TODO: Benchmark?
-    # TODO: Use sage's vector or matplotlib builtins more so we do not need to implement basic geometric primitives manually here.
+        :func:`hyperbolic_path` to create a ``Graphics`` containing a
+        :class:`CartesianPathPlot`, most likely you want to use that
+        function if you want to use this functionality in plots of your own.
+
+    """
+
     def __init__(self, commands, options=None):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
-        # TODO: Validate input.
         options = options or {}
 
         valid_options = self._allowed_options()
@@ -8121,24 +8413,101 @@ class HyperbolicGraphicalPath(GraphicPrimitive):
             if option not in valid_options:
                 raise RuntimeError(f"option {option} not valid")
 
+        # We don't validate the commands here. The consumers below are going to
+        # do that implicitly.
         self._commands = commands
+
         super().__init__(options)
 
     def _allowed_options(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
         r"""
         Return the options that are supported by a path.
 
         We support all the options that are understood by a SageMath polygon.
 
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import CartesianPathPlot
+            sage: P = CartesianPathPlot([])
+            sage: P._allowed_options()
+            {'alpha': 'How transparent the figure is.',
+             'edgecolor': 'The color for the border of filled polygons.',
+             'fill': 'Whether or not to fill the polygon.',
+             'hue': 'The color given as a hue.',
+             'legend_color': 'The color of the legend text.',
+             'legend_label': 'The label for this item in the legend.',
+             'linestyle': 'The style of the enclosing line.',
+             'rgbcolor': 'The color as an RGB tuple.',
+             'thickness': 'How thick the border line is.',
+             'zorder': 'The layer level in which to draw'}
+            sage: P = CartesianPathPlot([], options={"alpha": .1})
+            sage: P = CartesianPathPlot([], options={"beta": .1})
+            Traceback (most recent call last):
+            ...
+            RuntimeError: option beta not valid
+
         """
         from sage.plot.polygon import Polygon
 
         return Polygon([], [], {})._allowed_options()
+
+    def __repr__(self):
+        r"""
+        Return a printable representation of this plot for debugging purposes.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import CartesianPathPlot, CartesianPathPlotCommand
+
+            sage: P = CartesianPathPlot([
+            ....:     CartesianPathPlotCommand("MOVETO", (-1, 0)),
+            ....:     CartesianPathPlotCommand("LINETO", (0, 0)),
+            ....: ])
+            sage: P
+            CartesianPathPlot([CartesianPathPlotCommand(code='MOVETO', args=(-1, 0)), CartesianPathPlotCommand(code='LINETO', args=(0, 0))])
+
+        """
+        return f"CartesianPathPlot({self._commands})"
+
+    class DynamicPath(matplotlib.path.Path):
+        # TODO: Do we need a dynamic path or a dynamic patch?
+        r"""
+        A path that contains infinite rays and dynamically redraws when its
+        bounding box changes so that these rays always extend beyond the
+        viewport.
+        """
+        # TODO: Check documentation.
+        # TODO: Check INPUT
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        # TODO: Benchmark?
+
+        def __init__(self, parent):
+            self._parent = parent
+            self._box = None
+            self._redraw(self._box, force=True)
+
+        @property
+        @cached_method
+        def _bbox(self):
+            r"""
+            Return a minimal bounding box for this path.
+            """
+            # TODO: Check documentation.
+            # TODO: Check INPUT
+            # TODO: Check SEEALSO
+            # TODO: Check for doctests
+            # TODO: Benchmark?
+            raise NotImplementedError
+
+        def _redraw(self, box, force=False):
+            # TODO: Check documentation.
+            # TODO: Check INPUT
+            # TODO: Check SEEALSO
+            # TODO: Check for doctests
+            # TODO: Benchmark?
+            raise NotImplementedError
+            # .padded(max(self._box.width, self._box.height)))
 
     def _render_on_subplot(self, subplot):
         # TODO: Check documentation.
@@ -8147,13 +8516,14 @@ class HyperbolicGraphicalPath(GraphicPrimitive):
         # TODO: Check for doctests
         # TODO: Benchmark?
         r"""
-        Render this path on the subplot.
+        Render this path on ``subplot``.
 
         Matplotlib was not really made to draw things that extend to infinity.
         The trick here is to register a callback that redraws whenever the
         viewbox of the plot changes, e.g., as more objects are added to the
-        plot.
+        plot or as the plot is dragged around.
         """
+        # TODO: Use sage's vector or matplotlib builtins more so we do not need to implement basic geometric primitives manually here.
         # Rewrite options to only contain matplotlib compatible entries
         matplotlib_options = {
             key: value
@@ -8171,46 +8541,54 @@ class HyperbolicGraphicalPath(GraphicPrimitive):
 
         from matplotlib.path import Path
 
-        fill_path = Path([(0, 0)])
-        edge_path = Path([(0, 0)])
+        path = Path([(0, 0)])
 
         from matplotlib.patches import PathPatch
 
-        fill_patch = PathPatch(fill_path, **matplotlib_options)
-        edge_patch = PathPatch(edge_path, **matplotlib_options)
+        patch = PathPatch(path, **matplotlib_options)
+
+        subplot.axes.add_patch(patch)
 
         options = self.options()
-        fill = options.pop("fill")
+
+        fill = options.pop("fill", None)
         if fill:
-            subplot.axes.add_patch(fill_patch)
-        subplot.axes.add_patch(edge_patch)
+            patch.set_fill(True)
 
         # Translate SageMath options to matplotlib style.
-        fill_patch.set_linewidth(float(options["thickness"]))
+        if "thickness" in options:
+            patch.set_linewidth(float(options.pop("thickness")))
+
         if "linestyle" in options:
-            fill_patch.set_linestyle(options["linestyle"])
-        fill_patch.set_alpha(float(options["alpha"]))
+            patch.set_linestyle(options.pop("linestyle"))
+
+        if "alpha" in options:
+            patch.set_alpha(float(options["alpha"]))
 
         from sage.plot.colors import to_mpl_color
 
-        color = to_mpl_color(options.pop("rgbcolor"))
+        color = None
+        if "rgbcolor" in options:
+            color = to_mpl_color(options.pop("rgbcolor"))
 
-        fill_patch.set_fill(True)
-        edge_patch.set_fill(False)
+        edge_color = None
+        if "edgecolor" in options:
+            edge_color = to_mpl_color(options.pop("edgecolor"))
 
-        edge_color = options.pop("edgecolor")
-        if fill:
-            if edge_color is None:
-                fill_patch.set_color(color)
-                edge_patch.set_color(color)
+        if edge_color is None:
+            if color is None:
+                pass
             else:
-                fill_patch.set_facecolor(color)
-                fill_patch.set_edgecolor(color)
-                edge_patch.set_edgecolor(to_mpl_color(edge_color))
+                patch.set_color(color)
         else:
-            edge_patch.set_edgecolor(edge_color or color)
+            patch.set_edgecolor(edge_color)
+            if color is None:
+                pass
+            else:
+                patch.set_facecolor(color)
 
-        fill_patch.set_label(options["legend_label"])
+        if "legend_label" in options:
+            patch.set_label(options.pop("legend_label"))
 
         def redraw(_=None):
             # TODO: Check documentation.
@@ -8222,68 +8600,88 @@ class HyperbolicGraphicalPath(GraphicPrimitive):
             Redraw after the viewport has been rescaled to make sure that
             infinite rays reach the end of the viewport.
             """
-            self._redraw_on_subplot(subplot, fill_patch, fill=True)
-            self._redraw_on_subplot(subplot, edge_patch, fill=False)
+            patch.set_path(self._create_path(subplot.axes.get_xlim(), subplot.axes.get_ylim(), fill=fill))
 
         subplot.axes.callbacks.connect("ylim_changed", redraw)
         subplot.axes.callbacks.connect("xlim_changed", redraw)
         redraw()
 
-    def _redraw_on_subplot(self, subplot, patch, fill):
+    def _create_path(self, xlim, ylim, fill):
         # TODO: Check documentation.
         # TODO: Check INPUT
         # TODO: Check SEEALSO
         # TODO: Check for doctests
         # TODO: Benchmark?
-        # Note that we throw RuntimeError (instead of NotImplementedError)
-        # since some errors are silently consumed by matplotlib (or SageMath?)
-        # it seems.
+
+        # Handle the first command. This controls how the path starts.
+        command = self._commands[0]
+
+        if command.code == "MOVETO":
+            pos = command.args
+            direction = None
+            vertices = [pos]
+        elif command.code == "MOVETOINFINITY":
+            direction = command.args
+            # TODO: What's pos?
+            vertices = [self._infinity(pos, direction)]
+        else:
+            raise RuntimeError(f"path must not start with a {command.code} command")
 
         from matplotlib.path import Path
 
-        xlim = subplot.axes.get_xlim()
-        ylim = subplot.axes.get_ylim()
+        codes = [Path.MOVETO]
 
-        commands = list(reversed(self._commands))
+        for command in self._commands[1:]:
+            pos, direction = self._extend_path(vertices, codes, pos, direction, command, fill)
 
-        command = commands.pop()
+        return Path(vertices, codes)
 
-        def vertex(pos, direction):
-            # TODO: Check documentation.
-            # TODO: Check INPUT
-            # TODO: Check SEEALSO
-            # TODO: Check for doctests
-            # TODO: Benchmark?
-            from sage.all import vector
+    @staticmethod
+    def _infinitiy(pos, direction, xlim, ylim):
+        # TODO: Check documentation.
+        # TODO: Check INPUT
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        # TODO: Benchmark?
+        from sage.all import vector
 
-            direction = vector(direction)
-            pos = vector(pos)
+        direction = vector(direction)
+        pos = vector(pos)
 
-            from sage.all import infinity
+        from sage.all import infinity
 
-            if direction[0]:
-                λx = max(
-                    (xlim[0] - pos[0]) / direction[0], (xlim[1] - pos[0]) / direction[0]
-                )
-            else:
-                λx = infinity
+        if direction[0]:
+            λx = max(
+                (xlim[0] - pos[0]) / direction[0], (xlim[1] - pos[0]) / direction[0]
+            )
+        else:
+            λx = infinity
 
-            if direction[1]:
-                λy = max(
-                    (ylim[0] - pos[1]) / direction[1], (ylim[1] - pos[1]) / direction[1]
-                )
-            else:
-                λy = infinity
+        if direction[1]:
+            λy = max(
+                (ylim[0] - pos[1]) / direction[1], (ylim[1] - pos[1]) / direction[1]
+            )
+        else:
+            λy = infinity
 
-            λ = min(λx, λy)
+        λ = min(λx, λy)
 
-            # Additionally, we now move out a full plot size so we are sure
-            # that no artifacts coming from any sweeps (see below) show up in
-            # the final plot.
-            plot_size = (xlim[1] - xlim[0]) + (ylim[1] - ylim[0])
-            λ += plot_size / direction.norm()
+        # Additionally, we now move out a full plot size so we are sure
+        # that no artifacts coming from any sweeps (see below) show up in
+        # the final plot.
+        plot_size = (xlim[1] - xlim[0]) + (ylim[1] - ylim[0])
+        λ += plot_size / direction.norm()
 
-            return pos + λ * direction
+        return pos + λ * direction
+
+    @staticmethod
+    def _extend_path(vertices, codes, pos, direction, command, fill):
+        # TODO: Check documentation.
+        # TODO: Check INPUT
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        # TODO: Benchmark?
+        from matplotlib.path import Path
 
         def extend(path):
             # TODO: Check documentation.
@@ -8294,67 +8692,29 @@ class HyperbolicGraphicalPath(GraphicPrimitive):
             vertices.extend(path.vertices[1:])
             codes.extend(path.codes[1:])
 
-        if command.code == "MOVETO":
-            (pos,) = command.args
-            direction = None
-            vertices = [pos]
-        elif command.code == "MOVETOINFINITY":
-            pos, direction = command.args
-            vertices = [vertex(pos, direction)]
-        else:
-            raise RuntimeError(f"path must not start with a {command.code} command")
+        if command.code == "LINETO":
+            target = command.args
 
-        codes = [Path.MOVETO]
-
-        while commands:
-            command = commands.pop()
-
-            if command.code == "LINETO":
-                (target,) = command.args
-
-                if direction is not None and pos != target:
-                    raise ValueError(
-                        f"Cannot execute LINETO from infinite point at {pos} + λ {direction} when going to {target}"
-                    )
-
+            if direction is not None:
+                vertices.append(CartesianPathPlot._infinity(target, direction))
+                codes.append(Path.LINETO)
                 direction = None
-                pos = target
 
-                vertices.append(pos)
+            pos = target
+
+            vertices.append(pos)
+            codes.append(Path.LINETO)
+        elif command.code == "RAYTO":
+            if direction is None:
+                direction = command.args
+
+                vertices.append(CartesianPathPlot._infinity(pos, direction))
                 codes.append(Path.LINETO)
-            elif command.code == "LINETOINFINITY":
-                assert direction is None
+            else:
+                start = CartesianPathPlot._infinity(pos, direction)
 
-                base, direction = command.args
-                # TODO: check up to epsilon
-                # assert base == pos
-                pos = base
-
-                vertices.append(vertex(pos, direction))
-                codes.append(Path.LINETO)
-            elif command.code == "ARCTO":
-                target, center = command.args
-
-                assert direction is None
-
-                extend(self._arc_path(center, pos, target))
-
-                pos = target
-            elif command.code == "RARCTO":
-                target, center = command.args
-
-                assert direction is None
-
-                extend(self._arc_path(center, target, pos, reverse=True))
-
-                pos = target
-            elif command.code == "MOVETOINFINITY":
-                assert direction is not None
-
-                start = vertex(pos, direction)
-
-                pos, direction = command.args
-                end = vertex(pos, direction)
+                direction = command.args
+                end = CartesianPathPlot._infinity(pos, direction)
 
                 # Sweep the bounding box counterclockwise from start to end
                 from sage.all import vector
@@ -8362,16 +8722,36 @@ class HyperbolicGraphicalPath(GraphicPrimitive):
                 # TODO: Is this the correct center?
                 center = vector(((start[0] + end[0]) / 2, (start[1] + end[1]) / 2))
 
-                extend(self._arc_path(center, start, end))
+                extend(CartesianPathPlot._arc_path(center, start, end))
 
                 vertices.append(end)
                 codes.append(Path.LINETO if fill else Path.MOVETO)
-            else:
-                raise RuntimeError(f"cannot draw {command.code} yet")
+        elif command.code == "ARCTO":
+            target, center = command.args
 
-        from matplotlib.path import Path
+            assert direction is None
 
-        patch.set_path(Path(vertices, codes))
+            extend(CartesianPathPlot._arc_path(center, pos, target))
+
+            pos = target
+        elif command.code == "RARCTO":
+            target, center = command.args
+
+            assert direction is None
+
+            extend(CartesianPathPlot._arc_path(center, target, pos, reverse=True))
+
+            pos = target
+        elif command.code == "MOVETO":
+            target = command.args
+            pos = target
+            direction = None
+            vertices.append(pos)
+            codes.append(Path.MOVETO)
+        else:
+            raise RuntimeError(f"cannot draw {command.code} yet")
+
+        return pos, direction
 
     @cached_method
     def get_minmax_data(self):
@@ -8380,6 +8760,7 @@ class HyperbolicGraphicalPath(GraphicPrimitive):
         # TODO: Check SEEALSO
         # TODO: Check for doctests
         # TODO: Benchmark?
+        # TODO: Use sage's vector or matplotlib builtins more so we do not need to implement basic geometric primitives manually here.
         try:
             from matplotlib.transforms import Bbox
 
@@ -8388,7 +8769,7 @@ class HyperbolicGraphicalPath(GraphicPrimitive):
             pos = None
             for command in self._commands:
                 if command.code in ["MOVETO", "LINETO"]:
-                    (pos,) = command.args
+                    pos = command.args
                     bbox.update_from_data_xy([pos], ignore=False)
                 elif command.code in ["ARCTO", "RARCTO"]:
                     target, center = command.args
@@ -8419,7 +8800,7 @@ class HyperbolicGraphicalPath(GraphicPrimitive):
                         ])
 
                     pos = target
-                elif command.code in ["LINETOINFINITY", "MOVETOINFINITY"]:
+                elif command.code in ["RAYTO", "MOVETOINFINITY"]:
                     # TODO: Add a bit to the bounding box so these are always visible.
                     pass
                 else:
@@ -8440,6 +8821,7 @@ class HyperbolicGraphicalPath(GraphicPrimitive):
         # TODO: Check SEEALSO
         # TODO: Check for doctests
         # TODO: Benchmark?
+        # TODO: Use sage's vector or matplotlib builtins more so we do not need to implement basic geometric primitives manually here.
         from matplotlib.path import Path
         from math import atan2, pi
         from sage.all import vector
@@ -8463,110 +8845,229 @@ class HyperbolicGraphicalPath(GraphicPrimitive):
 
         return Path(arc_vertices, unit_arc.codes)
 
-    @classmethod
-    def hyperbolic_path(cls, commands, model, **kwds):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
-        if len(commands) < 2:
-            raise ValueError("a path must contain at least two points")
 
-        commands.reverse()
+@dataclass
+class HyperbolicPathPlotCommand:
+    r"""
+    A step in a hyperbolic plot.
 
-        command = commands.pop()
-        if command.code == "MOVETO":
-            (pos,) = command.args
-            if model == "half_plane" and pos == pos.parent().infinity():
-                next = commands[-1].args[0]
-                bezier_commands = [
-                    HyperbolicGraphicalPath.Command(
-                        "MOVETOINFINITY", [next.coordinates(model=model), (0, 1)]
-                    )
-                ]
-            else:
-                from sage.all import RR
+    Such a step is independent of the model chosen for the plot. It merely
+    draws a segment (``LINETO``) in the hyperbolic plan or performs a movement
+    without drawing a segment (``MOVETO``).
 
-                bezier_commands = [
-                    HyperbolicGraphicalPath.Command(
-                        "MOVETO", [pos.change_ring(RR).coordinates(model=model)]
-                    )
-                ]
-        else:
-            raise ValueError("path must start with MOVETO or MOVETOINFINITY command")
+    Each command has a parameter, the point to which the command moves.
 
-        while commands:
-            command = commands.pop()
+    A sequence of such commands cannot be plotted directly. It is first
+    converted into a sequence of :class:`CartesianPathPlotCommand` which
+    realizes the commands in a specific hyperbolic model.
 
-            if command.code == "LINETO":
-                (target,) = command.args
-                bezier_commands.extend(
-                    cls._hyperbolic_segment(pos, target, model=model)
-                )
-                pos = target
-            elif command.code == "MOVETO":
-                (target,) = command.args
-                bezier_commands.extend(cls._hyperbolic_move(pos, target, model=model))
-                pos = target
-            else:
-                raise NotImplementedError("unsuported hyperbolic plotting code")
+    EXAMPLES::
 
-        if bezier_commands[-1].code == "LINETOINFINITY" and bezier_commands[-1].args[
-            -1
-        ] == (1, 0):
-            assert bezier_commands[0].code == "MOVETOINFINITY" and bezier_commands[
-                1
-            ].args[-1] == (0, 1)
-            bezier_commands.append(bezier_commands[0])
+        sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicPathPlotCommand
+        sage: H = HyperbolicPlane()
+        sage: HyperbolicPathPlotCommand("MOVETO", H(0))
+        HyperbolicPathPlotCommand(code='MOVETO', target=0)
 
-        assert len(bezier_commands) >= 2
+    """
+    code: Literal["MOVETO", "LINETO"]
+    target: HyperbolicPoint
 
-        return HyperbolicGraphicalPath(bezier_commands, kwds)
-
-    @classmethod
-    def _hyperbolic_segment(cls, start, end, model):
+    def cartesian(self, model, cursor=None, fill=True, stroke=True):
         r"""
-        Return a sequence of :class:`HyperbolicGraphicalPath` that represent
-        the closed boundary of a :class:`HyperbolicPolygon`, namely the segment
-        to ``end`` (from the previous position ``start``.)
+        Return the sequence of commands that realizes this plot in the
+        Cartesian plot coordinate system.
+
+        INPUT:
+
+        - ``model`` -- one of ``"half_plane"`` or ``"klein"``
+
+        - ``cursor`` -- a point in the hyperbolic plane or ``None`` (the
+          default); assume that the cursor has been positioned at ``cursor``
+          before this command.
+
+        - ``fill`` -- a boolean; whether to return commands that produce the
+          correct polygon to represent the area of the polygon.
+
+        - ``stroke`` -- a boolean; whether to return commands that produce the
+          correct polygon to represent the lines of the polygon.
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicGraphicalPath
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicPathPlotCommand
+            sage: H = HyperbolicPlane()
+            sage: command = HyperbolicPathPlotCommand("MOVETO", H(0))
+            sage: command.cartesian("half_plane")
+            [CartesianPathPlotCommand(code='MOVETO', args=(0.000000000000000, 0.000000000000000))]
+            sage: command.cartesian("klein")
+            [CartesianPathPlotCommand(code='MOVETO', args=(0.000000000000000, -1.00000000000000))]
+
+            sage: command = HyperbolicPathPlotCommand("LINETO", H(1))
+            sage: command.cartesian("half_plane", cursor=H(0))
+            [CartesianPathPlotCommand(code='RARCTO', args=((1.00000000000000, 0.000000000000000), (0.500000000000000, 0)))]
+            sage: command.cartesian("klein", cursor=H(0))
+            [CartesianPathPlotCommand(code='LINETO', args=(1.00000000000000, 0.000000000000000))]
+
+            sage: command = HyperbolicPathPlotCommand("LINETO", H(oo))
+            sage: command.cartesian("half_plane", cursor=H(1))
+            [CartesianPathPlotCommand(code='RAYTO', args=(0, 1))]
+            sage: command.cartesian("klein", cursor=H(1))
+            [CartesianPathPlotCommand(code='LINETO', args=(0.000000000000000, 1.00000000000000))]
+
+        """
+        if cursor is None:
+            if self.code != "MOVETO":
+                raise ValueError("when no previous cursor position is specified, command must be MOVETO")
+
+            if model == "half_plane" and self.target == self.target.parent().infinity():
+                return [CartesianPathPlotCommand("MOVETOINFINITY", (0, 1))]
+
+            from sage.all import RR
+            return [CartesianPathPlotCommand("MOVETO", self.target.change_ring(RR).coordinates(model=model))]
+
+        if self.code == "LINETO":
+            return HyperbolicPathPlotCommand.create_segment_cartesian(cursor, self.target, model=model)
+
+        if self.code == "MOVETO":
+            return HyperbolicPathPlotCommand.create_move_cartesian(cursor, self.target, model=model, fill=fill, stroke=stroke)
+
+        raise NotImplementedError("cannot convert this command to a Cartesian plot command yet")
+
+    @staticmethod
+    def make_cartesian(commands, model, fill=True, stroke=True):
+        r"""
+        Return the sequence of :class:`CartesianPathPlotCommand` that realizes
+        the hyperbolic ``commands`` in the ``model``.
+
+        INPUT:
+
+        - ``commands`` -- a sequence of :class:`HyperbolicPathPlotCommand`.
+
+        - ``model`` -- one of ``"half_plane"`` or ``"klein"``
+
+        - ``fill`` -- a boolean; whether to return commands that produce the
+          correct polygon to represent the area of the polygon.
+
+        - ``stroke`` -- a boolean; whether to return commands that produce the
+          correct polygon to represent the lines of the polygon.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicPathPlotCommand
             sage: H = HyperbolicPlane()
 
-        A finite segment in the hyperbolic plane note that we assume that
-        "cursor" is at ``start``, so only command that goes to ``end`` is
+        A finite closed triangle in the hyperbolic plane::
+
+            sage: commands = [
+            ....:     HyperbolicPathPlotCommand("MOVETO", H(I)),
+            ....:     HyperbolicPathPlotCommand("LINETO", H(I + 1)),
+            ....:     HyperbolicPathPlotCommand("LINETO", H(2 * I)),
+            ....:     HyperbolicPathPlotCommand("LINETO", H(I)),
+            ....: ]
+
+        And its corresponding plot in different models::
+hi
+            sage: HyperbolicPathPlotCommand.make_cartesian(commands, model="half_plane")
+            [CartesianPathPlotCommand(code='MOVETO', args=(0.000000000000000, 1.00000000000000)),
+             CartesianPathPlotCommand(code='RARCTO', args=((1.00000000000000, 1.00000000000000), (0.500000000000000, 0))),
+             CartesianPathPlotCommand(code='ARCTO', args=((0.000000000000000, 2.00000000000000), (-1.00000000000000, 0))),
+             CartesianPathPlotCommand(code='LINETO', args=(0.000000000000000, 1.00000000000000))]
+
+            sage: HyperbolicPathPlotCommand.make_cartesian(commands, model="klein")
+            [CartesianPathPlotCommand(code='MOVETO', args=(0.000000000000000, 0.000000000000000)),
+             CartesianPathPlotCommand(code='LINETO', args=(0.666666666666667, 0.333333333333333)),
+             CartesianPathPlotCommand(code='LINETO', args=(0.000000000000000, 0.600000000000000)),
+             CartesianPathPlotCommand(code='LINETO', args=(0.000000000000000, 0.000000000000000))]
+
+        Asking for a polygon that works for both fill and stroke is not always
+        possible::
+
+            sage: commands = [
+            ....:     HyperbolicPathPlotCommand("MOVETO", H(0)),
+            ....:     HyperbolicPathPlotCommand("MOVETO", H(1)),
+            ....:     HyperbolicPathPlotCommand("LINETO", H(oo)),
+            ....:     HyperbolicPathPlotCommand("LINETO", H(0)),
+            ....: ]
+
+            sage: HyperbolicPathPlotCommand.make_cartesian(commands, model="half_plane")
+            Traceback (most recent call last):
+            ...
+            ValueError: exactly one of fill & stroke must be set
+
+            sage: HyperbolicPathPlotCommand.make_cartesian(commands, model="half_plane", fill=False, stroke=True)
+            [CartesianPathPlotCommand(code='MOVETO', args=(0.000000000000000, 0.000000000000000)),
+             CartesianPathPlotCommand(code='MOVETO', args=(1.00000000000000, 0.000000000000000)),
+             CartesianPathPlotCommand(code='RAYTO', args=(0, 1)),
+             CartesianPathPlotCommand(code='LINETO', args=(0.000000000000000, 0.000000000000000))]
+
+            sage: HyperbolicPathPlotCommand.make_cartesian(commands, model="half_plane", fill=True, stroke=False)
+            [CartesianPathPlotCommand(code='MOVETO', args=(0.000000000000000, 0.000000000000000)),
+             CartesianPathPlotCommand(code='LINETO', args=(1.00000000000000, 0.000000000000000)),
+             CartesianPathPlotCommand(code='RAYTO', args=(0, 1)),
+             CartesianPathPlotCommand(code='LINETO', args=(0.000000000000000, 0.000000000000000))]
+
+        """
+        cartesian_commands = []
+        cursor = None
+
+        for command in commands:
+            cartesian_commands.extend(command.cartesian(model=model, cursor=cursor, stroke=stroke, fill=fill))
+            cursor = command.target
+
+        while cartesian_commands and cartesian_commands[-1].code.startswith("MOVE"):
+            cartesian_commands.pop()
+
+        return cartesian_commands
+
+    @staticmethod
+    def create_segment_cartesian(start, end, model):
+        r"""
+        Return a sequence of :class:`CartesianPathPlotCommand` that represent
+        the closed boundary of a :class:`HyperbolicPolygon`, namely the segment
+        to ``end`` (from the previous position ``start``.)
+
+        This is a helper function for :meth:`cartesian`.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicPathPlotCommand
+            sage: H = HyperbolicPlane()
+
+        A finite segment in the hyperbolic plane; note that we assume that
+        "cursor" is at ``start``, so only the command that goes to ``end`` is
         returned::
 
-            sage: HyperbolicGraphicalPath._hyperbolic_segment(H(I), H(2*I), model="half_plane")
-            [HyperbolicGraphicalPath.Command(code='LINETO', args=[(0.000000000000000, 2.00000000000000)])]
+            sage: HyperbolicPathPlotCommand.create_segment_cartesian(H(I), H(2*I), model="half_plane")
+            [CartesianPathPlotCommand(code='LINETO', args=(0.000000000000000, 2.00000000000000))]
 
         An infinite segment::
 
-            sage: HyperbolicGraphicalPath._hyperbolic_segment(H(I), H(oo), model="half_plane")
-            [HyperbolicGraphicalPath.Command(code='LINETOINFINITY', args=[(0.000000000000000, 1.00000000000000), (0, 1)])]
+            sage: HyperbolicPathPlotCommand.create_segment_cartesian(H(I), H(oo), model="half_plane")
+            [CartesianPathPlotCommand(code='RAYTO', args=(0, 1))]
 
-        A segment that is infinite on both ends::
+        A segment that is infinite on both ends; it looks the same because the
+        starting point is not rendered here::
 
-            sage: HyperbolicGraphicalPath._hyperbolic_segment(H(0), H(oo), model="half_plane")
-            [HyperbolicGraphicalPath.Command(code='LINETOINFINITY', args=[(0.000000000000000, 0.000000000000000), (0, 1)])]
+            sage: HyperbolicPathPlotCommand.create_segment_cartesian(H(0), H(oo), model="half_plane")
+            [CartesianPathPlotCommand(code='RAYTO', args=(0, 1))]
 
         Note that this is a "closed" boundary of the polygon that is left of
         that segment unlike the "open" version produced by
         :meth:`_hyperbolic_move` which contains the entire positive real axis::
 
-            sage: HyperbolicGraphicalPath._hyperbolic_move(H(0), H(oo), model="half_plane")
-            [HyperbolicGraphicalPath.Command(code='LINETOINFINITY', args=[(0.000000000000000, 0.000000000000000), (1, 0)])]
+            sage: HyperbolicPathPlotCommand.create_move_cartesian(H(0), H(oo), model="half_plane", stroke=True, fill=False)
+            [CartesianPathPlotCommand(code='MOVETOINFINITY', args=(0, 1))]
+            sage: HyperbolicPathPlotCommand.create_move_cartesian(H(0), H(oo), model="half_plane", stroke=False, fill=True)
+            [CartesianPathPlotCommand(code='RAYTO', args=(1, 0)),
+             CartesianPathPlotCommand(code='RAYTO', args=(0, 1))]
 
         The corresponding difference in the Klein model::
 
-            sage: HyperbolicGraphicalPath._hyperbolic_segment(H(0), H(oo), model="klein")
-            [HyperbolicGraphicalPath.Command(code='LINETO', args=[(0.000000000000000, 1.00000000000000)])]
-
-            sage: HyperbolicGraphicalPath._hyperbolic_move(H(0), H(oo), model="klein")
-            [HyperbolicGraphicalPath.Command(code='ARCTO', args=[(0.000000000000000, 1.00000000000000), (0, 0)])]
+            sage: HyperbolicPathPlotCommand.create_segment_cartesian(H(0), H(oo), model="klein")
+            [CartesianPathPlotCommand(code='LINETO', args=(0.000000000000000, 1.00000000000000))]
+            sage: HyperbolicPathPlotCommand.create_move_cartesian(H(0), H(oo), model="klein", stroke=True, fill=False)
+            [CartesianPathPlotCommand(code='MOVETO', args=(0.000000000000000, 1.00000000000000))]
+            sage: HyperbolicPathPlotCommand.create_move_cartesian(H(0), H(oo), model="klein", stroke=False, fill=True)
+            [CartesianPathPlotCommand(code='ARCTO', args=((0.000000000000000, 1.00000000000000), (0, 0)))]
 
         """
         # TODO: Check documentation.
@@ -8574,6 +9075,7 @@ class HyperbolicGraphicalPath(GraphicPrimitive):
         # TODO: Check SEEALSO
         # TODO: Check for doctests
         # TODO: Benchmark?
+        # TODO: Use sage's vector or matplotlib builtins more so we do not need to implement basic geometric primitives manually here.
         if start == end:
             raise ValueError(f"cannot draw segment from point {start} to itself ({end})")
 
@@ -8588,15 +9090,14 @@ class HyperbolicGraphicalPath(GraphicPrimitive):
 
             if start == start.parent().infinity():
                 return [
-                    HyperbolicGraphicalPath.Command("MOVETOINFINITY", [(end_x, end_y), (0, 1)]),
-                    HyperbolicGraphicalPath.Command("LINETO", [(end_x, end_y)]),
+                    CartesianPathPlotCommand("LINETO", (end_x, end_y)),
                 ]
 
             if end == end.parent().infinity():
                 return [
-                    HyperbolicGraphicalPath.Command(
-                        "LINETOINFINITY",
-                        [(start_x, start_y), (0, 1)],
+                    CartesianPathPlotCommand(
+                        "RAYTO",
+                        (0, 1),
                     )
                 ]
 
@@ -8604,7 +9105,7 @@ class HyperbolicGraphicalPath(GraphicPrimitive):
             if (start_x - end_x).abs() < (start_y - end_y).abs() * 1e-6:
                 # This segment is (almost) vertical. We plot it as if it were
                 # vertical to avoid numeric issus.
-                return [HyperbolicGraphicalPath.Command("LINETO", [(end_x, end_y)])]
+                return [CartesianPathPlotCommand("LINETO", (end_x, end_y))]
 
             real_hyperbolic_plane = HyperbolicPlane(RR)
             geodesic = real_hyperbolic_plane.geodesic(
@@ -8617,94 +9118,157 @@ class HyperbolicGraphicalPath(GraphicPrimitive):
             )
 
             return [
-                HyperbolicGraphicalPath.Command("RARCTO" if start_x < end_x else "ARCTO", [(end_x, end_y), center])
+                CartesianPathPlotCommand("RARCTO" if start_x < end_x else "ARCTO", ((end_x, end_y), center))
             ]
         elif model == "klein":
             from sage.all import RR
 
             return [
-                HyperbolicGraphicalPath.Command(
-                    "LINETO", [end.change_ring(RR).coordinates(model="klein")]
+                CartesianPathPlotCommand(
+                    "LINETO", end.change_ring(RR).coordinates(model="klein")
                 )
             ]
         else:
             raise NotImplementedError("cannot draw segment in this model")
 
-    @classmethod
-    def _hyperbolic_move(cls, start, end, model):
+    @staticmethod
+    def create_move_cartesian(start, end, model, stroke=True, fill=True):
         r"""
-        Return a list of :class:`HyperbolicGraphicalPath` that represent the
-        open "segment" on the boundary of a polygon connecting ``start`` and
-        ``end``.
+        Return a list of :class:`CartesianPathPlot.Command` that
+        represent the open "segment" on the boundary of a polygon
+        connecting ``start`` and ``end``.
+
+        This is a helper function for :meth:`make_cartesian`.
         """
         # TODO: Check documentation.
         # TODO: Check INPUT
         # TODO: Check SEEALSO
         # TODO: Check for doctests
         # TODO: Benchmark?
+        # TODO: Use sage's vector or matplotlib builtins more so we do not need to implement basic geometric primitives manually here.
         if start == end:
             raise ValueError("cannot move from point to itself")
 
         if start.is_finite():
-            raise ValueError("starting point of move must be ideal")
+            raise ValueError(f"starting point of move must be ideal but was {start}")
 
         if end.is_finite():
-            raise ValueError("end of move must be ideal")
+            raise ValueError(f"end of move must be ideal but was {end}")
+
+        if fill == stroke:
+            raise ValueError("exactly one of fill & stroke must be set")
 
         if model == "half_plane":
-            if start == start.parent().infinity():
-                from sage.all import RR
+            from sage.all import RR
 
+            if not fill:
+                if end == end.parent().infinity():
+                    return [CartesianPathPlotCommand("MOVETOINFINITY", (0, 1))]
+
+                return [CartesianPathPlotCommand("MOVETO", end.change_ring(RR).coordinates())]
+
+            if start == start.parent().infinity():
                 return [
-                    HyperbolicGraphicalPath.Command(
-                        "MOVETOINFINITY", [end.change_ring(RR).coordinates(), (-1, 0)]
-                    ),
-                    HyperbolicGraphicalPath.Command("LINETO", [end.change_ring(RR).coordinates()]),
+                    CartesianPathPlotCommand("RAYTO", (-1, 0)),
+                    CartesianPathPlotCommand("LINETO", end.change_ring(RR).coordinates()),
                 ]
 
             if end == end.parent().infinity():
-                from sage.all import RR
-
                 return [
-                    HyperbolicGraphicalPath.Command(
-                        "LINETOINFINITY", [start.change_ring(RR).coordinates(), (1, 0)]
-                    )
+                    CartesianPathPlotCommand("RAYTO", (1, 0)),
+                    CartesianPathPlotCommand("RAYTO", (0, 1)),
                 ]
-
-            from sage.all import RR
 
             if (
                 start.change_ring(RR).coordinates()[0]
                 < end.change_ring(RR).coordinates()[0]
             ):
                 return [
-                    HyperbolicGraphicalPath.Command("LINETO", [end.change_ring(RR).coordinates()])
+                    CartesianPathPlotCommand("LINETO", end.change_ring(RR).coordinates())
                 ]
             else:
                 return [
-                    HyperbolicGraphicalPath.Command(
-                        "LINETOINFINITY", [start.change_ring(RR).coordinates(), (1, 0)]
+                    CartesianPathPlotCommand(
+                        "RAYTO", (1, 0)
                     ),
-                    HyperbolicGraphicalPath.Command(
-                        "MOVETOINFINITY", [end.change_ring(RR).coordinates(), (-1, 0)]
+                    CartesianPathPlotCommand(
+                        "RAYTO", (0, 1)
                     ),
-                    HyperbolicGraphicalPath.Command("LINETO", [end.change_ring(RR).coordinates()]),
+                    CartesianPathPlotCommand(
+                        "RAYTO", (-1, 0)
+                    ),
+                    CartesianPathPlotCommand("LINETO", end.change_ring(RR).coordinates()),
                 ]
 
-            raise NotImplementedError(
-                f"cannot move from {start} to {end} in half plane model"
-            )
         elif model == "klein":
-            # TODO: The actual arc should not be visible.
             from sage.all import RR
 
-            return [
-                HyperbolicGraphicalPath.Command(
-                    "ARCTO", [end.change_ring(RR).coordinates(model="klein"), (0, 0)]
-                )
-            ]
+            if fill:
+                return [
+                    CartesianPathPlotCommand(
+                        "ARCTO", (end.change_ring(RR).coordinates(model="klein"), (0, 0))
+                    )
+                ]
+            else:
+                return [
+                    CartesianPathPlotCommand(
+                        "MOVETO", end.change_ring(RR).coordinates(model="klein")
+                    )
+                ]
         else:
             raise NotImplementedError("cannot move in this model")
+
+
+@dataclass
+class CartesianPathPlotCommand:
+    r"""
+    A plot command in the plot coordinate system.
+
+    EXAMPLES:
+
+    Move the cursor to the origin of the coordinate system::
+
+
+        sage: from flatsurf.geometry.hyperbolic import CartesianPathPlotCommand
+        sage: P = CartesianPathPlotCommand("MOVETO", (0, 0))
+
+    Draw a line segment to another point::
+
+        sage: P = CartesianPathPlotCommand("LINETO", (1, 1))
+
+    Draw a ray from the current position in a specific direction::
+
+        sage: P = CartesianPathPlotCommand("RAYTO", (1, 1))
+
+    Move the cursor to a point at infinity in a specific direction::
+
+        sage: P = CartesianPathPlotCommand("MOVETOINFINITY", (0, 1))
+
+    When already at a point at infinity, then this draws a line::
+
+        sage: P = CartesianPathPlotCommand("RAYTO", (0, -1))
+
+    When at a point at infinity, we can also draw a ray to a finite point::
+
+        sage: P = CartesianPathPlotCommand("LINETO", (0, 0))
+
+    Finally, we can draw counterclockwise and clockwise sectors of the circle,
+    i.e., arcs by specifying the other endpoint and the center of the circle::
+
+        sage: P = CartesianPathPlotCommand("ARCTO", ((2, 0), (1, 0)))
+        sage: P = CartesianPathPlotCommand("RARCTO", ((0, 0), (1, 0)))
+
+    .. SEEALSO::
+
+        :class:`CartesianPathPlot` which draws a sequence of such commands with
+        matplotlib.
+
+        :meth:`HyperbolicPathPlotCommand.make_cartesian` to generate a sequence
+        of such commands from a sequence of plot commands in the hyperbolic plane.
+
+    """
+    code: Literal["MOVETO", "MOVETOINFINITY", "LINETO", "RAYTO", "ARCTO", "RARCTO"]
+    args: tuple
 
 
 @rename_keyword(color="rgbcolor")
@@ -8734,7 +9298,9 @@ def hyperbolic_path(commands, model="half_plane", **options):
     g._set_extra_kwds(Graphics._extract_kwds_for_show(options))
 
     try:
-        g.add_primitive(HyperbolicGraphicalPath.hyperbolic_path(commands[:], model=model, **options))
+        if options.get("fill", None):
+            g.add_primitive(CartesianPathPlot(HyperbolicPathPlotCommand.make_cartesian(commands, model=model, fill=True, stroke=False), {**options, 'thickness': 0}))
+        g.add_primitive(CartesianPathPlot(HyperbolicPathPlotCommand.make_cartesian(commands, model=model, fill=False, stroke=True), {**options, 'fill': False}))
     except Exception as e:
         raise RuntimeError(f"Failed to render hyperbolic path {commands}", e)
 
