@@ -210,7 +210,7 @@ class SpineTessellation(Parent):
              {(-a^3 + 3*a)*(x^2 + y^2) + (-2*a^2 + 4)*x + a^3 - 3*a = 0},
              {(a^3 - 3*a)*(x^2 + y^2) + (-2*a^2 + 4)*x - a^3 + 3*a = 0},
              {a*(x^2 + y^2) + (2*a^2 - 6)*x - a = 0},
-             {4*x = 0}]
+             {x = 0}]
         """
 
         return list(self._geodesic_to_periods(vertex).keys())
