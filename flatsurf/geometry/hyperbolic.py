@@ -212,8 +212,6 @@ We can also intersect objects that are not half spaces::
 from dataclasses import dataclass
 from typing import Literal
 
-import matplotlib.path
-
 from sage.structure.parent import Parent
 from sage.structure.element import Element
 from sage.structure.unique_representation import UniqueRepresentation
@@ -8395,46 +8393,6 @@ class CartesianPathPlot(GraphicPrimitive):
 
         """
         return f"CartesianPathPlot({self._commands})"
-
-    class DynamicPath(matplotlib.path.Path):
-        # TODO: Do we need a dynamic path or a dynamic patch?
-        r"""
-        A path that contains infinite rays and dynamically redraws when its
-        bounding box changes so that these rays always extend beyond the
-        viewport.
-        """
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
-
-        def __init__(self, parent):
-            self._parent = parent
-            self._box = None
-            self._redraw(self._box, force=True)
-
-        @property
-        @cached_method
-        def _bbox(self):
-            r"""
-            Return a minimal bounding box for this path.
-            """
-            # TODO: Check documentation.
-            # TODO: Check INPUT
-            # TODO: Check SEEALSO
-            # TODO: Check for doctests
-            # TODO: Benchmark?
-            raise NotImplementedError
-
-        def _redraw(self, box, force=False):
-            # TODO: Check documentation.
-            # TODO: Check INPUT
-            # TODO: Check SEEALSO
-            # TODO: Check for doctests
-            # TODO: Benchmark?
-            raise NotImplementedError
-            # .padded(max(self._box.width, self._box.height)))
 
     def _render_on_subplot(self, subplot):
         # TODO: Check documentation.
