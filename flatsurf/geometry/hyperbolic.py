@@ -1976,7 +1976,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         """
         subsets = [self(subset) for subset in subsets]
 
-        vertices = sum([list(subset.vertices()) for subset in subsets], start=[])
+        vertices = sum([list(subset.vertices()) for subset in subsets], [])
 
         polygon = self.polygon(HyperbolicHalfSpaces.convex_hull(vertices))
 
