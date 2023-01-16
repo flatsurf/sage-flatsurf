@@ -237,8 +237,8 @@ class IsoDelaunayTessellation(Parent):
 
         """
         # TODO: Should this mutate the tessellation or create a copy instead?
-        for tessellation_face in self._dual_graph.vertices(sort=False)
-            for source_tessellation_face, target_tessellation_face, tessellation_edges in self._dual_graph.edges(tessellation_face, labels=True, sort=False)
+        for tessellation_face in self._dual_graph.vertices(sort=False):
+            for source_tessellation_face, target_tessellation_face, tessellation_edges in self._dual_graph.edges(tessellation_face, labels=True, sort=False):
                 # crossing edge of the polygon cycles back to the very edge in the
                 # polygon, so there is an orbifold point on that edge.
                 # We patch the polygon by inserting a marked point.
