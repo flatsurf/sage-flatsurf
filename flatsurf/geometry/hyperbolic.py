@@ -212,8 +212,6 @@ We can also intersect objects that are not half spaces::
 from dataclasses import dataclass
 from typing import Literal
 
-import matplotlib.path
-
 from sage.structure.parent import Parent
 from sage.structure.element import Element
 from sage.structure.unique_representation import UniqueRepresentation
@@ -1025,7 +1023,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             :class:`HyperbolicPlane`. It is otherwise identical to
             :meth:`HyperbolicOrientedGeodesic.start`.
 
-        EXAMPLES:
+        EXAMPLES::
 
             sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
             sage: H = HyperbolicPlane()
@@ -5620,7 +5618,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
 
             sage: polygon = lambda *half_spaces: H.polygon(half_spaces, check=False, assume_sorted=False, assume_minimal=True)
 
-        An instance that caused problems at some point:
+        An instance that caused problems at some point::
 
             sage: P = polygon(
             ....:   H.geodesic(7, -4, -3, model="half_plane").left_half_space(),
@@ -6779,16 +6777,16 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
                                CartesianPathPlotCommand(code='LINETO', args=(0.000000000000000, 0.000000000000000)),
                                CartesianPathPlotCommand(code='LINETO', args=(1.00000000000000, 0.000000000000000))])
 
-            The last part, the line connecting 0 and 1, is missing from the
-            stroke plot since we only stroke finite edges::
+        The last part, the line connecting 0 and 1, is missing from the
+        stroke plot since we only stroke finite edges::
 
             sage: P.plot("half_plane")[1]
             CartesianPathPlot([CartesianPathPlotCommand(code='MOVETO', args=(1.00000000000000, 0.000000000000000)),
                                CartesianPathPlotCommand(code='RAYTO', args=(0, 1)),
                                CartesianPathPlotCommand(code='LINETO', args=(0.000000000000000, 0.000000000000000))])
 
-            Simalarly in the Klein model picture, the arc of infinite points is
-            only part of the fill, not of the stroke::
+        Simalarly in the Klein model picture, the arc of infinite points is
+        only part of the fill, not of the stroke::
 
             sage: P.plot("klein")[1]
             CartesianPathPlot([CartesianPathPlotCommand(code='MOVETO', args=(1.00000000000000, 0.000000000000000)),
@@ -8039,10 +8037,6 @@ class HyperbolicVertices(SortedSet):
     A set of vertices on the boundary of a convex set in the hyperbolic plane,
     sorted in counterclockwise order.
 
-    .. SEEALSO::
-
-        :meth:`HyperbolicConvexSet.vertices`
-
     EXAMPLES::
 
         sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
@@ -8056,6 +8050,10 @@ class HyperbolicVertices(SortedSet):
         sage: from flatsurf.geometry.hyperbolic import HyperbolicVertices
         sage: isinstance(V, HyperbolicVertices)
         True
+
+    .. SEEALSO::
+
+        :meth:`HyperbolicConvexSet.vertices`
 
     """
 
@@ -8468,46 +8466,6 @@ class CartesianPathPlot(GraphicPrimitive):
 
         """
         return f"CartesianPathPlot({self._commands})"
-
-    class DynamicPath(matplotlib.path.Path):
-        # TODO: Do we need a dynamic path or a dynamic patch?
-        r"""
-        A path that contains infinite rays and dynamically redraws when its
-        bounding box changes so that these rays always extend beyond the
-        viewport.
-        """
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
-
-        def __init__(self, parent):
-            self._parent = parent
-            self._box = None
-            self._redraw(self._box, force=True)
-
-        @property
-        @cached_method
-        def _bbox(self):
-            r"""
-            Return a minimal bounding box for this path.
-            """
-            # TODO: Check documentation.
-            # TODO: Check INPUT
-            # TODO: Check SEEALSO
-            # TODO: Check for doctests
-            # TODO: Benchmark?
-            raise NotImplementedError
-
-        def _redraw(self, box, force=False):
-            # TODO: Check documentation.
-            # TODO: Check INPUT
-            # TODO: Check SEEALSO
-            # TODO: Check for doctests
-            # TODO: Benchmark?
-            raise NotImplementedError
-            # .padded(max(self._box.width, self._box.height)))
 
     def _render_on_subplot(self, subplot):
         # TODO: Check documentation.
