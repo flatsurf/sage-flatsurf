@@ -4,7 +4,7 @@ The flatsurf.geometry Package
 .. automodule:: flatsurf.geometry
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    geometry/chamanara
    geometry/circle
