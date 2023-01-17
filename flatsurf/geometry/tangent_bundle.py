@@ -1,12 +1,31 @@
+# ********************************************************************
+#  This file is part of sage-flatsurf.
+#
+#        Copyright (C) 2016-2022 W. Patrick Hooper
+#                      2016-2022 Vincent Delecroix
+#                           2022 Julian Rüth
+#
+#  sage-flatsurf is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  sage-flatsurf is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
+# ********************************************************************
 from __future__ import absolute_import, print_function, division
-from six.moves import range, map, filter, zip
+from six.moves import range
 
 from .polygon import wedge_product, is_same_direction, is_opposite_direction
 
-rotate_limit=100
-r"""
-Limit for clockwise_to and counter_clockwise_to in SimilaritySurfaceTangentVector.
-"""
+# Limit for clockwise_to and counter_clockwise_to in SimilaritySurfaceTangentVector.
+rotate_limit = 100
+
 
 class SimilaritySurfaceTangentVector:
     r"""
@@ -155,13 +174,6 @@ class SimilaritySurfaceTangentVector:
 
     def vertex(self):
         r"""Return the index of the vertex."""
-        return self._position.get_vertex()
-
-    def singularity(self):
-        r"""Return the index of the vertex."""
-        from sage.misc.superseded import deprecation
-        deprecation(42, "Do not use .singularity(). Use .vertex() instead.")
-        # Note: I want to change this to returning the singularity of the surface instead.
         return self._position.get_vertex()
 
     def is_in_boundary_of_polygon(self):
@@ -472,12 +484,37 @@ class SimilaritySurfaceTangentVector:
                 raise NotImplementedError('codes are only implemented when based at a singularity')
             return self.surface().tangent_vector(v.polygon_label(),v.point(),w)
 
+    def plot(self, **kwargs):
+        r"""
+        Return a plot of this tangent vector.
+
+        EXAMPLES::
+
+            sage: import flatsurf
+            sage: S = flatsurf.translation_surfaces.veech_double_n_gon(5)
+            sage: v = S.tangent_vector(0, (1/8, 1/4), (1/2, 1/4))
+            sage: S.plot() + v.plot()
+            Graphics object consisting of 22 graphics primitives
+
+        Any keyword arguments are passed on to the underlying plot method from SageMath::
+
+            sage: S.plot() + v.plot(color="red")
+            Graphics object consisting of 22 graphics primitives
+
+        """
+        return self.vector().plot(**{
+            'start': self.point(),
+            'width': 1,
+            'arrowsize': 2,
+            **kwargs
+        })
+
 
 class SimilaritySurfaceTangentBundle:
     r"""
     Construct the tangent bundle of a given similarity surface.
 
-    Needs work: We should check for coersion from the base_ring of the surface
+    Needs work: We should check for coercion from the base_ring of the surface
     """
     def __init__(self, similarity_surface, ring=None):
         self._s=similarity_surface
@@ -492,7 +529,6 @@ class SimilaritySurfaceTangentBundle:
         r"""
         Construct a tangent vector from a polygon label, a point in the polygon and a vector. The point and the vector should have coordinates
         in the base field."""
-        V = self.vector_space()
         return SimilaritySurfaceTangentVector(self, polygon_label, self._V(point), self._V(vector))
 
     def __repr__(self):
@@ -538,7 +574,7 @@ class SimilaritySurfaceTangentBundle:
         r"""Return the vector leaving a vertex of the polygon which under straight-line flow travels
         *clockwise* around the boundary of the polygon along the edge with the provided index.
         The length of the vector matches the length of the indexed edge.
-        Note that the point will be based in the polgon opposite the provided edge.
+        Note that the point will be based in the polygon opposite the provided edge.
 
         EXAMPLES::
 
@@ -555,8 +591,7 @@ class SimilaritySurfaceTangentBundle:
             sage: print(tb.clockwise_edge(0,0))
             SimilaritySurfaceTangentVector in polygon 1 based at (2, 0) with vector (-1, 3)
         """
-        polygon=self.surface().polygon(polygon_label)
-        point=polygon.vertex(edge_index+1)
-        vector=-polygon.edge(edge_index)
+        polygon = self.surface().polygon(polygon_label)
+        point = polygon.vertex(edge_index + 1)
+        vector = -polygon.edge(edge_index)
         return SimilaritySurfaceTangentVector(self, polygon_label, point, vector)
-

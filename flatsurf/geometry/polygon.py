@@ -28,7 +28,7 @@ EXAMPLES::
 #  This file is part of sage-flatsurf.
 #
 #        Copyright (C) 2016-2020 Vincent Delecroix
-#                      2020      Julian Rüth
+#                      2020-2022 Julian Rüth
 #
 #  sage-flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -370,7 +370,7 @@ def projectivization(x, y, signed=True, denominator=None):
     """
     if y:
         z = x / y
-        if denominator == True or (denominator is None and hasattr(z, 'denominator')):
+        if denominator is True or (denominator is None and hasattr(z, 'denominator')):
             d = z.denominator()
         else:
             d = 1
@@ -669,7 +669,8 @@ class Polygon(Element):
         Element.__init__(self, parent)
         V = parent.module()
         self._v = tuple(map(V, vertices))
-        for vv in self._v: vv.set_immutable()
+        for vv in self._v:
+            vv.set_immutable()
         if check:
             self._non_intersection_check()
             self._inside_outside_check()
@@ -756,9 +757,13 @@ class Polygon(Element):
             return NotImplemented
         return self._v != other._v
 
-    def __lt__(self, other): raise TypeError
+    def __lt__(self, other):
+        raise TypeError
+
     __le__ = __lt__
+
     __gt__ = __lt__
+
     __ge__ = __lt__
 
     def cmp(self, other):
@@ -939,20 +944,44 @@ class Polygon(Element):
         """
         return self.vertex(i+1) - self.vertex(i)
 
-    def plot(self, translation=None):
+    def plot(self, translation=None, polygon_options={}, edge_options={}, vertex_options={}):
         r"""
         Plot the polygon with the origin at ``translation``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import polygons
+            sage: S = polygons.square()
+            sage: S.plot()
+            ...Graphics object consisting of 3 graphics primitives
+
+        We can specify an explicit ``zorder`` to render edges and vertices on
+        top of the axes which are rendered at z-order 3::
+
+            sage: S.plot(edge_options={'zorder': 3}, vertex_options={'zorder': 3})
+            ...Graphics object consisting of 3 graphics primitives
+
+        We can control the colors, e.g., we can render transparent polygons,
+        with red edges and blue vertices::
+
+            sage: S.plot(polygon_options={'fill': None}, edge_options={'color': 'red'}, vertex_options={'color': 'blue'})
+            ...Graphics object consisting of 3 graphics primitives
+
         """
         from sage.plot.point import point2d
         from sage.plot.line import line2d
         from sage.plot.polygon import polygon2d
-        V = VectorSpace(RR,2)
         P = self.vertices(translation)
-        return point2d(P, color='red') + line2d(P + (P[0],), color='orange') + polygon2d(P, alpha=0.3)
+
+        polygon_options = {'alpha': 0.3, 'zorder': 1, **polygon_options}
+        edge_options = {'color': 'orange', 'zorder': 2, **edge_options}
+        vertex_options = {'color': 'red', 'zorder': 2, **vertex_options}
+
+        return polygon2d(P, **polygon_options) + line2d(P + (P[0],), **edge_options) + point2d(P, **vertex_options)
 
     def angle(self, e, numerical=False, assume_rational=False):
         r"""
-        Return the angle at the begining of the start point of the edge ``e``.
+        Return the angle at the beginning of the start point of the edge ``e``.
 
         EXAMPLES::
 
@@ -1126,17 +1155,17 @@ class Polygon(Element):
 
             sage: S = polygons((1,0), (sqrt2/2, 3), (-2,3), (-sqrt2/2+1, -6))
             sage: T = polygons((sqrt2/2,3), (-2,3), (-sqrt2/2+1, -6), (1,0))
-            sage: ans, certif = S.is_isometric(T, certificate=True)
-            sage: assert ans
-            sage: shift, rot = certif
+            sage: isometric, cert = S.is_isometric(T, certificate=True)
+            sage: assert isometric
+            sage: shift, rot = cert
             sage: polygons(edges=[rot * S.edge((k + shift) % 4) for k in range(4)], base_point=T.vertex(0)) == T
             True
 
 
             sage: T = (matrix(2, [sqrt2/2, -sqrt2/2, sqrt2/2, sqrt2/2]) * S).translate((3,2))
-            sage: ans, certif = S.is_isometric(T, certificate=True)
-            sage: assert ans
-            sage: shift, rot = certif
+            sage: isometric, cert = S.is_isometric(T, certificate=True)
+            sage: assert isometric
+            sage: shift, rot = cert
             sage: polygons(edges=[rot * S.edge(k + shift) for k in range(4)], base_point=T.vertex(0)) == T
             True
         """
@@ -1228,9 +1257,9 @@ class Polygon(Element):
 
             sage: S.is_half_translate(T1, certificate=True)
             (True, (0, 1))
-            sage: ans, certif = S.is_half_translate(T2, certificate=True)
-            sage: assert ans
-            sage: shift, rot = certif
+            sage: half_translate, cert = S.is_half_translate(T2, certificate=True)
+            sage: assert half_translate
+            sage: shift, rot = cert
             sage: polygons(edges=[rot * S.edge(k + shift) for k in range(3)], base_point=T2.vertex(0)) == T2
             True
             sage: S.is_half_translate(T3, certificate=True)
@@ -1555,13 +1584,17 @@ class ConvexPolygon(Polygon):
         lengths = [t.dot_product(e) for e in self.edges()]
         n = len(lengths)
         for i in range(n):
-            j = (i+1)%len(lengths)
+            j = (i + 1) % len(lengths)
             l0 = lengths[i]
             l1 = lengths[j]
-            if l0 >= 0 and l1 <  0: rt = j
-            if l0 >  0 and l1 <= 0: rb = j
-            if l0 <= 0 and l1 >  0: lb = j
-            if l0 <  0 and l1 >= 0: lt = j
+            if l0 >= 0 and l1 <  0:
+                rt = j
+            if l0 >  0 and l1 <= 0:
+                rb = j
+            if l0 <= 0 and l1 >  0:
+                lb = j
+            if l0 <  0 and l1 >= 0:
+                lt = j
 
         if rt < lt:
             top_lengths = lengths[rt:lt]
@@ -2055,6 +2088,7 @@ class EquiangularPolygons:
         # Construct the cosine and sine of each angle as an element of our number field.
         def cosine(a):
             return chebyshev_T(abs(a), c) / 2
+
         def sine(a):
             # Use sin(x) = cos(π/2 - x)
             return cosine(N//4 - a)
@@ -2269,6 +2303,7 @@ class EquiangularPolygons:
             ring = QQ
 
         rays = [r.vector() for r in self.lengths_polytope().rays()]
+
         def random_element():
             while True:
                 coeffs = []
@@ -2763,7 +2798,7 @@ class PolygonsConstructor:
         if angle <= 0 or angle > QQ((1,2)):
             raise ValueError('angle must be in ]0,1/2]')
 
-        z = QQbar.zeta(2*angle.denom())**angle.numer()
+        z = QQbar.zeta(2*angle.denom())**angle.numerator()
         c = z.real()
         s = z.imag()
 
@@ -2932,24 +2967,21 @@ class PolygonsConstructor:
         else:
             return Polygons(base_ring)(vertices=vertices, edges=edges, base_point=base_point)
 
+
 polygons = PolygonsConstructor()
 
-def regular_octagon(field=None):
-    from sage.misc.superseded import deprecation
-    deprecation(33, "Do not use this function anymore but regular_ngon(8)")
-    return polygons.regular_ngon(8)
 
 class PolygonCreator():
     r"""
     Class for iteratively constructing a polygon over the field.
     """
-    def __init__(self, field = QQ):
+    def __init__(self, field=QQ):
         r"""Create a polygon in the provided field."""
-        self._v=[]
-        self._w=[]
-        if not field in Fields():
+        self._v = []
+        self._w = []
+        if field not in Fields():
             raise TypeError("field must be a field")
-        self._field=field
+        self._field = field
 
     def vector_space(self):
         r"""

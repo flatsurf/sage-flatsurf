@@ -1,4 +1,4 @@
-#*****************************************************************************
+# ****************************************************************************
 #       Copyright (C) 2013-2019 Vincent Delecroix <20100.delecroix@gmail.com>
 #                     2013-2019 W. Patrick Hooper <wphooper@gmail.com>
 #
@@ -6,7 +6,7 @@
 #  as published by the Free Software Foundation; either version 2 of
 #  the License, or (at your option) any later version.
 #                  https://www.gnu.org/licenses/
-#*****************************************************************************
+# ****************************************************************************
 
 from __future__ import absolute_import, print_function, division
 from six.moves import range, map, filter, zip
@@ -26,6 +26,7 @@ class HalfTranslationSurface(HalfDilationSurface, RationalConeSurface):
     r"""
     A half translation surface has gluings between polygons whose monodromy is +I or -I.
     """
+    # TODO: Add singularities(), vertices() and angle(vertex)
     def angles(self, numerical=False, return_adjacent_edges=False):
         r"""
         Return the set of angles around the vertices of the surface.
@@ -76,6 +77,7 @@ class HalfTranslationSurface(HalfDilationSurface, RationalConeSurface):
         edges = set(self.edge_iterator())
         angles = []
 
+        # TODO: Why do we have two implementations here?
         if return_adjacent_edges:
             while edges:
                 # Note that iteration order here is different for different
@@ -148,7 +150,7 @@ class HalfTranslationSurface(HalfDilationSurface, RationalConeSurface):
             p = self.polygon(lab)
             for e in range(p.num_edges()):
                 # Warning: check the matrices computed from the edges,
-                # rather the ones overriden by TranslationSurface.
+                # rather the ones overridden by TranslationSurface.
                 m = SimilaritySurface.edge_matrix(self,lab,e)
                 tester.assertTrue(m.is_one() or (-m).is_one(),
                     "edge_matrix between edge e={} and e'={} has matrix\n{}\nwhich is neither a translation nor a rotation by pi".format((lab,e), self.opposite_edge((lab,e)), m))

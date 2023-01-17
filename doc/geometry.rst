@@ -1,5 +1,5 @@
-The Geometry Package
-********************
+The flatsurf.geometry Package
+*****************************
 .. automodule:: flatsurf.geometry
 
 Polygons
@@ -44,8 +44,8 @@ Similarities and Translations
    :members:
    :undoc-members:
 
-Tangent Bundle
-==============
+Tangent Bundles
+===============
 .. automodule:: flatsurf.geometry.tangent_bundle
    :members:
    :undoc-members:
