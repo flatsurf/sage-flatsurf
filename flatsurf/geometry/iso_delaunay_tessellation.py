@@ -93,6 +93,14 @@ class IsoDelaunayTessellation(Parent):
             sage: idt = IsoDelaunayTessellation(s)
             sage: idt.explore()
 
+        ::
+
+            sage: S = SymmetricGroup(4)
+            sage: r = S('(1)(2,3)(4)')
+            sage: u = S('(1,2)(3,4)')
+            sage: s = translation_surfaces.origami(r, u)
+            sage: idt.explore()
+
         """
         from sage.all import Graph
         self._surface_original = surface
