@@ -84,6 +84,16 @@ from sage.misc.cachefunc import cached_method
 
 class IsoDelaunayTessellation(Parent):
     def __init__(self, surface):
+        r"""
+        TESTS::
+
+            sage: from flatsurf import translation_surfaces
+            sage: from flatsurf.geometry.iso_delaunay_tessellation import IsoDelaunayTessellation
+            sage: s = translation_surfaces.square_torus()
+            sage: idt = IsoDelaunayTessellation(s)
+            sage: idt.explore()
+
+        """
         from sage.all import Graph
         self._surface_original = surface
 
@@ -305,6 +315,27 @@ class IsoDelaunayTessellation(Parent):
         from flatsurf.geometry.pyflatsurf_conversion import to_pyflatsurf
         return to_pyflatsurf(triangulation)
 
+    @cached_method
+    def _automorphisms_quotient(self):
+        r"""
+        Return the number of automorphisms that correspond to the matrix
+        identity and -identity, i.e., the subgroup of the automorphisms that
+        consists just of relabelings or deformations that do not affect the
+        hyperbolic picture.
+        """
+        surface = self._to_pyflatsurf(self._surface)
+
+        from pyflatsurf import flatsurf
+
+        S = type(surface)
+        unlabeled_equivalence = flatsurf.Equivalence[S].unlabeled()
+        order = flatsurf.EquivalenceClass[S](surface, unlabeled_equivalence).automorphisms()
+
+        if unlabeled_equivalence.isomorphic(surface, surface.applyMatrix(-1, 0, 0, -1).codomain()):
+            order *= 2
+
+        return order
+
     def _ensure_dual_graph_vertex(self, tessellation_face, surface, tessellation_edge):
         r"""
         Return vertex and edge of hyperbolic polygon TODO
@@ -360,7 +391,8 @@ class IsoDelaunayTessellation(Parent):
         # We have to add a new vertex.
 
         # First, we check if the new face has self-symmetries.
-        order = clazz.automorphisms() // 2
+        assert clazz.automorphisms() %  self._automorphisms_quotient() == 0
+        order = clazz.automorphisms() // self._automorphisms_quotient()
 
         if order != 1:
             assert len(tessellation_face.edges()) % order == 0
