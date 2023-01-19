@@ -3,6 +3,10 @@ on:
   push: { branches: [ "master" ] }
   pull_request: { branches: [ "master" ] }
 
+concurrency:
+  group: conda-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   conda-build:
     runs-on: ubuntu-20.04
@@ -17,12 +21,12 @@ jobs:
         recipe: recipe
     - uses: conda-incubator/setup-miniconda@v2
       with: {
-        mamba-version: "*",
-        channels: "conda-forge",
+        miniforge-variant: "Mambaforge",
+        miniforge-version: "latest",
         # Default Python version for binder:
         # https://github.com/jupyterhub/repo2docker/blob/master/repo2docker/buildpacks/conda/environment.yml
-        python-version: "3.7.12",
-        channel-priority: true }
+        python-version: "3.7.12"
+      }
     - name: Install package like binder would
       shell: bash -l {0}
       run: |

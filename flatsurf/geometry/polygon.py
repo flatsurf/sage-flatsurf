@@ -2967,12 +2967,8 @@ class PolygonsConstructor:
         else:
             return Polygons(base_ring)(vertices=vertices, edges=edges, base_point=base_point)
 
-polygons = PolygonsConstructor()
 
-def regular_octagon(field=None):
-    from sage.misc.superseded import deprecation
-    deprecation(33, "Do not use this function anymore but regular_ngon(8)")
-    return polygons.regular_ngon(8)
+polygons = PolygonsConstructor()
 
 
 class PolygonCreator():

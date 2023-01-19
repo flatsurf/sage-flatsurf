@@ -33,16 +33,7 @@ class HalfDilationSurface(SimilaritySurface):
     the oriented case, have a look at
     :meth:`flatsurf.dilation_surface.DilationSurface`.
     """
-    def GL2R_mapping(self, matrix):
-        r"""
-        Deprecated. Use apply_matrix instead.
 
-        Apply a 2x2 matrix to the polygons making up this surface. 
-        Returns the flatsurf.geometry.SurfaceMapping from this surface to its image.
-        """
-        deprecation(13109, "GL2R_mapping is deprecated. Use apply_matrix(mapping=True) instead.")
-        return GL2RMapping(self, matrix)
-        
     def __rmul__(self,matrix):
         r"""
         EXAMPLES::

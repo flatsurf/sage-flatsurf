@@ -81,7 +81,8 @@ they are generally not parabolic::
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 ######################################################################
 
-from sage.all import VectorSpace, FreeModule, matrix, identity_matrix, ZZ, QQ, Unknown, vector, prod
+from sage.all import FreeModule, matrix, identity_matrix, ZZ, QQ, Unknown, vector, prod
+
 
 class GL2ROrbitClosure:
     r"""
@@ -147,6 +148,7 @@ class GL2ROrbitClosure:
         sage: for i, e in enumerate(O.spanning_set): # optional: pyflatsurf
         ....:     assert (O.proj * V.gen(e.index())) == H.gen(i)
     """
+
     def __init__(self, surface):
         from flatsurf.geometry.translation_surface import TranslationSurface
         if isinstance(surface, TranslationSurface):
@@ -407,10 +409,10 @@ class GL2ROrbitClosure:
         k = len(self.spanning_set)
         assert k + len(bdry) == n + 1
         A = matrix(QQ, n+1, n)
-        for i,e in enumerate(self.spanning_set):
-            A[i,e.index()] = 1
-        for i,b in enumerate(bdry):
-            A[k+i,:] = b
+        for i, e in enumerate(self.spanning_set):
+            A[i, e.index()] = 1
+        for i, b in enumerate(bdry):
+            A[k+i, :] = b
         u = vector(self.V2.base_ring(), n + 1)
         u[:k] = v
         from sage.all import Fields
@@ -420,7 +422,7 @@ class GL2ROrbitClosure:
         return A.solve_right(u)
 
     def absolute_homology(self):
-        vert_index = {v:i for i,v in enumerate(self._surface.vertices())}
+        vert_index = {v: i for i, v in enumerate(self._surface.vertices())}
         m = len(vert_index)
         if m == 1:
             return self.V
@@ -520,7 +522,7 @@ class GL2ROrbitClosure:
             root = next(iter(self._surface.edges())).positive()
 
         root = self._half_edge_to_face(root)
-        t = {root: None} # face -> half edge to take to go to the root
+        t = {root: None}  # face -> half edge to take to go to the root
         todo = [root]
         edges = []  # store edges in topological order to perform Gauss reduction
         while todo:
@@ -540,23 +542,22 @@ class GL2ROrbitClosure:
         proj = identity_matrix(ZZ, n)
         edges.reverse()
         for f1 in edges:
-            v = [0] * n
             f2 = self._surface.nextInFace(f1)
             f3 = self._surface.nextInFace(f2)
             assert self._surface.nextInFace(f3) == f1
 
             i1 = f1.index()
-            s1 = -1 if i1%2 else 1
+            s1 = -1 if i1 % 2 else 1
             i2 = f2.index()
-            s2 = -1 if i2%2 else 1
+            s2 = -1 if i2 % 2 else 1
             i3 = f3.index()
-            s3 = -1 if i3%2 else 1
+            s3 = -1 if i3 % 2 else 1
             i1 = f1.edge().index()
             i2 = f2.edge().index()
             i3 = f3.edge().index()
             proj[i1] = -s1*(s2*proj[i2] + s3*proj[i3])
             for j in range(n):
-                assert proj[j,i1] == 0
+                assert proj[j, i1] == 0
 
         return (t, proj)
 
@@ -615,12 +616,12 @@ class GL2ROrbitClosure:
 
                 if pi1 < pj1 < pi2:
                     # one sign
-                    Omega[i,j] = si * sj
+                    Omega[i, j] = si * sj
                 else:
                     # other sign
                     assert pi1 < pj2 < pi2, (pi1, pi2, pj1, pj2)
-                    Omega[i,j] = -si*sj
-                Omega[j,i] = - Omega[i,j]
+                    Omega[i, j] = -si*sj
+                Omega[j, i] = - Omega[i, j]
         return Omega
 
     def boundaries(self):
@@ -650,13 +651,13 @@ class GL2ROrbitClosure:
         n = self._surface.size()
         V = FreeModule(ZZ, n)
         B = []
-        for (f1,f2,f3) in self._surface.faces():
+        for (f1, f2, f3) in self._surface.faces():
             i1 = f1.index()
-            s1 = -1 if i1%2 else 1
+            s1 = -1 if i1 % 2 else 1
             i2 = f2.index()
-            s2 = -1 if i2%2 else 1
+            s2 = -1 if i2 % 2 else 1
             i3 = f3.index()
-            s3 = -1 if i3%2 else 1
+            s3 = -1 if i3 % 2 else 1
             i1 = f1.edge().index()
             i2 = f2.edge().index()
             i3 = f3.edge().index()
@@ -678,7 +679,6 @@ class GL2ROrbitClosure:
 
         decomposition = pyflatsurf.flatsurf.makeFlowDecomposition(self._surface, v.vector)
 
-        u = self.V2._isomorphic_vector_space(v)
         if limit != 0:
             decomposition.decompose(int(limit))
         return decomposition
@@ -760,7 +760,7 @@ class GL2ROrbitClosure:
             return False
 
         for decomposition in self.decompositions_depth_first(bound, limit):
-            if decomposition.parabolic() == False:
+            if decomposition.parabolic() == False:  # noqa, we are comparing to a boost tribool so this cannot be replaced by "is False"
                 return False
 
         return Unknown
@@ -793,7 +793,7 @@ class GL2ROrbitClosure:
             sage: O.cylinder_circumference(c1, *kz) # optional: pyflatsurf
             (0, 0, -1, 0)
         """
-        if component.cylinder() != True:  # cannot be replaced by "is not True"
+        if component.cylinder() != True:  # noqa, we are comparing to a boost tribool so this cannot be replaced by "is not True"
             raise ValueError
 
         perimeters = [p for p in component.perimeter()]
@@ -840,17 +840,15 @@ class GL2ROrbitClosure:
                     [d for d in denominators if denominator != d]
                 ) for (numerator, denominator) in fractions]
 
-        v = self.V()
         module_fractions = []
         vcyls = []
         kz = self.flow_decomposition_kontsevich_zorich_cocycle(decomposition)
         for component in decomposition.components():
-            if component.cylinder() == False:
+            if component.cylinder() == False:  # noqa, we are comparing to a boost tribool so this cannot be replaced by "is False"
                 continue
-            elif component.cylinder() == True:
+            elif component.cylinder() == True:  # noqa, we are comparing to a boost tribool so this cannot be replaced with "is True"
                 vcyls.append(self.cylinder_circumference(component, *kz))
 
-                vertical = component.vertical()
                 width = self.V2._isomorphic_vector_space.base_ring()(self.V2.base_ring()(component.width()))
                 height = self.V2._isomorphic_vector_space.base_ring()(self.V2.base_ring()(component.vertical().project(component.circumferenceHolonomy())))
                 module_fractions.append((width, height))
@@ -884,7 +882,7 @@ class GL2ROrbitClosure:
                 from itertools import chain
                 ret = list(chain(*[to_rational_vector(self.V2.base_ring().base_ring()(self.V2.base_ring().base_ring()(c))) for c in x._backend.coefficients()]))
             else:
-                raise NotImplementedError("cannot turn %s, i.e., a %s, into a rational vector yet"%(x,type(x)))
+                raise NotImplementedError("cannot turn %s, i.e., a %s, into a rational vector yet" % (x, type(x)))
 
             assert all(y in QQ for y in ret)
             return ret
@@ -931,7 +929,7 @@ class GL2ROrbitClosure:
         for p in components[0].perimeter():
             break
         root = p.saddleConnection()
-        t = {0: None} # face -> half edge to take to go to the root
+        t = {0: None}  # face -> half edge to take to go to the root
         todo = [0]
         edges = []  # store edges in topological order to perform Gauss reduction
         while todo:
@@ -972,7 +970,7 @@ class GL2ROrbitClosure:
 
             spanning_set.remove(i1)
             for j in range(n):
-                assert proj[j,i1] == 0
+                assert proj[j, i1] == 0
 
         return (t, sorted(spanning_set), proj)
 
@@ -1020,14 +1018,13 @@ class GL2ROrbitClosure:
             [ 1  0]
             [-2  1]
         """
-        sc_pos = []   # list of positive boundary saddle connections
-                      # (store only one orientation for each)
-        sc_index = {} # inverse of sc_pos (and also reverse orientation with negative index)
+        sc_pos = []  # list of positive boundary saddle connections (store only one orientation for each)
+        sc_index = {}  # inverse of sc_pos (and also reverse orientation with negative index)
         sc_comp = {}
         n_saddles = 0
         components = list(decomposition.components())
         n_components = len(components)
-        for i,comp in enumerate(components):
+        for i, comp in enumerate(components):
             for p in comp.perimeter():
                 sc = p.saddleConnection()
                 sc_comp[sc] = i
@@ -1119,7 +1116,7 @@ class GL2ROrbitClosure:
                     pass
 
             p = 2**30 if self._p is None else self._p.p()
-            
+
             from sage.all import next_prime
             self._p = ZZ.valuation(next_prime(p)).extensions(self._U.base_ring())[0]
 
@@ -1157,7 +1154,7 @@ class GL2ROrbitClosure:
             sage: S = S.minimal_cover(cover_type="translation")
             sage: GL2ROrbitClosure(S) == GL2ROrbitClosure(S) # optional: pyflatsurf
             True
-            
+
         """
         return self._surface == other._surface
 
@@ -1176,7 +1173,7 @@ class GL2ROrbitClosure:
             sage: S = S.minimal_cover(cover_type="translation")
             sage: GL2ROrbitClosure(S) != GL2ROrbitClosure(S) # optional: pyflatsurf
             False
-            
+
         """
         return not (self == other)
 
