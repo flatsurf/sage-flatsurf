@@ -1,0 +1,604 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
+
+    <!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
+        <title>flatsurf.geometry.pyflatsurf_conversion - sage-flatsurf 0.4.7 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    <link rel="stylesheet" type="text/css" href="https://doc.sagemath.org/html/en/reference/_static/custom-furo.css" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  --color-brand-primary: #0f0fff;
+  --color-brand-content: #0f0fff;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #272822;
+  --color-code-foreground: #f8f8f2;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #272822;
+  --color-code-foreground: #f8f8f2;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../../index.html"><div class="brand">sage-flatsurf 0.4.7 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo only-light" src="../../../_static/logo.svg" alt="Light Logo"/>
+    <img class="sidebar-logo only-dark" src="../../../_static/logo.svg" alt="Dark Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">sage-flatsurf 0.4.7 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../install.html">Installing sage-flatsurf</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developer.html">The Developer’s Guide for sage-flatsurf</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/defining_surfaces.html">Defining Surfaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/graphics_configuration.html">Graphics Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/linear_action_and_delaunay.html">The GL(2,R) Action, the Veech Group, Delaunay Decomposition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/rel_deformations.html">Relative Period Deformations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/saddle_connections.html">Working with Saddle Connections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/apisa_wright.html">Exploring Orbit Closures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/siegel_veech.html">Siegel-Veech Constants</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/straight_line_flow.html">Straight-Line Flow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/warwick-2017.html">Notes from the Warwick EPSRC Symposium on “Computation in geometric topology”</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/boshernitzan_conjecture.html">Boshernitzan’s Conjectures</a></li>
+</ul>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../geometry.html">The flatsurf.geometry Package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/chamanara.html"><code class="docutils literal notranslate"><span class="pre">chamanara</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/circle.html"><code class="docutils literal notranslate"><span class="pre">circle</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/cone_surface.html"><code class="docutils literal notranslate"><span class="pre">cone_surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/delaunay.html"><code class="docutils literal notranslate"><span class="pre">delaunay</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/dilation_surface.html"><code class="docutils literal notranslate"><span class="pre">dilation_surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/finitely_generated_matrix_group.html"><code class="docutils literal notranslate"><span class="pre">finitely_generated_matrix_group</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/fundamental_group.html"><code class="docutils literal notranslate"><span class="pre">fundamental_group</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/gl2r_orbit_closure.html"><code class="docutils literal notranslate"><span class="pre">gl2r_orbit_closure</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/half_dilation_surface.html"><code class="docutils literal notranslate"><span class="pre">half_dilation_surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/half_translation_surface.html"><code class="docutils literal notranslate"><span class="pre">half_translation_surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/interval_exchange_transformation.html"><code class="docutils literal notranslate"><span class="pre">interval_exchange_transformation</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/l_infinity_delaunay_cells.html"><code class="docutils literal notranslate"><span class="pre">l_infinity_delaunay_cells</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/mappings.html"><code class="docutils literal notranslate"><span class="pre">mappings</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/matrix_2x2.html"><code class="docutils literal notranslate"><span class="pre">matrix_2x2</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/mega_wollmilchsau.html"><code class="docutils literal notranslate"><span class="pre">mega_wollmilchsau</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/minimal_cover.html"><code class="docutils literal notranslate"><span class="pre">minimal_cover</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/polygon.html"><code class="docutils literal notranslate"><span class="pre">polygon</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/polyhedra.html"><code class="docutils literal notranslate"><span class="pre">polyhedra</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/pyflatsurf_conversion.html"><code class="docutils literal notranslate"><span class="pre">pyflatsurf_conversion</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/rational_cone_surface.html"><code class="docutils literal notranslate"><span class="pre">rational_cone_surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/rational_similarity_surface.html"><code class="docutils literal notranslate"><span class="pre">rational_similarity_surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/relative_homology.html"><code class="docutils literal notranslate"><span class="pre">relative_homology</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/similarity.html"><code class="docutils literal notranslate"><span class="pre">similarity</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/similarity_surface_generators.html"><code class="docutils literal notranslate"><span class="pre">similarity_surface_generators</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/similarity_surface.html"><code class="docutils literal notranslate"><span class="pre">similarity_surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/straight_line_trajectory.html"><code class="docutils literal notranslate"><span class="pre">straight_line_trajectory</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/subfield.html"><code class="docutils literal notranslate"><span class="pre">subfield</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/surface_objects.html"><code class="docutils literal notranslate"><span class="pre">surface_objects</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/surface.html"><code class="docutils literal notranslate"><span class="pre">surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/tangent_bundle.html"><code class="docutils literal notranslate"><span class="pre">tangent_bundle</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/thurston_veech.html"><code class="docutils literal notranslate"><span class="pre">thurston_veech</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/translation_surface.html"><code class="docutils literal notranslate"><span class="pre">translation_surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/xml.html"><code class="docutils literal notranslate"><span class="pre">xml</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../graphical.html">The flatsurf.graphical Package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../graphical/polygon.html"><code class="docutils literal notranslate"><span class="pre">polygon</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../graphical/straight_line_trajectory.html"><code class="docutils literal notranslate"><span class="pre">straight_line_trajectory</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../graphical/surface_point.html"><code class="docutils literal notranslate"><span class="pre">surface_point</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../graphical/surface.html"><code class="docutils literal notranslate"><span class="pre">surface</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <h1>Source code for flatsurf.geometry.pyflatsurf_conversion</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Interface with pyflatsurf</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c1"># ********************************************************************</span>
+<span class="c1">#  This file is part of sage-flatsurf.</span>
+<span class="c1">#</span>
+<span class="c1">#        Copyright (C) 2019      Vincent Delecroix</span>
+<span class="c1">#                      2019-2022 Julian Rüth</span>
+<span class="c1">#</span>
+<span class="c1">#  sage-flatsurf is free software: you can redistribute it and/or modify</span>
+<span class="c1">#  it under the terms of the GNU General Public License as published by</span>
+<span class="c1">#  the Free Software Foundation, either version 2 of the License, or</span>
+<span class="c1">#  (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1">#  sage-flatsurf is distributed in the hope that it will be useful,</span>
+<span class="c1">#  but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1">#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1">#  GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1">#  You should have received a copy of the GNU General Public License</span>
+<span class="c1">#  along with sage-flatsurf. If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
+<span class="c1"># ********************************************************************</span>
+
+<span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">QQ</span><span class="p">,</span> <span class="n">AA</span><span class="p">,</span> <span class="n">ZZ</span>
+
+
+<span class="k">def</span> <span class="nf">_check_data</span><span class="p">(</span><span class="n">vp</span><span class="p">,</span> <span class="n">fp</span><span class="p">,</span> <span class="n">vec</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check consistency of data</span>
+
+<span class="sd">    vp - vector permutation</span>
+<span class="sd">    fp - face permutation</span>
+<span class="sd">    vec - vectors of the flat structure</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">vp</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">vec</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span>
+
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">vp</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+
+    <span class="k">assert</span> <span class="n">n</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="n">n</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">fp</span><span class="p">)</span> <span class="o">==</span> <span class="n">n</span><span class="o">+</span><span class="mi">1</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">vec</span><span class="p">)</span> <span class="o">==</span> <span class="n">n</span><span class="o">//</span><span class="mi">2</span>
+
+    <span class="k">assert</span> <span class="n">vp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span>
+    <span class="k">assert</span> <span class="n">fp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="o">//</span><span class="mi">2</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+        <span class="c1"># check fp/vp consistency</span>
+        <span class="k">assert</span> <span class="n">fp</span><span class="p">[</span><span class="o">-</span><span class="n">vp</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">==</span> <span class="n">i</span><span class="p">,</span> <span class="n">i</span>
+
+        <span class="c1"># check that each face is a triangle and that vectors sum up to zero</span>
+        <span class="n">j</span> <span class="o">=</span> <span class="n">fp</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="n">fp</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+        <span class="k">assert</span> <span class="n">i</span> <span class="o">!=</span> <span class="n">j</span> <span class="ow">and</span> <span class="n">i</span> <span class="o">!=</span> <span class="n">k</span> <span class="ow">and</span> <span class="n">fp</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">==</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
+        <span class="n">vi</span> <span class="o">=</span> <span class="n">vec</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="mi">1</span> <span class="k">else</span> <span class="o">-</span><span class="n">vec</span><span class="p">[</span><span class="o">-</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">vj</span> <span class="o">=</span> <span class="n">vec</span><span class="p">[</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">j</span> <span class="o">&gt;=</span> <span class="mi">1</span> <span class="k">else</span> <span class="o">-</span><span class="n">vec</span><span class="p">[</span><span class="o">-</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">vk</span> <span class="o">=</span> <span class="n">vec</span><span class="p">[</span><span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">k</span> <span class="o">&gt;=</span> <span class="mi">1</span> <span class="k">else</span> <span class="o">-</span><span class="n">vec</span><span class="p">[</span><span class="o">-</span><span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">vi</span> <span class="o">+</span> <span class="n">vj</span> <span class="o">+</span> <span class="n">vk</span>
+        <span class="k">assert</span> <span class="n">v</span><span class="o">.</span><span class="n">x</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="n">v</span><span class="o">.</span><span class="n">x</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="n">v</span><span class="o">.</span><span class="n">y</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="n">v</span><span class="o">.</span><span class="n">y</span><span class="p">()</span>
+
+
+<span class="k">def</span> <span class="nf">_cycle_decomposition</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="k">assert</span> <span class="n">n</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span>
+    <span class="n">cycles</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">unseen</span> <span class="o">=</span> <span class="p">[</span><span class="kc">True</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="o">-</span><span class="n">n</span><span class="o">//</span><span class="mi">2</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="o">//</span><span class="mi">2</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">unseen</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+            <span class="n">j</span> <span class="o">=</span> <span class="n">i</span>
+            <span class="n">cycle</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">while</span> <span class="n">unseen</span><span class="p">[</span><span class="n">j</span><span class="p">]:</span>
+                <span class="n">unseen</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="n">cycle</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">j</span><span class="p">)</span>
+                <span class="n">j</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+            <span class="n">cycles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cycle</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">cycles</span>
+
+
+<div class="viewcode-block" id="to_pyflatsurf"><a class="viewcode-back" href="../../../geometry/pyflatsurf_conversion.html#flatsurf.geometry.pyflatsurf_conversion.to_pyflatsurf">[docs]</a><span class="k">def</span> <span class="nf">to_pyflatsurf</span><span class="p">(</span><span class="n">S</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Given S a translation surface from sage-flatsurf return a</span>
+<span class="sd">    flatsurf::FlatTriangulation from libflatsurf/pyflatsurf.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">flatsurf.geometry.translation_surface</span> <span class="kn">import</span> <span class="n">TranslationSurface</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">TranslationSurface</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;S must be a translation surface&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">S</span><span class="o">.</span><span class="n">is_finite</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;the surface S must be finite&quot;</span><span class="p">)</span>
+
+    <span class="n">S</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">triangulate</span><span class="p">()</span>
+
+    <span class="c1"># populate half edges and vectors</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">S</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">lab</span><span class="p">)</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()</span> <span class="k">for</span> <span class="n">lab</span> <span class="ow">in</span> <span class="n">S</span><span class="o">.</span><span class="n">label_iterator</span><span class="p">())</span>
+    <span class="n">half_edge_labels</span> <span class="o">=</span> <span class="p">{}</span>   <span class="c1"># map: (face lab, edge num) in faltsurf -&gt; integer</span>
+    <span class="n">vec</span> <span class="o">=</span> <span class="p">[]</span>                <span class="c1"># vectors</span>
+    <span class="n">k</span> <span class="o">=</span> <span class="mi">1</span>                   <span class="c1"># half edge label in {1, ..., n}</span>
+    <span class="k">for</span> <span class="n">t0</span><span class="p">,</span> <span class="n">t1</span> <span class="ow">in</span> <span class="n">S</span><span class="o">.</span><span class="n">edge_iterator</span><span class="p">(</span><span class="n">gluings</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">t0</span> <span class="ow">in</span> <span class="n">half_edge_labels</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+        <span class="n">half_edge_labels</span><span class="p">[</span><span class="n">t0</span><span class="p">]</span> <span class="o">=</span> <span class="n">k</span>
+        <span class="n">half_edge_labels</span><span class="p">[</span><span class="n">t1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">k</span>
+
+        <span class="n">f0</span><span class="p">,</span> <span class="n">e0</span> <span class="o">=</span> <span class="n">t0</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">f0</span><span class="p">)</span>
+        <span class="n">vec</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="n">e0</span><span class="p">))</span>
+
+        <span class="n">k</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="c1"># compute vertex and face permutations</span>
+    <span class="n">vp</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># vertex permutation</span>
+    <span class="n">fp</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># face permutation</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">S</span><span class="o">.</span><span class="n">edge_iterator</span><span class="p">(</span><span class="n">gluings</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="n">e</span> <span class="o">=</span> <span class="n">half_edge_labels</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
+        <span class="n">j</span> <span class="o">=</span> <span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="n">S</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()</span>
+        <span class="n">fp</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="o">=</span> <span class="n">half_edge_labels</span><span class="p">[(</span><span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">j</span><span class="p">)]</span>
+        <span class="n">vp</span><span class="p">[</span><span class="n">fp</span><span class="p">[</span><span class="n">e</span><span class="p">]]</span> <span class="o">=</span> <span class="o">-</span><span class="n">e</span>
+
+    <span class="c1"># convert the vp permutation into cycles</span>
+    <span class="n">verts</span> <span class="o">=</span> <span class="n">_cycle_decomposition</span><span class="p">(</span><span class="n">vp</span><span class="p">)</span>
+
+    <span class="c1"># find a finite SageMath base ring that contains all the coordinates</span>
+    <span class="n">base_ring</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">base_ring</span> <span class="ow">is</span> <span class="n">AA</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">sage.rings.qqbar</span> <span class="kn">import</span> <span class="n">number_field_elements_from_algebraics</span>
+        <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">chain</span>
+        <span class="n">base_ring</span> <span class="o">=</span> <span class="n">number_field_elements_from_algebraics</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">chain</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">vec</span><span class="p">])),</span> <span class="n">embedded</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="kn">from</span> <span class="nn">flatsurf.features</span> <span class="kn">import</span> <span class="n">pyflatsurf_feature</span>
+    <span class="n">pyflatsurf_feature</span><span class="o">.</span><span class="n">require</span><span class="p">()</span>
+    <span class="kn">from</span> <span class="nn">pyflatsurf.vector</span> <span class="kn">import</span> <span class="n">Vectors</span>
+
+    <span class="n">V</span> <span class="o">=</span> <span class="n">Vectors</span><span class="p">(</span><span class="n">base_ring</span><span class="p">)</span>
+    <span class="n">vec</span> <span class="o">=</span> <span class="p">[</span><span class="n">V</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="o">.</span><span class="n">vector</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">vec</span><span class="p">]</span>
+
+    <span class="n">_check_data</span><span class="p">(</span><span class="n">vp</span><span class="p">,</span> <span class="n">fp</span><span class="p">,</span> <span class="n">vec</span><span class="p">)</span>
+
+    <span class="kn">from</span> <span class="nn">pyflatsurf.factory</span> <span class="kn">import</span> <span class="n">make_surface</span>
+    <span class="k">return</span> <span class="n">make_surface</span><span class="p">(</span><span class="n">verts</span><span class="p">,</span> <span class="n">vec</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="sage_ring"><a class="viewcode-back" href="../../../geometry/pyflatsurf_conversion.html#flatsurf.geometry.pyflatsurf_conversion.sage_ring">[docs]</a><span class="k">def</span> <span class="nf">sage_ring</span><span class="p">(</span><span class="n">surface</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the SageMath ring over which the pyflatsurf surface ``surface`` can</span>
+<span class="sd">    be constructed in sage-flatsurf.</span>
+
+<span class="sd">    EXAMPLES::</span>
+
+<span class="sd">        sage: from flatsurf import translation_surfaces</span>
+<span class="sd">        sage: from flatsurf.geometry.pyflatsurf_conversion import to_pyflatsurf, sage_ring # optional: pyflatsurf</span>
+<span class="sd">        sage: S = to_pyflatsurf(translation_surfaces.veech_double_n_gon(5)) # optional: pyflatsurf</span>
+<span class="sd">        sage: sage_ring(S) # optional: pyflatsurf</span>
+<span class="sd">        Number Field in a with defining polynomial x^4 - 5*x^2 + 5 with a = 1.902113032590308?</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">Sequence</span>
+    <span class="n">vectors</span> <span class="o">=</span> <span class="p">[</span><span class="n">surface</span><span class="o">.</span><span class="n">fromHalfEdge</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">positive</span><span class="p">())</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">surface</span><span class="o">.</span><span class="n">edges</span><span class="p">()]</span>
+    <span class="k">return</span> <span class="n">Sequence</span><span class="p">([</span><span class="n">to_sage_ring</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">x</span><span class="p">())</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">vectors</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">to_sage_ring</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">y</span><span class="p">())</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">vectors</span><span class="p">])</span><span class="o">.</span><span class="n">universe</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="to_sage_ring"><a class="viewcode-back" href="../../../geometry/pyflatsurf_conversion.html#flatsurf.geometry.pyflatsurf_conversion.to_sage_ring">[docs]</a><span class="k">def</span> <span class="nf">to_sage_ring</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Given a coordinate of a flatsurf::Vector, return a SageMath element from</span>
+<span class="sd">    which :meth:`from_pyflatsurf` can eventually construct a translation surface.</span>
+
+<span class="sd">    EXAMPLES::</span>
+
+<span class="sd">        sage: from flatsurf.geometry.pyflatsurf_conversion import to_sage_ring  # optional: pyflatsurf</span>
+<span class="sd">        sage: to_sage_ring(1R).parent()  # optional: pyflatsurf</span>
+<span class="sd">        Integer Ring</span>
+
+<span class="sd">    GMP coordinate types::</span>
+
+<span class="sd">        sage: import cppyy  # optional: pyflatsurf</span>
+<span class="sd">        sage: import pyeantic  # optional: pyflatsurf</span>
+<span class="sd">        sage: to_sage_ring(cppyy.gbl.mpz_class(1)).parent()  # optional: pyflatsurf</span>
+<span class="sd">        Integer Ring</span>
+<span class="sd">        sage: to_sage_ring(cppyy.gbl.mpq_class(1, 2)).parent()  # optional: pyflatsurf</span>
+<span class="sd">        Rational Field</span>
+
+<span class="sd">    e-antic coordinate types::</span>
+
+<span class="sd">        sage: import pyeantic  # optional: pyflatsurf</span>
+<span class="sd">        sage: K = pyeantic.eantic.renf_class.make(&quot;a^3 - 3*a + 1&quot;, &quot;a&quot;, &quot;0.34 +/- 0.01&quot;, 64R)  # optional: pyflatsurf</span>
+<span class="sd">        sage: to_sage_ring(K.gen()).parent()  # optional: pyflatsurf</span>
+<span class="sd">        Number Field in a with defining polynomial x^3 - 3*x + 1 with a = 0.3472963553338607?</span>
+
+<span class="sd">    exact-real coordinate types::</span>
+
+<span class="sd">        sage: from pyexactreal import QQModule, RealNumber  # optional: pyflatsurf</span>
+<span class="sd">        sage: M = QQModule(RealNumber.random())   # optional: pyflatsurf</span>
+<span class="sd">        sage: to_sage_ring(M.gen(0R)).parent()  # optional: pyflatsurf</span>
+<span class="sd">        Real Numbers as (Rational Field)-Module</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">flatsurf.features</span> <span class="kn">import</span> <span class="n">cppyy_feature</span>
+    <span class="n">cppyy_feature</span><span class="o">.</span><span class="n">require</span><span class="p">()</span>
+    <span class="kn">import</span> <span class="nn">cppyy</span>
+
+    <span class="k">def</span> <span class="nf">maybe_type</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">t</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="c1"># The type constructed by t might not exist because the required C++ library has not been loaded.</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ZZ</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="ow">is</span> <span class="n">maybe_type</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">cppyy</span><span class="o">.</span><span class="n">gbl</span><span class="o">.</span><span class="n">mpz_class</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">ZZ</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+    <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="ow">is</span> <span class="n">maybe_type</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">cppyy</span><span class="o">.</span><span class="n">gbl</span><span class="o">.</span><span class="n">mpq_class</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">QQ</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+    <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="ow">is</span> <span class="n">maybe_type</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">cppyy</span><span class="o">.</span><span class="n">gbl</span><span class="o">.</span><span class="n">eantic</span><span class="o">.</span><span class="n">renf_elem_class</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">pyeantic</span> <span class="kn">import</span> <span class="n">RealEmbeddedNumberField</span>
+        <span class="n">real_embedded_number_field</span> <span class="o">=</span> <span class="n">RealEmbeddedNumberField</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">parent</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">real_embedded_number_field</span><span class="o">.</span><span class="n">number_field</span><span class="p">(</span><span class="n">real_embedded_number_field</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+    <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="ow">is</span> <span class="n">maybe_type</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">cppyy</span><span class="o">.</span><span class="n">gbl</span><span class="o">.</span><span class="n">exactreal</span><span class="o">.</span><span class="n">Element</span><span class="p">[</span><span class="n">cppyy</span><span class="o">.</span><span class="n">gbl</span><span class="o">.</span><span class="n">exactreal</span><span class="o">.</span><span class="n">IntegerRing</span><span class="p">]):</span>
+        <span class="kn">from</span> <span class="nn">pyexactreal</span> <span class="kn">import</span> <span class="n">ExactReals</span>
+        <span class="k">return</span> <span class="n">ExactReals</span><span class="p">(</span><span class="n">ZZ</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="ow">is</span> <span class="n">maybe_type</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">cppyy</span><span class="o">.</span><span class="n">gbl</span><span class="o">.</span><span class="n">exactreal</span><span class="o">.</span><span class="n">Element</span><span class="p">[</span><span class="n">cppyy</span><span class="o">.</span><span class="n">gbl</span><span class="o">.</span><span class="n">exactreal</span><span class="o">.</span><span class="n">RationalField</span><span class="p">]):</span>
+        <span class="kn">from</span> <span class="nn">pyexactreal</span> <span class="kn">import</span> <span class="n">ExactReals</span>
+        <span class="k">return</span> <span class="n">ExactReals</span><span class="p">(</span><span class="n">QQ</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="ow">is</span> <span class="n">maybe_type</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">cppyy</span><span class="o">.</span><span class="n">gbl</span><span class="o">.</span><span class="n">exactreal</span><span class="o">.</span><span class="n">Element</span><span class="p">[</span><span class="n">cppyy</span><span class="o">.</span><span class="n">gbl</span><span class="o">.</span><span class="n">exactreal</span><span class="o">.</span><span class="n">NumberField</span><span class="p">]):</span>
+        <span class="kn">from</span> <span class="nn">pyexactreal</span> <span class="kn">import</span> <span class="n">ExactReals</span>
+        <span class="k">return</span> <span class="n">ExactReals</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">module</span><span class="p">()</span><span class="o">.</span><span class="n">ring</span><span class="p">()</span><span class="o">.</span><span class="n">parameters</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;unknown coordinate ring for element </span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2"> which is a </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="from_pyflatsurf"><a class="viewcode-back" href="../../../geometry/pyflatsurf_conversion.html#flatsurf.geometry.pyflatsurf_conversion.from_pyflatsurf">[docs]</a><span class="k">def</span> <span class="nf">from_pyflatsurf</span><span class="p">(</span><span class="n">T</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Given T a flatsurf::FlatTriangulation from libflatsurf/pyflatsurf, return a</span>
+<span class="sd">    sage-flatsurf translation surface.</span>
+
+<span class="sd">    EXAMPLES::</span>
+
+<span class="sd">        sage: from flatsurf import translation_surfaces</span>
+<span class="sd">        sage: from flatsurf.geometry.pyflatsurf_conversion import to_pyflatsurf, from_pyflatsurf # optional: pyflatsurf</span>
+<span class="sd">        sage: S = translation_surfaces.veech_double_n_gon(5) # optional: pyflatsurf</span>
+<span class="sd">        sage: from_pyflatsurf(to_pyflatsurf(S)) # optional: pyflatsurf</span>
+<span class="sd">        TranslationSurface built from 6 polygons</span>
+
+<span class="sd">    TESTS:</span>
+
+<span class="sd">    Verify that #137 has been resolved::</span>
+
+<span class="sd">        sage: from flatsurf import polygons</span>
+<span class="sd">        sage: from flatsurf.geometry.surface import Surface_list</span>
+<span class="sd">        sage: from flatsurf.geometry.translation_surface import TranslationSurface</span>
+<span class="sd">        sage: from flatsurf.geometry.gl2r_orbit_closure import GL2ROrbitClosure</span>
+<span class="sd">        sage: from flatsurf.geometry.pyflatsurf_conversion import from_pyflatsurf</span>
+<span class="sd">        sage: P = polygons.regular_ngon(10)</span>
+<span class="sd">        sage: S = Surface_list(P.base_ring())</span>
+<span class="sd">        sage: S.add_polygon(P)</span>
+<span class="sd">        0</span>
+<span class="sd">        sage: for i in range(5): S.set_edge_pairing(0, i, 0, 5+i)</span>
+<span class="sd">        sage: M = TranslationSurface(S)</span>
+<span class="sd">        sage: X = GL2ROrbitClosure(M)  # optional: pyflatsurf</span>
+<span class="sd">        sage: D0 = list(X.decompositions(2))[2]  # optional: pyflatsurf</span>
+<span class="sd">        sage: T0 = D0.triangulation()  # optional: pyflatsurf</span>
+<span class="sd">        sage: from_pyflatsurf(T0)  # optional: pyflatsurf</span>
+<span class="sd">        TranslationSurface built from 8 polygons</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">flatsurf.features</span> <span class="kn">import</span> <span class="n">pyflatsurf_feature</span>
+    <span class="n">pyflatsurf_feature</span><span class="o">.</span><span class="n">require</span><span class="p">()</span>
+    <span class="kn">import</span> <span class="nn">pyflatsurf</span>
+
+    <span class="n">ring</span> <span class="o">=</span> <span class="n">sage_ring</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
+
+    <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface</span> <span class="kn">import</span> <span class="n">Surface_list</span>
+    <span class="n">S</span> <span class="o">=</span> <span class="n">Surface_list</span><span class="p">(</span><span class="n">ring</span><span class="p">)</span>
+
+    <span class="kn">from</span> <span class="nn">flatsurf.geometry.polygon</span> <span class="kn">import</span> <span class="n">ConvexPolygons</span>
+    <span class="n">P</span> <span class="o">=</span> <span class="n">ConvexPolygons</span><span class="p">(</span><span class="n">ring</span><span class="p">)</span>
+
+    <span class="n">V</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">module</span><span class="p">()</span>
+
+    <span class="n">half_edges</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">for</span> <span class="n">face</span> <span class="ow">in</span> <span class="n">T</span><span class="o">.</span><span class="n">faces</span><span class="p">():</span>
+        <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="n">pyflatsurf</span><span class="o">.</span><span class="n">flatsurf</span><span class="o">.</span><span class="n">HalfEdge</span><span class="p">,</span> <span class="n">face</span><span class="p">)</span>
+
+        <span class="n">vectors</span> <span class="o">=</span> <span class="p">[</span><span class="n">T</span><span class="o">.</span><span class="n">fromHalfEdge</span><span class="p">(</span><span class="n">he</span><span class="p">)</span> <span class="k">for</span> <span class="n">he</span> <span class="ow">in</span> <span class="n">face</span><span class="p">]</span>
+        <span class="n">vectors</span> <span class="o">=</span> <span class="p">[</span><span class="n">V</span><span class="p">([</span><span class="n">ring</span><span class="p">(</span><span class="n">to_sage_ring</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">x</span><span class="p">())),</span> <span class="n">ring</span><span class="p">(</span><span class="n">to_sage_ring</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">y</span><span class="p">()))])</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">vectors</span><span class="p">]</span>
+        <span class="n">triangle</span> <span class="o">=</span> <span class="n">P</span><span class="p">(</span><span class="n">vectors</span><span class="p">)</span>
+        <span class="n">face_id</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span><span class="n">triangle</span><span class="p">)</span>
+
+        <span class="k">assert</span><span class="p">(</span><span class="n">a</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">half_edges</span><span class="p">)</span>
+        <span class="n">half_edges</span><span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">face_id</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">assert</span><span class="p">(</span><span class="n">b</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">half_edges</span><span class="p">)</span>
+        <span class="n">half_edges</span><span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">face_id</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">assert</span><span class="p">(</span><span class="n">c</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">half_edges</span><span class="p">)</span>
+        <span class="n">half_edges</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">face_id</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">half_edge</span><span class="p">,</span> <span class="p">(</span><span class="n">face</span><span class="p">,</span> <span class="nb">id</span><span class="p">)</span> <span class="ow">in</span> <span class="n">half_edges</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">_face</span><span class="p">,</span> <span class="n">_id</span> <span class="o">=</span> <span class="n">half_edges</span><span class="p">[</span><span class="o">-</span><span class="n">half_edge</span><span class="p">]</span>
+        <span class="n">S</span><span class="o">.</span><span class="n">change_edge_gluing</span><span class="p">(</span><span class="n">face</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="n">_face</span><span class="p">,</span> <span class="n">_id</span><span class="p">)</span>
+
+    <span class="n">S</span><span class="o">.</span><span class="n">set_immutable</span><span class="p">()</span>
+
+    <span class="kn">from</span> <span class="nn">flatsurf.geometry.translation_surface</span> <span class="kn">import</span> <span class="n">TranslationSurface</span>
+    <span class="k">return</span> <span class="n">TranslationSurface</span><span class="p">(</span><span class="n">S</span><span class="p">)</span></div>
+</pre></div>
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2016-2022, the sage-flatsurf authors
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </div>
+</div><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/scripts/furo.js"></script>
+    </body>
+</html>

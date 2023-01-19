@@ -1,0 +1,500 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
+
+    <!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
+        <title>flatsurf.geometry.interval_exchange_transformation - sage-flatsurf 0.4.7 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    <link rel="stylesheet" type="text/css" href="https://doc.sagemath.org/html/en/reference/_static/custom-furo.css" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  --color-brand-primary: #0f0fff;
+  --color-brand-content: #0f0fff;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #272822;
+  --color-code-foreground: #f8f8f2;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #272822;
+  --color-code-foreground: #f8f8f2;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../../index.html"><div class="brand">sage-flatsurf 0.4.7 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo only-light" src="../../../_static/logo.svg" alt="Light Logo"/>
+    <img class="sidebar-logo only-dark" src="../../../_static/logo.svg" alt="Dark Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">sage-flatsurf 0.4.7 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../install.html">Installing sage-flatsurf</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developer.html">The Developer’s Guide for sage-flatsurf</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/defining_surfaces.html">Defining Surfaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/graphics_configuration.html">Graphics Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/linear_action_and_delaunay.html">The GL(2,R) Action, the Veech Group, Delaunay Decomposition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/rel_deformations.html">Relative Period Deformations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/saddle_connections.html">Working with Saddle Connections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/apisa_wright.html">Exploring Orbit Closures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/siegel_veech.html">Siegel-Veech Constants</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/straight_line_flow.html">Straight-Line Flow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/warwick-2017.html">Notes from the Warwick EPSRC Symposium on “Computation in geometric topology”</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/boshernitzan_conjecture.html">Boshernitzan’s Conjectures</a></li>
+</ul>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../geometry.html">The flatsurf.geometry Package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/chamanara.html"><code class="docutils literal notranslate"><span class="pre">chamanara</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/circle.html"><code class="docutils literal notranslate"><span class="pre">circle</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/cone_surface.html"><code class="docutils literal notranslate"><span class="pre">cone_surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/delaunay.html"><code class="docutils literal notranslate"><span class="pre">delaunay</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/dilation_surface.html"><code class="docutils literal notranslate"><span class="pre">dilation_surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/finitely_generated_matrix_group.html"><code class="docutils literal notranslate"><span class="pre">finitely_generated_matrix_group</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/fundamental_group.html"><code class="docutils literal notranslate"><span class="pre">fundamental_group</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/gl2r_orbit_closure.html"><code class="docutils literal notranslate"><span class="pre">gl2r_orbit_closure</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/half_dilation_surface.html"><code class="docutils literal notranslate"><span class="pre">half_dilation_surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/half_translation_surface.html"><code class="docutils literal notranslate"><span class="pre">half_translation_surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/interval_exchange_transformation.html"><code class="docutils literal notranslate"><span class="pre">interval_exchange_transformation</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/l_infinity_delaunay_cells.html"><code class="docutils literal notranslate"><span class="pre">l_infinity_delaunay_cells</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/mappings.html"><code class="docutils literal notranslate"><span class="pre">mappings</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/matrix_2x2.html"><code class="docutils literal notranslate"><span class="pre">matrix_2x2</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/mega_wollmilchsau.html"><code class="docutils literal notranslate"><span class="pre">mega_wollmilchsau</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/minimal_cover.html"><code class="docutils literal notranslate"><span class="pre">minimal_cover</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/polygon.html"><code class="docutils literal notranslate"><span class="pre">polygon</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/polyhedra.html"><code class="docutils literal notranslate"><span class="pre">polyhedra</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/pyflatsurf_conversion.html"><code class="docutils literal notranslate"><span class="pre">pyflatsurf_conversion</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/rational_cone_surface.html"><code class="docutils literal notranslate"><span class="pre">rational_cone_surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/rational_similarity_surface.html"><code class="docutils literal notranslate"><span class="pre">rational_similarity_surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/relative_homology.html"><code class="docutils literal notranslate"><span class="pre">relative_homology</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/similarity.html"><code class="docutils literal notranslate"><span class="pre">similarity</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/similarity_surface_generators.html"><code class="docutils literal notranslate"><span class="pre">similarity_surface_generators</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/similarity_surface.html"><code class="docutils literal notranslate"><span class="pre">similarity_surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/straight_line_trajectory.html"><code class="docutils literal notranslate"><span class="pre">straight_line_trajectory</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/subfield.html"><code class="docutils literal notranslate"><span class="pre">subfield</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/surface_objects.html"><code class="docutils literal notranslate"><span class="pre">surface_objects</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/surface.html"><code class="docutils literal notranslate"><span class="pre">surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/tangent_bundle.html"><code class="docutils literal notranslate"><span class="pre">tangent_bundle</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/thurston_veech.html"><code class="docutils literal notranslate"><span class="pre">thurston_veech</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/translation_surface.html"><code class="docutils literal notranslate"><span class="pre">translation_surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/xml.html"><code class="docutils literal notranslate"><span class="pre">xml</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../graphical.html">The flatsurf.graphical Package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../graphical/polygon.html"><code class="docutils literal notranslate"><span class="pre">polygon</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../graphical/straight_line_trajectory.html"><code class="docutils literal notranslate"><span class="pre">straight_line_trajectory</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../graphical/surface_point.html"><code class="docutils literal notranslate"><span class="pre">surface_point</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../graphical/surface.html"><code class="docutils literal notranslate"><span class="pre">surface</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <h1>Source code for flatsurf.geometry.interval_exchange_transformation</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span><span class="p">,</span> <span class="n">print_function</span><span class="p">,</span> <span class="n">division</span>
+<span class="kn">from</span> <span class="nn">six.moves</span> <span class="kn">import</span> <span class="nb">range</span><span class="p">,</span> <span class="nb">map</span><span class="p">,</span> <span class="nb">filter</span><span class="p">,</span> <span class="nb">zip</span>
+
+<span class="kn">from</span> <span class="nn">sage.structure.sage_object</span> <span class="kn">import</span> <span class="n">SageObject</span>
+
+<div class="viewcode-block" id="FlowPolygonMap"><a class="viewcode-back" href="../../../geometry/interval_exchange_transformation.html#flatsurf.geometry.interval_exchange_transformation.FlowPolygonMap">[docs]</a><span class="k">class</span> <span class="nc">FlowPolygonMap</span><span class="p">(</span><span class="n">SageObject</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The map obtained as the return map of the flow on the sides of a (convex)</span>
+<span class="sd">    polygon.</span>
+
+<span class="sd">    Formally, this can be defined as follows: one start with two partition into</span>
+<span class="sd">    (finitely many) intervals of a given interval. The map corresponds to</span>
+<span class="sd">    changing from the first partition to the second. In other words, points are</span>
+<span class="sd">    identified as pairs ``(i, x)`` where ``i`` is an atom and ``x`` is the</span>
+<span class="sd">    relative position in this atom.</span>
+
+<span class="sd">    Contrarily to an interval exchange transformation, things here are going</span>
+<span class="sd">    from bottom to top.</span>
+
+<span class="sd">    Note that this could also be used for homothetic surfaces. And to some</span>
+<span class="sd">    extent to half translation surface.</span>
+
+<span class="sd">    EXAMPLES::</span>
+
+<span class="sd">        sage: from flatsurf.geometry.interval_exchange_transformation import FlowPolygonMap</span>
+<span class="sd">        sage: T = FlowPolygonMap(QQ, [0,1,2], [2,3,1], [2,1,0], [1,3,2])</span>
+<span class="sd">        sage: [T.forward_image(0,x) for x in range(3)]</span>
+<span class="sd">        [(2, 0), (1, 0), (1, 1)]</span>
+<span class="sd">        sage: [T.forward_image(1,x) for x in range(4)]</span>
+<span class="sd">        [(1, 1), (1, 2), (0, 0), (0, 1)]</span>
+<span class="sd">        sage: [T.forward_image(2,x) for x in range(1)]</span>
+<span class="sd">        [(0, 1)]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ring</span><span class="p">,</span> <span class="n">bot_labels</span><span class="p">,</span> <span class="n">bot_lengths</span><span class="p">,</span> <span class="n">top_labels</span><span class="p">,</span> <span class="n">top_lengths</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        INPUT:</span>
+
+<span class="sd">        - ``ring`` -- the base ring for the lengths of the interval</span>
+
+<span class="sd">        - ``bot_labels`` -- labels for the bottom partition</span>
+
+<span class="sd">        - ``bot_lengths`` -- lengths for the bottom partition</span>
+
+<span class="sd">        - ``top_labels`` -- labels for the top partition</span>
+
+<span class="sd">        - ``top_lengths`` -- lengths for top partition</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="nb">all</span><span class="p">(</span><span class="n">x</span> <span class="o">&gt;</span> <span class="n">ring</span><span class="o">.</span><span class="n">zero</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">bot_lengths</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">all</span><span class="p">(</span><span class="n">x</span> <span class="o">&gt;</span> <span class="n">ring</span><span class="o">.</span><span class="n">zero</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">top_lengths</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">bot_labels</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">bot_lengths</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">top_labels</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">top_lengths</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">sum</span><span class="p">(</span><span class="n">top_lengths</span><span class="p">)</span>  <span class="o">==</span> <span class="nb">sum</span><span class="p">(</span><span class="n">bot_lengths</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ring</span> <span class="o">=</span> <span class="n">ring</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_bot_labels</span> <span class="o">=</span> <span class="n">bot_labels</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_top_labels</span> <span class="o">=</span> <span class="n">top_labels</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_bot_labels_to_index</span> <span class="o">=</span> <span class="p">{</span><span class="n">j</span><span class="p">:</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">j</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">bot_labels</span><span class="p">)}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_top_labels_to_index</span> <span class="o">=</span> <span class="p">{</span><span class="n">j</span><span class="p">:</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">j</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">top_labels</span><span class="p">)}</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_bot_labels</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_bot_labels_to_index</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;non unique labels for bot: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">bot_labels</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_top_labels</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_top_labels_to_index</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;non unique labels in top: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">top_labels</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_bot_lengths</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">ring</span><span class="p">,</span><span class="n">bot_lengths</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_top_lengths</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">ring</span><span class="p">,</span><span class="n">top_lengths</span><span class="p">))</span>
+
+
+        <span class="c1"># forward image of intervals</span>
+        <span class="n">it</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">lt</span> <span class="o">=</span> <span class="n">x1</span> <span class="o">=</span> <span class="n">top_lengths</span><span class="p">[</span><span class="n">it</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_forward_images</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">ib</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">bot_lengths</span><span class="p">)):</span>
+            <span class="n">lenb</span> <span class="o">=</span> <span class="n">bot_lengths</span><span class="p">[</span><span class="n">ib</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_forward_images</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">it</span><span class="p">,</span><span class="n">lt</span><span class="o">-</span><span class="n">x1</span><span class="p">))</span>
+
+            <span class="k">while</span> <span class="n">lenb</span> <span class="ow">and</span> <span class="n">lenb</span> <span class="o">&gt;=</span> <span class="n">x1</span><span class="p">:</span>
+                <span class="n">lenb</span> <span class="o">-=</span> <span class="n">x1</span>
+                <span class="n">it</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="n">it</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">top_lengths</span><span class="p">):</span>
+                    <span class="n">lt</span> <span class="o">=</span> <span class="n">x1</span> <span class="o">=</span> <span class="n">top_lengths</span><span class="p">[</span><span class="n">it</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">lt</span> <span class="o">=</span> <span class="n">ring</span><span class="o">.</span><span class="n">zero</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">lenb</span><span class="p">:</span>
+                <span class="n">x1</span> <span class="o">-=</span> <span class="n">lenb</span>
+
+        <span class="c1"># backward image of intervals</span>
+        <span class="n">ib</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">lb</span> <span class="o">=</span> <span class="n">x1</span> <span class="o">=</span> <span class="n">bot_lengths</span><span class="p">[</span><span class="n">ib</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_backward_images</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">it</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">top_lengths</span><span class="p">)):</span>
+            <span class="n">lent</span> <span class="o">=</span> <span class="n">top_lengths</span><span class="p">[</span><span class="n">it</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_backward_images</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">ib</span><span class="p">,</span><span class="n">lb</span><span class="o">-</span><span class="n">x1</span><span class="p">))</span>
+
+            <span class="k">while</span> <span class="n">lent</span> <span class="ow">and</span> <span class="n">lent</span> <span class="o">&gt;=</span> <span class="n">x1</span><span class="p">:</span>
+                <span class="n">lent</span> <span class="o">-=</span> <span class="n">x1</span>
+                <span class="n">ib</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="n">ib</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">bot_lengths</span><span class="p">):</span>
+                    <span class="n">lb</span> <span class="o">=</span> <span class="n">x1</span> <span class="o">=</span> <span class="n">bot_lengths</span><span class="p">[</span><span class="n">ib</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">lb</span> <span class="o">=</span> <span class="n">ring</span><span class="o">.</span><span class="n">zero</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">lent</span><span class="p">:</span>
+                <span class="n">x1</span> <span class="o">-=</span> <span class="n">lent</span>
+
+<div class="viewcode-block" id="FlowPolygonMap.length_bot"><a class="viewcode-back" href="../../../geometry/interval_exchange_transformation.html#flatsurf.geometry.interval_exchange_transformation.FlowPolygonMap.length_bot">[docs]</a>    <span class="k">def</span> <span class="nf">length_bot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bot_labels_to_index</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bot_lengths</span><span class="p">[</span><span class="n">i</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="FlowPolygonMap.length_top"><a class="viewcode-back" href="../../../geometry/interval_exchange_transformation.html#flatsurf.geometry.interval_exchange_transformation.FlowPolygonMap.length_top">[docs]</a>    <span class="k">def</span> <span class="nf">length_top</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_top_labels_to_index</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_top_lengths</span><span class="p">[</span><span class="n">i</span><span class="p">]</span></div>
+
+    <span class="k">def</span> <span class="nf">_repr_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Flow polygon map:&quot;</span><span class="p">]</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_top_labels</span><span class="p">))</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bot_labels</span><span class="p">))</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;top lengths: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_top_lengths</span><span class="p">))</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;bot lengths: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_bot_lengths</span><span class="p">))</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+
+<div class="viewcode-block" id="FlowPolygonMap.forward_image"><a class="viewcode-back" href="../../../geometry/interval_exchange_transformation.html#flatsurf.geometry.interval_exchange_transformation.FlowPolygonMap.forward_image">[docs]</a>    <span class="k">def</span> <span class="nf">forward_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the forward image.</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf.geometry.interval_exchange_transformation import FlowPolygonMap</span>
+
+<span class="sd">        Singularities are always sent to a ``(i,0)``::</span>
+
+<span class="sd">            sage: T = FlowPolygonMap(QQ, [0,1], [2,1], [2,3,4], [1,1,1])</span>
+<span class="sd">            sage: T.forward_image(0, 0)</span>
+<span class="sd">            (2, 0)</span>
+<span class="sd">            sage: T.forward_image(0, 1)  # could have equally been (2, 1)</span>
+<span class="sd">            (3, 0)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bot_labels_to_index</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ring</span><span class="o">.</span><span class="n">zero</span><span class="p">()</span> <span class="ow">or</span> <span class="n">x</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bot_lengths</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;x = </span><span class="si">{}</span><span class="s2"> is out of the interval&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+        <span class="n">j</span><span class="p">,</span><span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_forward_images</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">x</span><span class="o">+</span><span class="n">y</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_top_lengths</span><span class="p">[</span><span class="n">j</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_top_labels</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">x</span><span class="o">+</span><span class="n">y</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">-=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_top_lengths</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">-</span><span class="n">y</span>
+        <span class="n">j</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">while</span> <span class="n">x</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_top_lengths</span><span class="p">[</span><span class="n">j</span><span class="p">]:</span>
+            <span class="n">x</span> <span class="o">-=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_top_lengths</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+            <span class="n">j</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_top_labels</span><span class="p">[</span><span class="n">j</span><span class="p">],</span><span class="n">x</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="FlowPolygonMap.backward_image"><a class="viewcode-back" href="../../../geometry/interval_exchange_transformation.html#flatsurf.geometry.interval_exchange_transformation.FlowPolygonMap.backward_image">[docs]</a>    <span class="k">def</span> <span class="nf">backward_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf.geometry.interval_exchange_transformation import \</span>
+<span class="sd">            ....:     FlowPolygonMap</span>
+
+<span class="sd">            sage: x = polygen(ZZ)</span>
+<span class="sd">            sage: K.&lt;sqrt2&gt; = NumberField(x^2 - 2, embedding=AA(2).sqrt())</span>
+
+<span class="sd">            sage: T = FlowPolygonMap(K, [0,1,2],</span>
+<span class="sd">            ....:       [sqrt2,1+sqrt2,1], [2,0,1], [1,sqrt2,1+sqrt2])</span>
+<span class="sd">            sage: T.backward_image(*T.forward_image(1, 1))</span>
+<span class="sd">            (1, 1)</span>
+<span class="sd">            sage: T.backward_image(*T.forward_image(0, 1))</span>
+<span class="sd">            (0, 1)</span>
+<span class="sd">            sage: T.backward_image(*T.forward_image(0, sqrt2-1))</span>
+<span class="sd">            (0, sqrt2 - 1)</span>
+<span class="sd">            sage: T.backward_image(*T.forward_image(1, sqrt2-1))</span>
+<span class="sd">            (1, sqrt2 - 1)</span>
+
+<span class="sd">        Singularities are always sent to a ``(i,0)``::</span>
+
+<span class="sd">            sage: T = FlowPolygonMap(QQ, [2,3,4], [1,1,1], [0,1], [2,1])</span>
+<span class="sd">            sage: T.backward_image(0, 0)</span>
+<span class="sd">            (2, 0)</span>
+<span class="sd">            sage: T.backward_image(0, 1)  # could have equally been (2, 1)</span>
+<span class="sd">            (3, 0)</span>
+
+<span class="sd">        TESTS::</span>
+
+<span class="sd">            sage: T = FlowPolygonMap(K, [0,1,2],</span>
+<span class="sd">            ....:       [5*sqrt2,1,1], [2,1,0], [1,1,5*sqrt2])</span>
+<span class="sd">            sage: for x in range(1,8):</span>
+<span class="sd">            ....:     p0 = (0,x)</span>
+<span class="sd">            ....:     for n in range(5):</span>
+<span class="sd">            ....:         p1 = T.forward_image(*p0)</span>
+<span class="sd">            ....:         assert T.backward_image(*p1) == p0, &quot;p0 = {}, p1 = {}&quot;.format(p0,p1)</span>
+<span class="sd">            ....:         p0 = p1</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_top_labels_to_index</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ring</span><span class="o">.</span><span class="n">zero</span><span class="p">()</span> <span class="ow">or</span> <span class="n">x</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_top_lengths</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;x = </span><span class="si">{}</span><span class="s2"> is out of the interval&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+        <span class="n">j</span><span class="p">,</span><span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_backward_images</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">x</span><span class="o">+</span><span class="n">y</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bot_lengths</span><span class="p">[</span><span class="n">j</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_bot_labels</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">x</span><span class="o">+</span><span class="n">y</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">-=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bot_lengths</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">-</span><span class="n">y</span>
+        <span class="n">j</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">while</span> <span class="n">x</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bot_lengths</span><span class="p">[</span><span class="n">j</span><span class="p">]:</span>
+            <span class="n">x</span> <span class="o">-=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bot_lengths</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+            <span class="n">j</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_bot_labels</span><span class="p">[</span><span class="n">j</span><span class="p">],</span><span class="n">x</span><span class="p">)</span></div></div>
+</pre></div>
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2016-2022, the sage-flatsurf authors
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </div>
+</div><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/scripts/furo.js"></script>
+    </body>
+</html>

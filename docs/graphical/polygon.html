@@ -1,0 +1,514 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="straight_line_trajectory" href="straight_line_trajectory.html" /><link rel="prev" title="The flatsurf.graphical Package" href="../graphical.html" />
+
+    <!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
+        <title>polygon - sage-flatsurf 0.4.7 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    <link rel="stylesheet" type="text/css" href="https://doc.sagemath.org/html/en/reference/_static/custom-furo.css" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  --color-brand-primary: #0f0fff;
+  --color-brand-content: #0f0fff;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #272822;
+  --color-code-foreground: #f8f8f2;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #272822;
+  --color-code-foreground: #f8f8f2;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">sage-flatsurf 0.4.7 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo only-light" src="../_static/logo.svg" alt="Light Logo"/>
+    <img class="sidebar-logo only-dark" src="../_static/logo.svg" alt="Dark Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">sage-flatsurf 0.4.7 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul>
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installing sage-flatsurf</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html">The Developer’s Guide for sage-flatsurf</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../examples/defining_surfaces.html">Defining Surfaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/graphics_configuration.html">Graphics Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/linear_action_and_delaunay.html">The GL(2,R) Action, the Veech Group, Delaunay Decomposition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/rel_deformations.html">Relative Period Deformations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/saddle_connections.html">Working with Saddle Connections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/apisa_wright.html">Exploring Orbit Closures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/siegel_veech.html">Siegel-Veech Constants</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/straight_line_flow.html">Straight-Line Flow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/warwick-2017.html">Notes from the Warwick EPSRC Symposium on “Computation in geometric topology”</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/boshernitzan_conjecture.html">Boshernitzan’s Conjectures</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../geometry.html">The flatsurf.geometry Package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/chamanara.html"><code class="docutils literal notranslate"><span class="pre">chamanara</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/circle.html"><code class="docutils literal notranslate"><span class="pre">circle</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/cone_surface.html"><code class="docutils literal notranslate"><span class="pre">cone_surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/delaunay.html"><code class="docutils literal notranslate"><span class="pre">delaunay</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/dilation_surface.html"><code class="docutils literal notranslate"><span class="pre">dilation_surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/finitely_generated_matrix_group.html"><code class="docutils literal notranslate"><span class="pre">finitely_generated_matrix_group</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/fundamental_group.html"><code class="docutils literal notranslate"><span class="pre">fundamental_group</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/gl2r_orbit_closure.html"><code class="docutils literal notranslate"><span class="pre">gl2r_orbit_closure</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/half_dilation_surface.html"><code class="docutils literal notranslate"><span class="pre">half_dilation_surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/half_translation_surface.html"><code class="docutils literal notranslate"><span class="pre">half_translation_surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/interval_exchange_transformation.html"><code class="docutils literal notranslate"><span class="pre">interval_exchange_transformation</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/l_infinity_delaunay_cells.html"><code class="docutils literal notranslate"><span class="pre">l_infinity_delaunay_cells</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/mappings.html"><code class="docutils literal notranslate"><span class="pre">mappings</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/matrix_2x2.html"><code class="docutils literal notranslate"><span class="pre">matrix_2x2</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/mega_wollmilchsau.html"><code class="docutils literal notranslate"><span class="pre">mega_wollmilchsau</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/minimal_cover.html"><code class="docutils literal notranslate"><span class="pre">minimal_cover</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/polygon.html"><code class="docutils literal notranslate"><span class="pre">polygon</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/polyhedra.html"><code class="docutils literal notranslate"><span class="pre">polyhedra</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/pyflatsurf_conversion.html"><code class="docutils literal notranslate"><span class="pre">pyflatsurf_conversion</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/rational_cone_surface.html"><code class="docutils literal notranslate"><span class="pre">rational_cone_surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/rational_similarity_surface.html"><code class="docutils literal notranslate"><span class="pre">rational_similarity_surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/relative_homology.html"><code class="docutils literal notranslate"><span class="pre">relative_homology</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/similarity.html"><code class="docutils literal notranslate"><span class="pre">similarity</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/similarity_surface_generators.html"><code class="docutils literal notranslate"><span class="pre">similarity_surface_generators</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/similarity_surface.html"><code class="docutils literal notranslate"><span class="pre">similarity_surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/straight_line_trajectory.html"><code class="docutils literal notranslate"><span class="pre">straight_line_trajectory</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/subfield.html"><code class="docutils literal notranslate"><span class="pre">subfield</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/surface_objects.html"><code class="docutils literal notranslate"><span class="pre">surface_objects</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/surface.html"><code class="docutils literal notranslate"><span class="pre">surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/tangent_bundle.html"><code class="docutils literal notranslate"><span class="pre">tangent_bundle</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/thurston_veech.html"><code class="docutils literal notranslate"><span class="pre">thurston_veech</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/translation_surface.html"><code class="docutils literal notranslate"><span class="pre">translation_surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/xml.html"><code class="docutils literal notranslate"><span class="pre">xml</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../graphical.html">The flatsurf.graphical Package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">polygon</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="straight_line_trajectory.html"><code class="docutils literal notranslate"><span class="pre">straight_line_trajectory</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="surface_point.html"><code class="docutils literal notranslate"><span class="pre">surface_point</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="surface.html"><code class="docutils literal notranslate"><span class="pre">surface</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <section id="module-flatsurf.graphical.polygon">
+<span id="polygon"></span><h1><code class="docutils literal notranslate"><span class="pre">polygon</span></code><a class="headerlink" href="#module-flatsurf.graphical.polygon" title="Permalink to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="flatsurf.graphical.polygon.GraphicalPolygon">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flatsurf.graphical.polygon.</span></span><span class="sig-name descname"><span class="pre">GraphicalPolygon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">polygon</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transformation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/graphical/polygon.html#GraphicalPolygon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.polygon.GraphicalPolygon" title="Permalink to this definition">#</a></dt>
+<dd><p>Stores data necessary to draw one of the polygons from a surface.</p>
+<p>Note that this involves converting between geometric coordinates, defined for the SimilaritySurface,
+and graphical coordinates. We do this with a similarity (called transformation below).</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.graphical.polygon.GraphicalPolygon.base_polygon">
+<span class="sig-name descname"><span class="pre">base_polygon</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/graphical/polygon.html#GraphicalPolygon.base_polygon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.polygon.GraphicalPolygon.base_polygon" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the polygon of the surface in geometric coordinates.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.graphical.polygon.GraphicalPolygon.bounding_box">
+<span class="sig-name descname"><span class="pre">bounding_box</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/graphical/polygon.html#GraphicalPolygon.bounding_box"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.polygon.GraphicalPolygon.bounding_box" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the quadruple (x1,y1,x2,y2) where x1 and y1 are the minimal
+x and y coordinates and x2 and y2 are the maximal x and y coordinates.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.graphical.polygon.GraphicalPolygon.contains">
+<span class="sig-name descname"><span class="pre">contains</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">point</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/graphical/polygon.html#GraphicalPolygon.contains"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.polygon.GraphicalPolygon.contains" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the transformation of point from graphical coordinates to the geometric coordinates
+of the underlying SimilaritySurface.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.graphical.polygon.GraphicalPolygon.copy">
+<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/graphical/polygon.html#GraphicalPolygon.copy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.polygon.GraphicalPolygon.copy" title="Permalink to this definition">#</a></dt>
+<dd><p>Return a copy of this GraphicalPolygon.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.graphical.polygon.GraphicalPolygon.plot_edge">
+<span class="sig-name descname"><span class="pre">plot_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">e</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">options</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/graphical/polygon.html#GraphicalPolygon.plot_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.polygon.GraphicalPolygon.plot_edge" title="Permalink to this definition">#</a></dt>
+<dd><p>Plot the edge e, with e a number 0,…,n-1 with n being the number
+of edges of the polygon.</p>
+<p>Options are processed as in sage.plot.line.line2d.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.graphical.polygon.GraphicalPolygon.plot_edge_label">
+<span class="sig-name descname"><span class="pre">plot_edge_label</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">options</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/graphical/polygon.html#GraphicalPolygon.plot_edge_label"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.polygon.GraphicalPolygon.plot_edge_label" title="Permalink to this definition">#</a></dt>
+<dd><p>Write label on the i-th edge.</p>
+<p>A parameter <code class="docutils literal notranslate"><span class="pre">t</span></code> in the interval [0,1] can be provided to position the
+label along the edge. A value of t=0 will position it at the starting
+vertex and t=1 will position it at the terminating vertex. Defaults to
+0.3.</p>
+<p>If the parameter <code class="docutils literal notranslate"><span class="pre">position</span></code> can take the values “outside”, “inside”
+or “edge” to indicate if the label should be drawn outside the polygon,
+inside the polygon or on the edge. Defaults to “inside”.</p>
+<p>A <code class="docutils literal notranslate"><span class="pre">push_off</span></code> perturbation parameter controls how far off the edge the label is pushed.</p>
+<p>Other options are processed as in sage.plot.text.text.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.graphical.polygon.GraphicalPolygon.plot_label">
+<span class="sig-name descname"><span class="pre">plot_label</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">options</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/graphical/polygon.html#GraphicalPolygon.plot_label"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.polygon.GraphicalPolygon.plot_label" title="Permalink to this definition">#</a></dt>
+<dd><p>Write the label of the polygon as text.</p>
+<p>Set <code class="docutils literal notranslate"><span class="pre">position</span></code> to a pair (x,y) to determine where
+the label is drawn (in graphical coordinates). If this parameter
+is not provided, the label is positioned in the baricenter
+of the polygon.</p>
+<p>Other options are processed as in sage.plot.text.text.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.graphical.polygon.GraphicalPolygon.plot_points">
+<span class="sig-name descname"><span class="pre">plot_points</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">options</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/graphical/polygon.html#GraphicalPolygon.plot_points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.polygon.GraphicalPolygon.plot_points" title="Permalink to this definition">#</a></dt>
+<dd><p>Plot the points in the given collection of points.</p>
+<p>The options are passed to point2d.</p>
+<p>If no “zorder” option is provided then we set “zorder” to 50.</p>
+<p>By default coordinates are taken in the underlying surface. Call with coordinates=”graphical”
+to use graphical coordinates instead.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.graphical.polygon.GraphicalPolygon.plot_polygon">
+<span class="sig-name descname"><span class="pre">plot_polygon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">options</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/graphical/polygon.html#GraphicalPolygon.plot_polygon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.polygon.GraphicalPolygon.plot_polygon" title="Permalink to this definition">#</a></dt>
+<dd><p>Returns only the filled polygon.</p>
+<p>Options are processed as in sage.plot.polygon.polygon2d except
+that by default axes=False.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.graphical.polygon.GraphicalPolygon.plot_zero_flag">
+<span class="sig-name descname"><span class="pre">plot_zero_flag</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">options</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/graphical/polygon.html#GraphicalPolygon.plot_zero_flag"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.polygon.GraphicalPolygon.plot_zero_flag" title="Permalink to this definition">#</a></dt>
+<dd><p>Draw a line segment from the zero vertex toward the baricenter.</p>
+<p>A real parameter <code class="docutils literal notranslate"><span class="pre">t</span></code> can be provided. If t=1, then the segment will
+go all the way to the baricenter.  The value of <code class="docutils literal notranslate"><span class="pre">t</span></code> is linear in the
+length of the segment. Defaults to t=0.5.</p>
+<p>Other options are processed as in sage.plot.line.line2d.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.graphical.polygon.GraphicalPolygon.set_transformation">
+<span class="sig-name descname"><span class="pre">set_transformation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transformation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/graphical/polygon.html#GraphicalPolygon.set_transformation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.polygon.GraphicalPolygon.set_transformation" title="Permalink to this definition">#</a></dt>
+<dd><p>Set the transformation to be applied to the polygon.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.graphical.polygon.GraphicalPolygon.transform">
+<span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">point</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">double_precision</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/graphical/polygon.html#GraphicalPolygon.transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.polygon.GraphicalPolygon.transform" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the transformation of point into graphical coordinates.</p>
+<p>By default returned point is in double precision. This can be changed
+to an exact representation by setting <cite>double_precision</cite> to False.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.graphical.polygon.GraphicalPolygon.transform_back">
+<span class="sig-name descname"><span class="pre">transform_back</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">point</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/graphical/polygon.html#GraphicalPolygon.transform_back"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.polygon.GraphicalPolygon.transform_back" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the transformation of point from graphical coordinates to the geometric coordinates
+of the underlying SimilaritySurface.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.graphical.polygon.GraphicalPolygon.transformation">
+<span class="sig-name descname"><span class="pre">transformation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/graphical/polygon.html#GraphicalPolygon.transformation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.polygon.GraphicalPolygon.transformation" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the transformation (similarity) which converts from
+mathematical to graphical coordinates.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.graphical.polygon.GraphicalPolygon.transformed_vertex">
+<span class="sig-name descname"><span class="pre">transformed_vertex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">e</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/graphical/polygon.html#GraphicalPolygon.transformed_vertex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.polygon.GraphicalPolygon.transformed_vertex" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the graphical coordinates of the vertex in double precision.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.graphical.polygon.GraphicalPolygon.xmax">
+<span class="sig-name descname"><span class="pre">xmax</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/graphical/polygon.html#GraphicalPolygon.xmax"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.polygon.GraphicalPolygon.xmax" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the maximal x-coordinate of a vertex.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.graphical.polygon.GraphicalPolygon.xmin">
+<span class="sig-name descname"><span class="pre">xmin</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/graphical/polygon.html#GraphicalPolygon.xmin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.polygon.GraphicalPolygon.xmin" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the minimal x-coordinate of a vertex.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.graphical.polygon.GraphicalPolygon.ymax">
+<span class="sig-name descname"><span class="pre">ymax</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/graphical/polygon.html#GraphicalPolygon.ymax"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.polygon.GraphicalPolygon.ymax" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the minimal y-coordinate of a vertex</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.graphical.polygon.GraphicalPolygon.ymin">
+<span class="sig-name descname"><span class="pre">ymin</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/graphical/polygon.html#GraphicalPolygon.ymin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.polygon.GraphicalPolygon.ymin" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the minimal y-coordinate of a vertex.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="straight_line_trajectory.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title"><code class="docutils literal notranslate"><span class="pre">straight_line_trajectory</span></code></div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="../graphical.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">The flatsurf.graphical Package</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2016-2022, the sage-flatsurf authors
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">polygon</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.graphical.polygon.GraphicalPolygon"><code class="docutils literal notranslate"><span class="pre">GraphicalPolygon</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.graphical.polygon.GraphicalPolygon.base_polygon"><code class="docutils literal notranslate"><span class="pre">GraphicalPolygon.base_polygon()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.polygon.GraphicalPolygon.bounding_box"><code class="docutils literal notranslate"><span class="pre">GraphicalPolygon.bounding_box()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.polygon.GraphicalPolygon.contains"><code class="docutils literal notranslate"><span class="pre">GraphicalPolygon.contains()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.polygon.GraphicalPolygon.copy"><code class="docutils literal notranslate"><span class="pre">GraphicalPolygon.copy()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.polygon.GraphicalPolygon.plot_edge"><code class="docutils literal notranslate"><span class="pre">GraphicalPolygon.plot_edge()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.polygon.GraphicalPolygon.plot_edge_label"><code class="docutils literal notranslate"><span class="pre">GraphicalPolygon.plot_edge_label()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.polygon.GraphicalPolygon.plot_label"><code class="docutils literal notranslate"><span class="pre">GraphicalPolygon.plot_label()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.polygon.GraphicalPolygon.plot_points"><code class="docutils literal notranslate"><span class="pre">GraphicalPolygon.plot_points()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.polygon.GraphicalPolygon.plot_polygon"><code class="docutils literal notranslate"><span class="pre">GraphicalPolygon.plot_polygon()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.polygon.GraphicalPolygon.plot_zero_flag"><code class="docutils literal notranslate"><span class="pre">GraphicalPolygon.plot_zero_flag()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.polygon.GraphicalPolygon.set_transformation"><code class="docutils literal notranslate"><span class="pre">GraphicalPolygon.set_transformation()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.polygon.GraphicalPolygon.transform"><code class="docutils literal notranslate"><span class="pre">GraphicalPolygon.transform()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.polygon.GraphicalPolygon.transform_back"><code class="docutils literal notranslate"><span class="pre">GraphicalPolygon.transform_back()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.polygon.GraphicalPolygon.transformation"><code class="docutils literal notranslate"><span class="pre">GraphicalPolygon.transformation()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.polygon.GraphicalPolygon.transformed_vertex"><code class="docutils literal notranslate"><span class="pre">GraphicalPolygon.transformed_vertex()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.polygon.GraphicalPolygon.xmax"><code class="docutils literal notranslate"><span class="pre">GraphicalPolygon.xmax()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.polygon.GraphicalPolygon.xmin"><code class="docutils literal notranslate"><span class="pre">GraphicalPolygon.xmin()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.polygon.GraphicalPolygon.ymax"><code class="docutils literal notranslate"><span class="pre">GraphicalPolygon.ymax()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.polygon.GraphicalPolygon.ymin"><code class="docutils literal notranslate"><span class="pre">GraphicalPolygon.ymin()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/scripts/furo.js"></script>
+    </body>
+</html>

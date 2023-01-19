@@ -1,0 +1,680 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
+
+    <!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
+        <title>flatsurf.geometry.half_dilation_surface - sage-flatsurf 0.4.7 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    <link rel="stylesheet" type="text/css" href="https://doc.sagemath.org/html/en/reference/_static/custom-furo.css" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  --color-brand-primary: #0f0fff;
+  --color-brand-content: #0f0fff;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #272822;
+  --color-code-foreground: #f8f8f2;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #272822;
+  --color-code-foreground: #f8f8f2;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../../index.html"><div class="brand">sage-flatsurf 0.4.7 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo only-light" src="../../../_static/logo.svg" alt="Light Logo"/>
+    <img class="sidebar-logo only-dark" src="../../../_static/logo.svg" alt="Dark Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">sage-flatsurf 0.4.7 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../install.html">Installing sage-flatsurf</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developer.html">The Developer’s Guide for sage-flatsurf</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/defining_surfaces.html">Defining Surfaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/graphics_configuration.html">Graphics Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/linear_action_and_delaunay.html">The GL(2,R) Action, the Veech Group, Delaunay Decomposition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/rel_deformations.html">Relative Period Deformations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/saddle_connections.html">Working with Saddle Connections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/apisa_wright.html">Exploring Orbit Closures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/siegel_veech.html">Siegel-Veech Constants</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/straight_line_flow.html">Straight-Line Flow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/warwick-2017.html">Notes from the Warwick EPSRC Symposium on “Computation in geometric topology”</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/boshernitzan_conjecture.html">Boshernitzan’s Conjectures</a></li>
+</ul>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../geometry.html">The flatsurf.geometry Package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/chamanara.html"><code class="docutils literal notranslate"><span class="pre">chamanara</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/circle.html"><code class="docutils literal notranslate"><span class="pre">circle</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/cone_surface.html"><code class="docutils literal notranslate"><span class="pre">cone_surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/delaunay.html"><code class="docutils literal notranslate"><span class="pre">delaunay</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/dilation_surface.html"><code class="docutils literal notranslate"><span class="pre">dilation_surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/finitely_generated_matrix_group.html"><code class="docutils literal notranslate"><span class="pre">finitely_generated_matrix_group</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/fundamental_group.html"><code class="docutils literal notranslate"><span class="pre">fundamental_group</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/gl2r_orbit_closure.html"><code class="docutils literal notranslate"><span class="pre">gl2r_orbit_closure</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/half_dilation_surface.html"><code class="docutils literal notranslate"><span class="pre">half_dilation_surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/half_translation_surface.html"><code class="docutils literal notranslate"><span class="pre">half_translation_surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/interval_exchange_transformation.html"><code class="docutils literal notranslate"><span class="pre">interval_exchange_transformation</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/l_infinity_delaunay_cells.html"><code class="docutils literal notranslate"><span class="pre">l_infinity_delaunay_cells</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/mappings.html"><code class="docutils literal notranslate"><span class="pre">mappings</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/matrix_2x2.html"><code class="docutils literal notranslate"><span class="pre">matrix_2x2</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/mega_wollmilchsau.html"><code class="docutils literal notranslate"><span class="pre">mega_wollmilchsau</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/minimal_cover.html"><code class="docutils literal notranslate"><span class="pre">minimal_cover</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/polygon.html"><code class="docutils literal notranslate"><span class="pre">polygon</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/polyhedra.html"><code class="docutils literal notranslate"><span class="pre">polyhedra</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/pyflatsurf_conversion.html"><code class="docutils literal notranslate"><span class="pre">pyflatsurf_conversion</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/rational_cone_surface.html"><code class="docutils literal notranslate"><span class="pre">rational_cone_surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/rational_similarity_surface.html"><code class="docutils literal notranslate"><span class="pre">rational_similarity_surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/relative_homology.html"><code class="docutils literal notranslate"><span class="pre">relative_homology</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/similarity.html"><code class="docutils literal notranslate"><span class="pre">similarity</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/similarity_surface_generators.html"><code class="docutils literal notranslate"><span class="pre">similarity_surface_generators</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/similarity_surface.html"><code class="docutils literal notranslate"><span class="pre">similarity_surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/straight_line_trajectory.html"><code class="docutils literal notranslate"><span class="pre">straight_line_trajectory</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/subfield.html"><code class="docutils literal notranslate"><span class="pre">subfield</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/surface_objects.html"><code class="docutils literal notranslate"><span class="pre">surface_objects</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/surface.html"><code class="docutils literal notranslate"><span class="pre">surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/tangent_bundle.html"><code class="docutils literal notranslate"><span class="pre">tangent_bundle</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/thurston_veech.html"><code class="docutils literal notranslate"><span class="pre">thurston_veech</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/translation_surface.html"><code class="docutils literal notranslate"><span class="pre">translation_surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/xml.html"><code class="docutils literal notranslate"><span class="pre">xml</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../graphical.html">The flatsurf.graphical Package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../graphical/polygon.html"><code class="docutils literal notranslate"><span class="pre">polygon</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../graphical/straight_line_trajectory.html"><code class="docutils literal notranslate"><span class="pre">straight_line_trajectory</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../graphical/surface_point.html"><code class="docutils literal notranslate"><span class="pre">surface_point</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../graphical/surface.html"><code class="docutils literal notranslate"><span class="pre">surface</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <h1>Source code for flatsurf.geometry.half_dilation_surface</h1><div class="highlight"><pre>
+<span></span><span class="c1"># ****************************************************************************</span>
+<span class="c1">#       Copyright (C) 2013-2019 Vincent Delecroix &lt;20100.delecroix@gmail.com&gt;</span>
+<span class="c1">#                     2013-2019 W. Patrick Hooper &lt;wphooper@gmail.com&gt;</span>
+<span class="c1">#</span>
+<span class="c1">#  Distributed under the terms of the GNU General Public License (GPL)</span>
+<span class="c1">#  as published by the Free Software Foundation; either version 2 of</span>
+<span class="c1">#  the License, or (at your option) any later version.</span>
+<span class="c1">#                  https://www.gnu.org/licenses/</span>
+<span class="c1"># ****************************************************************************</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span><span class="p">,</span> <span class="n">print_function</span><span class="p">,</span> <span class="n">division</span>
+<span class="kn">from</span> <span class="nn">six.moves</span> <span class="kn">import</span> <span class="nb">range</span><span class="p">,</span> <span class="nb">map</span><span class="p">,</span> <span class="nb">filter</span><span class="p">,</span> <span class="nb">zip</span>
+<span class="kn">from</span> <span class="nn">six</span> <span class="kn">import</span> <span class="n">iteritems</span>
+
+<span class="kn">from</span> <span class="nn">flatsurf.geometry.surface</span> <span class="kn">import</span> <span class="n">Surface</span>
+<span class="kn">from</span> <span class="nn">flatsurf.geometry.similarity_surface</span> <span class="kn">import</span> <span class="n">SimilaritySurface</span>
+<span class="kn">from</span> <span class="nn">flatsurf.geometry.mappings</span> <span class="kn">import</span> <span class="n">SurfaceMapping</span><span class="p">,</span> <span class="n">IdentityMapping</span><span class="p">,</span> <span class="n">SurfaceMappingComposition</span>
+<span class="kn">from</span> <span class="nn">flatsurf.geometry.polygon</span> <span class="kn">import</span> <span class="n">ConvexPolygons</span>
+
+<span class="kn">from</span> <span class="nn">sage.env</span> <span class="kn">import</span> <span class="n">SAGE_VERSION</span>
+<span class="k">if</span> <span class="n">SAGE_VERSION</span> <span class="o">&gt;=</span> <span class="s1">&#39;8.2&#39;</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">sage.structure.element</span> <span class="kn">import</span> <span class="n">is_Matrix</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">sage.matrix.matrix</span> <span class="kn">import</span> <span class="n">is_Matrix</span>
+
+
+<div class="viewcode-block" id="HalfDilationSurface"><a class="viewcode-back" href="../../../geometry/half_dilation_surface.html#flatsurf.geometry.half_dilation_surface.HalfDilationSurface">[docs]</a><span class="k">class</span> <span class="nc">HalfDilationSurface</span><span class="p">(</span><span class="n">SimilaritySurface</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Half dilation surface.</span>
+
+<span class="sd">    A half-dilation surface is a (G,X) structure for the group of dilatations</span>
+<span class="sd">    `G = \RR^*` acting on the plane `X = \RR^2`. If you want to consider only</span>
+<span class="sd">    the oriented case, have a look at</span>
+<span class="sd">    :meth:`flatsurf.dilation_surface.DilationSurface`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__rmul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">matrix</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf import *</span>
+<span class="sd">            sage: s=translation_surfaces.infinite_staircase()</span>
+<span class="sd">            sage: s.underlying_surface()</span>
+<span class="sd">            The infinite staircase</span>
+<span class="sd">            sage: m=Matrix([[1,2],[0,1]])</span>
+<span class="sd">            sage: s2=m*s</span>
+<span class="sd">            sage: TestSuite(s2).run(skip=&#39;_test_pickling&#39;)</span>
+<span class="sd">            sage: s2.polygon(0)</span>
+<span class="sd">            Polygon: (0, 0), (1, 0), (3, 1), (2, 1)</span>
+
+<span class="sd">        Testing multiplication by a matrix with negative determinant::</span>
+
+<span class="sd">            sage: from flatsurf import *</span>
+<span class="sd">            sage: ds1 = dilation_surfaces.genus_two_square(1/2, 1/3, 1/4, 1/5)</span>
+<span class="sd">            sage: ds1.polygon(0)</span>
+<span class="sd">            Polygon: (0, 0), (1/2, 0), (1, 1/3), (1, 1), (3/4, 1), (0, 4/5)</span>
+<span class="sd">            sage: m = matrix(QQ, [[0, 1], [1, 0]]) # maps (x,y) to (y, x)</span>
+<span class="sd">            sage: ds2 = m*ds1</span>
+<span class="sd">            sage: ds2.polygon(0)</span>
+<span class="sd">            Polygon: (0, 0), (4/5, 0), (1, 3/4), (1, 1), (1/3, 1), (0, 1/2)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_Matrix</span><span class="p">(</span><span class="n">matrix</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Only implemented for matrices.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">matrix</span><span class="o">.</span><span class="n">dimensions</span><span class="o">!=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Only implemented for 2x2 matrices.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="n">GL2RImageSurface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">matrix</span><span class="p">))</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+<div class="viewcode-block" id="HalfDilationSurface.apply_matrix"><a class="viewcode-back" href="../../../geometry/half_dilation_surface.html#flatsurf.geometry.half_dilation_surface.HalfDilationSurface.apply_matrix">[docs]</a>    <span class="k">def</span> <span class="nf">apply_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">m</span><span class="p">,</span><span class="n">in_place</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Carry out the GL(2,R) action of m on this surface and return the result.</span>
+<span class="sd">        </span>
+<span class="sd">        If in_place=True, then this is done in place and changes the surface. </span>
+<span class="sd">        This can only be carried out if the surface is finite and mutable.</span>
+<span class="sd">        </span>
+<span class="sd">        If mapping=True, then we return a GL2RMapping between this surface and its image. </span>
+<span class="sd">        In this case in_place must be False.</span>
+<span class="sd">        </span>
+<span class="sd">        If in_place=False, then a copy is made before the deformation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">mapping</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">in_place</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;Can not modify in place and return a mapping.&quot;</span>
+            <span class="k">return</span> <span class="n">GL2RMapping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">in_place</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_finite</span><span class="p">():</span>
+                <span class="kn">from</span> <span class="nn">sage.structure.element</span> <span class="kn">import</span> <span class="n">get_coercion_model</span>
+                <span class="n">cm</span> <span class="o">=</span> <span class="n">get_coercion_model</span><span class="p">()</span>
+                <span class="n">field</span> <span class="o">=</span> <span class="n">cm</span><span class="o">.</span><span class="n">common_parent</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span> <span class="n">m</span><span class="o">.</span><span class="n">base_ring</span><span class="p">())</span>
+                <span class="n">s</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">mutable</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">new_field</span><span class="o">=</span><span class="n">field</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">apply_matrix</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">m</span><span class="o">*</span><span class="bp">self</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Make sure m is in the right state</span>
+            <span class="kn">from</span> <span class="nn">sage.matrix.constructor</span> <span class="kn">import</span> <span class="n">Matrix</span>
+            <span class="n">m</span><span class="o">=</span><span class="n">Matrix</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="n">m</span><span class="o">.</span><span class="n">det</span><span class="p">()</span><span class="o">!=</span><span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span><span class="o">.</span><span class="n">zero</span><span class="p">(),</span> <span class="s2">&quot;Can not deform by degenerate matrix.&quot;</span>
+            <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_finite</span><span class="p">(),</span> <span class="s2">&quot;In place GL(2,R) action only works for finite surfaces.&quot;</span>
+            <span class="n">us</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">underlying_surface</span><span class="p">()</span>
+            <span class="k">assert</span> <span class="n">us</span><span class="o">.</span><span class="n">is_mutable</span><span class="p">(),</span> <span class="s2">&quot;In place changes only work for mutable surfaces.&quot;</span>
+            <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_iterator</span><span class="p">():</span>
+                <span class="n">us</span><span class="o">.</span><span class="n">change_polygon</span><span class="p">(</span><span class="n">label</span><span class="p">,</span><span class="n">m</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">m</span><span class="o">.</span><span class="n">det</span><span class="p">()</span><span class="o">&lt;</span><span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span><span class="o">.</span><span class="n">zero</span><span class="p">():</span>
+                <span class="c1"># Polygons were all reversed orientation. Need to redo gluings.</span>
+                
+                <span class="c1"># First pass record new gluings in a dictionary.</span>
+                <span class="n">new_glue</span><span class="o">=</span><span class="p">{}</span>
+                <span class="n">seen_labels</span><span class="o">=</span><span class="nb">set</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">p1</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_iterator</span><span class="p">():</span>
+                    <span class="n">n1</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">p1</span><span class="p">)</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()</span>
+                    <span class="k">for</span> <span class="n">e1</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n1</span><span class="p">):</span>
+                        <span class="n">p2</span><span class="p">,</span><span class="n">e2</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span><span class="n">e1</span><span class="p">)</span>
+                        <span class="n">n2</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">p2</span><span class="p">)</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()</span>
+                        <span class="k">if</span> <span class="n">p2</span> <span class="ow">in</span> <span class="n">seen_labels</span><span class="p">:</span>
+                            <span class="k">pass</span>
+                        <span class="k">elif</span> <span class="n">p1</span><span class="o">==</span><span class="n">p2</span> <span class="ow">and</span> <span class="n">e1</span><span class="o">&gt;</span><span class="n">e2</span><span class="p">:</span>
+                            <span class="k">pass</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">new_glue</span><span class="p">[(</span><span class="n">p1</span><span class="p">,</span> <span class="n">n1</span><span class="o">-</span><span class="mi">1</span><span class="o">-</span><span class="n">e1</span><span class="p">)]</span><span class="o">=</span><span class="p">(</span><span class="n">p2</span><span class="p">,</span> <span class="n">n2</span><span class="o">-</span><span class="mi">1</span><span class="o">-</span><span class="n">e2</span><span class="p">)</span>
+                    <span class="n">seen_labels</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">p1</span><span class="p">)</span>
+                <span class="c1"># Second pass: reassign gluings</span>
+                <span class="k">for</span> <span class="p">(</span><span class="n">p1</span><span class="p">,</span><span class="n">e1</span><span class="p">),(</span><span class="n">p2</span><span class="p">,</span><span class="n">e2</span><span class="p">)</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">new_glue</span><span class="p">):</span>
+                    <span class="n">us</span><span class="o">.</span><span class="n">change_edge_gluing</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span><span class="n">e1</span><span class="p">,</span><span class="n">p2</span><span class="p">,</span><span class="n">e2</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span></div>
+                
+    <span class="k">def</span> <span class="nf">_edge_needs_flip_Linfinity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p1</span><span class="p">,</span> <span class="n">e1</span><span class="p">,</span> <span class="n">p2</span><span class="p">,</span> <span class="n">e2</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check whether the provided edge which bounds two triangles should be flipped</span>
+<span class="sd">        to get closer to the L-infinity Delaunay decomposition.</span>
+
+<span class="sd">        TESTS::</span>
+
+<span class="sd">            sage: from flatsurf import *</span>
+<span class="sd">            sage: s = Surface_list(base_ring=QQ)</span>
+<span class="sd">            sage: t1 = polygons((1,0),(-1,1),(0,-1))</span>
+<span class="sd">            sage: t2 = polygons((0,1),(-1,0),(1,-1))</span>
+<span class="sd">            sage: s.add_polygon(polygons(vertices=[(0,0), (1,0), (0,1)]))</span>
+<span class="sd">            0</span>
+<span class="sd">            sage: s.add_polygon(polygons(vertices=[(1,1), (0,1), (1,0)]))</span>
+<span class="sd">            1</span>
+<span class="sd">            sage: s.change_polygon_gluings(0, [(1,0), (1,1), (1,2)])</span>
+<span class="sd">            sage: s = TranslationSurface(s)</span>
+<span class="sd">            sage: [s._edge_needs_flip_Linfinity(0, i, 1, i) for i in range(3)]</span>
+<span class="sd">            [False, False, False]</span>
+
+<span class="sd">            sage: ss = matrix(2, [1,1,0,1]) * s</span>
+<span class="sd">            sage: [ss._edge_needs_flip_Linfinity(0, i, 1, i) for i in range(3)]</span>
+<span class="sd">            [False, False, False]</span>
+<span class="sd">            sage: ss = matrix(2, [1,0,1,1]) * s</span>
+<span class="sd">            sage: [ss._edge_needs_flip_Linfinity(0, i, 1, i) for i in range(3)]</span>
+<span class="sd">            [False, False, False]</span>
+
+<span class="sd">            sage: ss = matrix(2, [1,2,0,1]) * s</span>
+<span class="sd">            sage: [ss._edge_needs_flip_Linfinity(0, i, 1, i) for i in range(3)]</span>
+<span class="sd">            [False, False, True]</span>
+
+<span class="sd">            sage: ss = matrix(2, [1,0,2,1]) * s</span>
+<span class="sd">            sage: [ss._edge_needs_flip_Linfinity(0, i, 1, i) for i in range(3)]</span>
+<span class="sd">            [True, False, False]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># safety check for now</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">e1</span><span class="p">)</span> <span class="o">==</span> <span class="p">(</span><span class="n">p2</span><span class="p">,</span> <span class="n">e2</span><span class="p">),</span> <span class="s2">&quot;not opposite edges&quot;</span>
+
+        <span class="c1"># triangles</span>
+        <span class="n">poly1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">p1</span><span class="p">)</span>
+        <span class="n">poly2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">p2</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">poly1</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()</span> <span class="o">!=</span> <span class="mi">3</span> <span class="ow">or</span> <span class="n">poly2</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;edge must be adjacent to two triangles&quot;</span><span class="p">)</span>
+
+        <span class="n">edge1</span> <span class="o">=</span> <span class="n">poly1</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="n">e1</span><span class="p">)</span>
+        <span class="n">edge1L</span> <span class="o">=</span> <span class="n">poly1</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="n">e1</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">edge1R</span> <span class="o">=</span> <span class="n">poly1</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="n">e1</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">edge2</span> <span class="o">=</span> <span class="n">poly2</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="n">e2</span><span class="p">)</span>
+        <span class="n">edge2L</span> <span class="o">=</span> <span class="n">poly2</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="n">e2</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">edge2R</span> <span class="o">=</span> <span class="n">poly2</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="n">e2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">sim</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_transformation</span><span class="p">(</span><span class="n">p2</span><span class="p">,</span> <span class="n">e2</span><span class="p">)</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">derivative</span><span class="p">()</span>   <span class="c1"># matrix carrying p2 to p1</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">m</span><span class="o">.</span><span class="n">is_one</span><span class="p">():</span>
+            <span class="n">edge2</span> <span class="o">=</span> <span class="n">m</span> <span class="o">*</span> <span class="n">edge2</span>
+            <span class="n">edge2L</span> <span class="o">=</span> <span class="n">m</span> <span class="o">*</span> <span class="n">edge2L</span>
+            <span class="n">edge2R</span> <span class="o">=</span> <span class="n">m</span> <span class="o">*</span> <span class="n">edge2R</span>
+
+        <span class="c1"># convexity check of the quadrilateral</span>
+        <span class="kn">from</span> <span class="nn">flatsurf.geometry.polygon</span> <span class="kn">import</span> <span class="n">wedge_product</span>
+        <span class="k">if</span> <span class="n">wedge_product</span><span class="p">(</span><span class="n">edge2L</span><span class="p">,</span> <span class="n">edge1R</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="ow">or</span> \
+           <span class="n">wedge_product</span><span class="p">(</span><span class="n">edge1L</span><span class="p">,</span> <span class="n">edge2R</span><span class="p">)</span> <span class="o">&lt;=</span><span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="c1"># compare the norms</span>
+        <span class="n">new_edge</span> <span class="o">=</span> <span class="n">edge2L</span> <span class="o">+</span> <span class="n">edge1R</span>
+        <span class="n">n1</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">edge1</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">abs</span><span class="p">(</span><span class="n">edge1</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">new_edge</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">abs</span><span class="p">(</span><span class="n">new_edge</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="k">return</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="n">n1</span>
+
+<div class="viewcode-block" id="HalfDilationSurface.l_infinity_delaunay_triangulation"><a class="viewcode-back" href="../../../geometry/half_dilation_surface.html#flatsurf.geometry.half_dilation_surface.HalfDilationSurface.l_infinity_delaunay_triangulation">[docs]</a>    <span class="k">def</span> <span class="nf">l_infinity_delaunay_triangulation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triangulated</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a L-infinity Delaunay triangulation of a surface, or make some</span>
+<span class="sd">        triangle flips to get closer to the Delaunay decomposition.</span>
+
+<span class="sd">        INPUT:</span>
+
+<span class="sd">        - ``triangulated`` -- optional (boolean, default ``False``) If true, the</span>
+<span class="sd">          algorithm assumes the surface is already triangulated. It does this</span>
+<span class="sd">          without verification.</span>
+
+<span class="sd">        - ``in_place`` -- optional (boolean, default ``False``) If true, the</span>
+<span class="sd">          triangulating and the triangle flips are done in place. Otherwise, a</span>
+<span class="sd">          mutable copy of the surface is made.</span>
+
+<span class="sd">        - ``limit`` -- optional (positive integer) If provided, then at most ``limit``</span>
+<span class="sd">            many diagonal flips will be done.</span>
+
+<span class="sd">        - ``direction`` -- optional (vector). Used to determine labels when a</span>
+<span class="sd">          pair of triangles is flipped. Each triangle has a unique separatrix</span>
+<span class="sd">          which points in the provided direction or its negation. As such a</span>
+<span class="sd">          vector determines a sign for each triangle.  A pair of adjacent</span>
+<span class="sd">          triangles have opposite signs. Labels are chosen so that this sign is</span>
+<span class="sd">          preserved (as a function of labels).</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf import *</span>
+<span class="sd">            sage: s0 = translation_surfaces.veech_double_n_gon(5)</span>
+<span class="sd">            sage: field = s0.base_ring()</span>
+<span class="sd">            sage: a = field.gen()</span>
+<span class="sd">            sage: m = matrix(field, 2, [2,a,1,1])</span>
+
+<span class="sd">            sage: s = m*s0</span>
+<span class="sd">            sage: s = s.l_infinity_delaunay_triangulation()</span>
+<span class="sd">            sage: TestSuite(s).run()</span>
+
+<span class="sd">            sage: s = (m**2)*s0</span>
+<span class="sd">            sage: s = s.l_infinity_delaunay_triangulation()</span>
+<span class="sd">            sage: TestSuite(s).run()</span>
+
+<span class="sd">            sage: s = (m**3)*s0</span>
+<span class="sd">            sage: s = s.l_infinity_delaunay_triangulation()</span>
+<span class="sd">            sage: TestSuite(s).run()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_finite</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;no L-infinity Delaunay implemented for infinite surfaces&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">triangulated</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">in_place</span><span class="p">:</span>
+                <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface</span> <span class="kn">import</span> <span class="n">Surface_dict</span>
+                <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="n">Surface_dict</span><span class="p">(</span><span class="n">surface</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span><span class="n">mutable</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface</span> <span class="kn">import</span> <span class="n">Surface_list</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="n">Surface_list</span><span class="p">(</span><span class="n">surface</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">triangulate</span><span class="p">(</span><span class="n">in_place</span><span class="o">=</span><span class="n">in_place</span><span class="p">),</span><span class="n">mutable</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">direction</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">base_ring</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span>
+            <span class="n">direction</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vector_space</span><span class="p">()(</span> <span class="p">(</span><span class="n">base_ring</span><span class="o">.</span><span class="n">zero</span><span class="p">(),</span> <span class="n">base_ring</span><span class="o">.</span><span class="n">one</span><span class="p">())</span> <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="ow">not</span> <span class="n">direction</span><span class="o">.</span><span class="n">is_zero</span><span class="p">()</span>
+
+        <span class="n">triangles</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">label_iterator</span><span class="p">())</span>
+        <span class="k">if</span> <span class="n">limit</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">limit</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">limit</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">limit</span><span class="p">)</span>
+        <span class="k">while</span> <span class="n">triangles</span> <span class="ow">and</span> <span class="n">limit</span><span class="p">:</span>
+            <span class="n">p1</span> <span class="o">=</span> <span class="n">triangles</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">e1</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+                <span class="n">p2</span><span class="p">,</span> <span class="n">e2</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">e1</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">_edge_needs_flip_Linfinity</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">e1</span><span class="p">,</span> <span class="n">p2</span><span class="p">,</span> <span class="n">e2</span><span class="p">):</span>
+                    <span class="n">s</span><span class="o">.</span><span class="n">triangle_flip</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">e1</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="n">direction</span><span class="p">)</span>
+                    <span class="n">triangles</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">p1</span><span class="p">)</span>
+                    <span class="n">triangles</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">p2</span><span class="p">)</span>
+                    <span class="n">limit</span> <span class="o">-=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">s</span></div></div>
+
+<div class="viewcode-block" id="GL2RImageSurface"><a class="viewcode-back" href="../../../geometry/half_dilation_surface.html#flatsurf.geometry.half_dilation_surface.GL2RImageSurface">[docs]</a><span class="k">class</span> <span class="nc">GL2RImageSurface</span><span class="p">(</span><span class="n">Surface</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is a lazy implementation of the SL(2,R) image of a translation surface.</span>
+
+<span class="sd">    EXAMPLE::</span>
+
+<span class="sd">        sage: import flatsurf</span>
+<span class="sd">        sage: s=flatsurf.translation_surfaces.octagon_and_squares()</span>
+<span class="sd">        sage: r=matrix(ZZ,[[0,1],[1,0]])</span>
+<span class="sd">        sage: ss=r*s</span>
+<span class="sd">        sage: TestSuite(ss).run()</span>
+<span class="sd">        sage: s.canonicalize()==ss.canonicalize()</span>
+<span class="sd">        True</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">surface</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">ring</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="n">surface</span><span class="o">.</span><span class="n">is_mutable</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">surface</span><span class="o">.</span><span class="n">is_finite</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">=</span><span class="n">surface</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Can not apply matrix to mutable infinite surface.&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">=</span><span class="n">surface</span>
+
+        <span class="n">det</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">determinant</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">det</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_det_sign</span><span class="o">=</span><span class="mi">1</span>
+        <span class="k">elif</span> <span class="n">det</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_det_sign</span><span class="o">=-</span><span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Can not apply matrix with zero determinant to surface.&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_m</span><span class="o">=</span><span class="n">m</span>
+
+        <span class="k">if</span> <span class="n">ring</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">m</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">base_ring</span><span class="p">():</span>
+                <span class="n">base_ring</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="kn">from</span> <span class="nn">sage.structure.element</span> <span class="kn">import</span> <span class="n">get_coercion_model</span>
+                <span class="n">cm</span> <span class="o">=</span> <span class="n">get_coercion_model</span><span class="p">()</span>
+                <span class="n">base_ring</span> <span class="o">=</span> <span class="n">cm</span><span class="o">.</span><span class="n">common_parent</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">base_ring</span><span class="p">())</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">base_ring</span><span class="o">=</span><span class="n">ring</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_P</span> <span class="o">=</span> <span class="n">ConvexPolygons</span><span class="p">(</span><span class="n">base_ring</span><span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">base_ring</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">base_label</span><span class="p">(),</span> <span class="n">finite</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">is_finite</span><span class="p">(),</span> <span class="n">mutable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<div class="viewcode-block" id="GL2RImageSurface.polygon"><a class="viewcode-back" href="../../../geometry/half_dilation_surface.html#flatsurf.geometry.half_dilation_surface.GL2RImageSurface.polygon">[docs]</a>    <span class="k">def</span> <span class="nf">polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lab</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_det_sign</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">lab</span><span class="p">)</span>
+            <span class="n">edges</span> <span class="o">=</span> <span class="p">[</span> <span class="bp">self</span><span class="o">.</span><span class="n">_m</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">num_edges</span><span class="p">())]</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_P</span><span class="p">(</span><span class="n">edges</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">lab</span><span class="p">)</span>
+            <span class="n">edges</span> <span class="o">=</span> <span class="p">[</span> <span class="bp">self</span><span class="o">.</span><span class="n">_m</span> <span class="o">*</span> <span class="p">(</span><span class="o">-</span><span class="n">p</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="n">e</span><span class="p">))</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)]</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_P</span><span class="p">(</span><span class="n">edges</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GL2RImageSurface.opposite_edge"><a class="viewcode-back" href="../../../geometry/half_dilation_surface.html#flatsurf.geometry.half_dilation_surface.GL2RImageSurface.opposite_edge">[docs]</a>    <span class="k">def</span> <span class="nf">opposite_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_det_sign</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">p</span><span class="p">,</span><span class="n">e</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">polygon</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+            <span class="n">pp</span><span class="p">,</span><span class="n">ee</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">p</span><span class="p">,</span><span class="n">polygon</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()</span><span class="o">-</span><span class="mi">1</span><span class="o">-</span><span class="n">e</span><span class="p">)</span>
+            <span class="n">polygon2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">pp</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">pp</span><span class="p">,</span><span class="n">polygon2</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()</span><span class="o">-</span><span class="mi">1</span><span class="o">-</span><span class="n">ee</span></div></div>
+
+<div class="viewcode-block" id="GL2RMapping"><a class="viewcode-back" href="../../../geometry/half_dilation_surface.html#flatsurf.geometry.half_dilation_surface.GL2RMapping">[docs]</a><span class="k">class</span> <span class="nc">GL2RMapping</span><span class="p">(</span><span class="n">SurfaceMapping</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class pushes a surface forward under a matrix.</span>
+<span class="sd">    </span>
+<span class="sd">    Note that for matrices of negative determinant we need to relabel edges (because</span>
+<span class="sd">    edges must have a counterclockwise cyclic order). For each n-gon in the surface,</span>
+<span class="sd">    we relabel edges according to the involution e mapsto n-1-e.</span>
+
+<span class="sd">    EXAMPLE::</span>
+
+<span class="sd">        sage: from flatsurf import *</span>
+<span class="sd">        sage: s=translation_surfaces.veech_2n_gon(4)</span>
+<span class="sd">        sage: from flatsurf.geometry.half_dilation_surface import GL2RMapping</span>
+<span class="sd">        sage: mat=Matrix([[2,1],[1,1]])</span>
+<span class="sd">        sage: m=GL2RMapping(s,mat)</span>
+<span class="sd">        sage: TestSuite(m.codomain()).run()</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">ring</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Hit the surface s with the 2x2 matrix m which should have positive determinant.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">codomain</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="n">GL2RImageSurface</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="n">m</span><span class="p">,</span><span class="n">ring</span> <span class="o">=</span> <span class="n">ring</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_m</span><span class="o">=</span><span class="n">m</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_im</span><span class="o">=~</span><span class="n">m</span>
+        <span class="n">SurfaceMapping</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">codomain</span><span class="p">)</span>
+
+<div class="viewcode-block" id="GL2RMapping.push_vector_forward"><a class="viewcode-back" href="../../../geometry/half_dilation_surface.html#flatsurf.geometry.half_dilation_surface.GL2RMapping.push_vector_forward">[docs]</a>    <span class="k">def</span> <span class="nf">push_vector_forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">tangent_vector</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Applies the mapping to the provided vector.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">codomain</span><span class="p">()</span><span class="o">.</span><span class="n">tangent_vector</span><span class="p">(</span>
+                <span class="n">tangent_vector</span><span class="o">.</span><span class="n">polygon_label</span><span class="p">(),</span> \
+                <span class="bp">self</span><span class="o">.</span><span class="n">_m</span><span class="o">*</span><span class="n">tangent_vector</span><span class="o">.</span><span class="n">point</span><span class="p">(),</span> \
+                <span class="bp">self</span><span class="o">.</span><span class="n">_m</span><span class="o">*</span><span class="n">tangent_vector</span><span class="o">.</span><span class="n">vector</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="GL2RMapping.pull_vector_back"><a class="viewcode-back" href="../../../geometry/half_dilation_surface.html#flatsurf.geometry.half_dilation_surface.GL2RMapping.pull_vector_back">[docs]</a>    <span class="k">def</span> <span class="nf">pull_vector_back</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">tangent_vector</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Applies the inverse of the mapping to the provided vector.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">domain</span><span class="p">()</span><span class="o">.</span><span class="n">tangent_vector</span><span class="p">(</span>
+                <span class="n">tangent_vector</span><span class="o">.</span><span class="n">polygon_label</span><span class="p">(),</span> \
+                <span class="bp">self</span><span class="o">.</span><span class="n">_im</span><span class="o">*</span><span class="n">tangent_vector</span><span class="o">.</span><span class="n">point</span><span class="p">(),</span> \
+                <span class="bp">self</span><span class="o">.</span><span class="n">_im</span><span class="o">*</span><span class="n">tangent_vector</span><span class="o">.</span><span class="n">vector</span><span class="p">())</span></div></div>
+</pre></div>
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2016-2022, the sage-flatsurf authors
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </div>
+</div><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/scripts/furo.js"></script>
+    </body>
+</html>

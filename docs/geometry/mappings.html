@@ -1,0 +1,795 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="matrix_2x2" href="matrix_2x2.html" /><link rel="prev" title="l_infinity_delaunay_cells" href="l_infinity_delaunay_cells.html" />
+
+    <!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
+        <title>mappings - sage-flatsurf 0.4.7 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    <link rel="stylesheet" type="text/css" href="https://doc.sagemath.org/html/en/reference/_static/custom-furo.css" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  --color-brand-primary: #0f0fff;
+  --color-brand-content: #0f0fff;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #272822;
+  --color-code-foreground: #f8f8f2;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #272822;
+  --color-code-foreground: #f8f8f2;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">sage-flatsurf 0.4.7 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo only-light" src="../_static/logo.svg" alt="Light Logo"/>
+    <img class="sidebar-logo only-dark" src="../_static/logo.svg" alt="Dark Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">sage-flatsurf 0.4.7 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul>
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installing sage-flatsurf</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html">The Developer’s Guide for sage-flatsurf</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../examples/defining_surfaces.html">Defining Surfaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/graphics_configuration.html">Graphics Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/linear_action_and_delaunay.html">The GL(2,R) Action, the Veech Group, Delaunay Decomposition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/rel_deformations.html">Relative Period Deformations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/saddle_connections.html">Working with Saddle Connections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/apisa_wright.html">Exploring Orbit Closures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/siegel_veech.html">Siegel-Veech Constants</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/straight_line_flow.html">Straight-Line Flow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/warwick-2017.html">Notes from the Warwick EPSRC Symposium on “Computation in geometric topology”</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/boshernitzan_conjecture.html">Boshernitzan’s Conjectures</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../geometry.html">The flatsurf.geometry Package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="chamanara.html"><code class="docutils literal notranslate"><span class="pre">chamanara</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="circle.html"><code class="docutils literal notranslate"><span class="pre">circle</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cone_surface.html"><code class="docutils literal notranslate"><span class="pre">cone_surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="delaunay.html"><code class="docutils literal notranslate"><span class="pre">delaunay</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="dilation_surface.html"><code class="docutils literal notranslate"><span class="pre">dilation_surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="finitely_generated_matrix_group.html"><code class="docutils literal notranslate"><span class="pre">finitely_generated_matrix_group</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="fundamental_group.html"><code class="docutils literal notranslate"><span class="pre">fundamental_group</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="gl2r_orbit_closure.html"><code class="docutils literal notranslate"><span class="pre">gl2r_orbit_closure</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="half_dilation_surface.html"><code class="docutils literal notranslate"><span class="pre">half_dilation_surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="half_translation_surface.html"><code class="docutils literal notranslate"><span class="pre">half_translation_surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="interval_exchange_transformation.html"><code class="docutils literal notranslate"><span class="pre">interval_exchange_transformation</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="l_infinity_delaunay_cells.html"><code class="docutils literal notranslate"><span class="pre">l_infinity_delaunay_cells</span></code></a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">mappings</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="matrix_2x2.html"><code class="docutils literal notranslate"><span class="pre">matrix_2x2</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="mega_wollmilchsau.html"><code class="docutils literal notranslate"><span class="pre">mega_wollmilchsau</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="minimal_cover.html"><code class="docutils literal notranslate"><span class="pre">minimal_cover</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="polygon.html"><code class="docutils literal notranslate"><span class="pre">polygon</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyhedra.html"><code class="docutils literal notranslate"><span class="pre">polyhedra</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyflatsurf_conversion.html"><code class="docutils literal notranslate"><span class="pre">pyflatsurf_conversion</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="rational_cone_surface.html"><code class="docutils literal notranslate"><span class="pre">rational_cone_surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="rational_similarity_surface.html"><code class="docutils literal notranslate"><span class="pre">rational_similarity_surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="relative_homology.html"><code class="docutils literal notranslate"><span class="pre">relative_homology</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="similarity.html"><code class="docutils literal notranslate"><span class="pre">similarity</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="similarity_surface_generators.html"><code class="docutils literal notranslate"><span class="pre">similarity_surface_generators</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="similarity_surface.html"><code class="docutils literal notranslate"><span class="pre">similarity_surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="straight_line_trajectory.html"><code class="docutils literal notranslate"><span class="pre">straight_line_trajectory</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="subfield.html"><code class="docutils literal notranslate"><span class="pre">subfield</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="surface_objects.html"><code class="docutils literal notranslate"><span class="pre">surface_objects</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="surface.html"><code class="docutils literal notranslate"><span class="pre">surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tangent_bundle.html"><code class="docutils literal notranslate"><span class="pre">tangent_bundle</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="thurston_veech.html"><code class="docutils literal notranslate"><span class="pre">thurston_veech</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="translation_surface.html"><code class="docutils literal notranslate"><span class="pre">translation_surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="xml.html"><code class="docutils literal notranslate"><span class="pre">xml</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../graphical.html">The flatsurf.graphical Package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../graphical/polygon.html"><code class="docutils literal notranslate"><span class="pre">polygon</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../graphical/straight_line_trajectory.html"><code class="docutils literal notranslate"><span class="pre">straight_line_trajectory</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../graphical/surface_point.html"><code class="docutils literal notranslate"><span class="pre">surface_point</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../graphical/surface.html"><code class="docutils literal notranslate"><span class="pre">surface</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <section id="module-flatsurf.geometry.mappings">
+<span id="mappings"></span><h1><code class="docutils literal notranslate"><span class="pre">mappings</span></code><a class="headerlink" href="#module-flatsurf.geometry.mappings" title="Permalink to this heading">#</a></h1>
+<p>Mappings between translation surfaces.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="flatsurf.geometry.mappings.CanonicalizePolygonsMapping">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.mappings.</span></span><span class="sig-name descname"><span class="pre">CanonicalizePolygonsMapping</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/mappings.html#CanonicalizePolygonsMapping"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.mappings.CanonicalizePolygonsMapping" title="Permalink to this definition">#</a></dt>
+<dd><p>This is a mapping to a surface with the polygon vertices canonically determined.
+A canonical labeling is when the canonocal_first_vertex is the zero vertex.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.mappings.CanonicalizePolygonsMapping.pull_vector_back">
+<span class="sig-name descname"><span class="pre">pull_vector_back</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tangent_vector</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/mappings.html#CanonicalizePolygonsMapping.pull_vector_back"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.mappings.CanonicalizePolygonsMapping.pull_vector_back" title="Permalink to this definition">#</a></dt>
+<dd><p>Applies the pullback mapping to the provided vector.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.mappings.CanonicalizePolygonsMapping.push_vector_forward">
+<span class="sig-name descname"><span class="pre">push_vector_forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tangent_vector</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/mappings.html#CanonicalizePolygonsMapping.push_vector_forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.mappings.CanonicalizePolygonsMapping.push_vector_forward" title="Permalink to this definition">#</a></dt>
+<dd><p>Applies the mapping to the provided vector.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="flatsurf.geometry.mappings.IdentityMapping">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.mappings.</span></span><span class="sig-name descname"><span class="pre">IdentityMapping</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">domain</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">codomain</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/mappings.html#IdentityMapping"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.mappings.IdentityMapping" title="Permalink to this definition">#</a></dt>
+<dd><p>Construct an identity map between two “equal” surfaces.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.mappings.IdentityMapping.pull_vector_back">
+<span class="sig-name descname"><span class="pre">pull_vector_back</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tangent_vector</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/mappings.html#IdentityMapping.pull_vector_back"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.mappings.IdentityMapping.pull_vector_back" title="Permalink to this definition">#</a></dt>
+<dd><p>Applies the pullback mapping to the provided vector.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.mappings.IdentityMapping.push_vector_forward">
+<span class="sig-name descname"><span class="pre">push_vector_forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tangent_vector</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/mappings.html#IdentityMapping.push_vector_forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.mappings.IdentityMapping.push_vector_forward" title="Permalink to this definition">#</a></dt>
+<dd><p>Applies the mapping to the provided vector.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="flatsurf.geometry.mappings.MatrixListDeformedSurface">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.mappings.</span></span><span class="sig-name descname"><span class="pre">MatrixListDeformedSurface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">surface</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">matrix_function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ring</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/mappings.html#MatrixListDeformedSurface"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.mappings.MatrixListDeformedSurface" title="Permalink to this definition">#</a></dt>
+<dd><p>Apply a different matrix to each polygon in the surface. 
+Here matrix_function is a python function mapping labels to 2x2 matrices with positive determinant.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.mappings.MatrixListDeformedSurface.base_label">
+<span class="sig-name descname"><span class="pre">base_label</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/mappings.html#MatrixListDeformedSurface.base_label"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.mappings.MatrixListDeformedSurface.base_label" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the label of a special chosen polygon in the surface.</p>
+<p>When no specific choice was made with <code class="xref py py-meth docutils literal notranslate"><span class="pre">set_base_label()</span></code>, this
+might just be the initial polygon, i.e., the one that was first added
+in the construction of this surface.</p>
+<p>This label is for example used as the starting position when walking
+the surface in a canonical order with <code class="xref py py-meth docutils literal notranslate"><span class="pre">walker()</span></code>.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">import</span> <span class="nn">flatsurf</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">G</span> <span class="o">=</span> <span class="n">SymmetricGroup</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">flatsurf</span><span class="o">.</span><span class="n">translation_surfaces</span><span class="o">.</span><span class="n">origami</span><span class="p">(</span><span class="n">G</span><span class="p">(</span><span class="s1">&#39;(1,2,3,4)&#39;</span><span class="p">),</span> <span class="n">G</span><span class="p">(</span><span class="s1">&#39;(1,4,2,3)&#39;</span><span class="p">))</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">base_label</span><span class="p">()</span>
+<span class="mi">1</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.mappings.MatrixListDeformedSurface.base_ring">
+<span class="sig-name descname"><span class="pre">base_ring</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/mappings.html#MatrixListDeformedSurface.base_ring"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.mappings.MatrixListDeformedSurface.base_ring" title="Permalink to this definition">#</a></dt>
+<dd><p>The field on which the coordinates of <code class="docutils literal notranslate"><span class="pre">self</span></code> live.</p>
+<p>This method must be overridden in subclasses!</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.mappings.MatrixListDeformedSurface.is_finite">
+<span class="sig-name descname"><span class="pre">is_finite</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/mappings.html#MatrixListDeformedSurface.is_finite"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.mappings.MatrixListDeformedSurface.is_finite" title="Permalink to this definition">#</a></dt>
+<dd><p>Return whether or not the surface is finite.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.mappings.MatrixListDeformedSurface.opposite_edge">
+<span class="sig-name descname"><span class="pre">opposite_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/mappings.html#MatrixListDeformedSurface.opposite_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.mappings.MatrixListDeformedSurface.opposite_edge" title="Permalink to this definition">#</a></dt>
+<dd><p>Given the label <code class="docutils literal notranslate"><span class="pre">l</span></code> of a polygon and an edge <code class="docutils literal notranslate"><span class="pre">e</span></code> in that polygon
+returns the pair (<code class="docutils literal notranslate"><span class="pre">ll</span></code>, <code class="docutils literal notranslate"><span class="pre">ee</span></code>) to which this edge is glued.</p>
+<p>This method must be overridden in subclasses.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.mappings.MatrixListDeformedSurface.polygon">
+<span class="sig-name descname"><span class="pre">polygon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lab</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/mappings.html#MatrixListDeformedSurface.polygon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.mappings.MatrixListDeformedSurface.polygon" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the polygon with the provided label.</p>
+<p>This method must be overridden in subclasses.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="flatsurf.geometry.mappings.MatrixListDeformedSurfaceMapping">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.mappings.</span></span><span class="sig-name descname"><span class="pre">MatrixListDeformedSurfaceMapping</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">matrix_function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ring</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/mappings.html#MatrixListDeformedSurfaceMapping"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.mappings.MatrixListDeformedSurfaceMapping" title="Permalink to this definition">#</a></dt>
+<dd><p>This mapping applies a possibly different linear matrix to each polygon.
+The matrix is determined by the matrix_function which should be a python
+object.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.mappings.MatrixListDeformedSurfaceMapping.pull_vector_back">
+<span class="sig-name descname"><span class="pre">pull_vector_back</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tangent_vector</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/mappings.html#MatrixListDeformedSurfaceMapping.pull_vector_back"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.mappings.MatrixListDeformedSurfaceMapping.pull_vector_back" title="Permalink to this definition">#</a></dt>
+<dd><p>Applies the inverse of the mapping to the provided vector.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.mappings.MatrixListDeformedSurfaceMapping.push_vector_forward">
+<span class="sig-name descname"><span class="pre">push_vector_forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tangent_vector</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/mappings.html#MatrixListDeformedSurfaceMapping.push_vector_forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.mappings.MatrixListDeformedSurfaceMapping.push_vector_forward" title="Permalink to this definition">#</a></dt>
+<dd><p>Applies the mapping to the provided vector.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="flatsurf.geometry.mappings.ReindexMapping">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.mappings.</span></span><span class="sig-name descname"><span class="pre">ReindexMapping</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relabler</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_base_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/mappings.html#ReindexMapping"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.mappings.ReindexMapping" title="Permalink to this definition">#</a></dt>
+<dd><p>Apply a dictionary to relabel the polygons.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.mappings.ReindexMapping.pull_vector_back">
+<span class="sig-name descname"><span class="pre">pull_vector_back</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tangent_vector</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/mappings.html#ReindexMapping.pull_vector_back"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.mappings.ReindexMapping.pull_vector_back" title="Permalink to this definition">#</a></dt>
+<dd><p>Applies the pullback mapping to the provided vector.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.mappings.ReindexMapping.push_vector_forward">
+<span class="sig-name descname"><span class="pre">push_vector_forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tangent_vector</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/mappings.html#ReindexMapping.push_vector_forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.mappings.ReindexMapping.push_vector_forward" title="Permalink to this definition">#</a></dt>
+<dd><p>Applies the mapping to the provided vector.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="flatsurf.geometry.mappings.SimilarityJoinPolygonsMapping">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.mappings.</span></span><span class="sig-name descname"><span class="pre">SimilarityJoinPolygonsMapping</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/mappings.html#SimilarityJoinPolygonsMapping"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.mappings.SimilarityJoinPolygonsMapping" title="Permalink to this definition">#</a></dt>
+<dd><p>Return a SurfaceMapping joining two polygons together along the edge provided to the constructor.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface</span> <span class="kn">import</span> <span class="n">Surface_list</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.translation_surface</span> <span class="kn">import</span> <span class="n">TranslationSurface</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.polygon</span> <span class="kn">import</span> <span class="n">ConvexPolygons</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">P</span> <span class="o">=</span> <span class="n">ConvexPolygons</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">s0</span><span class="o">=</span><span class="n">Surface_list</span><span class="p">(</span><span class="n">base_ring</span><span class="o">=</span><span class="n">QQ</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">s0</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span><span class="n">P</span><span class="p">([(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">),(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)]))</span> <span class="c1"># gets label=0</span>
+<span class="mi">0</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">s0</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span><span class="n">P</span><span class="p">([(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">),(</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)]))</span> <span class="c1"># gets label=1</span>
+<span class="mi">1</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">s0</span><span class="o">.</span><span class="n">change_polygon_gluings</span><span class="p">(</span><span class="mi">0</span><span class="p">,[(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)])</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">s0</span><span class="o">.</span><span class="n">set_immutable</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">s</span><span class="o">=</span><span class="n">TranslationSurface</span><span class="p">(</span><span class="n">s0</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.mappings</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">m</span><span class="o">=</span><span class="n">SimilarityJoinPolygonsMapping</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">s2</span><span class="o">=</span><span class="n">m</span><span class="o">.</span><span class="n">codomain</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="k">for</span> <span class="n">label</span><span class="p">,</span><span class="n">polygon</span> <span class="ow">in</span> <span class="n">s2</span><span class="o">.</span><span class="n">label_iterator</span><span class="p">(</span><span class="n">polygons</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="o">....</span><span class="p">:</span>     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Polygon &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot; is &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">polygon</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
+<span class="n">Polygon</span> <span class="mi">0</span> <span class="ow">is</span> <span class="n">Polygon</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span>
+<span class="n">sage</span><span class="p">:</span> <span class="k">for</span> <span class="n">label</span><span class="p">,</span><span class="n">edge</span> <span class="ow">in</span> <span class="n">s2</span><span class="o">.</span><span class="n">edge_iterator</span><span class="p">():</span>
+<span class="o">....</span><span class="p">:</span>     <span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">((</span><span class="n">label</span><span class="p">,</span><span class="n">edge</span><span class="p">))</span><span class="o">+</span><span class="s2">&quot; is glued to &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">s2</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">label</span><span class="p">,</span><span class="n">edge</span><span class="p">))</span><span class="o">+</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
+<span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">is</span> <span class="n">glued</span> <span class="n">to</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span>
+<span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="ow">is</span> <span class="n">glued</span> <span class="n">to</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span><span class="o">.</span>
+<span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="ow">is</span> <span class="n">glued</span> <span class="n">to</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span>
+<span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span> <span class="ow">is</span> <span class="n">glued</span> <span class="n">to</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.mappings.SimilarityJoinPolygonsMapping.glued_vertices">
+<span class="sig-name descname"><span class="pre">glued_vertices</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/mappings.html#SimilarityJoinPolygonsMapping.glued_vertices"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.mappings.SimilarityJoinPolygonsMapping.glued_vertices" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the vertices of the newly glued polygon which bound the diagonal formed by the glue.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.mappings.SimilarityJoinPolygonsMapping.pull_vector_back">
+<span class="sig-name descname"><span class="pre">pull_vector_back</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tangent_vector</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/mappings.html#SimilarityJoinPolygonsMapping.pull_vector_back"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.mappings.SimilarityJoinPolygonsMapping.pull_vector_back" title="Permalink to this definition">#</a></dt>
+<dd><p>Applies the inverse of the mapping to the provided vector.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.mappings.SimilarityJoinPolygonsMapping.push_vector_forward">
+<span class="sig-name descname"><span class="pre">push_vector_forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tangent_vector</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/mappings.html#SimilarityJoinPolygonsMapping.push_vector_forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.mappings.SimilarityJoinPolygonsMapping.push_vector_forward" title="Permalink to this definition">#</a></dt>
+<dd><p>Applies the mapping to the provided vector.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.mappings.SimilarityJoinPolygonsMapping.removed_label">
+<span class="sig-name descname"><span class="pre">removed_label</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/mappings.html#SimilarityJoinPolygonsMapping.removed_label"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.mappings.SimilarityJoinPolygonsMapping.removed_label" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the label that was removed in the joining process.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="flatsurf.geometry.mappings.SplitPolygonsMapping">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.mappings.</span></span><span class="sig-name descname"><span class="pre">SplitPolygonsMapping</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/mappings.html#SplitPolygonsMapping"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.mappings.SplitPolygonsMapping" title="Permalink to this definition">#</a></dt>
+<dd><p>Class for cutting a polygon along a diagonal.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">s</span><span class="o">=</span><span class="n">translation_surfaces</span><span class="o">.</span><span class="n">veech_2n_gon</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.mappings</span> <span class="kn">import</span> <span class="n">SplitPolygonsMapping</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">m</span> <span class="o">=</span> <span class="n">SplitPolygonsMapping</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">s2</span><span class="o">=</span><span class="n">m</span><span class="o">.</span><span class="n">codomain</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">TestSuite</span><span class="p">(</span><span class="n">s2</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="k">for</span> <span class="n">pair</span> <span class="ow">in</span> <span class="n">s2</span><span class="o">.</span><span class="n">label_iterator</span><span class="p">(</span><span class="n">polygons</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="o">....</span><span class="p">:</span>     <span class="nb">print</span><span class="p">(</span><span class="n">pair</span><span class="p">)</span>
+<span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">Polygon</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">a</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">a</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">a</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">a</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">a</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">a</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">a</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">a</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">a</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">a</span><span class="p">))</span>
+<span class="p">(</span><span class="n">ExtraLabel</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">Polygon</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">a</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">a</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">a</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">a</span><span class="p">))</span>
+<span class="n">sage</span><span class="p">:</span> <span class="k">for</span> <span class="n">glue</span> <span class="ow">in</span> <span class="n">s2</span><span class="o">.</span><span class="n">edge_iterator</span><span class="p">(</span><span class="n">gluings</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="o">....</span><span class="p">:</span>     <span class="nb">print</span><span class="p">(</span><span class="n">glue</span><span class="p">)</span>
+<span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="n">ExtraLabel</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="mi">0</span><span class="p">))</span>
+<span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="n">ExtraLabel</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="mi">1</span><span class="p">))</span>
+<span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="n">ExtraLabel</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="mi">2</span><span class="p">))</span>
+<span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+<span class="p">((</span><span class="n">ExtraLabel</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+<span class="p">((</span><span class="n">ExtraLabel</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<span class="p">((</span><span class="n">ExtraLabel</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.mappings.SplitPolygonsMapping.pull_vector_back">
+<span class="sig-name descname"><span class="pre">pull_vector_back</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tangent_vector</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/mappings.html#SplitPolygonsMapping.pull_vector_back"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.mappings.SplitPolygonsMapping.pull_vector_back" title="Permalink to this definition">#</a></dt>
+<dd><p>Applies the pullback mapping to the provided vector.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.mappings.SplitPolygonsMapping.push_vector_forward">
+<span class="sig-name descname"><span class="pre">push_vector_forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tangent_vector</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/mappings.html#SplitPolygonsMapping.push_vector_forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.mappings.SplitPolygonsMapping.push_vector_forward" title="Permalink to this definition">#</a></dt>
+<dd><p>Applies the mapping to the provided vector.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="flatsurf.geometry.mappings.SurfaceMapping">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.mappings.</span></span><span class="sig-name descname"><span class="pre">SurfaceMapping</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">domain</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">codomain</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/mappings.html#SurfaceMapping"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.mappings.SurfaceMapping" title="Permalink to this definition">#</a></dt>
+<dd><p>Abstract class for any mapping between surfaces.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.mappings.SurfaceMapping.codomain">
+<span class="sig-name descname"><span class="pre">codomain</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/mappings.html#SurfaceMapping.codomain"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.mappings.SurfaceMapping.codomain" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the range of the mapping.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.mappings.SurfaceMapping.domain">
+<span class="sig-name descname"><span class="pre">domain</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/mappings.html#SurfaceMapping.domain"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.mappings.SurfaceMapping.domain" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the domain of the mapping.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.mappings.SurfaceMapping.pull_vector_back">
+<span class="sig-name descname"><span class="pre">pull_vector_back</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tangent_vector</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/mappings.html#SurfaceMapping.pull_vector_back"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.mappings.SurfaceMapping.pull_vector_back" title="Permalink to this definition">#</a></dt>
+<dd><p>Applies the inverse of the mapping to the provided vector.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.mappings.SurfaceMapping.push_vector_forward">
+<span class="sig-name descname"><span class="pre">push_vector_forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tangent_vector</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/mappings.html#SurfaceMapping.push_vector_forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.mappings.SurfaceMapping.push_vector_forward" title="Permalink to this definition">#</a></dt>
+<dd><p>Applies the mapping to the provided vector.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="flatsurf.geometry.mappings.SurfaceMappingComposition">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.mappings.</span></span><span class="sig-name descname"><span class="pre">SurfaceMappingComposition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mapping1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mapping2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/mappings.html#SurfaceMappingComposition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.mappings.SurfaceMappingComposition" title="Permalink to this definition">#</a></dt>
+<dd><p>Composition of two mappings between surfaces.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.mappings.SurfaceMappingComposition.factors">
+<span class="sig-name descname"><span class="pre">factors</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/mappings.html#SurfaceMappingComposition.factors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.mappings.SurfaceMappingComposition.factors" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the two factors of this surface mapping as a pair (f,g),
+where the original map is f o g.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.mappings.SurfaceMappingComposition.pull_vector_back">
+<span class="sig-name descname"><span class="pre">pull_vector_back</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tangent_vector</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/mappings.html#SurfaceMappingComposition.pull_vector_back"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.mappings.SurfaceMappingComposition.pull_vector_back" title="Permalink to this definition">#</a></dt>
+<dd><p>Applies the inverse of the mapping to the provided vector.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.mappings.SurfaceMappingComposition.push_vector_forward">
+<span class="sig-name descname"><span class="pre">push_vector_forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tangent_vector</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/mappings.html#SurfaceMappingComposition.push_vector_forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.mappings.SurfaceMappingComposition.push_vector_forward" title="Permalink to this definition">#</a></dt>
+<dd><p>Applies the mapping to the provided vector.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="flatsurf.geometry.mappings.canonical_first_vertex">
+<span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.mappings.</span></span><span class="sig-name descname"><span class="pre">canonical_first_vertex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">polygon</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/mappings.html#canonical_first_vertex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.mappings.canonical_first_vertex" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the index of the vertex with smallest y-coordinate.
+If two vertices have the same y-coordinate, then the one with least x-coordinate is returned.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="flatsurf.geometry.mappings.canonicalize_translation_surface_mapping">
+<span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.mappings.</span></span><span class="sig-name descname"><span class="pre">canonicalize_translation_surface_mapping</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/mappings.html#canonicalize_translation_surface_mapping"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.mappings.canonicalize_translation_surface_mapping" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the translation surface in a canonical form.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">s</span><span class="o">=</span><span class="n">translation_surfaces</span><span class="o">.</span><span class="n">octagon_and_squares</span><span class="p">()</span><span class="o">.</span><span class="n">canonicalize</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">TestSuite</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">a</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span><span class="o">.</span><span class="n">gen</span><span class="p">()</span>  <span class="c1"># a is the square root of 2.</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.mappings</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">mat</span><span class="o">=</span><span class="n">Matrix</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="o">+</span><span class="n">a</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]])</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.half_dilation_surface</span> <span class="kn">import</span> <span class="n">GL2RMapping</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">m1</span><span class="o">=</span><span class="n">GL2RMapping</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="n">mat</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">m2</span><span class="o">=</span><span class="n">canonicalize_translation_surface_mapping</span><span class="p">(</span><span class="n">m1</span><span class="o">.</span><span class="n">codomain</span><span class="p">())</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">m</span><span class="o">=</span><span class="n">m2</span><span class="o">*</span><span class="n">m1</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">translation_surface_cmp</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">domain</span><span class="p">(),</span><span class="n">m</span><span class="o">.</span><span class="n">codomain</span><span class="p">())</span><span class="o">==</span><span class="mi">0</span>
+<span class="kc">True</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">TestSuite</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">codomain</span><span class="p">())</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">s</span><span class="o">=</span><span class="n">m</span><span class="o">.</span><span class="n">domain</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">v</span><span class="o">=</span><span class="n">s</span><span class="o">.</span><span class="n">tangent_vector</span><span class="p">(</span><span class="mi">0</span><span class="p">,(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">w</span><span class="o">=</span><span class="n">m</span><span class="o">.</span><span class="n">push_vector_forward</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+<span class="n">SimilaritySurfaceTangentVector</span> <span class="ow">in</span> <span class="n">polygon</span> <span class="mi">0</span> <span class="n">based</span> <span class="n">at</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">with</span> <span class="n">vector</span> <span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="flatsurf.geometry.mappings.delaunay_decomposition_mapping">
+<span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.mappings.</span></span><span class="sig-name descname"><span class="pre">delaunay_decomposition_mapping</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/mappings.html#delaunay_decomposition_mapping"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.mappings.delaunay_decomposition_mapping" title="Permalink to this definition">#</a></dt>
+<dd><p>Returns a mapping to a Delaunay decomposition or possibly None if the surface already is Delaunay.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="flatsurf.geometry.mappings.delaunay_triangulation_mapping">
+<span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.mappings.</span></span><span class="sig-name descname"><span class="pre">delaunay_triangulation_mapping</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/mappings.html#delaunay_triangulation_mapping"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.mappings.delaunay_triangulation_mapping" title="Permalink to this definition">#</a></dt>
+<dd><p>Returns a mapping to a Delaunay triangulation or None if the surface already is Delaunay triangulated.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="flatsurf.geometry.mappings.flip_edge_mapping">
+<span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.mappings.</span></span><span class="sig-name descname"><span class="pre">flip_edge_mapping</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/mappings.html#flip_edge_mapping"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.mappings.flip_edge_mapping" title="Permalink to this definition">#</a></dt>
+<dd><p>Return a mapping whose domain is s which flips the provided edge.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="flatsurf.geometry.mappings.my_sgn">
+<span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.mappings.</span></span><span class="sig-name descname"><span class="pre">my_sgn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">val</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/mappings.html#my_sgn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.mappings.my_sgn" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="flatsurf.geometry.mappings.one_delaunay_flip_mapping">
+<span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.mappings.</span></span><span class="sig-name descname"><span class="pre">one_delaunay_flip_mapping</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/mappings.html#one_delaunay_flip_mapping"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.mappings.one_delaunay_flip_mapping" title="Permalink to this definition">#</a></dt>
+<dd><p>Returns one delaunay flip, or none if no flips are needed.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="flatsurf.geometry.mappings.polygon_compare">
+<span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.mappings.</span></span><span class="sig-name descname"><span class="pre">polygon_compare</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">poly1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">poly2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/mappings.html#polygon_compare"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.mappings.polygon_compare" title="Permalink to this definition">#</a></dt>
+<dd><p>Compare two polygons first by area, then by number of sides,
+then by lexigraphical ordering on edge vectors.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="flatsurf.geometry.mappings.subdivide_a_polygon">
+<span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.mappings.</span></span><span class="sig-name descname"><span class="pre">subdivide_a_polygon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/mappings.html#subdivide_a_polygon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.mappings.subdivide_a_polygon" title="Permalink to this definition">#</a></dt>
+<dd><p>Return a SurfaceMapping which cuts one polygon along a diagonal or None if the surface is triangulated.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="flatsurf.geometry.mappings.translation_surface_cmp">
+<span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.mappings.</span></span><span class="sig-name descname"><span class="pre">translation_surface_cmp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/mappings.html#translation_surface_cmp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.mappings.translation_surface_cmp" title="Permalink to this definition">#</a></dt>
+<dd><p>Compare two finite surfaces. 
+The surfaces will be considered equal if and only if there is a translation automorphism
+respecting the polygons and the base_labels.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="flatsurf.geometry.mappings.triangulation_mapping">
+<span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.mappings.</span></span><span class="sig-name descname"><span class="pre">triangulation_mapping</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/mappings.html#triangulation_mapping"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.mappings.triangulation_mapping" title="Permalink to this definition">#</a></dt>
+<dd><p>Return a  SurfaceMapping triangulating the provided surface.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">s</span><span class="o">=</span><span class="n">translation_surfaces</span><span class="o">.</span><span class="n">veech_2n_gon</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.mappings</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">m</span><span class="o">=</span><span class="n">triangulation_mapping</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">s2</span><span class="o">=</span><span class="n">m</span><span class="o">.</span><span class="n">codomain</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">TestSuite</span><span class="p">(</span><span class="n">s2</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="k">for</span> <span class="n">label</span><span class="p">,</span><span class="n">polygon</span> <span class="ow">in</span> <span class="n">s2</span><span class="o">.</span><span class="n">label_iterator</span><span class="p">(</span><span class="n">polygons</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="o">....</span><span class="p">:</span>     <span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">polygon</span><span class="p">))</span>
+<span class="n">Polygon</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">a</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">a</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">a</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">a</span><span class="p">)</span>
+<span class="n">Polygon</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">a</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">a</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">a</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">a</span><span class="p">)</span>
+<span class="n">Polygon</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">a</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">a</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">Polygon</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="n">a</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">a</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">a</span><span class="p">)</span>
+<span class="n">Polygon</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="n">a</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">Polygon</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">a</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">a</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">a</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">a</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="matrix_2x2.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title"><code class="docutils literal notranslate"><span class="pre">matrix_2x2</span></code></div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="l_infinity_delaunay_cells.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title"><code class="docutils literal notranslate"><span class="pre">l_infinity_delaunay_cells</span></code></div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2016-2022, the sage-flatsurf authors
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">mappings</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.CanonicalizePolygonsMapping"><code class="docutils literal notranslate"><span class="pre">CanonicalizePolygonsMapping</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.CanonicalizePolygonsMapping.pull_vector_back"><code class="docutils literal notranslate"><span class="pre">CanonicalizePolygonsMapping.pull_vector_back()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.CanonicalizePolygonsMapping.push_vector_forward"><code class="docutils literal notranslate"><span class="pre">CanonicalizePolygonsMapping.push_vector_forward()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.IdentityMapping"><code class="docutils literal notranslate"><span class="pre">IdentityMapping</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.IdentityMapping.pull_vector_back"><code class="docutils literal notranslate"><span class="pre">IdentityMapping.pull_vector_back()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.IdentityMapping.push_vector_forward"><code class="docutils literal notranslate"><span class="pre">IdentityMapping.push_vector_forward()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.MatrixListDeformedSurface"><code class="docutils literal notranslate"><span class="pre">MatrixListDeformedSurface</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.MatrixListDeformedSurface.base_label"><code class="docutils literal notranslate"><span class="pre">MatrixListDeformedSurface.base_label()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.MatrixListDeformedSurface.base_ring"><code class="docutils literal notranslate"><span class="pre">MatrixListDeformedSurface.base_ring()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.MatrixListDeformedSurface.is_finite"><code class="docutils literal notranslate"><span class="pre">MatrixListDeformedSurface.is_finite()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.MatrixListDeformedSurface.opposite_edge"><code class="docutils literal notranslate"><span class="pre">MatrixListDeformedSurface.opposite_edge()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.MatrixListDeformedSurface.polygon"><code class="docutils literal notranslate"><span class="pre">MatrixListDeformedSurface.polygon()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.MatrixListDeformedSurfaceMapping"><code class="docutils literal notranslate"><span class="pre">MatrixListDeformedSurfaceMapping</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.MatrixListDeformedSurfaceMapping.pull_vector_back"><code class="docutils literal notranslate"><span class="pre">MatrixListDeformedSurfaceMapping.pull_vector_back()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.MatrixListDeformedSurfaceMapping.push_vector_forward"><code class="docutils literal notranslate"><span class="pre">MatrixListDeformedSurfaceMapping.push_vector_forward()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.ReindexMapping"><code class="docutils literal notranslate"><span class="pre">ReindexMapping</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.ReindexMapping.pull_vector_back"><code class="docutils literal notranslate"><span class="pre">ReindexMapping.pull_vector_back()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.ReindexMapping.push_vector_forward"><code class="docutils literal notranslate"><span class="pre">ReindexMapping.push_vector_forward()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.SimilarityJoinPolygonsMapping"><code class="docutils literal notranslate"><span class="pre">SimilarityJoinPolygonsMapping</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.SimilarityJoinPolygonsMapping.glued_vertices"><code class="docutils literal notranslate"><span class="pre">SimilarityJoinPolygonsMapping.glued_vertices()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.SimilarityJoinPolygonsMapping.pull_vector_back"><code class="docutils literal notranslate"><span class="pre">SimilarityJoinPolygonsMapping.pull_vector_back()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.SimilarityJoinPolygonsMapping.push_vector_forward"><code class="docutils literal notranslate"><span class="pre">SimilarityJoinPolygonsMapping.push_vector_forward()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.SimilarityJoinPolygonsMapping.removed_label"><code class="docutils literal notranslate"><span class="pre">SimilarityJoinPolygonsMapping.removed_label()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.SplitPolygonsMapping"><code class="docutils literal notranslate"><span class="pre">SplitPolygonsMapping</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.SplitPolygonsMapping.pull_vector_back"><code class="docutils literal notranslate"><span class="pre">SplitPolygonsMapping.pull_vector_back()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.SplitPolygonsMapping.push_vector_forward"><code class="docutils literal notranslate"><span class="pre">SplitPolygonsMapping.push_vector_forward()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.SurfaceMapping"><code class="docutils literal notranslate"><span class="pre">SurfaceMapping</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.SurfaceMapping.codomain"><code class="docutils literal notranslate"><span class="pre">SurfaceMapping.codomain()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.SurfaceMapping.domain"><code class="docutils literal notranslate"><span class="pre">SurfaceMapping.domain()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.SurfaceMapping.pull_vector_back"><code class="docutils literal notranslate"><span class="pre">SurfaceMapping.pull_vector_back()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.SurfaceMapping.push_vector_forward"><code class="docutils literal notranslate"><span class="pre">SurfaceMapping.push_vector_forward()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.SurfaceMappingComposition"><code class="docutils literal notranslate"><span class="pre">SurfaceMappingComposition</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.SurfaceMappingComposition.factors"><code class="docutils literal notranslate"><span class="pre">SurfaceMappingComposition.factors()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.SurfaceMappingComposition.pull_vector_back"><code class="docutils literal notranslate"><span class="pre">SurfaceMappingComposition.pull_vector_back()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.SurfaceMappingComposition.push_vector_forward"><code class="docutils literal notranslate"><span class="pre">SurfaceMappingComposition.push_vector_forward()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.canonical_first_vertex"><code class="docutils literal notranslate"><span class="pre">canonical_first_vertex()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.canonicalize_translation_surface_mapping"><code class="docutils literal notranslate"><span class="pre">canonicalize_translation_surface_mapping()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.delaunay_decomposition_mapping"><code class="docutils literal notranslate"><span class="pre">delaunay_decomposition_mapping()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.delaunay_triangulation_mapping"><code class="docutils literal notranslate"><span class="pre">delaunay_triangulation_mapping()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.flip_edge_mapping"><code class="docutils literal notranslate"><span class="pre">flip_edge_mapping()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.my_sgn"><code class="docutils literal notranslate"><span class="pre">my_sgn()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.one_delaunay_flip_mapping"><code class="docutils literal notranslate"><span class="pre">one_delaunay_flip_mapping()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.polygon_compare"><code class="docutils literal notranslate"><span class="pre">polygon_compare()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.subdivide_a_polygon"><code class="docutils literal notranslate"><span class="pre">subdivide_a_polygon()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.translation_surface_cmp"><code class="docutils literal notranslate"><span class="pre">translation_surface_cmp()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.mappings.triangulation_mapping"><code class="docutils literal notranslate"><span class="pre">triangulation_mapping()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/scripts/furo.js"></script>
+    </body>
+</html>

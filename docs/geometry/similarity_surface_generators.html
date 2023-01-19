@@ -1,0 +1,1204 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="similarity_surface" href="similarity_surface.html" /><link rel="prev" title="similarity" href="similarity.html" />
+
+    <!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
+        <title>similarity_surface_generators - sage-flatsurf 0.4.7 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    <link rel="stylesheet" type="text/css" href="https://doc.sagemath.org/html/en/reference/_static/custom-furo.css" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  --color-brand-primary: #0f0fff;
+  --color-brand-content: #0f0fff;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #272822;
+  --color-code-foreground: #f8f8f2;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #272822;
+  --color-code-foreground: #f8f8f2;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">sage-flatsurf 0.4.7 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo only-light" src="../_static/logo.svg" alt="Light Logo"/>
+    <img class="sidebar-logo only-dark" src="../_static/logo.svg" alt="Dark Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">sage-flatsurf 0.4.7 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul>
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installing sage-flatsurf</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html">The Developer’s Guide for sage-flatsurf</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../examples/defining_surfaces.html">Defining Surfaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/graphics_configuration.html">Graphics Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/linear_action_and_delaunay.html">The GL(2,R) Action, the Veech Group, Delaunay Decomposition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/rel_deformations.html">Relative Period Deformations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/saddle_connections.html">Working with Saddle Connections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/apisa_wright.html">Exploring Orbit Closures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/siegel_veech.html">Siegel-Veech Constants</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/straight_line_flow.html">Straight-Line Flow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/warwick-2017.html">Notes from the Warwick EPSRC Symposium on “Computation in geometric topology”</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/boshernitzan_conjecture.html">Boshernitzan’s Conjectures</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../geometry.html">The flatsurf.geometry Package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="chamanara.html"><code class="docutils literal notranslate"><span class="pre">chamanara</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="circle.html"><code class="docutils literal notranslate"><span class="pre">circle</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cone_surface.html"><code class="docutils literal notranslate"><span class="pre">cone_surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="delaunay.html"><code class="docutils literal notranslate"><span class="pre">delaunay</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="dilation_surface.html"><code class="docutils literal notranslate"><span class="pre">dilation_surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="finitely_generated_matrix_group.html"><code class="docutils literal notranslate"><span class="pre">finitely_generated_matrix_group</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="fundamental_group.html"><code class="docutils literal notranslate"><span class="pre">fundamental_group</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="gl2r_orbit_closure.html"><code class="docutils literal notranslate"><span class="pre">gl2r_orbit_closure</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="half_dilation_surface.html"><code class="docutils literal notranslate"><span class="pre">half_dilation_surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="half_translation_surface.html"><code class="docutils literal notranslate"><span class="pre">half_translation_surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="interval_exchange_transformation.html"><code class="docutils literal notranslate"><span class="pre">interval_exchange_transformation</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="l_infinity_delaunay_cells.html"><code class="docutils literal notranslate"><span class="pre">l_infinity_delaunay_cells</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="mappings.html"><code class="docutils literal notranslate"><span class="pre">mappings</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="matrix_2x2.html"><code class="docutils literal notranslate"><span class="pre">matrix_2x2</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="mega_wollmilchsau.html"><code class="docutils literal notranslate"><span class="pre">mega_wollmilchsau</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="minimal_cover.html"><code class="docutils literal notranslate"><span class="pre">minimal_cover</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="polygon.html"><code class="docutils literal notranslate"><span class="pre">polygon</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyhedra.html"><code class="docutils literal notranslate"><span class="pre">polyhedra</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyflatsurf_conversion.html"><code class="docutils literal notranslate"><span class="pre">pyflatsurf_conversion</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="rational_cone_surface.html"><code class="docutils literal notranslate"><span class="pre">rational_cone_surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="rational_similarity_surface.html"><code class="docutils literal notranslate"><span class="pre">rational_similarity_surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="relative_homology.html"><code class="docutils literal notranslate"><span class="pre">relative_homology</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="similarity.html"><code class="docutils literal notranslate"><span class="pre">similarity</span></code></a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">similarity_surface_generators</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="similarity_surface.html"><code class="docutils literal notranslate"><span class="pre">similarity_surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="straight_line_trajectory.html"><code class="docutils literal notranslate"><span class="pre">straight_line_trajectory</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="subfield.html"><code class="docutils literal notranslate"><span class="pre">subfield</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="surface_objects.html"><code class="docutils literal notranslate"><span class="pre">surface_objects</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="surface.html"><code class="docutils literal notranslate"><span class="pre">surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tangent_bundle.html"><code class="docutils literal notranslate"><span class="pre">tangent_bundle</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="thurston_veech.html"><code class="docutils literal notranslate"><span class="pre">thurston_veech</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="translation_surface.html"><code class="docutils literal notranslate"><span class="pre">translation_surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="xml.html"><code class="docutils literal notranslate"><span class="pre">xml</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../graphical.html">The flatsurf.graphical Package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../graphical/polygon.html"><code class="docutils literal notranslate"><span class="pre">polygon</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../graphical/straight_line_trajectory.html"><code class="docutils literal notranslate"><span class="pre">straight_line_trajectory</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../graphical/surface_point.html"><code class="docutils literal notranslate"><span class="pre">surface_point</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../graphical/surface.html"><code class="docutils literal notranslate"><span class="pre">surface</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <section id="module-flatsurf.geometry.similarity_surface_generators">
+<span id="similarity-surface-generators"></span><h1><code class="docutils literal notranslate"><span class="pre">similarity_surface_generators</span></code><a class="headerlink" href="#module-flatsurf.geometry.similarity_surface_generators" title="Permalink to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="flatsurf.geometry.similarity_surface_generators.DilationSurfaceGenerators">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.similarity_surface_generators.</span></span><span class="sig-name descname"><span class="pre">DilationSurfaceGenerators</span></span><a class="reference internal" href="../_modules/flatsurf/geometry/similarity_surface_generators.html#DilationSurfaceGenerators"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity_surface_generators.DilationSurfaceGenerators" title="Permalink to this definition">#</a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.similarity_surface_generators.DilationSurfaceGenerators.basic_dilation_torus">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">basic_dilation_torus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/similarity_surface_generators.html#DilationSurfaceGenerators.basic_dilation_torus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity_surface_generators.DilationSurfaceGenerators.basic_dilation_torus" title="Permalink to this definition">#</a></dt>
+<dd><p>Return a dilation torus built from a <cite>1 times 1</cite> square and a <cite>a
+times 1</cite> rectangle. Each edge of the square is glued to the opposite
+edge of the rectangle. This results in horizontal edges glued by a
+dilation with a scaling factor of a, and vertical edges being glued by
+translation:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="n">b</span>       <span class="n">a</span>
+  <span class="o">+----+---------+</span>
+  <span class="o">|</span> <span class="mi">0</span>  <span class="o">|</span> <span class="mi">1</span>       <span class="o">|</span>
+<span class="n">c</span> <span class="o">|</span>    <span class="o">|</span>         <span class="o">|</span> <span class="n">c</span>
+  <span class="o">+----+---------+</span>
+    <span class="n">a</span>       <span class="n">b</span>
+</pre></div>
+</div>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">ds</span> <span class="o">=</span> <span class="n">dilation_surfaces</span><span class="o">.</span><span class="n">basic_dilation_torus</span><span class="p">(</span><span class="n">AA</span><span class="p">(</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)))</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">ds</span>
+<span class="n">DilationSurface</span> <span class="n">built</span> <span class="kn">from</span> <span class="mi">2</span> <span class="n">polygons</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">TestSuite</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.similarity_surface_generators.DilationSurfaceGenerators.genus_two_square">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">genus_two_square</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/similarity_surface_generators.html#DilationSurfaceGenerators.genus_two_square"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity_surface_generators.DilationSurfaceGenerators.genus_two_square" title="Permalink to this definition">#</a></dt>
+<dd><p>A genus two dilation surface is returned.</p>
+<p>The unit square is made into an octagon by marking a point on
+each of its edges. Then opposite sides of this octagon are
+glued together by translation. (Since we currently require strictly
+convex polygons, we subdivide the square into a hexagon and two
+triangles as depicted below.) The parameters <code class="docutils literal notranslate"><span class="pre">a</span></code>, <code class="docutils literal notranslate"><span class="pre">b</span></code>, <code class="docutils literal notranslate"><span class="pre">c</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">d</span></code> should be real numbers strictly between zero and one. These
+represent the lengths of an edge of the resulting octagon, as below:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>        <span class="n">c</span>
+  <span class="o">+--+-------+</span>
+<span class="n">d</span> <span class="o">|</span><span class="mi">2</span><span class="o">/</span>        <span class="o">|</span>
+  <span class="o">|/</span>         <span class="o">|</span>
+  <span class="o">+</span>    <span class="mi">0</span>     <span class="o">+</span>
+  <span class="o">|</span>         <span class="o">/|</span>
+  <span class="o">|</span>        <span class="o">/</span><span class="mi">1</span><span class="o">|</span> <span class="n">b</span>
+  <span class="o">+-------+--+</span>
+     <span class="n">a</span>
+</pre></div>
+</div>
+<p>The other edges will have length <cite>1-a</cite>, <cite>1-b</cite>, <cite>1-c</cite>, and <cite>1-d</cite>.
+Dilations used to glue edges will be by factors <cite>c/a</cite>, <cite>d/b</cite>,
+<cite>(1-c)/(1-a)</cite> and <cite>(1-d)/(1-b)</cite>.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">ds</span> <span class="o">=</span> <span class="n">dilation_surfaces</span><span class="o">.</span><span class="n">genus_two_square</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">ds</span>
+<span class="n">DilationSurface</span> <span class="n">built</span> <span class="kn">from</span> <span class="mi">3</span> <span class="n">polygons</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">TestSuite</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="flatsurf.geometry.similarity_surface_generators.EInfinitySurface">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.similarity_surface_generators.</span></span><span class="sig-name descname"><span class="pre">EInfinitySurface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lambda_squared</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/similarity_surface_generators.html#EInfinitySurface"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity_surface_generators.EInfinitySurface" title="Permalink to this definition">#</a></dt>
+<dd><p>The surface based on the <cite>E_infinity</cite> graph.</p>
+<p>The biparite graph is shown below, with edges numbered:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>  <span class="mi">0</span>   <span class="mi">1</span>   <span class="mi">2</span>  <span class="o">-</span><span class="mi">2</span>   <span class="mi">3</span>  <span class="o">-</span><span class="mi">3</span>   <span class="mi">4</span>  <span class="o">-</span><span class="mi">4</span>
+<span class="o">*---</span><span class="n">o</span><span class="o">---*---</span><span class="n">o</span><span class="o">---*---</span><span class="n">o</span><span class="o">---*---</span><span class="n">o</span><span class="o">---*...</span>
+        <span class="o">|</span>
+        <span class="o">|-</span><span class="mi">1</span>
+        <span class="n">o</span>
+</pre></div>
+</div>
+<p>Here, black vertices are colored <code class="docutils literal notranslate"><span class="pre">*</span></code>, and white <code class="docutils literal notranslate"><span class="pre">o</span></code>.
+Black nodes represent vertical cylinders and white nodes
+represent horizontal cylinders.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="flatsurf.geometry.similarity_surface_generators.EInfinitySurface.get_black">
+<span class="sig-name descname"><span class="pre">get_black</span></span><a class="reference internal" href="../_modules/flatsurf/geometry/similarity_surface_generators.html#EInfinitySurface.get_black"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity_surface_generators.EInfinitySurface.get_black" title="Permalink to this definition">#</a></dt>
+<dd><p>File: /usr/share/miniconda3/envs/test/lib/python3.10/site-packages/flatsurf/geometry/similarity_surface_generators.py (starting at line 149)
+Get the weight of the black endpoint of edge n.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="flatsurf.geometry.similarity_surface_generators.EInfinitySurface.get_white">
+<span class="sig-name descname"><span class="pre">get_white</span></span><a class="reference internal" href="../_modules/flatsurf/geometry/similarity_surface_generators.html#EInfinitySurface.get_white"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity_surface_generators.EInfinitySurface.get_white" title="Permalink to this definition">#</a></dt>
+<dd><p>File: /usr/share/miniconda3/envs/test/lib/python3.10/site-packages/flatsurf/geometry/similarity_surface_generators.py (starting at line 133)
+Get the weight of the white endpoint of edge n.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.similarity_surface_generators.EInfinitySurface.opposite_edge">
+<span class="sig-name descname"><span class="pre">opposite_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/similarity_surface_generators.html#EInfinitySurface.opposite_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity_surface_generators.EInfinitySurface.opposite_edge" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the pair <code class="docutils literal notranslate"><span class="pre">(pp,ee)</span></code> to which the edge <code class="docutils literal notranslate"><span class="pre">(p,e)</span></code> is glued to.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.similarity_surface_generators.EInfinitySurface.polygon">
+<span class="sig-name descname"><span class="pre">polygon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lab</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/similarity_surface_generators.html#EInfinitySurface.polygon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity_surface_generators.EInfinitySurface.polygon" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the polygon labeled by <code class="docutils literal notranslate"><span class="pre">lab</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.similarity_surface_generators.EInfinitySurface.polygon_labels">
+<span class="sig-name descname"><span class="pre">polygon_labels</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/similarity_surface_generators.html#EInfinitySurface.polygon_labels"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity_surface_generators.EInfinitySurface.polygon_labels" title="Permalink to this definition">#</a></dt>
+<dd><p>The set of labels used for the polygons.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="flatsurf.geometry.similarity_surface_generators.HalfTranslationSurfaceGenerators">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.similarity_surface_generators.</span></span><span class="sig-name descname"><span class="pre">HalfTranslationSurfaceGenerators</span></span><a class="reference internal" href="../_modules/flatsurf/geometry/similarity_surface_generators.html#HalfTranslationSurfaceGenerators"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity_surface_generators.HalfTranslationSurfaceGenerators" title="Permalink to this definition">#</a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.similarity_surface_generators.HalfTranslationSurfaceGenerators.step_billiard">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">step_billiard</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/similarity_surface_generators.html#HalfTranslationSurfaceGenerators.step_billiard"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity_surface_generators.HalfTranslationSurfaceGenerators.step_billiard" title="Permalink to this definition">#</a></dt>
+<dd><p>Return a (finite) step billiard associated to the given widths <code class="docutils literal notranslate"><span class="pre">w</span></code> and heights <code class="docutils literal notranslate"><span class="pre">h</span></code>.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">half_translation_surfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">half_translation_surfaces</span><span class="o">.</span><span class="n">step_billiard</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="o">/</span><span class="mi">5</span><span class="p">])</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span>
+<span class="n">HalfTranslationSurface</span> <span class="n">built</span> <span class="kn">from</span> <span class="mi">8</span> <span class="n">polygons</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">TestSuite</span><span class="p">(</span><span class="n">S</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="flatsurf.geometry.similarity_surface_generators.SimilaritySurfaceGenerators">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.similarity_surface_generators.</span></span><span class="sig-name descname"><span class="pre">SimilaritySurfaceGenerators</span></span><a class="reference internal" href="../_modules/flatsurf/geometry/similarity_surface_generators.html#SimilaritySurfaceGenerators"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity_surface_generators.SimilaritySurfaceGenerators" title="Permalink to this definition">#</a></dt>
+<dd><p>Examples of similarity surfaces.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.similarity_surface_generators.SimilaritySurfaceGenerators.billiard">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">billiard</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">P</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rational</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/similarity_surface_generators.html#SimilaritySurfaceGenerators.billiard"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity_surface_generators.SimilaritySurfaceGenerators.billiard" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the ConeSurface associated to the billiard in the polygon <code class="docutils literal notranslate"><span class="pre">P</span></code>.</p>
+<p>INPUT:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">P</span></code> - a polygon</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rational</span></code> (boolean, default <code class="docutils literal notranslate"><span class="pre">False</span></code>) - whether to assume that the polygon
+has all its angle rational multiple of pi.</p></li>
+</ul>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">P</span> <span class="o">=</span> <span class="n">polygons</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)])</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.rational_cone_surface</span> <span class="kn">import</span> <span class="n">RationalConeSurface</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">Q</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">billiard</span><span class="p">(</span><span class="n">P</span><span class="p">,</span> <span class="n">rational</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">Q</span>
+<span class="n">RationalConeSurface</span> <span class="n">built</span> <span class="kn">from</span> <span class="mi">2</span> <span class="n">polygons</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">M</span> <span class="o">=</span> <span class="n">Q</span><span class="o">.</span><span class="n">minimal_cover</span><span class="p">(</span><span class="n">cover_type</span><span class="o">=</span><span class="s2">&quot;translation&quot;</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">M</span>
+<span class="n">TranslationSurface</span> <span class="n">built</span> <span class="kn">from</span> <span class="mi">8</span> <span class="n">polygons</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">TestSuite</span><span class="p">(</span><span class="n">M</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>A non-convex examples (L-shape polygon):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">P</span> <span class="o">=</span> <span class="n">polygons</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">)],</span> <span class="n">convex</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">Q</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">billiard</span><span class="p">(</span><span class="n">P</span><span class="p">,</span> <span class="n">rational</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">TestSuite</span><span class="p">(</span><span class="n">Q</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">M</span> <span class="o">=</span> <span class="n">Q</span><span class="o">.</span><span class="n">minimal_cover</span><span class="p">(</span><span class="n">cover_type</span><span class="o">=</span><span class="s2">&quot;translation&quot;</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">TestSuite</span><span class="p">(</span><span class="n">M</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">M</span><span class="o">.</span><span class="n">stratum</span><span class="p">()</span>
+<span class="n">H_2</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="o">^</span><span class="mi">5</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>A quadrilateral from Eskin-McMullen-Mukamel-Wright:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">E</span> <span class="o">=</span> <span class="n">EquiangularPolygons</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">P</span> <span class="o">=</span> <span class="n">E</span><span class="o">.</span><span class="n">an_element</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">billiard</span><span class="p">(</span><span class="n">P</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">TestSuite</span><span class="p">(</span><span class="n">S</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">minimal_cover</span><span class="p">(</span><span class="n">cover_type</span><span class="o">=</span><span class="s2">&quot;translation&quot;</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">TestSuite</span><span class="p">(</span><span class="n">S</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">erase_marked_points</span><span class="p">()</span> <span class="c1"># optional: pyflatsurf</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">TestSuite</span><span class="p">(</span><span class="n">S</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">normalized_coordinates</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">TestSuite</span><span class="p">(</span><span class="n">S</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Unfolding a triangle with non-algebraic lengths:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">E</span> <span class="o">=</span> <span class="n">EquiangularPolygons</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">pyexactreal</span> <span class="kn">import</span> <span class="n">ExactReals</span> <span class="c1"># optional: exactreal</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">R</span> <span class="o">=</span> <span class="n">ExactReals</span><span class="p">(</span><span class="n">E</span><span class="o">.</span><span class="n">base_ring</span><span class="p">())</span> <span class="c1"># optional: exactreal</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">P</span> <span class="o">=</span> <span class="n">E</span><span class="p">(</span><span class="n">R</span><span class="o">.</span><span class="n">random_element</span><span class="p">())</span> <span class="c1"># optional: exactreal</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">billiard</span><span class="p">(</span><span class="n">P</span><span class="p">);</span> <span class="n">S</span> <span class="c1"># optional: exactreal</span>
+<span class="n">ConeSurface</span> <span class="n">built</span> <span class="kn">from</span> <span class="mi">2</span> <span class="n">polygons</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">TestSuite</span><span class="p">(</span><span class="n">S</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span> <span class="c1"># long time (6s), optional: exactreal</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.similarity_surface_generators.SimilaritySurfaceGenerators.example">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">example</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/similarity_surface_generators.html#SimilaritySurfaceGenerators.example"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity_surface_generators.SimilaritySurfaceGenerators.example" title="Permalink to this definition">#</a></dt>
+<dd><p>Construct a SimilaritySurface from a pair of triangles.</p>
+<p>TESTS:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">ex</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">example</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">ex</span>
+<span class="n">SimilaritySurface</span> <span class="n">built</span> <span class="kn">from</span> <span class="mi">2</span> <span class="n">polygons</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">TestSuite</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.similarity_surface_generators.SimilaritySurfaceGenerators.polygon_double">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">polygon_double</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">P</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/similarity_surface_generators.html#SimilaritySurfaceGenerators.polygon_double"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity_surface_generators.SimilaritySurfaceGenerators.polygon_double" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the ConeSurface associated to the billiard in the polygon <code class="docutils literal notranslate"><span class="pre">P</span></code>.
+Differs from billiard(P) only in the graphical display. Here, we display
+the polygons separately.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.similarity_surface_generators.SimilaritySurfaceGenerators.right_angle_triangle">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">right_angle_triangle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/similarity_surface_generators.html#SimilaritySurfaceGenerators.right_angle_triangle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity_surface_generators.SimilaritySurfaceGenerators.right_angle_triangle" title="Permalink to this definition">#</a></dt>
+<dd><p>TESTS:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">R</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">right_angle_triangle</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">R</span>
+<span class="n">ConeSurface</span> <span class="n">built</span> <span class="kn">from</span> <span class="mi">2</span> <span class="n">polygons</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">TestSuite</span><span class="p">(</span><span class="n">R</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.similarity_surface_generators.SimilaritySurfaceGenerators.self_glued_polygon">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">self_glued_polygon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">P</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/similarity_surface_generators.html#SimilaritySurfaceGenerators.self_glued_polygon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity_surface_generators.SimilaritySurfaceGenerators.self_glued_polygon" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the HalfTranslationSurface formed by gluing all edges of P to themselves.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">p</span> <span class="o">=</span> <span class="n">polygons</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">),(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">),(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">3</span><span class="p">))</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">s</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">self_glued_polygon</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">TestSuite</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="flatsurf.geometry.similarity_surface_generators.TFractalSurface">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.similarity_surface_generators.</span></span><span class="sig-name descname"><span class="pre">TFractalSurface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">w</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/similarity_surface_generators.html#TFractalSurface"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity_surface_generators.TFractalSurface" title="Permalink to this definition">#</a></dt>
+<dd><p>The TFractal surface.</p>
+<p>The TFractal surface is a translation surface of finite area built from
+infinitely many polygons. The basic building block is the following polygon:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">w</span><span class="o">/</span><span class="n">r</span>    <span class="n">w</span>     <span class="n">w</span><span class="o">/</span><span class="n">r</span>
+<span class="o">+---+------+---+</span>
+<span class="o">|</span> <span class="mi">1</span> <span class="o">|</span>   <span class="mi">2</span>  <span class="o">|</span> <span class="mi">3</span> <span class="o">|</span> <span class="n">h2</span>
+<span class="o">+---+------+---+</span>
+    <span class="o">|</span>   <span class="mi">0</span>  <span class="o">|</span> <span class="n">h1</span>
+    <span class="o">+------+</span>
+        <span class="n">w</span>
+</pre></div>
+</div>
+<p>where <code class="docutils literal notranslate"><span class="pre">w</span></code>, <code class="docutils literal notranslate"><span class="pre">h1</span></code>, <code class="docutils literal notranslate"><span class="pre">h2</span></code>, <code class="docutils literal notranslate"><span class="pre">r</span></code> are some positive numbers. Default values
+are <code class="docutils literal notranslate"><span class="pre">w=h1=h2=1</span></code> and <code class="docutils literal notranslate"><span class="pre">r=2</span></code>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.similarity_surface_generators.TFractalSurface.opposite_edge">
+<span class="sig-name descname"><span class="pre">opposite_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/similarity_surface_generators.html#TFractalSurface.opposite_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity_surface_generators.TFractalSurface.opposite_edge" title="Permalink to this definition">#</a></dt>
+<dd><p>Labeling of polygons:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">wl</span><span class="p">,</span><span class="mi">0</span>             <span class="n">wr</span><span class="p">,</span><span class="mi">0</span>
+<span class="o">+-----+---------+------+</span>
+<span class="o">|</span>     <span class="o">|</span>         <span class="o">|</span>      <span class="o">|</span>
+<span class="o">|</span> <span class="n">w</span><span class="p">,</span><span class="mi">1</span> <span class="o">|</span>   <span class="n">w</span><span class="p">,</span><span class="mi">2</span>   <span class="o">|</span>  <span class="n">w</span><span class="p">,</span><span class="mi">3</span> <span class="o">|</span>
+<span class="o">|</span>     <span class="o">|</span>         <span class="o">|</span>      <span class="o">|</span>
+<span class="o">+-----+---------+------+</span>
+      <span class="o">|</span>         <span class="o">|</span>
+      <span class="o">|</span>   <span class="n">w</span><span class="p">,</span><span class="mi">0</span>   <span class="o">|</span>
+      <span class="o">|</span>         <span class="o">|</span>
+      <span class="o">+---------+</span>
+           <span class="n">w</span>
+</pre></div>
+</div>
+<p>and we always have: bot-&gt;0, right-&gt;1, top-&gt;2, left-&gt;3</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">import</span> <span class="nn">flatsurf.geometry.similarity_surface_generators</span> <span class="k">as</span> <span class="nn">sfg</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">T</span> <span class="o">=</span> <span class="n">sfg</span><span class="o">.</span><span class="n">tfractal_surface</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">W</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">underlying_surface</span><span class="p">()</span><span class="o">.</span><span class="n">_words</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">w</span> <span class="o">=</span> <span class="n">W</span><span class="p">(</span><span class="s1">&#39;LLRLRL&#39;</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">T</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">((</span><span class="n">w</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span><span class="mi">0</span><span class="p">)</span>
+<span class="p">((</span><span class="n">word</span><span class="p">:</span> <span class="n">LLRLR</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">T</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">((</span><span class="n">w</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span><span class="mi">1</span><span class="p">)</span>
+<span class="p">((</span><span class="n">word</span><span class="p">:</span> <span class="n">LLRLRL</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="mi">3</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">T</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">((</span><span class="n">w</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span><span class="mi">2</span><span class="p">)</span>
+<span class="p">((</span><span class="n">word</span><span class="p">:</span> <span class="n">LLRLRL</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">T</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">((</span><span class="n">w</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span><span class="mi">3</span><span class="p">)</span>
+<span class="p">((</span><span class="n">word</span><span class="p">:</span> <span class="n">LLRLRL</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.similarity_surface_generators.TFractalSurface.polygon">
+<span class="sig-name descname"><span class="pre">polygon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lab</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/similarity_surface_generators.html#TFractalSurface.polygon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity_surface_generators.TFractalSurface.polygon" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the polygon with label <code class="docutils literal notranslate"><span class="pre">lab</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">w</span><span class="o">/</span><span class="n">r</span>         <span class="n">w</span><span class="o">/</span><span class="n">r</span>
+<span class="o">+---+------+---+</span>
+<span class="o">|</span> <span class="mi">1</span> <span class="o">|</span>  <span class="mi">2</span>   <span class="o">|</span> <span class="mi">3</span> <span class="o">|</span>
+<span class="o">|</span>   <span class="o">|</span>      <span class="o">|</span>   <span class="o">|</span>  <span class="n">h2</span>
+<span class="o">+---+------+---+</span>
+    <span class="o">|</span>  <span class="mi">0</span>   <span class="o">|</span> <span class="n">h1</span>
+    <span class="o">+------+</span>
+    <span class="n">w</span>
+</pre></div>
+</div>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">import</span> <span class="nn">flatsurf.geometry.similarity_surface_generators</span> <span class="k">as</span> <span class="nn">sfg</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">T</span> <span class="o">=</span> <span class="n">sfg</span><span class="o">.</span><span class="n">tfractal_surface</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">T</span><span class="o">.</span><span class="n">polygon</span><span class="p">((</span><span class="s1">&#39;L&#39;</span><span class="p">,</span><span class="mi">0</span><span class="p">))</span>
+<span class="n">Polygon</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">T</span><span class="o">.</span><span class="n">polygon</span><span class="p">((</span><span class="s1">&#39;LRL&#39;</span><span class="p">,</span><span class="mi">0</span><span class="p">))</span>
+<span class="n">Polygon</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">8</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">8</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">8</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">8</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="flatsurf.geometry.similarity_surface_generators.TFractalSurface.polygon_labels">
+<span class="sig-name descname"><span class="pre">polygon_labels</span></span><a class="reference internal" href="../_modules/flatsurf/geometry/similarity_surface_generators.html#TFractalSurface.polygon_labels"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity_surface_generators.TFractalSurface.polygon_labels" title="Permalink to this definition">#</a></dt>
+<dd><p>File: /usr/share/miniconda3/envs/test/lib/python3.10/site-packages/flatsurf/geometry/similarity_surface_generators.py (starting at line 278)</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="flatsurf.geometry.similarity_surface_generators.TranslationSurfaceGenerators">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.similarity_surface_generators.</span></span><span class="sig-name descname"><span class="pre">TranslationSurfaceGenerators</span></span><a class="reference internal" href="../_modules/flatsurf/geometry/similarity_surface_generators.html#TranslationSurfaceGenerators"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity_surface_generators.TranslationSurfaceGenerators" title="Permalink to this definition">#</a></dt>
+<dd><p>Common and less common translation surfaces.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.similarity_surface_generators.TranslationSurfaceGenerators.arnoux_yoccoz">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">arnoux_yoccoz</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">genus</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/similarity_surface_generators.html#TranslationSurfaceGenerators.arnoux_yoccoz"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity_surface_generators.TranslationSurfaceGenerators.arnoux_yoccoz" title="Permalink to this definition">#</a></dt>
+<dd><p>Construct the Arnoux-Yoccoz surface of genus 3 or greater.</p>
+<p>This presentation of the surface follows Section 2.3 of
+Joshua P. Bowman’s paper “The Complete Family of Arnoux-Yoccoz
+Surfaces.”</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">s</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">arnoux_yoccoz</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">TestSuite</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">is_delaunay_decomposed</span><span class="p">()</span>
+<span class="kc">True</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">canonicalize</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">field</span><span class="o">=</span><span class="n">s</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">a</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">gen</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">sage.matrix.constructor</span> <span class="kn">import</span> <span class="n">Matrix</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">m</span> <span class="o">=</span> <span class="n">Matrix</span><span class="p">([[</span><span class="n">a</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="o">~</span><span class="n">a</span><span class="p">]])</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">ss</span> <span class="o">=</span> <span class="n">m</span><span class="o">*</span><span class="n">s</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">ss</span> <span class="o">=</span> <span class="n">ss</span><span class="o">.</span><span class="n">canonicalize</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">cmp</span><span class="p">(</span><span class="n">ss</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
+<span class="kc">True</span>
+</pre></div>
+</div>
+<p>The Arnoux-Yoccoz pseudo-Anosov are known to have (minimal) invariant
+foliations with SAF=0:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">S3</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">arnoux_yoccoz</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">Jxx</span><span class="p">,</span> <span class="n">Jyy</span><span class="p">,</span> <span class="n">Jxy</span> <span class="o">=</span> <span class="n">S3</span><span class="o">.</span><span class="n">j_invariant</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">Jxx</span><span class="o">.</span><span class="n">is_zero</span><span class="p">()</span> <span class="ow">and</span> <span class="n">Jyy</span><span class="o">.</span><span class="n">is_zero</span><span class="p">()</span>
+<span class="kc">True</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">Jxy</span>
+<span class="p">[</span> <span class="mi">0</span>  <span class="mi">2</span>  <span class="mi">0</span><span class="p">]</span>
+<span class="p">[</span> <span class="mi">2</span> <span class="o">-</span><span class="mi">2</span>  <span class="mi">0</span><span class="p">]</span>
+<span class="p">[</span> <span class="mi">0</span>  <span class="mi">0</span>  <span class="mi">2</span><span class="p">]</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">S4</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">arnoux_yoccoz</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">Jxx</span><span class="p">,</span> <span class="n">Jyy</span><span class="p">,</span> <span class="n">Jxy</span> <span class="o">=</span> <span class="n">S4</span><span class="o">.</span><span class="n">j_invariant</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">Jxx</span><span class="o">.</span><span class="n">is_zero</span><span class="p">()</span> <span class="ow">and</span> <span class="n">Jyy</span><span class="o">.</span><span class="n">is_zero</span><span class="p">()</span>
+<span class="kc">True</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">Jxy</span>
+<span class="p">[</span> <span class="mi">0</span>  <span class="mi">2</span>  <span class="mi">0</span>  <span class="mi">0</span><span class="p">]</span>
+<span class="p">[</span> <span class="mi">2</span> <span class="o">-</span><span class="mi">2</span>  <span class="mi">0</span>  <span class="mi">0</span><span class="p">]</span>
+<span class="p">[</span> <span class="mi">0</span>  <span class="mi">0</span>  <span class="mi">2</span>  <span class="mi">2</span><span class="p">]</span>
+<span class="p">[</span> <span class="mi">0</span>  <span class="mi">0</span>  <span class="mi">2</span>  <span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.similarity_surface_generators.TranslationSurfaceGenerators.cathedral">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cathedral</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/similarity_surface_generators.html#TranslationSurfaceGenerators.cathedral"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity_surface_generators.TranslationSurfaceGenerators.cathedral" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the cathedral surface with parameters <code class="docutils literal notranslate"><span class="pre">a</span></code> and <code class="docutils literal notranslate"><span class="pre">b</span></code>.</p>
+<p>For any parameter <code class="docutils literal notranslate"><span class="pre">a</span></code> and <code class="docutils literal notranslate"><span class="pre">b</span></code>, the cathedral surface belongs to the
+so-called Gothic locus described in McMullen, Mukamel, Wright “Cubic
+curves and totally geodesic subvarieties of moduli space” (2017):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>         <span class="mi">1</span>
+       <span class="o">&lt;---&gt;</span>
+
+        <span class="o">/</span>\           <span class="mi">2</span><span class="n">a</span>
+       <span class="o">/</span>  \      <span class="o">+------+</span>
+   <span class="n">a</span>  <span class="n">b</span><span class="o">|</span>   <span class="o">|</span> <span class="n">a</span>  <span class="o">/</span>        \
+ <span class="o">+----+</span>    <span class="o">+---+</span>          <span class="o">+</span>
+ <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>   <span class="o">|</span>          <span class="o">|</span>
+<span class="mi">1</span><span class="o">|</span> <span class="n">P0</span> <span class="o">|</span><span class="n">P1</span>  <span class="o">|</span><span class="n">P2</span> <span class="o">|</span>  <span class="n">P3</span>      <span class="o">|</span>
+ <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>   <span class="o">|</span>          <span class="o">|</span>
+ <span class="o">+----+</span>    <span class="o">+---+</span>          <span class="o">+</span>
+     <span class="n">b</span><span class="o">|</span>    <span class="o">|</span>    \        <span class="o">/</span>
+       \  <span class="o">/</span>      <span class="o">+------+</span>
+        \<span class="o">/</span>
+</pre></div>
+</div>
+<p>If a and b satisfies</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[a = x + y \sqrt(d) \qquad b = -3x -3/2 + 3y \sqrt(d)\]</div>
+</div>
+<p>for some rational x,y and d &gt;= 0 then it is a Teichmüller curve.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">C</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">cathedral</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">C</span><span class="o">.</span><span class="n">stratum</span><span class="p">()</span>
+<span class="n">H_4</span><span class="p">(</span><span class="mi">2</span><span class="o">^</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">TestSuite</span><span class="p">(</span><span class="n">C</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">pyexactreal</span> <span class="kn">import</span> <span class="n">ExactReals</span> <span class="c1"># optional: exactreal</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">K</span> <span class="o">=</span> <span class="n">QuadraticField</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">embedding</span><span class="o">=</span><span class="n">AA</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span><span class="o">.</span><span class="n">sqrt</span><span class="p">())</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">R</span> <span class="o">=</span> <span class="n">ExactReals</span><span class="p">(</span><span class="n">K</span><span class="p">)</span> <span class="c1"># optional: exactreal</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">C</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">cathedral</span><span class="p">(</span><span class="n">K</span><span class="o">.</span><span class="n">gen</span><span class="p">(),</span> <span class="n">R</span><span class="o">.</span><span class="n">random_element</span><span class="p">([</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">]))</span> <span class="c1"># optional: exactreal</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">C</span><span class="o">.</span><span class="n">stratum</span><span class="p">()</span> <span class="c1"># optional: exactreal</span>
+<span class="n">H_4</span><span class="p">(</span><span class="mi">2</span><span class="o">^</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">TestSuite</span><span class="p">(</span><span class="n">C</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span> <span class="c1"># long time (6s), optional: exactreal</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.similarity_surface_generators.TranslationSurfaceGenerators.chamanara">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">chamanara</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alpha</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/similarity_surface_generators.html#TranslationSurfaceGenerators.chamanara"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity_surface_generators.TranslationSurfaceGenerators.chamanara" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the Chamanara surface with parameter <code class="docutils literal notranslate"><span class="pre">alpha</span></code>.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">C</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">chamanara</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">C</span>
+<span class="n">TranslationSurface</span> <span class="n">built</span> <span class="kn">from</span> <span class="nn">infinitely</span> <span class="n">many</span> <span class="n">polygons</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">TestSuite</span><span class="p">(</span><span class="n">C</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">skip</span><span class="o">=</span><span class="s1">&#39;_test_pickling&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.similarity_surface_generators.TranslationSurfaceGenerators.e_infinity_surface">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">e_infinity_surface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lambda_squared</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/similarity_surface_generators.html#TranslationSurfaceGenerators.e_infinity_surface"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity_surface_generators.TranslationSurfaceGenerators.e_infinity_surface" title="Permalink to this definition">#</a></dt>
+<dd><p>The translation surface based on the <cite>E_infinity</cite> graph.</p>
+<p>The biparite graph is shown below, with edges numbered:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>  <span class="mi">0</span>   <span class="mi">1</span>   <span class="mi">2</span>  <span class="o">-</span><span class="mi">2</span>   <span class="mi">3</span>  <span class="o">-</span><span class="mi">3</span>   <span class="mi">4</span>  <span class="o">-</span><span class="mi">4</span>
+<span class="o">*---</span><span class="n">o</span><span class="o">---*---</span><span class="n">o</span><span class="o">---*---</span><span class="n">o</span><span class="o">---*---</span><span class="n">o</span><span class="o">---*...</span>
+        <span class="o">|</span>
+        <span class="o">|-</span><span class="mi">1</span>
+        <span class="n">o</span>
+</pre></div>
+</div>
+<p>Here, black vertices are colored <code class="docutils literal notranslate"><span class="pre">*</span></code>, and white <code class="docutils literal notranslate"><span class="pre">o</span></code>.
+Black nodes represent vertical cylinders and white nodes
+represent horizontal cylinders.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">s</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">e_infinity_surface</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">TestSuite</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">skip</span><span class="o">=</span><span class="s1">&#39;_test_pickling&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.similarity_surface_generators.TranslationSurfaceGenerators.from_flipper">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_flipper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">h</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/similarity_surface_generators.html#TranslationSurfaceGenerators.from_flipper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity_surface_generators.TranslationSurfaceGenerators.from_flipper" title="Permalink to this definition">#</a></dt>
+<dd><p>Build a (half-)translation surface from a flipper pseudo-Anosov.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">import</span> <span class="nn">flipper</span>                             <span class="c1"># optional - flipper</span>
+</pre></div>
+</div>
+<p>A torus example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">t1</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="n">r</span><span class="p">,</span><span class="mi">1</span><span class="n">r</span><span class="p">,</span><span class="mi">2</span><span class="n">r</span><span class="p">)</span>                            <span class="c1"># optional - flipper</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">t2</span> <span class="o">=</span> <span class="p">(</span><span class="o">~</span><span class="mi">0</span><span class="n">r</span><span class="p">,</span><span class="o">~</span><span class="mi">1</span><span class="n">r</span><span class="p">,</span><span class="o">~</span><span class="mi">2</span><span class="n">r</span><span class="p">)</span>                         <span class="c1"># optional - flipper</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">T</span> <span class="o">=</span> <span class="n">flipper</span><span class="o">.</span><span class="n">create_triangulation</span><span class="p">([</span><span class="n">t1</span><span class="p">,</span><span class="n">t2</span><span class="p">])</span>  <span class="c1"># optional - flipper</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">L1</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">lamination</span><span class="p">([</span><span class="mi">1</span><span class="n">r</span><span class="p">,</span><span class="mi">0</span><span class="n">r</span><span class="p">,</span><span class="mi">1</span><span class="n">r</span><span class="p">])</span>              <span class="c1"># optional - flipper</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">L2</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">lamination</span><span class="p">([</span><span class="mi">0</span><span class="n">r</span><span class="p">,</span><span class="mi">1</span><span class="n">r</span><span class="p">,</span><span class="mi">1</span><span class="n">r</span><span class="p">])</span>              <span class="c1"># optional - flipper</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">h1</span> <span class="o">=</span> <span class="n">L1</span><span class="o">.</span><span class="n">encode_twist</span><span class="p">()</span>                     <span class="c1"># optional - flipper</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">h2</span> <span class="o">=</span> <span class="n">L2</span><span class="o">.</span><span class="n">encode_twist</span><span class="p">()</span>                     <span class="c1"># optional - flipper</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">h</span> <span class="o">=</span> <span class="n">h1</span><span class="o">*</span><span class="n">h2</span><span class="o">^</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="n">r</span><span class="p">)</span>                            <span class="c1"># optional - flipper</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">f</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">flat_structure</span><span class="p">()</span>                     <span class="c1"># optional - flipper</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">ts</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">from_flipper</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>  <span class="c1"># optional - flipper</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">ts</span>                                         <span class="c1"># optional - flipper</span>
+<span class="n">HalfTranslationSurface</span> <span class="n">built</span> <span class="kn">from</span> <span class="mi">2</span> <span class="n">polygons</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">TestSuite</span><span class="p">(</span><span class="n">ts</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>                        <span class="c1"># optional - flipper</span>
+</pre></div>
+</div>
+<p>A non-orientable example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">T</span> <span class="o">=</span> <span class="n">flipper</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;SB_4&#39;</span><span class="p">)</span>                   <span class="c1"># optional - flipper</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">h</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">mapping_class</span><span class="p">(</span><span class="s1">&#39;s_0S_1s_2S_3s_1S_2&#39;</span><span class="p">)</span>  <span class="c1"># optional - flipper</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">h</span><span class="o">.</span><span class="n">is_pseudo_anosov</span><span class="p">()</span>                       <span class="c1"># optional - flipper</span>
+<span class="kc">True</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">from_flipper</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>   <span class="c1"># optional - flipper</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">TestSuite</span><span class="p">(</span><span class="n">S</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>                         <span class="c1"># optional - flipper</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">num_polygons</span><span class="p">()</span>                           <span class="c1"># optional - flipper</span>
+<span class="mi">4</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.similarity_surface_generators</span> <span class="kn">import</span> <span class="n">flipper_nf_element_to_sage</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">a</span> <span class="o">=</span> <span class="n">flipper_nf_element_to_sage</span><span class="p">(</span><span class="n">h</span><span class="o">.</span><span class="n">dilatation</span><span class="p">())</span>  <span class="c1"># optional - flipper</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.similarity_surface_generators.TranslationSurfaceGenerators.infinite_staircase">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">infinite_staircase</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/similarity_surface_generators.html#TranslationSurfaceGenerators.infinite_staircase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity_surface_generators.TranslationSurfaceGenerators.infinite_staircase" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the infinite staircase built as an origami.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">infinite_staircase</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">underlying_surface</span><span class="p">()</span>
+<span class="n">The</span> <span class="n">infinite</span> <span class="n">staircase</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">TestSuite</span><span class="p">(</span><span class="n">S</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">skip</span><span class="o">=</span><span class="s1">&#39;_test_pickling&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.similarity_surface_generators.TranslationSurfaceGenerators.mcmullen_L">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mcmullen_L</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">l1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l4</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/similarity_surface_generators.html#TranslationSurfaceGenerators.mcmullen_L"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity_surface_generators.TranslationSurfaceGenerators.mcmullen_L" title="Permalink to this definition">#</a></dt>
+<dd><p>Return McMullen’s L shaped surface with parameters l1, l2, l3, l4.</p>
+<p>Polygon labels and lengths are marked below:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">+-----+</span>
+<span class="o">|</span>     <span class="o">|</span>
+<span class="o">|</span>  <span class="mi">1</span>  <span class="o">|</span><span class="n">l1</span>
+<span class="o">|</span>     <span class="o">|</span>
+<span class="o">|</span>     <span class="o">|</span>    <span class="n">l4</span>
+<span class="o">+-----+---------+</span>
+<span class="o">|</span>     <span class="o">|</span>         <span class="o">|</span>
+<span class="o">|</span>  <span class="mi">0</span>  <span class="o">|</span>    <span class="mi">2</span>    <span class="o">|</span><span class="n">l2</span>
+<span class="o">|</span>     <span class="o">|</span>         <span class="o">|</span>
+<span class="o">+-----+---------+</span>
+  <span class="n">l3</span>
+</pre></div>
+</div>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">s</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">mcmullen_L</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">TestSuite</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>TESTS:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">mcmullen_L</span><span class="p">(</span><span class="mi">1</span><span class="n">r</span><span class="p">,</span> <span class="mi">1</span><span class="n">r</span><span class="p">,</span> <span class="mi">1</span><span class="n">r</span><span class="p">,</span> <span class="mi">1</span><span class="n">r</span><span class="p">)</span>
+<span class="n">TranslationSurface</span> <span class="n">built</span> <span class="kn">from</span> <span class="mi">3</span> <span class="n">polygons</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.similarity_surface_generators.TranslationSurfaceGenerators.mcmullen_genus2_prototype">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mcmullen_genus2_prototype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_ring</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/similarity_surface_generators.html#TranslationSurfaceGenerators.mcmullen_genus2_prototype"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity_surface_generators.TranslationSurfaceGenerators.mcmullen_genus2_prototype" title="Permalink to this definition">#</a></dt>
+<dd><p>McMullen prototypes in the stratum H(2).</p>
+<p>These prototype appear at least in McMullen “Teichmüller curves in genus
+two: Discriminant and spin” (2004). The notation from that paper are
+quadruple <code class="docutils literal notranslate"><span class="pre">(a,</span> <span class="pre">b,</span> <span class="pre">c,</span> <span class="pre">e)</span></code> which translates in our notation as
+<code class="docutils literal notranslate"><span class="pre">w</span> <span class="pre">=</span> <span class="pre">b</span></code>, <code class="docutils literal notranslate"><span class="pre">h</span> <span class="pre">=</span> <span class="pre">c</span></code>, <code class="docutils literal notranslate"><span class="pre">t</span> <span class="pre">=</span> <span class="pre">a</span></code> (and <code class="docutils literal notranslate"><span class="pre">e</span> <span class="pre">=</span> <span class="pre">e</span></code>).</p>
+<p>The associated discriminant is <cite>D = e^2 + 4 wh</cite>.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">rel</span></code> is a positive parameter (less than w-lambda) the surface belongs
+to the eigenform locus in H(1,1).</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">surface_dynamics</span> <span class="kn">import</span> <span class="n">AbelianStratum</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">prototypes</span> <span class="o">=</span> <span class="p">{</span>
+<span class="o">....</span><span class="p">:</span>      <span class="mi">5</span><span class="p">:</span> <span class="p">[(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)],</span>
+<span class="o">....</span><span class="p">:</span>      <span class="mi">8</span><span class="p">:</span> <span class="p">[(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)],</span>
+<span class="o">....</span><span class="p">:</span>      <span class="mi">9</span><span class="p">:</span> <span class="p">[(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)],</span>
+<span class="o">....</span><span class="p">:</span>     <span class="mi">12</span><span class="p">:</span> <span class="p">[(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)],</span>
+<span class="o">....</span><span class="p">:</span>     <span class="mi">13</span><span class="p">:</span> <span class="p">[(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)],</span>
+<span class="o">....</span><span class="p">:</span>     <span class="mi">16</span><span class="p">:</span> <span class="p">[(</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)],</span>
+<span class="o">....</span><span class="p">:</span>     <span class="mi">17</span><span class="p">:</span> <span class="p">[(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)],</span>
+<span class="o">....</span><span class="p">:</span>     <span class="mi">20</span><span class="p">:</span> <span class="p">[(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">)],</span>
+<span class="o">....</span><span class="p">:</span>     <span class="mi">21</span><span class="p">:</span> <span class="p">[(</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">3</span><span class="p">)],</span>
+<span class="o">....</span><span class="p">:</span>     <span class="mi">24</span><span class="p">:</span> <span class="p">[(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)],</span>
+<span class="o">....</span><span class="p">:</span>     <span class="mi">25</span><span class="p">:</span> <span class="p">[(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">3</span><span class="p">)]}</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="k">for</span> <span class="n">D</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">prototypes</span><span class="p">):</span>
+<span class="o">....</span><span class="p">:</span>     <span class="k">for</span> <span class="n">w</span><span class="p">,</span><span class="n">h</span><span class="p">,</span><span class="n">t</span><span class="p">,</span><span class="n">e</span> <span class="ow">in</span> <span class="n">prototypes</span><span class="p">[</span><span class="n">D</span><span class="p">]:</span>
+<span class="o">....</span><span class="p">:</span>          <span class="n">T</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">mcmullen_genus2_prototype</span><span class="p">(</span><span class="n">w</span><span class="p">,</span><span class="n">h</span><span class="p">,</span><span class="n">t</span><span class="p">,</span><span class="n">e</span><span class="p">)</span>
+<span class="o">....</span><span class="p">:</span>          <span class="k">assert</span> <span class="n">T</span><span class="o">.</span><span class="n">stratum</span><span class="p">()</span> <span class="o">==</span> <span class="n">AbelianStratum</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="o">....</span><span class="p">:</span>          <span class="k">assert</span> <span class="p">(</span><span class="n">D</span><span class="o">.</span><span class="n">is_square</span><span class="p">()</span> <span class="ow">and</span> <span class="n">T</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span> <span class="ow">is</span> <span class="n">QQ</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">T</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span><span class="o">.</span><span class="n">polynomial</span><span class="p">()</span><span class="o">.</span><span class="n">discriminant</span><span class="p">()</span> <span class="o">==</span> <span class="n">D</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>An example with some relative homology:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">U8</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">mcmullen_genus2_prototype</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="o">/</span><span class="mi">4</span><span class="p">)</span>    <span class="c1"># discriminant 8</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">U12</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">mcmullen_genus2_prototype</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="o">/</span><span class="mi">10</span><span class="p">)</span>   <span class="c1"># discriminant 12</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">U8</span><span class="o">.</span><span class="n">stratum</span><span class="p">()</span>
+<span class="n">H_2</span><span class="p">(</span><span class="mi">1</span><span class="o">^</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">U8</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span><span class="o">.</span><span class="n">polynomial</span><span class="p">()</span><span class="o">.</span><span class="n">discriminant</span><span class="p">()</span>
+<span class="mi">8</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">U8</span><span class="o">.</span><span class="n">j_invariant</span><span class="p">()</span>
+<span class="p">(</span>
+          <span class="p">[</span><span class="mi">4</span> <span class="mi">0</span><span class="p">]</span>
+<span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="p">[</span><span class="mi">0</span> <span class="mi">2</span><span class="p">]</span>
+<span class="p">)</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">U12</span><span class="o">.</span><span class="n">stratum</span><span class="p">()</span>
+<span class="n">H_2</span><span class="p">(</span><span class="mi">1</span><span class="o">^</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">U12</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span><span class="o">.</span><span class="n">polynomial</span><span class="p">()</span><span class="o">.</span><span class="n">discriminant</span><span class="p">()</span>
+<span class="mi">12</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">U12</span><span class="o">.</span><span class="n">j_invariant</span><span class="p">()</span>
+<span class="p">(</span>
+          <span class="p">[</span><span class="mi">6</span> <span class="mi">0</span><span class="p">]</span>
+<span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="p">[</span><span class="mi">0</span> <span class="mi">2</span><span class="p">]</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.similarity_surface_generators.TranslationSurfaceGenerators.octagon_and_squares">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">octagon_and_squares</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/similarity_surface_generators.html#TranslationSurfaceGenerators.octagon_and_squares"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity_surface_generators.TranslationSurfaceGenerators.octagon_and_squares" title="Permalink to this definition">#</a></dt>
+<dd><p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">os</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">octagon_and_squares</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">os</span>
+<span class="n">TranslationSurface</span> <span class="n">built</span> <span class="kn">from</span> <span class="mi">3</span> <span class="n">polygons</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">TestSuite</span><span class="p">(</span><span class="n">os</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.similarity_surface_generators.TranslationSurfaceGenerators.origami">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">origami</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">u</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uu</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/similarity_surface_generators.html#TranslationSurfaceGenerators.origami"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity_surface_generators.TranslationSurfaceGenerators.origami" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the origami defined by the permutations <code class="docutils literal notranslate"><span class="pre">r</span></code> and <code class="docutils literal notranslate"><span class="pre">u</span></code>.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">SymmetricGroup</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">r</span> <span class="o">=</span> <span class="n">S</span><span class="p">(</span><span class="s1">&#39;(1,2)&#39;</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">u</span> <span class="o">=</span> <span class="n">S</span><span class="p">(</span><span class="s1">&#39;(1,3)&#39;</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">o</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">origami</span><span class="p">(</span><span class="n">r</span><span class="p">,</span><span class="n">u</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">underlying_surface</span><span class="p">()</span>
+<span class="n">Origami</span> <span class="n">defined</span> <span class="n">by</span> <span class="n">r</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span> <span class="ow">and</span> <span class="n">u</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">stratum</span><span class="p">()</span>
+<span class="n">H_2</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">TestSuite</span><span class="p">(</span><span class="n">o</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.similarity_surface_generators.TranslationSurfaceGenerators.regular_octagon">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">regular_octagon</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/similarity_surface_generators.html#TranslationSurfaceGenerators.regular_octagon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity_surface_generators.TranslationSurfaceGenerators.regular_octagon" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the translation surface built from the regular octagon by
+identifying opposite sides.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">T</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">regular_octagon</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">T</span>
+<span class="n">TranslationSurface</span> <span class="n">built</span> <span class="kn">from</span> <span class="mi">1</span> <span class="n">polygon</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">T</span><span class="o">.</span><span class="n">stratum</span><span class="p">()</span>
+<span class="n">H_2</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">TestSuite</span><span class="p">(</span><span class="n">T</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.similarity_surface_generators.TranslationSurfaceGenerators.square_torus">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">square_torus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/similarity_surface_generators.html#TranslationSurfaceGenerators.square_torus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity_surface_generators.TranslationSurfaceGenerators.square_torus" title="Permalink to this definition">#</a></dt>
+<dd><p>Return flat torus obtained by identification of the opposite sides of a
+square.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">T</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">square_torus</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">T</span>
+<span class="n">TranslationSurface</span> <span class="n">built</span> <span class="kn">from</span> <span class="mi">1</span> <span class="n">polygon</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">TestSuite</span><span class="p">(</span><span class="n">T</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Rational directions are completely periodic:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">v</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">tangent_vector</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">33</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">257</span><span class="p">),</span> <span class="p">(</span><span class="mi">13</span><span class="p">,</span><span class="mi">17</span><span class="p">))</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">L</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">straight_line_trajectory</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">L</span><span class="o">.</span><span class="n">flow</span><span class="p">(</span><span class="mi">13</span><span class="o">+</span><span class="mi">17</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">L</span><span class="o">.</span><span class="n">is_closed</span><span class="p">()</span>
+<span class="kc">True</span>
+</pre></div>
+</div>
+<p>TESTS:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">TestSuite</span><span class="p">(</span><span class="n">T</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.similarity_surface_generators.TranslationSurfaceGenerators.t_fractal">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">t_fractal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">w</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/similarity_surface_generators.html#TranslationSurfaceGenerators.t_fractal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity_surface_generators.TranslationSurfaceGenerators.t_fractal" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the T-fractal with parameters <code class="docutils literal notranslate"><span class="pre">w</span></code>, <code class="docutils literal notranslate"><span class="pre">r</span></code>, <code class="docutils literal notranslate"><span class="pre">h1</span></code>, <code class="docutils literal notranslate"><span class="pre">h2</span></code>.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">tf</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">t_fractal</span><span class="p">()</span><span class="o">.</span><span class="n">underlying_surface</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">tf</span>
+<span class="n">The</span> <span class="n">T</span><span class="o">-</span><span class="n">fractal</span> <span class="n">surface</span> <span class="k">with</span> <span class="n">parameters</span> <span class="n">w</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">h1</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">h2</span><span class="o">=</span><span class="mi">1</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">TestSuite</span><span class="p">(</span><span class="n">tf</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">skip</span><span class="o">=</span><span class="s1">&#39;_test_pickling&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.similarity_surface_generators.TranslationSurfaceGenerators.torus">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">torus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">u</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/similarity_surface_generators.html#TranslationSurfaceGenerators.torus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity_surface_generators.TranslationSurfaceGenerators.torus" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the flat torus obtained as the quotient of the plane by the pair
+of vectors <code class="docutils literal notranslate"><span class="pre">u</span></code> and <code class="docutils literal notranslate"><span class="pre">v</span></code>.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>sage: from flatsurf import translation_surfaces
+sage: T = translation_surfaces.torus((1, AA(2).sqrt()), (AA(3).sqrt(), 3))
+sage: T
+TranslationSurface built from 1 polygon
+sage: T.polygon(0)
+Polygon: (0, 0), (1, 1.414213562373095?), (2.732050807568878?, 4.414213562373095?), (1.732050807568878?, 3)
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.similarity_surface_generators.TranslationSurfaceGenerators.veech_2n_gon">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">veech_2n_gon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/similarity_surface_generators.html#TranslationSurfaceGenerators.veech_2n_gon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity_surface_generators.TranslationSurfaceGenerators.veech_2n_gon" title="Permalink to this definition">#</a></dt>
+<dd><p>The regular 2n-gon with opposite sides identified.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">s</span><span class="o">=</span><span class="n">translation_surfaces</span><span class="o">.</span><span class="n">veech_2n_gon</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">Polygon</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">a</span><span class="o">^</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">5</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">a</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="n">a</span><span class="o">^</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">7</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">a</span><span class="o">^</span><span class="mi">3</span> <span class="o">+</span> <span class="mi">2</span><span class="o">*</span><span class="n">a</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">a</span><span class="o">^</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">5</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="n">a</span><span class="o">^</span><span class="mi">3</span> <span class="o">+</span> <span class="mi">7</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">a</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="n">a</span><span class="o">^</span><span class="mi">3</span> <span class="o">+</span> <span class="mi">4</span><span class="o">*</span><span class="n">a</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="n">a</span><span class="o">^</span><span class="mi">3</span> <span class="o">+</span> <span class="mi">4</span><span class="o">*</span><span class="n">a</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">a</span><span class="o">^</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">3</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="n">a</span><span class="o">^</span><span class="mi">3</span> <span class="o">+</span> <span class="mi">7</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">a</span><span class="p">),</span> <span class="p">(</span><span class="n">a</span><span class="o">^</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">5</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">a</span><span class="o">^</span><span class="mi">3</span> <span class="o">+</span> <span class="mi">2</span><span class="o">*</span><span class="n">a</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">a</span><span class="o">^</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">3</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">a</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">TestSuite</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.similarity_surface_generators.TranslationSurfaceGenerators.veech_double_n_gon">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">veech_double_n_gon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/similarity_surface_generators.html#TranslationSurfaceGenerators.veech_double_n_gon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity_surface_generators.TranslationSurfaceGenerators.veech_double_n_gon" title="Permalink to this definition">#</a></dt>
+<dd><p>A pair of regular n-gons with each edge of one identified to an edge of the other to make a translation surface.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">s</span><span class="o">=</span><span class="n">translation_surfaces</span><span class="o">.</span><span class="n">veech_double_n_gon</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">TestSuite</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.similarity_surface_generators.TranslationSurfaceGenerators.ward">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/similarity_surface_generators.html#TranslationSurfaceGenerators.ward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity_surface_generators.TranslationSurfaceGenerators.ward" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the surface formed by gluing a regular 2n-gon to two regular n-gons.
+These surfaces have Veech’s lattice property due to work of Ward.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">s</span><span class="o">=</span><span class="n">translation_surfaces</span><span class="o">.</span><span class="n">ward</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">TestSuite</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">s</span><span class="o">=</span><span class="n">translation_surfaces</span><span class="o">.</span><span class="n">ward</span><span class="p">(</span><span class="mi">7</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">TestSuite</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="flatsurf.geometry.similarity_surface_generators.flipper_nf_element_to_sage">
+<span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.similarity_surface_generators.</span></span><span class="sig-name descname"><span class="pre">flipper_nf_element_to_sage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">K</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/similarity_surface_generators.html#flipper_nf_element_to_sage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity_surface_generators.flipper_nf_element_to_sage" title="Permalink to this definition">#</a></dt>
+<dd><p>Convert a flipper number field element into Sage</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>sage: from flatsurf.geometry.similarity_surface_generators import flipper_nf_element_to_sage
+sage: import flipper                               # optional - flipper
+sage: T = flipper.load(&#39;SB_6&#39;)                     # optional - flipper
+sage: h = T.mapping_class(&#39;s_0S_1S_2s_3s_4s_3S_5&#39;) # optional - flipper
+sage: flipper_nf_element_to_sage(h.dilatation())   # optional - flipper
+a
+sage: AA(_)                                        # optional - flipper
+6.45052513748511?
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="flatsurf.geometry.similarity_surface_generators.flipper_nf_to_sage">
+<span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.similarity_surface_generators.</span></span><span class="sig-name descname"><span class="pre">flipper_nf_to_sage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">K</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'a'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/similarity_surface_generators.html#flipper_nf_to_sage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity_surface_generators.flipper_nf_to_sage" title="Permalink to this definition">#</a></dt>
+<dd><p>Convert a flipper number field into a Sage number field</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Currently, the code is not careful at all with root isolation.</p>
+</div>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>sage: import flipper  # optional - flipper
+sage: import realalg  # optional - flipper
+sage: from flatsurf.geometry.similarity_surface_generators import flipper_nf_to_sage
+sage: K = realalg.RealNumberField([-2r] + [0r]*5 + [1r])   # optional - flipper
+sage: K_sage = flipper_nf_to_sage(K)                       # optional - flipper
+sage: K_sage                                               # optional - flipper
+Number Field in a with defining polynomial x^6 - 2 with a = 1.122462048309373?
+sage: AA(K_sage.gen())                                     # optional - flipper
+1.122462048309373?
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="flatsurf.geometry.similarity_surface_generators.tfractal_surface">
+<span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.similarity_surface_generators.</span></span><span class="sig-name descname"><span class="pre">tfractal_surface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">w</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/similarity_surface_generators.html#tfractal_surface"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity_surface_generators.tfractal_surface" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="similarity_surface.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title"><code class="docutils literal notranslate"><span class="pre">similarity_surface</span></code></div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="similarity.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title"><code class="docutils literal notranslate"><span class="pre">similarity</span></code></div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2016-2022, the sage-flatsurf authors
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">similarity_surface_generators</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface_generators.DilationSurfaceGenerators"><code class="docutils literal notranslate"><span class="pre">DilationSurfaceGenerators</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface_generators.DilationSurfaceGenerators.basic_dilation_torus"><code class="docutils literal notranslate"><span class="pre">DilationSurfaceGenerators.basic_dilation_torus()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface_generators.DilationSurfaceGenerators.genus_two_square"><code class="docutils literal notranslate"><span class="pre">DilationSurfaceGenerators.genus_two_square()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface_generators.EInfinitySurface"><code class="docutils literal notranslate"><span class="pre">EInfinitySurface</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface_generators.EInfinitySurface.get_black"><code class="docutils literal notranslate"><span class="pre">EInfinitySurface.get_black</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface_generators.EInfinitySurface.get_white"><code class="docutils literal notranslate"><span class="pre">EInfinitySurface.get_white</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface_generators.EInfinitySurface.opposite_edge"><code class="docutils literal notranslate"><span class="pre">EInfinitySurface.opposite_edge()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface_generators.EInfinitySurface.polygon"><code class="docutils literal notranslate"><span class="pre">EInfinitySurface.polygon()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface_generators.EInfinitySurface.polygon_labels"><code class="docutils literal notranslate"><span class="pre">EInfinitySurface.polygon_labels()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface_generators.HalfTranslationSurfaceGenerators"><code class="docutils literal notranslate"><span class="pre">HalfTranslationSurfaceGenerators</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface_generators.HalfTranslationSurfaceGenerators.step_billiard"><code class="docutils literal notranslate"><span class="pre">HalfTranslationSurfaceGenerators.step_billiard()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface_generators.SimilaritySurfaceGenerators"><code class="docutils literal notranslate"><span class="pre">SimilaritySurfaceGenerators</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface_generators.SimilaritySurfaceGenerators.billiard"><code class="docutils literal notranslate"><span class="pre">SimilaritySurfaceGenerators.billiard()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface_generators.SimilaritySurfaceGenerators.example"><code class="docutils literal notranslate"><span class="pre">SimilaritySurfaceGenerators.example()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface_generators.SimilaritySurfaceGenerators.polygon_double"><code class="docutils literal notranslate"><span class="pre">SimilaritySurfaceGenerators.polygon_double()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface_generators.SimilaritySurfaceGenerators.right_angle_triangle"><code class="docutils literal notranslate"><span class="pre">SimilaritySurfaceGenerators.right_angle_triangle()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface_generators.SimilaritySurfaceGenerators.self_glued_polygon"><code class="docutils literal notranslate"><span class="pre">SimilaritySurfaceGenerators.self_glued_polygon()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface_generators.TFractalSurface"><code class="docutils literal notranslate"><span class="pre">TFractalSurface</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface_generators.TFractalSurface.opposite_edge"><code class="docutils literal notranslate"><span class="pre">TFractalSurface.opposite_edge()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface_generators.TFractalSurface.polygon"><code class="docutils literal notranslate"><span class="pre">TFractalSurface.polygon()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface_generators.TFractalSurface.polygon_labels"><code class="docutils literal notranslate"><span class="pre">TFractalSurface.polygon_labels</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface_generators.TranslationSurfaceGenerators"><code class="docutils literal notranslate"><span class="pre">TranslationSurfaceGenerators</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface_generators.TranslationSurfaceGenerators.arnoux_yoccoz"><code class="docutils literal notranslate"><span class="pre">TranslationSurfaceGenerators.arnoux_yoccoz()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface_generators.TranslationSurfaceGenerators.cathedral"><code class="docutils literal notranslate"><span class="pre">TranslationSurfaceGenerators.cathedral()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface_generators.TranslationSurfaceGenerators.chamanara"><code class="docutils literal notranslate"><span class="pre">TranslationSurfaceGenerators.chamanara()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface_generators.TranslationSurfaceGenerators.e_infinity_surface"><code class="docutils literal notranslate"><span class="pre">TranslationSurfaceGenerators.e_infinity_surface()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface_generators.TranslationSurfaceGenerators.from_flipper"><code class="docutils literal notranslate"><span class="pre">TranslationSurfaceGenerators.from_flipper()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface_generators.TranslationSurfaceGenerators.infinite_staircase"><code class="docutils literal notranslate"><span class="pre">TranslationSurfaceGenerators.infinite_staircase()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface_generators.TranslationSurfaceGenerators.mcmullen_L"><code class="docutils literal notranslate"><span class="pre">TranslationSurfaceGenerators.mcmullen_L()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface_generators.TranslationSurfaceGenerators.mcmullen_genus2_prototype"><code class="docutils literal notranslate"><span class="pre">TranslationSurfaceGenerators.mcmullen_genus2_prototype()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface_generators.TranslationSurfaceGenerators.octagon_and_squares"><code class="docutils literal notranslate"><span class="pre">TranslationSurfaceGenerators.octagon_and_squares()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface_generators.TranslationSurfaceGenerators.origami"><code class="docutils literal notranslate"><span class="pre">TranslationSurfaceGenerators.origami()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface_generators.TranslationSurfaceGenerators.regular_octagon"><code class="docutils literal notranslate"><span class="pre">TranslationSurfaceGenerators.regular_octagon()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface_generators.TranslationSurfaceGenerators.square_torus"><code class="docutils literal notranslate"><span class="pre">TranslationSurfaceGenerators.square_torus()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface_generators.TranslationSurfaceGenerators.t_fractal"><code class="docutils literal notranslate"><span class="pre">TranslationSurfaceGenerators.t_fractal()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface_generators.TranslationSurfaceGenerators.torus"><code class="docutils literal notranslate"><span class="pre">TranslationSurfaceGenerators.torus()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface_generators.TranslationSurfaceGenerators.veech_2n_gon"><code class="docutils literal notranslate"><span class="pre">TranslationSurfaceGenerators.veech_2n_gon()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface_generators.TranslationSurfaceGenerators.veech_double_n_gon"><code class="docutils literal notranslate"><span class="pre">TranslationSurfaceGenerators.veech_double_n_gon()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface_generators.TranslationSurfaceGenerators.ward"><code class="docutils literal notranslate"><span class="pre">TranslationSurfaceGenerators.ward()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface_generators.flipper_nf_element_to_sage"><code class="docutils literal notranslate"><span class="pre">flipper_nf_element_to_sage()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface_generators.flipper_nf_to_sage"><code class="docutils literal notranslate"><span class="pre">flipper_nf_to_sage()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface_generators.tfractal_surface"><code class="docutils literal notranslate"><span class="pre">tfractal_surface()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/scripts/furo.js"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    </body>
+</html>

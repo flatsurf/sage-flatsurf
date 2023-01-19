@@ -1,0 +1,691 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
+
+    <!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
+        <title>flatsurf.geometry.subfield - sage-flatsurf 0.4.7 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    <link rel="stylesheet" type="text/css" href="https://doc.sagemath.org/html/en/reference/_static/custom-furo.css" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  --color-brand-primary: #0f0fff;
+  --color-brand-content: #0f0fff;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #272822;
+  --color-code-foreground: #f8f8f2;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #272822;
+  --color-code-foreground: #f8f8f2;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../../index.html"><div class="brand">sage-flatsurf 0.4.7 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo only-light" src="../../../_static/logo.svg" alt="Light Logo"/>
+    <img class="sidebar-logo only-dark" src="../../../_static/logo.svg" alt="Dark Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">sage-flatsurf 0.4.7 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../install.html">Installing sage-flatsurf</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developer.html">The Developer’s Guide for sage-flatsurf</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/defining_surfaces.html">Defining Surfaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/graphics_configuration.html">Graphics Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/linear_action_and_delaunay.html">The GL(2,R) Action, the Veech Group, Delaunay Decomposition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/rel_deformations.html">Relative Period Deformations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/saddle_connections.html">Working with Saddle Connections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/apisa_wright.html">Exploring Orbit Closures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/siegel_veech.html">Siegel-Veech Constants</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/straight_line_flow.html">Straight-Line Flow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/warwick-2017.html">Notes from the Warwick EPSRC Symposium on “Computation in geometric topology”</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/boshernitzan_conjecture.html">Boshernitzan’s Conjectures</a></li>
+</ul>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../geometry.html">The flatsurf.geometry Package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/chamanara.html"><code class="docutils literal notranslate"><span class="pre">chamanara</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/circle.html"><code class="docutils literal notranslate"><span class="pre">circle</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/cone_surface.html"><code class="docutils literal notranslate"><span class="pre">cone_surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/delaunay.html"><code class="docutils literal notranslate"><span class="pre">delaunay</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/dilation_surface.html"><code class="docutils literal notranslate"><span class="pre">dilation_surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/finitely_generated_matrix_group.html"><code class="docutils literal notranslate"><span class="pre">finitely_generated_matrix_group</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/fundamental_group.html"><code class="docutils literal notranslate"><span class="pre">fundamental_group</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/gl2r_orbit_closure.html"><code class="docutils literal notranslate"><span class="pre">gl2r_orbit_closure</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/half_dilation_surface.html"><code class="docutils literal notranslate"><span class="pre">half_dilation_surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/half_translation_surface.html"><code class="docutils literal notranslate"><span class="pre">half_translation_surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/interval_exchange_transformation.html"><code class="docutils literal notranslate"><span class="pre">interval_exchange_transformation</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/l_infinity_delaunay_cells.html"><code class="docutils literal notranslate"><span class="pre">l_infinity_delaunay_cells</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/mappings.html"><code class="docutils literal notranslate"><span class="pre">mappings</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/matrix_2x2.html"><code class="docutils literal notranslate"><span class="pre">matrix_2x2</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/mega_wollmilchsau.html"><code class="docutils literal notranslate"><span class="pre">mega_wollmilchsau</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/minimal_cover.html"><code class="docutils literal notranslate"><span class="pre">minimal_cover</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/polygon.html"><code class="docutils literal notranslate"><span class="pre">polygon</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/polyhedra.html"><code class="docutils literal notranslate"><span class="pre">polyhedra</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/pyflatsurf_conversion.html"><code class="docutils literal notranslate"><span class="pre">pyflatsurf_conversion</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/rational_cone_surface.html"><code class="docutils literal notranslate"><span class="pre">rational_cone_surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/rational_similarity_surface.html"><code class="docutils literal notranslate"><span class="pre">rational_similarity_surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/relative_homology.html"><code class="docutils literal notranslate"><span class="pre">relative_homology</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/similarity.html"><code class="docutils literal notranslate"><span class="pre">similarity</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/similarity_surface_generators.html"><code class="docutils literal notranslate"><span class="pre">similarity_surface_generators</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/similarity_surface.html"><code class="docutils literal notranslate"><span class="pre">similarity_surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/straight_line_trajectory.html"><code class="docutils literal notranslate"><span class="pre">straight_line_trajectory</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/subfield.html"><code class="docutils literal notranslate"><span class="pre">subfield</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/surface_objects.html"><code class="docutils literal notranslate"><span class="pre">surface_objects</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/surface.html"><code class="docutils literal notranslate"><span class="pre">surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/tangent_bundle.html"><code class="docutils literal notranslate"><span class="pre">tangent_bundle</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/thurston_veech.html"><code class="docutils literal notranslate"><span class="pre">thurston_veech</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/translation_surface.html"><code class="docutils literal notranslate"><span class="pre">translation_surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/xml.html"><code class="docutils literal notranslate"><span class="pre">xml</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../graphical.html">The flatsurf.graphical Package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../graphical/polygon.html"><code class="docutils literal notranslate"><span class="pre">polygon</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../graphical/straight_line_trajectory.html"><code class="docutils literal notranslate"><span class="pre">straight_line_trajectory</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../graphical/surface_point.html"><code class="docutils literal notranslate"><span class="pre">surface_point</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../graphical/surface.html"><code class="docutils literal notranslate"><span class="pre">surface</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <h1>Source code for flatsurf.geometry.subfield</h1><div class="highlight"><pre>
+<span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Various helper functions for computations in number fields.</span>
+
+<span class="sd">References</span>
+
+<span class="sd">.. [KoRoTr2015]</span>
+<span class="sd">    Pierre-Vincent Koseleff, Fabrice Rouillier, Cuong Tran.</span>
+<span class="sd">    On the Sign of a Trigonometric Expression.</span>
+<span class="sd">    ISSAC 2015. Proceedings of the 2015 ACM International</span>
+<span class="sd">    Symposium on Symbolic and Algebraic Computation.</span>
+<span class="sd">    Pages 259--266.</span>
+<span class="sd">    DOI: http://dx.doi.org/10.1145/2755996.2756664</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">sage.misc.misc_c</span> <span class="kn">import</span> <span class="n">prod</span>
+<span class="kn">from</span> <span class="nn">sage.rings.all</span> <span class="kn">import</span> <span class="n">ZZ</span><span class="p">,</span> <span class="n">QQ</span><span class="p">,</span> <span class="n">AA</span><span class="p">,</span> <span class="n">QQbar</span><span class="p">,</span> <span class="n">NumberField</span><span class="p">,</span> <span class="n">polygen</span>
+<span class="kn">from</span> <span class="nn">sage.structure.element</span> <span class="kn">import</span> <span class="n">parent</span>
+<span class="kn">from</span> <span class="nn">sage.modules.free_module</span> <span class="kn">import</span> <span class="n">VectorSpace</span>
+<span class="kn">from</span> <span class="nn">sage.matrix.constructor</span> <span class="kn">import</span> <span class="n">matrix</span>
+<span class="kn">from</span> <span class="nn">sage.categories.homset</span> <span class="kn">import</span> <span class="n">Hom</span>
+<span class="kn">from</span> <span class="nn">sage.categories.fields</span> <span class="kn">import</span> <span class="n">Fields</span>
+<span class="kn">from</span> <span class="nn">sage.rings.qqbar</span> <span class="kn">import</span> <span class="n">do_polred</span>
+
+<div class="viewcode-block" id="number_field_elements_from_algebraics"><a class="viewcode-back" href="../../../geometry/subfield.html#flatsurf.geometry.subfield.number_field_elements_from_algebraics">[docs]</a><span class="k">def</span> <span class="nf">number_field_elements_from_algebraics</span><span class="p">(</span><span class="n">elts</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The native Sage function ``number_field_elements_from_algebraics`` currently</span>
+<span class="sd">    returns number field *without* embedding. This function return field with</span>
+<span class="sd">    embedding!</span>
+
+<span class="sd">    EXAMPLES::</span>
+
+<span class="sd">        sage: from flatsurf.geometry.subfield import number_field_elements_from_algebraics</span>
+<span class="sd">        sage: z = QQbar.zeta(5)</span>
+<span class="sd">        sage: c = z.real()</span>
+<span class="sd">        sage: s = z.imag()</span>
+<span class="sd">        sage: number_field_elements_from_algebraics((c, s))</span>
+<span class="sd">        (Number Field in a with defining polynomial y^4 - 5*y^2 + 5</span>
+<span class="sd">         with a = 1.902113032590308?, [1/2*a^2 - 3/2, 1/2*a])</span>
+<span class="sd">        sage: number_field_elements_from_algebraics([AA(1), AA(2/3)])</span>
+<span class="sd">        (Rational Field, [1, 2/3])</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># case when all elements are rationals</span>
+    <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">x</span> <span class="ow">in</span> <span class="n">QQ</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">elts</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">QQ</span><span class="p">,</span> <span class="p">[</span><span class="n">QQ</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">elts</span><span class="p">]</span>
+
+    <span class="c1"># general case</span>
+    <span class="kn">from</span> <span class="nn">sage.rings.qqbar</span> <span class="kn">import</span> <span class="n">number_field_elements_from_algebraics</span>
+    <span class="n">field</span><span class="p">,</span><span class="n">elts</span><span class="p">,</span><span class="n">phi</span> <span class="o">=</span> <span class="n">number_field_elements_from_algebraics</span><span class="p">(</span><span class="n">elts</span><span class="p">,</span> <span class="n">minimal</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">polys</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">polynomial</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">elts</span><span class="p">]</span>
+    <span class="n">K</span> <span class="o">=</span> <span class="n">NumberField</span><span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">polynomial</span><span class="p">(),</span> <span class="n">name</span><span class="p">,</span> <span class="n">embedding</span><span class="o">=</span><span class="n">AA</span><span class="p">(</span><span class="n">phi</span><span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">gen</span><span class="p">())))</span>
+    <span class="n">gen</span> <span class="o">=</span> <span class="n">K</span><span class="o">.</span><span class="n">gen</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">K</span><span class="p">,</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">polynomial</span><span class="p">()(</span><span class="n">gen</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">elts</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="subfield_from_elements"><a class="viewcode-back" href="../../../geometry/subfield.html#flatsurf.geometry.subfield.subfield_from_elements">[docs]</a><span class="k">def</span> <span class="nf">subfield_from_elements</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">polred</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the subfield generated by the elements ``alpha``.</span>
+
+<span class="sd">    .. NOTE::</span>
+
+<span class="sd">        See https://trac.sagemath.org/ticket/29331</span>
+
+<span class="sd">    INPUT:</span>
+
+<span class="sd">    - ``alpha`` - list of elements in this number field</span>
+
+<span class="sd">    - ``name`` - a name for the generator of the new number field</span>
+
+<span class="sd">    - ``polred`` (boolean, default ``True``) - whether to optimize the generator of</span>
+<span class="sd">      the newly created field</span>
+
+<span class="sd">    - ``threshold`` (positive number, default ``None``) - threshold to be passed to</span>
+<span class="sd">      the ``do_polred`` function</span>
+
+<span class="sd">    EXAMPLES::</span>
+
+<span class="sd">        sage: from flatsurf.geometry.subfield import subfield_from_elements</span>
+
+<span class="sd">        sage: x = polygen(QQ)</span>
+<span class="sd">        sage: poly = x^4 - 4*x^2 + 1</span>
+<span class="sd">        sage: emb = AA.polynomial_root(poly, RIF(0.51, 0.52))</span>
+<span class="sd">        sage: K.&lt;a&gt; = NumberField(poly, embedding=emb)</span>
+<span class="sd">        sage: sqrt2 = -a^3 + 3*a</span>
+<span class="sd">        sage: sqrt3 = -a^2 + 2</span>
+<span class="sd">        sage: assert sqrt2 ** 2 == 2 and sqrt3 ** 2 == 3</span>
+<span class="sd">        sage: L, elts, phi = subfield_from_elements(K, [sqrt2, 1 - sqrt2/3])</span>
+<span class="sd">        sage: L</span>
+<span class="sd">        Number Field in a0 with defining polynomial x^2 - 2 with a0 = 1.414213562373095?</span>
+<span class="sd">        sage: elts</span>
+<span class="sd">        [a0, -1/3*a0 + 1]</span>
+<span class="sd">        sage: phi</span>
+<span class="sd">        Ring morphism:</span>
+<span class="sd">          From: Number Field in a0 with defining polynomial x^2 - 2 with a0 = 1.414213562373095?</span>
+<span class="sd">          To:   Number Field in a with defining polynomial x^4 - 4*x^2 + 1 with a = 0.5176380902050415?</span>
+<span class="sd">          Defn: a0 |--&gt; -a^3 + 3*a</span>
+<span class="sd">        sage: assert phi(elts[0]) == sqrt2</span>
+<span class="sd">        sage: assert phi(elts[1]) == 1 - sqrt2/3</span>
+
+<span class="sd">        sage: L, elts, phi = subfield_from_elements(K, [1, sqrt3])</span>
+<span class="sd">        sage: assert phi(elts[0]) == 1</span>
+<span class="sd">        sage: assert phi(elts[1]) == sqrt3</span>
+
+<span class="sd">    TESTS::</span>
+
+<span class="sd">        sage: from flatsurf.geometry.subfield import subfield_from_elements</span>
+<span class="sd">        sage: x = polygen(QQ)</span>
+
+<span class="sd">        sage: p = x^8 - 12*x^6 + 23*x^4 - 12*x^2 + 1</span>
+<span class="sd">        sage: K.&lt;a&gt; = NumberField(p)</span>
+<span class="sd">        sage: sqrt2 = 6/7*a^7 - 71/7*a^5 + 125/7*a^3 - 43/7*a</span>
+<span class="sd">        sage: sqrt3 = 3/7*a^6 - 32/7*a^4 + 24/7*a^2 + 10/7</span>
+<span class="sd">        sage: sqrt5 = 8/7*a^6 - 90/7*a^4 + 120/7*a^2 - 27/7</span>
+<span class="sd">        sage: assert sqrt2**2 == 2 and sqrt3**2 == 3 and sqrt5**2 == 5</span>
+<span class="sd">        sage: L, elts, phi = subfield_from_elements(K, [sqrt2, sqrt3], name=&#39;b&#39;)</span>
+<span class="sd">        sage: assert phi(elts[0]) == sqrt2</span>
+<span class="sd">        sage: assert phi(elts[1]) == sqrt3</span>
+<span class="sd">        sage: L, elts, phi = subfield_from_elements(K, [sqrt2, sqrt5], name=&#39;b&#39;)</span>
+<span class="sd">        sage: assert phi(elts[0]) == sqrt2</span>
+<span class="sd">        sage: assert phi(elts[1]) == sqrt5</span>
+<span class="sd">        sage: L, elts, phi = subfield_from_elements(K, [sqrt3, sqrt5], name=&#39;b&#39;)</span>
+<span class="sd">        sage: assert phi(elts[0]) == sqrt3</span>
+<span class="sd">        sage: assert phi(elts[1]) == sqrt5</span>
+<span class="sd">        sage: L, elts, phi = subfield_from_elements(K, [-149582/214245 + 21423/5581*sqrt2], name=&#39;b&#39;)</span>
+<span class="sd">        sage: assert L.polynomial() == x^2 - 2</span>
+<span class="sd">        sage: L, elts, phi = subfield_from_elements(K, [131490/777 - 1359/22*sqrt3], name=&#39;b&#39;)</span>
+<span class="sd">        sage: assert L.polynomial() == x^2 - 3</span>
+<span class="sd">        sage: L, elts, phi = subfield_from_elements(K, [12241829/177 - 321121/22459 * sqrt5], name=&#39;b&#39;)</span>
+<span class="sd">        sage: assert L.polynomial() == x^2 - x - 1</span>
+
+<span class="sd">        sage: from sage.rings.qqbar import number_field_elements_from_algebraics</span>
+<span class="sd">        sage: R.&lt;x&gt; = QQ[]</span>
+<span class="sd">        sage: p1 = x^3 - x - 1</span>
+<span class="sd">        sage: roots1 = p1.roots(QQbar, False)</span>
+<span class="sd">        sage: for _ in range(10):</span>
+<span class="sd">        ....:     p2 = R.random_element(degree=2)</span>
+<span class="sd">        ....:     while not p2.is_irreducible(): p2 = R.random_element(degree=2)</span>
+<span class="sd">        ....:     roots2 = p2.roots(QQbar, False)</span>
+<span class="sd">        ....:     K, (a1,b1,c1,a2,b2), phi = number_field_elements_from_algebraics(roots1 + roots2)</span>
+<span class="sd">        ....:     u1 = 1 - a1/17 + 3/7*a1**2</span>
+<span class="sd">        ....:     u2 = 2 + 33/35 * a1</span>
+<span class="sd">        ....:     L, (v1,v2), phi = subfield_from_elements(K, [u1, u2], threshold=100)</span>
+<span class="sd">        ....:     assert L.polynomial() == p1</span>
+<span class="sd">        ....:     assert phi(v1) == u1 and phi(v2) == u2</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">V</span> <span class="o">=</span> <span class="n">VectorSpace</span><span class="p">(</span><span class="n">QQ</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">degree</span><span class="p">())</span>
+    <span class="n">alpha</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">alpha</span><span class="p">]</span>
+
+    <span class="c1"># Rational case (degree 0)</span>
+    <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">a</span> <span class="ow">in</span> <span class="n">QQ</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">alpha</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">QQ</span><span class="p">,</span> <span class="p">[</span><span class="n">QQ</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">alpha</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">coerce_map_from</span><span class="p">(</span><span class="n">QQ</span><span class="p">))</span>
+
+    <span class="c1"># Trivial maximal case (an element generating the field)</span>
+    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">minpoly</span><span class="p">()</span><span class="o">.</span><span class="n">degree</span><span class="p">()</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">degree</span><span class="p">()</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">alpha</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">Hom</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">Fields</span><span class="p">())</span><span class="o">.</span><span class="n">identity</span><span class="p">())</span>
+
+    <span class="c1"># Saturate with multiplication</span>
+    <span class="n">vecs</span> <span class="o">=</span> <span class="p">[(</span><span class="n">a</span> <span class="o">*</span> <span class="n">a</span><span class="o">.</span><span class="n">denominator</span><span class="p">())</span><span class="o">.</span><span class="n">vector</span><span class="p">()</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">alpha</span><span class="p">]</span>
+    <span class="n">U</span> <span class="o">=</span> <span class="n">V</span><span class="o">.</span><span class="n">subspace</span><span class="p">(</span><span class="n">vecs</span><span class="p">)</span>
+    <span class="n">modified</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">while</span> <span class="n">modified</span><span class="p">:</span>
+        <span class="n">modified</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">U</span><span class="o">.</span><span class="n">dimension</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">d</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">degree</span><span class="p">():</span>
+            <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">Hom</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">Fields</span><span class="p">())</span><span class="o">.</span><span class="n">identity</span><span class="p">())</span>
+        <span class="n">B</span> <span class="o">=</span> <span class="n">U</span><span class="o">.</span><span class="n">basis</span><span class="p">()</span>
+        <span class="n">new_vecs</span> <span class="o">=</span> <span class="p">[(</span><span class="bp">self</span><span class="p">(</span><span class="n">B</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">*</span> <span class="bp">self</span><span class="p">(</span><span class="n">B</span><span class="p">[</span><span class="n">j</span><span class="p">]))</span><span class="o">.</span><span class="n">vector</span><span class="p">()</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">d</span><span class="p">)]</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">vv</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">U</span> <span class="k">for</span> <span class="n">vv</span> <span class="ow">in</span> <span class="n">new_vecs</span><span class="p">):</span>
+            <span class="n">U</span> <span class="o">=</span> <span class="n">V</span><span class="o">.</span><span class="n">subspace</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">B</span><span class="p">)</span> <span class="o">+</span> <span class="n">new_vecs</span><span class="p">)</span>
+            <span class="n">modified</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="c1"># Strict subfield, find a generator</span>
+    <span class="n">vgen</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">U</span><span class="o">.</span><span class="n">basis</span><span class="p">():</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="p">(</span><span class="n">b</span><span class="p">)</span><span class="o">.</span><span class="n">minpoly</span><span class="p">()</span><span class="o">.</span><span class="n">degree</span><span class="p">()</span> <span class="o">==</span> <span class="n">d</span><span class="p">:</span>
+            <span class="n">vgen</span> <span class="o">=</span> <span class="n">b</span>
+            <span class="k">break</span>
+    <span class="k">if</span> <span class="n">vgen</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">vgen</span> <span class="o">=</span> <span class="n">U</span><span class="o">.</span><span class="n">random_element</span><span class="p">(</span><span class="n">proba</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">x</span><span class="o">=-</span><span class="n">s</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">s</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="p">(</span><span class="n">vgen</span><span class="p">)</span><span class="o">.</span><span class="n">minpoly</span><span class="p">()</span><span class="o">.</span><span class="n">degree</span><span class="p">()</span> <span class="o">==</span> <span class="n">d</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="n">s</span> <span class="o">*=</span> <span class="mi">2</span>
+
+    <span class="c1"># Minimize the generator via PARI polred</span>
+    <span class="n">gen</span> <span class="o">=</span> <span class="bp">self</span><span class="p">(</span><span class="n">vgen</span><span class="p">)</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">gen</span><span class="o">.</span><span class="n">minpoly</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">polred</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">threshold</span><span class="p">:</span>
+            <span class="n">fwd</span><span class="p">,</span> <span class="n">back</span><span class="p">,</span> <span class="n">q</span> <span class="o">=</span> <span class="n">do_polred</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">threshold</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">fwd</span><span class="p">,</span> <span class="n">back</span><span class="p">,</span> <span class="n">q</span> <span class="o">=</span> <span class="n">do_polred</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">q</span> <span class="o">=</span> <span class="n">p</span>
+        <span class="n">fwd</span> <span class="o">=</span> <span class="n">back</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">polynomial_ring</span><span class="p">()</span><span class="o">.</span><span class="n">gen</span><span class="p">()</span>
+
+    <span class="n">new_gen</span> <span class="o">=</span> <span class="n">fwd</span><span class="p">(</span><span class="n">gen</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">new_gen</span><span class="o">.</span><span class="n">minpoly</span><span class="p">()</span> <span class="o">==</span> <span class="n">q</span>
+    <span class="n">K</span><span class="p">,</span> <span class="n">hom</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subfield</span><span class="p">(</span><span class="n">new_gen</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="c1"># need to express the elements in the basis 1, a, a^2, ..., a^(d-1)</span>
+    <span class="n">M</span> <span class="o">=</span> <span class="n">matrix</span><span class="p">(</span><span class="n">QQ</span><span class="p">,</span> <span class="p">[(</span><span class="n">new_gen</span><span class="o">**</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">vector</span><span class="p">()</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">d</span><span class="p">)])</span>
+    <span class="n">new_alpha</span> <span class="o">=</span> <span class="p">[</span><span class="n">K</span><span class="p">(</span><span class="n">M</span><span class="o">.</span><span class="n">solve_left</span><span class="p">(</span><span class="n">elt</span><span class="o">.</span><span class="n">vector</span><span class="p">()))</span> <span class="k">for</span> <span class="n">elt</span> <span class="ow">in</span> <span class="n">alpha</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">new_alpha</span><span class="p">,</span> <span class="n">hom</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="is_embedded_subfield"><a class="viewcode-back" href="../../../geometry/subfield.html#flatsurf.geometry.subfield.is_embedded_subfield">[docs]</a><span class="k">def</span> <span class="nf">is_embedded_subfield</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">certificate</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return whether there exists a field morphism from ``K`` to ``L`` compatible with</span>
+<span class="sd">    the embeddings.</span>
+
+<span class="sd">    EXAMPLES::</span>
+
+<span class="sd">        sage: from flatsurf.geometry.subfield import is_embedded_subfield</span>
+
+<span class="sd">        sage: x = polygen(QQ)</span>
+<span class="sd">        sage: y = polygen(QQ, &#39;y&#39;)</span>
+<span class="sd">        sage: z = polygen(QQ, &#39;z&#39;)</span>
+<span class="sd">        sage: p = x^4 - 4*x^2 + 1</span>
+<span class="sd">        sage: emb = AA.polynomial_root(p, RIF(0.5, 0.6))</span>
+<span class="sd">        sage: L = NumberField(p, &#39;a&#39;, embedding=emb)</span>
+<span class="sd">        sage: K1 = NumberField(y^2 - 2, &#39;sqrt2&#39;, embedding=AA(2)**(1/2))</span>
+<span class="sd">        sage: K2 = NumberField(z^2 - 2, &#39;msqrt2&#39;, embedding=-AA(2)**(1/2))</span>
+<span class="sd">        sage: is_embedded_subfield(K1, L)</span>
+<span class="sd">        True</span>
+<span class="sd">        sage: is_embedded_subfield(K1, L, True)</span>
+<span class="sd">        (True, Generic morphism:</span>
+<span class="sd">           From: Number Field in sqrt2 with defining polynomial y^2 - 2 with sqrt2 = 1.414213562373095?</span>
+<span class="sd">           To:   Number Field in a with defining polynomial x^4 - 4*x^2 + 1 with a = 0.5176380902050415?</span>
+<span class="sd">           Defn: sqrt2 -&gt; -a^3 + 3*a)</span>
+<span class="sd">        sage: is_embedded_subfield(K2, L, True)</span>
+<span class="sd">        (True, Generic morphism:</span>
+<span class="sd">           From: Number Field in msqrt2 with defining polynomial z^2 - 2 with msqrt2 = -1.414213562373095?</span>
+<span class="sd">           To:   Number Field in a with defining polynomial x^4 - 4*x^2 + 1 with a = 0.5176380902050415?</span>
+<span class="sd">           Defn: msqrt2 -&gt; a^3 - 3*a)</span>
+<span class="sd">        sage: is_embedded_subfield(K1, K2, True)</span>
+<span class="sd">        (True, Generic morphism:</span>
+<span class="sd">           From: Number Field in sqrt2 with defining polynomial y^2 - 2 with sqrt2 = 1.414213562373095?</span>
+<span class="sd">           To:   Number Field in msqrt2 with defining polynomial z^2 - 2 with msqrt2 = -1.414213562373095?</span>
+<span class="sd">           Defn: sqrt2 -&gt; -msqrt2)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="n">K</span><span class="o">.</span><span class="n">coerce_embedding</span><span class="p">()</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+    <span class="k">assert</span> <span class="n">L</span><span class="o">.</span><span class="n">coerce_embedding</span><span class="p">()</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+    <span class="k">assert</span> <span class="n">K</span><span class="o">.</span><span class="n">coerce_embedding</span><span class="p">()</span><span class="o">.</span><span class="n">codomain</span><span class="p">()</span> <span class="o">==</span> <span class="n">L</span><span class="o">.</span><span class="n">coerce_embedding</span><span class="p">()</span><span class="o">.</span><span class="n">codomain</span><span class="p">()</span>
+    <span class="n">pK</span> <span class="o">=</span> <span class="n">K</span><span class="o">.</span><span class="n">polynomial</span><span class="p">()</span>
+    <span class="n">pL</span> <span class="o">=</span> <span class="n">L</span><span class="o">.</span><span class="n">polynomial</span><span class="p">()</span>
+    <span class="n">emb</span> <span class="o">=</span> <span class="n">K</span><span class="o">.</span><span class="n">coerce_embedding</span><span class="p">()</span><span class="o">.</span><span class="n">gen_image</span><span class="p">()</span>
+    <span class="n">P</span> <span class="o">=</span> <span class="n">pL</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span>
+    <span class="n">pK</span> <span class="o">=</span> <span class="n">P</span><span class="p">(</span><span class="n">pK</span><span class="p">)</span>
+    <span class="n">phi</span> <span class="o">=</span> <span class="n">L</span><span class="o">.</span><span class="n">coerce_embedding</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">pK</span><span class="o">.</span><span class="n">roots</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">multiplicities</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">phi</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="o">==</span> <span class="n">emb</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">K</span><span class="o">.</span><span class="n">hom</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="p">[</span><span class="n">r</span><span class="p">]))</span> <span class="k">if</span> <span class="n">certificate</span> <span class="k">else</span> <span class="kc">True</span>
+    <span class="k">return</span> <span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="k">if</span> <span class="n">certificate</span> <span class="k">else</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="chebyshev_T"><a class="viewcode-back" href="../../../geometry/subfield.html#flatsurf.geometry.subfield.chebyshev_T">[docs]</a><span class="k">def</span> <span class="nf">chebyshev_T</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the Chebyshev polynomial T_n so that</span>
+
+<span class="sd">    T_n(2 cos(x)) = 2 cos(n x)</span>
+
+<span class="sd">    .. NOTE::</span>
+
+<span class="sd">        We use the polynomial as defined in [KoRoTr2015]_,</span>
+<span class="sd">        not the Sage version which uses a different normalization.</span>
+
+<span class="sd">    EXAMPLES::</span>
+
+<span class="sd">        sage: from flatsurf.geometry.subfield import chebyshev_T, cos_minpoly</span>
+
+<span class="sd">        sage: x = polygen(ZZ)</span>
+
+<span class="sd">        sage: chebyshev_T(1, x) - 1 == cos_minpoly(3, x)</span>
+<span class="sd">        True</span>
+<span class="sd">        sage: chebyshev_T(2, x) - chebyshev_T(1, x) + 1 == cos_minpoly(5, x)</span>
+<span class="sd">        True</span>
+<span class="sd">        sage: chebyshev_T(3, x) - chebyshev_T(2, x) + chebyshev_T(1, x) - 1 == cos_minpoly(7, x)</span>
+<span class="sd">        True</span>
+
+<span class="sd">        sage: cos_minpoly(5, x)(chebyshev_T(3, x)) == cos_minpoly(15, x) * cos_minpoly(5, x)</span>
+<span class="sd">        True</span>
+<span class="sd">        sage: cos_minpoly(3, x)(chebyshev_T(5, x)) == cos_minpoly(15, x) * cos_minpoly(3, x)</span>
+<span class="sd">        True</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># T_0(x) = 2</span>
+    <span class="c1"># T_1(x) = x</span>
+    <span class="c1"># and T_{n+1}(x) = x T_n(x) - T_{n-1}(x)</span>
+    <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">parent</span><span class="p">(</span><span class="n">c</span><span class="p">)(</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">T0</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">T1</span> <span class="o">=</span> <span class="n">c</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">T0</span><span class="p">,</span> <span class="n">T1</span> <span class="o">=</span> <span class="n">T1</span><span class="p">,</span> <span class="n">c</span> <span class="o">*</span> <span class="n">T1</span> <span class="o">-</span> <span class="n">T0</span>
+    <span class="k">return</span> <span class="n">T1</span></div>
+
+<div class="viewcode-block" id="cos_minpoly_odd_prime"><a class="viewcode-back" href="../../../geometry/subfield.html#flatsurf.geometry.subfield.cos_minpoly_odd_prime">[docs]</a><span class="k">def</span> <span class="nf">cos_minpoly_odd_prime</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">var</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    (-1)^k + (-1)^{k-1} T1 + ... + T_k</span>
+
+<span class="sd">    EXAMPLES::</span>
+
+<span class="sd">        sage: from flatsurf.geometry.subfield import cos_minpoly_odd_prime</span>
+
+<span class="sd">        sage: x = polygen(ZZ)</span>
+
+<span class="sd">        sage: cos_minpoly_odd_prime(3, x)</span>
+<span class="sd">        x - 1</span>
+<span class="sd">        sage: cos_minpoly_odd_prime(5, x)</span>
+<span class="sd">        x^2 - x - 1</span>
+<span class="sd">        sage: cos_minpoly_odd_prime(7, x)</span>
+<span class="sd">        x^3 - x^2 - 2*x + 1</span>
+<span class="sd">        sage: cos_minpoly_odd_prime(11, x)</span>
+<span class="sd">        x^5 - x^4 - 4*x^3 + 3*x^2 + 3*x - 1</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">T0</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">T1</span> <span class="o">=</span> <span class="n">var</span>
+    <span class="n">k</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">//</span><span class="mi">2</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="n">k</span>
+    <span class="n">minpoly</span> <span class="o">=</span> <span class="n">s</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">T1</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">T0</span><span class="p">,</span> <span class="n">T1</span> <span class="o">=</span> <span class="n">T1</span><span class="p">,</span> <span class="n">var</span> <span class="o">*</span> <span class="n">T1</span> <span class="o">-</span> <span class="n">T0</span>
+        <span class="n">minpoly</span> <span class="o">+=</span> <span class="n">s</span> <span class="o">*</span> <span class="n">T1</span>
+        <span class="n">s</span> <span class="o">*=</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="k">return</span> <span class="n">minpoly</span></div>
+
+<div class="viewcode-block" id="cos_minpoly"><a class="viewcode-back" href="../../../geometry/subfield.html#flatsurf.geometry.subfield.cos_minpoly">[docs]</a><span class="k">def</span> <span class="nf">cos_minpoly</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the minimal polynomial of 2 cos pi/n</span>
+
+<span class="sd">    Done via [KoRoTr2015]_ Algorithm 3.</span>
+
+<span class="sd">    EXAMPLES::</span>
+
+<span class="sd">        sage: from flatsurf.geometry.subfield import cos_minpoly</span>
+
+<span class="sd">        sage: cos_minpoly(1)</span>
+<span class="sd">        x + 2</span>
+<span class="sd">        sage: cos_minpoly(2)</span>
+<span class="sd">        x</span>
+<span class="sd">        sage: cos_minpoly(3)</span>
+<span class="sd">        x - 1</span>
+<span class="sd">        sage: cos_minpoly(4)</span>
+<span class="sd">        x^2 - 2</span>
+<span class="sd">        sage: cos_minpoly(5)</span>
+<span class="sd">        x^2 - x - 1</span>
+<span class="sd">        sage: cos_minpoly(6)</span>
+<span class="sd">        x^2 - 3</span>
+<span class="sd">        sage: cos_minpoly(8)</span>
+<span class="sd">        x^4 - 4*x^2 + 2</span>
+<span class="sd">        sage: cos_minpoly(9)</span>
+<span class="sd">        x^3 - 3*x - 1</span>
+<span class="sd">        sage: cos_minpoly(10)</span>
+<span class="sd">        x^4 - 5*x^2 + 5</span>
+
+<span class="sd">        sage: cos_minpoly(90)</span>
+<span class="sd">        x^24 - 24*x^22 + 252*x^20 - 1519*x^18 + 5796*x^16 - 14553*x^14 + 24206*x^12 - 26169*x^10 + 17523*x^8 - 6623*x^6 + 1182*x^4 - 72*x^2 + 1</span>
+<span class="sd">        sage: cos_minpoly(148)</span>
+<span class="sd">        x^72 - 72*x^70 + 2483*x^68 - 54604*x^66 + 860081*x^64 ... - 3511656*x^6 + 77691*x^4 - 684*x^2 + 1</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">ZZ</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+    <span class="n">facs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">factor</span><span class="p">())</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">var</span> <span class="o">=</span> <span class="n">polygen</span><span class="p">(</span><span class="n">ZZ</span><span class="p">,</span> <span class="n">var</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">facs</span><span class="p">:</span>
+        <span class="c1"># 2 cos (pi) = -2</span>
+        <span class="k">return</span> <span class="n">var</span> <span class="o">+</span> <span class="mi">2</span>
+    <span class="k">if</span> <span class="n">facs</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>  <span class="c1"># n is even</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="n">facs</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">facs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">facs</span><span class="p">:</span>
+        <span class="c1"># 0. n = 2^k</span>
+        <span class="c1"># ([KoRoTr2015] Lemma 12)</span>
+        <span class="k">return</span> <span class="n">chebyshev_T</span><span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="p">(</span><span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">var</span><span class="p">)</span>
+
+    <span class="c1"># 1. Compute M_{n0} = M_{p1 ... ps}</span>
+    <span class="c1"># ([KoRoTr2015] Lemma 14 and Lemma 15)</span>
+    <span class="n">M</span> <span class="o">=</span> <span class="n">cos_minpoly_odd_prime</span><span class="p">(</span><span class="n">facs</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">var</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">facs</span><span class="p">)):</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">facs</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">M</span><span class="p">,</span> <span class="n">r</span> <span class="o">=</span> <span class="n">M</span><span class="p">(</span><span class="n">chebyshev_T</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">var</span><span class="p">))</span><span class="o">.</span><span class="n">quo_rem</span><span class="p">(</span><span class="n">M</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">r</span><span class="o">.</span><span class="n">is_zero</span><span class="p">()</span>
+
+    <span class="c1"># 2. Compute M_{2^k p1^{a1} ... ps^{as}}</span>
+    <span class="c1"># ([KoRoTr2015] Lemma 12)</span>
+    <span class="n">nn</span> <span class="o">=</span> <span class="mi">2</span><span class="o">**</span><span class="n">k</span> <span class="o">*</span> <span class="n">prod</span><span class="p">(</span><span class="n">p</span><span class="o">**</span><span class="p">(</span><span class="n">a</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span><span class="p">,</span><span class="n">a</span> <span class="ow">in</span> <span class="n">facs</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">nn</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">M</span> <span class="o">=</span> <span class="n">M</span><span class="p">(</span><span class="n">chebyshev_T</span><span class="p">(</span><span class="n">nn</span><span class="p">,</span> <span class="n">var</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">M</span></div>
+</pre></div>
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2016-2022, the sage-flatsurf authors
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </div>
+</div><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/scripts/furo.js"></script>
+    </body>
+</html>
