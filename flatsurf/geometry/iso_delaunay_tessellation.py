@@ -321,7 +321,7 @@ class IsoDelaunayTessellation(Parent):
         linear_equivalence = flatsurf.Equivalence[S].linear()
         clazz = flatsurf.EquivalenceClass[S](surface_, linear_equivalence)
 
-        if any(clazz == clazz_ for clazz_ in self._surface_classes):
+        if clazz in self._surface_classes:
             tessellation_face_ = self._surface_classes[clazz]
 
             # TODO: We don't need to run the isomorphism() machinery to recover the isomorphism here.
