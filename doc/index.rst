@@ -74,8 +74,10 @@ contains plotting logic, and ``geometry`` containing everything else. The links
 below lead to the documentation for the modules that make up these packages
 with more usage examples and the source code for all the classes and functions
 implemented in sage-flatsurf. (Note that you can also access this documentation
-from an interactive SageMath session with [`?` and
-`??`](https://ipython.readthedocs.io/en/stable/interactive/python-ipython-diff.html#accessing-help).)
+from an interactive SageMath session with |help|_.
+
+.. |help| replace:: ``?`` and ``??``
+.. _help: https://ipython.readthedocs.io/en/stable/interactive/python-ipython-diff.html#accessing-help
 
 .. toctree::
    :maxdepth: 1
