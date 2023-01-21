@@ -607,30 +607,10 @@ makes it so the edge <cite>e</cite> can be glued to its opposite edge by transla
 <dd><p>Return a GraphicalSurface representing this surface.</p>
 <p>By default this returns a cached version of the GraphicalSurface. If
 <code class="docutils literal notranslate"><span class="pre">cached=False</span></code> is provided as a keyword option then a new
-GraphicalSurface is returned. Other keyword options:</p>
-<p>INPUT:</p>
-<ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">cached</span></code> – a boolean (default <code class="docutils literal notranslate"><span class="pre">True</span></code>). If true return a cached
-GraphicalSurface. Otherwise we make a new one.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">polygon_labels</span></code> – a boolean (default <code class="docutils literal notranslate"><span class="pre">True</span></code>) whether the label
-of polygons are displayed</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">edge_labels</span></code> – option to control the display of edge labels. It
-can be one of</p>
-<blockquote>
-<div><ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">False</span></code> or <code class="docutils literal notranslate"><span class="pre">None</span></code> for no labels</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">'gluings'</span></code> – to put on each side of each non-adjacent edge, the
-name of the polygon to which it is glued</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">'number'</span></code> – to put on each side of each edge the number of the
-edge</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">'gluings</span> <span class="pre">and</span> <span class="pre">numbers'</span></code> – full information</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">'letter'</span></code> – add matching letters to glued edges in an arbitrary way</p></li>
-</ul>
-</div></blockquote>
-</li>
-<li><p><code class="docutils literal notranslate"><span class="pre">default_position_function</span></code> – a function mapping polygon labels to
-similarities describing the position of the corresponding polygon.</p></li>
-</ul>
+GraphicalSurface is returned.</p>
+<p>All other parameters are passed on to <code class="xref py py-class docutils literal notranslate"><span class="pre">GraphicalSurface</span></code> or
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">GraphicalSurface.process_options()</span></code>. Note that this mutates the
+cached graphical surface for future calls.</p>
 <p>EXAMPLES:</p>
 <p>Test the difference between the cached graphical_surface and the uncached version:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="o">*</span>
@@ -803,31 +783,8 @@ the pair (<code class="docutils literal notranslate"><span class="pre">l</span><
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.similarity_surface.SimilaritySurface.plot">
 <span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwds</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/similarity_surface.html#SimilaritySurface.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.plot" title="Permalink to this definition">#</a></dt>
-<dd><p>Returns a plot of the surface.</p>
-<p>There may be zero or one argument. If provided the single argument
-should be a GraphicalSurface whick will be used in the plot.</p>
-<p>INPUT:</p>
-<ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">polygon_labels</span></code> – a boolean (default <code class="docutils literal notranslate"><span class="pre">True</span></code>) whether the label
-of polygons are displayed</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">edge_labels</span></code> – option to control the display of edge labels. It
-can be one of</p>
-<blockquote>
-<div><ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">False</span></code> or <code class="docutils literal notranslate"><span class="pre">None</span></code> for no labels</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">'gluings'</span></code> – to put on each side of each non-adjacent edge, the
-name of the polygon to which it is glued</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">'number'</span></code> – to put on each side of each edge the number of the
-edge</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">'gluings</span> <span class="pre">and</span> <span class="pre">number'</span></code> – full information</p></li>
-</ul>
-</div></blockquote>
-</li>
-<li><p><code class="docutils literal notranslate"><span class="pre">adjacencies</span></code> – a list of pairs <code class="docutils literal notranslate"><span class="pre">(p,e)</span></code> to be used to set
-adjacencies of polygons.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">default_position_function</span></code> – a function mapping polygon labels to
-similarities describing the position of the corresponding polygon.</p></li>
-</ul>
+<dd><p>Return a plot of the surface.</p>
+<p>The parameters are passed on to <a class="reference internal" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.graphical_surface" title="flatsurf.geometry.similarity_surface.SimilaritySurface.graphical_surface"><code class="xref py py-meth docutils literal notranslate"><span class="pre">graphical_surface()</span></code></a> and <code class="xref py py-meth docutils literal notranslate"><span class="pre">GraphicalSurface.plot()</span></code>. Consult their documentation for details.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">import</span> <span class="nn">flatsurf</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">flatsurf</span><span class="o">.</span><span class="n">translation_surfaces</span><span class="o">.</span><span class="n">veech_double_n_gon</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
@@ -835,9 +792,16 @@ similarities describing the position of the corresponding polygon.</p></li>
 <span class="n">Graphics</span> <span class="nb">object</span> <span class="n">consisting</span> <span class="n">of</span> <span class="mi">21</span> <span class="n">graphics</span> <span class="n">primitives</span>
 </pre></div>
 </div>
-<p>TESTS:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
-<span class="n">Graphics</span> <span class="nb">object</span> <span class="n">consisting</span> <span class="n">of</span> <span class="mi">21</span> <span class="n">graphics</span> <span class="n">primitives</span>
+<p>Keywords are passed on to the underlying plotting routines, see
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">GraphicalSurface.plot()</span></code> for details:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">fill</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="o">...</span><span class="n">Graphics</span> <span class="nb">object</span> <span class="n">consisting</span> <span class="n">of</span> <span class="mi">21</span> <span class="n">graphics</span> <span class="n">primitives</span>
+</pre></div>
+</div>
+<p>Note that some keywords mutate the underlying cached graphical surface,
+see <a class="reference internal" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.graphical_surface" title="flatsurf.geometry.similarity_surface.SimilaritySurface.graphical_surface"><code class="xref py py-meth docutils literal notranslate"><span class="pre">graphical_surface()</span></code></a>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">edge_labels</span><span class="o">=</span><span class="s1">&#39;gluings and number&#39;</span><span class="p">)</span>
+<span class="o">...</span><span class="n">Graphics</span> <span class="nb">object</span> <span class="n">consisting</span> <span class="n">of</span> <span class="mi">23</span> <span class="n">graphics</span> <span class="n">primitives</span>
 </pre></div>
 </div>
 </dd></dl>

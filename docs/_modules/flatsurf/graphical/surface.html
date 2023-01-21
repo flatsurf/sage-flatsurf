@@ -295,6 +295,7 @@
 <span class="kn">from</span> <span class="nn">sage.rings.rational_field</span> <span class="kn">import</span> <span class="n">QQ</span>
 <span class="kn">from</span> <span class="nn">sage.modules.free_module_element</span> <span class="kn">import</span> <span class="n">vector</span>
 
+
 <div class="viewcode-block" id="GraphicalSurface"><a class="viewcode-back" href="../../../graphical/surface.html#flatsurf.graphical.surface.GraphicalSurface">[docs]</a><span class="k">class</span> <span class="nc">GraphicalSurface</span><span class="p">:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This class manages the rendering of a SimilaritySurface.</span>
@@ -304,7 +305,7 @@
 <span class="sd">    stores options which are passed to the polygons when they are rendered.</span>
 
 <span class="sd">    Some setup features set in the constructor and can be set again later via</span>
-<span class="sd">    `process_options()`.</span>
+<span class="sd">    :meth:`process_options`.</span>
 
 <span class="sd">    The basic tasks of the class are to render the polygons, edges and labels.</span>
 <span class="sd">    To customize a rendering, it is useful to know something about how this</span>
@@ -313,59 +314,90 @@
 <span class="sd">    There are attributes which control whether or not certain objects are</span>
 <span class="sd">    rendered, namely:</span>
 
-<span class="sd">    - `will_plot_polygons` -- Whether to plot polygons which are right-side up.</span>
+<span class="sd">    - ``will_plot_polygons`` -- Whether to plot polygons which are right-side up.</span>
 
-<span class="sd">    - `will_plot_upside_down_polygons` -- Whether to plot polygons which are</span>
+<span class="sd">    - ``will_plot_upside_down_polygons`` -- Whether to plot polygons which are</span>
 <span class="sd">        upside down. Defaults to False.</span>
 
-<span class="sd">    - `will_plot_polygon_labels` -- Whether to plot polygon labels.</span>
+<span class="sd">    - ``will_plot_polygon_labels`` -- Whether to plot polygon labels.</span>
 
-<span class="sd">    - `will_plot_edges` -- If this is False then no edges will be plotted.</span>
+<span class="sd">    - ``will_plot_edges`` -- If this is False then no edges will be plotted.</span>
 
-<span class="sd">    - `will_plot_non_adjacent_edges` = Whether to plot polygon edges which are</span>
+<span class="sd">    - ``will_plot_non_adjacent_edges`` = Whether to plot polygon edges which are</span>
 <span class="sd">        not adjacent to the edge it is glued to.</span>
 
-<span class="sd">    - `will_plot_adjacent_edges` -- Whether to plot polygon edges which are</span>
+<span class="sd">    - ``will_plot_adjacent_edges`` -- Whether to plot polygon edges which are</span>
 <span class="sd">        adjacent to the polygon they are glued to.</span>
 
-<span class="sd">    - `will_plot_self_glued_edges` -- Whether to plot polygon edges which are</span>
+<span class="sd">    - ``will_plot_self_glued_edges`` -- Whether to plot polygon edges which are</span>
 <span class="sd">        glued to themselves.</span>
 
-<span class="sd">    - `will_plot_edge_labels` -- Whether to plot polygon edges labels.</span>
+<span class="sd">    - ``will_plot_edge_labels`` -- Whether to plot polygon edges labels.</span>
 
-<span class="sd">    - `will_plot_zero_flags` -- Whether to plot line segments from the</span>
+<span class="sd">    - ``will_plot_zero_flags`` -- Whether to plot line segments from the</span>
 <span class="sd">        baricenter to the zero vertex of each polygon. Useful in working out</span>
 <span class="sd">        vertex and edge labels. Defaults to False.</span>
 
-<span class="sd">    The `plot` method calls some other built in methods: `plot_polygon`,</span>
-<span class="sd">    `plot_polygon_label`, `plot_edge` and `plot_edge_label`. These in turn</span>
-<span class="sd">    call methods in `GraphicalPolygon`.</span>
+<span class="sd">    The :meth:`plot` method calls some other built in methods: :meth:`plot_polygon`,</span>
+<span class="sd">    :meth:`plot_polygon_label`, :meth:`plot_edge` and :meth:`plot_edge_label`. These in turn</span>
+<span class="sd">    call methods in :class:`GraphicalPolygon`.</span>
 
-<span class="sd">    - `polygon_options` -- Options passed to :func:`graphical_polygon.GraphicalPolygon.plot_polygon` when</span>
+<span class="sd">    - ``polygon_options`` -- Options passed to :meth:`graphical_polygon.GraphicalPolygon.plot_polygon` when</span>
 <span class="sd">        plotting a polygon right-side up.</span>
 
-<span class="sd">    - `upside_down_polygon_options` -- Options passed to</span>
-<span class="sd">        :func:`graphical_polygon.GraphicalPolygon.plot_polygon` when plotting a polygon upside-down.</span>
+<span class="sd">    - ``upside_down_polygon_options`` -- Options passed to</span>
+<span class="sd">        :meth:`graphical_polygon.GraphicalPolygon.plot_polygon` when plotting a polygon upside-down.</span>
 
-<span class="sd">    - `polygon_label_options` -- Options passed to :func:`graphical_polygon.GraphicalPolygon.plot_label`</span>
+<span class="sd">    - ``polygon_label_options`` -- Options passed to :meth:`graphical_polygon.GraphicalPolygon.plot_label`</span>
 <span class="sd">        when plotting a polygon label.</span>
 
-<span class="sd">    - `non_adjacent_edge_options` -- Options passed to</span>
-<span class="sd">        :func:`graphical_polygon.GraphicalPolygon.plot_edge` when plotting a polygon edge which is not</span>
+<span class="sd">    - ``non_adjacent_edge_options`` -- Options passed to</span>
+<span class="sd">        :meth:`graphical_polygon.GraphicalPolygon.plot_edge` when plotting a polygon edge which is not</span>
 <span class="sd">        adjacent to the edge it is glued to.</span>
 
-<span class="sd">    - `self.adjacent_edge_options` -- Options passed to</span>
-<span class="sd">        :func:`graphical_polygon.GraphicalPolygon.plot_edge` when plotting a polygon edge which is</span>
+<span class="sd">    - ``adjacent_edge_options`` -- Options passed to</span>
+<span class="sd">        :meth:`graphical_polygon.GraphicalPolygon.plot_edge` when plotting a polygon edge which is</span>
 <span class="sd">        adjacent to the edge it is glued to.</span>
 
-<span class="sd">    - `self_glued_edge_options` -- Options passed to :func:`graphical_polygon.GraphicalPolygon.plot_edge`</span>
+<span class="sd">    - ``self_glued_edge_options`` -- Options passed to :meth:`graphical_polygon.GraphicalPolygon.plot_edge`</span>
 <span class="sd">        when plotting a polygon edge which is glued to itself.</span>
 
-<span class="sd">    - `edge_label_options` -- Options passed to :func:`graphical_polygon.GraphicalPolygon.edge_label`</span>
+<span class="sd">    - ``edge_label_options`` -- Options passed to :meth:`graphical_polygon.GraphicalPolygon.edge_label`</span>
 <span class="sd">        when plotting a edge label.</span>
 
-<span class="sd">    - `zero_flag_options` -- Options passed to</span>
-<span class="sd">        :func:`graphical_polygon.GraphicalPolygon.plot_zero_flag` when plotting a zero_flag.</span>
+<span class="sd">    - ``zero_flag_options`` -- Options passed to</span>
+<span class="sd">        :meth:`graphical_polygon.GraphicalPolygon.plot_zero_flag` when plotting a zero_flag.</span>
+
+<span class="sd">    INPUT:</span>
+
+<span class="sd">    - ``similarity_surface`` -- a similarity surface</span>
+
+<span class="sd">    - ``polygon_labels`` -- a boolean (default ``True``) whether the label</span>
+<span class="sd">      of polygons are displayed</span>
+
+<span class="sd">    - ``edge_labels`` -- option to control the display of edge labels. It</span>
+<span class="sd">      can be one of</span>
+
+<span class="sd">        - ``False`` or ``None`` for no labels</span>
+
+<span class="sd">        - ``&#39;gluings&#39;`` -- to put on each side of each non-adjacent edge, the</span>
+<span class="sd">          name of the polygon to which it is glued</span>
+
+<span class="sd">        - ``&#39;number&#39;`` -- to put on each side of each edge the number of the</span>
+<span class="sd">          edge</span>
+
+<span class="sd">        - ``&#39;gluings and number&#39;`` -- full information</span>
+
+<span class="sd">        - ``&#39;letter&#39;`` -- add matching letters to glued edges in an arbitrary way</span>
+
+<span class="sd">    - ``adjacencies`` -- a list of pairs ``(p,e)`` to be used to set</span>
+<span class="sd">      adjacencies of polygons.</span>
+
+<span class="sd">    - ``default_position_function`` -- a function mapping polygon labels to</span>
+<span class="sd">      similarities describing the position of the corresponding polygon.</span>
+
+<span class="sd">    If adjacencies is not defined and the surface is finite, make_all_visible()</span>
+<span class="sd">    is called to make all polygons visible.</span>
 
 <span class="sd">    EXAMPLES::</span>
 
@@ -377,43 +409,10 @@
 <span class="sd">        sage: gs.polygon_options[&quot;color&quot;]=&quot;red&quot;</span>
 <span class="sd">        sage: gs.plot()</span>
 <span class="sd">        ...Graphics object consisting of 13 graphics primitives</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">similarity_surface</span><span class="p">,</span> <span class="n">adjacencies</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">polygon_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">edge_labels</span><span class="o">=</span><span class="s2">&quot;gluings&quot;</span><span class="p">,</span> <span class="n">default_position_function</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Construct a GraphicalSurface from a similarity surface.</span>
-
-<span class="sd">        INPUT:</span>
-
-<span class="sd">        - ``similarity_surface`` -- a similarity surface</span>
-
-<span class="sd">        - ``polygon_labels`` -- a boolean (default ``True``) whether the label</span>
-<span class="sd">          of polygons are displayed</span>
-
-<span class="sd">        - ``edge_labels`` -- option to control the display of edge labels. It</span>
-<span class="sd">          can be one of</span>
-
-<span class="sd">            - ``False`` or ``None`` for no labels</span>
-
-<span class="sd">            - ``&#39;gluings&#39;`` -- to put on each side of each non-adjacent edge, the</span>
-<span class="sd">              name of the polygon to which it is glued</span>
-
-<span class="sd">            - ``&#39;number&#39;`` -- to put on each side of each edge the number of the</span>
-<span class="sd">              edge</span>
-
-<span class="sd">            - ``&#39;gluings and number&#39;`` -- full information</span>
-
-<span class="sd">            - ``&#39;letter&#39;`` -- add matching letters to glued edges in an arbitrary way</span>
-
-<span class="sd">        - ``adjacencies`` -- a list of pairs ``(p,e)`` to be used to set</span>
-<span class="sd">          adjacencies of polygons.</span>
-
-<span class="sd">        - ``default_position_function`` -- a function mapping polygon labels to</span>
-<span class="sd">          similarities describing the position of the corresponding polygon.</span>
-
-<span class="sd">        If adjacencies is not defined and the surface is finite, make_all_visible()</span>
-<span class="sd">        is called to make all polygons visible.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">similarity_surface</span><span class="p">,</span> <span class="n">SimilaritySurface</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ss</span> <span class="o">=</span> <span class="n">similarity_surface</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_default_position_function</span> <span class="o">=</span> <span class="n">default_position_function</span>
@@ -431,7 +430,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">polygon_options</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;lightgray&quot;</span><span class="p">}</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Options passed to :func:`graphical_polygon.GraphicalPolygon.plot_polygon` when plotting a polygon right-side up.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Options passed to :meth:`graphical_polygon.GraphicalPolygon.plot_polygon` when plotting a polygon right-side up.&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">will_plot_upside_down_polygons</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -439,7 +438,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">upside_down_polygon_options</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;lightgray&quot;</span><span class="p">,</span> <span class="s2">&quot;zorder&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">}</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Options passed to :func:`graphical_polygon.GraphicalPolygon.plot_polygon` when plotting a polygon upside-down.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Options passed to :meth:`graphical_polygon.GraphicalPolygon.plot_polygon` when plotting a polygon upside-down.&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">will_plot_polygon_labels</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -447,7 +446,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">polygon_label_options</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="s2">&quot;vertical_alignment&quot;</span><span class="p">:</span> <span class="s2">&quot;center&quot;</span><span class="p">,</span> <span class="s2">&quot;horizontal_alignment&quot;</span><span class="p">:</span> <span class="s2">&quot;center&quot;</span><span class="p">}</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Options passed to :func:`graphical_polygon.GraphicalPolygon.plot_label` when plotting a polygon label.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Options passed to :meth:`graphical_polygon.GraphicalPolygon.plot_label` when plotting a polygon label.&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">will_plot_edges</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -460,7 +459,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">non_adjacent_edge_options</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;blue&quot;</span><span class="p">}</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Options passed to :func:`graphical_polygon.GraphicalPolygon.plot_edge` when plotting a polygon edge</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Options passed to :meth:`graphical_polygon.GraphicalPolygon.plot_edge` when plotting a polygon edge</span>
 <span class="sd">        which is not adjacent to the edge it is glued to.&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">will_plot_adjacent_edges</span> <span class="o">=</span> <span class="kc">True</span>
@@ -469,7 +468,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">adjacent_edge_options</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;blue&quot;</span><span class="p">,</span> <span class="s2">&quot;linestyle&quot;</span><span class="p">:</span> <span class="s2">&quot;:&quot;</span><span class="p">}</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Options passed to :func:`graphical_polygon.GraphicalPolygon.plot_edge`</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Options passed to :meth:`graphical_polygon.GraphicalPolygon.plot_edge`</span>
 <span class="sd">        when plotting a polygon edge which is adjacent to the edge it is glued to.&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">will_plot_self_glued_edges</span> <span class="o">=</span> <span class="kc">True</span>
@@ -478,7 +477,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">self_glued_edge_options</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;red&quot;</span><span class="p">}</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Options passed to :func:`graphical_polygon.GraphicalPolygon.plot_edge` when plotting a polygon edge</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Options passed to :meth:`graphical_polygon.GraphicalPolygon.plot_edge` when plotting a polygon edge</span>
 <span class="sd">        which is glued to itself.&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">will_plot_edge_labels</span> <span class="o">=</span> <span class="kc">True</span>
@@ -487,7 +486,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">edge_label_options</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;blue&quot;</span><span class="p">}</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Options passed to :func:`graphical_polygon.GraphicalPolygon.edge_label` when plotting a polygon label.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Options passed to :meth:`graphical_polygon.GraphicalPolygon.edge_label` when plotting a polygon label.&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">will_plot_zero_flags</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -495,7 +494,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">zero_flag_options</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;green&quot;</span><span class="p">,</span> <span class="s2">&quot;thickness&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">}</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Options passed to :func:`graphical_polygon.GraphicalPolygon.plot_zero_flag` when plotting a zero_flag.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Options passed to :meth:`graphical_polygon.GraphicalPolygon.plot_zero_flag` when plotting a zero_flag.&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">process_options</span><span class="p">(</span><span class="n">adjacencies</span><span class="o">=</span><span class="n">adjacencies</span><span class="p">,</span> <span class="n">polygon_labels</span><span class="o">=</span><span class="n">polygon_labels</span><span class="p">,</span> <span class="n">edge_labels</span><span class="o">=</span><span class="n">edge_labels</span><span class="p">)</span>
 
@@ -506,33 +505,7 @@
 
 <span class="sd">        INPUT:</span>
 
-<span class="sd">        - ``adjacencies`` -- a list of pairs ``(p,e)`` to be used to set</span>
-<span class="sd">          adjacencies of polygons.</span>
-
-<span class="sd">        - ``polygon_labels`` -- a boolean (default ``True``) whether the label</span>
-<span class="sd">          of polygons are displayed</span>
-
-<span class="sd">        - ``edge_labels`` -- option to control the display of edge labels. It</span>
-<span class="sd">          can be one of</span>
-
-<span class="sd">            - ``None`` for no change</span>
-
-<span class="sd">            - ``False`` for no labels</span>
-
-<span class="sd">            - ``&#39;gluings&#39;`` -- to put on each side of each non-adjacent edge, the</span>
-<span class="sd">              name of the polygon to which it is glued</span>
-
-<span class="sd">            - ``&#39;number&#39;`` -- to put on each side of each edge the number of the</span>
-<span class="sd">              edge</span>
-
-<span class="sd">            - ``&#39;gluings and number&#39;`` -- full information</span>
-
-<span class="sd">            - ``&#39;letter&#39;`` -- add matching letters to glued edges in an arbitrary way</span>
-
-<span class="sd">        - ``default_position_function`` -- a function mapping polygon labels to</span>
-<span class="sd">          similarities describing the position of the corresponding polygon.</span>
-<span class="sd">          Note that this will not affect polygons which have already been</span>
-<span class="sd">          positioned.</span>
+<span class="sd">        Consult :class:`GraphicalSurface` for the possible arguments.</span>
 
 <span class="sd">        TESTS::</span>
 
@@ -596,7 +569,7 @@
 <span class="sd">            sage: gs2.polygon_options</span>
 <span class="sd">            {&#39;color&#39;: &#39;yellow&#39;}</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">gs</span> <span class="o">=</span> <span class="n">GraphicalSurface</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_surface</span><span class="p">(),</span> <span class="n">default_position_function</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_position_function</span><span class="p">)</span>
+        <span class="n">gs</span> <span class="o">=</span> <span class="n">GraphicalSurface</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_surface</span><span class="p">(),</span> <span class="n">default_position_function</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_default_position_function</span><span class="p">)</span>
 
         <span class="c1"># Copy plot options</span>
         <span class="n">gs</span><span class="o">.</span><span class="n">will_plot_polygons</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">will_plot_polygons</span>
@@ -618,7 +591,7 @@
         <span class="n">gs</span><span class="o">.</span><span class="n">zero_flag_options</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">zero_flag_options</span><span class="p">)</span>
 
         <span class="c1"># Copy polygons and visible set.</span>
-        <span class="n">gs</span><span class="o">.</span><span class="n">_polygons</span> <span class="o">=</span> <span class="p">{</span><span class="n">label</span><span class="p">:</span><span class="n">gp</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">for</span> <span class="n">label</span><span class="p">,</span><span class="n">gp</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_polygons</span><span class="p">)}</span>
+        <span class="n">gs</span><span class="o">.</span><span class="n">_polygons</span> <span class="o">=</span> <span class="p">{</span><span class="n">label</span><span class="p">:</span> <span class="n">gp</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">gp</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_polygons</span><span class="p">)}</span>
         <span class="n">gs</span><span class="o">.</span><span class="n">_visible</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_visible</span><span class="p">)</span>
         <span class="n">gs</span><span class="o">.</span><span class="n">_edge_labels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_labels</span>
 
@@ -917,7 +890,7 @@
 <span class="sd">            to ``SimilaritySurface.surface_point``.</span>
 
 <span class="sd">        - ``search_all`` -- (default ``False``) By default we look just in</span>
-<span class="sd">            polygons with visible label. If set to `True``, then we instead</span>
+<span class="sd">            polygons with visible label. If set to ``True``, then we instead</span>
 <span class="sd">            look in all labels.</span>
 
 <span class="sd">        - ``search_limit`` -- (default ``None``) If ``search_all`` is ``True``,</span>
@@ -1116,9 +1089,9 @@
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Internal method for plotting polygons returning a Graphics object.</span>
 
-<span class="sd">        Calls :func:`graphical_polygon.GraphicalPolygon.plot_polygon` passing</span>
-<span class="sd">        the attribute `upside_down_polygon_options` if the polygon is upside down</span>
-<span class="sd">        and `polygon_options` otherwise.</span>
+<span class="sd">        Calls :meth:`graphical_polygon.GraphicalPolygon.plot_polygon` passing</span>
+<span class="sd">        the attribute ``upside_down_polygon_options`` if the polygon is upside down</span>
+<span class="sd">        and ``polygon_options`` otherwise.</span>
 
 <span class="sd">        Override this method for fine control of how the polygons are drawn.</span>
 
@@ -1139,8 +1112,8 @@
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Internal method for plotting polygon labels returning a Graphics2D.</span>
 
-<span class="sd">        Calls :func:`graphical_polygon.GraphicalPolygon.plot_polygon_label` passing</span>
-<span class="sd">        the attribute `polygon_label_options`.</span>
+<span class="sd">        Calls :meth:`graphical_polygon.GraphicalPolygon.plot_polygon_label` passing</span>
+<span class="sd">        the attribute ``polygon_label_options``.</span>
 
 <span class="sd">        Override this method for fine control of how the polygons are drawn.</span>
 
@@ -1152,15 +1125,15 @@
 
 <span class="sd">        - ``upside_down`` -- True if and only if the polygon will be rendered upside down.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">graphical_polygon</span><span class="o">.</span><span class="n">plot_label</span><span class="p">(</span><span class="n">label</span><span class="p">,</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">polygon_label_options</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">graphical_polygon</span><span class="o">.</span><span class="n">plot_label</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">polygon_label_options</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="GraphicalSurface.plot_edge"><a class="viewcode-back" href="../../../graphical/surface.html#flatsurf.graphical.surface.GraphicalSurface.plot_edge">[docs]</a>    <span class="k">def</span> <span class="nf">plot_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">graphical_polygon</span><span class="p">,</span> <span class="n">is_adjacent</span><span class="p">,</span> <span class="n">is_self_glued</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Internal method for plotting a polygon&#39;s edge returning a Graphics2D.</span>
 
-<span class="sd">        The method calls :func:`graphical_polygon.GraphicalPolygon.plot_edge`.</span>
+<span class="sd">        The method calls :meth:`graphical_polygon.GraphicalPolygon.plot_edge`.</span>
 <span class="sd">        Depending on the geometry of the edge pair, it passes one of the attributes</span>
-<span class="sd">        `adjacent_edge_options`, `self_glued_edge_options` or `non_adjacent_edge_options`.</span>
+<span class="sd">        ``adjacent_edge_options``, ``self_glued_edge_options`` or ``non_adjacent_edge_options``.</span>
 
 <span class="sd">        Override this method for fine control of how the edge is drawn.</span>
 
@@ -1188,8 +1161,8 @@
 <div class="viewcode-block" id="GraphicalSurface.plot_edge_label"><a class="viewcode-back" href="../../../graphical/surface.html#flatsurf.graphical.surface.GraphicalSurface.plot_edge_label">[docs]</a>    <span class="k">def</span> <span class="nf">plot_edge_label</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">edge_label</span><span class="p">,</span> <span class="n">graphical_polygon</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Internal method for plotting an edge label.</span>
-<span class="sd">        Calls :func:`graphical_polygon.GraphicalPolygon.plot_edge_label` passing</span>
-<span class="sd">        the attribute `edge_label_options`.</span>
+<span class="sd">        Calls :meth:`graphical_polygon.GraphicalPolygon.plot_edge_label` passing</span>
+<span class="sd">        the attribute ``edge_label_options``.</span>
 
 <span class="sd">        Override this method for fine control of how the edge is drawn.</span>
 
@@ -1208,8 +1181,8 @@
 <div class="viewcode-block" id="GraphicalSurface.plot_zero_flag"><a class="viewcode-back" href="../../../graphical/surface.html#flatsurf.graphical.surface.GraphicalSurface.plot_zero_flag">[docs]</a>    <span class="k">def</span> <span class="nf">plot_zero_flag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">graphical_polygon</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Internal method for plotting a polygon&#39;s zero_flag and returning a Graphics2D.</span>
-<span class="sd">        Simply calls :func:`graphical_polygon.GraphicalPolygon.plot_zero_flag` passing</span>
-<span class="sd">        the attribute `zero_flag_options`.</span>
+<span class="sd">        Simply calls :meth:`graphical_polygon.GraphicalPolygon.plot_zero_flag` passing</span>
+<span class="sd">        the attribute` `zero_flag_options``.</span>
 
 <span class="sd">        Override this method for fine control of how the edge is drawn.</span>
 
@@ -1221,9 +1194,17 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">graphical_polygon</span><span class="o">.</span><span class="n">plot_zero_flag</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">zero_flag_options</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="GraphicalSurface.plot"><a class="viewcode-back" href="../../../graphical/surface.html#flatsurf.graphical.surface.GraphicalSurface.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="GraphicalSurface.plot"><a class="viewcode-back" href="../../../graphical/surface.html#flatsurf.graphical.surface.GraphicalSurface.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns a plot of the GraphicalSurface</span>
+<span class="sd">        Return a plot of this surface.</span>
+
+<span class="sd">        INPUT:</span>
+
+<span class="sd">        - ``kwargs`` -- arguments are normally forwarded to the polygon</span>
+<span class="sd">          plotting. However, prefixed arguments, e.g., ``polygon_label_color``,</span>
+<span class="sd">          are routed correspondingly. Also, a dictionary suffixed with</span>
+<span class="sd">          ``_options`` is merged with the existing options of this surface. See</span>
+<span class="sd">          examples below for details.</span>
 
 <span class="sd">        EXAMPLES::</span>
 
@@ -1234,6 +1215,27 @@
 <span class="sd">            sage: gs.plot()</span>
 <span class="sd">            ...Graphics object consisting of 13 graphics primitives</span>
 
+<span class="sd">        Keyword arguments that end in ``_options`` are merged into the</span>
+<span class="sd">        corresponding attribute before plotting; see :class:`GraphicalSurface`</span>
+<span class="sd">        for a list of all supported ``_options``::</span>
+
+<span class="sd">            sage: gs.plot(polygon_label_options={&quot;color&quot;: &quot;red&quot;})</span>
+<span class="sd">            ...Graphics object consisting of 13 graphics primitives</span>
+
+<span class="sd">        Keyword arguments that are prefixed with such an aspect of plotting,</span>
+<span class="sd">        are also merged into the corresponding attribute before plotting; see</span>
+<span class="sd">        :class:`GraphicalSurface` for a list of all supported prefixes, i.e.,</span>
+<span class="sd">        ``_options``::</span>
+
+<span class="sd">            sage: gs.plot(polygon_label_color=&quot;red&quot;)</span>
+<span class="sd">            ...Graphics object consisting of 13 graphics primitives</span>
+
+<span class="sd">        All other arguments are passed to the polygon plotting itself::</span>
+
+<span class="sd">            sage: gs.plot(fill=None)</span>
+<span class="sd">            ...Graphics object consisting of 13 graphics primitives</span>
+
+<span class="sd">        TESTS:</span>
 
 <span class="sd">        Check that label options are handled correctly::</span>
 
@@ -1247,6 +1249,29 @@
 <span class="sd">            sage: S.plot(polygon_labels=False, edge_labels=False)</span>
 <span class="sd">            ...Graphics object consisting of 5 graphics primitives</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">surface</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+            <span class="n">options</span> <span class="o">=</span> <span class="p">[</span><span class="n">option</span> <span class="k">for</span> <span class="n">option</span> <span class="ow">in</span> <span class="n">surface</span><span class="o">.</span><span class="vm">__dict__</span> <span class="k">if</span> <span class="n">option</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;_options&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">option</span> <span class="o">!=</span> <span class="s2">&quot;process_options&quot;</span><span class="p">]</span>
+            <span class="c1"># Sort recognized options so we do not pass polygon_label_color to</span>
+            <span class="c1"># polygon_options as label_color.</span>
+            <span class="n">options</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">option</span><span class="p">:</span> <span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">option</span><span class="p">))</span>
+
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">options</span><span class="p">:</span>
+                    <span class="nb">setattr</span><span class="p">(</span><span class="n">surface</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="p">{</span><span class="o">**</span><span class="nb">getattr</span><span class="p">(</span><span class="n">surface</span><span class="p">,</span> <span class="n">key</span><span class="p">),</span> <span class="o">**</span><span class="n">value</span><span class="p">})</span>
+                    <span class="k">continue</span>
+
+                <span class="k">for</span> <span class="n">option</span> <span class="ow">in</span> <span class="n">options</span><span class="p">:</span>
+                    <span class="n">prefix</span> <span class="o">=</span> <span class="n">option</span><span class="p">[:</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="s2">&quot;options&quot;</span><span class="p">)]</span>
+                    <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span> <span class="ow">and</span> <span class="n">key</span> <span class="o">!=</span> <span class="n">prefix</span><span class="p">:</span>
+                        <span class="nb">getattr</span><span class="p">(</span><span class="n">surface</span><span class="p">,</span> <span class="n">option</span><span class="p">)[</span><span class="n">key</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">prefix</span><span class="p">):]]</span> <span class="o">=</span> <span class="n">value</span>
+                        <span class="k">break</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">surface</span><span class="o">.</span><span class="n">polygon_options</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+            <span class="k">return</span> <span class="n">surface</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+
         <span class="kn">from</span> <span class="nn">sage.plot.graphics</span> <span class="kn">import</span> <span class="n">Graphics</span>
         <span class="n">p</span> <span class="o">=</span> <span class="n">Graphics</span><span class="p">()</span>
 
@@ -1255,16 +1280,16 @@
 
         <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_visible</span><span class="p">:</span>
             <span class="n">polygon</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graphical_polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
-            <span class="n">upside_down</span> <span class="o">=</span> <span class="n">polygon</span><span class="o">.</span><span class="n">transformation</span><span class="p">()</span><span class="o">.</span><span class="n">sign</span><span class="p">()</span><span class="o">==-</span><span class="mi">1</span>
+            <span class="n">upside_down</span> <span class="o">=</span> <span class="n">polygon</span><span class="o">.</span><span class="n">transformation</span><span class="p">()</span><span class="o">.</span><span class="n">sign</span><span class="p">()</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span>
 
             <span class="c1"># Plot the polygons</span>
             <span class="k">if</span> <span class="n">upside_down</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">will_plot_upside_down_polygons</span><span class="p">:</span>
-                    <span class="n">p</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot_polygon</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">polygon</span><span class="p">,</span> <span class="n">upside_down</span><span class="p">)</span>
+                <span class="n">p</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot_polygon</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">polygon</span><span class="p">,</span> <span class="n">upside_down</span><span class="p">)</span>
             <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">will_plot_polygons</span><span class="p">:</span>
                 <span class="n">p</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot_polygon</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">polygon</span><span class="p">,</span> <span class="n">upside_down</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">will_plot_zero_flags</span><span class="p">:</span>
-                <span class="n">p</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot_zero_flag</span><span class="p">(</span><span class="n">label</span><span class="p">,</span><span class="n">polygon</span><span class="p">)</span>
+                <span class="n">p</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot_zero_flag</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">polygon</span><span class="p">)</span>
 
             <span class="c1"># Add the polygon label</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">will_plot_polygon_labels</span><span class="p">:</span>
@@ -1273,11 +1298,11 @@
             <span class="c1"># Plot the edges</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">will_plot_edges</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()):</span>
-                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_adjacent</span><span class="p">(</span><span class="n">label</span><span class="p">,</span><span class="n">i</span><span class="p">):</span>
-                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">will_plot_adjacent_edges</span> <span class="ow">and</span> <span class="p">(</span><span class="n">label</span><span class="p">,</span><span class="n">i</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">plotted_adjacent_edges</span><span class="p">:</span>
-                            <span class="n">plotted_adjacent_edges</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">label</span><span class="p">,</span><span class="n">i</span><span class="p">))</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_adjacent</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">will_plot_adjacent_edges</span> <span class="ow">and</span> <span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">plotted_adjacent_edges</span><span class="p">:</span>
+                            <span class="n">plotted_adjacent_edges</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">i</span><span class="p">))</span>
                             <span class="n">p</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot_edge</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">polygon</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
-                    <span class="k">elif</span> <span class="p">(</span><span class="n">label</span><span class="p">,</span><span class="n">i</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">label</span><span class="p">,</span><span class="n">i</span><span class="p">):</span>
+                    <span class="k">elif</span> <span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
                         <span class="c1"># Self-glued edge</span>
                         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">will_plot_self_glued_edges</span><span class="p">:</span>
                             <span class="n">p</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot_edge</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">polygon</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>

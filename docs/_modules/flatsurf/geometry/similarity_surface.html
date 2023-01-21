@@ -2283,33 +2283,11 @@
 
 <span class="sd">        By default this returns a cached version of the GraphicalSurface. If</span>
 <span class="sd">        ``cached=False`` is provided as a keyword option then a new</span>
-<span class="sd">        GraphicalSurface is returned. Other keyword options:</span>
+<span class="sd">        GraphicalSurface is returned.</span>
 
-<span class="sd">        INPUT:</span>
-
-<span class="sd">        - ``cached`` -- a boolean (default ``True``). If true return a cached</span>
-<span class="sd">          GraphicalSurface. Otherwise we make a new one.</span>
-
-<span class="sd">        - ``polygon_labels`` -- a boolean (default ``True``) whether the label</span>
-<span class="sd">          of polygons are displayed</span>
-
-<span class="sd">        - ``edge_labels`` -- option to control the display of edge labels. It</span>
-<span class="sd">          can be one of</span>
-
-<span class="sd">            - ``False`` or ``None`` for no labels</span>
-
-<span class="sd">            - ``&#39;gluings&#39;`` -- to put on each side of each non-adjacent edge, the</span>
-<span class="sd">              name of the polygon to which it is glued</span>
-
-<span class="sd">            - ``&#39;number&#39;`` -- to put on each side of each edge the number of the</span>
-<span class="sd">              edge</span>
-
-<span class="sd">            - ``&#39;gluings and numbers&#39;`` -- full information</span>
-
-<span class="sd">            - ``&#39;letter&#39;`` -- add matching letters to glued edges in an arbitrary way</span>
-
-<span class="sd">        - ``default_position_function`` -- a function mapping polygon labels to</span>
-<span class="sd">          similarities describing the position of the corresponding polygon.</span>
+<span class="sd">        All other parameters are passed on to :class:`GraphicalSurface` or</span>
+<span class="sd">        :meth:`GraphicalSurface.process_options`. Note that this mutates the</span>
+<span class="sd">        cached graphical surface for future calls.</span>
 
 <span class="sd">        EXAMPLES:</span>
 
@@ -2338,34 +2316,9 @@
 
 <div class="viewcode-block" id="SimilaritySurface.plot"><a class="viewcode-back" href="../../../geometry/similarity_surface.html#flatsurf.geometry.similarity_surface.SimilaritySurface.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns a plot of the surface.</span>
+<span class="sd">        Return a plot of the surface.</span>
 
-<span class="sd">        There may be zero or one argument. If provided the single argument</span>
-<span class="sd">        should be a GraphicalSurface whick will be used in the plot.</span>
-
-<span class="sd">        INPUT:</span>
-
-<span class="sd">        - ``polygon_labels`` -- a boolean (default ``True``) whether the label</span>
-<span class="sd">          of polygons are displayed</span>
-
-<span class="sd">        - ``edge_labels`` -- option to control the display of edge labels. It</span>
-<span class="sd">          can be one of</span>
-
-<span class="sd">            - ``False`` or ``None`` for no labels</span>
-
-<span class="sd">            - ``&#39;gluings&#39;`` -- to put on each side of each non-adjacent edge, the</span>
-<span class="sd">              name of the polygon to which it is glued</span>
-
-<span class="sd">            - ``&#39;number&#39;`` -- to put on each side of each edge the number of the</span>
-<span class="sd">              edge</span>
-
-<span class="sd">            - ``&#39;gluings and number&#39;`` -- full information</span>
-
-<span class="sd">        - ``adjacencies`` -- a list of pairs ``(p,e)`` to be used to set</span>
-<span class="sd">          adjacencies of polygons.</span>
-
-<span class="sd">        - ``default_position_function`` -- a function mapping polygon labels to</span>
-<span class="sd">          similarities describing the position of the corresponding polygon.</span>
+<span class="sd">        The parameters are passed on to :meth:`graphical_surface` and :meth:`GraphicalSurface.plot`. Consult their documentation for details.</span>
 
 <span class="sd">        EXAMPLES::</span>
 
@@ -2374,23 +2327,44 @@
 <span class="sd">            sage: S.plot()</span>
 <span class="sd">            Graphics object consisting of 21 graphics primitives</span>
 
-<span class="sd">        TESTS::</span>
+<span class="sd">        Keywords are passed on to the underlying plotting routines, see</span>
+<span class="sd">        :meth:`GraphicalSurface.plot` for details::</span>
 
-<span class="sd">            sage: S.plot()</span>
-<span class="sd">            Graphics object consisting of 21 graphics primitives</span>
+<span class="sd">            sage: S.plot(fill=None)</span>
+<span class="sd">            ...Graphics object consisting of 21 graphics primitives</span>
+
+<span class="sd">        Note that some keywords mutate the underlying cached graphical surface,</span>
+<span class="sd">        see :meth:`graphical_surface`::</span>
+
+<span class="sd">            sage: S.plot(edge_labels=&#39;gluings and number&#39;)</span>
+<span class="sd">            ...Graphics object consisting of 23 graphics primitives</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;SimilaritySurface.plot() can take at most one non-keyword argument.&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;plot() can take at most one non-keyword argument&quot;</span><span class="p">)</span>
+
+        <span class="n">graphical_surface_keywords</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">key</span><span class="p">:</span> <span class="n">kwds</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;cached&quot;</span><span class="p">,</span> <span class="s2">&quot;adjacencies&quot;</span><span class="p">,</span> <span class="s2">&quot;polygon_labels&quot;</span><span class="p">,</span> <span class="s2">&quot;edge_labels&quot;</span><span class="p">,</span> <span class="s2">&quot;default_position_function&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">kwds</span>
+        <span class="p">}</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="kn">from</span> <span class="nn">flatsurf.graphical.surface</span> <span class="kn">import</span> <span class="n">GraphicalSurface</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">GraphicalSurface</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;If an argument is provided, it must be a GraphicalSurface.&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;non-keyword argument must be a GraphicalSurface&quot;</span><span class="p">)</span>
+
+            <span class="kn">import</span> <span class="nn">warnings</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Passing a GraphicalSurface to plot() is deprecated because it mutates that GraphicalSurface. This functionality will be removed in a future version of sage-flatsurf. Call process_options() and plot() on the GraphicalSurface explicitly instead.&quot;</span><span class="p">)</span>
+
             <span class="n">gs</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">gs</span><span class="o">.</span><span class="n">process_options</span><span class="p">(</span><span class="o">**</span><span class="n">kwds</span><span class="p">)</span>
+            <span class="n">gs</span><span class="o">.</span><span class="n">process_options</span><span class="p">(</span><span class="o">**</span><span class="n">graphical_surface_keywords</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">gs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graphical_surface</span><span class="p">(</span><span class="o">**</span><span class="n">kwds</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">gs</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span></div>
+            <span class="c1"># It&#39;s very surprising that plot mutates the underlying cached</span>
+            <span class="c1"># graphical surface. We should change that and make the graphical</span>
+            <span class="c1"># surface not cached. See</span>
+            <span class="c1"># https://github.com/flatsurf/sage-flatsurf/issues/97</span>
+            <span class="n">gs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graphical_surface</span><span class="p">(</span><span class="o">**</span><span class="n">graphical_surface_keywords</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">gs</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="o">**</span><span class="n">kwds</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SimilaritySurface.plot_polygon"><a class="viewcode-back" href="../../../geometry/similarity_surface.html#flatsurf.geometry.similarity_surface.SimilaritySurface.plot_polygon">[docs]</a>    <span class="k">def</span> <span class="nf">plot_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">graphical_surface</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                      <span class="n">plot_polygon</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">plot_edges</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">plot_edge_labels</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
