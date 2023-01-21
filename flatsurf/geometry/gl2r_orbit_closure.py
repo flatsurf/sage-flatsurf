@@ -211,7 +211,12 @@ class GL2ROrbitClosure:
 
     def dimension(self):
         r"""
-        Return the current real dimension of the GL(2,R)-orbit closure.
+        Return the current complex dimension of the GL(2,R)-orbit closure.
+
+        Note that this is not the dimension of the orbit closure but only a
+        lower bound. It is always at least 2 (coming from a GL(2,R)-orbit).
+        The current tangent space could be refined via
+        :meth:`update_tangent_space_from_flow_decomposition`.
 
         EXAMPLES::
 
