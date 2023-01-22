@@ -470,7 +470,12 @@
 
 <div class="viewcode-block" id="GL2ROrbitClosure.dimension"><a class="viewcode-back" href="../../../geometry/gl2r_orbit_closure.html#flatsurf.geometry.gl2r_orbit_closure.GL2ROrbitClosure.dimension">[docs]</a>    <span class="k">def</span> <span class="nf">dimension</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return the current real dimension of the GL(2,R)-orbit closure.</span>
+<span class="sd">        Return the current complex dimension of the GL(2,R)-orbit closure.</span>
+
+<span class="sd">        Note that this is not the dimension of the orbit closure but only a</span>
+<span class="sd">        lower bound. It is always at least 2 (coming from a GL(2,R)-orbit).</span>
+<span class="sd">        The current tangent space could be refined via</span>
+<span class="sd">        :meth:`update_tangent_space_from_flow_decomposition`.</span>
 
 <span class="sd">        EXAMPLES::</span>
 

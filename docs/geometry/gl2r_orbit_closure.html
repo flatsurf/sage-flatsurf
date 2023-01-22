@@ -518,7 +518,11 @@ closure computed from the flow decomposition <code class="docutils literal notra
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.gl2r_orbit_closure.GL2ROrbitClosure.dimension">
 <span class="sig-name descname"><span class="pre">dimension</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/gl2r_orbit_closure.html#GL2ROrbitClosure.dimension"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.gl2r_orbit_closure.GL2ROrbitClosure.dimension" title="Permalink to this definition">#</a></dt>
-<dd><p>Return the current real dimension of the GL(2,R)-orbit closure.</p>
+<dd><p>Return the current complex dimension of the GL(2,R)-orbit closure.</p>
+<p>Note that this is not the dimension of the orbit closure but only a
+lower bound. It is always at least 2 (coming from a GL(2,R)-orbit).
+The current tangent space could be refined via
+<a class="reference internal" href="#flatsurf.geometry.gl2r_orbit_closure.GL2ROrbitClosure.update_tangent_space_from_flow_decomposition" title="flatsurf.geometry.gl2r_orbit_closure.GL2ROrbitClosure.update_tangent_space_from_flow_decomposition"><code class="xref py py-meth docutils literal notranslate"><span class="pre">update_tangent_space_from_flow_decomposition()</span></code></a>.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">EquiangularPolygons</span><span class="p">,</span> <span class="n">similarity_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">GL2ROrbitClosure</span> <span class="c1"># optional: pyflatsurf</span>
