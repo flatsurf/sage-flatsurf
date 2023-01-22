@@ -1,3 +1,3 @@
 **Fixed:**
 
-* clarify the documentation of GL2ROrbitClosure.dimension
+* Clarified the documentation of `GL2ROrbitClosure.dimension()`
