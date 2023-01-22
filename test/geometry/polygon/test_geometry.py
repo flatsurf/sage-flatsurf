@@ -25,16 +25,19 @@ import pytest
 
 from sage.all import QQ, randint
 
+
 def test_is_same_direction():
     from flatsurf.geometry.polygon import is_same_direction
 
     V = QQ**2
 
     for _ in range(1024):
-       v = V.random_element()
-       if not v: continue
-       assert is_same_direction(v, 2*v)
-       assert not is_same_direction(v, -v)
+        v = V.random_element()
+        if not v:
+            continue
+        assert is_same_direction(v, 2 * v)
+        assert not is_same_direction(v, -v)
+
 
 def test_is_opposite_direction():
     from flatsurf.geometry.polygon import is_opposite_direction
@@ -42,11 +45,13 @@ def test_is_opposite_direction():
     V = QQ**2
 
     for _ in range(100):
-       v = V.random_element()
-       if not v: continue
-       assert not is_opposite_direction(v, v)
-       assert not is_opposite_direction(v,2*v)
-       assert is_opposite_direction(v, -v)
+        v = V.random_element()
+        if not v:
+            continue
+        assert not is_opposite_direction(v, v)
+        assert not is_opposite_direction(v, 2 * v)
+        assert is_opposite_direction(v, -v)
+
 
 def test_segment_intersect():
     from flatsurf.geometry.polygon import segment_intersect
@@ -77,5 +82,6 @@ def test_is_between():
     for i, a in enumerate(vecs):
         for j, b in enumerate(vecs):
             for k, c in enumerate(vecs):
-                if a == b or a == c or b == c: continue
+                if a == b or a == c or b == c:
+                    continue
                 assert is_between(a, b, c) == (i < k < j or k < j < i or j < i < k)

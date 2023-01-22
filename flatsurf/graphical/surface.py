@@ -3,17 +3,29 @@ EXAMPLES::
 
     sage: import flatsurf
     sage: flatsurf.translation_surfaces.veech_2n_gon(4).plot()
-    Graphics object consisting of 18 graphics primitives
+    ...Graphics object consisting of 18 graphics primitives
+
 """
-#*****************************************************************************
+# ****************************************************************************
+#  This file is part of sage-flatsurf.
+#
 #       Copyright (C) 2013-2019 Vincent Delecroix <20100.delecroix@gmail.com>
 #                     2013-2019 W. Patrick Hooper <wphooper@gmail.com>
+#                          2022 Julian Rüth <julian.rueth@fsfe.org>
 #
-#  Distributed under the terms of the GNU General Public License (GPL)
-#  as published by the Free Software Foundation; either version 2 of
-#  the License, or (at your option) any later version.
-#                  https://www.gnu.org/licenses/
-#*****************************************************************************
+#  sage-flatsurf is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  sage-flatsurf is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
+# ****************************************************************************
 
 from __future__ import absolute_import, print_function, division
 from six.moves import range, map, filter, zip
@@ -26,6 +38,7 @@ from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
 from sage.modules.free_module_element import vector
 
+
 class GraphicalSurface:
     r"""
     This class manages the rendering of a SimilaritySurface.
@@ -35,7 +48,7 @@ class GraphicalSurface:
     stores options which are passed to the polygons when they are rendered.
 
     Some setup features set in the constructor and can be set again later via
-    `process_options()`.
+    :meth:`process_options`.
 
     The basic tasks of the class are to render the polygons, edges and labels.
     To customize a rendering, it is useful to know something about how this
@@ -44,59 +57,90 @@ class GraphicalSurface:
     There are attributes which control whether or not certain objects are
     rendered, namely:
 
-    - `will_plot_polygons` -- Whether to plot polygons which are right-side up.
+    - ``will_plot_polygons`` -- Whether to plot polygons which are right-side up.
 
-    - `will_plot_upside_down_polygons` -- Whether to plot polygons which are
+    - ``will_plot_upside_down_polygons`` -- Whether to plot polygons which are
         upside down. Defaults to False.
 
-    - `will_plot_polygon_labels` -- Whether to plot polygon labels.
+    - ``will_plot_polygon_labels`` -- Whether to plot polygon labels.
 
-    - `will_plot_edges` -- If this is False then no edges will be plotted.
+    - ``will_plot_edges`` -- If this is False then no edges will be plotted.
 
-    - `will_plot_non_adjacent_edges` = Whether to plot polygon edges which are
+    - ``will_plot_non_adjacent_edges`` = Whether to plot polygon edges which are
         not adjacent to the edge it is glued to.
 
-    - `will_plot_adjacent_edges` -- Whether to plot polygon edges which are
+    - ``will_plot_adjacent_edges`` -- Whether to plot polygon edges which are
         adjacent to the polygon they are glued to.
 
-    - `will_plot_self_glued_edges` -- Whether to plot polygon edges which are
+    - ``will_plot_self_glued_edges`` -- Whether to plot polygon edges which are
         glued to themselves.
 
-    - `will_plot_edge_labels` -- Whether to plot polygon edges labels.
+    - ``will_plot_edge_labels`` -- Whether to plot polygon edges labels.
 
-    - `will_plot_zero_flags` -- Whether to plot line segments from the
+    - ``will_plot_zero_flags`` -- Whether to plot line segments from the
         baricenter to the zero vertex of each polygon. Useful in working out
         vertex and edge labels. Defaults to False.
 
-    The `plot` method calls some other built in methods: `plot_polygon`,
-    `plot_polygon_label`, `plot_edge` and `plot_edge_label`. These in turn
-    call methods in `GraphicalPolygon`.
+    The :meth:`plot` method calls some other built in methods: :meth:`plot_polygon`,
+    :meth:`plot_polygon_label`, :meth:`plot_edge` and :meth:`plot_edge_label`. These in turn
+    call methods in :class:`GraphicalPolygon`.
 
-    - `polygon_options` -- Options passed to :func:`graphical_polygon.GraphicalPolygon.plot_polygon` when
+    - ``polygon_options`` -- Options passed to :meth:`graphical_polygon.GraphicalPolygon.plot_polygon` when
         plotting a polygon right-side up.
 
-    - `upside_down_polygon_options` -- Options passed to
-        :func:`graphical_polygon.GraphicalPolygon.plot_polygon` when plotting a polygon upside-down.
+    - ``upside_down_polygon_options`` -- Options passed to
+        :meth:`graphical_polygon.GraphicalPolygon.plot_polygon` when plotting a polygon upside-down.
 
-    - `polygon_label_options` -- Options passed to :func:`graphical_polygon.GraphicalPolygon.plot_label`
+    - ``polygon_label_options`` -- Options passed to :meth:`graphical_polygon.GraphicalPolygon.plot_label`
         when plotting a polygon label.
 
-    - `non_adjacent_edge_options` -- Options passed to
-        :func:`graphical_polygon.GraphicalPolygon.plot_edge` when plotting a polygon edge which is not
+    - ``non_adjacent_edge_options`` -- Options passed to
+        :meth:`graphical_polygon.GraphicalPolygon.plot_edge` when plotting a polygon edge which is not
         adjacent to the edge it is glued to.
 
-    - `self.adjacent_edge_options` -- Options passed to
-        :func:`graphical_polygon.GraphicalPolygon.plot_edge` when plotting a polygon edge which is
+    - ``adjacent_edge_options`` -- Options passed to
+        :meth:`graphical_polygon.GraphicalPolygon.plot_edge` when plotting a polygon edge which is
         adjacent to the edge it is glued to.
 
-    - `self_glued_edge_options` -- Options passed to :func:`graphical_polygon.GraphicalPolygon.plot_edge`
+    - ``self_glued_edge_options`` -- Options passed to :meth:`graphical_polygon.GraphicalPolygon.plot_edge`
         when plotting a polygon edge which is glued to itself.
 
-    - `edge_label_options` -- Options passed to :func:`graphical_polygon.GraphicalPolygon.edge_label`
+    - ``edge_label_options`` -- Options passed to :meth:`graphical_polygon.GraphicalPolygon.edge_label`
         when plotting a edge label.
 
-    - `zero_flag_options` -- Options passed to
-        :func:`graphical_polygon.GraphicalPolygon.plot_zero_flag` when plotting a zero_flag.
+    - ``zero_flag_options`` -- Options passed to
+        :meth:`graphical_polygon.GraphicalPolygon.plot_zero_flag` when plotting a zero_flag.
+
+    INPUT:
+
+    - ``similarity_surface`` -- a similarity surface
+
+    - ``polygon_labels`` -- a boolean (default ``True``) whether the label
+      of polygons are displayed
+
+    - ``edge_labels`` -- option to control the display of edge labels. It
+      can be one of
+
+        - ``False`` or ``None`` for no labels
+
+        - ``'gluings'`` -- to put on each side of each non-adjacent edge, the
+          name of the polygon to which it is glued
+
+        - ``'number'`` -- to put on each side of each edge the number of the
+          edge
+
+        - ``'gluings and number'`` -- full information
+
+        - ``'letter'`` -- add matching letters to glued edges in an arbitrary way
+
+    - ``adjacencies`` -- a list of pairs ``(p,e)`` to be used to set
+      adjacencies of polygons.
+
+    - ``default_position_function`` -- a function mapping polygon labels to
+      similarities describing the position of the corresponding polygon.
+
+    If adjacencies is not defined and the surface is finite, make_all_visible()
+    is called to make all polygons visible.
 
     EXAMPLES::
 
@@ -106,46 +150,12 @@ class GraphicalSurface:
         sage: s = similarity_surfaces.example()
         sage: gs = GraphicalSurface(s)
         sage: gs.polygon_options["color"]="red"
-        sage: gs.plot()     # not tested (problem with matplotlib font caches on Travis)
-        Graphics object consisting of 13 graphics primitives
+        sage: gs.plot()
+        ...Graphics object consisting of 13 graphics primitives
+
     """
 
-    def __init__(self, similarity_surface, adjacencies=None, polygon_labels=True, \
-                 edge_labels="gluings", default_position_function = None):
-        r"""
-        Construct a GraphicalSurface from a similarity surface.
-
-        INPUT:
-
-        - ``similarity_surface`` -- a similarity surface
-
-        - ``polygon_labels`` -- a boolean (default ``True``) whether the label
-          of polygons are displayed
-
-        - ``edge_labels`` -- option to control the display of edge labels. It
-          can be one of
-
-            - ``False`` or ``None`` for no labels
-
-            - ``'gluings'`` -- to put on each side of each non-adjacent edge, the
-              name of the polygon to which it is glued
-
-            - ``'number'`` -- to put on each side of each edge the number of the
-              edge
-
-            - ``'gluings and number'`` -- full information
-
-            - ``'letter'`` -- add matching letters to glued edges in an arbitrary way
-
-        - ``adjacencies`` -- a list of pairs ``(p,e)`` to be used to set
-          adjacencies of polygons.
-
-        - ``default_position_function`` -- a function mapping polygon labels to
-          similarities describing the position of the corresponding polygon.
-
-        If adjacencies is not defined and the surface is finite, make_all_visible()
-        is called to make all polygons visible.
-        """
+    def __init__(self, similarity_surface, adjacencies=None, polygon_labels=True, edge_labels="gluings", default_position_function=None):
         assert isinstance(similarity_surface, SimilaritySurface)
         self._ss = similarity_surface
         self._default_position_function = default_position_function
@@ -162,24 +172,24 @@ class GraphicalSurface:
         Whether to plot polygons which are right-side up.
         """
 
-        self.polygon_options = {"color":"lightgray"}
-        r"""Options passed to :func:`graphical_polygon.GraphicalPolygon.plot_polygon` when plotting a polygon right-side up."""
+        self.polygon_options = {"color": "lightgray"}
+        r"""Options passed to :meth:`graphical_polygon.GraphicalPolygon.plot_polygon` when plotting a polygon right-side up."""
 
         self.will_plot_upside_down_polygons = False
         r"""
         Whether to plot polygons which are upside down
         """
 
-        self.upside_down_polygon_options = {"color":"lightgray", "zorder":-1}
-        r"""Options passed to :func:`graphical_polygon.GraphicalPolygon.plot_polygon` when plotting a polygon upside-down."""
+        self.upside_down_polygon_options = {"color": "lightgray", "zorder": -1}
+        r"""Options passed to :meth:`graphical_polygon.GraphicalPolygon.plot_polygon` when plotting a polygon upside-down."""
 
         self.will_plot_polygon_labels = True
         r"""
         Whether to plot polygon labels.
         """
 
-        self.polygon_label_options = {"color":"black", "vertical_alignment":"center", "horizontal_alignment":"center"}
-        r"""Options passed to :func:`graphical_polygon.GraphicalPolygon.plot_label` when plotting a polygon label."""
+        self.polygon_label_options = {"color": "black", "vertical_alignment": "center", "horizontal_alignment": "center"}
+        r"""Options passed to :meth:`graphical_polygon.GraphicalPolygon.plot_label` when plotting a polygon label."""
 
         self.will_plot_edges = True
         r"""
@@ -191,8 +201,8 @@ class GraphicalSurface:
         Whether to plot polygon edges which are not adjacent to the edge it is glued to.
         """
 
-        self.non_adjacent_edge_options = {"color":"blue"}
-        r"""Options passed to :func:`graphical_polygon.GraphicalPolygon.plot_edge` when plotting a polygon edge
+        self.non_adjacent_edge_options = {"color": "blue"}
+        r"""Options passed to :meth:`graphical_polygon.GraphicalPolygon.plot_edge` when plotting a polygon edge
         which is not adjacent to the edge it is glued to."""
 
         self.will_plot_adjacent_edges = True
@@ -200,8 +210,8 @@ class GraphicalSurface:
         Whether to plot polygon edges which are adjacent to the polygon they are glued to.
         """
 
-        self.adjacent_edge_options = {"color":"blue", "linestyle":":"}
-        r"""Options passed to :func:`graphical_polygon.GraphicalPolygon.plot_edge`
+        self.adjacent_edge_options = {"color": "blue", "linestyle": ":"}
+        r"""Options passed to :meth:`graphical_polygon.GraphicalPolygon.plot_edge`
         when plotting a polygon edge which is adjacent to the edge it is glued to."""
 
         self.will_plot_self_glued_edges = True
@@ -209,8 +219,8 @@ class GraphicalSurface:
         Whether to plot polygon edges which are glued to themselves.
         """
 
-        self.self_glued_edge_options = {"color":"red"}
-        r"""Options passed to :func:`graphical_polygon.GraphicalPolygon.plot_edge` when plotting a polygon edge
+        self.self_glued_edge_options = {"color": "red"}
+        r"""Options passed to :meth:`graphical_polygon.GraphicalPolygon.plot_edge` when plotting a polygon edge
         which is glued to itself."""
 
         self.will_plot_edge_labels = True
@@ -218,54 +228,27 @@ class GraphicalSurface:
         Whether to plot polygon edges which are not adjacent to the polygon they are glued to.
         """
 
-        self.edge_label_options = {"color":"blue"}
-        r"""Options passed to :func:`graphical_polygon.GraphicalPolygon.edge_label` when plotting a polygon label."""
+        self.edge_label_options = {"color": "blue"}
+        r"""Options passed to :meth:`graphical_polygon.GraphicalPolygon.edge_label` when plotting a polygon label."""
 
         self.will_plot_zero_flags = False
         r"""
         Whether to plot line segments from the baricenter to the zero vertex of each polygon.
         """
 
-        self.zero_flag_options = {"color":"green", "thickness":0.5}
-        r"""Options passed to :func:`graphical_polygon.GraphicalPolygon.plot_zero_flag` when plotting a zero_flag."""
+        self.zero_flag_options = {"color": "green", "thickness": 0.5}
+        r"""Options passed to :meth:`graphical_polygon.GraphicalPolygon.plot_zero_flag` when plotting a zero_flag."""
 
-        self.process_options(adjacencies=adjacencies,
-                polygon_labels=polygon_labels, edge_labels=edge_labels)
+        self.process_options(adjacencies=adjacencies, polygon_labels=polygon_labels, edge_labels=edge_labels)
 
-    def process_options(self, adjacencies=None, polygon_labels=None, edge_labels=None, default_position_function = None):
+    def process_options(self, adjacencies=None, polygon_labels=None, edge_labels=None, default_position_function=None):
         r"""
         Process the options listed as if the graphical_surface was first
         created.
 
         INPUT:
 
-        - ``adjacencies`` -- a list of pairs ``(p,e)`` to be used to set
-          adjacencies of polygons.
-
-        - ``polygon_labels`` -- a boolean (default ``True``) whether the label
-          of polygons are displayed
-
-        - ``edge_labels`` -- option to control the display of edge labels. It
-          can be one of
-
-            - ``None`` for no change
-
-            - ``False`` for no labels
-
-            - ``'gluings'`` -- to put on each side of each non-adjacent edge, the
-              name of the polygon to which it is glued
-
-            - ``'number'`` -- to put on each side of each edge the number of the
-              edge
-
-            - ``'gluings and number'`` -- full information
-
-            - ``'letter'`` -- add matching letters to glued edges in an arbitrary way
-
-        - ``default_position_function`` -- a function mapping polygon labels to
-          similarities describing the position of the corresponding polygon.
-          Note that this will not affect polygons which have already been
-          positioned.
+        Consult :class:`GraphicalSurface` for the possible arguments.
 
         TESTS::
 
@@ -279,24 +262,27 @@ class GraphicalSurface:
             ValueError: invalid value for edge_labels (='hey')
         """
         if adjacencies is not None:
-            for p,e in adjacencies:
+            for p, e in adjacencies:
                 self.make_adjacent(p, e)
+
         if polygon_labels is not None:
             if not isinstance(polygon_labels, bool):
                 raise ValueError("polygon_labels must be True, False or None.")
             self.will_plot_polygon_labels = polygon_labels
+
         if edge_labels is not None:
             if edge_labels is True:
-                self.will_plot_edge_labels = True
                 edge_labels = 'gluings'
-            elif edge_labels is False:
+
+            if edge_labels is False:
+                self._edge_labels = None
                 self.will_plot_edge_labels = False
-                edge_labels = None
             elif edge_labels in ['gluings', 'number', 'gluings and number', 'letter']:
                 self._edge_labels = edge_labels
                 self.will_plot_edge_labels = True
             else:
                 raise ValueError("invalid value for edge_labels (={!r})".format(edge_labels))
+
         if default_position_function is not None:
             self._default_position_function = default_position_function
 
@@ -326,7 +312,7 @@ class GraphicalSurface:
             sage: gs2.polygon_options
             {'color': 'yellow'}
         """
-        gs = GraphicalSurface(self.get_surface(), default_position_function = self._default_position_function)
+        gs = GraphicalSurface(self.get_surface(), default_position_function=self._default_position_function)
 
         # Copy plot options
         gs.will_plot_polygons = self.will_plot_polygons
@@ -348,7 +334,7 @@ class GraphicalSurface:
         gs.zero_flag_options = dict(self.zero_flag_options)
 
         # Copy polygons and visible set.
-        gs._polygons = {label:gp.copy() for label,gp in iteritems(self._polygons)}
+        gs._polygons = {label: gp.copy() for label, gp in iteritems(self._polygons)}
         gs._visible = set(self._visible)
         gs._edge_labels = self._edge_labels
 
@@ -400,14 +386,14 @@ class GraphicalSurface:
             sage: s = similarity_surfaces.example()
             sage: g = s.graphical_surface()
             sage: g.make_all_visible()
-            sage: g.plot()      # not tested (problem with matplotlib font caches on Travis)
-            Graphics object consisting of 13 graphics primitives
+            sage: g.plot()
+            ...Graphics object consisting of 13 graphics primitives
 
             sage: s = similarity_surfaces.example()
             sage: g = s.graphical_surface(cached=False, adjacencies=[])
             sage: g.make_all_visible(adjacent=False)
-            sage: g.plot()      # not tested (problem with matplotlib font caches on Travis)
-            Graphics object consisting of 16 graphics primitives
+            sage: g.plot()
+            ...Graphics object consisting of 16 graphics primitives
         """
         if adjacent is None:
             adjacent = (self._default_position_function is None)
@@ -504,10 +490,9 @@ class GraphicalSurface:
         r"""
         Return the quadruple (x1,y1,x2,y2) where x1 and y1 are the minimal
         x- and y-coordinates of a visible graphical polygon and x2 and y2 are the
-        maximal x-and y- cordinates  of a visible graphical polygon.
+        maximal x-and y- coordinates of a visible graphical polygon.
         """
         return self.xmin(), self.ymin(), self.xmax(), self.ymax()
-
 
     def graphical_polygon(self, label):
         r"""
@@ -517,13 +502,13 @@ class GraphicalSurface:
             return self._polygons[label]
         else:
             t = None
-            if not self._default_position_function is None:
-                t=self._default_position_function(label)
+            if self._default_position_function is not None:
+                t = self._default_position_function(label)
             p = GraphicalPolygon(self._ss.polygon(label), transformation=t)
             self._polygons[label] = p
             return p
 
-    def make_adjacent(self, p, e, reverse = False, visible = True):
+    def make_adjacent(self, p, e, reverse=False, visible=True):
         r"""
         Move the polygon across the prescribed edge so that is adjacent.
         The polygon moved is obtained from opposite_edge(p,e).
@@ -582,15 +567,6 @@ class GraphicalSurface:
         self.graphical_polygon(pp).set_transformation(h*g)
         if visible:
             self.make_visible(pp)
-
-    def make_adjacent_and_visible(self, p, e, reverse=False):
-        r"""
-        Move the polygon across the prescribed edge so that is adjacent,
-        and make the moved polygon visible.
-        """
-        from sage.misc.superseded import deprecation
-        deprecation(42, "Do not use .make_adjacent_and_visible(). Use .make_adjacent() instead.")
-        self.make_adjacent(p, e, reverse=reverse)
 
     def is_adjacent(self,p,e):
         r"""
@@ -657,7 +633,7 @@ class GraphicalSurface:
             to ``SimilaritySurface.surface_point``.
 
         - ``search_all`` -- (default ``False``) By default we look just in
-            polygons with visible label. If set to `True``, then we instead
+            polygons with visible label. If set to ``True``, then we instead
             look in all labels.
 
         - ``search_limit`` -- (default ``None``) If ``search_all`` is ``True``,
@@ -744,9 +720,9 @@ class GraphicalSurface:
         Given the label ``p`` of a polygon and an edge ``e`` in that polygon
         returns the pair (``pp``, ``ee``) to which this edge is glued.
         """
-        return self._ss.opposite_edge(p,e)
+        return self._ss.opposite_edge(p, e)
 
-    def reset_letters(self,p,e):
+    def reset_letters(self, p, e):
         r"""
         Resets the letter dictionary for storing letters used in
         edge labeling if edge_labels="letter" is used.
@@ -754,15 +730,15 @@ class GraphicalSurface:
         try:
             del self._letters
             del self._next_letter
-        except:
+        except AttributeError:
             pass
 
     def _get_letter_for_edge(self, p, e):
-        if not hasattr(self,"_letters"):
-            self._letters={}
-            self._next_letter=1
+        if not hasattr(self, "_letters"):
+            self._letters = {}
+            self._next_letter = 1
         try:
-            return self._letters[(p,e)]
+            return self._letters[(p, e)]
         except KeyError:
             # convert number to string
             nl = self._next_letter
@@ -823,42 +799,42 @@ class GraphicalSurface:
         p = g.base_polygon()
 
         if self._edge_labels == 'gluings':
-            ans = []
+            labels = []
             for e in range(p.num_edges()):
                 if self.is_adjacent(lab, e):
-                    ans.append(None)
+                    labels.append(None)
                 else:
                     llab,ee = s.opposite_edge(lab,e)
-                    ans.append(str(llab))
+                    labels.append(str(llab))
         elif self._edge_labels == 'number':
-            ans = list(map(str, range(p.num_edges())))
+            labels = list(map(str, range(p.num_edges())))
         elif self._edge_labels == 'gluings and number':
-            ans = []
+            labels = []
             for e in range(p.num_edges()):
                 if self.is_adjacent(lab, e):
-                    ans.append(str(e))
+                    labels.append(str(e))
                 else:
-                    ans.append("{} -> {}".format(e, s.opposite_edge(lab,e)))
+                    labels.append("{} -> {}".format(e, s.opposite_edge(lab,e)))
         elif self._edge_labels == "letter":
-            ans = []
+            labels = []
             for e in range(p.num_edges()):
                 llab,ee = s.opposite_edge(lab,e)
                 if not self.is_visible(llab) or self.is_adjacent(lab, e):
-                    ans.append(None)
+                    labels.append(None)
                 else:
-                    ans.append(self._get_letter_for_edge(lab,e))
+                    labels.append(self._get_letter_for_edge(lab,e))
         else:
             raise RuntimeError("invalid option for edge_labels")
 
-        return ans
+        return labels
 
     def plot_polygon(self, label, graphical_polygon, upside_down):
         r"""
         Internal method for plotting polygons returning a Graphics object.
 
-        Calls :func:`graphical_polygon.GraphicalPolygon.plot_polygon` passing
-        the attribute `upside_down_polygon_options` if the polygon is upside down
-        and `polygon_options` otherwise.
+        Calls :meth:`graphical_polygon.GraphicalPolygon.plot_polygon` passing
+        the attribute ``upside_down_polygon_options`` if the polygon is upside down
+        and ``polygon_options`` otherwise.
 
         Override this method for fine control of how the polygons are drawn.
 
@@ -879,8 +855,8 @@ class GraphicalSurface:
         r"""
         Internal method for plotting polygon labels returning a Graphics2D.
 
-        Calls :func:`graphical_polygon.GraphicalPolygon.plot_polygon_label` passing
-        the attribute `polygon_label_options`.
+        Calls :meth:`graphical_polygon.GraphicalPolygon.plot_polygon_label` passing
+        the attribute ``polygon_label_options``.
 
         Override this method for fine control of how the polygons are drawn.
 
@@ -892,15 +868,15 @@ class GraphicalSurface:
 
         - ``upside_down`` -- True if and only if the polygon will be rendered upside down.
         """
-        return graphical_polygon.plot_label(label,**self.polygon_label_options)
+        return graphical_polygon.plot_label(label, **self.polygon_label_options)
 
     def plot_edge(self, label, edge, graphical_polygon, is_adjacent, is_self_glued):
         r"""
         Internal method for plotting a polygon's edge returning a Graphics2D.
 
-        The method calls :func:`graphical_polygon.GraphicalPolygon.plot_edge`.
+        The method calls :meth:`graphical_polygon.GraphicalPolygon.plot_edge`.
         Depending on the geometry of the edge pair, it passes one of the attributes
-        `adjacent_edge_options`, `self_glued_edge_options` or `non_adjacent_edge_options`.
+        ``adjacent_edge_options``, ``self_glued_edge_options`` or ``non_adjacent_edge_options``.
 
         Override this method for fine control of how the edge is drawn.
 
@@ -928,8 +904,8 @@ class GraphicalSurface:
     def plot_edge_label(self, p, e, edge_label, graphical_polygon):
         r"""
         Internal method for plotting an edge label.
-        Calls :func:`graphical_polygon.GraphicalPolygon.plot_edge_label` passing
-        the attribute `edge_label_options`.
+        Calls :meth:`graphical_polygon.GraphicalPolygon.plot_edge_label` passing
+        the attribute ``edge_label_options``.
 
         Override this method for fine control of how the edge is drawn.
 
@@ -948,8 +924,8 @@ class GraphicalSurface:
     def plot_zero_flag(self, label, graphical_polygon):
         r"""
         Internal method for plotting a polygon's zero_flag and returning a Graphics2D.
-        Simply calls :func:`graphical_polygon.GraphicalPolygon.plot_zero_flag` passing
-        the attribute `zero_flag_options`.
+        Simply calls :meth:`graphical_polygon.GraphicalPolygon.plot_zero_flag` passing
+        the attribute` `zero_flag_options``.
 
         Override this method for fine control of how the edge is drawn.
 
@@ -961,10 +937,17 @@ class GraphicalSurface:
         """
         return graphical_polygon.plot_zero_flag(**self.zero_flag_options)
 
-
-    def plot(self):
+    def plot(self, **kwargs):
         r"""
-        Returns a plot of the GraphicalSurface
+        Return a plot of this surface.
+
+        INPUT:
+
+        - ``kwargs`` -- arguments are normally forwarded to the polygon
+          plotting. However, prefixed arguments, e.g., ``polygon_label_color``,
+          are routed correspondingly. Also, a dictionary suffixed with
+          ``_options`` is merged with the existing options of this surface. See
+          examples below for details.
 
         EXAMPLES::
 
@@ -972,23 +955,66 @@ class GraphicalSurface:
             sage: s = similarity_surfaces.example()
             sage: from flatsurf.graphical.surface import GraphicalSurface
             sage: gs = GraphicalSurface(s)
-            sage: gs.make_visible(1)
-            sage: gs.plot()      # not tested (problem with matplotlib font caches on Travis)
-            Graphics object consisting of 13 graphics primitives
+            sage: gs.plot()
+            ...Graphics object consisting of 13 graphics primitives
 
+        Keyword arguments that end in ``_options`` are merged into the
+        corresponding attribute before plotting; see :class:`GraphicalSurface`
+        for a list of all supported ``_options``::
+
+            sage: gs.plot(polygon_label_options={"color": "red"})
+            ...Graphics object consisting of 13 graphics primitives
+
+        Keyword arguments that are prefixed with such an aspect of plotting,
+        are also merged into the corresponding attribute before plotting; see
+        :class:`GraphicalSurface` for a list of all supported prefixes, i.e.,
+        ``_options``::
+
+            sage: gs.plot(polygon_label_color="red")
+            ...Graphics object consisting of 13 graphics primitives
+
+        All other arguments are passed to the polygon plotting itself::
+
+            sage: gs.plot(fill=None)
+            ...Graphics object consisting of 13 graphics primitives
+
+        TESTS:
 
         Check that label options are handled correctly::
 
             sage: S = translation_surfaces.square_torus()
-            sage: S.plot(polygon_labels=True, edge_labels=True)     # not tested (problem with matplotlib font caches on Travis)
-            Graphics object consisting of 10 graphics primitives
-            sage: S.plot(polygon_labels=False, edge_labels=True)    # not tested (problem with matplotlib font caches on Travis)
-            Graphics object consisting of 9 graphics primitives
-            sage: S.plot(polygon_labels=True, edge_labels=False)    # not tested (problem with matplotlib font caches on Travis)
-            Graphics object consisting of 6 graphics primitives
-            sage: S.plot(polygon_labels=False, edge_labels=False)   # not tested (problem with matplotlib font caches on Travis)
-            Graphics object consisting of 5 graphics primitives
+            sage: S.plot(polygon_labels=True, edge_labels=True)
+            ...Graphics object consisting of 10 graphics primitives
+            sage: S.plot(polygon_labels=False, edge_labels=True)
+            ...Graphics object consisting of 9 graphics primitives
+            sage: S.plot(polygon_labels=True, edge_labels=False)
+            ...Graphics object consisting of 6 graphics primitives
+            sage: S.plot(polygon_labels=False, edge_labels=False)
+            ...Graphics object consisting of 5 graphics primitives
         """
+        if kwargs:
+            surface = self.copy()
+
+            options = [option for option in surface.__dict__ if option.endswith("_options") and option != "process_options"]
+            # Sort recognized options so we do not pass polygon_label_color to
+            # polygon_options as label_color.
+            options.sort(key=lambda option: -len(option))
+
+            for key, value in kwargs.items():
+                if key in options:
+                    setattr(surface, key, {**getattr(surface, key), **value})
+                    continue
+
+                for option in options:
+                    prefix = option[:-len("options")]
+                    if key.startswith(prefix) and key != prefix:
+                        getattr(surface, option)[key[len(prefix):]] = value
+                        break
+                else:
+                    surface.polygon_options[key] = value
+
+            return surface.plot()
+
         from sage.plot.graphics import Graphics
         p = Graphics()
 
@@ -997,16 +1023,16 @@ class GraphicalSurface:
 
         for label in self._visible:
             polygon = self.graphical_polygon(label)
-            upside_down = polygon.transformation().sign()==-1
+            upside_down = polygon.transformation().sign() == -1
 
             # Plot the polygons
             if upside_down and self.will_plot_upside_down_polygons:
-                    p += self.plot_polygon(label, polygon, upside_down)
+                p += self.plot_polygon(label, polygon, upside_down)
             elif self.will_plot_polygons:
                 p += self.plot_polygon(label, polygon, upside_down)
 
             if self.will_plot_zero_flags:
-                p += self.plot_zero_flag(label,polygon)
+                p += self.plot_zero_flag(label, polygon)
 
             # Add the polygon label
             if self.will_plot_polygon_labels:
@@ -1015,11 +1041,11 @@ class GraphicalSurface:
             # Plot the edges
             if self.will_plot_edges:
                 for i in range(self._ss.polygon(label).num_edges()):
-                    if self.is_adjacent(label,i):
-                        if self.will_plot_adjacent_edges and (label,i) not in plotted_adjacent_edges:
-                            plotted_adjacent_edges.add(self._ss.opposite_edge(label,i))
+                    if self.is_adjacent(label, i):
+                        if self.will_plot_adjacent_edges and (label, i) not in plotted_adjacent_edges:
+                            plotted_adjacent_edges.add(self._ss.opposite_edge(label, i))
                             p += self.plot_edge(label, i, polygon, True, False)
-                    elif (label,i) == self._ss.opposite_edge(label,i):
+                    elif (label, i) == self._ss.opposite_edge(label, i):
                         # Self-glued edge
                         if self.will_plot_self_glued_edges:
                             p += self.plot_edge(label, i, polygon, False, True)
@@ -1036,5 +1062,3 @@ class GraphicalSurface:
                         if edge_labels[i] is not None:
                             p += self.plot_edge_label(label, i, edge_labels[i], polygon)
         return p
-
-
