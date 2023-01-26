@@ -316,7 +316,7 @@ class HarmonicDifferential(Element):
             sage: C = PowerSeriesConstraints(T, 5)
             sage: R = C.symbolic_ring()
             sage: η._evaluate(R(C.gen(0, 0)) + R(C.gen(1, 0)))  # tol 1e-9
-            0 - 2.0000000000000000*I
+            -2.0000000000000000*I
 
         """
         coefficients = {}
@@ -603,6 +603,7 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
         # the a_k.
 
         constraints = PowerSeriesConstraints(self.surface(), prec=prec, geometry=self._geometry)
+        self._constraints = constraints # TODO: Remove
 
         # We use a variety of constraints. Which ones to use exactly is
         # determined by the "algorithm" parameter. If algorithm is a dict, it
@@ -612,11 +613,6 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
             if isinstance(algorithm, dict):
                 return algorithm[alg]
             return default
-
-        # (0) If two power series are developed around essentially the same
-        # point (because the Delaunay triangulation is ambiguous) we force them
-        # to coincide.
-        constraints.require_equality()
 
         # (1) The radius of convergence of the power series is the distance from the vertex of the Voronoi
         # cell to the closest vertex of the triangulation (since we use a Delaunay triangulation, all vertices
@@ -648,6 +644,9 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
         if "area" in algorithm:
             weight = get_parameter("area", 1)
             constraints.optimize(weight * constraints._area())
+
+        if "tykhonov" in algorithm:
+            pass
 
         solution, residue = constraints.solve()
         η = self.element_class(self, solution, residue=residue, cocycle=cocycle)
@@ -692,6 +691,25 @@ class GeometricPrimitives:
             (0, -1/2)
             sage: G.midpoint(1, 2)
             (1/2, 0)
+
+        ::
+
+            sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology, SimplicialCohomology
+            sage: T = translation_surfaces.regular_octagon().delaunay_triangulation()
+            sage: T.set_immutable()
+
+            sage: from flatsurf.geometry.harmonic_differentials import GeometricPrimitives
+            sage: G = GeometricPrimitives(T)
+
+            sage: G.midpoint(0, 0)
+            (-1/4*a - 1/2, -1/4*a)
+            sage: G.midpoint(5, 0)
+            (-1/4*a - 1/2, -1/4*a)
+
+            sage: G.midpoint(0, 2)
+            (-1/4*a - 1/2, -1/4*a - 1/2)
+            sage: G.midpoint(3, 2)
+            (1/4*a + 1/2, 1/4*a + 1/2)
 
         """
         polygon = self._surface.polygon(triangle)
@@ -1566,6 +1584,7 @@ class SymbolicCoefficientRing(UniqueRepresentation, CommutativeRing):
                 else:
                     raise NotImplementedError
 
+                assert polygon < self._surface.num_polygons()
                 n = k * 2 * self._surface.num_polygons() + 2 * polygon + kind
             elif len(n) == 2:
                 kind, k = n
@@ -1612,6 +1631,58 @@ class PowerSeriesConstraints:
 
     def __repr__(self):
         return repr(self._constraints)
+
+    @cached_method
+    def _representatives(self):
+        representatives = {gen: gen for gen in range(2*self._surface.num_polygons()*self._prec)}
+
+        def add_equality(a, b):
+            def monomial(x):
+                y = x
+                x = x._coefficients.items()
+                if len(x) != 1:
+                    raise NotImplementedError
+
+                x, _ = next(iter(x))
+
+                if len(x) != 1:
+                    raise NotImplementedError
+
+                x = x[0]
+
+                if x < 0:
+                    raise NotImplementedError
+
+                assert self.symbolic_ring().gen(x) == y
+
+                return x
+
+            representatives[monomial(a)] = monomial(b)
+
+        for triangle0, edge0 in self._surface.edge_iterator():
+            triangle1, edge1 = self._surface.opposite_edge(triangle0, edge0)
+
+            if triangle1 < triangle0:
+                # Add each constraint only once.
+                continue
+
+            Δ0 = self._geometry.midpoint(triangle0, edge0)
+            Δ1 = self._geometry.midpoint(triangle1, edge1)
+
+            # TODO: Is this a good bound?
+            if abs(Δ0 - Δ1) < 1e-6:
+                # Force power series to be identical if they have the same center of Voronoi cell.
+                for k in range(self._prec):
+                    add_equality(self.symbolic_ring().gen(("real", triangle1, k)), self.symbolic_ring().gen(("real", triangle0, k)))
+                    add_equality(self.symbolic_ring().gen(("imag", triangle1, k)), self.symbolic_ring().gen(("imag", triangle0, k)))
+
+        def representative(gen):
+            if representatives[gen] != gen:
+                representatives[gen] = representative(representatives[gen])
+
+            return representatives[gen]
+
+        return {gen: representative(gen) for gen in representatives}
 
     @cached_method
     def symbolic_ring(self, base_ring=None):
@@ -1675,13 +1746,14 @@ class PowerSeriesConstraints:
             sage: C.real(0, 1)
             Re(a0,1)
             sage: C.real(1, 2)
-            Re(a1,2)
+            Re(a0,2)
 
         """
         if k >= self._prec:
             raise ValueError(f"symbolic ring has no {k}-th generator for this triangle")
 
-        return self.symbolic_ring().gen(("real", triangle, k))
+        gen = self.symbolic_ring().gen(("real", triangle, k))
+        return self.symbolic_ring().gen(self._representatives()[next(iter(gen._coefficients.keys()))[0]])
 
     @cached_method
     def imag(self, triangle, k):
@@ -1702,13 +1774,14 @@ class PowerSeriesConstraints:
             sage: C.imag(0, 1)
             Im(a0,1)
             sage: C.imag(1, 2)
-            Im(a1,2)
+            Im(a0,2)
 
         """
         if k >= self._prec:
             raise ValueError(f"symbolic ring has no {k}-th generator for this triangle")
 
-        return self.symbolic_ring().gen(("imag", triangle, k))
+        gen = self.symbolic_ring().gen(("imag", triangle, k))
+        return self.symbolic_ring().gen(self._representatives()[next(iter(gen._coefficients.keys()))[0]])
 
     @cached_method
     def lagrange(self, k):
@@ -1844,7 +1917,7 @@ class PowerSeriesConstraints:
             sage: C.develop(0)
             Re(a0,0) + 1.000000000000000*I*Im(a0,0) + (Re(a0,1) + 1.000000000000000*I*Im(a0,1))*z + (Re(a0,2) + 1.000000000000000*I*Im(a0,2))*z^2
             sage: C.develop(1, 1)
-            Re(a1,0) + 1.000000000000000*I*Im(a1,0) + Re(a1,1) + 1.000000000000000*I*Im(a1,1) + Re(a1,2) + 1.000000000000000*I*Im(a1,2) + (Re(a1,1) + 1.000000000000000*I*Im(a1,1) + 2.000000000000000*Re(a1,2) + 2.000000000000000*I*Im(a1,2))*z + (Re(a1,2) + 1.000000000000000*I*Im(a1,2))*z^2
+            Re(a0,0) + 1.000000000000000*I*Im(a0,0) + Re(a0,1) + 1.000000000000000*I*Im(a0,1) + Re(a0,2) + 1.000000000000000*I*Im(a0,2) + (Re(a0,1) + 1.000000000000000*I*Im(a0,1) + 2.000000000000000*Re(a0,2) + 2.000000000000000*I*Im(a0,2))*z + (Re(a0,2) + 1.000000000000000*I*Im(a0,2))*z^2
 
         """
         # TODO: Check that Δ is within the radius of convergence.
@@ -1873,9 +1946,9 @@ class PowerSeriesConstraints:
 
             sage: a, b = H.gens()
             sage: C.integrate(a)
-            (0.500000000000000 + 0.500000000000000*I)*Re(a0,0) + (0.500000000000000 - 0.500000000000000*I)*Im(a0,0) + (0.500000000000000 + 0.500000000000000*I)*Re(a1,0) + (0.500000000000000 - 0.500000000000000*I)*Im(a1,0)
+            (1.00000000000000 + 1.00000000000000*I)*Re(a0,0) + (-1.00000000000000 + 1.00000000000000*I)*Im(a0,0)
             sage: C.integrate(b)
-            (-0.500000000000000)*Re(a0,0) + 0.500000000000000*I*Im(a0,0) + (-0.500000000000000)*Re(a1,0) + 0.500000000000000*I*Im(a1,0)
+            -Re(a0,0) + (-1.00000000000000*I)*Im(a0,0)
 
             sage: C = PowerSeriesConstraints(T, prec=5)
             sage: C.integrate(a) + C.integrate(-a)
@@ -1931,9 +2004,9 @@ class PowerSeriesConstraints:
             sage: C.evaluate(0, 0)
             Re(a0,0) + 1.000000000000000*I*Im(a0,0)
             sage: C.evaluate(1, 0)
-            Re(a1,0) + 1.000000000000000*I*Im(a1,0)
+            Re(a0,0) + 1.000000000000000*I*Im(a0,0)
             sage: C.evaluate(1, 2)
-            Re(a1,0) + 1.000000000000000*I*Im(a1,0) + 2.000000000000000*Re(a1,1) + 2.000000000000000*I*Im(a1,1) + 4.000000000000000*Re(a1,2) + 4.000000000000000*I*Im(a1,2)
+            Re(a0,0) + 1.000000000000000*I*Im(a0,0) + 2.000000000000000*Re(a0,1) + 2.000000000000000*I*Im(a0,1) + 4.000000000000000*Re(a0,2) + 4.000000000000000*I*Im(a0,2)
 
         """
         # TODO: Check that Δ is within the radius of convergence.
@@ -1960,24 +2033,6 @@ class PowerSeriesConstraints:
 
         return value
 
-    def require_equality(self):
-        for triangle0, edge0 in self._surface.edge_iterator():
-            triangle1, edge1 = self._surface.opposite_edge(triangle0, edge0)
-
-            if triangle1 < triangle0:
-                # Add each constraint only once.
-                continue
-
-            parent = self.symbolic_ring()
-
-            Δ0 = self._geometry.midpoint(triangle0, edge0)
-            Δ1 = self._geometry.midpoint(triangle1, edge1)
-
-            if abs(Δ0 - Δ1) < 1e-6:
-                # Force power series to be identical if they have the same center of Voronoi cell.
-                for k in range(self._prec):
-                    self.add_constraint(self.gen(triangle0, k) - self.gen(triangle1, k))
-
     def require_midpoint_derivatives(self, derivatives):
         r"""
         The radius of convergence of the power series is the distance from the
@@ -2002,8 +2057,8 @@ class PowerSeriesConstraints:
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
             sage: C = PowerSeriesConstraints(T, 1)
             sage: C.require_midpoint_derivatives(1)
-            sage: C
-            [Re(a0,0) - Re(a1,0), Im(a0,0) - Im(a1,0), Re(a0,0) - Re(a1,0), Im(a0,0) - Im(a1,0)]
+            sage: C  # TODO: Does this still match the comment above?
+            []
 
         If we add more coefficients, we get three pairs of contraints for the
         three edges surrounding a face; for the edge on which the centers of
@@ -2013,25 +2068,15 @@ class PowerSeriesConstraints:
 
             sage: C = PowerSeriesConstraints(T, 2)
             sage: C.require_midpoint_derivatives(1)
-            sage: C
-            [Re(a0,0) - 0.500000000000000*Im(a0,1) - Re(a1,0) - 0.500000000000000*Im(a1,1),
-             Im(a0,0) + 0.500000000000000*Re(a0,1) - Im(a1,0) + 0.500000000000000*Re(a1,1),
-             Re(a0,0) - 0.500000000000000*Re(a0,1) - Re(a1,0) - 0.500000000000000*Re(a1,1),
-             Im(a0,0) - 0.500000000000000*Im(a0,1) - Im(a1,0) - 0.500000000000000*Im(a1,1)]
+            sage: C  # TODO: Does this still match the comment above?
+            [-Im(a0,1), Re(a0,1), -Re(a0,1), -Im(a0,1)]
 
         ::
 
             sage: C = PowerSeriesConstraints(T, 2)
             sage: C.require_midpoint_derivatives(2)
             sage: C  # tol 1e-9
-            [Re(a0,0) - 0.500000000000000*Im(a0,1) - Re(a1,0) - 0.500000000000000*Im(a1,1),
-             Im(a0,0) + 0.500000000000000*Re(a0,1) - Im(a1,0) + 0.500000000000000*Re(a1,1),
-             Re(a0,1) - Re(a1,1),
-             Im(a0,1) - Im(a1,1),
-             Re(a0,0) - 0.500000000000000*Re(a0,1) - Re(a1,0) - 0.500000000000000*Re(a1,1),
-             Im(a0,0) - 0.500000000000000*Im(a0,1) - Im(a1,0) - 0.500000000000000*Im(a1,1),
-             Re(a0,1) - Re(a1,1),
-             Im(a0,1) - Im(a1,1)]
+            [-Im(a0,1), Re(a0,1), -Re(a0,1), -Im(a0,1)]
 
         """
         if derivatives > self._prec:
@@ -2069,6 +2114,7 @@ class PowerSeriesConstraints:
         Δ1 = self.complex_field()(*self._geometry.midpoint(triangle1, edge1))
 
         # Develop both power series around that midpoint, i.e., Taylor expand them.
+        # Unfortunately, these contain huge binomial coefficients.
         T0 = self.develop(triangle0, Δ0)
         T1 = self.develop(triangle1, Δ1)
 
@@ -2135,6 +2181,12 @@ class PowerSeriesConstraints:
 
             if triangle1 < triangle0:
                 # Add each constraint only once.
+                continue
+
+            Δ0 = self._geometry.midpoint(triangle0, edge0)
+            Δ1 = self._geometry.midpoint(triangle1, edge1)
+
+            if abs(Δ0 - Δ1) < 1e-6:
                 continue
 
             cost += self._L2_consistency_edge(triangle0, edge0)
@@ -2324,7 +2376,9 @@ class PowerSeriesConstraints:
         r"""
         Add constraints that optimize the symbolic expression ``f``.
 
-        EXAMPLES::
+        EXAMPLES:
+
+        TODO: All these examples are a bit pointless::
 
             sage: from flatsurf import translation_surfaces, SimplicialCohomology
             sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
@@ -2332,23 +2386,47 @@ class PowerSeriesConstraints:
 
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
             sage: C = PowerSeriesConstraints(T, 1)
-            sage: C.require_midpoint_derivatives(1)
             sage: R = C.symbolic_ring()
+
+        We optimize a function that is really in two variables (due to
+        identification of variables with cells that share the Delaunay cell).
+        Since there are no constraints, we do not get any Lagrange multipliers
+        in this optimization but just for roots of the derivative::
+
             sage: f = 3*C.real(0, 0)^2 + 5*C.imag(0, 0)^2 + 7*C.real(1, 0)^2 + 11*C.imag(1, 0)^2
             sage: C.optimize(f)
             sage: C._optimize_cost()
             sage: C
-            [Re(a0,0) - Re(a1,0),
-             Im(a0,0) - Im(a1,0),
-             Re(a0,0) - Re(a1,0),
-             Im(a0,0) - Im(a1,0),
-             6.00000000000000*Re(a0,0) + λ0 + λ2,
-             10.0000000000000*Im(a0,0) + λ1 + λ3,
-             14.0000000000000*Re(a1,0) - λ0 - λ2,
-             22.0000000000000*Im(a1,0) - λ1 - λ3]
+            [20.0000000000000*Re(a0,0), 32.0000000000000*Im(a0,0)]
+
+        In this example, the constraints and the optimized values do not
+        overlap, so again we do not get Lagrange multipliers::
+
+            sage: C = PowerSeriesConstraints(T, 2)
+            sage: C.require_midpoint_derivatives(1)
+            sage: C
+            [-Im(a0,1), Re(a0,1), -Re(a0,1), -Im(a0,1)]
+            sage: f = 3*C.real(0, 0)^2 + 5*C.imag(0, 0)^2 + 7*C.real(1, 0)^2 + 11*C.imag(1, 0)^2
+            sage: C.optimize(f)
+            sage: C._optimize_cost()
+            sage: C
+            [-Im(a0,1), Re(a0,1), -Re(a0,1), -Im(a0,1), 20.0000000000000*Re(a0,0), 32.0000000000000*Im(a0,0)]
+
+        ::
+
+            sage: C = PowerSeriesConstraints(T, 2)
+            sage: C.require_midpoint_derivatives(1)
+            sage: C
+            [-Im(a0,1), Re(a0,1), -Re(a0,1), -Im(a0,1)]
+            sage: f = 3*C.real(0, 1)^2 + 5*C.imag(0, 1)^2
+            sage: C.optimize(f)
+            sage: C._optimize_cost()
+            sage: C
+            [-Im(a0,1), Re(a0,1), -Re(a0,1), -Im(a0,1), 6.00000000000000*Re(a0,1) + λ1 - λ2, 10.0000000000000*Im(a0,1) - λ0 - λ3]
 
         """
-        self._cost += f
+        if f:
+            self._cost += f
 
     def _optimize_cost(self):
         # We use Lagrange multipliers to rewrite this expression.
@@ -2365,22 +2443,20 @@ class PowerSeriesConstraints:
 
         # We form the partial derivative with respect to the variables Re(a_k)
         # and Im(a_k).
-        for triangle in range(self._surface.num_polygons()):
-            for k in range(self._prec):
-                for part in ["real", "imag"]:
-                    gen = getattr(self, part)(triangle, k)
+        for representative in set(self._representatives().values()):
+            gen = self.symbolic_ring().gen(representative)
 
-                    if self._cost.degree(gen) <= 0:
-                        continue
+            if self._cost.degree(gen) <= 0:
+                continue
 
-                    gen = self._cost.parent()(gen)
+            gen = self._cost.parent()(gen)
 
-                    L = self._cost.derivative(gen)
+            L = self._cost.derivative(gen)
 
-                    for i in range(lagranges):
-                        L += g[i][gen] * self.lagrange(i)
+            for i in range(lagranges):
+                L += g[i][gen] * self.lagrange(i)
 
-                    self.add_constraint(L)
+            self.add_constraint(L)
 
         # We form the partial derivatives with respect to the λ_i. This yields
         # the condition -g_i=0 which is already recorded in the linear system.
@@ -2413,24 +2489,16 @@ class PowerSeriesConstraints:
             sage: C = PowerSeriesConstraints(T, 1)
             sage: C.require_cohomology(H({b: 1}))
             sage: C  # tol 1e-9
-            [0.500000000000000*Re(a0,0) + 0.500000000000000*Im(a0,0) + 0.500000000000000*Re(a1,0) + 0.500000000000000*Im(a1,0),
-            -0.500000000000000*Re(a0,0) - 0.500000000000000*Re(a1,0) - 1.00000000000000]
+            [Re(a0,0) - Im(a0,0), -Re(a0,0) - 1.00000000000000]
 
         If we increase precision, we see additional higher imaginary parts.
         These depend on the choice of base point of the integration and will be
-        found to be zero by other constraints::
+        found to be zero by other constraints, not true anymore TODO::
 
             sage: C = PowerSeriesConstraints(T, 2)
             sage: C.require_cohomology(H({b: 1}))
             sage: C  # tol 1e-9
-            [0.500000000000000*Re(a0,0) + 0.500000000000000*Im(a0,0) - 0.250000000000000*Re(a0,1) + 0.500000000000000*Re(a1,0) + 0.500000000000000*Im(a1,0) + 0.250000000000000*Re(a1,1),
-            -0.500000000000000*Re(a0,0) + 0.125000000000000*Re(a0,1) - 0.500000000000000*Re(a1,0) - 0.125000000000000*Re(a1,1) - 1.00000000000000]
-
-            sage: C = PowerSeriesConstraints(T, 2)
-            sage: C.require_cohomology(H({b: 1}))
-            sage: C  # tol 1e-9
-            [0.500000000000000*Re(a0,0) + 0.500000000000000*Im(a0,0) - 0.250000000000000*Re(a0,1) + 0.500000000000000*Re(a1,0) + 0.500000000000000*Im(a1,0) + 0.250000000000000*Re(a1,1),
-            -0.500000000000000*Re(a0,0) + 0.125000000000000*Re(a0,1) - 0.500000000000000*Re(a1,0) - 0.125000000000000*Re(a1,1) - 1.00000000000000]
+            [Re(a0,0) - Im(a0,0), -Re(a0,0) - 1.00000000000000]
 
         """
         for cycle in cocycle.parent().homology().gens():
@@ -2447,9 +2515,13 @@ class PowerSeriesConstraints:
             sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
             sage: T.set_immutable()
 
+            sage: H = SimplicialCohomology(T)
+            sage: a, b = H.homology().gens()
+
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
-            sage: C = PowerSeriesConstraints(T, 1)
-            sage: C.require_midpoint_derivatives(1)
+            sage: C = PowerSeriesConstraints(T, 6)
+            sage: C.require_cohomology(H({a: 1}))
+            sage: C.optimize(C._L2_consistency())
             sage: C.matrix()
             (
             [ 1.00000000000000 0.000000000000000 -1.00000000000000 0.000000000000000]
@@ -2483,14 +2555,38 @@ class PowerSeriesConstraints:
 
         lagranges = {}
 
+        non_lagranges = set()
+        for row, constraint in enumerate(self._constraints):
+            for monomial, coefficient in constraint._coefficients.items():
+                if not monomial:
+                    continue
+
+                gen = monomial[0]
+                if gen >= 0:
+                    non_lagranges.add(gen)
+
+        for gen in range(2*len(triangles)*prec):
+            if self._representatives()[gen] in non_lagranges:
+                non_lagranges.add(gen)
+
+        representatives = set(self._representatives()[gen] for gen in non_lagranges)
+        representatives = {representative: i for (i, representative) in enumerate(representatives)}
+
+        non_lagranges = {gen: representatives[self._representatives()[gen]] for gen in non_lagranges}
+
+        free = set(gen for gen in range(2*len(triangles)*prec) if gen not in non_lagranges)
+        if free:
+            from warnings import warn
+            warn(f"Power series coefficients {[self.symbolic_ring().gen(gen) for gen in free]} are not constrained for this harmonic differential. They will be chosen to be 0 by the solver.")
+
         from sage.all import matrix, vector
-        A = matrix(self.real_field(), len(self._constraints), 2*len(triangles)*prec + len(self.lagrange_variables()))
+        A = matrix(self.real_field(), len(self._constraints), len(representatives) + len(self.lagrange_variables()))
         b = vector(self.real_field(), len(self._constraints))
 
         for row, constraint in enumerate(self._constraints):
             for monomial, coefficient in constraint._coefficients.items():
                 if not monomial:
-                    b[row] = -coefficient
+                    b[row] -= coefficient
                     continue
 
                 assert len(monomial) == 1
@@ -2498,14 +2594,14 @@ class PowerSeriesConstraints:
                 gen = monomial[0]
                 if gen < 0:
                     if gen not in lagranges:
-                        lagranges[gen] = 2*len(triangles)*prec + len(lagranges)
+                        lagranges[gen] = len(representatives) + len(lagranges)
                     column = lagranges[gen]
                 else:
-                    column = gen
+                    column = non_lagranges[gen]
 
-                A[row, column] = coefficient
+                A[row, column] += coefficient
 
-        return A, b
+        return A, b, non_lagranges, free
 
     @cached_method
     def power_series_ring(self, triangle):
@@ -2545,12 +2641,14 @@ class PowerSeriesConstraints:
             sage: C.add_constraint(C.real(0, 0) - C.real(1, 0))
             sage: C.add_constraint(C.real(0, 0) - 1)
             sage: C.solve()
+            ...
+            UserWarning: Some power series coefficients are not constrained for this harmonic differential. They will be set to 0.
             ({0: 1.00000000000000 + O(z0), 1: 1.00000000000000 + O(z1)}, 0.000000000000000)
 
         """
         self._optimize_cost()
 
-        A, b = self.matrix()
+        A, b, decode, free = self.matrix()
 
         if algorithm == "arb":
             from sage.all import ComplexBallField
@@ -2569,7 +2667,7 @@ class PowerSeriesConstraints:
         else:
             raise NotImplementedError
 
-        residue = (A*solution -b).norm()
+        residue = (A*solution - b).norm()
 
         lagranges = len(self.lagrange_variables())
 
@@ -2577,8 +2675,8 @@ class PowerSeriesConstraints:
             solution = solution[:-lagranges]
 
         P = self._surface.num_polygons()
-        real_solution = [solution[2*p::2*P] for p in range(P)]
-        imag_solution = [solution[2*p + 1::2*P] for p in range(P)]
+        real_solution = [[solution[decode[2*p + 2*P*prec]] if 2*p + 2*P*prec in decode else 0 for prec in range(self._prec)] for p in range(P)]
+        imag_solution = [[solution[decode[2*p + 1 + 2*P*prec]] if 2*p + 1 + 2*P*prec in decode else 0 for prec in range(self._prec)] for p in range(P)]
 
         return {
             triangle: self.power_series_ring(triangle)([self.complex_field()(real_solution[p][k], imag_solution[p][k]) for k in range(self._prec)], self._prec)
