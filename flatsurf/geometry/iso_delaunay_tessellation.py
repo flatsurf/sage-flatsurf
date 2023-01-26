@@ -369,12 +369,15 @@ class IsoDelaunayTessellation(Parent):
             def capture_matrix(a, b, c, d):
                 if a * d - b * c != 1:
                     return False
-
-                from pyeantic import RealEmbeddedNumberField
-                k = RealEmbeddedNumberField(a.parent())
-                a, b, c, d = k(a), k(b), k(c), k(d)
-                k = k.number_field
-                a, b, c, d = k(a), k(b), k(c), k(d)
+                if hasattr(a, 'parent'):
+                    from pyeantic import RealEmbeddedNumberField
+                    k = RealEmbeddedNumberField(a.parent())
+                    a, b, c, d = k(a), k(b), k(c), k(d)
+                    k = k.number_field
+                    a, b, c, d = k(a), k(b), k(c), k(d)
+                else:
+                    from sage.all import QQ
+                    a, b, c, d = QQ(a), QQ(b), QQ(c), QQ(d)
 
                 nonlocal isomorphism
                 isomorphism = (a, b, c, d)
@@ -464,13 +467,14 @@ class IsoDelaunayTessellation(Parent):
         A_T = surface.apply_matrix(
             A, in_place=False).delaunay_triangulation(in_place=False)
         T = A_T.apply_matrix(~A, in_place=False)
+        T.set_immutable()
         half_planes = cls._iso_delaunay_region(T)
         iso_delaunay_region = point.parent().polygon(half_planes)
 
         if iso_delaunay_region.dimension() < 2:
-            return None
+            return None, T
 
-        return iso_delaunay_region
+        return iso_delaunay_region, T
 
     def face(self, point):
         r"""
@@ -494,8 +498,9 @@ class IsoDelaunayTessellation(Parent):
 
         while True:
             shifted = point.parent().point(x + shift, y, model="half_plane")
-            face = self._face(self._surface, shifted)
+            face, pulled_back_triangulation = self._face(self._surface, shifted)
             if point in face:
+                self._surface = pulled_back_triangulation
                 return face
             shift /= 2
 
@@ -603,7 +608,7 @@ class IsoDelaunayTessellation(Parent):
         shift = 0
         while True:
             shifted = H.point(shift, 1, model="half_plane")
-            face = cls._face(surface, shifted)
+            face, _ = cls._face(surface, shifted)
 
             from sage.all import I
             if face is not None and I in face:
