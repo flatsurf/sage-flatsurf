@@ -210,7 +210,7 @@ class SpineTessellation(Parent):
              {(-a^3 + 3*a)*(x^2 + y^2) + (-2*a^2 + 4)*x + a^3 - 3*a = 0},
              {(a^3 - 3*a)*(x^2 + y^2) + (-2*a^2 + 4)*x - a^3 + 3*a = 0},
              {a*(x^2 + y^2) + (2*a^2 - 6)*x - a = 0},
-             {4*x = 0}]
+             {x = 0}]
         """
 
         return list(self._geodesic_to_periods(vertex).keys())
@@ -225,7 +225,8 @@ class SpineTessellation(Parent):
         x, y = vertex.coordinates(model="half_plane")
         geodesics = {}
         for v, w in zip(shortest_directions, shortest_directions[1:] + [-shortest_directions[0]]):
-            def rotation90clockwise(v): return vector([v[1], -v[0]])
+            def rotation90clockwise(v):
+                return vector([v[1], -v[0]])
             rotation = matrix([rotation90clockwise(v + w), v + w]).transpose()
             sigmaAinv = matrix([[y, x], [0, 1]])
             [[a, b], [c, d]] = sigmaAinv * rotation
@@ -269,7 +270,8 @@ class SpineTessellation(Parent):
         InCircleDet(A(t)u, A(t)v, A(t)w) = t det([ux uy ux^2 + t^2 uy^2 | vx vy vx^2 + t^2 vy^2 | wx wy wx^2 + t^2 wy^2]) = t(M1 + t^2 M2)
 
         """
-        def rotation90clockwise(v): return vector([v[1], -v[0]])
+        def rotation90clockwise(v):
+            return vector([v[1], -v[0]])
         rotation = matrix([rotation90clockwise(v + w), v + w]).transpose()
 
 

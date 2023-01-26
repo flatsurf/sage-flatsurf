@@ -13,12 +13,12 @@ dependencies:
   - matplotlib-base
   - pip
   - pyeantic>=1.2.1,<2
-  - pyexactreal>=2.3.0,<3
+  - pyexactreal>=3,<4
   - pyflatsurf>=3.11.1,<4
   - python=3.9
   - ruamel.yaml
-  - sage-flatsurf=0.4.6
-  - sagelib=9.5
+  - sage-flatsurf=0.4.7
+  - sagelib=9.7
   - scipy
   - surface-dynamics>=0.4.7,<0.5
   - pip:
