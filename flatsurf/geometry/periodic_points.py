@@ -18,7 +18,7 @@
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 ######################################################################
 
-from thurston_veech import ThurstonVeech
+from flatsurf.geometry.thurston_veech import ThurstonVeech
 
 class PeriodicPoints():
     def __init__(self, T):
@@ -33,6 +33,52 @@ class PeriodicPoints():
         G = self._prune_candidate_graph(G)
         return G.vertices()
 
+    def _horizontal_constraint(self, height):
+        r'''Constrain y coordinate of point with rational height lemma
+
+        EXAMPLE::
+
+            sage: import flatsurf as fs
+            sage: X = fs.translation_surfaces.mcmullen_genus2_prototype(1, 1, 0, -1)
+            sage: P = PeriodicPoints(X)
+            sage: R = X.base_ring()
+            sage: P._horizontal_constraint(R(R.gen()))
+            ([0 0 1 0], (0))
+        '''
+
+        A = (~height).matrix().submatrix(1)
+        A = A.parent().zero().augment(A)
+        return A, A.column_space().zero()
+
+    def _vertical_constraint(self, width):
+        r'''Constrain x coordinate of point with rational height lemma
+
+        EXAMPLE::
+
+            sage: import flatsurf as fs
+            sage: X = fs.translation_surfaces.mcmullen_genus2_prototype(1, 1, 0, -1)
+            sage: P = PeriodicPoints(X)
+            sage: R = X.base_ring()
+            sage: P._vertical_constraint(R(R.gen()))
+            ([1 0 0 0], (0))
+
+        '''
+        A = (~width).matrix().submatrix(1)
+        A = A.augment(A.parent().zero())
+        return A, A.column_space().zero()
+
+    def _connecting_constraint_horizontal(self, R, distance):
+        return self._connecting_constraint_generic(self._surface.horizontal_twist()[0][1], distance, R.width())
+
+    def _connecting_constraint_vertical(self, R, distance):
+        return self._connecting_constraint_generic(self._surface.vertical_twist()[0][1], distance, R.height())
+
+    def _connecting_constraint_generic(self, twist, distance, side_length):
+        A_t = twist.matrix()
+        A = (~side_length).matrix() * A_t.parent().one().augment(A_t)
+        v = (~side_length).matrix() * distance.vector()
+        return A.submatrix(1), v[1:]
+
     def _constraint_segments_in_region(self, R):
         r'''Return segments containing all periodic points in region ``R`` '''
         segments = []
@@ -46,8 +92,8 @@ class PeriodicPoints():
 
         from sage.all import QQ
         if (horizontal_cylinder.circumference() / width) not in QQ:
-            for R1 in horizontal_cylinder.regions(start=R, multiplicity=horizontal_cylinder.multiplicity()):
-                connecting_constraint = self._connecting_equation(R, R1)
+            for R1, wrap in horizontal_cylinder.regions(start=R, multiplicity=horizontal_cylinder.multiplicity()):
+                connecting_constraint = self._connecting_constraint(R1, wrap)
                 segments.append(self._solve_constraints(horizontal_constraint, vertical_constraint, connecting_constraint))
 
         else:
@@ -106,50 +152,4 @@ class PeriodicPoints():
 
         # remove the connected component of ``None``
         raise NotImplementedError
-
-
-    '''
-    given a rectangle (H cap V), write down the constraints in that rectangle
-    assuming that c(H)/h(V) is irrational
-    we'd need:
-    all the rectangles in the horizontal cylinders
-    global horizontal multitwist
-    multiplicities of the horizontal cylinder
-
-    y / ht(H) in Q
-    x / ht(V) in Q
-    (x + ay - d) / ht(V') in Q,
-    where d = sum ht(V_k) adding from V --> V_k
-    and T = [1 a | 0 1]
-    Note: the left-hand sides are elements of K[x, y]
-
-    pi_j : (K = Q^n) --> Q
-    pi_j (y / ht(H)) = 0 for all 1 <= j <= n
-    pi_j (x / ht) ...
-    pi_j (...)
-
-    each constraint --> k1 x + k2 y + k3 in Q
-    and now project k1, k2, k3 to get coefficient for each number field basis elt.
-
-    let alpha_1, .. alpha_n be a Q-basis for K
-    then
-    x = x^i alpha_i
-    k = a^i alpha_i
-    (a^i alpha_i) * (x^j alpha_j) + (b^i alpha_i) * (y^j alpha_j) + (c^i alpha_i) in Q
-
-    y / ht(H) in Q
-
-    e.g. (y^1 + y^2 rt2) / (a^1 + a^2 rt2) in Q
-    [(y1 + y2 rt2) * (a1 - a2rt2)] / (a1**2 - 2 a2**2)
-    [a1 y1 - a2y1rt2 + y2 a1 rt2 - 2 a2y2] / (a1**2 - 2 a2**2) in Q
-    (a1 y1 - 2 a2 y2)/(a1**2 - 2 a2**2) + rt2 (y2 a1 - a2 y1)/(a1**2 - 2 a2**2) in Q
-    for each element of the basis that is not rational, get equations
-    rt2 equation is ==> (a1 y2 - a2 y1)/(a1**2 - 2 a2**2) = 0
-    i.e. [a1/(a1**2 - 2 a2**2)] y2 - [a2/(a1**2 - 2 a2**2)] y1 = 0
-
-    now solve the resulting system of equations
-    '''
-
-
-
 
