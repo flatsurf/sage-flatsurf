@@ -79,6 +79,18 @@ class PeriodicPoints():
         v = (~side_length).matrix() * distance.vector()
         return A.submatrix(1), v[1:]
 
+    def _solve_constraints_in_region(self, R, constraints):
+        M = matrix([c[0] for c in constraints])
+        b = vector([c[1] for c in constraints])
+        x = M.solve_right(b)
+        K = M.right_kernel()
+
+        assert K.dimension() <= 1
+
+        from sage.all import Polyhedron
+        line = Polyhedron(vertices=[x], lines=K.basis())
+        return R.intersection(line)
+
     def _constraint_segments_in_region(self, R):
         r'''Return segments containing all periodic points in region ``R`` '''
         segments = []
@@ -94,13 +106,17 @@ class PeriodicPoints():
         if (horizontal_cylinder.circumference() / width) not in QQ:
             for R1, wrap in horizontal_cylinder.regions(start=R, multiplicity=horizontal_cylinder.multiplicity()):
                 connecting_constraint = self._connecting_constraint(R1, wrap)
-                segments.append(self._solve_constraints(horizontal_constraint, vertical_constraint, connecting_constraint))
+                constraints = [horizontal_constraint, vertical_constraint, connecting_constraint]
+                segments.append(self._solve_constraints_in_region(R, constraints))
 
         else:
             assert (vertical_cylinder.circumference() / height) not in QQ
             for R1 in vertical_cylinder.regions(start=R, multiplicity=vertical_cylinder.multiplicity()):
                 connecting_constraint = self._connecting_equation(R, R1)
                 segments.append(self._solve_constraints(horizontal_constraint, vertical_constraint, connecting_constraint))
+
+        return [s for s in segments if not s.is_empty()]
+
 
     def _constraint_segments(self):
         r'''Return set of segments containing all periodic points'''
