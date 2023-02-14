@@ -2657,6 +2657,12 @@ class PowerSeriesConstraints:
 
         A, b, decode, free = self.matrix()
 
+        rows, columns = A.dimensions()
+        rank = A.rank()
+        if rank < columns:
+            # TODO: Warn?
+            print(f"system undetermined: {rows}×{columns} matrix of rank {rank}")
+
         if algorithm == "arb":
             from sage.all import ComplexBallField
             C = ComplexBallField(self.complex_field().prec())
