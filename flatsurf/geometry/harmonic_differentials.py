@@ -2125,6 +2125,11 @@ class PowerSeriesConstraints:
         edge = self._surface.polygon(triangle0).edges()[edge0]
         r2 = (edge[0]**2 + edge[1]**2) / 4
 
+        # Actually, after discussing with Marc Mezzarroba, it's a bad idea to
+        # go all the way to the radius of convergence. So, we instead only
+        # optimize on half the edge.
+        r2 /= 4
+
         r2n = r2
         for n, b_n in enumerate(b):
             # TODO: In the article it says that it should be R^n as a
