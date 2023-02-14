@@ -2617,11 +2617,15 @@ class HyperbolicEpsilonGeometry(UniqueRepresentation, HyperbolicGeometry):
     """
 
     def __init__(self, ring, epsilon):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        TESTS::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicEpsilonGeometry
+            sage: H = HyperbolicPlane(RR)
+            sage: isinstance(H.geometry, HyperbolicEpsilonGeometry)
+            True
+
+        """
         super().__init__(ring)
         self._epsilon = ring(epsilon)
 
