@@ -2575,11 +2575,47 @@ class HyperbolicExactGeometry(UniqueRepresentation, HyperbolicGeometry):
 
 
 class HyperbolicEpsilonGeometry(UniqueRepresentation, HyperbolicGeometry):
-    # TODO: Check documentation
-    # TODO: Check INPUTS
-    # TODO: Check SEEALSO
-    # TODO: Check for doctests
-    # TODO: Benchmark?
+    r"""
+    Predicates and primitive geometric constructions over a base ``ring`` with
+    "precision" ``epsilon``.
+
+    This is an alternative to :class:`HyperbolicExactGeometry` over inexact
+    rings. The exact meaning of the ``epsilon`` parameter is a bit fuzzy, but
+    the basic idea is that two numbers are considered equal in this geometry if
+    their relative difference is less than ``epsilon``, see :meth:`_equal` for
+    details.
+
+    INPUT:
+
+    - ``ring`` -- a ring, the ring in which coordinates in the hyperbolic plane
+      will be represented
+
+    - ``epsilon`` -- an error bound
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicEpsilonGeometry
+        sage: H = HyperbolicPlane(RR, HyperbolicEpsilonGeometry(RR, 1/1024))
+
+    The ``epsilon`` affects the notion of equality in this geometry::
+
+        sage: H(0) == H(1/2048)
+        True
+
+        sage: H(1/2048) == H(2/2048)
+        False
+
+    This geometry is meant for inexact rings, however, it can also be used in
+    exact rings::
+
+        sage: H = HyperbolicPlane(QQ, HyperbolicEpsilonGeometry(QQ, 1/1024))
+
+    .. SEEALSO::
+
+        :class:`HyperbolicExactGeometry`
+
+    """
+
     def __init__(self, ring, epsilon):
         # TODO: Check documentation.
         # TODO: Check INPUT
