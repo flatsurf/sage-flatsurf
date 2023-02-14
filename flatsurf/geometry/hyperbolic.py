@@ -2371,7 +2371,6 @@ class HyperbolicGeometry:
             0
 
         """
-        # TODO: Epsilon Geometry should override this.
         if self._zero(p) and self._zero(q):
             raise ValueError("one of p and q must not be zero")
 
@@ -2643,6 +2642,48 @@ class HyperbolicEpsilonGeometry(UniqueRepresentation, HyperbolicGeometry):
             return abs(x - y) < self._epsilon
 
         return abs(x - y) <= (abs(x) + abs(y)) * self._epsilon
+
+    def projective(self, p, q, point):
+        r"""
+        Return the ideal point with projective coordinates ``[p: q]`` in the
+        upper half plane model.
+
+        INPUT:
+
+        - ``p`` -- an element of the :meth:`base_ring`
+
+        - ``q`` -- an element of the :meth:`base_ring`
+
+        - ``point`` -- the :meth:`HyperbolicPlane.point` to create points
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(RR)
+
+        The point ``[p: q]`` is the point at infinity if ``q`` is very small in
+        comparison to ``p``::
+
+            sage: H.geometry.projective(1, 0, H.point)
+            ∞
+
+            sage: H.geometry.projective(1e-8, 1e-16, H.point)
+            ∞
+
+            sage: H.geometry.projective(1e-8, -1e-16, H.point)
+            ∞
+
+        Even though ``q`` might be small, ``[p: q]`` is not the point at
+        infinity if both coordinates are of similar size::
+
+            sage: H.geometry.projective(1e-16, 1e-16, H.point)
+            1
+
+            sage: H.geometry.projective(-1e-16, 1e-16, H.point)
+            -1
+
+        """
+        return super().projective(p, q, point)
 
     def change_ring(self, ring):
         # TODO: Check documentation.
