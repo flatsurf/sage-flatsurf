@@ -2452,7 +2452,9 @@ class PowerSeriesConstraints:
             gen = self.symbolic_ring().gen(representative)
 
             if self._cost.degree(gen) <= 0:
-                continue
+                # The cost function does not depend on this variable.
+                # That's fine, we still need it for the Lagrange multipliers machinery.
+                pass
 
             gen = self._cost.parent()(gen)
 
