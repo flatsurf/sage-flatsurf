@@ -2677,12 +2677,28 @@ class HyperbolicEpsilonGeometry(UniqueRepresentation, HyperbolicGeometry):
         infinity if both coordinates are of similar size::
 
             sage: H.geometry.projective(1e-16, 1e-16, H.point)
-            1
+            1.00000000000000
 
             sage: H.geometry.projective(-1e-16, 1e-16, H.point)
-            -1
+            -1.00000000000000
 
         """
+        if self._zero(p) and self._zero(q):
+            try:
+                pq = p / q
+            except ZeroDivisionError:
+                return point(0, 1, model="klein", check=False)
+
+            try:
+                qp = q / p
+            except ZeroDivisionError:
+                return point(0, 0, model="half_plane", check=False)
+
+            if self._zero(qp):
+                return point(0, 1, model="klein", check=False)
+
+            return point(pq, 0, model="half_plane", check=False)
+
         return super().projective(p, q, point)
 
     def change_ring(self, ring):
