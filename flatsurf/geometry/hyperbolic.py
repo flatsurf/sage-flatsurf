@@ -2162,6 +2162,8 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             isometry to a convex set.
 
         """
+        # TODO: Add an example that shows that we expect marked vertices to be mapped to marked vertices.
+
         # Normalize the arguments so that they are a list of convex sets.
         from collections.abc import Iterable
         if not isinstance(preimage, Iterable):
@@ -2170,24 +2172,150 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             image = [image]
 
         preimage = [self(x) for x in preimage]
-        image = [self(x) for x in image]
+        image = [self(y) for y in image]
 
         if len(preimage) != len(image):
             raise ValueError("preimage and image must be the same size to determine an isometry between them")
 
-        # Normalize the arguments so that they are a list of geodics and points.
-        raise NotImplementedError
+        for (x, y) in zip(preimage, image):
+            if x.dimension() != y.dimension():
+                raise ValueError("preimage and image must be of the same dimensions to determine an isometry between them")
+            if x.is_oriented() != y.is_oriented():
+                raise ValueError("preimage and image must be oriented or unoriented consistently")
 
-        if len(preimage) != len(image):
-            raise ValueError("preimage and image must be compatible to determine an isometry between them")
+        # Drop empty sets from the preimage and image to make our lives easier
+        preimage = [x for x in preimage if x.dimension() >= 0]
+        image = [y for y in preimage if y.dimension() >= 0]
 
-        from sage.all import MatrixSpace
-        MS = MatrixSpace(self.base_ring(), 2, 2)
+        # An isometry is uniquely determined by mapping three points.
+        # In principle, we now just need to find three points in preimage, find
+        # their corresponding images, construct the isometry, and then check
+        # that it maps everything correctly.
+        # However, there are objects that do not really define a mapping of
+        # points. For example, when presented with an unoriented geodesic, we
+        # can map its endpoints two possible ways. More generally, when mapping
+        # a polygon, we can permute the edges cyclically.
 
-        if not preimage:
-            # When there are no conditions, any isometry will do.
-            return MS.one()
+        # We need a mild form of backtracking to collect all possible triples
+        # that define the isometry.
+        isometry = self._isometry([], list(zip(preimage, image)))
 
+        if isometry is None:
+            raise ValueError("no isometry can map these objects to each other")
+
+        return isometry
+
+    def _isometry(self, defining, remaining):
+        r"""
+        Return an isometry that maps the pairs in ``defining`` to each other.
+
+        If no isometry also maps the pairs in ``remaining`` to each other,
+        return ``None``.
+
+        INPUT:
+
+        - ``defining`` -- a sequence of pairs of points
+
+        - ``remaining`` -- a sequence of pairs of subsets of the hyperbolic
+          plane
+
+        """
+        # TODO: Add doctests.
+
+        assert len(defining) <= 3
+
+        if len(defining) == 3:
+            isometry = self._isometry_from_points(*defining)
+
+            if isometry is not None:
+                for x, y in remaining:
+                    if x.apply_isometry(isometry) != y:
+                        return None
+
+            return isometry
+
+        # "defining" is not sufficient to determine a unique isometry, we extend it.
+
+        if not remaining:
+            # we have freedom in defining this isometry, make it unique by
+            # randomly mapping some more points
+            from itertools import count
+            for n in count(0):
+                n = self(n)
+                if any([x == n or y == n for (x, y) in defining]):
+                    continue
+                return self._isometry(defining + [(n, n)], remaining=[])
+
+        # Extend by turning remaining[0] into a condition
+        x, y = remaining[0]
+        remaining = remaining[1:]
+
+        if x.dimension() == 0:
+            assert y.dimension() == 0
+
+            if (x, y) in defining:
+                return self._isometry(defining, remaining)
+
+            return self._isometry(defining + [(x, y)], remaining)
+
+        if x.dimension() == 1:
+            if isinstance(x, HyperbolicGeodesic):
+                if not x.is_oriented():
+                    f = x.half_spaces()[0].boundary()
+                    g = y.half_spaces()[0].boundary()
+                    return self._isometry(defining, [(f, g)] + remaining) \
+                        or self._isometry(defining, [(f, -g)] + remaining)
+
+                return self._isometry(defining, [(x.start(), y.start()), (x.end(), y.end())] + remaining)
+
+            if isinstance(x, HyperbolicSegment):
+                if not x.is_oriented():
+                    return self._isometry(defining, [(x.start(), y.start()), (x.end(), y.end())] + remaining) \
+                            or self._isometry(defining, [(x.start(), y.end()), (x.end(), y.start())] + remaining)
+                return self._isometry(defining, [(x.start(), y.start()), (x.end(), y.end())] + remaining)
+
+            raise NotImplementedError("cannot determine isometry for this one-dimensional set yet")
+
+        if x.dimension() == 2:
+            if isinstance(x, HyperbolicHalfSpace):
+                return self._isometry(defining, [(x.boundary(), y.boundary())] + remaining)
+
+            x = list(x.vertices())
+            y = list(y.vertices())
+
+            if len(x) != len(y):
+                return None
+
+            for i in range(len(x)):
+                isometry = self._isometry(defining, list(zip(x, y[i:] + y[:i])) + remaining)
+                if isometry is not None:
+                    break
+
+            return isometry
+
+        raise NotImplementedError("cannot determine isometry for sets of this dimension")
+
+    def _isometry_from_points(self, *points):
+        r"""
+        Return the unique isometry mapping ``points`` to each other.
+
+        INPUT:
+
+        - ``points`` -- a sequence of pairs of points in the hyperbolic plane
+
+        OUTPUT:
+
+        An isometry as a 2×2 matrix.
+
+        .. SEEALSO::
+
+            :meth:`HyperbolicConvexSet.apply_matrix` to apply the returned matrix to a set.
+
+        """
+        if len(points) != 3:
+            raise ValueError("need exactly three pairs of points to determine a unique isometry")
+
+        # TODO: Add doctests
         raise NotImplementedError
 
     def _repr_(self):
