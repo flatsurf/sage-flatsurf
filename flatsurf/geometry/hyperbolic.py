@@ -2100,6 +2100,96 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         """
         return self.__make_element_class__(HyperbolicEmptySet)(self)
 
+    def isometry(self, preimage, image):
+        r"""
+        Return an isometry that maps ``preimage`` to ``image``.
+
+        INPUT:
+
+        - ``preimage`` -- a convex set in the hyperbolic plane or a list of
+          such convex sets.
+
+        - ``image`` -- a convex set in the hyperbolic plane or a list of such
+          convex sets.
+
+        OUTPUT:
+
+        Returns an element of `PGL(2, \mathbb{R})` that maps (each element of)
+        ``preimage`` to (the corresponding element of) ``image``.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+        An isometry mapping one point to another; naturally this is not the
+        unique isometry with this property::
+
+            sage: H.isometry(0, 1)
+            sage: H.isometry(I, I+1)
+            sage: H.isometry(0, oo)
+
+        An isometry is uniquely determined by its image on three points::
+
+            sage: H.isometry([0, 1, oo], [1, oo, 0])
+
+        It might be impossible to find an isometry with the prescribed mapping::
+
+            sage: H.isometry(0, I)
+
+            sage: H.isometry([0, 1, oo, I], [0, 1, oo, I + 1])
+
+        We can determine isometries by mapping more complex objects than
+        points, e.g., geodesics::
+
+            sage: H.isometry(H.geodesic(-1, 1), H.geodesic(1, -1))
+
+        The above isometry is not the only one with that property::
+
+            sage: H.isometry([H.geodesic(-1, 1), I], [H.geodesic(1, -1), 2*I])
+
+        We can also determine an isometry mapping more complex objects::
+
+            sage: P = H.polygon([H.vertical(1).left_half_space(), H.vertical(-1).right_half_space(), H.geodesic(-1, 1).left_half_space()])
+            sage: Q = H.polygon([H.geodesic(-1, 0).left_half_space(), H.geodesic(0, 1).left_half_space(), H.geodesic(1, -1).left_half_space()])
+            sage: m = H.isometry(P, Q)
+            sage: P.apply_isometry(m) == Q
+            True
+
+        .. SEEALSO::
+
+            :meth:`HyperbolicConvexSet.apply_isometr` to apply the returned
+            isometry to a convex set.
+
+        """
+        # Normalize the arguments so that they are a list of convex sets.
+        from collections.abc import Iterable
+        if not isinstance(preimage, Iterable):
+            preimage = [preimage]
+        if not isinstance(image, Iterable):
+            image = [image]
+
+        preimage = [self(x) for x in preimage]
+        image = [self(x) for x in image]
+
+        if len(preimage) != len(image):
+            raise ValueError("preimage and image must be the same size to determine an isometry between them")
+
+        # Normalize the arguments so that they are a list of geodics and points.
+        raise NotImplementedError
+
+        if len(preimage) != len(image):
+            raise ValueError("preimage and image must be compatible to determine an isometry between them")
+
+        from sage.all import MatrixSpace
+        MS = MatrixSpace(self.base_ring(), 2, 2)
+
+        if not preimage:
+            # When there are no conditions, any isometry will do.
+            return MS.one()
+
+        raise NotImplementedError
+
     def _repr_(self):
         r"""
         Return a printable representation of this hyperbolic plane.
@@ -5087,7 +5177,7 @@ class HyperbolicPoint(HyperbolicConvexSet):
         r"""
         INPUT:
 
-        - ``isometry`` -- a 2x2 matrix in `PGL(2,\mathbb{R})` or a 3x3 matrix in `SO(1, 2)`
+        - ``isometry`` -- a 3x3 matrix in `SO(1, 2)`
 
         - ``model`` (optional) -- either ``"half_plane"`` (default) or ``"klein"``
 
@@ -6965,6 +7055,58 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
 
         """
         return hash((self._half_spaces, self._marked_vertices))
+
+    def cusp_width(self, vertex):
+        r"""
+        Return the width of the cusp ``vertex``.
+
+        INPUT:
+
+        - ``vertex`` -- a vertex of this polygon that is an ideal point
+
+        EXAMPLES:
+
+        For the point at infinity, the cusp width is the distance of the
+        verticals in the upper half plane model that meet at this point::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+
+            sage: H = HyperbolicPlane()
+            sage: P = H.polygon([H.vertical(-1).right_half_space(), H.vertical(1).left_half_space()])
+            sage: P.cusp_width(oo)
+            2
+
+        For other points, the cusp width is the above after conjugating the
+        cusp to the point at infinity::
+
+            sage: P = H.polygon([H.geodesic(0, 1).left_half_space(), H.geodesic(-1, 0).left_half_space()])
+            sage: P.cusp_width(0)
+
+        """
+        vertex = self.parent()(vertex)
+
+        if not vertex.is_ideal():
+            raise ValueError("vertex must be an ideal point")
+
+        for (f, g) in self.half_spaces().pairs():
+            f = f.boundary()
+
+            if vertex != f.end():
+                continue
+
+            g = g.boundary()
+
+            if vertex != g.start():
+                raise ValueError("vertex is not a cusp since no two boundaries meet at it")
+
+            isometry = self.parent().isometry(vertex, self.parent().infinity())
+
+            f = f.apply_isometry(isometry)
+            g = g.apply_isometry(isometry)
+
+            return g.start().coordinates(model="half_plane")[0] - f.start().coordinates(model="half_plane")[0]
+
+        raise ValueError("vertex is not a cusp in this polygon")
 
 
 class HyperbolicSegment(HyperbolicConvexSet):
