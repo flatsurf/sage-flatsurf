@@ -7758,6 +7758,67 @@ def sl2_to_so12(m):
     )
 
 
+def so12_to_sl2(m, det=1):
+    r"""
+    Inverse of :func:`sl2_to_so12`.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.hyperbolic import so12_to_sl2
+        sage: so12_to_sl2(matrix(3, [1, -1, 1, 1, 1/2, 1/2, 1, -1/2, 3/2]))
+        [1 1]
+        [0 1]
+        sage: so12_to_sl2(matrix(3, [1, 1, 1, -1, 1/2, -1/2, 1, 1/2, 3/2]))
+        [1 0]
+        [1 1]
+        sage: so12_to_sl2(matrix(3, [1, 0, 0, 0, 17/8, 15/8, 0, 15/8, 17/8]))
+        [  2   0]
+        [  0 1/2]
+    """
+    from sage.matrix.constructor import matrix
+
+    if m.nrows() != 3 or m.ncols() != 3:
+        raise ValueError("invalid matrix")
+    m00, m01, m02, m10, m11, m12, m20, m21, m22 = m.list()
+    K = m.base_ring()
+    two = K(2)
+
+    a2 = (m12 + m22 + m21 + m11) / two
+    b2 = (m12 + m22 - m21 - m11) / two
+    c2 = (m21 + m22 - m12 - m11) / two
+    d2 = (m11 + m22 - m12 - m21) / two
+
+    ab = (m10 + m20) / two
+    ac = (m01 + m02) / two
+    ad = (m00 + det) / two
+    bc = (m00 - det) / two
+    bd = (m02 - m01) / two
+    cd = (m20 - m10) / two
+
+    # we recover +/- a takings square roots
+    pm_a = a2.sqrt()
+    pm_b = b2.sqrt()
+    pm_c = c2.sqrt()
+    pm_d = d2.sqrt()
+
+    # TODO: do something less naive as there is no need to iterate
+    import itertools
+    for sa, sb, sc, sd in itertools.product([1, -1], repeat=4):
+        a = sa * pm_a
+        b = sb * pm_b
+        c = sc * pm_c
+        d = sd * pm_d
+        if (a * b == ab and
+            a * c == ac and
+            a * d == ad and
+            b * c == bc and
+            b * d == bd and
+            c * d == cd):
+            return matrix(K, 2, 2, [a, b, c, d])
+
+    raise ValueError('no projection to SL(2, R) in the base ring')
+
+
 # TODO: Rename to OrderedSet?
 # TODO: Allow creating from generator while allowing to answer length immediately.
 class SortedSet:
