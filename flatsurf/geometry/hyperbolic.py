@@ -7371,8 +7371,8 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
         verticals in the upper half plane model that meet at this point::
 
             sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
-
             sage: H = HyperbolicPlane()
+
             sage: P = H.polygon([H.vertical(-1).right_half_space(), H.vertical(1).left_half_space()])
             sage: P.cusp_width(oo)
             2
@@ -7382,6 +7382,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
 
             sage: P = H.polygon([H.geodesic(0, 1).left_half_space(), H.geodesic(-1, 0).left_half_space()])
             sage: P.cusp_width(0)
+            4
 
         """
         vertex = self.parent()(vertex)
@@ -7405,7 +7406,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
             f = f.apply_isometry(isometry)
             g = g.apply_isometry(isometry)
 
-            return g.start().coordinates(model="half_plane")[0] - f.start().coordinates(model="half_plane")[0]
+            return f.start().coordinates(model="half_plane")[0] - g.end().coordinates(model="half_plane")[0]
 
         raise ValueError("vertex is not a cusp in this polygon")
 
