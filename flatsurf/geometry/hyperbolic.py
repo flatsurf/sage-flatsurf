@@ -2185,7 +2185,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         # Drop empty sets from the preimage and image to make our lives easier
         preimage = [x for x in preimage if x.dimension() >= 0]
-        image = [y for y in preimage if y.dimension() >= 0]
+        image = [y for y in image if y.dimension() >= 0]
 
         # An isometry is uniquely determined by mapping three points.
         # In principle, we now just need to find three points in preimage, find
@@ -2305,18 +2305,117 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         OUTPUT:
 
-        An isometry as a 2×2 matrix.
+        An isometry as a 2×2 matrix or ``None`` if there is no such isometry or
+        it is not defined over the base ring of the hyperbolic plane.
 
         .. SEEALSO::
 
             :meth:`HyperbolicConvexSet.apply_matrix` to apply the returned matrix to a set.
 
         """
+        # TODO: Add doctests
+
         if len(points) != 3:
             raise ValueError("need exactly three pairs of points to determine a unique isometry")
 
+        # To find the isometry mapping the given pairs of points, we construct
+        # the geodesics defining the triangle formed by these points.
+
+        from itertools import combinations
+        geodesics = [
+            (p[0].segment(q[0]).geodesic(), p[1].segment(q[1]).geodesic())
+            for p, q in combinations(points, 2)
+        ]
+
+        # If the triangles are not degenerate, there is exactly one isometry
+        # mapping one to the other.
+
+        for f, g in combinations(geodesics, 2):
+            if f[0].unoriented() != g[0].unoriented():
+                isometry = self._isometry_from_geodesics(f, g)
+                break
+        else:
+            raise NotImplementedError("cannot determine isometry for degenerate triangles yet")
+
+        # Verify that the isometry has the prescribed properties (if it is
+        # defined over the base ring.)
+        if isometry is not None:
+            assert points[0][0].apply_isometry(isometry) == points[0][1]
+            assert points[1][0].apply_isometry(isometry) == points[1][1]
+            assert points[2][0].apply_isometry(isometry) == points[2][1]
+
+        return isometry
+
+    def _isometry_from_geodesics(self, *geodesics):
+        r"""
+        Return the unique isometry mapping ``geodesics`` to each other.
+
+        INPUT:
+
+        - ``geodesics`` -- a sequence of pairs of oriented geodesics in the hyperbolic plane.
+
+        OUTPUT:
+
+        An isometry as a 2×2 matrix or ``None`` if there is no such isometry or
+        it is not defined over the base ring of the hyperbolic plane.
+
+        ALGORITHM:
+
+        TODO
+
+        .. SEEALSO::
+
+            :meth:`HyperbolicConvexSet.apply_matrix` to apply the returned matrix to a set.
+
+        """
         # TODO: Add doctests
-        raise NotImplementedError
+
+        if len(geodesics) != 2:
+            raise ValueError("need exactly two pairs of geodesics to determine a unique isometry")
+
+
+        from sage.all import PolynomialRing, matrix, vector
+
+        R = PolynomialRing(self.base_ring(), names=["a", "b", "c", "d", "λ"], order="degrevlex")
+        a, b, c, d, λ = R.gens()
+
+        isometry = matrix([
+            [a, b],
+            [c, d]
+        ])
+
+        isometry = sl2_to_so12(isometry)
+
+        def conditions(preimage, image, λ):
+            A, B, C = preimage.equation(model="klein")
+            fA, fB, fC = image.equation(model="klein")
+            condition = vector((B, C, A)) * isometry
+
+            condition -= λ * vector(R, (fB, fC, fA))
+
+            return condition.list()
+
+        equations = conditions(geodesics[0][0], geodesics[0][1], λ) + conditions(geodesics[1][0], geodesics[1][1], 1)
+
+        I = R.ideal(equations).groebner_basis()
+
+        λλ = I[0] - d**2
+        assert λλ in self.base_ring()
+
+        equations = conditions(geodesics[0][0], geodesics[0][1], λ) + conditions(geodesics[1][0], geodesics[1][1], -λλ)
+
+        solutions = R.ideal(equations).variety()
+
+        for solution in solutions:
+            isometry  = matrix([
+                [solution[a], solution[b]],
+                [solution[c], solution[d]]
+            ])
+
+            isometry = isometry.inverse()
+            return isometry
+
+        assert False
 
     def _repr_(self):
         r"""
@@ -3376,7 +3475,7 @@ class HyperbolicConvexSet(Element):
         ):
             raise ValueError("invalid isometry")
 
-    def _apply_isometry_klein(self, isometry):
+    def _apply_isometry_klein(self, isometry, on_right=False):
         # TODO: Check documentation.
         # TODO: Check INPUT
         # TODO: Check SEEALSO
