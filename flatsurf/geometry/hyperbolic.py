@@ -2205,6 +2205,13 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         """
         # TODO: Add an example that shows that we expect marked vertices to be mapped to marked vertices.
 
+        if model != "half_plane":
+            raise NotImplementedError # TODO
+        if on_right:
+            raise NotImplementedError # TODO
+        if normalized:
+            raise NotImplementedError # TODO
+
         # Normalize the arguments so that they are a list of convex sets.
         from collections.abc import Iterable
         if not isinstance(preimage, Iterable):
