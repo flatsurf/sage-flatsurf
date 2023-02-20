@@ -2187,7 +2187,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
             sage: H.isometry([H.geodesic(-1, 1), I - 1], [H.geodesic(1, -1), I - 1])
             [ -1/5 -2/15]
-            [ 2/15   1/5
+            [ 2/15   1/5]
 
         We can also determine an isometry mapping more complex objects::
 
@@ -4071,6 +4071,15 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
         # TODO: Check for doctests
         # TODO: Benchmark?
         return self.boundary().vertices()
+
+    def _apply_isometry_klein(self, isometry, on_right=False):
+        # TODO: Check documentation.
+        # TODO: Check INPUT
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        # TODO: Benchmark?
+        # TODO: This can be implemented generically.
+        return self._geodesic.apply_isometry(isometry, model="klein", on_right=on_right).left_half_space()
 
     def __hash__(self):
         r"""
@@ -7400,6 +7409,16 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
 
         raise ValueError("vertex is not a cusp in this polygon")
 
+    def _apply_isometry_klein(self, isometry, on_right=False):
+        # TODO: Check documentation.
+        # TODO: Check INPUT
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        # TODO: Benchmark?
+        half_spaces = [h.apply_isometry(isometry, model="klein", on_right=on_right) for h in self._half_spaces]
+        marked_vertices = [p.apply_isometry(isometry, model="klein", on_right=on_right) for p in self._marked_vertices]
+
+        return self.parent().polygon(half_spaces=half_spaces, check=False, assume_minimal=True, marked_vertices=marked_vertices)
 
 class HyperbolicSegment(HyperbolicConvexSet):
     # TODO: Check documentation
