@@ -2100,7 +2100,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         """
         return self.__make_element_class__(HyperbolicEmptySet)(self)
 
-    def isometry(self, preimage, image):
+    def isometry(self, preimage, image, model="half_plane", on_right=False, normalized=False):
         r"""
         Return an isometry that maps ``preimage`` to ``image``.
 
@@ -2112,10 +2112,22 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         - ``image`` -- a convex set in the hyperbolic plane or a list of such
           convex sets.
 
+        - ``model`` -- one of ``"half_plane"`` and ``"klein"``, the model in
+          which this isometry applies.
+
+        - ``on_right`` -- a boolean (default: ``False``); whether the returned
+          isometry maps ``preimage`` to ``image`` when multiplied from the
+          right; otherwise from the left.
+
+        - ``normalized`` -- a boolean (default: ``False``); whether the
+          returned matrix has determinant 1.
+
         OUTPUT:
 
-        Returns an element of `PGL(2, \mathbb{R})` that maps (each element of)
-        ``preimage`` to (the corresponding element of) ``image``.
+        If ``model`` is ``"half_plane"``, returns an element of `PGL(2,
+        \mathbb{R})` as a 2×2 matrix that maps (each element of) ``preimage`` to (the
+        corresponding element of) ``image``. If ``model`` is ``"klein"``,
+        returns the corresponding element of `SO(1,2)`` as a 3×3 matrix.
 
         EXAMPLES::
 
@@ -2125,28 +2137,57 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         An isometry mapping one point to another; naturally this is not the
         unique isometry with this property::
 
-            sage: H.isometry(0, 1)
+            sage: m = H.isometry(0, 1)
+            sage: H(0).apply_isometry(m)
+            1
+            sage: m
+            [ 9/2   27]
+            [-9/2   27]
+
+        ::
+
             sage: H.isometry(I, I+1)
+            [  3   0]
+            [3/2 3/2]
             sage: H.isometry(0, oo)
+            [   4 -8/3]
+            [ 4/3    0]
 
         An isometry is uniquely determined by its image on three points::
 
             sage: H.isometry([0, 1, oo], [1, oo, 0])
+            [ 0  2]
+            [-2  2]
 
         It might be impossible to find an isometry with the prescribed mapping::
 
             sage: H.isometry(0, I)
+            Traceback (most recent call last):
+            ...
+            ValueError: no isometry can map these objects to each other
+
+            sage: H.isometry(I, 2*I)
+            Traceback (most recent call last):
+            ...
+            ValueError: no isometry can map these objects to each other
 
             sage: H.isometry([0, 1, oo, I], [0, 1, oo, I + 1])
+            Traceback (most recent call last):
+            ...
+            ValueError: no isometry can map these objects to each other
 
         We can determine isometries by mapping more complex objects than
         points, e.g., geodesics::
 
             sage: H.isometry(H.geodesic(-1, 1), H.geodesic(1, -1))
+            [-1  0]
+            [ 0  1]
 
         The above isometry is not the only one with that property::
 
-            sage: H.isometry([H.geodesic(-1, 1), I], [H.geodesic(1, -1), 2*I])
+            sage: H.isometry([H.geodesic(-1, 1), I - 1], [H.geodesic(1, -1), I - 1])
+            [ -1/5 -2/15]
+            [ 2/15   1/5
 
         We can also determine an isometry mapping more complex objects::
 
@@ -2337,12 +2378,12 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         else:
             raise NotImplementedError("cannot determine isometry for degenerate triangles yet")
 
-        # Verify that the isometry has the prescribed properties (if it is
-        # defined over the base ring.)
+        # Verify that the isometry has the prescribed properties
         if isometry is not None:
-            assert points[0][0].apply_isometry(isometry) == points[0][1]
-            assert points[1][0].apply_isometry(isometry) == points[1][1]
-            assert points[2][0].apply_isometry(isometry) == points[2][1]
+            for p, q in points:
+                if p.apply_isometry(isometry) != q:
+                    assert not p.is_ideal() or not q.is_ideal(), f"found isometry {isometry} but it does not map {p} to {q} but to {p.apply_isometry(isometry)}"
+                    return None
 
         return isometry
 
@@ -2376,8 +2417,8 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         from sage.all import PolynomialRing, matrix, vector
 
-        R = PolynomialRing(self.base_ring(), names=["a", "b", "c", "d", "λ"], order="degrevlex")
-        a, b, c, d, λ = R.gens()
+        R = PolynomialRing(self.base_ring(), names=["λ", "a", "b", "c", "d"], order="degrevlex(4), lex(1)")
+        λ, a, b, c, d = R.gens()
 
         isometry = matrix([
             [a, b],
@@ -2397,10 +2438,27 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         equations = conditions(geodesics[0][0], geodesics[0][1], λ) + conditions(geodesics[1][0], geodesics[1][1], 1)
 
-        I = R.ideal(equations).groebner_basis()
+        # TODO: The below is quite hacky. We should use a more generic approach
+        # when some of the coefficients are forced to be zero at least.
+        I = list(R.ideal(equations).groebner_basis())
 
-        λλ = I[0] - d**2
-        assert λλ in self.base_ring()
+        λλ = I.pop()
+        while λλ.total_degree() == 1:
+            λλ = I.pop()
+
+        if λλ == 1:
+            return None
+
+        assert len(λλ.variables()) == 1, f"expected Groebner basis algorithm to yield an equality of the form d^2 = n or d^3 = nd but found {λλ} instead"
+
+        if λλ.total_degree() == 3:
+            assert λλ.constant_coefficient() == 0, f"expected Groebner basis algorithm to yield an equality of the form d^3 = nd but got {λλ} instead"
+            λλ //= λλ.variables()[0]
+
+        assert λλ.total_degree() == 2, f"expected Groebner basis algorithm to yield an equality of the form d^2 = n but got {λλ} instead"
+
+        λλ -= λλ.variables()[0]**2
+        assert λλ in self.base_ring(), f"expected Groebner basis algorithm to yield an equality of the form d^2 = n but got {λλ} instead"
 
         equations = conditions(geodesics[0][0], geodesics[0][1], λ) + conditions(geodesics[1][0], geodesics[1][1], -λλ)
 
@@ -2415,7 +2473,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             isometry = isometry.inverse()
             return isometry
 
-        assert False
+        return None
 
     def _repr_(self):
         r"""
