@@ -15,12 +15,12 @@ EXAMPLES:
 Let us first construct a Veech surface in the stratum H(2)::
 
     sage: from flatsurf import translation_surfaces
-    sage: from flatsurf import GL2ROrbitClosure # optional: pyflatsurf
+    sage: from flatsurf import GL2ROrbitClosure
 
     sage: x = polygen(QQ)
     sage: K.<a> = NumberField(x^3 - 2, embedding=AA(2)**(1/3))
     sage: S = translation_surfaces.mcmullen_L(1,1,1,a)
-    sage: O = GL2ROrbitClosure(S) # optional: pyflatsurf
+    sage: O = GL2ROrbitClosure(S) # optional: pyflatsurf  # random output due to matplotlib warnings with some combinations of Python and matplotlib
     sage: O.decomposition((1,2)).cylinders() # optional: pyflatsurf
     [Cylinder with perimeter [...]]
 
