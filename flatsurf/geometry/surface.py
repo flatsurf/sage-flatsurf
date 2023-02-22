@@ -559,6 +559,83 @@ class Surface(SageObject):
 
         return surface
 
+    def subdivide_edges(self, parts=2):
+        r"""
+        Return a copy of this surface whose edges have been split into
+        ``parts`` equal pieces each.
+
+        INPUT:
+
+        - ``parts`` -- a positive integer (default: 2)
+
+        EXAMPLES:
+
+        A surface consisting of a single triangle::
+
+            sage: from flatsurf.geometry.surface import Surface_dict
+            sage: from flatsurf.geometry.polygon import Polygon, ConvexPolygons
+
+            sage: S = Surface_dict(QQ)
+            sage: P = ConvexPolygons(QQ)
+            sage: S.add_polygon(P([(1, 0), (0, 1), (-1, -1)]), label="Δ")
+            'Δ'
+
+        Subdividing this triangle yields a triangle with marked points along
+        the edges::
+
+            sage: T = S.subdivide_edges()
+
+        If we add another polygon to the original surface and glue them, we
+        can see how existing gluings are preserved when subdividing::
+
+            sage: S.add_polygon(P([(1, 0), (0, 1), (-1, 0), (0, -1)]), label='□')
+            '□'
+
+            sage: S.change_edge_gluing("Δ", 0, "□", 2)
+            sage: S.change_edge_gluing("□", 1, "□", 3)
+
+            sage: T = S.subdivide_edges()
+            sage: list(T.edge_gluing_iterator())
+            [(('Δ', 0), ('□', 4)),
+             (('Δ', 1), ('□', 5)),
+             (('Δ', 2), None),
+             (('Δ', 3), None),
+             (('Δ', 4), None),
+             (('Δ', 5), None),
+             (('□', 0), None),
+             (('□', 1), None),
+             (('□', 2), ('□', 6)),
+             (('□', 3), ('□', 7)),
+             (('□', 4), ('Δ', 0)),
+             (('□', 5), ('Δ', 1)),
+             (('□', 6), ('□', 2)),
+             (('□', 7), ('□', 3))]
+
+        """
+        labels = list(self.label_iterator())
+        polygons = [self.polygon(l) for l in labels]
+
+        subdivideds = [p.subdivide_edges(parts=parts) for p in polygons]
+
+        from flatsurf.geometry.surface import Surface_dict
+        surface = Surface_dict(base_ring=self._base_ring)
+
+        # Add subdivided polygons
+        for s, subdivided in enumerate(subdivideds):
+            surface.add_polygon(subdivided, label=labels[s])
+
+        # Reestablish gluings between polygons
+        for label, polygon, subdivided in zip(labels, polygons, subdivideds):
+            for e in range(polygon.num_edges()):
+                opposite = self.opposite_edge(label, e)
+                if opposite is not None:
+                    for p in range(parts):
+                        surface.change_edge_gluing(label, e * parts + p, opposite[0], opposite[1] * parts + p)
+
+        return surface
+
+
+
     def __hash__(self):
         r"""
         Hash compatible with equals.

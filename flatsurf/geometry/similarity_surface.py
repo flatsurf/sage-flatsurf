@@ -1225,6 +1225,24 @@ class SimilaritySurface(SageObject):
         """
         return self.__class__(self._s.subdivide())
 
+    def subdivide_edges(self, parts=2):
+        r"""
+        Return a copy of this surface whose edges have been split into
+        ``parts`` equal pieces each.
+
+        INPUT:
+
+        - ``parts`` -- a positive integer (default: 2)
+
+        EXAMPLES:
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.veech_double_n_gon(5)
+            sage: S.subdivide_edges()
+            TranslationSurface built from 2 polygons
+
+        """
+        return self.__class__(self._s.subdivide_edges(parts=parts))
 
     def singularity(self, l, v, limit=None):
         r"""
