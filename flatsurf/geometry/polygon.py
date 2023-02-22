@@ -1797,10 +1797,14 @@ class ConvexPolygon(Polygon):
         center = self.centroid()
         return [self.parent()(vertices=(vertices[i], vertices[(i+1) % len(vertices)], center)) for i in range(len(vertices))]
 
-    def subdivide_edges(self, parts):
+    def subdivide_edges(self, parts=2):
         r"""
         Return a copy of this polygon whose edges have been split into
         ``parts`` equal parts each.
+
+        INPUT:
+
+        - ``parts`` -- a positive integer (default: 2)
 
         EXAMPLES::
 
@@ -1815,6 +1819,9 @@ class ConvexPolygon(Polygon):
             Polygon: (0, 0), (1/3, 0), (2/3, 0), (1, 0), (5/6, 1/6*a), (2/3, 1/3*a), (1/2, 1/2*a), (1/3, 1/3*a), (1/6, 1/6*a)
 
         """
+        if parts < 1:
+            raise ValueError("parts must be a positive integer")
+
         steps = [e / parts for e in self.edges()]
         return self.parent()(edges=[e for e in steps for p in range(parts)])
 
