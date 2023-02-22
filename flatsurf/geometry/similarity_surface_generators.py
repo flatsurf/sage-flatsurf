@@ -54,7 +54,6 @@ def flipper_nf_to_sage(K, name='a'):
     EXAMPLES::
 
         sage: import flipper  # optional - flipper  # random output due to matplotlib warnings with some combinations of Python and matplotlib
-
         sage: import realalg  # optional - flipper
         sage: from flatsurf.geometry.similarity_surface_generators import flipper_nf_to_sage
         sage: K = realalg.RealNumberField([-2r] + [0r]*5 + [1r])   # optional - flipper
