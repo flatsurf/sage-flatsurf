@@ -1958,7 +1958,7 @@ class EquiangularPolygons:
 
     Polygons can also be defined over other number field implementations::
 
-        sage: from pyeantic import RealEmbeddedNumberField # optional: eantic  # random output due to matplotlib warnings with some combinations of Python and matplotlib
+        sage: from pyeantic import RealEmbeddedNumberField # optional: eantic  # random output due to matplotlib warnings with some combinations of setuptools and matplotlib
         sage: K = RealEmbeddedNumberField(P.base_ring()) # optional: eantic
         sage: P(K(1)) # optional: eantic
         Polygon: (0, 0), (1, 0), (1/2*c0, -1/2*c0 + 1)
