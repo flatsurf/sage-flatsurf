@@ -272,12 +272,12 @@
 <span class="sd">Let us first construct a Veech surface in the stratum H(2)::</span>
 
 <span class="sd">    sage: from flatsurf import translation_surfaces</span>
-<span class="sd">    sage: from flatsurf import GL2ROrbitClosure # optional: pyflatsurf</span>
+<span class="sd">    sage: from flatsurf import GL2ROrbitClosure</span>
 
 <span class="sd">    sage: x = polygen(QQ)</span>
 <span class="sd">    sage: K.&lt;a&gt; = NumberField(x^3 - 2, embedding=AA(2)**(1/3))</span>
 <span class="sd">    sage: S = translation_surfaces.mcmullen_L(1,1,1,a)</span>
-<span class="sd">    sage: O = GL2ROrbitClosure(S) # optional: pyflatsurf</span>
+<span class="sd">    sage: O = GL2ROrbitClosure(S) # optional: pyflatsurf  # random output due to matplotlib warnings with some combinations of setuptools and matplotlib</span>
 <span class="sd">    sage: O.decomposition((1,2)).cylinders() # optional: pyflatsurf</span>
 <span class="sd">    [Cylinder with perimeter [...]]</span>
 
@@ -360,7 +360,7 @@
 <span class="sd">    Computing an orbit closure over an exact real ring with transcendental elements::</span>
 
 <span class="sd">        sage: from flatsurf import EquiangularPolygons</span>
-<span class="sd">        sage: from pyexactreal import ExactReals  # optional: exactreal</span>
+<span class="sd">        sage: from pyexactreal import ExactReals  # optional: exactreal  # random output due to matplotlib warnings with some combinations of setuptools and matplotlib</span>
 
 <span class="sd">        sage: E = EquiangularPolygons(1, 5, 5, 5)</span>
 <span class="sd">        sage: R = ExactReals(E.base_ring())  # optional: exactreal</span>

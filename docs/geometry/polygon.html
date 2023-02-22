@@ -543,7 +543,7 @@ Number Field in c0 with defining polynomial x^2 - 2 with c0 = 1.414213562373095?
 </pre></div>
 </div>
 <p>Polygons can also be defined over other number field implementations:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>sage: from pyeantic import RealEmbeddedNumberField # optional: eantic
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>sage: from pyeantic import RealEmbeddedNumberField # optional: eantic  # random output due to matplotlib warnings with some combinations of setuptools and matplotlib
 sage: K = RealEmbeddedNumberField(P.base_ring()) # optional: eantic
 sage: P(K(1)) # optional: eantic
 Polygon: (0, 0), (1, 0), (1/2*c0, -1/2*c0 + 1)
