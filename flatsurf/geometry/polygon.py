@@ -1778,10 +1778,44 @@ class ConvexPolygon(Polygon):
              Polygon: (1, 1), (0, 1), (1/2, 1/2),
              Polygon: (0, 1), (0, 0), (1/2, 1/2)]
 
+        Sometimes alternating with :meth:`subdivide_edges` can produce a more
+        uniform subdivision::
+
+            sage: P = polygons.regular_ngon(4)
+            sage: P.subdivide_edges(2).subdivide()
+            [Polygon: (0, 0), (1/2, 0), (1/2, 1/2),
+             Polygon: (1/2, 0), (1, 0), (1/2, 1/2),
+             Polygon: (1, 0), (1, 1/2), (1/2, 1/2),
+             Polygon: (1, 1/2), (1, 1), (1/2, 1/2),
+             Polygon: (1, 1), (1/2, 1), (1/2, 1/2),
+             Polygon: (1/2, 1), (0, 1), (1/2, 1/2),
+             Polygon: (0, 1), (0, 1/2), (1/2, 1/2),
+             Polygon: (0, 1/2), (0, 0), (1/2, 1/2)]
+
         """
         vertices = self.vertices()
         center = self.centroid()
         return [self.parent()(vertices=(vertices[i], vertices[(i+1) % len(vertices)], center)) for i in range(len(vertices))]
+
+    def subdivide_edges(self, parts):
+        r"""
+        Return a copy of this polygon whose edges have been split into
+        ``parts`` equal parts each.
+
+        EXAMPLES::
+
+            sage: P = polygons.regular_ngon(3); P
+            Polygon: (0, 0), (1, 0), (1/2, 1/2*a)
+            sage: P.subdivide_edges(1) == P
+            True
+            sage: P.subdivide_edges(2)
+            Polygon: (0, 0), (1/2, 0), (1, 0), (3/4, 1/4*a), (1/2, 1/2*a), (1/4, 1/4*a)
+            sage: P.subdivide_edges(3)
+            Polygon: (0, 0), (1/3, 0), (2/3, 0), (1, 0), (5/6, 1/6*a), (2/3, 1/3*a), (1/2, 1/2*a), (1/3, 1/3*a), (1/6, 1/6*a)
+
+        """
+        steps = [e / parts for e in self.edges()]
+        return self.parent()(edges=[e for e in steps for p in range(parts)])
 
 
 class Polygons(UniqueRepresentation, Parent):
