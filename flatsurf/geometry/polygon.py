@@ -1781,7 +1781,7 @@ class ConvexPolygon(Polygon):
         """
         vertices = self.vertices()
         center = self.centroid()
-        return [ConvexPolygon(self.parent(), (vertices[i], vertices[(i+1) % len(vertices)], center)) for i in range(len(vertices)) ]
+        return [self.parent()(vertices=(vertices[i], vertices[(i+1) % len(vertices)], center)) for i in range(len(vertices))]
 
 
 class Polygons(UniqueRepresentation, Parent):
