@@ -1066,7 +1066,6 @@ class Polygon(Element):
 
             sage: P = polygons.regular_ngon(11)
             sage: C = P.centroid()
-            (1/2, -7/22*a^9 + 3*a^7 - 19/2*a^5 + 11*a^3 - 5/2*a)
             sage: P = P.translate(-C)
             sage: P.centroid()
             (0, 0)
@@ -1762,6 +1761,7 @@ class ConvexPolygon(Polygon):
 
         EXAMPLES::
 
+            sage: from flatsurf import polygons
             sage: P = polygons.regular_ngon(3); P
             Polygon: (0, 0), (1, 0), (1/2, 1/2*a)
             sage: P.subdivide()
@@ -1804,6 +1804,7 @@ class ConvexPolygon(Polygon):
 
         EXAMPLES::
 
+            sage: from flatsurf import polygons
             sage: P = polygons.regular_ngon(3); P
             Polygon: (0, 0), (1, 0), (1/2, 1/2*a)
             sage: P.subdivide_edges(1) == P

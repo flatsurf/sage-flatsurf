@@ -497,9 +497,10 @@ class Surface(SageObject):
         can see how existing gluings are preserved when subdividing::
 
             sage: S.add_polygon(P([(1, 0), (0, 1), (-1, 0), (0, -1)]), label='□')
+            '□'
+
             sage: S.change_edge_gluing("Δ", 0, "□", 2)
             sage: S.change_edge_gluing("□", 1, "□", 3)
-            '□'
 
             sage: T = S.subdivide()
 
