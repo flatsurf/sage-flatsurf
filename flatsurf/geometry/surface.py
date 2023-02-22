@@ -456,6 +456,106 @@ class Surface(SageObject):
         self.__mutate()
         self._base_label=new_base_label
 
+    def subdivide(self):
+        r"""
+        Return a copy of this surface whose polygons have been partitioned into
+        smaller triangles with :meth:`Polygon.subdivide`.
+
+        EXAMPLES:
+
+        A surface consisting of a single triangle::
+
+            sage: from flatsurf.geometry.surface import Surface_dict
+            sage: from flatsurf.geometry.polygon import Polygon, ConvexPolygons
+
+            sage: S = Surface_dict(QQ)
+            sage: P = ConvexPolygons(QQ)
+            sage: S.add_polygon(P([(1, 0), (0, 1), (-1, -1)]), label="Δ")
+            'Δ'
+
+        Subdivision of this surface yields a surface with three triangles::
+
+            sage: T = S.subdivide()
+            sage: list(T.label_iterator())
+            [('Δ', 0), ('Δ', 1), ('Δ', 2)]
+
+        Note that the new labels are old labels plus an index. We verify that
+        the triangles are glued correctly::
+
+            sage: list(T.edge_gluing_iterator())
+            [((('Δ', 0), 0), None),
+             ((('Δ', 0), 1), (('Δ', 1), 2)),
+             ((('Δ', 0), 2), (('Δ', 2), 1)),
+             ((('Δ', 1), 0), None),
+             ((('Δ', 1), 1), (('Δ', 2), 2)),
+             ((('Δ', 1), 2), (('Δ', 0), 1)),
+             ((('Δ', 2), 0), None),
+             ((('Δ', 2), 1), (('Δ', 0), 2)),
+             ((('Δ', 2), 2), (('Δ', 1), 1))]
+
+        If we add another polygon to the original surface and glue things, we
+        can see how existing gluings are preserved when subdividing::
+
+            sage: S.add_polygon(P([(1, 0), (0, 1), (-1, 0), (0, -1)]), label='□')
+            sage: S.change_edge_gluing("Δ", 0, "□", 2)
+            sage: S.change_edge_gluing("□", 1, "□", 3)
+            '□'
+
+            sage: T = S.subdivide()
+
+            sage: list(T.label_iterator())
+            [('Δ', 0), ('Δ', 1), ('Δ', 2), ('□', 0), ('□', 1), ('□', 2), ('□', 3)]
+            sage: list(T.edge_gluing_iterator())
+            [((('Δ', 0), 0), (('□', 2), 0)),
+             ((('Δ', 0), 1), (('Δ', 1), 2)),
+             ((('Δ', 0), 2), (('Δ', 2), 1)),
+             ((('Δ', 1), 0), None),
+             ((('Δ', 1), 1), (('Δ', 2), 2)),
+             ((('Δ', 1), 2), (('Δ', 0), 1)),
+             ((('Δ', 2), 0), None),
+             ((('Δ', 2), 1), (('Δ', 0), 2)),
+             ((('Δ', 2), 2), (('Δ', 1), 1)),
+             ((('□', 0), 0), None),
+             ((('□', 0), 1), (('□', 1), 2)),
+             ((('□', 0), 2), (('□', 3), 1)),
+             ((('□', 1), 0), (('□', 3), 0)),
+             ((('□', 1), 1), (('□', 2), 2)),
+             ((('□', 1), 2), (('□', 0), 1)),
+             ((('□', 2), 0), (('Δ', 0), 0)),
+             ((('□', 2), 1), (('□', 3), 2)),
+             ((('□', 2), 2), (('□', 1), 1)),
+             ((('□', 3), 0), (('□', 1), 0)),
+             ((('□', 3), 1), (('□', 0), 2)),
+             ((('□', 3), 2), (('□', 2), 1))]
+
+        """
+        labels = list(self.label_iterator())
+        polygons = [self.polygon(l) for l in labels]
+
+        subdivisions = [p.subdivide() for p in polygons]
+
+        from flatsurf.geometry.surface import Surface_dict
+        surface = Surface_dict(base_ring=self.base_ring())
+
+        # Add subdivided polygons
+        for s, subdivision in enumerate(subdivisions):
+            label = labels[s]
+            for p, polygon in enumerate(subdivision):
+                surface.add_polygon(polygon, label=(label, p))
+            surface.change_base_label((label, 0))
+
+        # Add gluings between subdivided polygons
+        for s, subdivision in enumerate(subdivisions):
+            label = labels[s]
+            for p in range(len(subdivision)):
+                surface.change_edge_gluing((label, p), 1, (label, (p + 1)%len(subdivision)), 2)
+
+                opposite = self.opposite_edge(label, p)
+                if opposite is not None:
+                    surface.change_edge_gluing((label, p), 0, opposite, 0)
+
+        return surface
+
     def __hash__(self):
         r"""
         Hash compatible with equals.
@@ -1605,7 +1705,7 @@ class LabelComparator(object):
         # At this point we know label is not in lst
         lst.append(label)
         return len(lst)-1
-            
+
     def lt(self, l1, l2):
         r"""
         Return the truth value of l1 < l2.
@@ -1620,19 +1720,19 @@ class LabelComparator(object):
         if l1 == l2:
             return False
         return self._get_resolver_index(h1, l1) < self._get_resolver_index(h1, l2)
-    
+
     def le(self, l1, l2):
         r"""
         Return the truth value of l1 <= l2.
         """
         return self.lt(l1, l2) or l1 == l2
-    
+
     def gt(self, l1, l2):
         r"""
         Return the truth value of l1 > l2.
         """
         return self.lt(l2, l1)
-    
+
     def ge(self, l1, l2):
         r"""
         Return the truth value of l1 >= l2.
