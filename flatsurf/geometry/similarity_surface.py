@@ -1222,6 +1222,12 @@ class SimilaritySurface(SageObject):
             sage: S.subdivide().subdivide()
             TranslationSurface built from 30 polygons
 
+        Sometimes a more uniform subdivision can be obtained by alternating
+        between :meth:`subdivide_edges` and this method::
+
+            sage: S.subdivide_edges().subdivide()
+            TranslationSurface built from 20 polygons
+
         """
         return self.__class__(self._s.subdivide())
 

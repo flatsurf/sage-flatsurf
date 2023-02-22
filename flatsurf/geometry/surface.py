@@ -624,13 +624,15 @@ class Surface(SageObject):
         for s, subdivided in enumerate(subdivideds):
             surface.add_polygon(subdivided, label=labels[s])
 
+        surface.change_base_label(self._base_label)
+
         # Reestablish gluings between polygons
         for label, polygon, subdivided in zip(labels, polygons, subdivideds):
             for e in range(polygon.num_edges()):
                 opposite = self.opposite_edge(label, e)
                 if opposite is not None:
                     for p in range(parts):
-                        surface.change_edge_gluing(label, e * parts + p, opposite[0], opposite[1] * parts + p)
+                        surface.change_edge_gluing(label, e * parts + p, opposite[0], opposite[1] * parts + (parts - p - 1))
 
         return surface
 
