@@ -6,7 +6,7 @@ Similarity surfaces.
 #  This file is part of sage-flatsurf.
 #
 #        Copyright (C) 2016-2020 Vincent Delecroix
-#                      2020-2022 Julian Rüth
+#                      2020-2023 Julian Rüth
 #
 #  sage-flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -1207,6 +1207,24 @@ class SimilaritySurface(SageObject):
             if pair in old_to_new_labels:
                 pair = old_to_new_labels[pair]
             self.underlying_surface().change_edge_gluing(new_label, e, pair[0], pair[1])
+
+    def subdivide(self):
+        r"""
+        Return a copy of this surface whose polygons have been partitioned into
+        smaller triangles with :meth:`Polygon.subdivide`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.veech_double_n_gon(5)
+            sage: S.subdivide()
+            TranslationSurface built from 10 polygons
+            sage: S.subdivide().subdivide()
+            TranslationSurface built from 30 polygons
+
+        """
+        return self.__class__(self._s.subdivide())
+
 
     def singularity(self, l, v, limit=None):
         r"""

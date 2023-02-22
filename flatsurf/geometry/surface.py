@@ -56,7 +56,7 @@ We can recover the underlying surface again::
 #
 #        Copyright (C) 2016-2020 W. Patrick Hooper
 #                      2019-2020 Vincent Delecroix
-#                      2020-2021 Julian Rüth
+#                      2020-2023 Julian Rüth
 #
 #  sage-flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -535,14 +535,15 @@ class Surface(SageObject):
         subdivisions = [p.subdivide() for p in polygons]
 
         from flatsurf.geometry.surface import Surface_dict
-        surface = Surface_dict(base_ring=self.base_ring())
+        surface = Surface_dict(base_ring=self._base_ring)
 
         # Add subdivided polygons
         for s, subdivision in enumerate(subdivisions):
             label = labels[s]
             for p, polygon in enumerate(subdivision):
                 surface.add_polygon(polygon, label=(label, p))
-            surface.change_base_label((label, 0))
+
+        surface.change_base_label((self._base_label, 0))
 
         # Add gluings between subdivided polygons
         for s, subdivision in enumerate(subdivisions):
@@ -550,6 +551,7 @@ class Surface(SageObject):
             for p in range(len(subdivision)):
                 surface.change_edge_gluing((label, p), 1, (label, (p + 1)%len(subdivision)), 2)
 
+                # Add gluing from original surface
                 opposite = self.opposite_edge(label, p)
                 if opposite is not None:
                     surface.change_edge_gluing((label, p), 0, opposite, 0)

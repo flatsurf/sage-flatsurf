@@ -28,7 +28,7 @@ EXAMPLES::
 #  This file is part of sage-flatsurf.
 #
 #        Copyright (C) 2016-2020 Vincent Delecroix
-#                      2020-2022 Julian Rüth
+#                      2020-2023 Julian Rüth
 #
 #  sage-flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -1781,7 +1781,7 @@ class ConvexPolygon(Polygon):
         """
         vertices = self.vertices()
         center = self.centroid()
-        return [Polygon(self.parent(), (vertices[i], vertices[(i+1) % len(vertices)], center)) for i in range(len(vertices)) ]
+        return [ConvexPolygon(self.parent(), (vertices[i], vertices[(i+1) % len(vertices)], center)) for i in range(len(vertices)) ]
 
 
 class Polygons(UniqueRepresentation, Parent):
