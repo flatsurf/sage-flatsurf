@@ -151,7 +151,7 @@ def sage_ring(surface):
 
         sage: from flatsurf import translation_surfaces
         sage: from flatsurf.geometry.pyflatsurf_conversion import to_pyflatsurf, sage_ring # optional: pyflatsurf
-        sage: S = to_pyflatsurf(translation_surfaces.veech_double_n_gon(5)) # optional: pyflatsurf
+        sage: S = to_pyflatsurf(translation_surfaces.veech_double_n_gon(5)) # optional: pyflatsurf  # random output due to matplotlib warnings with some combinations of setuptools and matplotlib
         sage: sage_ring(S) # optional: pyflatsurf
         Number Field in a with defining polynomial x^4 - 5*x^2 + 5 with a = 1.902113032590308?
 
