@@ -9093,7 +9093,8 @@ class CartesianPathPlot(GraphicPrimitive):
 
         edge_color = None
         if "edgecolor" in options:
-            edge_color = to_mpl_color(options.pop("edgecolor"))
+            # TODO: Remove the blue hack
+            edge_color = to_mpl_color(options.pop("edgecolor") or "blue")
 
         if edge_color is None:
             if color is None:
