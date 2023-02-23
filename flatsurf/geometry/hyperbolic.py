@@ -2120,7 +2120,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
           right; otherwise from the left.
 
         - ``normalized`` -- a boolean (default: ``False``); whether the
-          returned matrix has determinant 1.
+          returned matrix has determinant ±1.
 
         OUTPUT:
 
@@ -2218,19 +2218,62 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             [-1  0]
             [ 0  1]
 
+        We can explicitly ask for an isometry in the Klein model, given by an
+        element of SO(1, 2)::
+
+            sage: H.isometry(P, Q, model="klein")
+            [-1  0  0]
+            [ 0  1  0]
+            [ 0  0  1]
+
+        The isometries are not returned as matrices of unit determinant since
+        such an isometry might not exist without extending the base ring, we
+        can, however, ask for an isometry of determinant ±1::
+
+            sage: H.isometry([H.geodesic(-1, 1), I - 1], [H.geodesic(1, -1), I - 1], normalized=True)
+            Traceback (most recent call last):
+            ...
+            ValueError: not a perfect 2nd power
+
+            sage: H.change_ring(AA).isometry([H.geodesic(-1, 1), I - 1], [H.geodesic(1, -1), I - 1], normalized=True)
+            [ -1.341640786499874? -0.8944271909999159?]
+            [ 0.8944271909999159?   1.341640786499874?]
+
+            sage: _.det()
+            -1.000000000000000?
+
+        We can also explicitly ask for the isometry for the right action::
+
+            sage: isometry = H.isometry(H.vertical(0), H.vertical(1), on_right=True)
+            sage: isometry
+            [ 1/8 -1/8]
+            [   0 1/16]
+            sage: H.vertical(0).apply_isometry(isometry)
+            {-x - 2 = 0}
+            sage: H.vertical(0).apply_isometry(isometry, on_right=True)
+            {-x + 1 = 0}
+
         .. SEEALSO::
 
             :meth:`HyperbolicConvexSet.apply_isometry` to apply the returned
             isometry to a convex set.
 
         """
-
-        if model != "half_plane":
-            raise NotImplementedError # TODO
-        if on_right:
-            raise NotImplementedError # TODO
         if normalized:
-            raise NotImplementedError # TODO
+            isometry = self.isometry(preimage=preimage, image=image, model=model, on_right=on_right, normalized=False)
+            det = abs(isometry.det())
+            λ = det.nth_root(isometry.nrows())
+            return ~λ * isometry
+
+        if model == "klein":
+            isometry = self.isometry(preimage=preimage, image=image, model="half_plane", on_right=on_right, normalized=normalized)
+            return sl2_to_so12(isometry)
+        elif model != "half_plane":
+            raise NotImplementedError("unsupported model")
+
+        if on_right:
+            isometry = self.isometry(preimage=preimage, image=image, model=model, on_right=False, normalized=normalized)
+            return ~isometry
 
         # Normalize the arguments so that they are a list of convex sets.
         from collections.abc import Iterable
