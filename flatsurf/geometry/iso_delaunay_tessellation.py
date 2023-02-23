@@ -175,9 +175,9 @@ class IsoDelaunayTessellation(Parent):
         cross_tessellation_face, target_triangulation = self._develop(tessellation_face, tessellation_edge)
 
         target_triangulation.set_immutable()
-        cross_tessellation_face, cross_tessellation_edge, is_new = self._ensure_dual_graph_vertex(cross_tessellation_face, target_triangulation, -tessellation_edge)
+        cross_tessellation_face, cross_tessellation_edge, isometry = self._ensure_dual_graph_vertex(cross_tessellation_face, target_triangulation, -tessellation_edge)
 
-        self._dual_graph.add_edge(tessellation_face, cross_tessellation_face, label={tessellation_edge, cross_tessellation_edge})
+        self._dual_graph.add_edge(tessellation_face, cross_tessellation_face, label=({tessellation_edge, cross_tessellation_edge}, isometry))
 
         return cross_tessellation_face
 
@@ -226,7 +226,7 @@ class IsoDelaunayTessellation(Parent):
         else:
             edge = {tessellation_edge}
 
-        for v, w, edges in self._dual_graph.edges(tessellation_face, labels=True, sort=False):
+        for v, w, (edges, isometry) in self._dual_graph.edges(tessellation_face, labels=True, sort=False):
             if any(e in edges for e in edge):
                 if v == tessellation_face:
                     return w
@@ -257,7 +257,7 @@ class IsoDelaunayTessellation(Parent):
         """
         # TODO: Should this mutate the tessellation or create a copy instead?
         for tessellation_face in self._dual_graph.vertices(sort=False):
-            for source_tessellation_face, target_tessellation_face, tessellation_edges in list(self._dual_graph.edges(tessellation_face, labels=True, sort=False)):
+            for source_tessellation_face, target_tessellation_face, (tessellation_edges, isometry) in list(self._dual_graph.edges(tessellation_face, labels=True, sort=False)):
                 # crossing edge of the polygon cycles back to the very edge in the
                 # polygon, so there is an orbifold point on that edge.
                 # We patch the polygon by inserting a marked point.
@@ -290,14 +290,14 @@ class IsoDelaunayTessellation(Parent):
         # TODO: This breaks self._surface_classes currently.
         self._dual_graph.add_vertex(tessellation_face_with_marked_vertices)
         self._dual_graph.set_vertex(tessellation_face_with_marked_vertices, self._dual_graph.get_vertex(tessellation_face))
-        for source_tessellation_face, target_tessellation_face, tessellation_edges in list(self._dual_graph.edges(tessellation_face, labels=True, sort=False)):
+        for source_tessellation_face, target_tessellation_face, (tessellation_edges, isometry) in list(self._dual_graph.edges(tessellation_face, labels=True, sort=False)):
             self._dual_graph.delete_edge(source_tessellation_face, target_tessellation_face, tessellation_edges)
             if source_tessellation_face == tessellation_face:
                 source_tessellation_face = tessellation_face_with_marked_vertices
             if target_tessellation_face == tessellation_face:
                 target_tessellation_face = tessellation_face_with_marked_vertices
 
-            self._dual_graph.add_edge(source_tessellation_face, target_tessellation_face, label=tessellation_edges)
+            self._dual_graph.add_edge(source_tessellation_face, target_tessellation_face, label=(tessellation_edges, isometry))
 
         self._dual_graph.delete_vertex(tessellation_face)
 
@@ -397,7 +397,7 @@ class IsoDelaunayTessellation(Parent):
             image_edge = tessellation_edge.apply_isometry(mob, model='half_plane')
 
             assert image_edge in tessellation_face_.edges()
-            return tessellation_face_, image_edge, False
+            return tessellation_face_, image_edge, mob
 
         # We have to add a new vertex.
 
@@ -414,14 +414,14 @@ class IsoDelaunayTessellation(Parent):
             assert surface is not None
             self._dual_graph.set_vertex(tessellation_face, (mod, surface))
             self._surface_classes[clazz] = tessellation_face
-            return tessellation_face, tessellation_edge, True
+            return tessellation_face, tessellation_edge, None
 
         # Add the new vertex.
         self._dual_graph.add_vertex(tessellation_face)
         assert surface is not None
         self._surface_classes[clazz] = tessellation_face
         self._dual_graph.set_vertex(tessellation_face, (None, surface))
-        return tessellation_face, tessellation_edge, True
+        return tessellation_face, tessellation_edge, None
 
     def is_vertex(self, translation_surface):
         r"""
@@ -655,7 +655,7 @@ class IsoDelaunayTessellation(Parent):
                 previous_tessellation_edge = tessellation_face.edges()[tessellation_face.edges().index(tessellation_edge) - 1]
 
                 # TODO: Merge this with the code in _cross maybe.
-                for source_tessellation_face, target_tessellation_face, tessellation_edges in self._dual_graph.edges(tessellation_face, labels=True, sort=False):
+                for source_tessellation_face, target_tessellation_face, (tessellation_edges, isometry) in self._dual_graph.edges(tessellation_face, labels=True, sort=False):
 
                     if previous_tessellation_edge in tessellation_edges:
                         if len(tessellation_edges) == 1:
@@ -788,7 +788,7 @@ class IsoDelaunayTessellation(Parent):
     def topological_euler_characteristic(self):
         # return V - E + F of the fundamental domain
         e_self_glued = 0
-        for _, _, tessellation_edges in self._dual_graph.edges(labels=True):
+        for _, _, (tessellation_edges, isometry) in self._dual_graph.edges(labels=True):
             if len(list(tessellation_edges)) == 1:
                 e_self_glued += 1
 
