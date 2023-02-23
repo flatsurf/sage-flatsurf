@@ -1,81 +1,42 @@
 The flatsurf.geometry Package
 *****************************
+
 .. automodule:: flatsurf.geometry
 
-Polygons
-========
-.. automodule:: flatsurf.geometry.polygon
-   :members:
-   :undoc-members:
+.. toctree::
+   :maxdepth: 1
 
-Surface Basics
-==============
-.. automodule:: flatsurf.geometry.surface
-   :members:
-   :undoc-members:
-
-Similarity Surfaces
-===================
-.. automodule:: flatsurf.geometry.similarity_surface
-   :members:
-   :undoc-members:
-
-Cone Surfaces
-=============
-.. automodule:: flatsurf.geometry.cone_surface
-   :members:
-   :undoc-members:
-
-Translation Surfaces
-====================
-.. automodule:: flatsurf.geometry.translation_surface
-   :members:
-   :undoc-members:
-
-Matrices (2x2)
-==============
-.. automodule:: flatsurf.geometry.matrix_2x2
-   :members:
-   :undoc-members:
-
-Similarities and Translations
-=============================
-.. automodule:: flatsurf.geometry.similarity
-   :members:
-   :undoc-members:
-
-Tangent Bundles
-===============
-.. automodule:: flatsurf.geometry.tangent_bundle
-   :members:
-   :undoc-members:
-
-Maps between Surfaces
-=====================
-.. automodule:: flatsurf.geometry.mappings
-   :members:
-   :undoc-members:
-
-Straight-line Flow
-==================
-.. automodule:: flatsurf.geometry.straight_line_trajectory
-   :members:
-   :undoc-members:
-
-Homology
-========
-.. automodule:: flatsurf.geometry.relative_homology
-   :members:
-   :undoc-members:
-
-Orbit Closures
-==============
-.. automodule:: flatsurf.geometry.gl2r_orbit_closure
-   :members:
-   :undoc-members:
-
-Hyperbolic Geometry
-===================
-.. automodule:: flatsurf.geometry.hyperbolic
-   :members:
-   :undoc-members:
+   geometry/chamanara
+   geometry/circle
+   geometry/cone_surface
+   geometry/delaunay
+   geometry/dilation_surface
+   geometry/finitely_generated_matrix_group
+   geometry/fundamental_group
+   geometry/gl2r_orbit_closure
+   geometry/half_dilation_surface
+   geometry/half_translation_surface
+   geometry/hyperbolic
+   geometry/interval_exchange_transformation
+   geometry/l_infinity_delaunay_cells
+   geometry/mappings
+   geometry/matrix_2x2
+   geometry/mega_wollmilchsau
+   geometry/minimal_cover
+   geometry/polygon
+   geometry/polyhedra
+   geometry/pyflatsurf_conversion
+   geometry/rational_cone_surface
+   geometry/rational_similarity_surface
+   geometry/relative_homology
+   geometry/similarity
+   geometry/similarity_surface_generators
+   geometry/similarity_surface
+   geometry/straight_line_trajectory
+   geometry/subfield
+   geometry/surface_objects
+   geometry/surface
+   geometry/tangent_bundle
+   geometry/thurston_veech
+   geometry/translation_surface
+   geometry/xml

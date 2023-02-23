@@ -2100,6 +2100,388 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         """
         return self.__make_element_class__(HyperbolicEmptySet)(self)
 
+    def isometry(self, preimage, image, model="half_plane", on_right=False, normalized=False):
+        r"""
+        Return an isometry that maps ``preimage`` to ``image``.
+
+        INPUT:
+
+        - ``preimage`` -- a convex set in the hyperbolic plane or a list of
+          such convex sets.
+
+        - ``image`` -- a convex set in the hyperbolic plane or a list of such
+          convex sets.
+
+        - ``model`` -- one of ``"half_plane"`` and ``"klein"``, the model in
+          which this isometry applies.
+
+        - ``on_right`` -- a boolean (default: ``False``); whether the returned
+          isometry maps ``preimage`` to ``image`` when multiplied from the
+          right; otherwise from the left.
+
+        - ``normalized`` -- a boolean (default: ``False``); whether the
+          returned matrix has determinant 1.
+
+        OUTPUT:
+
+        If ``model`` is ``"half_plane"``, returns an element of `PGL(2,
+        \mathbb{R})` as a 2×2 matrix that maps (each element of) ``preimage`` to (the
+        corresponding element of) ``image``. If ``model`` is ``"klein"``,
+        returns the corresponding element of `SO(1,2)`` as a 3×3 matrix.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+        An isometry mapping one point to another; naturally this is not the
+        unique isometry with this property::
+
+            sage: m = H.isometry(0, 1)
+            sage: H(0).apply_isometry(m)
+            1
+            sage: m
+            [ 9/2   27]
+            [-9/2   27]
+
+        ::
+
+            sage: H.isometry(I, I+1)
+            [  3   0]
+            [3/2 3/2]
+            sage: H.isometry(0, oo)
+            [   4 -8/3]
+            [ 4/3    0]
+
+        An isometry is uniquely determined by its image on three points::
+
+            sage: H.isometry([0, 1, oo], [1, oo, 0])
+            [ 0  2]
+            [-2  2]
+
+        It might be impossible to find an isometry with the prescribed mapping::
+
+            sage: H.isometry(0, I)
+            Traceback (most recent call last):
+            ...
+            ValueError: no isometry can map these objects to each other
+
+            sage: H.isometry(I, 2*I)
+            Traceback (most recent call last):
+            ...
+            ValueError: no isometry can map these objects to each other
+
+            sage: H.isometry([0, 1, oo, I], [0, 1, oo, I + 1])
+            Traceback (most recent call last):
+            ...
+            ValueError: no isometry can map these objects to each other
+
+        We can determine isometries by mapping more complex objects than
+        points, e.g., geodesics::
+
+            sage: H.isometry(H.geodesic(-1, 1), H.geodesic(1, -1))
+            [-1  0]
+            [ 0  1]
+
+        The above isometry is not the only one with that property::
+
+            sage: H.isometry([H.geodesic(-1, 1), I - 1], [H.geodesic(1, -1), I - 1])
+            [ -1/5 -2/15]
+            [ 2/15   1/5]
+
+        We can also determine an isometry mapping more complex objects::
+
+            sage: P = H.polygon([H.vertical(1).left_half_space(), H.vertical(-1).right_half_space(), H.geodesic(-1, 1).left_half_space()])
+            sage: Q = H.polygon([H.geodesic(-1, 0).left_half_space(), H.geodesic(0, 1).left_half_space(), H.geodesic(1, -1).left_half_space()])
+            sage: m = H.isometry(P, Q)
+            sage: P.apply_isometry(m) == Q
+            True
+
+        .. SEEALSO::
+
+            :meth:`HyperbolicConvexSet.apply_isometr` to apply the returned
+            isometry to a convex set.
+
+        """
+        # TODO: Add an example that shows that we expect marked vertices to be mapped to marked vertices.
+
+        if model != "half_plane":
+            raise NotImplementedError # TODO
+        if on_right:
+            raise NotImplementedError # TODO
+        if normalized:
+            raise NotImplementedError # TODO
+
+        # Normalize the arguments so that they are a list of convex sets.
+        from collections.abc import Iterable
+        if not isinstance(preimage, Iterable):
+            preimage = [preimage]
+        if not isinstance(image, Iterable):
+            image = [image]
+
+        preimage = [self(x) for x in preimage]
+        image = [self(y) for y in image]
+
+        if len(preimage) != len(image):
+            raise ValueError("preimage and image must be the same size to determine an isometry between them")
+
+        for (x, y) in zip(preimage, image):
+            if x.dimension() != y.dimension():
+                raise ValueError("preimage and image must be of the same dimensions to determine an isometry between them")
+            if x.is_oriented() != y.is_oriented():
+                raise ValueError("preimage and image must be oriented or unoriented consistently")
+
+        # Drop empty sets from the preimage and image to make our lives easier
+        preimage = [x for x in preimage if x.dimension() >= 0]
+        image = [y for y in image if y.dimension() >= 0]
+
+        # An isometry is uniquely determined by mapping three points.
+        # In principle, we now just need to find three points in preimage, find
+        # their corresponding images, construct the isometry, and then check
+        # that it maps everything correctly.
+        # However, there are objects that do not really define a mapping of
+        # points. For example, when presented with an unoriented geodesic, we
+        # can map its endpoints two possible ways. More generally, when mapping
+        # a polygon, we can permute the edges cyclically.
+
+        # We need a mild form of backtracking to collect all possible triples
+        # that define the isometry.
+        isometry = self._isometry([], list(zip(preimage, image)))
+
+        if isometry is None:
+            raise ValueError("no isometry can map these objects to each other")
+
+        return isometry
+
+    def _isometry(self, defining, remaining):
+        r"""
+        Return an isometry that maps the pairs in ``defining`` to each other.
+
+        If no isometry also maps the pairs in ``remaining`` to each other,
+        return ``None``.
+
+        INPUT:
+
+        - ``defining`` -- a sequence of pairs of points
+
+        - ``remaining`` -- a sequence of pairs of subsets of the hyperbolic
+          plane
+
+        """
+        # TODO: Add doctests.
+
+        assert len(defining) <= 3
+
+        if len(defining) == 3:
+            isometry = self._isometry_from_points(*defining)
+
+            if isometry is not None:
+                for x, y in remaining:
+                    if x.apply_isometry(isometry) != y:
+                        return None
+
+            return isometry
+
+        # "defining" is not sufficient to determine a unique isometry, we extend it.
+
+        if not remaining:
+            # we have freedom in defining this isometry, make it unique by
+            # randomly mapping some more points
+            from itertools import count
+            for n in count(0):
+                n = self(n)
+                if any([x == n or y == n for (x, y) in defining]):
+                    continue
+                return self._isometry(defining + [(n, n)], remaining=[])
+
+        # Extend by turning remaining[0] into a condition
+        x, y = remaining[0]
+        remaining = remaining[1:]
+
+        if x.dimension() == 0:
+            assert y.dimension() == 0
+
+            if (x, y) in defining:
+                return self._isometry(defining, remaining)
+
+            return self._isometry(defining + [(x, y)], remaining)
+
+        if x.dimension() == 1:
+            if isinstance(x, HyperbolicGeodesic):
+                if not x.is_oriented():
+                    f = x.half_spaces()[0].boundary()
+                    g = y.half_spaces()[0].boundary()
+                    return self._isometry(defining, [(f, g)] + remaining) \
+                        or self._isometry(defining, [(f, -g)] + remaining)
+
+                return self._isometry(defining, [(x.start(), y.start()), (x.end(), y.end())] + remaining)
+
+            if isinstance(x, HyperbolicSegment):
+                if not x.is_oriented():
+                    return self._isometry(defining, [(x.start(), y.start()), (x.end(), y.end())] + remaining) \
+                            or self._isometry(defining, [(x.start(), y.end()), (x.end(), y.start())] + remaining)
+                return self._isometry(defining, [(x.start(), y.start()), (x.end(), y.end())] + remaining)
+
+            raise NotImplementedError("cannot determine isometry for this one-dimensional set yet")
+
+        if x.dimension() == 2:
+            if isinstance(x, HyperbolicHalfSpace):
+                return self._isometry(defining, [(x.boundary(), y.boundary())] + remaining)
+
+            x = list(x.vertices())
+            y = list(y.vertices())
+
+            if len(x) != len(y):
+                return None
+
+            for i in range(len(x)):
+                isometry = self._isometry(defining, list(zip(x, y[i:] + y[:i])) + remaining)
+                if isometry is not None:
+                    break
+
+            return isometry
+
+        raise NotImplementedError("cannot determine isometry for sets of this dimension")
+
+    def _isometry_from_points(self, *points):
+        r"""
+        Return the unique isometry mapping ``points`` to each other.
+
+        INPUT:
+
+        - ``points`` -- a sequence of pairs of points in the hyperbolic plane
+
+        OUTPUT:
+
+        An isometry as a 2×2 matrix or ``None`` if there is no such isometry or
+        it is not defined over the base ring of the hyperbolic plane.
+
+        .. SEEALSO::
+
+            :meth:`HyperbolicConvexSet.apply_matrix` to apply the returned matrix to a set.
+
+        """
+        # TODO: Add doctests
+
+        if len(points) != 3:
+            raise ValueError("need exactly three pairs of points to determine a unique isometry")
+
+        # To find the isometry mapping the given pairs of points, we construct
+        # the geodesics defining the triangle formed by these points.
+
+        from itertools import combinations
+        geodesics = [
+            (p[0].segment(q[0]).geodesic(), p[1].segment(q[1]).geodesic())
+            for p, q in combinations(points, 2)
+        ]
+
+        # If the triangles are not degenerate, there is exactly one isometry
+        # mapping one to the other.
+
+        for f, g in combinations(geodesics, 2):
+            if f[0].unoriented() != g[0].unoriented():
+                isometry = self._isometry_from_geodesics(f, g)
+                break
+        else:
+            raise NotImplementedError("cannot determine isometry for degenerate triangles yet")
+
+        # Verify that the isometry has the prescribed properties
+        if isometry is not None:
+            for p, q in points:
+                if p.apply_isometry(isometry) != q:
+                    assert not p.is_ideal() or not q.is_ideal(), f"found isometry {isometry} but it does not map {p} to {q} but to {p.apply_isometry(isometry)}"
+                    return None
+
+        return isometry
+
+    def _isometry_from_geodesics(self, *geodesics):
+        r"""
+        Return the unique isometry mapping ``geodesics`` to each other.
+
+        INPUT:
+
+        - ``geodesics`` -- a sequence of pairs of oriented geodesics in the hyperbolic plane.
+
+        OUTPUT:
+
+        An isometry as a 2×2 matrix or ``None`` if there is no such isometry or
+        it is not defined over the base ring of the hyperbolic plane.
+
+        ALGORITHM:
+
+        TODO
+
+        .. SEEALSO::
+
+            :meth:`HyperbolicConvexSet.apply_matrix` to apply the returned matrix to a set.
+
+        """
+        # TODO: Add doctests
+
+        if len(geodesics) != 2:
+            raise ValueError("need exactly two pairs of geodesics to determine a unique isometry")
+
+
+        from sage.all import PolynomialRing, matrix, vector
+
+        R = PolynomialRing(self.base_ring(), names=["λ", "a", "b", "c", "d"], order="degrevlex(4), lex(1)")
+        λ, a, b, c, d = R.gens()
+
+        isometry = matrix([
+            [a, b],
+            [c, d]
+        ])
+
+        isometry = sl2_to_so12(isometry)
+
+        def conditions(preimage, image, λ):
+            A, B, C = preimage.equation(model="klein")
+            fA, fB, fC = image.equation(model="klein")
+            condition = vector((B, C, A)) * isometry
+
+            condition -= λ * vector(R, (fB, fC, fA))
+
+            return condition.list()
+
+        equations = conditions(geodesics[0][0], geodesics[0][1], λ) + conditions(geodesics[1][0], geodesics[1][1], 1)
+
+        # TODO: The below is quite hacky. We should use a more generic approach
+        # when some of the coefficients are forced to be zero at least.
+        I = list(R.ideal(equations).groebner_basis())
+
+        λλ = I.pop()
+        while λλ.total_degree() == 1:
+            λλ = I.pop()
+
+        if λλ == 1:
+            return None
+
+        assert len(λλ.variables()) == 1, f"expected Groebner basis algorithm to yield an equality of the form d^2 = n or d^3 = nd but found {λλ} instead"
+
+        if λλ.total_degree() == 3:
+            assert λλ.constant_coefficient() == 0, f"expected Groebner basis algorithm to yield an equality of the form d^3 = nd but got {λλ} instead"
+            λλ //= λλ.variables()[0]
+
+        assert λλ.total_degree() == 2, f"expected Groebner basis algorithm to yield an equality of the form d^2 = n but got {λλ} instead"
+
+        λλ -= λλ.variables()[0]**2
+        assert λλ in self.base_ring(), f"expected Groebner basis algorithm to yield an equality of the form d^2 = n but got {λλ} instead"
+
+        equations = conditions(geodesics[0][0], geodesics[0][1], λ) + conditions(geodesics[1][0], geodesics[1][1], -λλ)
+
+        solutions = R.ideal(equations).variety()
+
+        for solution in solutions:
+            isometry  = matrix([
+                [solution[a], solution[b]],
+                [solution[c], solution[d]]
+            ])
+
+            isometry = isometry.inverse()
+            return isometry
+
+        return None
+
     def _repr_(self):
         r"""
         Return a printable representation of this hyperbolic plane.
@@ -2371,7 +2753,6 @@ class HyperbolicGeometry:
             0
 
         """
-        # TODO: Epsilon Geometry should override this.
         if self._zero(p) and self._zero(q):
             raise ValueError("one of p and q must not be zero")
 
@@ -2575,17 +2956,57 @@ class HyperbolicExactGeometry(UniqueRepresentation, HyperbolicGeometry):
 
 
 class HyperbolicEpsilonGeometry(UniqueRepresentation, HyperbolicGeometry):
-    # TODO: Check documentation
-    # TODO: Check INPUTS
-    # TODO: Check SEEALSO
-    # TODO: Check for doctests
-    # TODO: Benchmark?
+    r"""
+    Predicates and primitive geometric constructions over a base ``ring`` with
+    "precision" ``epsilon``.
+
+    This is an alternative to :class:`HyperbolicExactGeometry` over inexact
+    rings. The exact meaning of the ``epsilon`` parameter is a bit fuzzy, but
+    the basic idea is that two numbers are considered equal in this geometry if
+    their relative difference is less than ``epsilon``, see :meth:`_equal` for
+    details.
+
+    INPUT:
+
+    - ``ring`` -- a ring, the ring in which coordinates in the hyperbolic plane
+      will be represented
+
+    - ``epsilon`` -- an error bound
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicEpsilonGeometry
+        sage: H = HyperbolicPlane(RR, HyperbolicEpsilonGeometry(RR, 1/1024))
+
+    The ``epsilon`` affects the notion of equality in this geometry::
+
+        sage: H(0) == H(1/2048)
+        True
+
+        sage: H(1/2048) == H(2/2048)
+        False
+
+    This geometry is meant for inexact rings, however, it can also be used in
+    exact rings::
+
+        sage: H = HyperbolicPlane(QQ, HyperbolicEpsilonGeometry(QQ, 1/1024))
+
+    .. SEEALSO::
+
+        :class:`HyperbolicExactGeometry`
+
+    """
+
     def __init__(self, ring, epsilon):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        TESTS::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicEpsilonGeometry
+            sage: H = HyperbolicPlane(RR)
+            sage: isinstance(H.geometry, HyperbolicEpsilonGeometry)
+            True
+
+        """
         super().__init__(ring)
         self._epsilon = ring(epsilon)
 
@@ -2603,6 +3024,64 @@ class HyperbolicEpsilonGeometry(UniqueRepresentation, HyperbolicGeometry):
             return abs(x - y) < self._epsilon
 
         return abs(x - y) <= (abs(x) + abs(y)) * self._epsilon
+
+    def projective(self, p, q, point):
+        r"""
+        Return the ideal point with projective coordinates ``[p: q]`` in the
+        upper half plane model.
+
+        INPUT:
+
+        - ``p`` -- an element of the :meth:`base_ring`
+
+        - ``q`` -- an element of the :meth:`base_ring`
+
+        - ``point`` -- the :meth:`HyperbolicPlane.point` to create points
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(RR)
+
+        The point ``[p: q]`` is the point at infinity if ``q`` is very small in
+        comparison to ``p``::
+
+            sage: H.geometry.projective(1, 0, H.point)
+            ∞
+
+            sage: H.geometry.projective(1e-8, 1e-16, H.point)
+            ∞
+
+            sage: H.geometry.projective(1e-8, -1e-16, H.point)
+            ∞
+
+        Even though ``q`` might be small, ``[p: q]`` is not the point at
+        infinity if both coordinates are of similar size::
+
+            sage: H.geometry.projective(1e-16, 1e-16, H.point)
+            1.00000000000000
+
+            sage: H.geometry.projective(-1e-16, 1e-16, H.point)
+            -1.00000000000000
+
+        """
+        if self._zero(p) and self._zero(q):
+            try:
+                pq = p / q
+            except ZeroDivisionError:
+                return point(0, 1, model="klein", check=False)
+
+            try:
+                qp = q / p
+            except ZeroDivisionError:
+                return point(0, 0, model="half_plane", check=False)
+
+            if self._zero(qp):
+                return point(0, 1, model="klein", check=False)
+
+            return point(pq, 0, model="half_plane", check=False)
+
+        return super().projective(p, q, point)
 
     def change_ring(self, ring):
         # TODO: Check documentation.
@@ -3592,6 +4071,15 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
         # TODO: Check for doctests
         # TODO: Benchmark?
         return self.boundary().vertices()
+
+    def _apply_isometry_klein(self, isometry, on_right=False):
+        # TODO: Check documentation.
+        # TODO: Check INPUT
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        # TODO: Benchmark?
+        # TODO: This can be implemented generically.
+        return self._geodesic.apply_isometry(isometry, model="klein", on_right=on_right).left_half_space()
 
     def __hash__(self):
         r"""
@@ -6918,6 +7406,16 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
         """
         return hash((self._half_spaces, self._marked_vertices))
 
+    def _apply_isometry_klein(self, isometry, on_right=False):
+        # TODO: Check documentation.
+        # TODO: Check INPUT
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        # TODO: Benchmark?
+        half_spaces = [h.apply_isometry(isometry, model="klein", on_right=on_right) for h in self._half_spaces]
+        marked_vertices = [p.apply_isometry(isometry, model="klein", on_right=on_right) for p in self._marked_vertices]
+
+        return self.parent().polygon(half_spaces=half_spaces, check=False, assume_minimal=True, marked_vertices=marked_vertices)
 
 class HyperbolicSegment(HyperbolicConvexSet):
     # TODO: Check documentation
@@ -7793,6 +8291,67 @@ def sl2_to_so12(m):
             (a**2 + b**2 + c**2 + d**2) / 2,
         ],
     )
+
+
+def so12_to_sl2(m, det=1):
+    r"""
+    Inverse of :func:`sl2_to_so12`.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.hyperbolic import so12_to_sl2
+        sage: so12_to_sl2(matrix(3, [1, -1, 1, 1, 1/2, 1/2, 1, -1/2, 3/2]))
+        [1 1]
+        [0 1]
+        sage: so12_to_sl2(matrix(3, [1, 1, 1, -1, 1/2, -1/2, 1, 1/2, 3/2]))
+        [1 0]
+        [1 1]
+        sage: so12_to_sl2(matrix(3, [1, 0, 0, 0, 17/8, 15/8, 0, 15/8, 17/8]))
+        [  2   0]
+        [  0 1/2]
+    """
+    from sage.matrix.constructor import matrix
+
+    if m.nrows() != 3 or m.ncols() != 3:
+        raise ValueError("invalid matrix")
+    m00, m01, m02, m10, m11, m12, m20, m21, m22 = m.list()
+    K = m.base_ring()
+    two = K(2)
+
+    a2 = (m12 + m22 + m21 + m11) / two
+    b2 = (m12 + m22 - m21 - m11) / two
+    c2 = (m21 + m22 - m12 - m11) / two
+    d2 = (m11 + m22 - m12 - m21) / two
+
+    ab = (m10 + m20) / two
+    ac = (m01 + m02) / two
+    ad = (m00 + det) / two
+    bc = (m00 - det) / two
+    bd = (m02 - m01) / two
+    cd = (m20 - m10) / two
+
+    # we recover +/- a takings square roots
+    pm_a = a2.sqrt()
+    pm_b = b2.sqrt()
+    pm_c = c2.sqrt()
+    pm_d = d2.sqrt()
+
+    # TODO: do something less naive as there is no need to iterate
+    import itertools
+    for sa, sb, sc, sd in itertools.product([1, -1], repeat=4):
+        a = sa * pm_a
+        b = sb * pm_b
+        c = sc * pm_c
+        d = sd * pm_d
+        if (a * b == ab and
+            a * c == ac and
+            a * d == ad and
+            b * c == bc and
+            b * d == bd and
+            c * d == cd):
+            return matrix(K, 2, 2, [a, b, c, d])
+
+    raise ValueError('no projection to SL(2, R) in the base ring')
 
 
 # TODO: Rename to OrderedSet?
