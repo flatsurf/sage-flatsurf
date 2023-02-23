@@ -391,7 +391,8 @@ class Surface(SageObject):
 
     def set_edge_pairing(self, label1, edge1, label2, edge2):
         r"""
-        Updates the gluing so that (label,edge1) is glued to (label2, edge2).
+        Update the gluing so that (``label1``, ``edge1``) is glued to
+        (``label2``, ``edge2``).
         """
         self.__mutate()
         self._set_edge_pairing(label1, edge1, label2, edge2)
