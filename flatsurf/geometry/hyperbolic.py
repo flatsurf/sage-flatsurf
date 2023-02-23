@@ -7357,59 +7357,6 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
         """
         return hash((self._half_spaces, self._marked_vertices))
 
-    def cusp_width(self, vertex):
-        r"""
-        Return the width of the cusp ``vertex``.
-
-        INPUT:
-
-        - ``vertex`` -- a vertex of this polygon that is an ideal point
-
-        EXAMPLES:
-
-        For the point at infinity, the cusp width is the distance of the
-        verticals in the upper half plane model that meet at this point::
-
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
-            sage: H = HyperbolicPlane()
-
-            sage: P = H.polygon([H.vertical(-1).right_half_space(), H.vertical(1).left_half_space()])
-            sage: P.cusp_width(oo)
-            2
-
-        For other points, the cusp width is the above after conjugating the
-        cusp to the point at infinity::
-
-            sage: P = H.polygon([H.geodesic(0, 1).left_half_space(), H.geodesic(-1, 0).left_half_space()])
-            sage: P.cusp_width(0)
-            4
-
-        """
-        vertex = self.parent()(vertex)
-
-        if not vertex.is_ideal():
-            raise ValueError("vertex must be an ideal point")
-
-        for (f, g) in self.half_spaces().pairs():
-            f = f.boundary()
-
-            if vertex != f.end():
-                continue
-
-            g = g.boundary()
-
-            if vertex != g.start():
-                raise ValueError("vertex is not a cusp since no two boundaries meet at it")
-
-            isometry = self.parent().isometry(vertex, self.parent().infinity())
-
-            f = f.apply_isometry(isometry)
-            g = g.apply_isometry(isometry)
-
-            return f.start().coordinates(model="half_plane")[0] - g.end().coordinates(model="half_plane")[0]
-
-        raise ValueError("vertex is not a cusp in this polygon")
-
     def _apply_isometry_klein(self, isometry, on_right=False):
         # TODO: Check documentation.
         # TODO: Check INPUT
