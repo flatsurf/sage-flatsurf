@@ -177,7 +177,7 @@ class IsoDelaunayTessellation(Parent):
         target_triangulation.set_immutable()
         cross_tessellation_face, cross_tessellation_edge, isometry = self._ensure_dual_graph_vertex(cross_tessellation_face, target_triangulation, -tessellation_edge)
 
-        self._dual_graph.add_edge(tessellation_face, cross_tessellation_face, label=({tessellation_edge, cross_tessellation_edge}, isometry))
+        self._dual_graph.add_edge(tessellation_face, cross_tessellation_face, label=({tessellation_edge, cross_tessellation_edge}, (isometry, tessellation_edge)))
 
         return cross_tessellation_face
 
@@ -820,9 +820,87 @@ class IsoDelaunayTessellation(Parent):
     def cusps(self):
         r"""
         Return the punctures of the quotient H^2/Gamma
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: from flatsurf.geometry.iso_delaunay_tessellation import IsoDelaunayTessellation
+            sage: s = translation_surfaces.veech_2n_gon(4)
+            sage: idt = IsoDelaunayTessellation(s)
+            sage: idt.explore()
+            sage: idt.cusps()
+
         """
         return [vertex_equivalence_class for vertex_equivalence_class in self.vertices()
                 if vertex_equivalence_class[0][1].start().is_ideal()]
+
+    def cusp_matrix(self, cusp):
+        r"""
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: from flatsurf.geometry.iso_delaunay_tessellation import IsoDelaunayTessellation
+            sage: s = translation_surfaces.veech_2n_gon(4)
+            sage: idt = IsoDelaunayTessellation(s)
+            sage: idt.explore()
+            sage: cusps = idt.cusps()
+            sage: idt.cusp_matrix(cusps[0])
+            [    -a  a + 1]
+            [-a - 1  a + 2]
+            sage: idt.cusp_matrix(cusps[1])
+            [     1/2*a -3/2*a - 2]
+            [     1/2*a -1/2*a - 2]
+        """
+        from sage.all import MatrixSpace
+        matrix = MatrixSpace(self.base_ring(), 2, 2).one()
+
+        for tessellation_face, tessellation_edge in cusp:
+            dual_graph_edges = self._dual_graph.edges(sort=False, vertices=[tessellation_face], labels=True)
+            for _, __, (tessellation_edges, (isometry, source_edge)) in dual_graph_edges:
+                if isometry is None:
+                    continue
+                if tessellation_edge in tessellation_edges:
+                    if source_edge != tessellation_edge:
+                        isometry = ~isometry
+                    matrix *= isometry
+
+        return matrix
+
+    def cusp_direction(self, cusp):
+        m = self.cusp_matrix(cusp)
+        evns = m.eigenvectors_right()
+        assert len(evns) == 1
+        e, v, n = evns[0]
+        assert len(v) == 1
+        return v[0]
+
+    def multitwist(self, cusp):
+        v = self.cusp_direction(cusp)
+        from flatsurf import GL2ROrbitClosure
+        O = GL2ROrbitClosure(self._surface)
+        decomposition = O.decomposition(v)
+        components = decomposition.components()
+        assert all(c.cylinder() for c in components)
+        holonomies = [c.circumferenceHolonomy() for c in components]
+        areas = [c.area()/2 for c in components]
+        inv_moduli = [area / (v.x()*v.x() + v.y()*v.y()) for v, area in zip(holonomies, areas)]
+
+        import pyeantic
+        inv_moduli = [
+            pyeantic.RealEmbeddedNumberField(x.parent())(x)
+            for x in inv_moduli
+        ]
+
+        inv_moduli = [
+            x.parent().number_field(x)
+            for x in inv_moduli
+        ]
+
+        # TODO: Complete this method.
+        return inv_moduli
+
+    def base_ring(self):
+        return self._surface.base_ring()
 
     def orbifold_points(self, order=None):
         r"""
