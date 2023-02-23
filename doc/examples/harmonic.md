@@ -6,7 +6,7 @@ jupyter:
       extension: .md
       format_name: markdown
       format_version: '1.3'
-      jupytext_version: 1.14.0
+      jupytext_version: 1.14.4
   kernelspec:
     display_name: SageMath 9.7
     language: sage
@@ -113,9 +113,19 @@ omega.cauchy_residue(vertex, -1)
 
 ```sage
 from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology, SimplicialCohomology
-T = translation_surfaces.regular_octagon().delaunay_triangulation()
+T = translation_surfaces.regular_octagon().copy(mutable=True)
+
+scale = 1.163592571218269375302518142809178538757590879116270587397 / ((1 + N(sqrt(2)))/2)
+T = T.apply_matrix(diagonal_matrix([scale, scale]))
+T = T.delaunay_triangulation()
 T.set_immutable()
+
 T.plot()
+```
+
+```sage
+T = T.subdivide().subdivide_edges(3).subdivide().delaunay_triangulation()
+T.set_immutable()
 ```
 
 ```sage
@@ -134,12 +144,58 @@ H = SimplicialCohomology(T)
 f = H({a: 1})
 ```
 
-**TODO**: Unfortunately this fails. We don't find solution here.
-
 ```sage
 Omega = HarmonicDifferentials(T)
-omega = Omega(f, prec=100, check=False)
+omega = Omega(f, prec=2, check=False)
 omega.error(verbose=True)
+```
+
+## Evaluating the Quality of our Differential
+
+```sage
+S = translation_surfaces.regular_octagon().copy(mutable=True)
+scale = 1.163592571218269375302518142809178538757590879116270587397 / ((1 + N(sqrt(2)))/2)
+S = S.apply_matrix(diagonal_matrix([scale, scale]))
+S = S.delaunay_triangulation()
+S.set_immutable()
+```
+
+We construct a map from the octagon to the subdivided octagon by finding the singularity in the subdivided octagon and then the triangles adjacent to the singularity that contains the vertical direction.
+
+```sage
+singularities = [(α, adjacents) for (α, adjacents) in T.angles(return_adjacent_edges=True) if α != 1]
+```
+
+```sage
+assert len(singularities) == 1 and singularities[0][0] == 3
+```
+
+```sage
+singularities = singularities[0][1]
+```
+
+```sage
+saddle_connections = T.saddle_connections(scale**2 + 1e-6)
+```
+
+```sage
+saddle_connections = [ sc for sc in saddle_connections if sc.direction() == vector((0, 1))]
+```
+
+```sage
+saddle_connections = [sc for sc in saddle_connections if sc.start_data() in singularities]
+```
+
+```sage
+reference = saddle_connections[0]
+```
+
+```sage
+assert abs(reference.length() - scale / 3) < 1e-6
+```
+
+```sage
+reference = reference.start_data()
 ```
 
 ### An Explicit Series for the Octagon
