@@ -506,7 +506,7 @@ class Surface(SageObject):
 
             sage: list(T.label_iterator())
             [('Δ', 0), ('Δ', 1), ('Δ', 2), ('□', 0), ('□', 1), ('□', 2), ('□', 3)]
-            sage: list(T.edge_gluing_iterator())
+            sage: list(sorted(T.edge_gluing_iterator()))
             [((('Δ', 0), 0), (('□', 2), 0)),
              ((('Δ', 0), 1), (('Δ', 1), 2)),
              ((('Δ', 0), 2), (('Δ', 2), 1)),
@@ -595,21 +595,21 @@ class Surface(SageObject):
             sage: S.change_edge_gluing("□", 1, "□", 3)
 
             sage: T = S.subdivide_edges()
-            sage: list(T.edge_gluing_iterator())
-            [(('Δ', 0), ('□', 4)),
-             (('Δ', 1), ('□', 5)),
+            sage: list(sorted(T.edge_gluing_iterator()))
+            [(('Δ', 0), ('□', 5)),
+             (('Δ', 1), ('□', 4)),
              (('Δ', 2), None),
              (('Δ', 3), None),
              (('Δ', 4), None),
              (('Δ', 5), None),
              (('□', 0), None),
              (('□', 1), None),
-             (('□', 2), ('□', 6)),
-             (('□', 3), ('□', 7)),
-             (('□', 4), ('Δ', 0)),
-             (('□', 5), ('Δ', 1)),
-             (('□', 6), ('□', 2)),
-             (('□', 7), ('□', 3))]
+             (('□', 2), ('□', 7)),
+             (('□', 3), ('□', 6)),
+             (('□', 4), ('Δ', 1)),
+             (('□', 5), ('Δ', 0)),
+             (('□', 6), ('□', 3)),
+             (('□', 7), ('□', 2))]
 
         """
         labels = list(self.label_iterator())
