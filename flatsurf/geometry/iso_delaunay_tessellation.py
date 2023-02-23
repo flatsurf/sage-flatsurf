@@ -402,7 +402,7 @@ class IsoDelaunayTessellation(Parent):
         # We have to add a new vertex.
 
         # First, we check if the new face has self-symmetries.
-        assert clazz.automorphisms() %  self._automorphisms_quotient() == 0
+        assert clazz.automorphisms() % self._automorphisms_quotient() == 0
         order = clazz.automorphisms() // self._automorphisms_quotient()
 
         if order != 1:
