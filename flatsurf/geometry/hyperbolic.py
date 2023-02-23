@@ -2197,13 +2197,33 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             sage: P.apply_isometry(m) == Q
             True
 
+        When determining an isometry of polygons, marked vertices are mapped to
+        marked vertices::
+
+            sage: P = H.polygon(P.half_spaces(), marked_vertices=[1 + I])
+            sage: Q = H.polygon(P.half_spaces(), marked_vertices=[])
+            sage: H.isometry(P, Q)
+            Traceback (most recent call last):
+            ...
+            ValueError: no isometry can map these objects to each other
+
+            sage: Q = H.polygon(P.half_spaces(), marked_vertices=[1 + 2*I])
+            sage: H.isometry(P, Q)
+            Traceback (most recent call last):
+            ...
+            ValueError: no isometry can map these objects to each other
+
+            sage: Q = H.polygon(P.half_spaces(), marked_vertices=[-1 + I])
+            sage: H.isometry(P, Q)
+            [-1  0]
+            [ 0  1]
+
         .. SEEALSO::
 
-            :meth:`HyperbolicConvexSet.apply_isometr` to apply the returned
+            :meth:`HyperbolicConvexSet.apply_isometry` to apply the returned
             isometry to a convex set.
 
         """
-        # TODO: Add an example that shows that we expect marked vertices to be mapped to marked vertices.
 
         if model != "half_plane":
             raise NotImplementedError # TODO
@@ -2334,6 +2354,12 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             if len(x) != len(y):
                 return None
 
+            for i in range(len(x)):
+                isometry = self._isometry(defining, list(zip(x, y[i:] + y[:i])) + remaining)
+                if isometry is not None:
+                    break
+
+            y.reverse()
             for i in range(len(x)):
                 isometry = self._isometry(defining, list(zip(x, y[i:] + y[:i])) + remaining)
                 if isometry is not None:
