@@ -487,7 +487,6 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             if x.real() in self.base_ring() and x.imag() in self.base_ring() and x.imag() >= 0:
                 return True
 
-
         return super().__contains__(x)
 
     def change_ring(self, ring, geometry=None):
@@ -1688,7 +1687,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         - ``marked_vertices`` -- an iterable of vertices (default: an empty
           tuple), the vertices are included in the
-          :meth:`HyperbolicPolygon.vertices` even if they are not in the set of
+          :meth:`HyperbolicConvexPolygon.vertices` even if they are not in the set of
           minimal vertices describing this polygon.
 
         ALGORITHM:
@@ -2369,48 +2368,10 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
             return self._isometry(defining + [(x, y)], remaining)
 
-        if x.dimension() == 1:
-            if isinstance(x, HyperbolicGeodesic):
-                if not x.is_oriented():
-                    f = x.half_spaces()[0].boundary()
-                    g = y.half_spaces()[0].boundary()
-                    return self._isometry(defining, [(f, g)] + remaining) \
-                        or self._isometry(defining, [(f, -g)] + remaining)
-
-                return self._isometry(defining, [(x.start(), y.start()), (x.end(), y.end())] + remaining)
-
-            if isinstance(x, HyperbolicSegment):
-                if not x.is_oriented():
-                    return self._isometry(defining, [(x.start(), y.start()), (x.end(), y.end())] + remaining) \
-                            or self._isometry(defining, [(x.start(), y.end()), (x.end(), y.start())] + remaining)
-                return self._isometry(defining, [(x.start(), y.start()), (x.end(), y.end())] + remaining)
-
-            raise NotImplementedError("cannot determine isometry for this one-dimensional set yet")
-
-        if x.dimension() == 2:
-            if isinstance(x, HyperbolicHalfSpace):
-                return self._isometry(defining, [(x.boundary(), y.boundary())] + remaining)
-
-            x = list(x.vertices())
-            y = list(y.vertices())
-
-            if len(x) != len(y):
-                return None
-
-            for i in range(len(x)):
-                isometry = self._isometry(defining, list(zip(x, y[i:] + y[:i])) + remaining)
-                if isometry is not None:
-                    break
-
-            y.reverse()
-            for i in range(len(x)):
-                isometry = self._isometry(defining, list(zip(x, y[i:] + y[:i])) + remaining)
-                if isometry is not None:
-                    break
-
-            return isometry
-
-        raise NotImplementedError("cannot determine isometry for sets of this dimension")
+        for pairs in x._isometry_conditions(y):
+            isometry = self._isometry(defining, pairs + remaining)
+            if isometry is not None:
+                return isometry
 
     def _isometry_from_points(self, *points):
         r"""
@@ -2490,7 +2451,6 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         if len(geodesics) != 2:
             raise ValueError("need exactly two pairs of geodesics to determine a unique isometry")
 
-
         from sage.all import PolynomialRing, matrix, vector
 
         R = PolynomialRing(self.base_ring(), names=["λ", "a", "b", "c", "d"], order="degrevlex(4), lex(1)")
@@ -2516,11 +2476,11 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         # TODO: The below is quite hacky. We should use a more generic approach
         # when some of the coefficients are forced to be zero at least.
-        I = list(R.ideal(equations).groebner_basis())
+        J = list(R.ideal(equations).groebner_basis())
 
-        λλ = I.pop()
+        λλ = J.pop()
         while λλ.total_degree() == 1:
-            λλ = I.pop()
+            λλ = J.pop()
 
         if λλ == 1:
             return None
@@ -2541,7 +2501,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         solutions = R.ideal(equations).variety()
 
         for solution in solutions:
-            isometry  = matrix([
+            isometry = matrix([
                 [solution[a], solution[b]],
                 [solution[c], solution[d]]
             ])
@@ -3864,6 +3824,14 @@ class HyperbolicConvexSet(Element):
             if subset != self:
                 tester.assertNotEqual(hash(self), hash(subset))
 
+    def _isometry_conditions(self, other):
+        # TODO: Check documentation
+        # TODO: Check INPUTS
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        # TODO: Benchmark?
+        raise NotImplementedError
+
 
 class HyperbolicOrientedConvexSet(HyperbolicConvexSet):
     # TODO: Check documentation
@@ -4171,6 +4139,14 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
         # Add the type to the hash value to distinguish the hash value from an
         # actual geodesic.
         return hash((type(self), self._geodesic))
+
+    def _isometry_conditions(self, other):
+        # TODO: Check documentation
+        # TODO: Check INPUTS
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        # TODO: Benchmark?
+        yield [(self.boundary(), other.boundary())]
 
 
 class HyperbolicGeodesic(HyperbolicConvexSet):
@@ -4923,6 +4899,17 @@ class HyperbolicUnorientedGeodesic(HyperbolicGeodesic):
         # TODO: Benchmark?
         return self.change(oriented=True).vertices()
 
+    def _isometry_conditions(self, other):
+        # TODO: Check documentation.
+        # TODO: Check INPUT
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        # TODO: Benchmark?
+        self = self.half_spaces()[0].boundary()
+        other = other.half_spaces()[0].boundary()
+        yield [(self, other)]
+        yield [(self, -other)]
+
 
 class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet):
     # TODO: Check documentation
@@ -5293,6 +5280,14 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
         # TODO: Check for doctests
         # TODO: Benchmark?
         return HyperbolicVertices([self.start(), self.end()])
+
+    def _isometry_conditions(self, other):
+        # TODO: Check documentation.
+        # TODO: Check INPUT
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        # TODO: Benchmark?
+        yield [(self.start(), other.start()), (self.end(), other.end())]
 
 
 class HyperbolicPoint(HyperbolicConvexSet):
@@ -7437,6 +7432,25 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
 
         return self.parent().polygon(half_spaces=half_spaces, check=False, assume_minimal=True, marked_vertices=marked_vertices)
 
+    def _isometry_conditions(self, other):
+        # TODO: Check documentation.
+        # TODO: Check INPUT
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        # TODO: Benchmark?
+        self = list(self.vertices())
+        other = list(other.vertices())
+
+        if len(self) == len(other):
+            for i in range(len(self)):
+                yield list(zip(self, other[i:] + other[:i]))
+
+            other.reverse()
+
+            for i in range(len(self)):
+                yield list(zip(self, other[i:] + other[:i]))
+
+
 class HyperbolicSegment(HyperbolicConvexSet):
     # TODO: Check documentation
     # TODO: Check INPUTS
@@ -7949,6 +7963,15 @@ class HyperbolicUnorientedSegment(HyperbolicSegment):
         """
         return hash((frozenset([self._start, self._end]), self.geodesic()))
 
+    def _isometry_conditions(self, other):
+        # TODO: Check documentation
+        # TODO: Check INPUTS
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        # TODO: Benchmark?
+        yield [(self.start(), other.start()), (self.end(), other.end())]
+        yield [(self.start(), other.end()), (self.end(), other.start())]
+
 
 class HyperbolicOrientedSegment(HyperbolicSegment, HyperbolicOrientedConvexSet):
     # TODO: Check documentation
@@ -8076,6 +8099,14 @@ class HyperbolicOrientedSegment(HyperbolicSegment, HyperbolicOrientedConvexSet):
 
         """
         return hash((self._start, self._end, self.geodesic()))
+
+    def _isometry_conditions(self, other):
+        # TODO: Check documentation.
+        # TODO: Check INPUT
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        # TODO: Benchmark?
+        yield [(self.start(), other.start()), (self.end(), other.end())]
 
 
 class HyperbolicEmptySet(HyperbolicConvexSet):
@@ -8339,12 +8370,7 @@ def so12_to_sl2(m, det=1):
         b = sb * pm_b
         c = sc * pm_c
         d = sd * pm_d
-        if (a * b == ab and
-            a * c == ac and
-            a * d == ad and
-            b * c == bc and
-            b * d == bd and
-            c * d == cd):
+        if (a * b == ab and a * c == ac and a * d == ad and b * c == bc and b * d == bd and c * d == cd):
             return matrix(K, 2, 2, [a, b, c, d])
 
     raise ValueError('no projection to SL(2, R) in the base ring')
@@ -9538,7 +9564,7 @@ class HyperbolicPathPlotCommand:
     def create_segment_cartesian(start, end, model):
         r"""
         Return a sequence of :class:`CartesianPathPlotCommand` that represent
-        the closed boundary of a :class:`HyperbolicPolygon`, namely the segment
+        the closed boundary of a :class:`HyperbolicConvexPolygon`, namely the segment
         to ``end`` (from the previous position ``start``.)
 
         This is a helper function for :meth:`cartesian`.
