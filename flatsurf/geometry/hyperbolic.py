@@ -2442,6 +2442,78 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         An isometry as a 2×2 matrix or ``None`` if there is no such isometry or
         it is not defined over the base ring of the hyperbolic plane.
 
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+        Points forming an ideal triangle with three ideal vertices::
+
+            sage: preimage = H(-1), H(0), H(1)
+            sage: image = H(0), H(1), H(2)
+            sage: H._isometry_from_points(*zip(preimage, image))
+            [5/4 5/4]
+            [  0 5/4]
+
+        Points forming an ideal triangle with two ideal vertices::
+
+            sage: preimage = H(-1), H(2*I), H(1)
+            sage: image = H(0), H(1 + 2*I), H(2)
+            sage: H._isometry_from_points(*zip(preimage, image))
+            [5/4 5/4]
+            [  0 5/4]
+
+        Points forming an ideal triangle with one ideal vertex::
+
+            sage: preimage = H(I - 1), H(I + 1), H(oo)
+            sage: preimage = H(I), H(I + 2), H(oo)
+            sage: H._isometry_from_points(*zip(preimage, image))
+            [5/4 5/4]
+            [  0 5/4]
+
+        Points forming a finite triangle::
+
+            sage: preimage = H(I), H(2*I), H(2*I + 1)
+            sage: preimage = H(I + 1), H(2*I + 1), H(2*I + 2)
+            sage: H._isometry_from_points(*zip(preimage, image))
+            [5/4 5/4]
+            [  0 5/4]
+
+        Points forming a degenerate ideal triangle::
+
+            sage: preimage = H(-1), H(I), H(1)
+            sage: image = H(0), H(I + 1), H(2)
+            sage: H._isometry_from_points(*zip(preimage, image))
+            [5/4 5/4]
+            [  0 5/4]
+
+        Points forming a finite degenerate triangle::
+
+            sage: preimage = H(I), H(2*I), H(3*I)
+            sage: preimage = H(I + 1), H(2*I + 1), H(3*I + 1)
+            sage: H._isometry_from_points(*zip(preimage, image))
+            [5/4 5/4]
+            [  0 5/4]
+
+        Impossible pairs of points (ideal and non-ideal) are detected::
+
+            sage: preimage = H(-1), H(I), H(1)
+            sage: image = H(0), H(1), H(2)
+            sage: H._isometry_from_points(*zip(preimage, image))
+
+            sage: preimage = H(0), H(1), H(2)
+            sage: image = H(-1), H(I), H(1)
+            sage: H._isometry_from_points(*zip(preimage, image))
+
+        ALGORITHM:
+
+        We turn the triples of points into triples of ideal points. These then
+        define a unique isometry which we compute in
+        :meth:`_isometry_from_geodesics`. If three points are collinear, we
+        turn them into two ideal points and one non-ideal point and compute the
+        unique isometry this defines (if any) in
+        :meth:`_isometry_from_geodesics_and_points`.
+
         .. SEEALSO::
 
             :meth:`HyperbolicConvexSet.apply_matrix` to apply the returned matrix to a set.
@@ -2461,21 +2533,41 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             for p, q in combinations(points, 2)
         ]
 
-        # If the triangles are not degenerate, there is exactly one isometry
-        # mapping one to the other.
+        # If the triangle formed by the geodesics is degenerate, we construct
+        # the isometry that maps the triangles to each other and also maps one
+        # finite point correctly.
+        def degenerate(triangle):
+            return len(set(geodesic.unoriented() for geodesic in triangle)) == 1
 
-        for f, g in combinations(geodesics, 2):
-            if f[0].unoriented() != g[0].unoriented():
-                isometry = self._isometry_from_geodesics(f, g)
-                break
+        if degenerate([pair[0] for pair in geodesics]):
+            if not degenerate([pair[1] for pair in geodesics]):
+                # No isometry can map a degenerate triangle to a non-degenerate one.
+                return None
+
+            f, g = geodesics[0]
+            for p, q in points:
+                if p.is_finite() and q.is_finite():
+                    for sgn in [-1, 1]:
+                        isometry = self._isometry_from_geodesics_and_points((f, g if sgn == 1 else -g), (p, q))
+
+                        # Check if this isometry maps all finite points correctly, otherwise, try another pair of points.
+                        if isometry is not None and all(p.apply_isometry(isometry) == q for (p, q) in points):
+                            break
+        elif degenerate([pair[1] for pair in geodesics]):
+            # No isometry can map a non-degenerate triangle to a degenerate one.
+            return None
         else:
-            raise NotImplementedError("cannot determine isometry for degenerate triangles yet")
+            # If the triangles are not degenerate, there can be exactly one
+            # isometry mapping one to the other.
+            isometry = self._isometry_from_geodesics(geodesics[0], geodesics[1])
 
-        # Verify that the isometry has the prescribed properties
+        # We found an isometry by considering the triangles formed by the
+        # (possibly finite) points that we were presented with. If the isometry
+        # maps these points correctly, it's the isometry we're looking for.
         if isometry is not None:
             for p, q in points:
                 if p.apply_isometry(isometry) != q:
-                    assert not p.is_ideal() or not q.is_ideal(), f"found isometry {isometry} but it does not map {p} to {q} but to {p.apply_isometry(isometry)}"
+                    assert not p.is_ideal() or not q.is_ideal(), f"found isometry {isometry} but it does not map ideal point {p} to ideal point {q} but to {p.apply_isometry(isometry)}"
                     return None
 
         return isometry
@@ -2566,6 +2658,9 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             return isometry
 
         return None
+
+    def _isometry_from_geodesics_and_points(self, geodesics, points):
+        raise NotImplementedError
 
     def _repr_(self):
         r"""
