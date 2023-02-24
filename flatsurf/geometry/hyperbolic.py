@@ -2317,10 +2317,28 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
     def _isometry(self, defining, remaining):
         r"""
-        Return an isometry that maps the pairs in ``defining`` to each other.
+        Return an isometry that maps the pairs in ``defining`` and
+        ``remaining`` to each other.
 
-        If no isometry also maps the pairs in ``remaining`` to each other,
-        return ``None``.
+        If no such isometry exists, return ``None``.
+
+        This is a helper function for :meth:`isometry`.
+
+        ALGORITHM:
+
+        An isometry is defined by specifying the image of three points. So once
+        ``defining`` contains three pairs of points, we take the unique
+        isometry this defines (if any) and verify that it maps ``remaining``
+        correctly. While ``defining`` contains less than three points, we
+        extract pairs of points from the pairs in ``remaining`` to augment
+        ``defining``.
+
+        The idea here is to turn a prescribed mapping of complex objects, say
+        between two polygons, into a mapping of a simpler objects, namely
+        points. Often there is not a unique mapping of points, e.g., there is
+        many ways to map two polygons to each other since we can cyclically
+        rotate the vertices for example. Therefore, we need some backtracking
+        here iterating over all possible three-point pairs.
 
         INPUT:
 
@@ -2329,14 +2347,37 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         - ``remaining`` -- a sequence of pairs of subsets of the hyperbolic
           plane
 
+        EXAMPLES:
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+        If the ``remaining`` pairs do not provide enough points, we randomly
+        add points to define a unique mapping::
+
+            sage: H._isometry([], [])
+            [1 0]
+            [0 1]
+            sage: H._isometry([(H(0), H(1))], [])
+            [ 9/2   27]
+            [-9/2   27]
+            sage: H._isometry([(H(1), H(0))], [])
+            [ 2/9 -2/9]
+            [1/27 1/27]
+
+        If no isometry is possible, ``None`` is returned::
+
+            sage: H._isometry([(H(1), H(0))], [(H(1), H(2))])
+
+
         """
-        # TODO: Add doctests.
+        assert len(defining) <= 3, "_isometry should never be called with more than three points"
 
-        assert len(defining) <= 3
-
+        # If we have three pairs of points, determine the unique isometry that maps them to each other.
         if len(defining) == 3:
             isometry = self._isometry_from_points(*defining)
 
+            # If there is such an isometry, check whether it also maps all the "remaining" objects.
             if isometry is not None:
                 for x, y in remaining:
                     if x.apply_isometry(isometry) != y:
@@ -2344,34 +2385,49 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
             return isometry
 
-        # "defining" is not sufficient to determine a unique isometry, we extend it.
+        # There are fewer than three points in "defining". Extend with more points.
 
-        if not remaining:
-            # we have freedom in defining this isometry, make it unique by
-            # randomly mapping some more points
-            from itertools import count
-            for n in count(0):
-                n = self(n)
-                if any([x == n or y == n for (x, y) in defining]):
-                    continue
-                return self._isometry(defining + [(n, n)], remaining=[])
+        if remaining:
+            # Extend by turning remaining[0] into a condition
+            x, y = remaining[0]
+            remaining = remaining[1:]
 
-        # Extend by turning remaining[0] into a condition
-        x, y = remaining[0]
-        remaining = remaining[1:]
+            # Extend with a pair of points in "remaining[0]"
+            if x.dimension() == 0:
+                assert y.dimension() == 0
 
-        if x.dimension() == 0:
-            assert y.dimension() == 0
+                if (x, y) in defining:
+                    return self._isometry(defining, remaining)
 
-            if (x, y) in defining:
-                return self._isometry(defining, remaining)
+                if x in [d[0] for d in defining]:
+                    return None
 
-            return self._isometry(defining + [(x, y)], remaining)
+                if y in [d[1] for d in defining]:
+                    return None
 
-        for pairs in x._isometry_conditions(y):
-            isometry = self._isometry(defining, pairs + remaining)
-            if isometry is not None:
-                return isometry
+                return self._isometry(defining + [(x, y)], remaining)
+
+            # Extend with points coming from other hyperbolicobjects in "remaining[0]"
+            for pairs in x._isometry_conditions(y):
+                isometry = self._isometry(defining, pairs + remaining)
+                if isometry is not None:
+                    return isometry
+
+            # We backtracked over all pairs of points in remaining but could
+            # not construct a consistent isometry.
+            return None
+
+        # Since there are no "remaining" points, we have freedom in defining this isometry.
+        # Map points arbitrarily to be able to search for a unique isometry.
+        from itertools import count
+        for n in count(0):
+            n = self(n)
+
+            if any([x == n or y == n for (x, y) in defining]):
+                # Do not add trivialities or contradictions.
+                continue
+
+            return self._isometry(defining + [(n, n)], remaining=[])
 
     def _isometry_from_points(self, *points):
         r"""
