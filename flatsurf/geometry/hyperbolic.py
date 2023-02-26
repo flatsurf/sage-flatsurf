@@ -2146,8 +2146,8 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         ::
 
             sage: H.isometry(I, I+1)
-            [2 0]
-            [1 1]
+            [  1   0]
+            [1/2 1/2]
             sage: H.isometry(0, oo)
             [   1 -2/3]
             [ 1/3    0]
@@ -2706,16 +2706,12 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         equations = conditions(geodesics[0][0], geodesics[0][1], λ) + conditions(geodesics[1][0], geodesics[1][1], λλ)
 
         solutions = R.ideal(equations).variety()
-        assert len(solutions) == 2, f"expected Gröbner basis to yield two solutions that are the negatives of each other but found {solutions} as solutions to {equations}"
+        assert len(solutions) == 2 or len(solutions) == 4, f"expected Gröbner basis to yield two or four solutions that are the negatives (and possibly reflections) of each other but found {solutions} as solutions to {equations}"
 
-        for solution in solutions:
-            if solution[d] == 1 or (solution[d] == 0 and solution[c] == 1):
-                return matrix([
-                    [solution[a], solution[b]],
-                    [solution[c], solution[d]]
-                ])
+        solutions = [matrix([[solution[a], solution[b]], [solution[c], solution[d]]]) for solution in solutions]
 
-        assert False, f"Found no solution of the expected shape in {solutions}"
+        # Prefer an isometry of determinant 1 and isometries with 1 entries.
+        return max(solutions, key=lambda isometry: (isometry.det(), isometry[1][1]==1, isometry[1][0]==1))
 
     def _isometry_from_geodesics_and_points(self, geodesics, points):
         raise NotImplementedError
