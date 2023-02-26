@@ -2126,7 +2126,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         If ``model`` is ``"half_plane"``, returns an element of `PGL(2,
         \mathbb{R})` as a 2×2 matrix that maps (each element of) ``preimage`` to (the
         corresponding element of) ``image``. If ``model`` is ``"klein"``,
-        returns the corresponding element of `SO(1,2)`` as a 3×3 matrix.
+        returns the corresponding element of `SO(1,2)` as a 3×3 matrix.
 
         EXAMPLES::
 
@@ -2258,6 +2258,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             isometry to a convex set.
 
         """
+        # TODO: Link to https://en.wikipedia.org/wiki/Indefinite_orthogonal_group somewhere.
         if normalized:
             isometry = self.isometry(preimage=preimage, image=image, model=model, on_right=on_right, normalized=False)
             det = abs(isometry.det())
@@ -4644,7 +4645,7 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
 
         The pole is the intersection of tangents of the Klein disk at
         the ideal endpoints of this geodesic, see `Wikipedia
-        <https://en.wikipedia.org/wiki/Beltrami%E2%80%93Klein_model#Compass_and_straightedge_constructions>`
+        <https://en.wikipedia.org/wiki/Beltrami%E2%80%93Klein_model#Compass_and_straightedge_constructions>`.
 
         EXAMPLES:
 
