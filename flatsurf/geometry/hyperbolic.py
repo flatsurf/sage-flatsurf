@@ -2140,8 +2140,8 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             sage: H(0).apply_isometry(m)
             1
             sage: m
-            [ 1/12   1/2]
-            [-1/12   1/2]
+            [ 1  6]
+            [-1  6]
 
         ::
 
@@ -2149,8 +2149,8 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             [2 0]
             [1 1]
             sage: H.isometry(0, oo)
-            [9/2   -3]
-            [3/2    0]
+            [   1 -2/3]
+            [ 1/3    0]
 
         An isometry is uniquely determined by its image on three points::
 
@@ -2179,14 +2179,14 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         points, e.g., geodesics::
 
             sage: H.isometry(H.geodesic(-1, 1), H.geodesic(1, -1))
-            [-1  0]
-            [ 0  1]
+            [ 1  0]
+            [ 0 -1]
 
         The above isometry is not the only one with that property::
 
             sage: H.isometry([H.geodesic(-1, 1), I - 1], [H.geodesic(1, -1), I - 1])
-            [-9/5 -6/5]
-            [ 6/5  9/5]
+            [   1  2/3]
+            [-2/3   -1]
 
         We can also determine an isometry mapping more complex objects::
 
@@ -2214,8 +2214,8 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
             sage: Q = H.polygon(P.half_spaces(), marked_vertices=[-1 + I])
             sage: H.isometry(P, Q)
-            [-1  0]
-            [ 0  1]
+            [ 1  0]
+            [ 0 -1]
 
         We can explicitly ask for an isometry in the Klein model, given by an
         element of SO(1, 2)::
@@ -2235,8 +2235,8 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             ValueError: not a perfect 2nd power
 
             sage: H.change_ring(AA).isometry([H.geodesic(-1, 1), I - 1], [H.geodesic(1, -1), I - 1], normalized=True)
-            [ -1.341640786499874? -0.8944271909999159?]
-            [ 0.8944271909999159?   1.341640786499874?]
+            [  1.341640786499874?  0.8944271909999159?]
+            [-0.8944271909999159?  -1.341640786499874?]
 
             sage: _.det()
             -1.000000000000000?
@@ -2273,7 +2273,13 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         if not on_right:
             isometry = self.isometry(preimage=preimage, image=image, model=model, on_right=True, normalized=normalized)
-            return ~isometry
+            if model == "half_plane":
+                from sage.all import matrix
+                # Pick a nice representative of the inverse matrix.
+                isometry = matrix([[isometry[1][1], -isometry[0][1]], [-isometry[1][0], isometry[0][0]]])
+            else:
+                isometry = ~isometry
+            return isometry
 
         # Normalize the arguments so that they are a list of convex sets.
         from collections.abc import Iterable
@@ -3787,6 +3793,7 @@ class HyperbolicConvexSet(Element):
         # TODO: Check SEEALSO
         # TODO: Check for doctests
         # TODO: Benchmark?
+        # TODO: Explain what the isometry actually encodes, in particular if its determinant is negative.
         r"""
         Return the image of this set under the isometry.
 
