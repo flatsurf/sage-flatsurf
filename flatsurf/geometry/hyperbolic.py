@@ -8376,13 +8376,13 @@ def sl2_to_so12(m):
     )
 
 
-def so12_to_sl2(m, det=1):
+def so12_to_sl2(m):
     r"""
     Inverse of :func:`sl2_to_so12`.
 
     EXAMPLES::
 
-        sage: from flatsurf.geometry.hyperbolic import so12_to_sl2
+        sage: from flatsurf.geometry.hyperbolic import so12_to_sl2, sl2_to_so12
         sage: so12_to_sl2(matrix(3, [1, -1, 1, 1, 1/2, 1/2, 1, -1/2, 3/2]))
         [1 1]
         [0 1]
@@ -8392,6 +8392,9 @@ def so12_to_sl2(m, det=1):
         sage: so12_to_sl2(matrix(3, [1, 0, 0, 0, 17/8, 15/8, 0, 15/8, 17/8]))
         [  2   0]
         [  0 1/2]
+        sage: so12_to_sl2(sl2_to_so12(matrix([[-1, 0], [0, 1]])))
+        [ 1  0]
+        [ 0 -1]
     """
     from sage.matrix.constructor import matrix
 
@@ -8401,6 +8404,11 @@ def so12_to_sl2(m, det=1):
     K = m.base_ring()
     two = K(2)
 
+    so12_det = m.determinant()
+    sl2_det = so12_det.nth_root(3)
+    if so12_det.sign() != sl2_det.sign():
+        sl2_det *= -1
+
     a2 = (m12 + m22 + m21 + m11) / two
     b2 = (m12 + m22 - m21 - m11) / two
     c2 = (m21 + m22 - m12 - m11) / two
@@ -8408,8 +8416,8 @@ def so12_to_sl2(m, det=1):
 
     ab = (m10 + m20) / two
     ac = (m01 + m02) / two
-    ad = (m00 + det) / two
-    bc = (m00 - det) / two
+    ad = (m00 + sl2_det) / two
+    bc = (m00 - sl2_det) / two
     bd = (m02 - m01) / two
     cd = (m20 - m10) / two
 
