@@ -1,4 +1,4 @@
-# Triggers after the documentation build has finished, 
+# Triggers after the documentation build has finished,
 # taking the artifact and uploading it to netlify
 # Mostly copied from the SageMath workflow file.
 name: Publish Documentation
@@ -48,7 +48,7 @@ jobs:
             });
             var fs = require('fs');
             fs.writeFileSync('${{github.workspace}}/doc.zip', Buffer.from(download.data));
-      
+
       - name: Extract docs
         run: unzip doc.zip -d doc
 
@@ -56,7 +56,7 @@ jobs:
         id: deploy-netlify
         uses: netlify/actions/cli@master
         with:
-          args: deploy --dir=doc/doc/_build/html ${NETLIFY_PRODUCTION:+"--prod"} --message ${NETLIFY_MESSAGE} --alias ${NETLIFY_ALIAS}
+          args: deploy --dir=doc ${NETLIFY_PRODUCTION:+"--prod"} --message ${NETLIFY_MESSAGE} --alias ${NETLIFY_ALIAS}
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
@@ -75,7 +75,7 @@ jobs:
           message: |
             [Documentation preview for this PR](${{ steps.deploy-netlify.outputs.NETLIFY_URL }}) is ready! :tada:
             Built with commit: ${{ steps.source-run-info.outputs.sourceHeadSha }}
-      
+
       - name: Update deployment status PR check
         uses: myrotvorets/set-commit-status-action@1.1.6
         if: ${{ always() }}
