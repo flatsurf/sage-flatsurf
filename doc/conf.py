@@ -10,6 +10,12 @@ extensions = [
     'myst_nb',
 ]
 
+# Extensions when rendering .ipynb/.md notebooks
+myst_enable_extensions = [
+    'dollarmath',
+    'amsmath',
+]
+
 # The suffix of source filenames.
 source_suffix = '.rst'
 
