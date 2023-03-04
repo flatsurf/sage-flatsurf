@@ -50,13 +50,13 @@ jobs:
             fs.writeFileSync('${{github.workspace}}/doc.zip', Buffer.from(download.data));
       
       - name: Extract docs
-        run: unzip doc.zip -d doc && unzip doc/doc.zip -d doc/doc
+        run: unzip doc.zip -d doc
 
       - name: Deploy to Netlify
         id: deploy-netlify
         uses: netlify/actions/cli@master
         with:
-          args: deploy --dir=doc/doc/html ${NETLIFY_PRODUCTION:+"--prod"} --message ${NETLIFY_MESSAGE} --alias ${NETLIFY_ALIAS}
+          args: deploy --dir=doc/doc/_build/html ${NETLIFY_PRODUCTION:+"--prod"} --message ${NETLIFY_MESSAGE} --alias ${NETLIFY_ALIAS}
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
