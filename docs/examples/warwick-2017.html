@@ -256,7 +256,7 @@
           </label>
         </div>
         <article role="main">
-          <section id="notes-from-the-warwick-epsrc-symposium-on-computation-in-geometric-topology">
+          <section class="tex2jax_ignore mathjax_ignore" id="notes-from-the-warwick-epsrc-symposium-on-computation-in-geometric-topology">
 <h1>Notes from the Warwick EPSRC Symposium on “Computation in geometric topology”<a class="headerlink" href="#notes-from-the-warwick-epsrc-symposium-on-computation-in-geometric-topology" title="Permalink to this heading">#</a></h1>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -350,7 +350,7 @@
 </div>
 </div>
 </div>
-<p>Define a tangent vector in polygon $0$ starting at $(\frac{1}{2}, 0)$ and pointed in some direction:</p>
+<p>Define a tangent vector in polygon <span class="math notranslate nohighlight">\(0\)</span> starting at <span class="math notranslate nohighlight">\((\frac{1}{2}, 0)\)</span> and pointed in some direction:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">direction</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="mi">3</span><span class="o">*</span><span class="n">s</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
@@ -2623,7 +2623,7 @@ if and only if the slope can be expressed as the ratio of two odd integers.</p>
 </div>
 </div>
 <p>The following builds a trajectory starting in the base polygon at the point
-$(\frac{1}{4}, \frac{1}{4})$ and traveling in a direction of slope one.</p>
+<span class="math notranslate nohighlight">\((\frac{1}{4}, \frac{1}{4})\)</span> and traveling in a direction of slope one.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">v</span> <span class="o">=</span> <span class="n">B</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">base_label</span><span class="p">(),</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
@@ -3242,7 +3242,7 @@ $(\frac{1}{4}, \frac{1}{4})$ and traveling in a direction of slope one.</p>
 </iframe>
 </div></div>
 </div>
-<p>A trajectory of slope $5/4$.</p>
+<p>A trajectory of slope <span class="math notranslate nohighlight">\(5/4\)</span>.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">v</span> <span class="o">=</span> <span class="n">B</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">base_label</span><span class="p">(),</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
@@ -3860,7 +3860,7 @@ $(\frac{1}{4}, \frac{1}{4})$ and traveling in a direction of slope one.</p>
 </iframe>
 </div></div>
 </div>
-<p>A trajectory of slope $11/9$</p>
+<p>A trajectory of slope <span class="math notranslate nohighlight">\(11/9\)</span></p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">v</span> <span class="o">=</span> <span class="n">B</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">base_label</span><span class="p">(),</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">11</span><span class="p">))</span>
@@ -3975,6 +3975,7 @@ $(\frac{1}{4}, \frac{1}{4})$ and traveling in a direction of slope one.</p>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/scripts/furo.js"></script>
-    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     </body>
 </html>

@@ -256,7 +256,7 @@
           </label>
         </div>
         <article role="main">
-          <section id="the-gl-2-r-action-the-veech-group-delaunay-decomposition">
+          <section class="tex2jax_ignore mathjax_ignore" id="the-gl-2-r-action-the-veech-group-delaunay-decomposition">
 <h1>The GL(2,R) Action, the Veech Group, Delaunay Decomposition<a class="headerlink" href="#the-gl-2-r-action-the-veech-group-delaunay-decomposition" title="Permalink to this heading">#</a></h1>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -291,7 +291,7 @@
 </div>
 </div>
 </div>
-<p>You can act on surfaces with the $GL(2,R)$ action</p>
+<p>You can act on surfaces with the <span class="math notranslate nohighlight">\(GL(2,R)\)</span> action</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ss</span> <span class="o">=</span> <span class="n">m</span><span class="o">*</span><span class="n">s</span>
@@ -336,7 +336,7 @@
 </section>
 <section id="the-veech-group">
 <h2>The Veech group<a class="headerlink" href="#the-veech-group" title="Permalink to this heading">#</a></h2>
-<p>Set $s$ to be the double pentagon again.</p>
+<p>Set <span class="math notranslate nohighlight">\(s\)</span> to be the double pentagon again.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">veech_double_n_gon</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
@@ -397,7 +397,7 @@
 0 & 1
 \end{array}\right)\)</html></div></div>
 </div>
-<p>The following can be used to check that $m$ is in the Veech group of $s$.</p>
+<p>The following can be used to check that <span class="math notranslate nohighlight">\(m\)</span> is in the Veech group of <span class="math notranslate nohighlight">\(s\)</span>.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s</span><span class="o">.</span><span class="n">canonicalize</span><span class="p">()</span> <span class="o">==</span> <span class="p">(</span><span class="n">m</span><span class="o">*</span><span class="n">s</span><span class="p">)</span><span class="o">.</span><span class="n">canonicalize</span><span class="p">()</span>
@@ -498,7 +498,7 @@
 <img alt="../_images/e686922298d1a4ead35c8a424d10584f15d418da493605888d4ea4d54cb3f8d3.png" src="../_images/e686922298d1a4ead35c8a424d10584f15d418da493605888d4ea4d54cb3f8d3.png" />
 </div>
 </div>
-<p>You can tell from the above picture that $m$ is in the Veech group.</p>
+<p>You can tell from the above picture that <span class="math notranslate nohighlight">\(m\)</span> is in the Veech group.</p>
 </section>
 </section>
 
@@ -579,6 +579,7 @@
     <script src="../_static/doctools.js"></script>
     <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/scripts/furo.js"></script>
-    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     </body>
 </html>

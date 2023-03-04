@@ -256,7 +256,7 @@
           </label>
         </div>
         <article role="main">
-          <section id="graphics-configuration">
+          <section class="tex2jax_ignore mathjax_ignore" id="graphics-configuration">
 <h1>Graphics Configuration<a class="headerlink" href="#graphics-configuration" title="Permalink to this heading">#</a></h1>
 <section id="rearranging-polygons">
 <h2>Rearranging Polygons<a class="headerlink" href="#rearranging-polygons" title="Permalink to this heading">#</a></h2>
@@ -526,7 +526,7 @@
 </div>
 </div>
 </div>
-<p>We just want the derivative of this similarity to transform the vertical direction. The derivative is a $2 \times 2$ matrix.</p>
+<p>We just want the derivative of this similarity to transform the vertical direction. The derivative is a <span class="math notranslate nohighlight">\(2 \times 2\)</span> matrix.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">show</span><span class="p">(</span><span class="n">inverse_transformation</span><span class="o">.</span><span class="n">derivative</span><span class="p">())</span>
@@ -664,7 +664,7 @@ To get a new suface, you can call <code class="docutils literal notranslate"><sp
 </div>
 </div>
 <p>Lets make it prettier by drawing some stars on the faces!</p>
-<p>Find all saddle connections of length at most $\sqrt{16}$:</p>
+<p>Find all saddle connections of length at most <span class="math notranslate nohighlight">\(\sqrt{16}\)</span>:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">saddle_connections</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">saddle_connections</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>
@@ -881,6 +881,7 @@ To get a new suface, you can call <code class="docutils literal notranslate"><sp
     <script src="../_static/doctools.js"></script>
     <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/scripts/furo.js"></script>
-    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     </body>
 </html>

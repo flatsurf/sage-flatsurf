@@ -256,7 +256,7 @@
           </label>
         </div>
         <article role="main">
-          <section id="straight-line-flow">
+          <section class="tex2jax_ignore mathjax_ignore" id="straight-line-flow">
 <h1>Straight-Line Flow<a class="headerlink" href="#straight-line-flow" title="Permalink to this heading">#</a></h1>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -325,7 +325,7 @@
 <img alt="../_images/cdd44871a8adc274b5bb863c78371493b32ec83783e2c9dcce1448808ff0ca35.png" src="../_images/cdd44871a8adc274b5bb863c78371493b32ec83783e2c9dcce1448808ff0ca35.png" />
 </div>
 </div>
-<p>Flow into the next $100$ polygons or until the trajectory hits a vertex.</p>
+<p>Flow into the next <span class="math notranslate nohighlight">\(100\)</span> polygons or until the trajectory hits a vertex.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">traj</span><span class="o">.</span><span class="n">flow</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
@@ -468,5 +468,7 @@
     <script src="../_static/doctools.js"></script>
     <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/scripts/furo.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     </body>
 </html>

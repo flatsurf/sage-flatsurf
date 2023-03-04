@@ -256,7 +256,7 @@
           </label>
         </div>
         <article role="main">
-          <section id="defining-surfaces">
+          <section class="tex2jax_ignore mathjax_ignore" id="defining-surfaces">
 <h1>Defining Surfaces<a class="headerlink" href="#defining-surfaces" title="Permalink to this heading">#</a></h1>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -403,8 +403,8 @@
 <img alt="../_images/e2a3842fcc27633e9ce3f75c38151498b1ead84cc66410d9e223a6dd3ae7540d.png" src="../_images/e2a3842fcc27633e9ce3f75c38151498b1ead84cc66410d9e223a6dd3ae7540d.png" />
 </div>
 </div>
-<p>The vertices of n-gons are numbered by ${0,…,n-1}$, with the $0$-th vertex at the origin. Edge $i$ joins vertex $i$ to vertex $i+1 \pmod{n}$.</p>
-<p>We can act on polygon with $2 \times 2$ matrices. We define the rotation by $\frac{\pi}{6}$ below:</p>
+<p>The vertices of n-gons are numbered by <span class="math notranslate nohighlight">\(\{0,...,n-1\}\)</span>, with the <span class="math notranslate nohighlight">\(0\)</span>-th vertex at the origin. Edge <span class="math notranslate nohighlight">\(i\)</span> joins vertex <span class="math notranslate nohighlight">\(i\)</span> to vertex <span class="math notranslate nohighlight">\(i+1 \pmod{n}\)</span>.</p>
+<p>We can act on polygon with <span class="math notranslate nohighlight">\(2 \times 2\)</span> matrices. We define the rotation by <span class="math notranslate nohighlight">\(\frac{\pi}{6}\)</span> below:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">R</span> <span class="o">=</span> <span class="n">matrix</span><span class="p">(</span><span class="n">AA</span><span class="p">,[[</span><span class="n">cos</span><span class="p">(</span><span class="n">pi</span><span class="o">/</span><span class="mi">6</span><span class="p">),</span><span class="o">-</span><span class="n">sin</span><span class="p">(</span><span class="n">pi</span><span class="o">/</span><span class="mi">6</span><span class="p">)],[</span><span class="n">sin</span><span class="p">(</span><span class="n">pi</span><span class="o">/</span><span class="mi">6</span><span class="p">),</span><span class="n">cos</span><span class="p">(</span><span class="n">pi</span><span class="o">/</span><span class="mi">6</span><span class="p">)]])</span>
@@ -729,7 +729,7 @@ More information including pitfalls are described in <a href="http://flipper.rea
 </div>
 </div>
 </div>
-<p>The surface $s$ is a Euclidean cone surface.</p>
+<p>The surface <span class="math notranslate nohighlight">\(s\)</span> is a Euclidean cone surface.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">type</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
@@ -1673,6 +1673,7 @@ The following tests failed: _test_underlying_surface
     <script src="../_static/doctools.js"></script>
     <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/scripts/furo.js"></script>
-    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     </body>
 </html>

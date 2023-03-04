@@ -256,9 +256,9 @@
           </label>
         </div>
         <article role="main">
-          <section id="siegel-veech-constants">
+          <section class="tex2jax_ignore mathjax_ignore" id="siegel-veech-constants">
 <h1>Siegel-Veech Constants<a class="headerlink" href="#siegel-veech-constants" title="Permalink to this heading">#</a></h1>
-<p>We count the number of cylinders of circumference at most $L$ in a surface as a
+<p>We count the number of cylinders of circumference at most <span class="math notranslate nohighlight">\(L\)</span> in a surface as a
 step in a potential computation of Siegel-Veech constants that David Aulicino
 was interested in.</p>
 <p>Note that parts of this code use the C++ library libflatsurf. Please consult
@@ -302,7 +302,7 @@ our installation instructions if this library is not available on your system ye
 </div>
 </div>
 </div>
-<p>For each direction we want to compute a decomposition into cylinders and minimal components. Note that sometimes our algorithm cannot decide whether a component is minimal. However, this is not an issue here: we can stop the decomposition process when a component has become so stretched out that it has no hope of producing a cylinder of circumference $≤L$ anymore.</p>
+<p>For each direction we want to compute a decomposition into cylinders and minimal components. Note that sometimes our algorithm cannot decide whether a component is minimal. However, this is not an issue here: we can stop the decomposition process when a component has become so stretched out that it has no hope of producing a cylinder of circumference <span class="math notranslate nohighlight">\(≤L\)</span> anymore.</p>
 <p>Here we define the target of the decomposition, i.e., a predicate that determines when a decomposition of a component can be stopped:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -326,7 +326,7 @@ our installation instructions if this library is not available on your system ye
 </div>
 </div>
 </div>
-<p>Now we perform the actual decomposition and collect the cylinders of circumference $≤L$:</p>
+<p>Now we perform the actual decomposition and collect the cylinders of circumference <span class="math notranslate nohighlight">\(≤L\)</span>:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">circumferences</span> <span class="o">=</span> <span class="p">[]</span>
@@ -421,5 +421,7 @@ our installation instructions if this library is not available on your system ye
     <script src="../_static/doctools.js"></script>
     <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/scripts/furo.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     </body>
 </html>

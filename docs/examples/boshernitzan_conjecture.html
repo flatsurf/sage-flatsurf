@@ -256,18 +256,18 @@
           </label>
         </div>
         <article role="main">
-          <section id="boshernitzan-s-conjectures">
+          <section class="tex2jax_ignore mathjax_ignore" id="boshernitzan-s-conjectures">
 <h1>Boshernitzan’s Conjectures<a class="headerlink" href="#boshernitzan-s-conjectures" title="Permalink to this heading">#</a></h1>
-<p>Let $\Delta$ be a rational triangle and let $P_0:=P_0(\Delta)$ be the directions for which the flow on the unfolding of $\Delta$ completely decomposes into cylinders. Let $E:=E(\Delta)$ be the exceptional directions of $\Delta$, i.e., the directions for which there exists a generalized diagonal, i.e., a billiard trajectory connecting two vertices.</p>
+<p>Let <span class="math notranslate nohighlight">\(\Delta\)</span> be a rational triangle and let <span class="math notranslate nohighlight">\(P_0:=P_0(\Delta)\)</span> be the directions for which the flow on the unfolding of <span class="math notranslate nohighlight">\(\Delta\)</span> completely decomposes into cylinders. Let <span class="math notranslate nohighlight">\(E:=E(\Delta)\)</span> be the exceptional directions of <span class="math notranslate nohighlight">\(\Delta\)</span>, i.e., the directions for which there exists a generalized diagonal, i.e., a billiard trajectory connecting two vertices.</p>
 <p>In <em>Billiards and Rational Periodic Directions in Polygons</em>, Boshernitzan states the following conjecture:</p>
 <blockquote>
 <div><p><strong>Conjecture 2.2</strong>
-Assume that a rational triangle $\Delta=(\alpha, \beta, \chi)$ [is embedded into $\mathbb{R}^2$ such that one of its sides is horizontal or vertical]. Then:<br />
-(a) If $d$ [with $d:=\alpha+\beta+\chi$] is even, we have $S^1(2d’)\subset P_0$ [where $d’:=\mathrm{lcm}(2, d)$ and $S^1(n):={z\in S^1\mid|z^n=1}$].<br />
-(b) If $d$ is odd, we have $S^1(2d’)\setminus S^1(d’)\subset P_0$.<br />
-(c) If $d\le 12$, and if $\Delta\ne(2/11,3/11,6/11)$, we have $S^1(2d’)\subset P_0$.<br />
-(d) If $d\le 12$, and if $\Delta\ne(2/11,3/11,6/11)$ or $(4/11,4/11,3/11)$, we have $P_0=E$.<br />
-(e) If $\Delta$ is either isosceles, or right triangle, we have $S^1(2d’)\subset P_0$.</p>
+Assume that a rational triangle <span class="math notranslate nohighlight">\(\Delta=(\alpha, \beta, \chi)\)</span> [is embedded into <span class="math notranslate nohighlight">\(\mathbb{R}^2\)</span> such that one of its sides is horizontal or vertical]. Then:<br />
+(a) If <span class="math notranslate nohighlight">\(d\)</span> [with <span class="math notranslate nohighlight">\(d:=\alpha+\beta+\chi\)</span>] is even, we have <span class="math notranslate nohighlight">\(S^1(2d')\subset P_0\)</span> [where <span class="math notranslate nohighlight">\(d':=\mathrm{lcm}(2, d)\)</span> and <span class="math notranslate nohighlight">\(S^1(n):=\{z\in S^1\mid|z^n=1\}\)</span>].<br />
+(b) If <span class="math notranslate nohighlight">\(d\)</span> is odd, we have <span class="math notranslate nohighlight">\(S^1(2d')\setminus S^1(d')\subset P_0\)</span>.<br />
+(c) If <span class="math notranslate nohighlight">\(d\le 12\)</span>, and if <span class="math notranslate nohighlight">\(\Delta\ne(2/11,3/11,6/11)\)</span>, we have <span class="math notranslate nohighlight">\(S^1(2d')\subset P_0\)</span>.<br />
+(d) If <span class="math notranslate nohighlight">\(d\le 12\)</span>, and if <span class="math notranslate nohighlight">\(\Delta\ne(2/11,3/11,6/11)\)</span> or <span class="math notranslate nohighlight">\((4/11,4/11,3/11)\)</span>, we have <span class="math notranslate nohighlight">\(P_0=E\)</span>.<br />
+(e) If <span class="math notranslate nohighlight">\(\Delta\)</span> is either isosceles, or right triangle, we have <span class="math notranslate nohighlight">\(S^1(2d')\subset P_0\)</span>.</p>
 </div></blockquote>
 <p>In the following, we are trying to verify the statements using sage-flatsurf.</p>
 <p>We will find that
@@ -280,9 +280,9 @@ Assume that a rational triangle $\Delta=(\alpha, \beta, \chi)$ [is embedded into
 <h2>(a) Cylinder Periodic Directions of Even Triangles<a class="headerlink" href="#a-cylinder-periodic-directions-of-even-triangles" title="Permalink to this heading">#</a></h2>
 <p>Let us first state assertion (a) again:</p>
 <blockquote>
-<div><p>Let $d$ be even and let $d=α+β+γ$ be a partition into coprime positive integers. Consider the triangle $\Delta = (α, β, γ)$, i.e., the triangle with angles $(απ/d, βπ/d, γπ/d)$, embedded into the complex plane such that one of its sides is horizontal. Let $z\in S^1$ be such that $z^{2d}=1$. Then the flow in direction $z$ on the unfolding of $\Delta$ completely decomposes into cylinders.</p>
+<div><p>Let <span class="math notranslate nohighlight">\(d\)</span> be even and let <span class="math notranslate nohighlight">\(d=α+β+γ\)</span> be a partition into coprime positive integers. Consider the triangle <span class="math notranslate nohighlight">\(\Delta = (α, β, γ)\)</span>, i.e., the triangle with angles <span class="math notranslate nohighlight">\((απ/d, βπ/d, γπ/d)\)</span>, embedded into the complex plane such that one of its sides is horizontal. Let <span class="math notranslate nohighlight">\(z\in S^1\)</span> be such that <span class="math notranslate nohighlight">\(z^{2d}=1\)</span>. Then the flow in direction <span class="math notranslate nohighlight">\(z\)</span> on the unfolding of <span class="math notranslate nohighlight">\(\Delta\)</span> completely decomposes into cylinders.</p>
 </div></blockquote>
-<p>To verify this conjecture for a given triangle, we do not need to compute the flow decomposition for each such $z$ due to symmetries in the unfolding. Indeed, identifying the set $S^1(2d):={z^{2d}=1}$ with $\mathbb{Z}/2d\mathbb{Z}$ we see that the assertion holds for a direction $v$ iff it holds for the subset $v + \langle 2α, 2β, 2γ\rangle$. Since the angles $α,β,γ$ are coprime, it suffices to check two directions; for example two directions orthogonal (or equally parallel) to edges of $\Delta$ that do not meet at the one “even” angle from $α,β,γ$.</p>
+<p>To verify this conjecture for a given triangle, we do not need to compute the flow decomposition for each such <span class="math notranslate nohighlight">\(z\)</span> due to symmetries in the unfolding. Indeed, identifying the set <span class="math notranslate nohighlight">\(S^1(2d):=\{z^{2d}=1\}\)</span> with <span class="math notranslate nohighlight">\(\mathbb{Z}/2d\mathbb{Z}\)</span> we see that the assertion holds for a direction <span class="math notranslate nohighlight">\(v\)</span> iff it holds for the subset <span class="math notranslate nohighlight">\(v + \langle 2α, 2β, 2γ\rangle\)</span>. Since the angles <span class="math notranslate nohighlight">\(α,β,γ\)</span> are coprime, it suffices to check two directions; for example two directions orthogonal (or equally parallel) to edges of <span class="math notranslate nohighlight">\(\Delta\)</span> that do not meet at the one “even” angle from <span class="math notranslate nohighlight">\(α,β,γ\)</span>.</p>
 <p>We performed such a search systematically with <a class="reference external" href="https://github.com/flatsurf/flatsurvey">flatsurvey</a> which is built upon sage-flatsurf. An exhaustive search up to d=153 found 9 counterexamples to the conjecture, namely (7, 7, 16), (7, 8, 15), (13, 20, 23), (15, 30, 47), (11, 45, 50), (23, 29, 58), (19, 38, 55), (11, 22, 103), (30, 41, 67).</p>
 <p>Let us verify that the (7, 7, 16) triangle indeed fails the assertion of the conjecture.</p>
 <p>First, we construct a triangle with angles (7, 7, 16).</p>
@@ -340,17 +340,17 @@ Assume that a rational triangle $\Delta=(\alpha, \beta, \chi)$ [is embedded into
 <h2>(b) Cylinder Periodic Directions of Odd Triangles<a class="headerlink" href="#b-cylinder-periodic-directions-of-odd-triangles" title="Permalink to this heading">#</a></h2>
 <p>Assertion (b) can be phrased as follows:</p>
 <blockquote>
-<div><p>Let $d$ be odd and let $d=α+β+γ$ be a partition into coprime positive integers. Consider the triangle $\Delta=(α,β,γ)$, i.e., the triangle with angles $(α\pi/d, β\pi/d, γ\pi/d)$, embedded into the complex plane such that one of its sides is horizontal. Let $z\in S^1$ be such that $z^{2d}=-1$. Then the flow in direction $z$ on the unfolding of $\Delta$ completely decomposes into cylinders.</p>
+<div><p>Let <span class="math notranslate nohighlight">\(d\)</span> be odd and let <span class="math notranslate nohighlight">\(d=α+β+γ\)</span> be a partition into coprime positive integers. Consider the triangle <span class="math notranslate nohighlight">\(\Delta=(α,β,γ)\)</span>, i.e., the triangle with angles <span class="math notranslate nohighlight">\((α\pi/d, β\pi/d, γ\pi/d)\)</span>, embedded into the complex plane such that one of its sides is horizontal. Let <span class="math notranslate nohighlight">\(z\in S^1\)</span> be such that <span class="math notranslate nohighlight">\(z^{2d}=-1\)</span>. Then the flow in direction <span class="math notranslate nohighlight">\(z\)</span> on the unfolding of <span class="math notranslate nohighlight">\(\Delta\)</span> completely decomposes into cylinders.</p>
 </div></blockquote>
-<p>Again, we do not need to compute the flow decomposition for each such $z$ since there are a lot of symmetries. Let us identify the $z\in S^1$ with $z^{4d}=1$ with $\mathbb{Z}/4d\mathbb{Z}$. The assertion then holds for a direction $v$ iff it holds for the subset $v + \langle 4α, 4β, 4γ\rangle$. Since the $α,β,γ$ are coprime and the assertion excludes directions with $z^{2d}=1$, it suffices to check two directions; for example directions orthogonal to two edges of $\Delta$ that do not meet at an “even” angle.</p>
+<p>Again, we do not need to compute the flow decomposition for each such <span class="math notranslate nohighlight">\(z\)</span> since there are a lot of symmetries. Let us identify the <span class="math notranslate nohighlight">\(z\in S^1\)</span> with <span class="math notranslate nohighlight">\(z^{4d}=1\)</span> with <span class="math notranslate nohighlight">\(\mathbb{Z}/4d\mathbb{Z}\)</span>. The assertion then holds for a direction <span class="math notranslate nohighlight">\(v\)</span> iff it holds for the subset <span class="math notranslate nohighlight">\(v + \langle 4α, 4β, 4γ\rangle\)</span>. Since the <span class="math notranslate nohighlight">\(α,β,γ\)</span> are coprime and the assertion excludes directions with <span class="math notranslate nohighlight">\(z^{2d}=1\)</span>, it suffices to check two directions; for example directions orthogonal to two edges of <span class="math notranslate nohighlight">\(\Delta\)</span> that do not meet at an “even” angle.</p>
 <p>We performed such a search systematically with <a class="reference external" href="https://github.com/flatsurf/flatsurvey">flatsurvey</a> which is built upon sage-flatsurf. An exhaustive search up to d=189 found no counterexamples to the conjecture.</p>
 </section>
 <section id="c-cylinder-periodic-directions-of-most-small-triangles">
 <h2>(c) Cylinder Periodic Directions of Most Small Triangles<a class="headerlink" href="#c-cylinder-periodic-directions-of-most-small-triangles" title="Permalink to this heading">#</a></h2>
 <p>Assertion (c) is a finite variant of (a) and (b), namely it asserts that:</p>
 <ul class="simple">
-<li><p>(a) holds for all $d\le 12$ and</p></li>
-<li><p>(b) holds for all $d\le 12$ even if we replace $z^{2d}=-1$ with $z^{4d}=1$ as long as we exclude the triangle $(2, 3, 6)$.</p></li>
+<li><p>(a) holds for all <span class="math notranslate nohighlight">\(d\le 12\)</span> and</p></li>
+<li><p>(b) holds for all <span class="math notranslate nohighlight">\(d\le 12\)</span> even if we replace <span class="math notranslate nohighlight">\(z^{2d}=-1\)</span> with <span class="math notranslate nohighlight">\(z^{4d}=1\)</span> as long as we exclude the triangle <span class="math notranslate nohighlight">\((2, 3, 6)\)</span>.</p></li>
 </ul>
 <p>We can use sage-flatsurf to verify that this assertion does indeed hold. Let us for example verify here that the assertion holds for the (1, 1, 10) triangle.</p>
 <p>We start by constructing the unfolding of that triangle:</p>
@@ -494,7 +494,7 @@ Assume that a rational triangle $\Delta=(\alpha, \beta, \chi)$ [is embedded into
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[a: (-1/65*c^9 + 19/130*c^7 - 31/65*c^5 + 8/13*c^3 - 33/130*c ~ 0.0020162788)] [b: (1/130*c^9 - 9/130*c^7 + 14/65*c^5 - 18/65*c^3 + 17/130*c ~ 0.0019669252)] [c: (1/130*c^9 - 11/130*c^7 + 21/65*c^5 - 32/65*c^3 + 16/65*c ~ 0.00055984527)] [d: (-1/65*c^9 + 2/13*c^7 - 71/130*c^5 + 21/26*c^3 - 53/130*c ~ 0.0010743352)] [e: (1/65*c^9 - 2/13*c^7 + 7/13*c^5 - 99/130*c^3 + 9/26*c ~ 0.0012930866)] [f: (1/130*c^9 - 9/130*c^7 + 14/65*c^5 - 18/65*c^3 + 17/130*c ~ 0.0019669252)] [g: (-1/130*c^7 + 4/65*c^5 - 19/130*c^3 + 6/65*c ~ 0.0033093655)] [h: (-1/130*c^9 + 11/130*c^7 - 43/130*c^5 + 7/13*c^3 - 4/13*c ~ 0.0018075766)] [i: (-1/130*c^3 + 2/65*c ~ 0.0012336838)] / [g] [b] [d] [i] [e] [a] [c] [h] [f]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[a: (-2*c^9 + 19*c^7 - 62*c^5 + 80*c^3 - 33*c ~ 0.26211625)] [b: (c^9 - 9*c^7 + 28*c^5 - 36*c^3 + 17*c ~ 0.25570027)] [c: (c^9 - 11*c^7 + 42*c^5 - 64*c^3 + 32*c ~ 0.072779886)] [d: (-2*c^9 + 20*c^7 - 71*c^5 + 105*c^3 - 53*c ~ 0.13966358)] [e: (2*c^9 - 20*c^7 + 70*c^5 - 99*c^3 + 45*c ~ 0.16810126)] [f: (c^9 - 9*c^7 + 28*c^5 - 36*c^3 + 17*c ~ 0.25570027)] [g: (-c^7 + 8*c^5 - 19*c^3 + 12*c ~ 0.43021751)] [h: (-c^9 + 11*c^7 - 43*c^5 + 70*c^3 - 40*c ~ 0.23498496)] [i: (-c^3 + 4*c ~ 0.16037889)] / [g] [b] [d] [i] [e] [a] [c] [h] [f]
 </pre></div>
 </div>
 </div>
@@ -514,7 +514,7 @@ Assume that a rational triangle $\Delta=(\alpha, \beta, \chi)$ [is embedded into
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[b: (1/130*c^9 - 9/130*c^7 + 14/65*c^5 - 18/65*c^3 + 17/130*c ~ 0.0019669252)] [c: (1/130*c^9 - 11/130*c^7 + 21/65*c^5 - 32/65*c^3 + 16/65*c ~ 0.00055984527)] [d: (-1/65*c^9 + 2/13*c^7 - 71/130*c^5 + 21/26*c^3 - 53/130*c ~ 0.0010743352)] [e: (1/65*c^9 - 2/13*c^7 + 7/13*c^5 - 99/130*c^3 + 9/26*c ~ 0.0012930866)] [f: (1/130*c^9 - 9/130*c^7 + 14/65*c^5 - 18/65*c^3 + 17/130*c ~ 0.0019669252)] [a: (-1/65*c^9 + 19/130*c^7 - 31/65*c^5 + 8/13*c^3 - 33/130*c ~ 0.0020162788)] [g: (1/65*c^9 - 2/13*c^7 + 7/13*c^5 - 99/130*c^3 + 9/26*c ~ 0.0012930866)] [h: (-1/130*c^9 + 11/130*c^7 - 43/130*c^5 + 7/13*c^3 - 4/13*c ~ 0.0018075766)] [i: (-1/130*c^3 + 2/65*c ~ 0.0012336838)] / [g] [b] [d] [i] [e] [a] [c] [h] [f]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[b: (c^9 - 9*c^7 + 28*c^5 - 36*c^3 + 17*c ~ 0.25570027)] [c: (c^9 - 11*c^7 + 42*c^5 - 64*c^3 + 32*c ~ 0.072779886)] [d: (-2*c^9 + 20*c^7 - 71*c^5 + 105*c^3 - 53*c ~ 0.13966358)] [e: (2*c^9 - 20*c^7 + 70*c^5 - 99*c^3 + 45*c ~ 0.16810126)] [f: (c^9 - 9*c^7 + 28*c^5 - 36*c^3 + 17*c ~ 0.25570027)] [a: (-2*c^9 + 19*c^7 - 62*c^5 + 80*c^3 - 33*c ~ 0.26211625)] [g: (2*c^9 - 20*c^7 + 70*c^5 - 99*c^3 + 45*c ~ 0.16810126)] [h: (-c^9 + 11*c^7 - 43*c^5 + 70*c^3 - 40*c ~ 0.23498496)] [i: (-c^3 + 4*c ~ 0.16037889)] / [g] [b] [d] [i] [e] [a] [c] [h] [f]
 </pre></div>
 </div>
 </div>
@@ -528,7 +528,7 @@ Assume that a rational triangle $\Delta=(\alpha, \beta, \chi)$ [is embedded into
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[b: (-1/130*c^9 + 11/130*c^7 - 21/65*c^5 + 63/130*c^3 - 14/65*c ~ 0.00067383852)] [c: (1/130*c^9 - 11/130*c^7 + 21/65*c^5 - 32/65*c^3 + 16/65*c ~ 0.00055984527)] [d: (-1/65*c^9 + 2/13*c^7 - 71/130*c^5 + 21/26*c^3 - 53/130*c ~ 0.0010743352)] [e: (1/65*c^9 - 2/13*c^7 + 7/13*c^5 - 99/130*c^3 + 9/26*c ~ 0.0012930866)] [f: (1/130*c^9 - 9/130*c^7 + 14/65*c^5 - 18/65*c^3 + 17/130*c ~ 0.0019669252)] [a: (-1/65*c^9 + 19/130*c^7 - 31/65*c^5 + 8/13*c^3 - 33/130*c ~ 0.0020162788)] [g: (1/65*c^9 - 2/13*c^7 + 7/13*c^5 - 99/130*c^3 + 9/26*c ~ 0.0012930866)] [h: (-1/130*c^9 + 11/130*c^7 - 43/130*c^5 + 7/13*c^3 - 4/13*c ~ 0.0018075766)] [i: (-1/130*c^3 + 2/65*c ~ 0.0012336838)] / [g] [b] [d] [i] [e] [a] [c] [h] [f]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[b: (-c^9 + 11*c^7 - 42*c^5 + 63*c^3 - 28*c ~ 0.087599007)] [c: (c^9 - 11*c^7 + 42*c^5 - 64*c^3 + 32*c ~ 0.072779886)] [d: (-2*c^9 + 20*c^7 - 71*c^5 + 105*c^3 - 53*c ~ 0.13966358)] [e: (2*c^9 - 20*c^7 + 70*c^5 - 99*c^3 + 45*c ~ 0.16810126)] [f: (c^9 - 9*c^7 + 28*c^5 - 36*c^3 + 17*c ~ 0.25570027)] [a: (-2*c^9 + 19*c^7 - 62*c^5 + 80*c^3 - 33*c ~ 0.26211625)] [g: (2*c^9 - 20*c^7 + 70*c^5 - 99*c^3 + 45*c ~ 0.16810126)] [h: (-c^9 + 11*c^7 - 43*c^5 + 70*c^3 - 40*c ~ 0.23498496)] [i: (-c^3 + 4*c ~ 0.16037889)] / [g] [b] [d] [i] [e] [a] [c] [h] [f]
 </pre></div>
 </div>
 </div>
@@ -544,7 +544,7 @@ Assume that a rational triangle $\Delta=(\alpha, \beta, \chi)$ [is embedded into
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[d: (-1/65*c^9 + 2/13*c^7 - 71/130*c^5 + 21/26*c^3 - 53/130*c ~ 0.0010743352)] [e: (1/65*c^9 - 2/13*c^7 + 7/13*c^5 - 99/130*c^3 + 9/26*c ~ 0.0012930866)] [f: (1/130*c^9 - 9/130*c^7 + 14/65*c^5 - 18/65*c^3 + 17/130*c ~ 0.0019669252)] [a: (-1/65*c^9 + 19/130*c^7 - 31/65*c^5 + 8/13*c^3 - 33/130*c ~ 0.0020162788)] [b: (-1/130*c^9 + 11/130*c^7 - 21/65*c^5 + 63/130*c^3 - 14/65*c ~ 0.00067383852)] [c: (1/130*c^9 - 11/130*c^7 + 21/65*c^5 - 32/65*c^3 + 16/65*c ~ 0.00055984527)] [g: (1/65*c^9 - 2/13*c^7 + 7/13*c^5 - 49/65*c^3 + 41/130*c ~ 5.9402855e-5)] [h: (-1/130*c^9 + 11/130*c^7 - 43/130*c^5 + 7/13*c^3 - 4/13*c ~ 0.0018075766)] [i: (-1/130*c^3 + 2/65*c ~ 0.0012336838)] / [g] [b] [d] [i] [e] [a] [c] [h] [f]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[d: (-2*c^9 + 20*c^7 - 71*c^5 + 105*c^3 - 53*c ~ 0.13966358)] [e: (2*c^9 - 20*c^7 + 70*c^5 - 99*c^3 + 45*c ~ 0.16810126)] [f: (c^9 - 9*c^7 + 28*c^5 - 36*c^3 + 17*c ~ 0.25570027)] [a: (-2*c^9 + 19*c^7 - 62*c^5 + 80*c^3 - 33*c ~ 0.26211625)] [b: (-c^9 + 11*c^7 - 42*c^5 + 63*c^3 - 28*c ~ 0.087599007)] [c: (c^9 - 11*c^7 + 42*c^5 - 64*c^3 + 32*c ~ 0.072779886)] [g: (2*c^9 - 20*c^7 + 70*c^5 - 98*c^3 + 41*c ~ 0.0077223712)] [h: (-c^9 + 11*c^7 - 43*c^5 + 70*c^3 - 40*c ~ 0.23498496)] [i: (-c^3 + 4*c ~ 0.16037889)] / [g] [b] [d] [i] [e] [a] [c] [h] [f]
 </pre></div>
 </div>
 </div>
@@ -566,7 +566,7 @@ Assume that a rational triangle $\Delta=(\alpha, \beta, \chi)$ [is embedded into
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[f: (1/130*c^9 - 11/130*c^7 + 21/65*c^5 - 32/65*c^3 + 16/65*c ~ 0.00055984527)] [a: (-1/65*c^9 + 19/130*c^7 - 31/65*c^5 + 8/13*c^3 - 33/130*c ~ 0.0020162788)] [d: (-1/26*c^9 + 49/130*c^7 - 13/10*c^5 + 119/65*c^3 - 107/130*c ~ 0.00028169098)] [b: (2/65*c^9 - 19/65*c^7 + 127/130*c^5 - 35/26*c^3 + 79/130*c ~ 0.00039214753)] [c: (1/130*c^9 - 11/130*c^7 + 21/65*c^5 - 32/65*c^3 + 16/65*c ~ 0.00055984527)] [g: (1/65*c^9 - 2/13*c^7 + 7/13*c^5 - 49/65*c^3 + 41/130*c ~ 5.9402855e-5)] [h: (-1/130*c^9 + 11/130*c^7 - 43/130*c^5 + 7/13*c^3 - 4/13*c ~ 0.0018075766)] [e: (1/130*c^9 - 11/130*c^7 + 21/65*c^5 - 32/65*c^3 + 16/65*c ~ 0.00055984527)] [i: (-1/130*c^9 + 11/130*c^7 - 21/65*c^5 + 63/130*c^3 - 14/65*c ~ 0.00067383852)] / [e] [a] [c] [h] [i] [b] [g] [d] [f]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[f: (c^9 - 11*c^7 + 42*c^5 - 64*c^3 + 32*c ~ 0.072779886)] [a: (-2*c^9 + 19*c^7 - 62*c^5 + 80*c^3 - 33*c ~ 0.26211625)] [d: (-5*c^9 + 49*c^7 - 169*c^5 + 238*c^3 - 107*c ~ 0.036619828)] [b: (4*c^9 - 38*c^7 + 127*c^5 - 175*c^3 + 79*c ~ 0.050979180)] [c: (c^9 - 11*c^7 + 42*c^5 - 64*c^3 + 32*c ~ 0.072779886)] [g: (2*c^9 - 20*c^7 + 70*c^5 - 98*c^3 + 41*c ~ 0.0077223712)] [h: (-c^9 + 11*c^7 - 43*c^5 + 70*c^3 - 40*c ~ 0.23498496)] [e: (c^9 - 11*c^7 + 42*c^5 - 64*c^3 + 32*c ~ 0.072779886)] [i: (-c^9 + 11*c^7 - 42*c^5 + 63*c^3 - 28*c ~ 0.087599007)] / [e] [a] [c] [h] [i] [b] [g] [d] [f]
 </pre></div>
 </div>
 </div>
@@ -580,7 +580,7 @@ Assume that a rational triangle $\Delta=(\alpha, \beta, \chi)$ [is embedded into
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[a: (-1/65*c^9 + 19/130*c^7 - 31/65*c^5 + 8/13*c^3 - 33/130*c ~ 0.0020162788)] [d: (-1/26*c^9 + 49/130*c^7 - 13/10*c^5 + 119/65*c^3 - 107/130*c ~ 0.00028169098)] [b: (2/65*c^9 - 19/65*c^7 + 127/130*c^5 - 35/26*c^3 + 79/130*c ~ 0.00039214753)] [c: (1/130*c^9 - 11/130*c^7 + 21/65*c^5 - 32/65*c^3 + 16/65*c ~ 0.00055984527)] [g: (1/65*c^9 - 2/13*c^7 + 7/13*c^5 - 49/65*c^3 + 41/130*c ~ 5.9402855e-5)] [h: (-1/130*c^9 + 11/130*c^7 - 43/130*c^5 + 7/13*c^3 - 4/13*c ~ 0.0018075766)] [e: (1/130*c^9 - 11/130*c^7 + 21/65*c^5 - 32/65*c^3 + 16/65*c ~ 0.00055984527)] [i: (-1/130*c^9 + 11/130*c^7 - 21/65*c^5 + 63/130*c^3 - 14/65*c ~ 0.00067383852)] / [a] [c] [h] [i] [b] [g] [d] [e]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[a: (-2*c^9 + 19*c^7 - 62*c^5 + 80*c^3 - 33*c ~ 0.26211625)] [d: (-5*c^9 + 49*c^7 - 169*c^5 + 238*c^3 - 107*c ~ 0.036619828)] [b: (4*c^9 - 38*c^7 + 127*c^5 - 175*c^3 + 79*c ~ 0.050979180)] [c: (c^9 - 11*c^7 + 42*c^5 - 64*c^3 + 32*c ~ 0.072779886)] [g: (2*c^9 - 20*c^7 + 70*c^5 - 98*c^3 + 41*c ~ 0.0077223712)] [h: (-c^9 + 11*c^7 - 43*c^5 + 70*c^3 - 40*c ~ 0.23498496)] [e: (c^9 - 11*c^7 + 42*c^5 - 64*c^3 + 32*c ~ 0.072779886)] [i: (-c^9 + 11*c^7 - 42*c^5 + 63*c^3 - 28*c ~ 0.087599007)] / [a] [c] [h] [i] [b] [g] [d] [e]
 </pre></div>
 </div>
 </div>
@@ -595,7 +595,7 @@ Assume that a rational triangle $\Delta=(\alpha, \beta, \chi)$ [is embedded into
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[d: (-1/26*c^9 + 49/130*c^7 - 13/10*c^5 + 119/65*c^3 - 107/130*c ~ 0.00028169098)] [b: (2/65*c^9 - 19/65*c^7 + 127/130*c^5 - 35/26*c^3 + 79/130*c ~ 0.00039214753)] [c: (1/130*c^9 - 11/130*c^7 + 21/65*c^5 - 32/65*c^3 + 16/65*c ~ 0.00055984527)] [g: (1/65*c^9 - 2/13*c^7 + 7/13*c^5 - 49/65*c^3 + 41/130*c ~ 5.9402855e-5)] [h: (-1/130*c^9 + 11/130*c^7 - 43/130*c^5 + 7/13*c^3 - 4/13*c ~ 0.0018075766)] [e: (1/130*c^9 - 11/130*c^7 + 21/65*c^5 - 32/65*c^3 + 16/65*c ~ 0.00055984527)] [i: (-1/130*c^9 + 11/130*c^7 - 21/65*c^5 + 63/130*c^3 - 14/65*c ~ 0.00067383852)] / [c] [h] [i] [b] [g] [d] [e]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[d: (-5*c^9 + 49*c^7 - 169*c^5 + 238*c^3 - 107*c ~ 0.036619828)] [b: (4*c^9 - 38*c^7 + 127*c^5 - 175*c^3 + 79*c ~ 0.050979180)] [c: (c^9 - 11*c^7 + 42*c^5 - 64*c^3 + 32*c ~ 0.072779886)] [g: (2*c^9 - 20*c^7 + 70*c^5 - 98*c^3 + 41*c ~ 0.0077223712)] [h: (-c^9 + 11*c^7 - 43*c^5 + 70*c^3 - 40*c ~ 0.23498496)] [e: (c^9 - 11*c^7 + 42*c^5 - 64*c^3 + 32*c ~ 0.072779886)] [i: (-c^9 + 11*c^7 - 42*c^5 + 63*c^3 - 28*c ~ 0.087599007)] / [c] [h] [i] [b] [g] [d] [e]
 </pre></div>
 </div>
 </div>
@@ -609,7 +609,7 @@ Assume that a rational triangle $\Delta=(\alpha, \beta, \chi)$ [is embedded into
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[d: (-2/65*c^9 + 21/65*c^7 - 77/65*c^5 + 45/26*c^3 - 101/130*c ~ 5.4590389e-5)] [h: (1/65*c^9 - 2/13*c^7 + 7/13*c^5 - 49/65*c^3 + 41/130*c ~ 5.9402855e-5)] [c: (2/65*c^9 - 4/13*c^7 + 141/130*c^5 - 102/65*c^3 + 49/65*c ~ 0.00021875143)] [g: (1/65*c^9 - 2/13*c^7 + 7/13*c^5 - 49/65*c^3 + 41/130*c ~ 5.9402855e-5)] [b: (-1/65*c^9 + 11/65*c^7 - 42/65*c^5 + 127/130*c^3 - 6/13*c ~ 0.00011399324)] [i: (-3/130*c^9 + 27/130*c^7 - 17/26*c^5 + 111/130*c^3 - 47/130*c ~ 0.00016769774)] / [h] [d] [c] [b] [g] [i]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[d: (-4*c^9 + 42*c^7 - 154*c^5 + 225*c^3 - 101*c ~ 0.0070967506)] [h: (2*c^9 - 20*c^7 + 70*c^5 - 98*c^3 + 41*c ~ 0.0077223712)] [c: (4*c^9 - 40*c^7 + 141*c^5 - 204*c^3 + 98*c ~ 0.028437687)] [g: (2*c^9 - 20*c^7 + 70*c^5 - 98*c^3 + 41*c ~ 0.0077223712)] [b: (-2*c^9 + 22*c^7 - 84*c^5 + 127*c^3 - 60*c ~ 0.014819122)] [i: (-3*c^9 + 27*c^7 - 85*c^5 + 111*c^3 - 47*c ~ 0.021800706)] / [h] [d] [c] [b] [g] [i]
 </pre></div>
 </div>
 </div>
@@ -624,7 +624,7 @@ Assume that a rational triangle $\Delta=(\alpha, \beta, \chi)$ [is embedded into
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[d: (-2/65*c^9 + 21/65*c^7 - 77/65*c^5 + 45/26*c^3 - 101/130*c ~ 5.4590389e-5)] [h: (1/65*c^9 - 2/13*c^7 + 7/13*c^5 - 49/65*c^3 + 41/130*c ~ 5.9402855e-5)] / [h] [d]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[d: (-4*c^9 + 42*c^7 - 154*c^5 + 225*c^3 - 101*c ~ 0.0070967506)] [h: (2*c^9 - 20*c^7 + 70*c^5 - 98*c^3 + 41*c ~ 0.0077223712)] / [h] [d]
 </pre></div>
 </div>
 </div>
@@ -651,7 +651,7 @@ Assume that a rational triangle $\Delta=(\alpha, \beta, \chi)$ [is embedded into
 <h2>(d) Most Small Triangles are Completely Cylinder Periodic<a class="headerlink" href="#d-most-small-triangles-are-completely-cylinder-periodic" title="Permalink to this heading">#</a></h2>
 <p>Assertion (d) can be phrased as</p>
 <blockquote>
-<div><p>Let $d\le 12$ with a partition $d=α+β+γ$ into positive coprime integers with $(α,β,γ)\ne(2,3,6)$ and $(α,β,γ)\ne(3,4,4)$. Consider a triangle $\Delta=(α,β,γ)$, i.e., the triangle with angles $(α\pi/d, β\pi/d, γ\pi/d)$. Then $\Delta$ is completely cylinder periodic, i.e., the flow in direction $v$ on the unfolding of $\Delta$ decomposes into cylinders for any direction $v$ given by a saddle connection.</p>
+<div><p>Let <span class="math notranslate nohighlight">\(d\le 12\)</span> with a partition <span class="math notranslate nohighlight">\(d=α+β+γ\)</span> into positive coprime integers with <span class="math notranslate nohighlight">\((α,β,γ)\ne(2,3,6)\)</span> and <span class="math notranslate nohighlight">\((α,β,γ)\ne(3,4,4)\)</span>. Consider a triangle <span class="math notranslate nohighlight">\(\Delta=(α,β,γ)\)</span>, i.e., the triangle with angles <span class="math notranslate nohighlight">\((α\pi/d, β\pi/d, γ\pi/d)\)</span>. Then <span class="math notranslate nohighlight">\(\Delta\)</span> is completely cylinder periodic, i.e., the flow in direction <span class="math notranslate nohighlight">\(v\)</span> on the unfolding of <span class="math notranslate nohighlight">\(\Delta\)</span> decomposes into cylinders for any direction <span class="math notranslate nohighlight">\(v\)</span> given by a saddle connection.</p>
 </div></blockquote>
 <p>We can use sage-flatsurf to check this assertion for some small triangles. Let us consider the (2, 2, 3) triangle.</p>
 <div class="cell docutils container">
@@ -697,7 +697,7 @@ Assume that a rational triangle $\Delta=(\alpha, \beta, \chi)$ [is embedded into
 <h2>(e) Cylinder Periodic Directions of Isosceles and Right Triangles<a class="headerlink" href="#e-cylinder-periodic-directions-of-isosceles-and-right-triangles" title="Permalink to this heading">#</a></h2>
 <p>Assertion (e) can be phrased as</p>
 <blockquote>
-<div><p>Let $d=α+β+γ$ be a sum of positive coprime integers with $γ=α+β$ or $α=β$. Consider the (right) triangle $\Delta=(α,β,γ)$ embedded into the complex plane such that one of its sides is horizontal. Let $z\in S^1$ be such that $z^{2\mathrm{lcm}(2,d)}=1$. Then the flow in direction $z$ on the unfolding of $\Delta$ completely decomposes into cylinders.</p>
+<div><p>Let <span class="math notranslate nohighlight">\(d=α+β+γ\)</span> be a sum of positive coprime integers with <span class="math notranslate nohighlight">\(γ=α+β\)</span> or <span class="math notranslate nohighlight">\(α=β\)</span>. Consider the (right) triangle <span class="math notranslate nohighlight">\(\Delta=(α,β,γ)\)</span> embedded into the complex plane such that one of its sides is horizontal. Let <span class="math notranslate nohighlight">\(z\in S^1\)</span> be such that <span class="math notranslate nohighlight">\(z^{2\mathrm{lcm}(2,d)}=1\)</span>. Then the flow in direction <span class="math notranslate nohighlight">\(z\)</span> on the unfolding of <span class="math notranslate nohighlight">\(\Delta\)</span> completely decomposes into cylinders.</p>
 </div></blockquote>
 <p>The (7,8,15) triangle which is also a counterexample to (a) works here as well.</p>
 <div class="cell docutils container">
@@ -823,5 +823,7 @@ Assume that a rational triangle $\Delta=(\alpha, \beta, \chi)$ [is embedded into
     <script src="../_static/doctools.js"></script>
     <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/scripts/furo.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     </body>
 </html>
