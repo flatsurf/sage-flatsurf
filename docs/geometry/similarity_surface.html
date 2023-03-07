@@ -1068,6 +1068,46 @@ edges closes up in limit or less steps.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.similarity_surface.SimilaritySurface.subdivide">
+<span class="sig-name descname"><span class="pre">subdivide</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/similarity_surface.html#SimilaritySurface.subdivide"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.subdivide" title="Permalink to this definition">#</a></dt>
+<dd><p>Return a copy of this surface whose polygons have been partitioned into
+smaller triangles with <code class="xref py py-meth docutils literal notranslate"><span class="pre">Polygon.subdivide()</span></code>.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">veech_double_n_gon</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">subdivide</span><span class="p">()</span>
+<span class="n">TranslationSurface</span> <span class="n">built</span> <span class="kn">from</span> <span class="mi">10</span> <span class="n">polygons</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">subdivide</span><span class="p">()</span><span class="o">.</span><span class="n">subdivide</span><span class="p">()</span>
+<span class="n">TranslationSurface</span> <span class="n">built</span> <span class="kn">from</span> <span class="mi">30</span> <span class="n">polygons</span>
+</pre></div>
+</div>
+<p>Sometimes a more uniform subdivision can be obtained by alternating
+between <a class="reference internal" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.subdivide_edges" title="flatsurf.geometry.similarity_surface.SimilaritySurface.subdivide_edges"><code class="xref py py-meth docutils literal notranslate"><span class="pre">subdivide_edges()</span></code></a> and this method:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">subdivide_edges</span><span class="p">()</span><span class="o">.</span><span class="n">subdivide</span><span class="p">()</span>
+<span class="n">TranslationSurface</span> <span class="n">built</span> <span class="kn">from</span> <span class="mi">20</span> <span class="n">polygons</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.similarity_surface.SimilaritySurface.subdivide_edges">
+<span class="sig-name descname"><span class="pre">subdivide_edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/similarity_surface.html#SimilaritySurface.subdivide_edges"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.subdivide_edges" title="Permalink to this definition">#</a></dt>
+<dd><p>Return a copy of this surface whose edges have been split into
+<code class="docutils literal notranslate"><span class="pre">parts</span></code> equal pieces each.</p>
+<p>INPUT:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">parts</span></code> – a positive integer (default: 2)</p></li>
+</ul>
+<p>EXAMPLES:</p>
+<blockquote>
+<div><p>sage: from flatsurf import translation_surfaces
+sage: S = translation_surfaces.veech_double_n_gon(5)
+sage: S.subdivide_edges()
+TranslationSurface built from 2 polygons</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.similarity_surface.SimilaritySurface.subdivide_polygon">
 <span class="sig-name descname"><span class="pre">subdivide_polygon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/similarity_surface.html#SimilaritySurface.subdivide_polygon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.subdivide_polygon" title="Permalink to this definition">#</a></dt>
 <dd><p>Cut the polygon with label p along the diagonal joining vertex
@@ -1399,6 +1439,8 @@ or <code class="docutils literal notranslate"><span class="pre">None</span></cod
 <li><a class="reference internal" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.set_immutable"><code class="docutils literal notranslate"><span class="pre">SimilaritySurface.set_immutable()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.set_vertex_zero"><code class="docutils literal notranslate"><span class="pre">SimilaritySurface.set_vertex_zero()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.singularity"><code class="docutils literal notranslate"><span class="pre">SimilaritySurface.singularity()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.subdivide"><code class="docutils literal notranslate"><span class="pre">SimilaritySurface.subdivide()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.subdivide_edges"><code class="docutils literal notranslate"><span class="pre">SimilaritySurface.subdivide_edges()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.subdivide_polygon"><code class="docutils literal notranslate"><span class="pre">SimilaritySurface.subdivide_polygon()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.surface_point"><code class="docutils literal notranslate"><span class="pre">SimilaritySurface.surface_point()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.tangent_bundle"><code class="docutils literal notranslate"><span class="pre">SimilaritySurface.tangent_bundle()</span></code></a></li>
