@@ -2663,11 +2663,21 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             [ 1 -1]
             [ 0  1]
 
-        An example with negative determinant::
+        A case that caused trouble at some point::
 
             sage: H._isometry_from_ideal_points(
             ....:    (H.geodesic(I - 1, I + 1), H.geodesic(I + 1, I - 1)),
             ....:    (H.geodesic(I - 2, I + 1), H.geodesic(I + 1, I - 2)))
+            [-1  2]
+            [-1  1]
+
+        An example with negative determinant::
+
+            sage: H._isometry_from_ideal_points(
+            ....:    (H.geodesic(I - 1, I + 1), H.geodesic(I + 1, I - 1)),
+            ....:    (H.geodesic(I - 2, I + 2), H.geodesic(I + 2, I - 2)))
+            [-1  0]
+            [ 0  1]
 
         .. SEEALSO::
 
@@ -2709,7 +2719,6 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             # Initially, we pick λλ to be 1.
             equations = conditions(geodesics[0][0], geodesics[0][1], λ) + conditions(geodesics[1][0], geodesics[1][1], 1)
 
-            # TODO: The below is quite hacky. We should use a more generic approach
             # when some of the coefficients are forced to be zero at least.
             J = list(R.ideal(equations).groebner_basis())
 
@@ -2747,8 +2756,8 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
                 assert equation.leading_coefficient() == 1, f"expected Gröbner basis algorithm to yield an equality with leading coefficient 1 but got {equation} instead"
                 equation = equation.parent().gen()**2 - (-equation[0]).sqrt()
             else:
-                # Retry for another variable. Rewriting this to degree two is messy.
                 assert equation.degree() == 4, f"expected Gröbner basis algorithm to yield an equality of degree 2 but got {equation} instead"
+                # Retry for another variable. Rewriting this to degree two is messy.
                 continue
 
             # Now we extract the value of λλ from this equation that lets us take
