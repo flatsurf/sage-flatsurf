@@ -2862,10 +2862,10 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
                 B = B[1]
                 C = C[1]
 
-                if B:
-                    λλ = 4*C * ~B**2
+                if B + C:
+                    λλ = -~(B + C)
                 else:
-                    λλ = -~C
+                    λλ = ~(B - C)
             elif equation.degree() == 4:
                 C = equation[0]
                 B = equation[2]
