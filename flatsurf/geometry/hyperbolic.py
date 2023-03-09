@@ -2284,6 +2284,15 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             [  1   0]
             [  0 1/2]
 
+        An underdetermined case::
+
+            sage: P = H.geodesic(126, 4447, 6387, model="half_plane").right_half_space()
+            sage: isometry = matrix([[-1, 2], [2, -1/2]])
+            sage: Q = P.apply_isometry(isometry)
+            sage: H.isometry(P, Q)
+            [  126/8579 -4321/8579]
+            [         0          1]
+
         .. SEEALSO::
 
             :meth:`HyperbolicConvexSet.apply_isometry` to apply the returned
@@ -2412,7 +2421,6 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
             sage: H._isometry([(H(1), H(0))], [(H(1), H(2))])
 
-
         """
         # TODO: Sort pairs
 
@@ -2428,10 +2436,32 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             return isometry
 
     def _isometry_from_primitives(self, pairs):
+        r"""
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+        An underdetermined system::
+
+            sage: preimage = H.geodesic(-126, -4447, -6387, model="half_plane")
+            sage: image = H.geodesic(-8579, -13089, -4510, model="half_plane")
+            sage: H._isometry_from_primitives([(preimage, image)])
+            [        1 4321/8579]
+            [        0  126/8579]
+
+        """
+        # TODO: Check documentation.
+        # TODO: Check INPUT
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        # TODO: Benchmark?
         # TODO print(f"{pairs=}")
 
         if len(pairs) == 1 and pairs[0][0].dimension() == 0:
             return self._isometry_from_single_points(pairs[0][0], pairs[0][1])
+
+        if len(pairs) == 1 and pairs[0][0].dimension() == 1:
+            return self._isometry_from_single_geodesics(pairs[0][0], pairs[0][1])
 
         from sage.all import vector
 
@@ -2465,7 +2495,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
                     other = "b"
                 elif gen == "d":
                     other = "a"
-                conditions.append(R(other) - 1)
+                conditions.append(R(other) + 1)
 
             for j in range(i + 1, len(λ)):
                 conditions.append(λ[j])
@@ -2625,6 +2655,14 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             isometry *= ~MS([[image.coordinates()[1] / preimage.coordinates()[1], 0], [0, 1]])
             isometry *= ~MS([[1, image.coordinates()[0] - preimage.apply_isometry(isometry, on_right=True).coordinates()[0]], [0, 1]])
             return isometry
+
+    def _isometry_from_single_geodesics(self, preimage, image):
+        # TODO: Check documentation.
+        # TODO: Check INPUT
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        # TODO: Benchmark?
+        return self._isometry_from_primitives([(preimage, image), (preimage.midpoint(), image.midpoint())])
 
     def _isometry_from_points(self, *points):
         r"""
@@ -3058,7 +3096,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
                     elif minpoly.exponents() == [0, 2]:
                         λ0 = -sgn * ~self.base_ring()(minpoly.constant_coefficient())
                     elif minpoly.degree() == 2:
-                        # TODO: This is incomplete
+                        # TODO: This is incomplete and also mostly nonsense. Doesn't this mean that the entry of the isometry does not live in the base ring even after scaling?
                         λ0 = -sgn * ~self.base_ring()(minpoly[0] + minpoly[1])
                         # TODO print(f"{sgn=}, {minpoly=}, {λ0=}")
                     else:
@@ -3078,7 +3116,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
                     if not solutions:
                         continue
                     # TODO: Explain why this is not true
-                    # assert solutions
+                    assert solutions
 
                     solutions = [matrix([[solution[a], solution[b]], [solution[c], solution[d]]]) for solution in solutions]
 
@@ -5394,7 +5432,7 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
 
         if isinstance(point, HyperbolicPointFromGeodesic):
             # Short cut the most common case (that _intersection cannot handle.)
-            if point._geodesic in [self, -self]:
+            if point._geodesic.unoriented() == self.unoriented():
                 return True
 
             intersection = self._intersection(point._geodesic)
@@ -5404,8 +5442,8 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
 
             if intersection.is_ultra_ideal():
                 return False
-            
-            raise NotImplementedError
+
+            return intersection == point
 
         x, y = point.coordinates(model="klein")
         a, b, c = self.equation(model="klein")
@@ -5530,6 +5568,57 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
             raise TypeError("cannot hash geodesic defined over inexact base ring")
 
         return hash((type(self), self.equation(model="klein", normalization=["one", "gcd"])))
+
+    def _intersection(self, other):
+        # TODO: Check documentation.
+        # TODO: Check INPUT
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        # TODO: Benchmark?
+        # TODO: Should this be in the oriented class? Should there be an equivalent in the unoriented class?
+        r"""
+        Return the intersection of this geodesic and ``other`` in the Klein
+        model or in the Euclidean plane if the intersection point is ultra
+        ideal, i.e., not in the unit disk.
+
+        Returns ``None`` if the lines do not intersect in a point.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(AA)
+
+        ::
+
+            sage: A = -H.vertical(0)
+            sage: B = H.vertical(-1)
+            sage: C = H.vertical(0)
+            sage: A._intersection(B)
+            ∞
+            sage: A._intersection(C)
+            sage: B._intersection(A)
+            ∞
+            sage: B._intersection(C)
+            ∞
+            sage: C._intersection(A)
+            sage: C._intersection(B)
+            ∞
+
+        """
+        if not isinstance(other, HyperbolicOrientedGeodesic):
+            raise TypeError("can only intersect with another oriented geodesic")
+
+        # TODO: Reference the trac ticket that says that solving for 2×2 matrices is very slow.
+        det = self._b * other._c - self._c * other._b
+
+        # TODO: Use a specialized predicate instead of the _method.
+        if self.parent().geometry._zero(det):
+            return None
+
+        x = (-other._c * self._a + self._c * other._a) / det
+        y = (other._b * self._a - self._b * other._a) / det
+
+        return self.parent().point(x, y, model="klein", check=False)
 
 
 class HyperbolicUnorientedGeodesic(HyperbolicGeodesic):
@@ -5789,57 +5878,6 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
 
         # TODO: Use the bounding-box trick to get mostly rid of concave cases.
         return "concave"
-
-    def _intersection(self, other):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
-        # TODO: Should this be in the oriented class? Should there be an equivalent in the unoriented class?
-        r"""
-        Return the intersection of this geodesic and ``other`` in the Klein
-        model or in the Euclidean plane if the intersection point is ultra
-        ideal, i.e., not in the unit disk.
-
-        Returns ``None`` if the lines do not intersect in a point.
-
-        EXAMPLES::
-
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
-            sage: H = HyperbolicPlane(AA)
-
-        ::
-
-            sage: A = -H.vertical(0)
-            sage: B = H.vertical(-1)
-            sage: C = H.vertical(0)
-            sage: A._intersection(B)
-            ∞
-            sage: A._intersection(C)
-            sage: B._intersection(A)
-            ∞
-            sage: B._intersection(C)
-            ∞
-            sage: C._intersection(A)
-            sage: C._intersection(B)
-            ∞
-
-        """
-        if not isinstance(other, HyperbolicOrientedGeodesic):
-            raise TypeError("can only intersect with another oriented geodesic")
-
-        # TODO: Reference the trac ticket that says that solving for 2×2 matrices is very slow.
-        det = self._b * other._c - self._c * other._b
-
-        # TODO: Use a specialized predicate instead of the _method.
-        if self.parent().geometry._zero(det):
-            return None
-
-        x = (-other._c * self._a + self._c * other._a) / det
-        y = (other._b * self._a - self._b * other._a) / det
-
-        return self.parent().point(x, y, model="klein", check=False)
 
     def an_element(self):
         # TODO: Check documentation.
