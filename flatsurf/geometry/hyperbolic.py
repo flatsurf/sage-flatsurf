@@ -746,6 +746,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
             set = self.segment(self.geodesic(a, b), start=a, end=b)
         elif kind == "polygon":
+            # TODO: This complains sometimes that we cannot intersect no half planes.
             from sage.all import ZZ
 
             interior_points = [
@@ -2425,15 +2426,14 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         # TODO: Sort pairs
 
         for conditions in self._isometry_conditions([], pairs):
-            isometry = self._isometry_from_primitives(conditions)
+            for isometry in self._isometry_from_primitives(conditions):
+                if isometry is None:
+                    continue
 
-            if isometry is None:
-                continue
+                if any([preimage.apply_isometry(isometry, on_right=True) != image for (preimage, image) in pairs]):
+                    continue
 
-            if any([preimage.apply_isometry(isometry, on_right=True) != image for (preimage, image) in pairs]):
-                continue
-
-            return isometry
+                return isometry
 
     def _isometry_from_primitives(self, pairs):
         r"""
@@ -2449,6 +2449,17 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             [        1 4321/8579]
             [        0  126/8579]
 
+        Here, there is an isometry of negative determinant that maps some of
+        the half spaces correctly::
+
+            sage: P = H.polygon([
+            ....:    H.geodesic(1, -5, 5, model="half_plane").left_half_space(),
+            ....:    H.geodesic(247, -957, -5156, model="half_plane").right_half_space(),
+            ....:    H.geodesic(1, -120, -137, model="half_plane").right_half_space()])
+            sage: isometry = matrix([[0, -2], [1, 2]])
+            sage: Q = P.apply_isometry(isometry)
+            sage: H.isometry(P, Q)
+
         """
         # TODO: Check documentation.
         # TODO: Check INPUT
@@ -2458,10 +2469,12 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         # TODO print(f"{pairs=}")
 
         if len(pairs) == 1 and pairs[0][0].dimension() == 0:
-            return self._isometry_from_single_points(pairs[0][0], pairs[0][1])
+            yield self._isometry_from_single_points(pairs[0][0], pairs[0][1])
+            return
 
         if len(pairs) == 1 and pairs[0][0].dimension() == 1:
-            return self._isometry_from_single_geodesics(pairs[0][0], pairs[0][1])
+            yield self._isometry_from_single_geodesics(pairs[0][0], pairs[0][1])
+            return
 
         from sage.all import vector
 
@@ -2484,18 +2497,19 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
                     condition = vector((b, c, a)) * isometry - λ[i] * vector(R, (fb, fc, fa))
                     conditions.extend(condition.list())
 
-            if len(conditions) < 6:
-                # TODO: Explain this hack.
-                gen = str(R.gens()[-1])
-                if gen == "a":
-                    other = "d"
-                elif gen == "b":
-                    other = "c"
-                elif gen == "c":
-                    other = "b"
-                elif gen == "d":
-                    other = "a"
-                conditions.append(R(other) + 1)
+            # if len(conditions) < 6:
+            #     conditions.append(R("a") * R("d") - R("b") * R("c") - λ[0])
+            #     # TODO: Explain this hack.
+            #     # gen = str(R.gens()[-1])
+            #     # if gen == "a":
+            #     #     other = "d"
+            #     # elif gen == "b":
+            #     #     other = "c"
+            #     # elif gen == "c":
+            #     #     other = "b"
+            #     # elif gen == "d":
+            #     #     other = "a"
+            #     # conditions.append(R(other) + 1)
 
             for j in range(i + 1, len(λ)):
                 conditions.append(λ[j])
@@ -2503,13 +2517,20 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             return conditions
 
         def filter(isometry):
+            if isometry.det().sign() != det:
+                return False
             for preimage, image in pairs:
                 # TODO print(f"{preimage}.apply_isometry({isometry}) == {preimage.apply_isometry(isometry)} =?= {image}")
                 if preimage.apply_isometry(isometry, on_right=True) != image:
                     return False
             return True
 
-        return self._isometry_from_conditions(conditions, filter)
+        det = 1
+        # print(f"{det=}")
+        yield self._isometry_from_conditions(conditions, filter)
+        det = -1
+        # print(f"{det=}")
+        yield self._isometry_from_conditions(conditions, filter)
 
     def _isometry_conditions(self, defining, remaining):
         r"""
@@ -2662,7 +2683,9 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         # TODO: Check SEEALSO
         # TODO: Check for doctests
         # TODO: Benchmark?
-        return self._isometry_from_primitives([(preimage, image), (preimage.midpoint(), image.midpoint())])
+        # TODO: If this does not work, then this does not mean that no such isometry exists.
+        for isometry in self._isometry_from_primitives([(preimage, image), (preimage.midpoint(), image.midpoint())]):
+            return isometry
 
     def _isometry_from_points(self, *points):
         r"""
@@ -3054,10 +3077,10 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
                 isometry = gl2_to_sim12(isometry)
 
                 equations = conditions(isometry, (λ0, λ1, λ2))
-                # TODO print(f"{equations=}")
+                # print(f"{equations=}")
 
                 J = list(R.ideal(equations).groebner_basis())
-                # TODO print(f"{J=}")
+                # print(f"{J=}")
 
                 if J == [1]:
                     # The equations are contradictory.
@@ -3086,20 +3109,23 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
                 while not equation.constant_coefficient():
                     equation >>= 1
 
-                from sage.all import AA
-                equation = equation.change_ring(AA)
+                from sage.all import QQbar
+                equation = equation.change_ring(QQbar)
                 # TODO: Do we need to iterate here?
                 for root in equation.roots(multiplicities=False):
                     minpoly = root.minpoly()
+                    # print(f"{minpoly=}, {λ0=}")
                     if minpoly.degree() == 1:
-                        λ0 = sgn
+                        pass
                     elif minpoly.exponents() == [0, 2]:
                         λ0 = -sgn * ~self.base_ring()(minpoly.constant_coefficient())
                     elif minpoly.degree() == 2:
                         # TODO: This is incomplete and also mostly nonsense. Doesn't this mean that the entry of the isometry does not live in the base ring even after scaling?
-                        λ0 = -sgn * ~self.base_ring()(minpoly[0] + minpoly[1])
-                        # TODO print(f"{sgn=}, {minpoly=}, {λ0=}")
+                        # λ0 = -sgn * ~self.base_ring()(minpoly[0] + minpoly[1])
+                        continue
                     else:
+                        # TODO: What to do here?
+                        continue
                         raise NotImplementedError
 
                     assert λ0 in self.base_ring() and λ0 != 0, f"did not deduce a non-zero constant for {λ0=} from {equation}"
@@ -3107,11 +3133,11 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
                     # We could now patch the existing Gröbner basis and solve directly, but
                     # we just solve again for the correct value of λ0.
                     equations = conditions(isometry, (λ0, λ1, λ2))
-                    # TODO print(f"adapted {equations=}")
-                    # TODO print(f"adapted J {R.ideal(equations).groebner_basis()}")
+                    # print(f"adapted {equations=}")
+                    # print(f"adapted J {R.ideal(equations).groebner_basis()}")
 
                     solutions = R.ideal(equations).variety()
-                    # TODO print(f"{solutions=}")
+                    # print(f"{solutions=}")
 
                     if not solutions:
                         continue
@@ -3126,7 +3152,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
                     solutions = [solution for solution in solutions if filter(solution)]
 
                     if not solutions:
-                        # TODO print("nothing passed the filter")
+                        # print("nothing passed the filter")
                         continue
 
                     # TODO: This does not seem to be true for underdetermined systems.
