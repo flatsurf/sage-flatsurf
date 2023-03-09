@@ -749,8 +749,9 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             from sage.all import ZZ
 
             interior_points = [
-                self.random_element("point")
+                p
                 for i in range(ZZ.random_element().abs() + 3)
+                if not (p:=self.random_element("point")).is_ideal()
             ]
 
             half_spaces = []
@@ -1359,6 +1360,9 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
             if a == b:
                 raise ValueError("points specifying a geodesic must be distinct")
+
+            if isinstance(a, HyperbolicPointFromGeodesic) and isinstance(b, HyperbolicPointFromGeodesic) and a._geodesic == -b._geodesic:
+                return a._geodesic
 
             ax, ay = a.coordinates(model="klein")
             bx, by = b.coordinates(model="klein")
@@ -2241,6 +2245,20 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             sage: H.vertical(0).apply_isometry(isometry, on_right=True)
             {-x + 1 = 0}
 
+        Currently, isometries cannot always be determined because some of the
+        elements used during the computation might not exist in the
+        :meth:`base_ring`::
+
+            sage: H.isometry((58*I, I + 1), (116*I - 1, 2*I + 1))
+            Traceback (most recent call last):
+            ...
+            ValueError: square root of ... not in Rational Field
+            sage: m = matrix([[2, -1], [0, 1]])
+            sage: H(58*I).apply_isometry(m)
+            -1 + 116*I
+            sage: H(I + 1).apply_isometry(m)
+            1 + 2*I
+
         TESTS:
 
         A case that caused problems at some point::
@@ -2276,6 +2294,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         """
         # TODO: Link to https://en.wikipedia.org/wiki/Indefinite_orthogonal_group somewhere.
+        # TODO: It is pretty annoying that this often fails because the ideal end points are not in the base ring. However, this does not really matter anymore. We now just produce generic conditions from the objects and solve generically for them. Maybe we should drop/relax the "points" approach here.
         if normalized:
             isometry = self.isometry(preimage=preimage, image=image, model=model, on_right=on_right, normalized=False)
             det = abs(isometry.det())
@@ -7941,18 +7960,32 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
         # TODO: Check SEEALSO
         # TODO: Check for doctests
         # TODO: Benchmark?
-        # TODO: Return half spaces instead so we get orientations right.
-        self = list(self.vertices())
-        other = list(other.vertices())
 
-        if len(self) == len(other):
-            for i in range(len(self)):
-                yield list(zip(self, other[i:] + other[:i]))
+        # TODO: Return half spaces instead so we get orientations right. However, then we are missing the marked vertices :(
+        if self._marked_vertices or other._marked_vertices:
+            self = list(self.vertices())
+            other = list(other.vertices())
 
-            other.reverse()
+            if len(self) == len(other):
+                for i in range(len(self)):
+                    yield list(zip(self, other[i:] + other[:i]))
 
-            for i in range(len(self)):
-                yield list(zip(self, other[i:] + other[:i]))
+                other.reverse()
+
+                for i in range(len(self)):
+                    yield list(zip(self, other[i:] + other[:i]))
+        else:
+            self = list(self.half_spaces())
+            other = list(other.half_spaces())
+
+            if len(self) == len(other):
+                for i in range(len(self)):
+                    yield list(zip(self, other[i:] + other[:i]))
+
+                other.reverse()
+
+                for i in range(len(self)):
+                    yield list(zip(self, other[i:] + other[:i]))
 
 
 class HyperbolicSegment(HyperbolicConvexSet):
