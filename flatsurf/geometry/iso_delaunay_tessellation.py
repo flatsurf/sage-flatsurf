@@ -883,7 +883,7 @@ class IsoDelaunayTessellation(Parent):
         assert all(c.cylinder() for c in components)
         holonomies = [c.circumferenceHolonomy() for c in components]
         areas = [c.area()/2 for c in components]
-        inv_moduli = [area / (v.x()*v.x() + v.y()*v.y()) for v, area in zip(holonomies, areas)]
+        inv_moduli = [(v.x()*v.x() + v.y()*v.y())/area for v, area in zip(holonomies, areas)]
 
         import pyeantic
         inv_moduli = [
@@ -896,8 +896,16 @@ class IsoDelaunayTessellation(Parent):
             for x in inv_moduli
         ]
 
-        # TODO: Complete this method.
-        return inv_moduli
+        from sage.all import QQ, lcm, matrix
+        multiplicities = [QQ(x//inv_moduli[0]) for x in inv_moduli]
+        denominator = lcm(rat.denominator() for rat in multiplicities)
+        multiplicities = [denominator * rat for rat in multiplicities]
+        c = lcm(multiplicities) * inv_moduli[0]
+
+        # want to carry v = [x y] to span(e_1)
+        # can use [x -y y x]^-1
+        COB = ~matrix(2, [v[0], -v[1], v[1], v[0]])
+        return ~COB * matrix(2, [1, c, 0, 1]) * COB
 
     def base_ring(self):
         return self._surface.base_ring()
@@ -913,14 +921,20 @@ class IsoDelaunayTessellation(Parent):
 
     def gens(self):
         r"""
-        Return the generators of the Veech group that we see while exploring the iso-Delaunay tessellation.
+        Return the generators of the Veech group that we see while exploring the isoDelaunay tessellation.
         """
         def twist(m):
+            from sage.all import matrix
             ((a, b), (c, d)) = m
             return matrix([[a, -b], [-c, d]])
 
         for _, _, (source_tessellation_edge, target_tessellation_edge) in self._dual_graph.edges(labels=True, sort=False):
-            yield twist(source_tessellation_edge.isometry(target_tessellation_edge))
-        for tessellation_face, (mod, _) in self._dual_graph.vertices(labels=True, sort=False):
+            isometry = target_tessellation_edge[0]
+            if isometry is not None:
+                yield twist(isometry)
+
+        for tessellation_face in self._dual_graph.vertices(sort=False):
+            mod, _ = self._dual_graph.get_vertex(tessellation_face)
             edges = tessellation_face.edges()
-            yield twist(edges[0].isometry(edges[mod]))
+            if mod is not None:
+                yield twist(edges[0].isometry(edges[mod]))
