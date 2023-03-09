@@ -2140,17 +2140,17 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             sage: H(0).apply_isometry(m)
             1
             sage: m
-            [ 1  6]
-            [-1  6]
+            [1 1]
+            [0 1]
 
         ::
 
             sage: H.isometry(I, I+1)
-            [  1   0]
-            [1/2 1/2]
+            [1 1]
+            [0 1]
             sage: H.isometry(0, oo)
-            [   1 -2/3]
-            [ 1/3    0]
+            [ 0 -1]
+            [-1  0]
 
         An isometry is uniquely determined by its image on three points::
 
@@ -2165,11 +2165,6 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             ...
             ValueError: no isometry can map these objects to each other
 
-            sage: H.isometry(I, 2*I)
-            Traceback (most recent call last):
-            ...
-            ValueError: no isometry can map these objects to each other
-
             sage: H.isometry([0, 1, oo, I], [0, 1, oo, I + 1])
             Traceback (most recent call last):
             ...
@@ -2179,16 +2174,10 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         points, e.g., geodesics::
 
             sage: H.isometry(H.geodesic(-1, 1), H.geodesic(1, -1))
-            [ 1  0]
-            [ 0 -1]
+            [ 0  1]
+            [-1  0]
 
-        The above isometry is not the only one with that property::
-
-            sage: H.isometry([H.geodesic(-1, 1), I - 1], [H.geodesic(1, -1), I - 1])
-            [   1  2/3]
-            [-2/3   -1]
-
-        We can also determine an isometry mapping more complex objects::
+        We can also determine an isometry mapping polygons::
 
             sage: P = H.polygon([H.vertical(1).left_half_space(), H.vertical(-1).right_half_space(), H.geodesic(-1, 1).left_half_space()])
             sage: Q = H.polygon([H.geodesic(-1, 0).left_half_space(), H.geodesic(0, 1).left_half_space(), H.geodesic(1, -1).left_half_space()])
@@ -2229,28 +2218,56 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         such an isometry might not exist without extending the base ring, we
         can, however, ask for an isometry of determinant ±1::
 
-            sage: H.isometry([H.geodesic(-1, 1), I - 1], [H.geodesic(1, -1), I - 1], normalized=True)
+            sage: H.isometry(I, 2*I, normalized=True)
             Traceback (most recent call last):
             ...
             ValueError: not a perfect 2nd power
 
-            sage: H.change_ring(AA).isometry([H.geodesic(-1, 1), I - 1], [H.geodesic(1, -1), I - 1], normalized=True)
-            [  1.341640786499874?  0.8944271909999159?]
-            [-0.8944271909999159?  -1.341640786499874?]
+            sage: H.change_ring(AA).isometry(I, 2*I, normalized=True)
+            [ 1.414213562373095?                   0]
+            [                  0 0.7071067811865475?]
 
             sage: _.det()
-            -1.000000000000000?
+            1.000000000000000?
 
         We can also explicitly ask for the isometry for the right action::
 
             sage: isometry = H.isometry(H.vertical(0), H.vertical(1), on_right=True)
             sage: isometry
-            [ 2 -2]
+            [ 1 -1]
             [ 0  1]
             sage: H.vertical(0).apply_isometry(isometry)
-            {-x - 2 = 0}
+            {-x - 1 = 0}
             sage: H.vertical(0).apply_isometry(isometry, on_right=True)
             {-x + 1 = 0}
+
+        TESTS:
+
+        A case that caused problems at some point::
+
+            sage: isometry = matrix([[1, 0], [0, -1/2]])
+            sage: x = H(I/2 - 1)
+            sage: y = H(I/3 - 1)
+            sage: z = H(5/19 * I - 1/3)
+            sage: H.isometry((x, y, z), (x.apply_isometry(isometry), y.apply_isometry(isometry), z.apply_isometry(isometry)))
+            [-2  0]
+            [ 0  1]
+
+        ::
+
+            sage: isometry = matrix([[2, 0], [1, 2]])
+            sage: x = H(0)
+            sage: y = H(I/2 - 1)
+            sage: z = H(0)
+            sage: H.isometry((x, y, z), (x.apply_isometry(isometry), y.apply_isometry(isometry), z.apply_isometry(isometry)))
+            [6/5   0]
+            [3/5 6/5]
+
+        ::
+
+            sage: H.isometry(I, 2*I)
+            [  1   0]
+            [  0 1/2]
 
         .. SEEALSO::
 
@@ -2279,6 +2296,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
                 isometry = matrix([[isometry[1][1], -isometry[0][1]], [-isometry[1][0], isometry[0][0]]])
             else:
                 isometry = ~isometry
+
             return isometry
 
         # Normalize the arguments so that they are a list of convex sets.
@@ -2366,11 +2384,11 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             [1 0]
             [0 1]
             sage: H._isometry([(H(0), H(1))], [])
-            [ 6 -6]
-            [ 1  1]
+            [ 1 -1]
+            [ 0  1]
             sage: H._isometry([(H(1), H(0))], [])
-            [ 1/6   1]
-            [-1/6   1]
+            [1 1]
+            [0 1]
 
         If no isometry is possible, ``None`` is returned::
 
@@ -2414,27 +2432,81 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
                 return self._isometry(defining + [(x, y)], remaining)
 
-            # Extend with points coming from other hyperbolicobjects in "remaining[0]"
+            # Extend with points coming from other hyperbolic objects in "remaining[0]"
             for pairs in x._isometry_conditions(y):
                 isometry = self._isometry(defining, pairs + remaining)
-                if isometry is not None:
+                if isometry is not None and x.apply_isometry(isometry, on_right=True) == y:
                     return isometry
 
             # We backtracked over all pairs of points in remaining but could
             # not construct a consistent isometry.
             return None
 
-        # Since there are no "remaining" points, we have freedom in defining this isometry.
-        # Map points arbitrarily to be able to search for a unique isometry.
-        from itertools import count
-        for n in count(0):
-            n = self(n)
+        if len(defining) == 0:
+            from sage.all import MatrixSpace
+            return MatrixSpace(self.base_ring(), 2, 2)(1)
 
-            if any([x == n or y == n for (x, y) in defining]):
-                # Do not add trivialities or contradictions.
-                continue
+        if len(defining) == 1:
+            return self._isometry_from_single_points(*defining[0])
 
-            return self._isometry(defining + [(n, n)], remaining=[])
+        if len(defining) == 2:
+            extra = (
+                self.geodesic(defining[0][0], defining[1][0]).start(),
+                self.geodesic(defining[0][1], defining[1][1]).start())
+            if extra not in defining:
+                remaining.append(extra)
+                return self._isometry(defining, remaining)
+
+            extra = (
+                self.geodesic(defining[0][0], defining[1][0]).end(),
+                self.geodesic(defining[0][1], defining[1][1]).end())
+            if extra not in defining:
+                remaining.append(extra)
+                return self._isometry(defining, remaining)
+
+            extra = (
+                self.geodesic(defining[0][0], defining[1][0]).midpoint(),
+                self.geodesic(defining[0][1], defining[1][1]).midpoint())
+            assert extra not in defining
+
+            remaining.append(extra)
+            return self._isometry(defining, remaining)
+
+        assert False
+
+    def _isometry_from_single_points(self, preimage, image):
+        # TODO: Check documentation.
+        # TODO: Check INPUT
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        # TODO: Benchmark?
+        if preimage.is_ideal() != image.is_ideal():
+            return None
+
+        from sage.all import MatrixSpace
+        MS = MatrixSpace(self.base_ring(), 2, 2)
+
+        isometry = MS(1)
+
+        if preimage == image:
+            return isometry
+
+        if preimage.is_ideal():
+            if preimage == self.infinity():
+                isometry *= ~MS([[0, 1], [1, 0]])
+            else:
+                isometry *= ~MS([[1, -preimage.coordinates()[0]], [0, 1]])
+
+            if image == self.infinity():
+                isometry *= ~MS([[0, 1], [1, 0]])
+            else:
+                isometry *= ~MS([[1, image.coordinates()[0]], [0, 1]])
+
+            return isometry
+        else:
+            isometry *= ~MS([[image.coordinates()[1] / preimage.coordinates()[1], 0], [0, 1]])
+            isometry *= ~MS([[1, image.coordinates()[0] - preimage.apply_isometry(isometry, on_right=True).coordinates()[0]], [0, 1]])
+            return isometry
 
     def _isometry_from_points(self, *points):
         r"""
@@ -2483,13 +2555,21 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             sage: preimage = H(I), H(2*I), H(2*I + 1)
             sage: image = H(I + 1), H(2*I + 1), H(2*I + 2)
             sage: H._isometry_from_points(*zip(preimage, image))
-            [ 1 -1]
-            [ 0  1]
+            [ 2/3 -2/3]
+            [   0  2/3]
 
         Points forming a degenerate ideal triangle::
 
             sage: preimage = H(-1), H(I), H(1)
             sage: image = H(0), H(I + 1), H(2)
+            sage: H._isometry_from_points(*zip(preimage, image))
+            [ 1 -1]
+            [ 0  1]
+
+        Another degenerate ideal triangle::
+
+            sage: preimage = H(0), H(I), H(oo)
+            sage: image = H(1), H(I + 1), H(oo)
             sage: H._isometry_from_points(*zip(preimage, image))
             [ 1 -1]
             [ 0  1]
@@ -2536,7 +2616,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         from itertools import combinations
         geodesics = [
-            (p[0].segment(q[0]).geodesic(), p[1].segment(q[1]).geodesic())
+            (self.geodesic(p[0], q[0]), self.geodesic(p[1], q[1]))
             for p, q in combinations(points, 2)
         ]
 
@@ -2742,6 +2822,14 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             [1 0]
             [0 1]
 
+        A translation::
+
+            sage: H._isometry_from_ideal_points_and_point(
+            ....:     (H.geodesic(0, oo), H.geodesic(1, oo)),
+            ....:     (H(I), H(I + 1)))
+            [ 1 -1]
+            [ 0  1]
+
         """
         from sage.all import vector
 
@@ -2752,12 +2840,12 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
             A, B, C = geodesics[0].equation(model="klein")
             fA, fB, fC = geodesics[1].equation(model="klein")
-            condition = vector((B, C, A)) * isometry - λ[0] * vector(R, (fB, fC, fA))
+            condition = vector((B, C, A)) * isometry - λ[1] * vector(R, (fB, fC, fA))
             conditions.extend(condition.list())
 
             x, y, z = (*points[0].coordinates(model="klein"), R.one())
             fx, fy, fz = (*points[1].coordinates(model="klein"), R.one())
-            condition = λ[1] * vector((x, y, z)) - isometry * vector(R, (fx, fy, fz))
+            condition = λ[0] * vector((x, y, z)) - isometry * vector(R, (fx, fy, fz))
             conditions.extend(condition.list())
 
             return conditions
@@ -2781,140 +2869,97 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         # TODO: Benchmark?
         from sage.all import PolynomialRing, matrix
 
-        for variable in ["d", "c", "b", "a"]:
-            variables = ["a", "b", "c", "d"]
-            variables.remove(variable)
-            variables.append("λλ")
-            variables.append(variable)
-            # We use a term order that guarantees that we will see an equation
-            # relating variable and λλ in the Gröbner basis.
-            R = PolynomialRing(self.base_ring(), names=["λ", "λ_", "λλ_"] + variables, order="degrevlex(6), lex(1), lex(1)")
-            λ = R("λ")
-            λ_ = R("λ_")
-            λλ = R("λλ")
-            λλ_ = R("λλ_")
-            a = R("a")
-            b = R("b")
-            c = R("c")
-            d = R("d")
-            variable = R(variable)
+        for sgn in [1, -1]:
+            for variable in ["a", "d", "b", "c"]:
+                variables = ["a", "b", "c", "d"]
+                variables.remove(variable)
+                variables.append("λ")
+                variables.append(variable)
+                # We use a term order that guarantees that we will see an
+                # equation for variable in the Gröbner basis.
+                R = PolynomialRing(self.base_ring(), names=variables, order="degrevlex(4), lex(1)")
+                λ = R("λ")
+                λλ = sgn
+                a = R("a")
+                b = R("b")
+                c = R("c")
+                d = R("d")
+                variable = R(variable)
 
-            isometry = matrix([
-                [a, b],
-                [c, d]
-            ])
+                isometry = matrix([
+                    [a, b],
+                    [c, d]
+                ])
 
-            isometry = gl2_to_sim12(isometry)
+                isometry = gl2_to_sim12(isometry)
 
-            # We force λ and λλ to be units by declaring that λ_ and λλ_ are their inverses, respectively.
-            equations = conditions(isometry, (λ, λλ)) + [λ*λ_ - 1, λλ*λλ_ - 1]
+                equations = conditions(isometry, (λ, λλ))
 
-            J = list(R.ideal(equations).groebner_basis())
+                J = list(R.ideal(equations).groebner_basis())
 
-            if J == [1]:
-                # The equations are contradictory.
-                return None
-
-            # We extract an equation for variable from the Gröbner basis. For
-            # some isometries, variable=0, so we'll see (variable) as en entry in the Gröbner
-            # basis. In this case, we just try for another variable.
-            equation = J.pop()
-            if equation.total_degree() == 1:
-                assert equation == variable, equation
-                continue
-
-            assert equation.variables() == (λλ, variable), f"expected Gröbner basis algorithm to yield an equation for {variable} but found {equation} instead"
-            equation = equation.polynomial(variable)
-            S = PolynomialRing(self.base_ring(), names=["λλ"])
-            equation = equation.map_coefficients(S, new_base_ring=S)
-            variable = equation.parent().gen()
-
-            # Whether the only transformations we did to the equations were
-            # equivalence transformations.
-            equivalence = True
-
-            # When we see an equation of the form x^3 = constant*x, we have to
-            # consider the option x = 0 and x^2 = constant.
-            # However, we can ignore the x = 0 option here. Some other variable
-            # will be non-zero, so this open will show up as we iterate over
-            # the variables in the outer loop.
-            if equation.degree() == 3:
-                assert equation.constant_coefficient() == 0, f"expected Gröbner basis algorithm to yield an equality of the form x^3 = nx but got {equation} instead"
-                equation //= variable
-                equivalence = False
-
-            equation = equation.map_coefficients(lambda c: c / self.base_ring()(equation.leading_coefficient()))
-
-            # The equation relating variable and λλ can be of degree 2 or 4.
-            # (There's probably a good theoretical reason why it cannot be of
-            # higher degree; in practice that has been all that happens.)
-            if equation.degree() == 2:
-                # We determine a value for λλ from this equation that lets us
-                # solve the equation without extending the base field.
-                C, B, A = equation.coefficients(sparse=False)
-
-                assert A == 1
-                if B and B.exponents() != [1]:
-                    raise NotImplementedError(f"cannot deduce λλ from {equation}")
-                if C and C.exponents() != [1]:
-                    raise NotImplementedError(f"cannot deduce λλ from {equation}")
-
-                B = B[1]
-                C = C[1]
-
-                if B + C:
-                    λλ = -~(B + C)
-                else:
-                    λλ = ~(B - C)
-            elif equation.degree() == 4:
-                C = equation[0]
-                B = equation[2]
-                if equation.exponents() in ([0, 4], [0, 2, 4]):
-                    if C.exponents() != [2]:
-                        raise NotImplementedError(f"cannot deduce λλ from {equation}")
-                    if B and B.exponents() != [1]:
-                        raise NotImplementedError(f"cannot deduce λλ from {equation}")
-
-                    B = B[1]
-                    C = C[2]
-
-                    # We need B^2*λλ^2 - 4*C*λλ^2 to have a square root.
-                    # The choice of λλ does not affect that.
-                    # TODO: When there is no square root, there is no solution.
-                    # We also want (-B*λλ ± sqrt(B^2*λλ^2 - 4*C*λλ^2)) / 2 to have a square root.
-                    # We pick λλ so that the variable is 1.
-                    λλ = ~((-B + (B**2 - 4*C).sqrt()) / 2)
-                else:
-                    raise NotImplementedError(f"cannot deduce λλ from {equation}")
-            else:
-                raise NotImplementedError(f"cannot deduce λλ from {equation}")
-
-            assert λλ in self.base_ring() and λλ != 0, f"did not deduce a non-zero constant for {λλ=} from {equation}"
-
-            # We could now patch the existing Gröbner basis and solve directly, but
-            # we just solve again for the correct value of λλ.
-            # We want the solution to be zero-dimensional, so we eliminate the
-            # symbolic variables λλ and λλ_ by forcing them to be 0.
-            equations = conditions(isometry, (λ, λλ)) + [λ*λ_ - 1, R('λλ'), λλ_]
-
-            solutions = R.ideal(equations).variety()
-
-            solutions = [matrix([[solution[a], solution[b]], [solution[c], solution[d]]]) for solution in solutions]
-
-            # If the determinant of the isometry is negative it flips the end
-            # points of the geodesics. We only consider solutions that map
-            # points in the right way.
-            solutions = [solution for solution in solutions if filter(solution)]
-
-            if not solutions:
-                if equivalence:
+                if J == [1]:
+                    # The equations are contradictory.
                     return None
-                continue
 
-            # Prefer an isometry of determinant 1 and isometries with 1 entries.
-            return max(solutions, key=lambda isometry: (isometry.det(), isometry[1][1] == 1, isometry[1][0] == 1))
+                # We extract an equation for variable from the Gröbner basis.
+                equation = J[-1]
 
-        assert False, "all the Gröbner bases that we saw when solving for an isometry were of an unexpected kind"
+                assert equation.variables() == (variable,), f"expected Gröbner basis algorithm to yield an equation for {variable} but found {equation} instead"
+                equation = equation.polynomial(variable)
+                equation = equation.map_coefficients(self.base_ring(), new_base_ring=self.base_ring())
+                variable = equation.parent().gen()
+
+                # The variable must be zero. We continue with another
+                # (non-zero) variable since we meant to deduce the value of the
+                # scaling factor λλ.
+                if equation.degree() == 1:
+                    assert equation == variable, equation
+                    continue
+
+                # The equation allows the case that the variable is zero.
+                # We ignore this possibility here. If this is needed, then we
+                # will find out in the loop for another variable.
+                while not equation.constant_coefficient():
+                    equation >>= 1
+
+                from sage.all import AA
+                equation = equation.change_ring(AA)
+                for root in equation.roots(multiplicities=False):
+                    minpoly = root.minpoly()
+                    if minpoly.degree() == 1:
+                        λλ = sgn
+                    else:
+                        assert minpoly.exponents() == [0, 2]
+                        λλ = -sgn * ~self.base_ring()(minpoly.constant_coefficient())
+
+                    assert λλ in self.base_ring() and λλ != 0, f"did not deduce a non-zero constant for {λλ=} from {equation}"
+
+                    # We could now patch the existing Gröbner basis and solve directly, but
+                    # we just solve again for the correct value of λλ.
+                    # We want the solution to be zero-dimensional, so we eliminate the
+                    # symbolic variables λλ and λλ_ by forcing them to be 0.
+                    equations = conditions(isometry, (λ, λλ))
+
+                    solutions = R.ideal(equations).variety()
+
+                    assert solutions
+
+                    solutions = [matrix([[solution[a], solution[b]], [solution[c], solution[d]]]) for solution in solutions]
+
+                    # If the determinant of the isometry is negative it flips the end
+                    # points of the geodesics. We only consider solutions that map
+                    # points in the right way.
+                    solutions = [solution for solution in solutions if filter(solution)]
+
+                    if not solutions:
+                        continue
+
+                    assert len(solutions) == 2, solutions
+
+                    # Prefer an isometry of determinant 1 and isometries with 1 entries.
+                    return max(solutions, key=lambda isometry: (isometry.det(), isometry[1][1] == 1, isometry[1][0] == 1))
+
+        return None
 
     def _repr_(self):
         r"""
@@ -4673,7 +4718,6 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
         # TODO: Check SEEALSO
         # TODO: Check for doctests
         # TODO: Benchmark?
-
         if model is None:
             model = "klein" if self.is_ultra_ideal() else "half_plane"
 
@@ -6131,7 +6175,6 @@ class HyperbolicPointFromCoordinates(HyperbolicPoint):
         EXAMPLES::
 
             sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
-
             sage: H = HyperbolicPlane()
 
             sage: H.infinity() == H.projective(1, 0)
@@ -6178,6 +6221,16 @@ class HyperbolicPointFromCoordinates(HyperbolicPoint):
         # TODO: Check SEEALSO
         # TODO: Check for doctests
         # TODO: Benchmark?
+        r"""
+        TESTS::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: geodesic = H.geodesic(733833/5522174119, -242010/5522174119, -105111/788882017, model="klein")
+            sage: geodesic.start()
+
+        """
         if self == self.parent().infinity():
             return "∞"
 
@@ -7888,6 +7941,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
         # TODO: Check SEEALSO
         # TODO: Check for doctests
         # TODO: Benchmark?
+        # TODO: Return half spaces instead so we get orientations right.
         self = list(self.vertices())
         other = list(other.vertices())
 
