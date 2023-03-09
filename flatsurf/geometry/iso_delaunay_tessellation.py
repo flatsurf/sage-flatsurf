@@ -832,3 +832,17 @@ class IsoDelaunayTessellation(Parent):
         """
         # TODO: implement by developing in a circle around vertex
         pass
+
+    def gens(self):
+        r"""
+        Return the generators of the Veech group that we see while exploring the iso-Delaunay tessellation.
+        """
+        def twist(m):
+            ((a, b), (c, d)) = m
+            return matrix([[a, -b], [-c, d]])
+
+        for _, _, (source_tessellation_edge, target_tessellation_edge) in self._dual_graph.edges(labels=True, sort=False):
+            yield twist(source_tessellation_edge.isometry(target_tessellation_edge))
+        for tessellation_face, (mod, _) in self._dual_graph.vertices(labels=True, sort=False):
+            edges = tessellation_face.edges()
+            yield twist(edges[0].isometry(edges[mod]))
