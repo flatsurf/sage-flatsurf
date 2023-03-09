@@ -2370,6 +2370,8 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         ALGORITHM:
 
+        TODO: Is this still accurate?
+
         An isometry is defined by specifying the image of three points. So once
         ``defining`` contains three pairs of points, we take the unique
         isometry this defines (if any) and verify that it maps ``remaining``
