@@ -2922,21 +2922,56 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             return isometry
 
     def _isometry_from_equations(self, conditions, filter):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Helper method for :meth:`isometry`.
+
+        Return an isometry that satisfies ``conditions`` and ``filter``.
+
+        INPUT:
+
+        - ``conditions`` -- a function that receives a (symbolic) isometry and
+          some (symbolic) variables and creates polynomial equations that a
+          concrete isometry must satisfy.
+
+        - ``filter`` -- a function that receives a concrete isometry and
+          returns whether it maps objects correctly.
+
+        ALGORITHM:
+
+        We guess determine the entries of a 2×2 matrix with entries a, b, c, d
+        by guessing for each term that it is non-zero and then building the
+        symbolic relations that the isometry must satisfy by invoking
+        ``conditions``. These symbolic conditions contain free linear variables
+        coming from the fact that points are encoded projectively and geodesics
+        in the dual. We tune these variables so that all entries of the matrix
+        are in the base ring. (Namely, so that we can take all the square roots
+        that show up.)
+
+        The whole process is very ad-hoc and very slow since it computes lots
+        of Gröbner bases. It is very likely that the approach is not
+        mathematically sound but it worked for many random inputs that we
+        presented it with.
+
+        """
         from sage.all import PolynomialRing, matrix
 
+        # Over the reals, the equations are different depending on whether we
+        # send a geodesic to -another geodesic or +another geodesic. We try
+        # both cases to see which one yields a system that we can solve over
+        # the base ring.
         for sgn in [self.base_ring().one(), -self.base_ring().one()]:
+            # We try to determine the matrix describing the isometry assuming
+            # that "variable" is non-zero.
             for variable in ["a", "d", "b", "c"]:
                 variables = ["a", "b", "c", "d", "λ1", "λ2"]
                 variables.remove(variable)
                 variables.append(variable)
                 # We use a term order that guarantees that we will see an
-                # equation for variable in the Gröbner basis.
+                # equation for "variable" in the Gröbner basis.
                 R = PolynomialRing(self.base_ring(), names=variables, order="degrevlex(5), lex(1)")
+                # We are going to run the same procedure twice. Once with λ0 =
+                # ±1 and then with a λ0 tuned to a value so that we can
+                # actually solve for "variable".
                 λ0 = sgn
                 λ1 = R("λ1")
                 λ2 = R("λ2")
@@ -2946,6 +2981,11 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
                 d = R("d")
                 variable = R(variable)
 
+                # We keep track of whether we made any assumptions here that
+                # mean that we might be ignoring solutions in this run.
+                equivalence = True
+
+                # The isometry as a symbolic 2×2 matrix.
                 isometry = matrix([
                     [a, b],
                     [c, d]
@@ -2953,6 +2993,8 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
                 isometry = gl2_to_sim12(isometry)
 
+                # Build equations for the symbolic variables and make sure that
+                # the resulting variety is zero-dimensional.
                 equations = conditions(isometry, (λ0, λ1, λ2))
 
                 for λ in [λ1, λ2]:
@@ -2960,16 +3002,17 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
                         # Force the unused variable λ to be =0
                         equations.append(λ)
 
+                # The system of euations typically has no rational points.
+                # We analyze the Gröbner basis to tune λ0 so that we get
+                # rational points.
                 J = list(R.ideal(equations).groebner_basis())
 
                 if J == [1]:
                     # The equations are contradictory.
-                    # TODO: Explain this weird hack.
-                    if len(equations) < 8:
-                        continue
+                    assert equivalence
                     return None
 
-                # We extract an equation for variable from the Gröbner basis.
+                # We extract an equation for "variable" from the Gröbner basis.
                 equation = J[-1]
 
                 assert equation.variables() == (variable,), f"expected Gröbner basis algorithm to yield an equation for {variable} but found {equation} instead"
@@ -2987,25 +3030,25 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
                 # We ignore this possibility here. If this is needed, then we
                 # will find out in the loop for another variable.
                 while not equation.constant_coefficient():
+                    equivalence = False
                     equation >>= 1
 
                 from sage.all import QQbar
                 equation = equation.change_ring(QQbar)
-                # TODO: Do we need to iterate here?
+
+                # We try to arrange things so that "variable" becomes an element of the base ring.
+                # We look at the minpoly of variable and tune λ0 so that this
+                # becomes a square root of something that is a square.
                 for root in equation.roots(multiplicities=False):
                     minpoly = root.minpoly()
                     if minpoly.degree() == 1:
                         pass
                     elif minpoly.exponents() == [0, 2]:
                         λ0 = -sgn * ~self.base_ring()(minpoly.constant_coefficient())
-                    elif minpoly.degree() == 2:
-                        # TODO: This is incomplete and also mostly nonsense. Doesn't this mean that the entry of the isometry does not live in the base ring even after scaling?
-                        # λ0 = -sgn * ~self.base_ring()(minpoly[0] + minpoly[1])
-                        continue
                     else:
-                        # TODO: What to do here?
+                        # We cannot change the equations for this root to show
+                        # up over the base ring.
                         continue
-                        raise NotImplementedError
 
                     assert λ0 in self.base_ring() and λ0 != 0, f"did not deduce a non-zero constant for {λ0=} from {equation}"
 
@@ -3020,27 +3063,24 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
                     solutions = R.ideal(equations).variety()
 
-                    if not solutions:
-                        continue
-                    # TODO: Explain why this is not true
-                    assert solutions
+                    assert solutions, f"After tuning the constant of the equations describing the isometry, there should be a solution but we did not find any."
 
                     solutions = [matrix([[solution[a], solution[b]], [solution[c], solution[d]]]) for solution in solutions]
 
-                    # If the determinant of the isometry is negative it flips the end
-                    # points of the geodesics. We only consider solutions that map
-                    # points in the right way.
+                    # Check which solutions do not only satisfy "conditions"
+                    # but map the underlying objects correctly, i.e., they also
+                    # pass "filter".
                     solutions = [solution for solution in solutions if filter(solution)]
 
                     if not solutions:
                         continue
 
-                    # TODO: This does not seem to be true for underdetermined systems.
-                    # assert len(solutions) == 2, solutions
-
                     # Prefer an isometry of determinant 1 and isometries with 1 entries.
                     return max(solutions, key=lambda isometry: (isometry.det(), isometry[1][1] == 1, isometry[1][0] == 1))
 
+        # No luck with this approach. We hope that this means that no such
+        # isometry exists over the base ring but it's not entirely clear
+        # whether that is actually true.
         return None
 
     def _repr_(self):
