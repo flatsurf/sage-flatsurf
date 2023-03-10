@@ -3423,9 +3423,15 @@ class HyperbolicGeometry:
             sage: H.geometry.half_circle(0, 1, H.geodesic)
             {(x^2 + y^2) - 1 = 0}
 
-        """
-        # TODO: Epsilon Geometry could override this to be able to create half circles with small radius.
+        Unfortunately, this does not work correctly over inexact fields yet::
 
+            sage: H = HyperbolicPlane(RR)
+            sage: H.geometry.half_circle(0, 1e-32, H.geodesic)
+            Traceback (most recent call last):
+            ...
+            ValueError: radius must be positive
+
+        """
         if self._sgn(radius_squared) <= 0:
             raise ValueError("radius must be positive")
 
@@ -3455,8 +3461,16 @@ class HyperbolicGeometry:
             sage: H.geometry.vertical(0, H.geodesic)
             {-x = 0}
 
+        Unfortunately, this does not allow creation of verticals at large reals
+        over inexact fields yet::
+
+            sage: H = HyperbolicPlane(RR)
+            sage: H.geometry.vertical(1e32, H.geodesic)
+            Traceback (most recent call last):
+            ...
+            ValueError: equation ... does not define a chord in the Klein model
+
         """
-        # TODO: Epsilon geometry should override this to allow very big real.
         # Convert the equation -x + real = 0 to the Klein model.
         return geodesic(real, -1, -real, model="klein")
 
