@@ -3203,6 +3203,7 @@ class HyperbolicGeometry:
             sage: H.geometry._determinant(1, 2, 3, 4)
             -2
             sage: H.geometry._determinant(0, 10^-10, 1, 1)
+            -1/10000000000
 
         """
         det = a * d - b * c
@@ -3582,13 +3583,19 @@ class HyperbolicEpsilonGeometry(UniqueRepresentation, HyperbolicGeometry):
             sage: H.geometry._determinant(1, 2, 3, 4)
             -2
             sage: H.geometry._determinant(1e-10, 0, 0, 1e-10)
-            1e-20
-            sage: H.geometry._determinant(0, 1e-10, 1, 1)
+            1.00000000000000e-20
+
+        Unfortunately, we are not implementing any actual rank detecting
+        algorithm (QR decomposition or such) here. So, we do not detect that
+        this matrik is singular::
+
+            sage: H.geometry._determinant(1e-127, 1e-128, 1, 1)
+            9.00000000000000e-128
 
         """
-        # TODO: Remark that this is crap.
         det = a * d - b * c
         if det == 0:
+            # Note that we should instead numerically detect the rank here.
             return None
         return det
 
