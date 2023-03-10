@@ -2253,6 +2253,113 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         TESTS:
 
+        Points forming an ideal triangle with three ideal vertices::
+
+            sage: preimage = H(-1), H(0), H(1)
+            sage: image = H(0), H(1), H(2)
+            sage: H.isometry(preimage, image, on_right=True)
+            [ 1 -1]
+            [ 0  1]
+
+        Points forming an ideal triangle with two ideal vertices::
+
+            sage: preimage = H(-1), H(2*I), H(1)
+            sage: image = H(0), H(1 + 2*I), H(2)
+            sage: H.isometry(preimage, image, on_right=True)
+            [ 1 -1]
+            [ 0  1]
+
+        Points forming an ideal triangle with one ideal vertex::
+
+            sage: preimage = H(I - 1), H(I + 1), H(oo)
+            sage: image = H(I), H(I + 2), H(oo)
+            sage: H.isometry(preimage, image, on_right=True)
+            [ 1 -1]
+            [ 0  1]
+
+        Points forming a finite triangle::
+
+            sage: preimage = H(I), H(2*I), H(2*I + 1)
+            sage: image = H(I + 1), H(2*I + 1), H(2*I + 2)
+            sage: H.isometry(preimage, image, on_right=True)
+            [ 1 -1]
+            [ 0  1]
+
+        Points forming a degenerate ideal triangle::
+
+            sage: preimage = H(-1), H(I), H(1)
+            sage: image = H(0), H(I + 1), H(2)
+            sage: H.isometry(preimage, image, on_right=True)
+            [ 1 -1]
+            [ 0  1]
+
+        Another degenerate ideal triangle::
+
+            sage: preimage = H(0), H(I), H(oo)
+            sage: image = H(1), H(I + 1), H(oo)
+            sage: H.isometry(preimage, image, on_right=True)
+            [ 1 -1]
+            [ 0  1]
+
+        Points forming a finite degenerate triangle::
+
+            sage: preimage = H(I), H(2*I), H(3*I)
+            sage: image = H(I + 1), H(2*I + 1), H(3*I + 1)
+            sage: H.isometry(preimage, image, on_right=True)
+            [ 1 -1]
+            [ 0  1]
+
+        Impossible pairs of points (ideal and non-ideal) are detected::
+
+            sage: preimage = H(-1), H(I), H(1)
+            sage: image = H(0), H(1), H(2)
+            sage: H.isometry(preimage, image)
+            Traceback (most recent call last):
+            ...
+            ValueError: no isometry can map these objects to each other
+
+            sage: preimage = H(0), H(1), H(2)
+            sage: image = H(-1), H(I), H(1)
+            sage: H.isometry(preimage, image)
+            Traceback (most recent call last):
+            ...
+            ValueError: no isometry can map these objects to each other
+
+        A case with d=0::
+
+            sage: preimage = (H.geodesic(0, 1), H.geodesic(1, oo))
+            sage: image = (H.geodesic(1, oo), H.geodesic(oo, 0))
+            sage: H.isometry(preimage, image, on_right=True)
+            [ 1 -1]
+            [ 1  0]
+
+        A case with no solution, such an isometry would map four ideal points
+        in an impossible way::
+
+            sage: preimage = (H.geodesic(0, 1), H.geodesic(2, 3))
+            sage: image = (H.geodesic(0, 1), H.geodesic(3, 4))
+            sage: H.isometry(preimage, image, on_right=True)
+            Traceback (most recent call last):
+            ...
+            ValueError: no isometry can map these objects to each other
+
+        An isometry that swaps end points but maps the corresponding oriented
+        geodesics to themselves::
+
+            sage: preimage = (-1, 1, -2, 2)
+            sage: image = (1, -1, 2, -2)
+            sage: H.isometry(preimage, image, on_right=True)
+            [-1  0]
+            [ 0  1]
+
+        An example with negative determinant::
+
+            sage: preimage = (I - 1, I + 1, I - 2, I + 2)
+            sage: image = (I + 1, I - 1, I + 2, I - 2)
+            sage: H.isometry(preimage, image, on_right=True)
+            [-1  0]
+            [ 0  1]
+
         A case that could initially not be solved over the rationals::
 
             sage: H.isometry((58*I, I + 1), (116*I - 1, 2*I + 1))
@@ -2268,6 +2375,22 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             sage: H.isometry((x, y, z), (x.apply_isometry(isometry), y.apply_isometry(isometry), z.apply_isometry(isometry)))
             [-2  0]
             [ 0  1]
+
+        ::
+
+            sage: preimage = (I - 1, I + 1, I + 1, oo)
+            sage: image = (I, I + 2, I + 2, oo)
+            sage: H.isometry(preimage, image, on_right=True)
+            [ 1 -1]
+            [ 0  1]
+
+        ::
+
+            sage: preimage = (H.geodesic(I - 1, I + 1), H.geodesic(I - 2, I + 1))
+            sage: image = (H.geodesic(I + 1, I - 1), H.geodesic(I + 1, I - 2))
+            sage: H.isometry(preimage, image, on_right=True)
+            [-1  2]
+            [-1  1]
 
         ::
 
@@ -2293,6 +2416,19 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             sage: H.isometry(P, Q)
             [  126/8579 -4321/8579]
             [         0          1]
+
+        Here, there is also an isometry of negative determinant that maps some
+        of the half spaces correctly::
+
+            sage: P = H.polygon([
+            ....:    H.geodesic(1, -5, 5, model="half_plane").left_half_space(),
+            ....:    H.geodesic(247, -957, -5156, model="half_plane").right_half_space(),
+            ....:    H.geodesic(1, -120, -137, model="half_plane").right_half_space()])
+            sage: isometry = matrix([[0, -2], [1, 2]])
+            sage: Q = P.apply_isometry(isometry)
+            sage: H.isometry(P, Q)
+            [  0  -1]
+            [1/2   1]
 
         .. SEEALSO::
 
@@ -2408,19 +2544,19 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         If the ``remaining`` pairs do not provide enough points, we randomly
         add points to define a unique mapping::
 
-            sage: H._isometry([], [])
+            sage: H._isometry([])
             [1 0]
             [0 1]
-            sage: H._isometry([(H(0), H(1))], [])
+            sage: H._isometry([(H(0), H(1))])
             [ 1 -1]
             [ 0  1]
-            sage: H._isometry([(H(1), H(0))], [])
+            sage: H._isometry([(H(1), H(0))])
             [1 1]
             [0 1]
 
         If no isometry is possible, ``None`` is returned::
 
-            sage: H._isometry([(H(1), H(0))], [(H(1), H(2))])
+            sage: H._isometry([(H(1), H(0)), (H(1), H(2))])
 
         """
         # TODO: Sort pairs
@@ -2445,20 +2581,11 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
             sage: preimage = H.geodesic(-126, -4447, -6387, model="half_plane")
             sage: image = H.geodesic(-8579, -13089, -4510, model="half_plane")
-            sage: H._isometry_from_primitives([(preimage, image)])
+            sage: list(H._isometry_from_primitives([(preimage, image)]))
+            [
             [        1 4321/8579]
             [        0  126/8579]
-
-        Here, there is an isometry of negative determinant that maps some of
-        the half spaces correctly::
-
-            sage: P = H.polygon([
-            ....:    H.geodesic(1, -5, 5, model="half_plane").left_half_space(),
-            ....:    H.geodesic(247, -957, -5156, model="half_plane").right_half_space(),
-            ....:    H.geodesic(1, -120, -137, model="half_plane").right_half_space()])
-            sage: isometry = matrix([[0, -2], [1, 2]])
-            sage: Q = P.apply_isometry(isometry)
-            sage: H.isometry(P, Q)
+            ]
 
         """
         # TODO: Check documentation.
@@ -2467,6 +2594,11 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         # TODO: Check for doctests
         # TODO: Benchmark?
         # TODO print(f"{pairs=}")
+
+        if len(pairs) == 0:
+            from sage.all import matrix
+            yield matrix(self.base_ring(), [[1, 0], [0, 1]])
+            return
 
         if len(pairs) == 1 and pairs[0][0].dimension() == 0:
             yield self._isometry_from_single_points(pairs[0][0], pairs[0][1])
@@ -2690,363 +2822,6 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         # TODO: If this does not work, then this does not mean that no such isometry exists.
         for isometry in self._isometry_from_primitives([(preimage, image), (preimage.midpoint(), image.midpoint())]):
             return isometry
-
-    def _isometry_from_points(self, *points):
-        r"""
-        TODO: Is this still used? Is this still true?
-
-        Return the unique right isometry mapping ``points`` to each other.
-
-        INPUT:
-
-        - ``points`` -- a sequence of pairs of points in the hyperbolic plane
-
-        OUTPUT:
-
-        An isometry as a 2×2 matrix or ``None`` if there is no such isometry or
-        it is not defined over the base ring of the hyperbolic plane.
-
-        EXAMPLES::
-
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
-            sage: H = HyperbolicPlane()
-
-        Points forming an ideal triangle with three ideal vertices::
-
-            sage: preimage = H(-1), H(0), H(1)
-            sage: image = H(0), H(1), H(2)
-            sage: H._isometry_from_points(*zip(preimage, image))
-            [ 1 -1]
-            [ 0  1]
-
-        Points forming an ideal triangle with two ideal vertices::
-
-            sage: preimage = H(-1), H(2*I), H(1)
-            sage: image = H(0), H(1 + 2*I), H(2)
-            sage: H._isometry_from_points(*zip(preimage, image))
-            [ 1 -1]
-            [ 0  1]
-
-        Points forming an ideal triangle with one ideal vertex::
-
-            sage: preimage = H(I - 1), H(I + 1), H(oo)
-            sage: image = H(I), H(I + 2), H(oo)
-            sage: H._isometry_from_points(*zip(preimage, image))
-            [ 1 -1]
-            [ 0  1]
-
-        Points forming a finite triangle::
-
-            sage: preimage = H(I), H(2*I), H(2*I + 1)
-            sage: image = H(I + 1), H(2*I + 1), H(2*I + 2)
-            sage: H._isometry_from_points(*zip(preimage, image))
-            [ 2/3 -2/3]
-            [   0  2/3]
-
-        Points forming a degenerate ideal triangle::
-
-            sage: preimage = H(-1), H(I), H(1)
-            sage: image = H(0), H(I + 1), H(2)
-            sage: H._isometry_from_points(*zip(preimage, image))
-            [ 1 -1]
-            [ 0  1]
-
-        Another degenerate ideal triangle::
-
-            sage: preimage = H(0), H(I), H(oo)
-            sage: image = H(1), H(I + 1), H(oo)
-            sage: H._isometry_from_points(*zip(preimage, image))
-            [ 1 -1]
-            [ 0  1]
-
-        Points forming a finite degenerate triangle::
-
-            sage: preimage = H(I), H(2*I), H(3*I)
-            sage: image = H(I + 1), H(2*I + 1), H(3*I + 1)
-            sage: H._isometry_from_points(*zip(preimage, image))
-            [ 1 -1]
-            [ 0  1]
-
-        Impossible pairs of points (ideal and non-ideal) are detected::
-
-            sage: preimage = H(-1), H(I), H(1)
-            sage: image = H(0), H(1), H(2)
-            sage: H._isometry_from_points(*zip(preimage, image))
-
-            sage: preimage = H(0), H(1), H(2)
-            sage: image = H(-1), H(I), H(1)
-            sage: H._isometry_from_points(*zip(preimage, image))
-
-        ALGORITHM:
-
-        We turn the triples of points into triples of ideal points. These then
-        define a unique isometry which we compute in
-        :meth:`_isometry_from_ideal_points`. If three points are collinear, we
-        turn them into two ideal points and one non-ideal point and compute the
-        unique isometry this defines (if any) in
-        :meth:`_isometry_from_ideal_points_and_point`.
-
-        .. SEEALSO::
-
-            :meth:`HyperbolicConvexSet.apply_matrix` to apply the returned matrix to a set.
-
-        """
-        # TODO: Add doctests
-
-        if len(points) != 3:
-            raise ValueError("need exactly three pairs of points to determine a unique isometry")
-
-        # To find the isometry mapping the given pairs of points, we construct
-        # the geodesics defining the triangle formed by these points.
-
-        from itertools import combinations
-        geodesics = [
-            (self.geodesic(p[0], q[0]), self.geodesic(p[1], q[1]))
-            for p, q in combinations(points, 2)
-        ]
-
-        # If the triangle formed by the geodesics is degenerate, we construct
-        # the isometry that maps the triangles to each other and also maps one
-        # finite point correctly.
-        def degenerate(triangle):
-            return len(set(geodesic.unoriented() for geodesic in triangle)) == 1
-
-        if degenerate([pair[0] for pair in geodesics]):
-            if not degenerate([pair[1] for pair in geodesics]):
-                # No isometry can map a degenerate triangle to a non-degenerate one.
-                return None
-
-            f, g = geodesics[0]
-            for p, q in points:
-                if p.is_finite() and q.is_finite():
-                    for sgn in [-1, 1]:
-                        isometry = self._isometry_from_ideal_points_and_point((f, g if sgn == 1 else -g), (p, q))
-
-                        # Check if this isometry maps all finite points correctly, otherwise, try another pair of points.
-                        if isometry is not None and all(p.apply_isometry(isometry, on_right=True) == q for (p, q) in points):
-                            break
-        elif degenerate([pair[1] for pair in geodesics]):
-            # No isometry can map a non-degenerate triangle to a degenerate one.
-            return None
-        else:
-            # If the triangles are not degenerate, there can be exactly one
-            # isometry mapping one to the other.
-            isometry = self._isometry_from_ideal_points(geodesics[0], geodesics[1])
-
-        # We found an isometry by considering the triangles formed by the
-        # (possibly finite) points that we were presented with. If the isometry
-        # maps these points correctly, it's the isometry we're looking for.
-        if isometry is not None:
-            for p, q in points:
-                if p.apply_isometry(isometry, on_right=True) != q:
-                    assert not p.is_ideal() or not q.is_ideal(), f"found isometry {isometry} but it does not map ideal point {p} to ideal point {q} but to {p.apply_isometry(isometry)}"
-                    return None
-
-        return isometry
-
-    def _isometry_from_ideal_points(self, *geodesics):
-        # TODO: Salvage doctests and trash.
-        r"""
-        Return the unique right isometry mapping ``geodesics`` to each other.
-
-        The isometry is such that the geodesics are mapped to each other as
-        unoriented geodesics but such the start points are mapped to the stand
-        points and the end points are mapped to the end points.
-
-        Note that this is not the same as mapping the oriented geodesics to
-        each other since an orientation-reversion isometry swaps start and end
-        point, e.g., the isometry `z \mapsto -\bar{z}` maps the oriented
-        geodesic from -1 to 1 to the itself since it preserves the half spaces
-        left and right of that geodesic. However, it does swap the ideal end
-        points of that geodesic so it would, in the context of this method, be
-        considered as an isometry that maps the geodesic to its negative.
-
-        INPUT:
-
-        - ``geodesics`` -- two pairs of oriented geodesics in the hyperbolic plane.
-
-        OUTPUT:
-
-        An isometry as a 2×2 matrix or ``None`` if there is no such isometry or
-        it is not defined over the base ring of the hyperbolic plane.
-
-        ALGORITHM:
-
-        We use a Gröbner basis approach to solve a system of constraints
-        describing the isometry.
-
-        Namely, we consider the (symbolic) 2×2 matrix with entries (a, b, c, d)
-        and require that it maps the geodesics as prescribed. Namely, we know
-        that a geodesic given as `A + Bx + Cy = 0` must map to the geodesic `A'
-        + B'x + B'y = 0` or a multiple thereof. We keep track of this
-        "multiple" by introducing new variables λ and λλ, one for each
-        geodesic. Since we can scale the matrix describing the isometry
-        arbitrarily, we can choose λλ arbitrarily.
-
-        TODO: Update this description; and move it to the specialized code::
-
-        We now solve the system twice. First we take λλ=1 and keep track where
-        we would need to take a square root to solve an expression of the form
-        `d^2=μ`. Then we choose `λλ=1/μ` and solve again. This ensure that we
-        will see an expression of the form `d^2=1` which we can solve without
-        extending our base ring.
-
-        EXAMPLES::
-
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
-            sage: H = HyperbolicPlane()
-
-        A case with d=0::
-
-            sage: H._isometry_from_ideal_points(
-            ....:   (H.geodesic(0, 1), H.geodesic(1, oo)),
-            ....:   (H.geodesic(1, oo), H.geodesic(oo, 0)))
-            [ 1 -1]
-            [ 1  0]
-
-        A case with no solution, such an isometry would map four ideal points
-        in an impossible way::
-
-            sage: H._isometry_from_ideal_points(
-            ....:   (H.geodesic(0, 1), H.geodesic(0, 1)),
-            ....:   (H.geodesic(2, 3), H.geodesic(3, 4)))
-
-        An isometry that maps the geodesic from -1 to 1 to its negative in the
-        sense of this method, i.e., it swaps the end points; even though it
-        actually maps the geodesic to itself::
-
-            sage: H._isometry_from_ideal_points(
-            ....:   (H.geodesic(-1, 1), H.geodesic(1, -1)),
-            ....:   (H.geodesic(-2, 2), H.geodesic(2, -2)))
-            [-1  0]
-            [ 0  1]
-
-        TESTS:
-
-        A case that caused trouble at some point::
-
-            sage: H._isometry_from_ideal_points(
-            ....:    (H.geodesic(I - 1, I + 1), H.geodesic(I, I + 2)),
-            ....:    (H.geodesic(I + 1, oo), H.geodesic(I + 2, oo)))
-            [ 1 -1]
-            [ 0  1]
-
-        A case that caused trouble at some point::
-
-            sage: H._isometry_from_ideal_points(
-            ....:    (H.geodesic(I - 1, I + 1), H.geodesic(I + 1, I - 1)),
-            ....:    (H.geodesic(I - 2, I + 1), H.geodesic(I + 1, I - 2)))
-            [-1  2]
-            [-1  1]
-
-        An example with negative determinant::
-
-            sage: H._isometry_from_ideal_points(
-            ....:    (H.geodesic(I - 1, I + 1), H.geodesic(I + 1, I - 1)),
-            ....:    (H.geodesic(I - 2, I + 2), H.geodesic(I + 2, I - 2)))
-            [-1  0]
-            [ 0  1]
-
-        .. SEEALSO::
-
-            :meth:`HyperbolicConvexSet.apply_matrix` to apply the returned matrix to a set.
-
-        """
-        if len(geodesics) != 2:
-            raise ValueError("need exactly two pairs of geodesics to determine a unique isometry")
-
-        from sage.all import vector
-
-        def conditions(isometry, λ):
-            conditions = []
-
-            for (preimage, image), scalar in zip(geodesics, λ):
-                A, B, C = preimage.equation(model="klein")
-                fA, fB, fC = image.equation(model="klein")
-                condition = vector((B, C, A)) * isometry - scalar * vector(isometry.base_ring(), (fB, fC, fA))
-                conditions.extend(condition.list())
-
-            return conditions
-
-        def filter(isometry):
-            if geodesics[0][0].start().apply_isometry(isometry, on_right=True) != geodesics[0][1].start():
-                return False
-
-            if geodesics[1][0].start().apply_isometry(isometry, on_right=True) != geodesics[1][1].start():
-                return False
-
-            return True
-
-        return self._isometry_from_conditions(conditions, filter)
-
-    def _isometry_from_ideal_points_and_point(self, geodesics, points):
-        # TODO: Salvage doctests and trash.
-        r"""
-        Return the unique right isometry that maps ``geodesics`` and ``points``
-        to each other or return ``None`` if no such isometry exists over the
-        :meth:`base_ring`.
-
-        The ``geodesics`` are mapped to each other as unoriented geodesics such
-        that their endpoints are preserved, see
-        :meth:`_isometry_from_ideal_point` for details.
-
-        INPUT:
-
-        - ``geodesics`` -- a pair of geodesics
-
-        - ``points`` -- a pair of finite points
-
-        EXAMPLES::
-
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
-            sage: H = HyperbolicPlane()
-
-        A trivial case::
-
-            sage: H._isometry_from_ideal_points_and_point(
-            ....:     (H.geodesic(-1, 1), H.geodesic(-1, 1)),
-            ....:     (H(I), H(I)))
-            [1 0]
-            [0 1]
-
-        A translation::
-
-            sage: H._isometry_from_ideal_points_and_point(
-            ....:     (H.geodesic(0, oo), H.geodesic(1, oo)),
-            ....:     (H(I), H(I + 1)))
-            [ 1 -1]
-            [ 0  1]
-
-        """
-        from sage.all import vector
-
-        def conditions(isometry, λ):
-            R = isometry.base_ring()
-
-            conditions = []
-
-            A, B, C = geodesics[0].equation(model="klein")
-            fA, fB, fC = geodesics[1].equation(model="klein")
-            condition = vector((B, C, A)) * isometry - λ[1] * vector(R, (fB, fC, fA))
-            conditions.extend(condition.list())
-
-            x, y, z = (*points[0].coordinates(model="klein"), R.one())
-            fx, fy, fz = (*points[1].coordinates(model="klein"), R.one())
-            condition = λ[0] * vector((x, y, z)) - isometry * vector(R, (fx, fy, fz))
-            conditions.extend(condition.list())
-
-            return conditions
-
-        def filter(isometry):
-            if geodesics[0].start().apply_isometry(isometry, on_right=True) != geodesics[1].start():
-                return False
-
-            if points[0].apply_isometry(isometry, on_right=True) != points[1]:
-                return False
-
-            return True
-
-        return self._isometry_from_conditions(conditions, filter)
 
     def _isometry_from_conditions(self, conditions, filter):
         # TODO: Check documentation.
