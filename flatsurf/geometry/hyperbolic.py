@@ -3173,6 +3173,43 @@ class HyperbolicGeometry:
         """
         raise NotImplementedError("this geometry does not implement _equal()")
 
+    def _determinant(self, a, b, c, d):
+        r"""
+        Return the determinant of the 2×2 matrix ``[[a, b], [c, d]]`` or
+        ``None`` if the matrix is singular.
+
+        .. NOTE::
+
+            This predicate should not be used directly in geometric
+            constructions since it does not specify the context in which this
+            question is asked. This makes it very difficult to override a
+            specific aspect in a custom geometry.
+
+        INPUT:
+
+        - ``a`` -- an element of the :meth:`base_ring`
+
+        - ``b`` -- an element of the :meth:`base_ring`
+
+        - ``c`` -- an element of the :meth:`base_ring`
+
+        - ``d`` -- an element of the :meth:`base_ring`
+
+        EXAMPLES:
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: H.geometry._determinant(1, 2, 3, 4)
+            -2
+            sage: H.geometry._determinant(0, 10^-10, 1, 1)
+
+        """
+        det = a * d - b * c
+        if self._zero(det):
+            return None
+        return det
+
     def change_ring(ring):
         r"""
         Return this geometry with the :meth:`base_ring` changed to ``ring``.
@@ -3294,7 +3331,8 @@ class HyperbolicGeometry:
         - ``model`` -- a supported model, either ``"half_plane"`` or
           ``"klein"``
 
-        OUTPUT: ``1`` if the point is finite, ``0`` if the point is ideal, ``-1`` if the point is neither of the two.
+        OUTPUT: ``1`` if the point is finite, ``0`` if the point is ideal,
+        ``-1`` if the point is neither of the two.
 
         EXAMPLES::
 
@@ -3318,6 +3356,42 @@ class HyperbolicGeometry:
             raise NotImplementedError
 
         raise NotImplementedError("unsupported model")
+
+    def intersection(self, f, g):
+        r"""
+        Return the point of intersection between the Euclidean lines ``f`` and ``g``.
+
+        INPUT:
+
+        - ``f`` -- a triple of elements ``(a, b, c)`` of :meth:`base_ring`
+          encoding the line `a + bx + cy = 0`
+
+        - ``g`` -- a triple of elements ``(a, b, c)`` of :meth:`base_ring`
+          encoding the line `a + bx + cy = 0`
+
+        OUTPUT: A pair of elements of :meth:`base_ring`, the coordinates of the
+        point of intersection, or ``None`` if the lines do not intersect.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: H.geometry.intersection((0, 1, 0), (0, 0, 1))
+            (0, 0)
+
+        """
+        (fa, fb, fc) = f
+        (ga, gb, gc) = g
+        det = self._determinant(fb, fc, gb, gc)
+
+        if det is None:
+            return None
+
+        x = (-gc * fa + fc * ga) / det
+        y = (gb * fa - fb * ga) / det
+
+        return (x, y)
 
 
 class HyperbolicExactGeometry(UniqueRepresentation, HyperbolicGeometry):
@@ -3484,6 +3558,39 @@ class HyperbolicEpsilonGeometry(UniqueRepresentation, HyperbolicGeometry):
             return abs(x - y) < self._epsilon
 
         return abs(x - y) <= (abs(x) + abs(y)) * self._epsilon
+
+    def _determinant(self, a, b, c, d):
+        r"""
+        Return the determinant of the 2×2 matrix ``[[a, b], [c, d]]`` or
+        ``None`` if the matrix is singular.
+
+        INPUT:
+
+        - ``a`` -- an element of the :meth:`base_ring`
+
+        - ``b`` -- an element of the :meth:`base_ring`
+
+        - ``c`` -- an element of the :meth:`base_ring`
+
+        - ``d`` -- an element of the :meth:`base_ring`
+
+        EXAMPLES:
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(RR)
+
+            sage: H.geometry._determinant(1, 2, 3, 4)
+            -2
+            sage: H.geometry._determinant(1e-10, 0, 0, 1e-10)
+            1e-20
+            sage: H.geometry._determinant(0, 1e-10, 1, 1)
+
+        """
+        # TODO: Remark that this is crap.
+        det = a * d - b * c
+        if det == 0:
+            return None
+        return det
 
     def projective(self, p, q, point):
         r"""
@@ -5413,17 +5520,12 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
         if not isinstance(other, HyperbolicOrientedGeodesic):
             raise TypeError("can only intersect with another oriented geodesic")
 
-        # TODO: Reference the trac ticket that says that solving for 2×2 matrices is very slow.
-        det = self._b * other._c - self._c * other._b
+        xy = self.parent().geometry.intersection((self._a, self._b, self._c), (other._a, other._b, other._c))
 
-        # TODO: Use a specialized predicate instead of the _method.
-        if self.parent().geometry._zero(det):
+        if xy is None:
             return None
 
-        x = (-other._c * self._a + self._c * other._a) / det
-        y = (other._b * self._a - self._b * other._a) / det
-
-        return self.parent().point(x, y, model="klein", check=False)
+        return self.parent().point(*xy, model="klein", check=False)
 
 
 class HyperbolicUnorientedGeodesic(HyperbolicGeodesic):
@@ -5690,11 +5792,10 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
         # TODO: Check SEEALSO
         # TODO: Check for doctests
         # TODO: Benchmark?
-        return (
-            self.parent()
-            .geodesic(0, -self._c, self._b, model="klein", check=False)
-            ._intersection(self)
-        )
+        other = self.parent().geodesic(0, -self._c, self._b, model="klein", check=False)
+        cross = other._intersection(self)
+        assert cross
+        return cross
 
     def parametrize(self, point, model, check=True):
         # TODO: Check documentation.
@@ -6250,6 +6351,7 @@ class HyperbolicPointFromCoordinates(HyperbolicPoint):
 
             sage: geodesic = H.geodesic(733833/5522174119, -242010/5522174119, -105111/788882017, model="klein")
             sage: geodesic.start()
+            3.03625883227966
 
         """
         if self == self.parent().infinity():
