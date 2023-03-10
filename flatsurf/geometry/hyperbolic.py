@@ -2821,11 +2821,33 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             yield defining
 
     def _isometry_from_single_points(self, preimage, image):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Helper method for :meth:`isometry`.
+
+        Return a right isometry that maps the point ``preimage`` to the point
+        ``image`` or ``None`` when no such isometry exists.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: H._isometry_from_single_points(H(I), H(I))
+            [1 0]
+            [0 1]
+
+            sage: H._isometry_from_single_points(H(I), H(2*I))
+            [1/2   0]
+            [  0   1]
+
+            sage: H._isometry_from_single_points(H(0), H(oo))
+            [0 1]
+            [1 0]
+
+            sage: H._isometry_from_single_points(H(I), H(1)) is None
+            True
+
+        """
         if preimage.is_ideal() != image.is_ideal():
             return None
 
@@ -2855,13 +2877,48 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             return isometry
 
     def _isometry_from_single_geodesics(self, preimage, image):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
-        # TODO: If this does not work, then this does not mean that no such isometry exists.
+        r"""
+        Helper method for :meth:`isometry`.
+
+        Return a right isometry that maps the geodesic ``preimage`` to the
+        geodesic ``image`` or ``None`` when no such isometry exists.
+
+        ALGORITHM:
+
+        We determine the isometry by forcing the midpoints of the geodesics to
+        be mapped to each other. This might fail because the midpoints of the
+        geodesics are not defined over the :meth:`base_ring`. Also, that
+        isometry might not be defined over the base ring but some other
+        isometry is.
+
+        In general, this is not a good approach. There might be a much better
+        way to determine such an isometry explicitly.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+        A case where we can actually map things::
+
+            sage: H._isometry_from_single_geodesics(H.geodesic(-1, 1), H.geodesic(0, 2))
+            [ 1 -1]
+            [ 0  1]
+
+        In many cases, we fail to find the isometry::
+
+            sage: g = H.geodesic(1, 2, 3, model="klein")
+            sage: h = g.apply_isometry(matrix([[1, 2], [3, 4]]), on_right=True)
+            sage: H._isometry_from_single_geodesics(g, h)
+            Traceback (most recent call last):
+            ...
+            ValueError: ...
+
+        """
         for isometry in self._isometry_from_primitives([(preimage, image), (preimage.midpoint(), image.midpoint())]):
+            if isometry is None:
+                import warnings
+                warnings.warn("Could not determine an isometry of geodesics over the base ring. There might still be one but the implementation failed to detect it.")
             return isometry
 
     def _isometry_from_equations(self, conditions, filter):
