@@ -752,7 +752,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             interior_points = [
                 p
                 for i in range(ZZ.random_element().abs() + 3)
-                if not (p:=self.random_element("point")).is_ideal()
+                if not (p := self.random_element("point")).is_ideal()
             ]
 
             half_spaces = []
@@ -2532,6 +2532,41 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         # print(f"{det=}")
         yield self._isometry_from_conditions(conditions, filter)
 
+    def _isometry_untrivialize(self, preimage, image, defining):
+        # TODO: Check documentation.
+        # TODO: Check INPUT
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        # TODO: Benchmark?
+        existings = [x for (x, y) in defining]
+
+        if preimage.dimension() == 0:
+            if preimage in existings:
+                return None
+            if preimage.is_ideal():
+                # Actually, an ideal point is not trivial if the existing
+                # geodesic is unoriented. But it does not take a full
+                # degree of freedom away, so we ignore it here.
+                if any([preimage in existing for existing in existings]):
+                    return None
+            return (preimage, image)
+
+        elif preimage.dimension() == 1:
+            if preimage.unoriented() in [existing.unoriented() for existing in existings]:
+                # Again, we ignore the distinction between oriented and
+                # unoriented geodesics here.
+                return None
+
+            if preimage.start() in existings:
+                return self._isometry_untrivialize((preimage.end(), image.end()))
+
+            if preimage.end() in existings:
+                return self._isometry_untrivialize((preimage.start(), image.start()))
+
+            return (preimage, image)
+
+        assert False
+
     def _isometry_conditions(self, defining, remaining):
         r"""
 
@@ -2567,37 +2602,6 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
                 return 2
             assert False
 
-        def untrivialize(preimage, image):
-            # TODO: Break this out and doctest.
-            existings = [x for (x, y) in defining]
-
-            if preimage.dimension() == 0:
-                if preimage in existings:
-                    return None
-                if preimage.is_ideal():
-                    # Actually, an ideal point is not trivial if the existing
-                    # geodesic is unoriented. But it does not take a full
-                    # degree of freedom away, so we ignore it here.
-                    if any([preimage in existing for existing in existings]):
-                        return None
-                return (preimage, image)
-
-            elif preimage.dimension() == 1:
-                if preimage.unoriented() in [existing.unoriented() for existing in existings]:
-                    # Again, we ignore the distinction between oriented and
-                    # unoriented geodesics here.
-                    return None
-
-                if preimage.start() in existings:
-                    return untrivialize((preimage.end(), image.end()))
-
-                if preimage.end() in existings:
-                    return untrivialize((preimage.start(), image.start()))
-
-                return (preimage, image)
-
-            assert False
-
         degree = sum([degree(preimage, image) for (preimage, image) in defining])
 
         # If we have three pairs of points, determine the unique isometry that maps them to each other.
@@ -2615,7 +2619,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             if x.dimension() == 0:
                 assert y.dimension() == 0
 
-                if pair := untrivialize(x, y):
+                if pair := self._isometry_untrivialize(x, y, defining):
                     defining.append(pair)
 
                 for conditions in self._isometry_conditions(defining[:], remaining):
@@ -2628,7 +2632,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
                 f = x.geodesic()
                 g = y.geodesic()
 
-                if pair := untrivialize(f, g):
+                if pair := self._isometry_untrivialize(f, g, defining):
                     defining.append(pair)
 
                 for conditions in self._isometry_conditions(defining[:], remaining + [(x.start(), y.start()), (x.end(), y.end())]):
