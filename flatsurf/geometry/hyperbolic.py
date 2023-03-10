@@ -746,14 +746,16 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
             set = self.segment(self.geodesic(a, b), start=a, end=b)
         elif kind == "polygon":
-            # TODO: This complains sometimes that we cannot intersect no half planes.
             from sage.all import ZZ
 
-            interior_points = [
-                p
-                for i in range(ZZ.random_element().abs() + 3)
-                if not (p := self.random_element("point")).is_ideal()
-            ]
+            interior_points = []
+            count = ZZ.random_element().abs() + 3
+
+            while len(interior_points) < count:
+                p = self.random_element("point")
+                if p.is_ideal():
+                    continue
+                interior_points.append(p)
 
             half_spaces = []
 
