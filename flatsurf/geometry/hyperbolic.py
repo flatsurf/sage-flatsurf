@@ -3706,15 +3706,31 @@ class HyperbolicEpsilonGeometry(UniqueRepresentation, HyperbolicGeometry):
         self._epsilon = ring(epsilon)
 
     def _equal(self, x, y):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
-        # see https://floating-point-gui.de/errors/comparison/ but we do not
-        # need to worry about denormalized numbers in RR; apparently the
-        # exponent can get arbitrarily large there.
-        # TODO: Test that this really does what we want it to do.
+        r"""
+        Return whether ``x`` and ``y`` should be considered equal numbers with
+        respect to an ε error.
+
+        .. NOTE::
+
+            This method has not been tested much. Since this underlies much of
+            the inexact geometry, we should probably do something better here,
+            see e.g., https://floating-point-gui.de/errors/comparison/
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(RR)
+
+            sage: H.geometry._equal(1, 2)
+            False
+            sage: H.geometry._equal(1, 1 + 1e-32)
+            True
+            sage: H.geometry._equal(1e-32, 1e-32 + 1e-33)
+            False
+            sage: H.geometry._equal(1e-32, 1e-32 + 1e-64)
+            True
+
+        """
         if x == 0 or y == 0:
             return abs(x - y) < self._epsilon
 
