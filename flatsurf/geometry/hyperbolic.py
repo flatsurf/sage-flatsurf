@@ -2555,6 +2555,8 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
     def _isometry_from_primitives(self, pairs):
         r"""
+        Helper method for :meth:`isometry`.
+
         Return right isometries as 2x2 matrices that maps the elements of
         ``pairs`` to each other.
 
@@ -2662,11 +2664,36 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         yield self._isometry_from_equations(equations, create_filter(-1))
 
     def _isometry_untrivialize(self, preimage, image, defining):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Helper method for :meth:`isometry`.
+
+        Return a pair of hyperbolic objects that describe the mapping of
+        ``preimage`` to ``image`` or return ``None`` if that mapping is already
+        captured by the pairs of objects in ``defining``.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: H._isometry_untrivialize(H(I), H(I), [])
+            (I, I)
+
+        There are many ways to map the geodesic between -1 and 1 to itself.
+        Knowing that we need to fix `I` adds information::
+
+            sage: H._isometry_untrivialize(H(I), H(I), [(H.geodesic(-1, 1), H.geodesic(-1, 1))])
+            (I, I)
+
+        However, we already know that ``-1`` must go to ``-1``. Well, actually
+        that's not true, we could also be swapping the endpoints otherwise but
+        we want to use this to build three conditions that are independent
+        (this could probably be improved)::
+
+            sage: H._isometry_untrivialize(H(-1), H(-1), [(H.geodesic(-1, 1), H.geodesic(-1, 1))]) is None
+            True
+
+        """
         existings = [x for (x, y) in defining]
 
         if preimage.dimension() == 0:
@@ -2694,19 +2721,43 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
             return (preimage, image)
 
-        assert False
+        raise NotImplementedError
 
     def _isometry_conditions(self, defining, remaining):
         r"""
+        Helper method for :meth:`isometry`.
 
-        TODO: Is this actually a somewhat minimal set? Maybe just comment polygons probably create too many options.
+        Return sequences (typically triples) of pairs of hyperbolic primitive
+        objects (geodesics and points) that (almost) uniquely define a
+        hyperbolic mapping.
+
+        Build this sequence by extending ``defining`` with conditions extracted
+        from ``remaining``.
+
+        EXAMPLES::
 
             sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
+        Given four points, three points already uniquely determine the isometry::
+
+            sage: conditions = H._isometry_conditions(defining=[], remaining=[(H(0), H(0)), (H(1), H(1)), (H(2), H(2)), (H(3), H(3))])
+            sage: list(conditions)
+            [[(0, 0), (1, 1), (2, 2)]]
+
+        The data provided by ``remaining`` can contain redundancies::
+
+            sage: conditions = H._isometry_conditions(defining=[], remaining=[(H(0), H(0)), (H(1), H(1)), (H(1), H(1)), (H(3), H(3))])
+            sage: list(conditions)
+            [[(0, 0), (1, 1), (3, 3)]]
+
+        For more complex objects there might be lots of mappings possible (we
+        could likely have a shorter list of possibilities here)::
+
             sage: P = H.polygon([H.vertical(1).left_half_space(), H.vertical(-1).right_half_space(), H.geodesic(-1, 1).left_half_space()], marked_vertices=[I + 1])
             sage: Q = H.polygon(P.half_spaces(), marked_vertices=[I - 1])
-            sage: list(H._isometry_conditions([], [(P, Q)]))
+            sage: conditions = H._isometry_conditions([], [(P, Q)])
+            sage: list(conditions)
             [[(-1, -1), (1, 1), (1 + I, ∞)],
              [(-1, 1), (1, ∞), (1 + I, -1 + I)],
              [(-1, ∞), (1, -1 + I), (1 + I, -1)],
@@ -2716,14 +2767,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
              [(-1, 1), (1, -1), (1 + I, -1 + I)],
              [(-1, -1), (1, -1 + I), (1 + I, ∞)]]
 
-
-
         """
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
         def degree(preimage, image):
             if preimage.dimension() == 0:
                 return 1
