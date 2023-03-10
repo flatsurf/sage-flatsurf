@@ -3502,14 +3502,19 @@ class HyperbolicGeometry:
             sage: H.geometry.classify_point(0, -1, model="half_plane")
             -1
 
+        Unfortunately, over an inexact field, this detects points close to the
+        real axis as being ultra-ideal::
+
+            sage: H = HyperbolicPlane(RR)
+            sage: H.geometry.classify_point(0, -1e32, model="half_plane")
+            -1
+
         """
         if model == "half_plane":
-            # TODO: Epsilon Geometry should override this.
             return self._sgn(y)
 
         if model == "klein":
-            # TODO: Implement me. Add tests.
-            raise NotImplementedError
+            raise NotImplementedError("cannot classify points in the Klein model yet")
 
         raise NotImplementedError("unsupported model")
 
