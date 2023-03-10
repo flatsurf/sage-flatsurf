@@ -473,6 +473,11 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             sage: CC(I) in H
             False
 
+        .. NOTE::
+
+            There is currently no way to check whether a point is in the
+            interior of a set.
+
         """
         from sage.categories.all import NumberFields
 
@@ -3834,11 +3839,21 @@ class HyperbolicEpsilonGeometry(UniqueRepresentation, HyperbolicGeometry):
         return super().projective(p, q, point)
 
     def change_ring(self, ring):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Return this geometry over ``ring``.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane(RR)
+
+            sage: H.geometry.change_ring(RR) is H.geometry
+            True
+
+            sage: H.geometry.change_ring(RDF)
+            Epsilon geometry with ϵ=1e-06 over Real Double Field
+ 
+        """
         if ring.is_exact():
             raise ValueError("cannot change_ring() to an exact ring")
 
@@ -3860,7 +3875,6 @@ class HyperbolicEpsilonGeometry(UniqueRepresentation, HyperbolicGeometry):
 
 
 # TODO: Change richcmp to match the description below.
-# TODO: Implement checking whether a point is in the interior.
 class HyperbolicConvexSet(Element):
     r"""
     Base class for convex subsets of :class:`HyperbolicPlane`.
