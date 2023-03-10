@@ -2140,6 +2140,44 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         over the base ring.
         See :meth:`apply_isometry` for meaning of this matrix.
 
+        ALGORITHM:
+
+        We compute an isometry with a very inefficient Gröbner basis approach.
+
+        Essentially, we try to extract three points from the ``preimage`` with
+        their prescribed images in ``image``, see :meth:`_isometry_conditions`
+        and determine the unique isometry mapping the points by solving the
+        corresponding polynomial system, see :meth:`_isometry_from_conditions`
+        for the hacky Gröbner basis bit.
+
+        There are a lot of problems with this approach (apart from it being
+        extremely slow.)
+
+        Usually, we do not have access to meaningful points (the ideal end
+        points of a geodesic do not typically live in the :meth:`base_ring`) so
+        we have to map around geodesics instead. However, given two pairs of
+        geodesics, there is in general not a unique isometry mapping one pair
+        to the other, since there might be one isometry with positive and one
+        with negative determinant with this property. This adds to the
+        inefficiency because we have to try for both determinants and then
+        check which isometry maps the actual objects in question correctly.
+
+        Similarly, for more complex objects such as polygons, we do not know
+        a-priori which edge of the preimage polygon can be mapped to which edge
+        of the image polygon, so we have to try for all rotations of both
+        polygons.
+
+        Finally, the approach cannot work in general for certain
+        undeterdetermined systems. We do not know how to determine an isometry
+        that maps one geodesic to another geodesic. We can of course try to
+        write down an isometry that maps a geodesic to the vertical at 0 but in
+        general no such isometry is defined over the base ring. We can make the
+        system determined by requiring that the midpoints of the geodesics map
+        to each other but (apart from the midpoint not having coordinates in
+        the base ring) that isometry might not be defined over the base ring
+        even though there exists some isometry that maps the geodesics over the
+        base ring.
+
         EXAMPLES::
 
             sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
@@ -2490,88 +2528,30 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         # that it maps everything correctly.
         # However, there are objects that do not really define a mapping of
         # points. For example, when presented with an unoriented geodesic, we
-        # can map its endpoints two possible ways. More generally, when mapping
-        # a polygon, we can permute the edges cyclically.
+        # can map its endpoints two possible ways (apart from that, an isometry
+        # can swap the end points of a geodesic but map an oriented geodesic to
+        # itself at the same time.) Similarly, when mapping a polygon, we can
+        # permute the edges cyclically.
 
         # We need a mild form of backtracking to collect all possible triples
         # that define the isometry.
-        isometry = self._isometry(list(zip(preimage, image)))
+        def search_isometry(pairs):
+            for conditions in self._isometry_conditions([], pairs):
+                for isometry in self._isometry_from_primitives(conditions):
+                    if isometry is None:
+                        continue
+
+                    if any([preimage.apply_isometry(isometry, on_right=True) != image for (preimage, image) in pairs]):
+                        continue
+
+                    return isometry
+
+        isometry = search_isometry(list(zip(preimage, image)))
 
         if isometry is None:
             raise ValueError("no isometry can map these objects to each other")
 
         return isometry
-
-    def _isometry(self, pairs):
-        r"""
-        TODO: This is not correct anymore.
-
-        Return a right isometry that maps the pairs in ``defining`` and
-        ``remaining`` to each other.
-
-        If no such isometry exists, return ``None``.
-
-        This is a helper function for :meth:`isometry`.
-
-        ALGORITHM:
-
-        TODO: Is this still accurate?
-
-        An isometry is defined by specifying the image of three points. So once
-        ``defining`` contains three pairs of points, we take the unique
-        isometry this defines (if any) and verify that it maps ``remaining``
-        correctly. While ``defining`` contains less than three points, we
-        extract pairs of points from the pairs in ``remaining`` to augment
-        ``defining``.
-
-        The idea here is to turn a prescribed mapping of complex objects, say
-        between two polygons, into a mapping of a simpler objects, namely
-        points. Often there is not a unique mapping of points, e.g., there is
-        many ways to map two polygons to each other since we can cyclically
-        rotate the vertices for example. Therefore, we need some backtracking
-        here iterating over all possible three-point pairs.
-
-        INPUT:
-
-        - ``defining`` -- a sequence of pairs of points
-
-        - ``remaining`` -- a sequence of pairs of subsets of the hyperbolic
-          plane
-
-        EXAMPLES:
-
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
-            sage: H = HyperbolicPlane()
-
-        If the ``remaining`` pairs do not provide enough points, we randomly
-        add points to define a unique mapping::
-
-            sage: H._isometry([])
-            [1 0]
-            [0 1]
-            sage: H._isometry([(H(0), H(1))])
-            [ 1 -1]
-            [ 0  1]
-            sage: H._isometry([(H(1), H(0))])
-            [1 1]
-            [0 1]
-
-        If no isometry is possible, ``None`` is returned::
-
-            sage: H._isometry([(H(1), H(0)), (H(1), H(2))])
-
-        """
-        # TODO: Sort pairs
-
-        for conditions in self._isometry_conditions([], pairs):
-            for isometry in self._isometry_from_primitives(conditions):
-                if isometry is None:
-                    continue
-
-                if any([preimage.apply_isometry(isometry, on_right=True) != image for (preimage, image) in pairs]):
-                    continue
-
-                return isometry
 
     def _isometry_from_primitives(self, pairs):
         r"""
