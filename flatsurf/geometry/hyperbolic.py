@@ -4551,6 +4551,34 @@ class HyperbolicConvexSet(Element):
             ...
             ValueError: matrix does not define an isometry
 
+        Isometries can be applied to half spaces::
+
+            sage: isometry = matrix([[1, 1], [0, 1]])
+            sage: H.vertical(0).left_half_space().apply_isometry(isometry)
+            {x - 1 ≤ 0}
+
+        Isometries can be applied to points::
+
+            sage: H(I).apply_isometry(isometry)
+            1 + I
+
+        Isometries can be applied to polygons::
+
+            sage: P = H.polygon([
+            ....:   H.vertical(1).left_half_space(),
+            ....:   H.vertical(-1).right_half_space(),
+            ....:   H.half_circle(0, 1).left_half_space(),
+            ....:   H.half_circle(0, 4).right_half_space(),
+            ....: ], marked_vertices=[I])
+            sage: P.apply_isometry(isometry)
+            {(x^2 + y^2) - 2*x ≥ 0} ∩ {x - 2 ≤ 0} ∩ {(x^2 + y^2) - 2*x - 3 ≤ 0} ∩ {x ≥ 0} ∪ {1 + I}
+
+        Isometries can be applied to segments::
+
+            sage: segment = H(I).segment(2*I)
+            sage: segment.apply_isometry(isometry)
+            {-x + 1 = 0} ∩ {2*(x^2 + y^2) - 3*x - 1 ≥ 0} ∩ {(x^2 + y^2) - 3*x - 2 ≤ 0}
+
         REFERENCES:
 
         - Svetlana Katok, "Fuchsian Groups", Chicago University Press, Section
@@ -4595,13 +4623,31 @@ class HyperbolicConvexSet(Element):
         raise NotImplementedError("cannot apply isometries in this model yet")
 
     def _apply_isometry_klein(self, isometry, on_right=False):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
-        # TODO: This can be implemented generically.
-        raise NotImplementedError
+        r"""
+        Return the result of applying the ``isometry`` to this hyperbolic set.
+
+        Helper methed for :meth:`apply_isometry`. Hyperbolic sets implement
+        this method which is not implemented generically.
+
+        INPUT:
+
+        - ``isometry`` -- a 3×3 matrix over the :meth:`base_ring` describing an
+          isometry in the hyperboloid model.
+
+        - ``on_right`` -- a boolean (default: ``False``); whether to return the
+          result of the right action.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: isometry = matrix([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
+            sage: H.empty_set()._apply_isometry_klein(isometry)
+            {}
+
+        """
+        raise NotImplementedError(f"{type(self)} does not implement _apply_isometry_klein() yet")
 
     def _acted_upon_(self, x, self_on_left):
         # TODO: Check documentation.
@@ -5248,12 +5294,29 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
         return self.boundary().vertices()
 
     def _apply_isometry_klein(self, isometry, on_right=False):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
-        # TODO: This can be implemented generically.
+        r"""
+        Return the image of this half space under ``isometry``.
+
+        Helper method for :meth:`HyperbolicConvexSet.apply_isometry`.
+
+        INPUT:
+
+        - ``isometry`` -- a 3×3 matrix over the :meth:`base_ring` describing an
+          isometry in the hyperboloid model.
+
+        - ``on_right`` -- a boolean (default: ``False``) whether to return the
+          result of the right action.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: isometry = matrix([[1, -1, 1], [1, 1/2, 1/2], [1, -1/2, 3/2]])
+            sage: H.vertical(0).left_half_space()._apply_isometry_klein(isometry)
+            {x - 1 ≤ 0}
+
+        """
         return self._geodesic.apply_isometry(isometry, model="klein", on_right=on_right).left_half_space()
 
     def __hash__(self):
@@ -6152,6 +6215,87 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
 
         return self.parent().point(*xy, model="klein", check=False)
 
+    def _apply_isometry_klein(self, isometry, on_right=False):
+        r"""
+        Return the result of applying the ``isometry`` to this geodesic.
+
+        Helper methed for :meth:`HyperbolicConvexSet.apply_isometry`.
+
+        INPUT:
+
+        - ``isometry`` -- a 3×3 matrix over the :meth:`base_ring` describing an
+          isometry in the hyperboloid model.
+
+        - ``on_right`` -- a boolean (default: ``False``); whether to return the
+          result of the right action.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+        We apply a reflection to a geodesic::
+
+            sage: isometry = matrix([[-1, 0, 0], [0, 1, 0], [0, 0, 1]])
+            sage: g = H.geodesic(-1, 1)
+
+            sage: g._apply_isometry_klein(isometry)
+            {(x^2 + y^2) - 1 = 0}
+
+        Note how the reflection swaps the end points of the geodesic::
+
+            sage: g.start().apply_isometry(isometry, model="klein")
+            1
+            sage: g.end().apply_isometry(isometry, model="klein")
+            -1
+
+        However, the isometry maps the oriented geodesic to itself since what's
+        left of the geodesic is not changed::
+
+            sage: g._apply_isometry_klein(isometry) == g
+            True
+
+        An isometry that changes the orientation of the geodesic::
+
+            sage: isometry = matrix([[-1, 0, 0], [0, -1, 0], [0, 0, 1]])
+            sage: g._apply_isometry_klein(isometry)
+            {-(x^2 + y^2) + 1 = 0}
+
+        For an unoriented geodesic, the geodesic is unchanged though::
+
+            sage: g.unoriented()._apply_isometry_klein(isometry) == g.unoriented()
+            True
+
+        TESTS::
+
+            sage: p0 = H(0)
+            sage: p1 = H(1)
+            sage: p2 = H(oo)
+            sage: for (a, b, c, d) in [(2, 1, 1, 1), (1, 1, 0, 1), (1, 0, 1, 1), (2, 0, 0 , 1)]:
+            ....:     for on_right in [True, False]:
+            ....:         m = matrix(2, [a, b, c, d])
+            ....:         q0 = p0.apply_isometry(m, on_right=on_right)
+            ....:         q1 = p1.apply_isometry(m, on_right=on_right)
+            ....:         q2 = p2.apply_isometry(m, on_right=on_right)
+            ....:         assert H.geodesic(p0, p1).apply_isometry(m, on_right=on_right) == H.geodesic(q0, q1)
+            ....:         assert H.geodesic(p1, p0).apply_isometry(m, on_right=on_right) == H.geodesic(q1, q0)
+            ....:         assert H.geodesic(p1, p2).apply_isometry(m, on_right=on_right) == H.geodesic(q1, q2)
+            ....:         assert H.geodesic(p2, p1).apply_isometry(m, on_right=on_right) == H.geodesic(q2, q1)
+            ....:         assert H.geodesic(p2, p0).apply_isometry(m, on_right=on_right) == H.geodesic(q2, q0)
+            ....:         assert H.geodesic(p0, p2).apply_isometry(m, on_right=on_right) == H.geodesic(q0, q2)
+
+        """
+        from sage.modules.free_module_element import vector
+
+        if not on_right:
+            isometry = isometry.inverse()
+
+        b, c, a = (
+            vector(self.parent().base_ring(), [self._b, self._c, self._a])
+            * isometry
+        )
+        return self.parent().geodesic(a, b, c, model="klein", oriented=self.is_oriented())
+
     def _isometry_equations(self, isometry, image, λ):
         # TODO: Check documentation
         # TODO: Check INPUTS
@@ -6493,53 +6637,6 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
             )
 
         raise NotImplementedError("cannot parametrize a geodesic over this model yet")
-
-    def _apply_isometry_klein(self, isometry, on_right=False):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
-        # TODO: Should this be in the oriented class? Should there be an equivalent in the unoriented class?
-        r"""
-        INPUT:
-
-        - ``isometry`` -- a 3 x 3 matrix
-
-        - ``on_right`` -- an optional boolean which default to ``False``; set it to
-          ``True`` if you want a right action instead.
-
-        TESTS::
-
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
-            sage: H = HyperbolicPlane()
-            sage: p0 = H(0)
-            sage: p1 = H(1)
-            sage: p2 = H(oo)
-            sage: for (a, b, c, d) in [(2, 1, 1, 1), (1, 1, 0, 1), (1, 0, 1, 1), (2, 0, 0 , 1)]:
-            ....:     for on_right in [True, False]:
-            ....:         m = matrix(2, [a, b, c, d])
-            ....:         q0 = p0.apply_isometry(m, on_right=on_right)
-            ....:         q1 = p1.apply_isometry(m, on_right=on_right)
-            ....:         q2 = p2.apply_isometry(m, on_right=on_right)
-            ....:         assert H.geodesic(p0, p1).apply_isometry(m, on_right=on_right) == H.geodesic(q0, q1)
-            ....:         assert H.geodesic(p1, p0).apply_isometry(m, on_right=on_right) == H.geodesic(q1, q0)
-            ....:         assert H.geodesic(p1, p2).apply_isometry(m, on_right=on_right) == H.geodesic(q1, q2)
-            ....:         assert H.geodesic(p2, p1).apply_isometry(m, on_right=on_right) == H.geodesic(q2, q1)
-            ....:         assert H.geodesic(p2, p0).apply_isometry(m, on_right=on_right) == H.geodesic(q2, q0)
-            ....:         assert H.geodesic(p0, p2).apply_isometry(m, on_right=on_right) == H.geodesic(q0, q2)
-
-        """
-        from sage.modules.free_module_element import vector
-
-        if not on_right:
-            isometry = isometry.inverse()
-
-        b, c, a = (
-            vector(self.parent().base_ring(), [self._b, self._c, self._a])
-            * isometry
-        )
-        return self.parent().geodesic(a, b, c, model="klein")
 
     def vertices(self, marked_vertices=True):
         r"""
