@@ -1222,6 +1222,9 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         Use the ``-`` operator to pass to the geodesic with opposite
         orientation.
 
+        Use :meth:`HyperbolicConvexSet.unoriented` to get the unoriented
+        vertical.
+
         INPUT:
 
         - ``real`` -- an element of the :meth:`base_ring`
@@ -1239,6 +1242,12 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
             sage: H.vertical(-1)
             {-x - 1 = 0}
+
+        We can also create an unoriented geodesic::
+
+            sage: v = H.vertical(0)
+            sage: v.unoriented() == v
+            False
 
         .. SEEALSO::
 
@@ -4143,12 +4152,69 @@ class HyperbolicConvexSet(Element):
         for vertex in vertices:
             tester.assertIn(vertex, self)
 
-    def vertices(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+    def vertices(self, marked_vertices=True):
+        r"""
+        Return the vertices bounding this hyperbolic set.
+
+        This returns both finite and ideal vertices.
+
+        INPUT:
+
+        - ``marked_vertices`` -- a boolean (default: ``True``) whether to
+          include marked vertices that are not actual cornerns of the convex
+          set.
+
+        OUTPUT:
+
+        A set of points, namely :class:`HyperbolicVertices`. Iteration of this
+        set happens incounterclockwise order (as seen from the inside of the
+        convex set.)
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+        The empty set has no vertices::
+
+            sage: H.empty_set().vertices()
+            {}
+
+        A point is its own vertex::
+
+            sage: H(0).vertices()
+            {0,}
+            sage: H(I).vertices()
+            {I,}
+            sage: H(oo).vertices()
+            {∞,}
+
+        The vertices of a geodesic are its ideal end points::
+
+            sage: H.vertical(0).vertices()
+            {0, ∞}
+
+        The vertices of a half space are the ideal end points of its boundary geodesic::
+
+            sage: H.vertical(0).left_half_space().vertices()
+            {0, ∞}
+
+        The vertices a polygon can be finite and ideal::
+
+            sage: P = H.polygon([H.vertical(0).left_half_space(), H.half_circle(0, 1).left_half_space()])
+            sage: P.vertices()
+            {-1, I, ∞}
+
+        If a polygon has marked vertices they are included::
+
+            sage: P = H.polygon([H.vertical(0).left_half_space(), H.half_circle(0, 1).left_half_space()], marked_vertices=[2*I])
+            sage: P.vertices()
+            {-1, I, 2*I, ∞}
+
+            sage: P.vertices(marked_vertices=False)
+            {-1, I, ∞}
+
+        """
         return self.parent().polygon(self.half_spaces(), check=False, assume_sorted=True, assume_minimal=True).vertices()
 
     def is_finite(self):
@@ -4951,12 +5017,62 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
 
         return ZZ(2)
 
-    def vertices(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+    def vertices(self, marked_vertices=True):
+        r"""
+        Return the vertices bounding this half space.
+
+        INPUT:
+
+        - ``marked_vertices`` -- a boolean (default: ``True``), ignored since a
+          half space cannot have marked vertices.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+        The vertices of a half space are the ideal end points of its boundary geodesic::
+
+            sage: H.vertical(0).left_half_space().vertices()
+            {0, ∞}
+
+        Note that iteration in the set is not consistent with the orientation
+        of the half space (it is chosen such that the subset relation on vertices
+        can be checked quickly)::
+
+            sage: h = H.vertical(0).left_half_space()
+            sage: list(h.vertices())
+            [0, ∞]
+
+            sage: list((-h).vertices())
+            [0, ∞]
+
+        Use :meth:`HyperbolicGeodesic.start` and
+        :meth:`HyperbolicGeodesic.end` on the :meth:`boundary` to get the end
+        points in an order consistent with the orientation::
+
+            sage: g = h.boundary()
+            sage: g.start(), g.end()
+            (0, ∞)
+
+            sage: g = (-h).boundary()
+            sage: g.start(), g.end()
+            (∞, 0)
+
+        Currently, vertices cannot be computed if some of them have coordinates
+        which do not live over the :meth:`HyperbolicPlane.base_ring`; see
+        :class:`HyperbolicVertices`::
+
+            sage: H.half_circle(0, 2).left_half_space().vertices()
+            Traceback (most recent call last):
+            ...
+            ValueError: ...
+
+        .. SEEALSO::
+
+            :meth:`HyperbolicConvexSet.vertices` for more details.
+
+        """
         return self.boundary().vertices()
 
     def _apply_isometry_klein(self, isometry, on_right=False):
@@ -5886,12 +6002,37 @@ class HyperbolicUnorientedGeodesic(HyperbolicGeodesic):
 
     """
 
-    def vertices(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+    def vertices(self, marked_vertices=True):
+        r"""
+        Return the ideal end points of this unoriented geodesic.
+
+        INPUT:
+
+        - ``marked_vertices`` -- a boolean (default: ``True``), ignored since a
+          geodesic cannot have marked vertices.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: H.vertical(0).unoriented().vertices()
+            {0, ∞}
+
+        Currently, vertices cannot be computed if some of them have coordinates
+        which do not live over the :meth:`HyperbolicPlane.base_ring`; see
+        :class:`HyperbolicVertices`::
+
+            sage: H.half_circle(0, 2).unoriented().vertices()
+            Traceback (most recent call last):
+            ...
+            ValueError: ...
+
+        .. SEEALSO::
+
+            :meth:`HyperbolicConvexSet.vertices` for more details.
+
+        """
         return self.change(oriented=True).vertices()
 
     def _isometry_conditions(self, other):
@@ -6216,12 +6357,58 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
         )
         return self.parent().geodesic(a, b, c, model="klein")
 
-    def vertices(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+    def vertices(self, marked_vertices=True):
+        r"""
+        Return the ideal end points of this oriented geodesic.
+
+        INPUT:
+
+        - ``marked_vertices`` -- a boolean (default: ``True``), ignored since a
+          geodesic cannot have marked vertices.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: H.vertical(0).vertices()
+            {0, ∞}
+
+        Note that iteration in the set is not consistent with the orientation
+        of the geodesic (it is chosen such that the subset relation on vertices
+        can be checked quickly)::
+
+            sage: v = H.vertical(0)
+            sage: list(v.vertices())
+            [0, ∞]
+
+            sage: list((-v).vertices())
+            [0, ∞]
+
+        Use :meth:`HyperbolicGeodesic.start` and
+        :meth:`HyperbolicGeodesic.end` to get the end points in an order that
+        is consistent with orientation::
+
+            sage: v.start(), v.end()
+            (0, ∞)
+
+            sage: (-v).start(), (-v).end()
+            (∞, 0)
+
+        Currently, vertices cannot be computed if some of them have coordinates
+        which do not live over the :meth:`HyperbolicPlane.base_ring`; see
+        :class:`HyperbolicVertices`::
+
+            sage: H.half_circle(0, 2).vertices()
+            Traceback (most recent call last):
+            ...
+            ValueError: ...
+
+        .. SEEALSO::
+
+            :meth:`HyperbolicConvexSet.vertices` for more details.
+
+        """
         return HyperbolicVertices([self.start(), self.end()])
 
     def _isometry_conditions(self, other):
@@ -6535,12 +6722,37 @@ class HyperbolicPoint(HyperbolicConvexSet):
 
         return ZZ.zero()
 
-    def vertices(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+    def vertices(self, marked_vertices=True):
+        r"""
+        Return the vertices of this point, i.e., this point.
+
+        INPUT:
+
+        - ``marked_vertices`` -- a boolean (default: ``True``), ignored since a
+          point cannot have marked vertices.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: H(oo).vertices()
+            {∞,}
+
+        Currently, this does not work for points that have coordinates that do
+        not live in the :meth:`HyperbolicPlane.base_ring`; see
+        :class:`HyperbolicVertices`::
+
+            sage: H.half_circle(0, 2).start().vertices()
+            Traceback (most recent call last):
+            ...
+            ValueError: ...
+
+        .. SEEALSO::
+
+            :meth:`HyperbolicConvexSet.vertices` for more details.
+
+        """
         return HyperbolicVertices([self])
 
     def __hash__(self):
@@ -8144,15 +8356,56 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
         return edges
 
     def vertices(self, marked_vertices=True):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
-        # TODO: Define in HyperbolicConvexSet
         r"""
         Return the vertices of this polygon, i.e., the (possibly ideal) end
-        points of the :meth:`edges`, in counterclockwise order.
+        points of the :meth:`edges`.
+
+        INPUT:
+
+        -- ``marked_vertices`` -- a boolean (default: ``True``) whether to
+        inlude marked vertices in the output
+
+        OUTPUT:
+
+        Returns a set of points. Iteration over this set is in counterclockwise
+        order.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+        A finite polygon with a marked vertex::
+
+            sage: P = H.polygon([
+            ....:   H.vertical(1).left_half_space(),
+            ....:   H.vertical(-1).right_half_space(),
+            ....:   H.half_circle(0, 1).left_half_space(),
+            ....:   H.half_circle(0, 4).right_half_space(),
+            ....: ], marked_vertices=[I])
+            sage: P.vertices()
+            {-1, I, 1, (2/5, 3/5), (-2/5, 3/5)}
+
+            sage: P.vertices(marked_vertices=False)
+            {-1, 1, (2/5, 3/5), (-2/5, 3/5)}
+
+        Currently, vertices cannot be computed if some of them have coordinates
+        which do not live over the :meth:`HyperbolicPlane.base_ring`; see
+        :class:`HyperbolicVertices`::
+
+            sage: P = H.polygon([
+            ....:   H.half_circle(0, 1).left_half_space(),
+            ....:   H.half_circle(0, 2).right_half_space(),
+            ....: ])
+            sage: P.vertices()
+            Traceback (most recent call last):
+            ...
+            ValueError: ...
+
+        .. SEEALSO::
+
+            :meth:`HyperbolicConvexSet.vertices` for more details.
+
         """
         vertices = []
 
@@ -8846,12 +9099,50 @@ class HyperbolicSegment(HyperbolicConvexSet):
             geodesic = geodesic.unoriented()
         return geodesic
 
-    def vertices(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+    def vertices(self, marked_vertices=True):
+        r"""
+        Return the end poinst of this segment.
+
+        INPUT:
+
+        - ``marked_vertices`` -- a boolean (default: ``True``), ignored since a
+          segment cannot have marked vertices.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: s = H(I).segment(2*I)
+            sage: s.vertices()
+            {I, 2*I}
+
+        Note that iteration in the set is not consistent with the orientation
+        of the segment (it is chosen such that the subset relation on vertices
+        can be checked quickly)::
+
+            sage: (-s).vertices()
+            {I, 2*I}
+
+        Use :meth:`start` and :meth:`end` to get the vertices in an order that
+        is consistent with the orientation::
+
+            sage: s.start(), s.end()
+            (I, 2*I)
+            sage: (-s).start(), (-s).end()
+            (2*I, I)
+
+        Both finite and ideal end points of the segment are returned::
+
+            sage: s = H(-1).segment(I)
+            sage: s.vertices()
+            {-1, I}
+
+        .. SEEALSO::
+
+            :meth:`HyperbolicConvexSet.vertices` for more details.
+
+        """
         return HyperbolicVertices([self.start(), self.end()])
 
     def dimension(self):
@@ -9298,12 +9589,23 @@ class HyperbolicEmptySet(HyperbolicConvexSet):
         """
         return 0
 
-    def vertices(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+    def vertices(self, marked_vertices=True):
+        r"""
+        Retrun the vertices of this empty, i.e., an empty set of points.
+
+        INPUT:
+
+        - ``marked_vertices`` -- a boolean (default: ``True``), ignored
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: H.empty_set().vertices()
+            {}
+
+        """
         return HyperbolicVertices([])
 
 
