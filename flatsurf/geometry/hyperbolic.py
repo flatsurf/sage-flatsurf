@@ -4263,13 +4263,59 @@ class HyperbolicConvexSet(Element):
         return all([vertex.is_finite() for vertex in self.vertices()])
 
     def change_ring(self, ring):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
         r"""
         Return this set as an element of the hyperbolic plane over ``ring``.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: p = H(0)
+            sage: q = p.change_ring(AA)
+            sage: q.parent().base_ring()
+            Algebraic Real Field
+
+        Changing the base ring can provide coordinates for points::
+
+            sage: p = H.half_circle(0, 2).start()
+            sage: p.coordinates()
+            Traceback (most recent call last):
+            ...
+            ValueError: ...
+
+            sage: q = p.change_ring(AA)
+            sage: q.coordinates()
+            (-1.414213562373095?, 0)
+
+        Note that changing the ring only works in relatively trivial cases::
+
+            sage: q = HyperbolicPlane(AA).point(sqrt(2), 0, model="half_plane")
+
+            sage: p = q.change_ring(QQ)
+            Traceback (most recent call last):
+            ...
+            ValueError: ...
+
+        Most other sets also support changing the base ring::
+
+            sage: g = H.half_circle(0, 2)
+            sage: g.start().coordinates()
+            Traceback (most recent call last):
+            ...
+            ValueError: ...
+
+            sage: g.change_ring(AA).start().coordinates()
+            (-1.414213562373095?, 0)
+
+        .. SEEALSO::
+
+            :meth:`change` for a more general interface to changing properties
+            of hyperbolic sets.
+
+            :meth:`HyperbolicPlane.change_ring` for the hyperbolic plane that
+            the resulting objects lives in.
+
         """
         return self.change(ring=ring)
 
@@ -9577,14 +9623,6 @@ class HyperbolicEmptySet(HyperbolicConvexSet):
         from sage.all import Graphics
 
         return self._enhance_plot(Graphics(), model=model)
-
-    def change_ring(self, ring):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
-        return HyperbolicPlane(ring).empty_set()
 
     def dimension(self):
         # TODO: Check documentation.
