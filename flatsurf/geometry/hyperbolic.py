@@ -4335,13 +4335,20 @@ class HyperbolicConvexSet(Element):
         tester.assertEqual(self, self.change_ring(self.parent().base_ring()))
 
     def change(self, ring=None, geometry=None, oriented=None):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
         r"""
         Return a modified copy of this set.
+
+        INPUT:
+
+        - ``ring`` -- a ring (default: ``None`` to keep the current
+          :meth:`base_ring`); the ring over which the new set will be defined.
+
+        - ``geometry`` -- a :class:`HyperbolicGeometry` (default: ``None`` to
+          keep the current geometry); the geometry that will be used for the
+          new set.
+
+        - ``oriented`` -- a boolean (default: ``None`` to keep the current
+          orientedness) whether the new set will be explicitly oriented.
 
         EXAMPLES::
 
@@ -4357,18 +4364,24 @@ class HyperbolicConvexSet(Element):
 
         We can drop the explicit orientation of a set::
 
-            sage: geodesic.change(oriented=False)
-            {(x^2 + y^2) - x = 0}
+            sage: unoriented = geodesic.change(oriented=False)
+            sage: unoriented.is_oriented()
+            False
+
+        We can also take an unoriented set and pick an orientation::
+
+            sage: oriented = geodesic.change(oriented=True)
+            sage: oriented.is_oriented()
+            True
+
+        .. SEEALSO::
+
+            :meth:`is_oriented` for oriented an unoriented sets.
 
         """
         raise NotImplementedError(f"this {type(self)} does not implement change()")
 
     def _test_change(self, **options):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
         r"""
         Verify that the full interface of :meth:`change` has been implemented.
 
@@ -4385,11 +4398,15 @@ class HyperbolicConvexSet(Element):
         # The ring parameter is supported
         tester.assertEqual(self, self.change(ring=self.parent().base_ring()))
 
+        # The geometry parameter is supported
+        tester.assertEqual(self, self.change(geometry=self.parent().geometry))
+
         # The oriented parameter is supported
         tester.assertEqual(
             self.change(oriented=False),
             self.change(oriented=False).change(oriented=False),
         )
+
         if self != self.change(oriented=False):
             tester.assertEqual(self, self.change(oriented=True))
 
@@ -4668,6 +4685,7 @@ class HyperbolicConvexSet(Element):
         return self.dimension() == 0
 
     def is_oriented(self):
+        # TODO: Explain that this is for sets that are not described by listing the half spaces that they are an intersection of.
         # TODO: Check documentation.
         # TODO: Check INPUT
         # TODO: Check SEEALSO
@@ -4775,12 +4793,14 @@ class HyperbolicConvexSet(Element):
 
 
 class HyperbolicOrientedConvexSet(HyperbolicConvexSet):
+    # TODO: Explain that this is for sets that are not described by listing the half spaces that they are an intersection of.
     # TODO: Check documentation
     # TODO: Check INPUTS
     # TODO: Check SEEALSO
     # TODO: Check for doctests
     # TODO: Benchmark?
     def _neg_(self):
+        # TODO: Explain that this is different from the generic neg. Do we still have the generic neg? Maybe we should not.
         # TODO: Check documentation.
         # TODO: Check INPUT
         # TODO: Check SEEALSO
@@ -5063,11 +5083,46 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
         )
 
     def change(self, ring=None, geometry=None, oriented=None):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Return a modified copy of this half space.
+
+        INPUT:
+
+        - ``ring`` -- a ring (default: ``None`` to keep the current
+          :meth:`base_ring`); the ring over which the new half space will be
+          defined.
+
+        - ``geometry`` -- a :class:`HyperbolicGeometry` (default: ``None`` to
+          keep the current geometry); the geometry that will be used for the
+          new half space.
+
+        - ``oriented`` -- a boolean (default: ``None`` to keep the current
+          orientedness); must be ``None`` or ``False`` since half spaces cannot
+          have an explicit orientation. See :meth:`is_oriented`.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: h = H.vertical(0).left_half_space()
+
+        We change the base ring over which this space is defined::
+
+            sage: h.change(ring=AA)
+            {x ≤ 0}
+
+        We cannot change the orientedness of a half space:
+
+            sage: h.change(oriented=True)
+            Traceback (most recent call last):
+            ...
+            NotImplementedError: half spaces cannot have an explicit orientation
+
+            sage: h.change(oriented=False)
+            {x ≤ 0}
+
+        """
         if ring is not None or geometry is not None:
             self = self._geodesic.change(ring=ring, geometry=geometry).left_half_space()
 
@@ -5075,7 +5130,7 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
             oriented = self.is_oriented()
 
         if oriented != self.is_oriented():
-            raise NotImplementedError("cannot change orientation of half space")
+            raise NotImplementedError("half spaces cannot have an explicit orientation")
 
         return self
 
@@ -5887,23 +5942,34 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
         return ZZ(1)
 
     def change(self, *, ring=None, geometry=None, oriented=None):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
         r"""
         Return a modified copy of this geodesic.
 
-        EXAMPLES:
+        INPUT:
 
-        The base ring over which this geodesic is defined can be changed::
+        - ``ring`` -- a ring (default: ``None`` to keep the current
+          :meth:`base_ring`); the ring over which the new geodesic will be
+          defined.
+
+        - ``geometry`` -- a :class:`HyperbolicGeometry` (default: ``None`` to
+          keep the current geometry); the geometry that will be used for the
+          new geodesic.
+
+        - ``oriented`` -- a boolean (default: ``None`` to keep the current
+          orientedness); whether the new geodesic should be oriented.
+
+        EXAMPLES::
 
             sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
             sage: H = HyperbolicPlane(AA)
 
+        The base ring over which this geodesic is defined can be changed::
+
             sage: H.vertical(1).change_ring(QQ)
             {-x + 1 = 0}
+
+        But we cannot change the base ring if the geodesic cannot be expressed
+        in the smaller ring::
 
             sage: H.vertical(AA(2).sqrt()).change(ring=QQ)
             Traceback (most recent call last):
@@ -5915,6 +5981,7 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
             sage: v = H.vertical(0)
             sage: v.is_oriented()
             True
+
             sage: v = v.change(oriented=False)
             sage: v.is_oriented()
             False
@@ -7040,11 +7107,44 @@ class HyperbolicPointFromCoordinates(HyperbolicPoint):
             return repr(PowerSeriesRing(self.parent().base_ring(), names="I")([x, y]))
 
     def change(self, ring=None, geometry=None, oriented=None):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Return a modified copy of this point.
+
+        INPUT:
+
+        - ``ring`` -- a ring (default: ``None`` to keep the current
+          :meth:`base_ring`); the ring over which the point will be defined.
+
+        - ``geometry`` -- a :class:`HyperbolicGeometry` (default: ``None`` to
+          keep the current geometry); the geometry that will be used for the
+          point.
+
+        - ``oriented`` -- a boolean (default: ``None`` to keep the current
+          orientedness); must be ``None`` or ``False`` since points cannot have
+          an orientation.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+        We change the base ring over which the point is defined::
+
+            sage: p = H(0)
+            sage: p.change(ring=AA)
+            0
+
+        We cannot make a point oriented::
+
+            sage: p.change(oriented=True)
+            Traceback (most recent call last):
+            ...
+            NotImplementedError: cannot make a point oriented
+
+            sage: p.change(oriented=False) == p
+            True
+
+        """
         def point(parent):
             return parent.point(*self._coordinates, model="klein", check=False)
 
@@ -7052,7 +7152,7 @@ class HyperbolicPointFromCoordinates(HyperbolicPoint):
             oriented = self.is_oriented()
 
         if oriented != self.is_oriented():
-            raise NotImplementedError("cannot change orientation of a point")
+            raise NotImplementedError("cannot make a point oriented")
 
         if ring is not None or geometry is not None:
             self = self.parent().change_ring(ring, geometry=geometry).point(*self._coordinates, model="klein", check=False)
@@ -7293,11 +7393,44 @@ class HyperbolicPointFromGeodesic(HyperbolicPoint):
         return repr(self.change_ring(RR))
 
     def change(self, ring=None, geometry=None, oriented=None):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Return a modified copy of this point.
+
+        INPUT:
+
+        - ``ring`` -- a ring (default: ``None`` to keep the current
+          :meth:`base_ring`); the ring over which the point will be defined.
+
+        - ``geometry`` -- a :class:`HyperbolicGeometry` (default: ``None`` to
+          keep the current geometry); the geometry that will be used for the
+          point.
+
+        - ``oriented`` -- a boolean (default: ``None`` to keep the current
+          orientedness); must be ``None`` or ``False`` since points cannot have
+          an orientation.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+        We change the base ring over which the point is defined::
+
+            sage: p = H.half_circle(0, 2).start()
+            sage: p.change(ring=AA)
+            -1.414213562373095?
+
+        We cannot make a point oriented::
+
+            sage: p.change(oriented=True)
+            Traceback (most recent call last):
+            ...
+            NotImplementedError: cannot change orientation of a point
+
+            sage: p.change(oriented=False) == p
+            True
+
+        """
         if oriented is None:
             oriented = self.is_oriented()
 
@@ -8717,11 +8850,50 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
         )
 
     def change(self, ring=None, geometry=None, oriented=None):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Return a modified copy of this polygon.
+
+        INPUT:
+
+        - ``ring`` -- a ring (default: ``None`` to keep the current
+          :meth:`base_ring`); the ring over which the polygon will be
+          defined.
+
+        - ``geometry`` -- a :class:`HyperbolicGeometry` (default: ``None`` to
+          keep the current geometry); the geometry that will be used for the
+          polygon.
+
+        - ``oriented`` -- a boolean (default: ``None`` to keep the current
+          orientedness); must be ``None`` or ``False`` since polygons cannot
+          have an explicit orientation. See :meth:`is_oriented`.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+        We change the ring over which a polygon is defined::
+
+            sage: P = H.polygon([
+            ....:     H.vertical(1).left_half_space(),
+            ....:     H.vertical(-1).right_half_space(),
+            ....:     H.half_circle(0, 1).left_half_space()],
+            ....:     marked_vertices=[I])
+
+            sage: P.change(ring=AA)
+            {x - 1 ≤ 0} ∩ {x + 1 ≥ 0} ∩ {(x^2 + y^2) - 1 ≥ 0}
+
+        We cannot give a polygon an explicit orientation::
+
+            sage: P.change(oriented=False) == P
+            True
+
+            sage: P.change(oriented=True)
+            Traceback (most recent call last):
+            ...
+            NotImplementedError: polygons cannot have an explicit orientation
+
+        """
         if ring is not None or geometry is not None:
             self = self.parent().change_ring(ring, geometry=geometry).polygon(
                 [half_space.change(ring=ring, geometry=geometry) for half_space in self._half_spaces],
@@ -8734,7 +8906,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
             oriented = self.is_oriented()
 
         if oriented != self.is_oriented():
-            raise NotImplementedError("cannot change orientation of a polygon")
+            raise NotImplementedError("polygons cannot have an explicit orientation")
 
         return self
 
@@ -9149,11 +9321,44 @@ class HyperbolicSegment(HyperbolicConvexSet):
         return super()._richcmp_(other, op)
 
     def change(self, ring=None, geometry=None, oriented=None):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Return a modified copy of this segment.
+
+        - ``ring`` -- a ring (default: ``None`` to keep the current
+          :meth:`base_ring`); the ring over which the new half space will be
+          defined.
+
+        - ``geometry`` -- a :class:`HyperbolicGeometry` (default: ``None`` to
+          keep the current geometry); the geometry that will be used for the
+          new half space.
+
+        - ``oriented`` -- a boolean (default: ``None`` to keep the current
+          orientedness); must be ``None`` or ``False`` since half spaces cannot
+          have an explicit orientation. See :meth:`is_oriented`.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+        We change the ring over which the segment is defined::
+
+            sage: s = H(I).segment(2*I)
+
+            sage: s.change(ring=AA)
+            {-x = 0} ∩ {3/5*(x^2 + y^2) - 3/5 ≥ 0} ∩ {6/25*(x^2 + y^2) - 24/25 ≤ 0}
+
+        We make the segment unoriented::
+
+            sage: s.change(oriented=False).is_oriented()
+            False
+
+        We pick a (somewhat) random orientation of an unoriented segment::
+
+            sage: s.unoriented().change(oriented=True).is_oriented()
+            True
+
+        """
         if ring is not None or geometry is not None:
             start = self._start.change(ring=ring, geometry=geometry) if self._start is not None else None
             end = self._end.change(ring=ring, geometry=geometry) if self._end is not None else None
@@ -9171,9 +9376,6 @@ class HyperbolicSegment(HyperbolicConvexSet):
             oriented = self.is_oriented()
 
         if oriented != self.is_oriented():
-            if not self.is_oriented():
-                raise NotImplementedError("cannot orient unoriented segment")
-
             self = self.parent().segment(
                 self._geodesic,
                 start=self._start,
@@ -9643,11 +9845,37 @@ class HyperbolicEmptySet(HyperbolicConvexSet):
         )
 
     def change(self, ring=None, geometry=None, oriented=None):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Return a copy of the empty set.
+
+        EXAMPLES::
+
+        - ``ring`` -- a ring (default: ``None`` to keep the current
+          :meth:`base_ring`); the ring over which the empty set will be
+          defined.
+
+        - ``geometry`` -- a :class:`HyperbolicGeometry` (default: ``None`` to
+          keep the current geometry); the geometry that will be used for the
+          empty set.
+
+        - ``oriented`` -- a boolean (default: ``None`` to keep the current
+          orientedness); must be ``None`` or ``False`` since the empty set
+          cannot have an explicit orientation.
+
+        EXAMPLES:
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: H.empty_set().change(ring=AA) == HyperbolicPlane(AA).empty_set()
+            True
+
+            sage: H.empty_set().change(oriented=True)
+            Traceback (most recent call last):
+            ...
+            NotImplementedError: cannot change orientation of empty set
+
+        """
         if ring is not None:
             self = self.parent().change_ring(ring, geometry=geometry).empty_set()
 
