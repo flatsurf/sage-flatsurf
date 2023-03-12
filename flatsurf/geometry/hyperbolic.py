@@ -3874,7 +3874,6 @@ class HyperbolicEpsilonGeometry(UniqueRepresentation, HyperbolicGeometry):
         return f"Epsilon geometry with ϵ={self._epsilon} over {self._ring}"
 
 
-# TODO: Change richcmp to match the description below.
 class HyperbolicConvexSet(Element):
     r"""
     Base class for convex subsets of :class:`HyperbolicPlane`.
@@ -4805,11 +4804,28 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
         return self.parent().geometry._sgn(a + b * x + c * y) >= 0
 
     def _richcmp_(self, other, op):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Return how this half space compares to ``other`` with respect to the
+        ``op`` operator.
+
+        This is only implemented for the operators ``==`` and ``!=``. It
+        returns whether the two spaces are indistinguishable.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: H.vertical(0).left_half_space() == H.vertical(0).left_half_space()
+            True
+
+            sage: H.vertical(0).left_half_space() != H.vertical(0).right_half_space()
+            True
+
+            sage: H.vertical(0).left_half_space() != H.vertical(0)
+            True
+
+        """
         from sage.structure.richcmp import op_EQ, op_NE
 
         if op == op_NE:
@@ -4819,6 +4835,8 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
             if not isinstance(other, HyperbolicHalfSpace):
                 return False
             return self._geodesic._richcmp_(other._geodesic, op)
+
+        return super()._richcmp_(other, op)
 
     def plot(self, model="half_plane", **kwds):
         r"""
@@ -5480,22 +5498,64 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
         return self.parent().infinity() in self
 
     def _richcmp_(self, other, op):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Return how this geodesic compares to ``other`` with respect to the
+        ``op`` operator.
+
+        This is only implemented for the operators ``==`` and ``!=``. It
+        returns whether the two geodesics are indistinguishable up to scaling
+        of their defining equations.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: H.vertical(0) == H.vertical(0)
+            True
+
+        We distinguish oriented and unoriented geodesics::
+
+            sage: H.vertical(0).unoriented() == H.vertical(0)
+            False
+
+        We distinguish differently oriented geodesics::
+
+            sage: H.vertical(0) == -H.vertical(0)
+            False
+
+        We do, however, identify geodesics whose defining equations differ by some scaling::
+
+            sage: g = H.vertical(0)
+            sage: g.equation(model="half_plane")
+            (0, -2, 0)
+            sage: h = H.geodesic(0, -4, 0, model="half_plane")
+            sage: g.equation(model="half_plane") == h.equation(model="half_plane")
+            False
+            sage: g == h
+            True
+
+        .. NOTE::
+
+            Over inexact rings, this method is not very reliable. To some
+            extent this is inherent to the problem but also the implementation
+            uses generic predicates instead of relying on a specialized
+            implementation in the :class:`HyperbolicGeometry`.
+
+        """
         from sage.structure.richcmp import op_EQ, op_NE
 
         if op == op_NE:
             return not self._richcmp_(other, op_EQ)
 
         if op == op_EQ:
-            # TODO: Use a specialized predicate instead of the _method.
+            # See note in the docstring. We should use specialized geometry here.
             equal = self.parent().geometry._equal
             sgn = self.parent().geometry._sgn
+
             if type(self) is not type(other):
                 return False
+
             if sgn(self._b):
                 return (
                     (not self.is_oriented() or sgn(self._b) == sgn(other._b))
@@ -5509,7 +5569,7 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
                     and equal(self._b * other._c, other._b * self._c)
                 )
 
-        super()._richcmp_(other, op)
+        return super()._richcmp_(other, op)
 
     def __contains__(self, point):
         r"""
@@ -6519,14 +6579,12 @@ class HyperbolicPointFromCoordinates(HyperbolicPoint):
         return super().coordinates(model=model, ring=ring)
 
     def _richcmp_(self, other, op):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
         r"""
-        Return how this point compares to ``other``, see
-        :meth:`HyperbolicConvexSet._richcmp_`.
+        Return how this point compares to ``other`` with respect to the ``op``
+        operator.
+
+        This is only implemented for the operators ``==`` and ``!=``. It
+        returns whether two points are the same.
 
         EXAMPLES::
 
@@ -6553,6 +6611,18 @@ class HyperbolicPointFromCoordinates(HyperbolicPoint):
             sage: H.half_circle(0, 1).end() == H(1)
             True
 
+        .. NOTE::
+
+            Over inexact rings, this method is not very reliable. To some
+            extent this is inherent to the problem but also the implementation
+            uses generic predicates instead of relying on a specialized
+            implementation in the :class:`HyperbolicGeometry`.
+
+        .. SEEALSO::
+
+            :meth:`HyperbolicConvexSet.__contains__` to check for containment
+            of a point in a set
+
         """
         from sage.structure.richcmp import op_EQ, op_NE
 
@@ -6566,10 +6636,11 @@ class HyperbolicPointFromCoordinates(HyperbolicPoint):
             if isinstance(other, HyperbolicPointFromGeodesic):
                 return other == self
 
-            # TODO: Use a specialized predicate instead of the _method.
+            # See note in the docstring. We should use specialized geometry
+            # here to compare the coordinates simultaneously.
             return all(self.parent().geometry._equal(a, b) for (a, b) in zip(self.coordinates(model="klein"), other.coordinates(model="klein")))
 
-        super()._richcmp_(other, op)
+        return super()._richcmp_(other, op)
 
     def _repr_(self):
         # TODO: Check documentation.
@@ -6752,19 +6823,16 @@ class HyperbolicPointFromGeodesic(HyperbolicPoint):
         return super().coordinates(model=model, ring=ring)
 
     def _richcmp_(self, other, op):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
         r"""
-        Return how this point compares to ``other``, see
-        :meth:`HyperbolicConvexSet._richcmp_`.
+        Return how this point compares to ``other`` with respect to the ``op``
+        operator.
+
+        This is only implemented for the operators ``==`` and ``!=``. It
+        returns whether two points are the same.
 
         EXAMPLES::
 
             sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
-
             sage: H = HyperbolicPlane()
 
             sage: H.infinity() == H.projective(1, 0)
@@ -6787,6 +6855,19 @@ class HyperbolicPointFromGeodesic(HyperbolicPoint):
             sage: H.half_circle(0, 1).end() == H(1)
             True
 
+        .. NOTE::
+
+            Over inexact rings, this method is not very reliable. To some
+            extent this is inherent to the problem but also the implementation
+            uses generic predicates instead of relying on a specialized
+            implementation in the :class:`HyperbolicGeometry`.
+
+            For points that are not defined by coordinates but merely as the
+            starting points of a hyperbolic geodesic, this is probably not
+            implemented to the full extent possible. Instead, this will often
+            throw a ``ValueError`` even though we could say something about the
+            equality of the points.
+
         """
         from sage.structure.richcmp import op_EQ, op_NE
 
@@ -6803,10 +6884,9 @@ class HyperbolicPointFromGeodesic(HyperbolicPoint):
                 if self._geodesic == -other._geodesic:
                     return False
 
-                # TODO: This is probably too complicated. If we can compute the
-                # intersection of two geodesics, then that point should have
-                # coordinates in the base ring (or its fraction field or
-                # something like that.)
+                # This is probably too complicated. If we can compute the
+                # intersection, then it should have coordinates in the base
+                # ring.
                 intersection = self._geodesic._intersection(other._geodesic)
 
                 return self == intersection and other == intersection
@@ -6814,9 +6894,11 @@ class HyperbolicPointFromGeodesic(HyperbolicPoint):
             if not other.is_ideal():
                 return False
 
+            # We should probably be a little bit more careful over inexact
+            # rings here.
             return other in self._geodesic and self._geodesic.parametrize(other, model="euclidean") < 0
 
-        super()._richcmp_(other, op)
+        return super()._richcmp_(other, op)
 
     def _repr_(self):
         # TODO: Check documentation.
@@ -8247,12 +8329,31 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
         return self
 
     def _richcmp_(self, other, op):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
-        # TODO: Pass to normalization
+        r"""
+        Return how this polygon compares to ``other`` with respect to the
+        ``op`` operator.
+
+        This is only implemented for the operators ``==`` and ``!=``. It
+        returns whether polygons are essentially indistinguishable.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: P = H.polygon([H.vertical(1).left_half_space(), H.vertical(-1).right_half_space()])
+            sage: P == P
+            True
+
+        Marked vertices are taken into account to determine equality::
+
+            sage: Q = H.polygon([H.vertical(1).left_half_space(), H.vertical(-1).right_half_space()], marked_vertices=[I + 1])
+            sage: Q == Q
+            True
+            sage: P == Q
+            False
+
+        """
         from sage.structure.richcmp import op_EQ, op_NE
 
         if op == op_NE:
@@ -8262,6 +8363,8 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
             if not isinstance(other, HyperbolicConvexPolygon):
                 return False
             return self._half_spaces == other._half_spaces and self._marked_vertices == other._marked_vertices
+
+        return super()._richcmp_(other, op)
 
     def __hash__(self):
         r"""
@@ -8597,20 +8700,19 @@ class HyperbolicSegment(HyperbolicConvexSet):
         return self._geodesic.end()
 
     def _richcmp_(self, other, op):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
         r"""
-        Compares this segment to ``other`` with respect to ``op``.
+        Return how this segment compares to ``other`` with respect to the
+        ``op`` operator.
 
-        EXAMPLES:
+        This is only implemented for the operators ``==`` and ``!=``. It
+        returns whether two segments are essentially indistinguishable.
 
-        Oriented segments are equal if they have the same start and end points::
+        EXAMPLES::
 
             sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicSegment
             sage: H = HyperbolicPlane()
+
+        Oriented segments are equal if they have the same start and end points::
 
             sage: H(I).segment(2*I) == H(2*I).segment(I)
             False
@@ -8633,6 +8735,8 @@ class HyperbolicSegment(HyperbolicConvexSet):
                 self.geodesic() == other.geodesic()
                 and self.vertices() == other.vertices()
             )
+
+        return super()._richcmp_(other, op)
 
     def change(self, ring=None, geometry=None, oriented=None):
         # TODO: Check documentation.
@@ -9003,20 +9107,15 @@ class HyperbolicEmptySet(HyperbolicConvexSet):
         super().__init__(parent)
 
     def _richcmp_(self, other, op):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
         r"""
-        Return how this set compares to ``other``.
+        Return how this set compares to ``other`` with respect to ``op``.
 
-        See :meth:`HyperbolicConvexSet._richcmp_`.
+        This is only implemented for the operators ``==`` and ``!=``. It
+        returns whether both sets are empty.
 
         EXAMPLES::
 
             sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
-
             sage: H = HyperbolicPlane()
 
             sage: H.empty_set() == H.empty_set()
