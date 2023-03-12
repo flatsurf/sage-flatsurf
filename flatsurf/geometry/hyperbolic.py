@@ -4320,11 +4320,6 @@ class HyperbolicConvexSet(Element):
         return self.change(ring=ring)
 
     def _test_change_ring(self, **options):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
         r"""
         Verify that this set implements :meth:`change_ring`.
 
