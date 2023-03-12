@@ -4452,56 +4452,8 @@ class HyperbolicConvexSet(Element):
             tester.assertIsInstance(self.plot(model="half_plane"), Graphics)
         tester.assertIsInstance(self.plot(model="klein"), Graphics)
 
-    def _check_isometry_klein(self, isometry):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
-
-        # TODO: check that isometry is actually a matrix over the right ring?
-        if (
-            isometry.nrows() != 3
-            or isometry.ncols() != 3
-            or not self.parent().base_ring().has_coerce_map_from(isometry.base_ring())
-        ):
-            raise ValueError("invalid isometry")
-
-        from sage.matrix.special import diagonal_matrix
-
-        D = isometry.transpose() * diagonal_matrix([1, 1, -1]) * isometry
-        for i, row in enumerate(D):
-            for j, entry in enumerate(row):
-                # TODO: Use a specialized predicate instead of the _method.
-                if (i == j) == self.parent().geometry._zero(entry):
-                    raise ValueError("invalid isometry")
-
-        # TODO: Use a specialized predicate instead of the _method.
-        if not self.parent().geometry._equal(D[0, 0], D[1, 1]):
-            raise ValueError("invalid isometry")
-
-        # TODO: Use a specialized predicate instead of the _method.
-        if not self.parent().geometry._equal(
-            D[0, 0], -D[2, 2]
-        ):
-            raise ValueError("invalid isometry")
-
-    def _apply_isometry_klein(self, isometry, on_right=False):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
-        # TODO: This can be implemented generically.
-        raise NotImplementedError
-
     def apply_isometry(self, isometry, model="half_plane", on_right=False):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
-        # TODO: Explain what the isometry actually encodes, in particular if its determinant is negative.
+        # TODO: Doctests
         r"""
         Return the image of this set under the ``isometry``.
 
@@ -4538,12 +4490,18 @@ class HyperbolicConvexSet(Element):
         In any case, we convert the matrix to a corresponding 3×3 matrix, see
         :func:`gl2_to_sim12` and apply the isometry in the Klein model.
 
-        TODO: Explain how the isometries in the Klein model work.
+        To apply an isometry in the Klein model, we lift objects to the
+        hyperboloid model, apply the isometry given by the 3×3 matrix there,
+        and then project to the Klein model again.
 
         REFERENCES:
 
         - Svetlana Katok, "Fuchsian Groups", Chicago University Press, Section
           1.3; for the isometries of the upper half plane.
+
+        - James W. Cannon, William J. Floyd, Richard Kenyon, and Walter R.
+          Parry, "Hyperbolic Geometry", Flavors of Geometry, MSRI Publications,
+          Volume 31, 1997, Section 10; for the isometries as 3×3 matrices.
 
         """
         if model == "half_plane":
@@ -4551,12 +4509,42 @@ class HyperbolicConvexSet(Element):
             model = "klein"
 
         if model == "klein":
-            self._check_isometry_klein(isometry)
+            if isometry.dimensions() != (3, 3):
+                raise ValueError("isometry in Klein model must be given as a 3×3 matrix")
+
+            isometry = isometry.change_ring(self.parent().base_ring())
+
+            # Check that the matrix defines an isometry in the hyperboloid
+            # model, see CFJK "Hyperbolic Geometry" Theorem 10.1
+            D = isometry.transpose() * isometry.parent().diagonal_matrix([1, 1, -1]) * isometry
+
+            # These checks should use a specialized predicate of the geometry
+            # of this space so they are more robust over inexact rings.
+            for i, row in enumerate(D):
+                for j, entry in enumerate(row):
+                    if (i == j) == self.parent().geometry._zero(entry):
+                        raise ValueError("matrix does not define an isometry")
+
+            if not self.parent().geometry._equal(D[0, 0], D[1, 1]):
+                raise ValueError("matrix does not define an isometry")
+
+            if not self.parent().geometry._equal(
+                D[0, 0], -D[2, 2]
+            ):
+                raise ValueError("matrix does not define an isometry")
+
             return self._apply_isometry_klein(isometry, on_right=on_right)
 
-        raise NotImplementedError(
-            "applying isometry not supported in this hyperbolic model"
-        )
+        raise NotImplementedError("cannot apply isometries in this model yet")
+
+    def _apply_isometry_klein(self, isometry, on_right=False):
+        # TODO: Check documentation.
+        # TODO: Check INPUT
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        # TODO: Benchmark?
+        # TODO: This can be implemented generically.
+        raise NotImplementedError
 
     def _acted_upon_(self, x, self_on_left):
         # TODO: Check documentation.
