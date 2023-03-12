@@ -1,4 +1,4 @@
-name: Documentation
+name: Build Documentation
 on:
   push: { branches: [ "master" ] }
   pull_request: { branches: [ "master" ] }
@@ -34,6 +34,11 @@ jobs:
           make html SPHINXOPTS="-W"
           # Do not run Jekyll to create GitHub Pages but take HTML files as they are.
           touch _build/html/.nojekyll
+      - name: provide documentation as artifact for netlify workflow
+        uses: actions/upload-artifact@v3
+        with:
+          name: doc
+          path: doc/_build/html
       - uses: JamesIves/github-pages-deploy-action@3.7.1
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
