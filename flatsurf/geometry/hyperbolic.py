@@ -478,6 +478,11 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             There is currently no way to check whether a point is in the
             interior of a set.
 
+        .. SEEALSO::
+
+            :meth:`HyperbolicConvexSet.__contains__` to check containment of a
+            point in subsets of the hyperbolic plane.
+
         """
         from sage.categories.all import NumberFields
 
@@ -4079,13 +4084,36 @@ class HyperbolicConvexSet(Element):
         return self.parent().intersection(self, other)
 
     def __contains__(self, point):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
         r"""
         Return whether ``point`` is contained in this set.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: H(I) in H.empty_set()
+            False
+
+            sage: I in H.vertical(0)
+            True
+
+            sage: 2*I in H.half_circle(0, 1).left_half_space()
+            True
+
+            sage: I/2 in H.half_circle(0, 1).left_half_space()
+            False
+
+        .. NOTE::
+
+            There is currently no way to check whether a point is in the
+            interior of a set.
+
+        .. SEEALSO::
+
+            :meth:`HyperbolicConvexSet.is_subset` to check containment of
+            arbitrary sets.
+
         """
         for half_space in self.half_spaces():
             if point not in half_space:
@@ -4787,11 +4815,37 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
         return self._geodesic
 
     def __contains__(self, point):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Return whether ``point`` is contained in this half space.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: h = H.vertical(0).left_half_space()
+            sage: I in h
+            True
+
+            sage: I - 1 in h
+            True
+
+            sage: I + 1 in h
+            False
+
+            sage: oo in h
+            True
+
+        .. NOTE::
+
+            The implementation is currently not very robust over inexact rings.
+
+        .. SEEALSO::
+
+            :meth:`HyperbolicConvexSet.is_subset` to check containment of
+            arbitrary sets.
+
+        """
         point = self.parent()(point)
 
         if not isinstance(point, HyperbolicPoint):
@@ -4800,7 +4854,9 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
         x, y = point.coordinates(model="klein")
         a, b, c = self.equation(model="klein")
 
-        # TODO: Use a specialized predicate instead of the _method.
+        # We should use a specialized predicate here to do something more
+        # reasonable for points that are close to the boundary over inexact
+        # rings.
         return self.parent().geometry._sgn(a + b * x + c * y) >= 0
 
     def _richcmp_(self, other, op):
@@ -5573,6 +5629,9 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
 
     def __contains__(self, point):
         r"""
+        Return whether ``point`` lies on this geodesic.
+
+        EXAMPLES::
 
             sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
             sage: H = HyperbolicPlane()
@@ -5583,10 +5642,11 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
             sage: g.start() in g
             True
 
-        Points coming from geodesics that are parallel in the Klein model::
+        We can often decide containment for points coming from geodesics::
 
             sage: g = H.geodesic(-1, -1/2)
             sage: h = H.geodesic(1, 1/2)
+
             sage: g.start() in g
             True
             sage: g.start() in h
@@ -5596,12 +5656,11 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
             sage: g.end() in h
             False
 
+        .. NOTE::
+
+            The implementation is currently not very robust over inexact rings.
+
         """
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
         point = self.parent()(point)
 
         if not isinstance(point, HyperbolicPoint):
@@ -5625,7 +5684,8 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
         x, y = point.coordinates(model="klein")
         a, b, c = self.equation(model="klein")
 
-        # TODO: Use a specialized predicate instead of the _method.
+        # We should use a specialized predicate from the geometry class here to
+        # handle points that are close to the geodesic in a more robust way.
         return self.parent().geometry._zero(a + b * x + c * y)
 
     def dimension(self):
