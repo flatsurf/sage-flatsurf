@@ -191,9 +191,9 @@ We can also intersect objects that are not half spaces::
 ######################################################################
 #  This file is part of sage-flatsurf.
 #
-#        Copyright (C) 2022 Julian Rüth
-#                      2022 Sam Freedman
-#                      2022 Vincent Delecroix
+#        Copyright (C) 2022-2023 Julian Rüth
+#                           2022 Sam Freedman
+#                           2022 Vincent Delecroix
 #
 #  sage-flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -683,7 +683,6 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         EXAMPLES::
 
             sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
-
             sage: H = HyperbolicPlane()
 
         Make the following randomized tests reproducible::
@@ -2652,13 +2651,9 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             yield self._isometry_from_single_geodesics(pairs[0][0], pairs[0][1])
             return
 
-        from sage.all import vector
-
         # Create polynomial equations that must be satisfied to map the pairs
         # to each other.
         def equations(isometry, λ):
-            R = isometry.base_ring()
-
             equations = []
 
             for i, (preimage, image) in enumerate(pairs):
@@ -3082,7 +3077,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
                     solutions = R.ideal(equations).variety()
 
-                    assert solutions, f"After tuning the constant of the equations describing the isometry, there should be a solution but we did not find any."
+                    assert solutions, "After tuning the constant of the equations describing the isometry, there should be a solution but we did not find any."
 
                     solutions = [matrix([[solution[a], solution[b]], [solution[c], solution[d]]]) for solution in solutions]
 
@@ -3866,7 +3861,7 @@ class HyperbolicEpsilonGeometry(UniqueRepresentation, HyperbolicGeometry):
 
             sage: H.geometry.change_ring(RDF)
             Epsilon geometry with ϵ=1e-06 over Real Double Field
- 
+
         """
         if ring.is_exact():
             raise ValueError("cannot change_ring() to an exact ring")
@@ -4453,7 +4448,6 @@ class HyperbolicConvexSet(Element):
         tester.assertIsInstance(self.plot(model="klein"), Graphics)
 
     def apply_isometry(self, isometry, model="half_plane", on_right=False):
-        # TODO: Doctests
         r"""
         Return the image of this set under the ``isometry``.
 
@@ -4493,6 +4487,69 @@ class HyperbolicConvexSet(Element):
         To apply an isometry in the Klein model, we lift objects to the
         hyperboloid model, apply the isometry given by the 3×3 matrix there,
         and then project to the Klein model again.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+        The horizontal translation by 1 in the upper half plane model, a
+        parabolic isometry::
+
+            sage: isometry = matrix([[1, 1], [0, 1]])
+            sage: H.vertical(0).apply_isometry(isometry)
+            {-x + 1 = 0}
+
+        The same isometry as an isometry of the hyperboloid model::
+
+            sage: isometry = matrix([[1, -1, 1], [1, 1/2, 1/2], [1, -1/2, 3/2]])
+            sage: H.vertical(0).apply_isometry(isometry, model="klein")
+            {-x + 1 = 0}
+
+        An elliptic isometry::
+
+            sage: isometry = matrix([[1, -1], [1, 1]])
+            sage: H.vertical(0).apply_isometry(isometry)
+            {(x^2 + y^2) - 1 = 0}
+
+        A hyperbolic isometry::
+
+            sage: isometry = matrix([[1, 0], [0, 1/2]])
+            sage: H.vertical(0).apply_isometry(isometry)
+            {-x = 0}
+            sage: H(I).apply_isometry(isometry)
+            2*I
+
+        A reflection::
+
+            sage: isometry = matrix([[-1, 0], [0, 1]])
+            sage: H.vertical(0).apply_isometry(isometry)
+            {x = 0}
+
+        A glide reflection::
+
+            sage: isometry = matrix([[-1, 0], [0, 1/2]])
+            sage: H.vertical(0).apply_isometry(isometry)
+            {x = 0}
+            sage: H.vertical(1).apply_isometry(isometry)
+            {x + 2 = 0}
+
+        An isometry of the upper half plane must have non-zero determinant::
+
+            sage: isometry = matrix([[1, 0], [1, 0]])
+            sage: H.vertical(0).apply_isometry(isometry)
+            Traceback (most recent call last):
+            ...
+            ValueError: matrix does not define an isometry
+
+        An isometry of the Klein model, must preserve a quadratic form of type
+        `(1, 2)`::
+
+            sage: isometry = matrix([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+            sage: H.vertical(0).apply_isometry(isometry, model="klein")
+            Traceback (most recent call last):
+            ...
+            ValueError: matrix does not define an isometry
 
         REFERENCES:
 
