@@ -4218,18 +4218,49 @@ class HyperbolicConvexSet(Element):
         return self.parent().polygon(self.half_spaces(), check=False, assume_sorted=True, assume_minimal=True).vertices()
 
     def is_finite(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
         r"""
         Return whether all points in this set are finite.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: H.empty_set().is_finite()
+            True
+
+            sage: H.vertical(0).is_finite()
+            False
+
+            sage: H.vertical(0).left_half_space().is_finite()
+            False
+
+            sage: H(I).segment(2*I).is_finite()
+            True
+
+            sage: H(0).segment(I).is_finite()
+            False
+
+            sage: P = H.polygon([
+            ....:     H.vertical(-1).right_half_space(),
+            ....:     H.vertical(1).left_half_space(),
+            ....:     H.half_circle(0, 1).left_half_space(),
+            ....:     H.half_circle(0, 4).right_half_space(),
+            ....: ])
+            sage: P.is_finite()
+            False
+
+            sage: P = H.polygon([
+            ....:     H.vertical(-1).right_half_space(),
+            ....:     H.vertical(1).left_half_space(),
+            ....:     H.half_circle(0, 2).left_half_space(),
+            ....:     H.half_circle(0, 4).right_half_space(),
+            ....: ])
+            sage: P.is_finite()
+            True
+
         """
-        # TODO: This could be implemented generically.
-        raise NotImplementedError(
-            f"this {type(self)} does not support checking finiteness"
-        )
+        return all([vertex.is_finite() for vertex in self.vertices()])
 
     def change_ring(self, ring):
         # TODO: Check documentation.
@@ -6466,13 +6497,31 @@ class HyperbolicPoint(HyperbolicConvexSet):
         return self.parent().geometry._cmp(x * x + y * y, 1) > 0
 
     def is_finite(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Return whether this point is finite.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: H(0).is_finite()
+            False
+
+            sage: H(I).is_finite()
+            True
+
+            sage: H.half_circle(0, 2).start().is_finite()
+            False
+
+        .. NOTE::
+
+            Currently, the implementation is not robust over inexact rings.
+
+        """
         x, y = self.coordinates(model="klein")
-        # TODO: Use a specialized predicate instead of the _method.
+        # We should use specialized predicate from the geometry implementation
+        # here to make this more robust over inexact rings.
         return self.parent().geometry._cmp(x * x + y * y, 1) < 0
 
     def half_spaces(self):
@@ -7043,11 +7092,18 @@ class HyperbolicPointFromGeodesic(HyperbolicPoint):
         return False
 
     def is_finite(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Return whether this ideal point is finite, i.e., return ``False``.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: H.half_circle(0, 2).start().is_finite()
+            False
+
+        """
         return False
 
     @cached_method
