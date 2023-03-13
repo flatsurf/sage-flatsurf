@@ -7302,20 +7302,19 @@ class HyperbolicPointFromCoordinates(HyperbolicPoint):
         return self
 
     def _apply_isometry_klein(self, isometry, on_right=False):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
         r"""
+        Return the result of applying the ``isometry`` to this hyperbolic
+        point.
+
+        Helper method for :meth:`HyperbolicConvexSet.apply_isometry`.
+
         INPUT:
 
-        - ``isometry`` -- a 3x3 matrix in `SO(1, 2)`
+        - ``isometry`` -- a 3×3 matrix over the :meth:`base_ring` describing an
+          isometry in the hyperboloid model.
 
-        - ``model`` (optional) -- either ``"half_plane"`` (default) or ``"klein"``
-
-        - ``on_right`` (optional; default to ``False``) -- set it to ``True`` if you want
-          the right action.
+        - ``on_right`` -- a boolean (default: ``False``) whether to return the
+          result of the right action.
 
         TESTS::
 
@@ -7635,13 +7634,47 @@ class HyperbolicPointFromGeodesic(HyperbolicPoint):
         return hash((type(self), self._geodesic))
 
     def _apply_isometry_klein(self, isometry, on_right=False):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Return the result of applying the ``isometry`` to this hyperbolic
+        point.
+
+        Helper method for :meth:`HyperbolicConvexSet.apply_isometry`.
+
+        INPUT:
+
+        - ``isometry`` -- a 3×3 matrix over the :meth:`base_ring` describing an
+          isometry in the hyperboloid model.
+
+        - ``on_right`` -- a boolean (default: ``False``) whether to return the
+          result of the right action.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: point = H.half_circle(0, 2).start()
+            sage: point
+            -1.41421356237310
+
+        We apply an isometry of positive determinant::
+
+            sage: isometry = matrix([[1, -1, 1], [1, 1/2, 1/2], [1, -1/2, 3/2]])
+            sage: point._apply_isometry_klein(isometry)
+            -0.414213562373095
+
+        We apply an isometry of negative determinant::
+
+            sage: isometry = matrix([[-1, 0, 0], [0, 1, 0], [0, 0, 1]])
+            sage: point._apply_isometry_klein(isometry)
+            1.41421356237310
+
+        """
         image = self._geodesic.apply_isometry(isometry, model="klein", on_right=on_right)
+
         if isometry.det().sign() == -1:
+            # An isometry of negative determinant swaps the end points of the
+            # geodesic
             image = -image
 
         return image.start()
@@ -9109,11 +9142,33 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
         return hash((self._half_spaces, self._marked_vertices))
 
     def _apply_isometry_klein(self, isometry, on_right=False):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Return the image of this polygon under ``isometry``.
+
+        Helper method for :meth:`HyperbolicConvexSet.apply_isometry`.
+
+        INPUT:
+
+        - ``isometry`` -- a 3×3 matrix over the :meth:`base_ring` describing an
+          isometry in the hyperboloid model.
+
+        - ``on_right`` -- a boolean (default: ``False``) whether to return the
+          result of the right action.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: isometry = matrix([[1, -1, 1], [1, 1/2, 1/2], [1, -1/2, 3/2]])
+            sage: P = H.polygon([
+            ....:     H.vertical(0).right_half_space(),
+            ....:     H.half_circle(0, 4).left_half_space()],
+            ....:     marked_vertices=[4*I])
+            sage: P._apply_isometry_klein(isometry)
+            {(x^2 + y^2) - 2*x - 3 ≥ 0} ∩ {x - 1 ≥ 0} ∪ {1 + 4*I}
+
+        """
         half_spaces = [h.apply_isometry(isometry, model="klein", on_right=on_right) for h in self._half_spaces]
         marked_vertices = [p.apply_isometry(isometry, model="klein", on_right=on_right) for p in self._marked_vertices]
 
@@ -9317,26 +9372,70 @@ class HyperbolicSegment(HyperbolicConvexSet):
         )
 
     def _apply_isometry_klein(self, isometry, on_right=False):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
         r"""
+        Return the image of this segment under ``isometry``.
+
+        Helper method for :meth:`HyperbolicConvexSet.apply_isometry`.
+
+        INPUT:
+
+        - ``isometry`` -- a 3×3 matrix over the :meth:`base_ring` describing an
+          isometry in the hyperboloid model.
+
+        - ``on_right`` -- a boolean (default: ``False``) whether to return the
+          result of the right action.
+
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicSegment
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
-            sage: segment = H.segment(H.vertical(0), start=I)
-            sage: segment.apply_isometry(matrix(2, [1, 1, 0, 1]))
-            {-x + 1 = 0} ∩ {2*(x^2 + y^2) - 3*x - 1 ≥ 0}
+        We apply an isometry to an oriented segment::
+
+            sage: isometry = matrix([[1, -1, 1], [1, 1/2, 1/2], [1, -1/2, 3/2]])
+            sage: segment = H(I).segment(2*I)
+            sage: segment._apply_isometry_klein(isometry)
+            {-x + 1 = 0} ∩ {2*(x^2 + y^2) - 3*x - 1 ≥ 0} ∩ {(x^2 + y^2) - 3*x - 2 ≤ 0}
+
+        We apply an isometry of negative determinant to an oriented segment::
+
+            sage: isometry = matrix([[-1, 0, 0], [0, 1, 0], [0, 0, 1]])
+            sage: segment._apply_isometry_klein(isometry) == segment
+            True
+
+            sage: segment.start().apply_isometry(isometry, model="klein") == segment.start()
+            True
+
+            sage: segment.end().apply_isometry(isometry, model="klein") == segment.end()
+            True
+
+        Note that this behavior is different from how the start and end point
+        of a geodesic behave under such an isometry::
+
+            sage: segment.geodesic().apply_isometry(isometry, model="klein") == segment.geodesic()
+            False
+
+            sage: segment.geodesic().apply_isometry(isometry, model="klein").start() == segment.geodesic().end()
+            True
+
+            sage: segment.geodesic().apply_isometry(isometry, model="klein").end() == segment.geodesic().start()
+            True
+
+        We can also apply an isometry to an unoriented geodesic::
+
+            sage: segment.unoriented()._apply_isometry_klein(isometry) == segment.unoriented()
+            True
 
         """
         geodesic = self.geodesic()._apply_isometry_klein(isometry, on_right=on_right)
-        start = self._start._apply_isometry_klein(isometry, on_right=on_right) if self._start is not None else None
-        end = self._end._apply_isometry_klein(isometry, on_right=on_right) if self._end is not None else None
-        return self.parent().segment(geodesic, start=start, end=end)
+
+        if isometry.det().sign() == -1 and geodesic.is_oriented():
+            geodesic = -geodesic
+
+        start = self._start.apply_isometry(isometry, model="klein", on_right=on_right) if self._start is not None else None
+        end = self._end.apply_isometry(isometry, model="klein", on_right=on_right) if self._end is not None else None
+
+        return self.parent().segment(geodesic, start=start, end=end, oriented=self.is_oriented())
 
     def _endpoint_half_spaces(self):
         # TODO: Check documentation.
@@ -9930,24 +10029,28 @@ class HyperbolicEmptySet(HyperbolicConvexSet):
         return "{}"
 
     def _apply_isometry_klein(self, isometry, on_right=False):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
         r"""
+        Return the result of applying the ``isometry`` to the empty set, i.e.,
+        the empty set.
+
+        Helper method for :meth:`HyperbolicConvexSet.apply_isometry`.
+
         INPUT:
 
-        - ``isometry`` -- a 3 x 3 matrix
+        - ``isometry`` -- a 3×3 matrix over the :meth:`base_ring` describing an
+          isometry in the hyperboloid model.
 
-        - ``on_right`` -- an optional boolean which default to ``False``; set it to
-          ``True`` if you want a right action instead.
+        - ``on_right`` -- a boolean (default: ``False``) whether to return the
+          result of the right action.
 
-        TESTS::
+        EXAMPLES::
 
             sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
-            sage: S = HyperbolicPlane().empty_set()
-            sage: S.apply_isometry(matrix(2, [2, 1, 1, 1])) is S
+            sage: H = HyperbolicPlane()
+
+
+            sage: isometry = matrix([[1, -1, 1], [1, 1/2, 1/2], [1, -1/2, 3/2]])
+            sage: H.empty_set()._apply_isometry_klein(isometry) == H.empty_set()
             True
 
         """
@@ -10096,8 +10199,9 @@ def gl2_to_sim12(m):
     """
     from sage.matrix.constructor import matrix
 
-    if m.nrows() != 2 or m.ncols() != 2:
-        raise ValueError("invalid matrix")
+    if m.dimensions() != (2, 2):
+        raise ValueError("matrix does not encode an isometry in the half plane model")
+
     a, b, c, d = m.list()
     return matrix(
         3,
@@ -10137,8 +10241,9 @@ def sim12_to_gl2(m):
     """
     from sage.matrix.constructor import matrix
 
-    if m.nrows() != 3 or m.ncols() != 3:
-        raise ValueError("invalid matrix")
+    if m.dimensions() != (3, 3):
+        raise ValueError("matrix does not encode an isometry in the Klein model")
+
     m00, m01, m02, m10, m11, m12, m20, m21, m22 = m.list()
     K = m.base_ring()
     two = K(2)
