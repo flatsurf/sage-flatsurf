@@ -7219,21 +7219,28 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
 
 
 class HyperbolicUnorientedGeodesic(HyperbolicGeodesic):
-    # TODO: Check documentation
-    # TODO: Check INPUTS
-    # TODO: Check SEEALSO
-    # TODO: Check for doctests
-    # TODO: Benchmark?
     r"""
     An unoriented geodesic in the hyperbolic plane.
 
     EXAMPLES::
 
-        sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+        sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicUnorientedGeodesic
         sage: H = HyperbolicPlane()
 
         sage: H.vertical(0).unoriented()
         {x = 0}
+
+    TESTS::
+
+        sage: v = H.vertical(0).unoriented()
+        sage: isinstance(v, HyperbolicUnorientedGeodesic)
+        True
+
+        sage: TestSuite(v).run()
+
+    .. SEEALSO::
+
+        :meth:`HyperbolicPlane.geodesic` to create geodesics from points or equations
 
     """
     def _isometry_conditions(self, other):
