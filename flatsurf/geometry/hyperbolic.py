@@ -7604,28 +7604,109 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
         return "concave"
 
     def parametrize(self, point, model, check=True):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
-        # TODO: Should this be in the oriented class? Should there be an equivalent in the unoriented class?
-        if isinstance(point, HyperbolicPoint):
-            if check and point not in self:
+        r"""
+        Return the value of ``point`` in a linear parametrization of this
+        geodesic.
+
+        INPUT:
+
+        - ``point`` -- a :class:`HyperbolicPoint` on this geodesic
+
+        - ``model`` -- a string; currently only ``"euclidean"`` is supported
+
+        - ``check`` -- a boolean (default: ``True``); whether to ensure that
+          ``point`` is actually a point on the geodesic
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+        We can parametrize points on a geodesic such that the order of the
+        points corresponds to the parameters we get::
+
+            sage: g = H.vertical(0)
+
+            sage: g.parametrize(0, model="euclidean")
+            -1
+
+            sage: g.parametrize(I, model="euclidean")
+            0
+
+            sage: g.parametrize(2*I, model="euclidean")
+            3/5
+
+            sage: g.parametrize(oo, model="euclidean")
+            1
+
+        .. NOTE::
+
+            This method is not robust for points over inexact rings and should
+            be improved.
+
+        .. SEEALSO::
+
+            :meth:`unparametrize` for the recovers the point from the parameter
+
+        """
+        if check:
+            point = self.parent()(point)
+            if point not in self:
                 raise ValueError("point must be on geodesic to be parametrized")
 
         if model == "euclidean":
             base = self.an_element().coordinates(model="klein")
             tangent = (self._c, -self._b)
 
-            if isinstance(point, HyperbolicPoint):
-                # TODO: Use a specialized predicate instead of the _method.
-                coordinate = 0 if not self.parent().geometry._zero(tangent[0]) else 1
-                return (
-                    point.coordinates(model="klein")[coordinate] - base[coordinate]
-                ) / tangent[coordinate]
+            # We should use a specialized predicate here to make this work
+            # better over inexact rings.
+            coordinate = 0 if not self.parent().geometry._zero(tangent[0]) else 1
+            return (
+                point.coordinates(model="klein")[coordinate] - base[coordinate]
+            ) / tangent[coordinate]
 
-            λ = self.parent().base_ring()(point)
+        raise NotImplementedError("cannot parametrize a geodesic over this model yet")
+
+    def unparametrize(self, λ, model, check=True):
+        r"""
+        Return the point parametrized by ``λ`` on this geodesic.
+
+        INPUT:
+
+        - ``λ`` -- an element of :meth:`HyperbolicPlane.base_ring`
+
+        - ``model`` -- a string; currently only ``"euclidean"`` is supported
+
+        - ``check`` -- a boolean (default: ``True``); whether to ensure that
+          the returned point is not ultra ideal
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+        This method is the inverse of :meth;`parametrize`::
+
+            sage: g = H.vertical(0)
+
+            sage: g.unparametrize(g.parametrize(0, model="euclidean"), model="euclidean")
+            0
+
+            sage: g.unparametrize(g.parametrize(I, model="euclidean"), model="euclidean")
+            I
+
+            sage: g.unparametrize(g.parametrize(2*I, model="euclidean"), model="euclidean")
+            2*I
+
+            sage: g.unparametrize(g.parametrize(oo, model="euclidean"), model="euclidean")
+            ∞
+
+        """
+        if model == "euclidean":
+            base = self.an_element().coordinates(model="klein")
+            tangent = (self._c, -self._b)
+
+            λ = self.parent().base_ring()(λ)
 
             return self.parent().point(
                 x=base[0] + λ * tangent[0],
@@ -9553,7 +9634,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
                     if intersection is None:
                         # constraining is anti-parallel to half_space
                         if (
-                            boundary.parametrize(0, model="euclidean", check=False)
+                            boundary.unparametrize(0, model="euclidean", check=False)
                             not in constraining
                         ):
                             return self.parent().empty_set()
@@ -9574,7 +9655,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
 
                     # Determine whether this half space constrains to (-∞, λ] or [λ, ∞).
                     if (
-                        boundary.parametrize(λ + 1, model="euclidean", check=False)
+                        boundary.unparametrize(λ + 1, model="euclidean", check=False)
                         in constraining
                     ):
                         constraint = RealSet.unbounded_above_closed(rλ)
@@ -9590,7 +9671,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
                 # Construct a point from any of the λ in interval.
                 λ = interval.an_element()
 
-                point = boundary.parametrize(λ, model="euclidean", check=False)
+                point = boundary.unparametrize(λ, model="euclidean", check=False)
 
         return self._extend_to_euclidean_boundary(point)
 
