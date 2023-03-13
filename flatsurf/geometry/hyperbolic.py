@@ -5284,13 +5284,15 @@ class HyperbolicOrientedConvexSet(HyperbolicConvexSet):
 
 
 class HyperbolicHalfSpace(HyperbolicConvexSet):
-    # TODO: Check documentation
-    # TODO: Check INPUTS
-    # TODO: Check SEEALSO
-    # TODO: Check for doctests
-    # TODO: Benchmark?
     r"""
     A closed half space of the hyperbolic plane.
+
+    INPUT:
+
+    - ``parent`` -- the :class:`HyperbolicPlane` containing this half space.
+
+    - ``geodesic`` -- the :class:`HyperbolicOrientedGeodesic` to whose left
+      this half space lies.
 
     EXAMPLES::
 
@@ -5300,27 +5302,40 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
         sage: H.half_circle(0, 1).left_half_space()
         {(x^2 + y^2) - 1 ≥ 0}
 
+    .. SEEALSO::
+
+        :meth:`HyperbolicPlane.half_space`,
+        :meth:`HyperbolicOrientedGeodesic.left_half_space`,
+        :meth:`HyperbolicOrientedGeodesic.right_half_space` for the most common
+        ways to create half spaces.
+
     """
 
     def __init__(self, parent, geodesic):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        TESTS::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicHalfSpace
+            sage: H = HyperbolicPlane()
+
+            sage: h = H.half_circle(0, 1).left_half_space()
+            sage: isinstance(h, HyperbolicHalfSpace)
+            True
+
+            sage: TestSuite(h).run()
+            
+        """
         super().__init__(parent)
 
         if not isinstance(geodesic, HyperbolicOrientedGeodesic):
             raise TypeError("geodesic must be an oriented geodesic")
 
+        if not geodesic.parent() is parent:
+            raise ValueError("geodesic must be in parent")
+
         self._geodesic = geodesic
 
     def equation(self, model, normalization=None):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
         r"""
         Return an inequality for this half space as a triple ``a``, ``b``, ``c`` such that:
 
@@ -5332,15 +5347,42 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
 
         Note that the output is not unique since the coefficients can be scaled
         by a positive scalar.
+
+        INPUT:
+
+        - ``model`` -- either ``"half_plane"`` or ``"klein"``
+
+        - ``normalization`` -- how to normalize the coefficients, see
+          :meth:`HyperbolicGeodesic.equation` for details
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicHalfSpace
+            sage: H = HyperbolicPlane()
+
+            sage: h = H.half_circle(0, 1).left_half_space()
+
+            sage: h.equation(model="half_plane")
+            (2, 0, -2)
+
+            sage: H.half_space(2, 0, -2, model="half_plane") == h
+            True
+
+            sage: h.equation(model="klein")
+            (0, 0, 2)
+
+            sage: H.half_space(0, 0, 2, model="klein") == h
+            True
+
+        .. SEEALSO::
+
+            :meth:`HyperbolicPlane.half_space` to build a half space from the
+            coefficients returned by this method.
+
         """
         return self._geodesic.equation(model=model, normalization=normalization)
 
     def _repr_(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
         r"""
         Return a printable representation of this half space.
 
@@ -6024,7 +6066,7 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
             sage: H = HyperbolicPlane()
 
             sage: H.vertical(0).plot()
-            Graphics object consisting of 1 graphics primitive
+            ...Graphics object consisting of 1 graphics primitive
 
         """
         return (
