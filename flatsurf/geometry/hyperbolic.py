@@ -5257,14 +5257,6 @@ class HyperbolicConvexSet(Element):
         """
         raise NotImplementedError(f"this {type(self)} does not implement _isometry_conditions yet and cannot be used to compute an isometry")
 
-    def _isometry_equations(self, isometry, other, λ):
-        # TODO: Check documentation
-        # TODO: Check INPUTS
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
-        raise NotImplementedError
-
 
 class HyperbolicOrientedConvexSet(HyperbolicConvexSet):
     # TODO: Explain that this is for sets that are not described by listing the half spaces that they are an intersection of.
@@ -6702,11 +6694,38 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
         return self.parent().geodesic(a, b, c, model="klein", oriented=self.is_oriented())
 
     def _isometry_equations(self, isometry, image, λ):
-        # TODO: Check documentation
-        # TODO: Check INPUTS
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Return equations that must be satisfied if this set converts to
+        ``image`` under ``isometry`` using ``λ`` as a free variable for the
+        scaling factor.
+
+        Helper method for :meth:`HyperbolicPlane._isometry_from_primitives`.
+
+        INPUT:
+
+        - ``isometry`` -- a 3×3 matrix describing a (right) isometry; typically
+          not over the base ring but in symbolic variables
+
+        - ``image`` -- a geodesic
+
+        - ``λ`` -- a symbolic variable
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, gl2_to_sim12
+            sage: H = HyperbolicPlane()
+
+            sage: R.<a, b, c, d, λ> = QQ[]
+            sage: isometry = gl2_to_sim12(matrix([[a, b], [c, d]]))
+            sage: isometry
+            [                            b*c + a*d                             a*c - b*d                             a*c + b*d]
+            [                            a*b - c*d 1/2*a^2 - 1/2*b^2 - 1/2*c^2 + 1/2*d^2 1/2*a^2 + 1/2*b^2 - 1/2*c^2 - 1/2*d^2]
+            [                            a*b + c*d 1/2*a^2 - 1/2*b^2 + 1/2*c^2 - 1/2*d^2 1/2*a^2 + 1/2*b^2 + 1/2*c^2 + 1/2*d^2]
+
+            sage: H.vertical(0)._isometry_equations(isometry, H.vertical(1), λ)
+            [-b*c - a*d + λ, -a*c + b*d + λ, -a*c - b*d - λ]
+
+        """
         R = λ.parent()
 
         a, b, c = self.equation(model="klein")
@@ -7510,11 +7529,40 @@ class HyperbolicPoint(HyperbolicConvexSet):
         return hash(self.coordinates(ring=self.parent().base_ring(), model="klein"))
 
     def _isometry_equations(self, isometry, image, λ):
-        # TODO: Check documentation
-        # TODO: Check INPUTS
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Return equations that must be satisfied if this set converts to
+        ``image`` under ``isometry`` using ``λ`` as a free variable for the
+        scaling factor.
+
+        Helper method for :meth:`HyperbolicPlane._isometry_from_primitives`.
+
+        INPUT:
+
+        - ``isometry`` -- a 3×3 matrix describing a (right) isometry; typically
+          not over the base ring but in symbolic variables
+
+        - ``image`` -- a point
+
+        - ``λ`` -- a symbolic variable
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, gl2_to_sim12
+            sage: H = HyperbolicPlane()
+
+            sage: R.<a, b, c, d, λ> = QQ[]
+            sage: isometry = gl2_to_sim12(matrix([[a, b], [c, d]]))
+            sage: isometry
+            [                            b*c + a*d                             a*c - b*d                             a*c + b*d]
+            [                            a*b - c*d 1/2*a^2 - 1/2*b^2 - 1/2*c^2 + 1/2*d^2 1/2*a^2 + 1/2*b^2 - 1/2*c^2 - 1/2*d^2]
+            [                            a*b + c*d 1/2*a^2 - 1/2*b^2 + 1/2*c^2 - 1/2*d^2 1/2*a^2 + 1/2*b^2 + 1/2*c^2 + 1/2*d^2]
+
+            sage: H(I)._isometry_equations(isometry, H(2*I), λ)
+            [-8/5*a*c - 2/5*b*d,
+             -4/5*a^2 - 1/5*b^2 + 4/5*c^2 + 1/5*d^2,
+             -4/5*a^2 - 1/5*b^2 - 4/5*c^2 - 1/5*d^2 + λ]
+
+        """
         R = λ.parent()
 
         x, y, z = (*self.coordinates(model="klein"), R.one())
