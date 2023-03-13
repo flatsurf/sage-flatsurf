@@ -4258,8 +4258,122 @@ class HyperbolicConvexSet(Element):
             sage: P.is_finite()
             True
 
+        .. SEEALSO::
+
+            :meth:`is_ideal` and :meth:`is_ultra_ideal` for complementary notions
+
         """
-        return all([vertex.is_finite() for vertex in self.vertices()])
+        return all(vertex.is_finite() for vertex in self.vertices(marked_vertices=False))
+
+    def is_ideal(self):
+        r"""
+        Return whether all points in this set are ideal.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: H.empty_set().is_ideal()
+            True
+
+            sage: H.vertical(0).is_ideal()
+            False
+
+            sage: H.vertical(0).start().is_ideal()
+            True
+
+            sage: H(I).is_ideal()
+            False
+
+        .. SEEALSO::
+
+            :meth:`is_finite` and :meth:`is_ultra_ideal` for complementary notions
+
+        """
+        if self.dimension() >= 1:
+            return False
+
+        return all(vertex.is_ideal() for vertex in self.vertices(marked_vertices=False))
+
+    def is_ultra_ideal(self):
+        r"""
+        Return whether all points in this set are ultra-ideal, i.e., the
+        correspond to points outside the Klein disk.
+
+        Note that it is normally not possible to create ultra ideal sets
+        (except for the actual empty set.) They only exist internally during
+        geometric constructions in the Euclidean plane containing the Klein
+        disk.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: H.empty_set().is_ultra_ideal()
+            True
+
+            sage: H.vertical(0).is_ultra_ideal()
+            False
+
+        Normally, ultra-ideal objects are not permitted. They can often be created with the ``check=False`` keyword::
+
+            sage: H.point(2, 0, check=False, model="klein").is_ultra_ideal()
+            True
+
+            sage: H.geodesic(2, 0, 1, check=False, model="klein").is_ultra_ideal()
+            True
+
+        .. SEEALSO::
+
+            :meth:`is_finite` and :meth:`is_ultra_ideal` for complementary notions
+
+        """
+        if self.is_empty():
+            return True
+
+        if any(not vertex.is_ultra_ideal() for vertex in self.vertices(marked_vertices=False)):
+            return False
+
+        raise NotImplementedError(f"{type(self)} does not implement is_ultra_ideal() yet")
+
+    def _test_is_finite(self, **options):
+        r"""
+        Verify that :meth;`is_finite`, :meth:`is_ideal`, and
+        :meth:`is_ultra_ideal` are implemented correctly for this set.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: H.empty_set()._test_is_finite()
+
+        """
+        tester = self._tester(**options)
+
+        finite = self.is_finite()
+        ideal = self.is_ideal()
+        ultra = self.is_ultra_ideal()
+
+        if self.is_empty():
+            tester.assertTrue(finite)
+            tester.assertTrue(ideal)
+            tester.assertTrue(ultra)
+            return
+
+        if finite:
+            tester.assertFalse(ideal)
+            tester.assertFalse(ultra)
+
+        if ideal:
+            tester.assertFalse(finite)
+            tester.assertFalse(ultra)
+
+        if ultra:
+            tester.assertFalse(finite)
+            tester.assertFalse(ideal)
 
     def change_ring(self, ring):
         r"""
@@ -5323,7 +5437,7 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
             True
 
             sage: TestSuite(h).run()
-            
+
         """
         super().__init__(parent)
 
@@ -5866,28 +5980,113 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
         self._c = c
 
     def _check(self, require_normalized=True):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
-        # TODO: Should this be in the oriented class? Should there be an equivalent in the unoriented class?
-        if self.is_ultra_ideal():
+        r"""
+        Validate the equation defining this geodesic.
+
+        Implements :meth:`HyperbolicConvexSet._check`.
+
+        EXAMPLES::
+
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicGeodesic
+            sage: H = HyperbolicPlane()
+
+            sage: geodesic = H.vertical(0)
+            sage: geodesic._check()
+
+            sage: geodesic = H.geodesic(2, 0, 1, model="klein", check=False)
+            sage: geodesic._check()
+            Traceback (most recent call last):
+            ...
+            ValueError: equation 2 + (0)*x + (1)*y = 0 does not define a chord in the Klein model
+
+        .. SEEALSO::
+
+            :meth:`is_ultra_ideal` to check whether a chord is completely outside the Klein disk
+
+            :meth:`is_ideal` to check whether a chord touches the Klein disk
+
+        """
+        if self.is_ultra_ideal() or self.is_ideal():
             raise ValueError(
                 f"equation {self._a} + ({self._b})*x + ({self._c})*y = 0 does not define a chord in the Klein model"
             )
 
+    def is_ideal(self):
+        r"""
+        Return whether all hyperbolic points of this geodesic are ideal, i.e.,
+        the defining equation of this geodesic in the Klein model only touches
+        the Klein disk but does not intersect it.
+
+        Note that it is normally not possible to create ideal geodesics. They
+        only exist internally during constructions in the Euclidean plane.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: H.vertical(0).is_ideal()
+            False
+
+            sage: geodesic = H.geodesic(1, 0, 1, model="klein", check=False)
+            sage: geodesic.is_ideal()
+            True
+
+            sage: geodesic = H.geodesic(2, 0, 1, model="klein", check=False)
+            sage: geodesic.is_ideal()
+            False
+
+        .. NOTE::
+
+            The implementation of this predicate is not numerically robust over inexact rings.
+
+        .. SEEALSO::
+
+            :meth:`is_ultra_ideal` to detect whether a geodesic does not even
+            touch the Klein disk
+
+        """
+        # We should probably use a specialized predicate of the geometry to
+        # make this more robust over inexact rings.
+        return self.parent().geometry._equal(self._b * self._b + self._c * self._c, self._a * self._a)
+
     def is_ultra_ideal(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
-        # TODO: Should this be in the oriented class? Should there be an equivalent in the unoriented class?
-        # TODO: Make sure that all sets have is_finite, is_ideal, is_ultra_ideal.
-        # TODO: Check that this also catches geodesics that touch the Klein disk.
-        # TODO: Use a specialized predicate instead of the _method.
-        return self.parent().geometry._cmp(self._b * self._b + self._c * self._c, self._a * self._a) <= 0
+        r"""
+        Return whether the line given by the defining equation is completely
+        outside the Klein disk, i.e., all "points" of this geodesic are ultra-ideal.
+
+        Note that it is normally not possible to create ultra-ideal geodesics.
+        They only exist internally during constructions in the Euclidean plane.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: H.vertical(0).is_ultra_ideal()
+            False
+
+            sage: geodesic = H.geodesic(1, 0, 1, model="klein", check=False)
+            sage: geodesic.is_ultra_ideal()
+            False
+
+            sage: geodesic = H.geodesic(2, 0, 1, model="klein", check=False)
+            sage: geodesic.is_ultra_ideal()
+            True
+
+        .. NOTE::
+
+            The implementation of this predicate is not numerically robust over inexact rings.
+
+        .. SEEALSO::
+
+            :meth:`is_ideal` to detect whether a geodesic touches the Klein disk
+
+        """
+        # We should probably use a specialized predicate of the geometry to
+        # make this more robust over inexact rings.
+        return self.parent().geometry._cmp(self._b * self._b + self._c * self._c, self._a * self._a) < 0
 
     def _repr_(self, model=None):
         # TODO: Check documentation.
