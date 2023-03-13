@@ -6089,13 +6089,51 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
         return self.parent().geometry._cmp(self._b * self._b + self._c * self._c, self._a * self._a) < 0
 
     def _repr_(self, model=None):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Return a printable representation of this geodesic.
+
+        INPUT:
+
+        - ``model`` -- ``"half_plane"`` or ``"klein"`` (default: ``None`` to
+          use ``"half_plane"`` if possible); in which model of hyperbolic
+          geometry the equation is realized
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+        If the geodesic is oriented, we print a defining equation of the
+        geodesic such that when replacing the ``=`` with a ``≥``, we get an
+        equation for the half space to the left of the geodesic::
+
+            sage: H.vertical(1)
+            {-x + 1 = 0}
+            sage: H.vertical(1).left_half_space()
+            {x - 1 ≤ 0}
+
+        Normally, geodesics are shown with their equation in the upper half
+        plane model. We can also ask for an equation of the chord in the Klein
+        disk::
+
+            sage: H.vertical(1)._repr_(model="klein")
+            '{1 + -x - y = 0}'
+
+        This representation is also chosen automatically for objects that do
+        not have a representation in upper half plane such as ultra-ideal
+        geodesics::
+
+            sage: H.geodesic(2, 0, 1, model="klein", check=False)
+            {2 + y = 0}
+
+        .. SEEALSO::
+
+            :meth:`equation` to access the coefficients of the equation
+            defining the geodesic
+
+        """
         if model is None:
-            model = "klein" if self.is_ultra_ideal() else "half_plane"
+            model = "klein" if self.is_ultra_ideal() or self.is_ideal() else "half_plane"
 
         if model == "half_plane":
             # Convert to the upper half plane model as a(x^2 + y^2) + bx + c = 0.
@@ -6104,7 +6142,6 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
             from sage.all import PolynomialRing
 
             R = PolynomialRing(self.parent().base_ring(), names="x")
-            # TODO: Use a specialized method instead of the _method.
             if self.parent().geometry._sgn(a) != 0:
                 return f"{{{repr(R([0, a]))[:-1]}(x^2 + y^2){repr(R([c, b, 1]))[3:]} = 0}}"
             else:
@@ -6117,7 +6154,6 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
 
             R = PolynomialRing(self.parent().base_ring(), names=["x", "y"])
             polynomial_part = R({(1, 0): b, (0, 1): c})
-            # TODO: Use a specialized predicate instead of the _method.
             if self.parent().geometry._sgn(a) != 0:
                 return f"{{{repr(a)} + {repr(polynomial_part)} = 0}}"
             else:
