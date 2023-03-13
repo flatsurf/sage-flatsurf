@@ -6348,12 +6348,9 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
         raise ValueError(f"unknown normalization {strategy}")
 
     def half_spaces(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
         r"""
+        Return the two half spaces whose intersection this geodesic is.
+
         Implements :meth:`HyperbolicConvexSet.half_spaces`.
 
         EXAMPLES::
@@ -6512,10 +6509,13 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
 
             sage: H.vertical(0).perpendicular()
             {(x^2 + y^2) - 1 = 0}
+
             sage: H.half_circle(0, 1).perpendicular()
             {x = 0}
+
             sage: H.half_circle(0, 1).perpendicular(0)
             {x = 0}
+
             sage: H.half_circle(0, 1).perpendicular(2)
             {2*(x^2 + y^2) - 5*x + 2 = 0}
 
@@ -6523,19 +6523,26 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
             Traceback (most recent call last):
             ...
             ValueError: no geodesic perpendicular to both {-x = 0} and {(x^2 + y^2) - 1 = 0}
+
             sage: H.half_circle(0, 1).perpendicular(H.vertical(0))
             Traceback (most recent call last):
             ...
             ValueError: no geodesic perpendicular to both {(x^2 + y^2) - 1 = 0} and {-x = 0}
+
             sage: H.vertical(0).perpendicular(H.vertical(0))
             {(x^2 + y^2) - 1 = 0}
+
             sage: H.vertical(0).perpendicular(H.half_circle(0, 1))
             Traceback (most recent call last):
             ...
             ValueError: no geodesic perpendicular to both {-x = 0} and {(x^2 + y^2) - 1 = 0}
 
+        .. NOTE::
+
+            Currently, the orientation of the returned geodesic is somewhat
+            random. It should probably be counterclockwise to this geodesic.
+
         """
-        # TODO: Orientation should be such that it is turning ccw from this geodesic.
         if point_or_geodesic is None:
             point_or_geodesic = self.an_element()
 
@@ -6662,7 +6669,6 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
             False
 
         """
-        # TODO: This check is probably done a few times in the code. We should use this predicate instead.
         return self.parent().infinity() in self
 
     def _richcmp_(self, other, op):
