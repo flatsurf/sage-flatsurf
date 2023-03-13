@@ -4738,12 +4738,37 @@ class HyperbolicConvexSet(Element):
         tester.assertTrue(self.is_subset(self.parent().intersection(*self.half_spaces())))
 
     def an_element(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
-        # TODO: Test that everything implements an_element().
+        r"""
+        Return a point of this set.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+        The returned element can be a finite point::
+
+            sage: H.vertical(0).an_element()
+            I
+
+        But it can also be an infinite point::
+
+            sage: H(0).segment(I).an_element()
+            0
+
+        An exception is raised when there are no elements in this set::
+
+            sage: H.empty_set().an_element()
+            Traceback (most recent call last):
+            ...
+            StopIteration
+
+        We get an element for geodesics without end points in the base ring::
+
+            sage: H.half_circle(0, 2).an_element()
+            (0, 1/3)
+
+        """
         return next(iter(self.vertices()))
 
     @classmethod
