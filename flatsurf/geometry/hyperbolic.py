@@ -4761,15 +4761,21 @@ class HyperbolicConvexSet(Element):
             sage: H.empty_set().an_element()
             Traceback (most recent call last):
             ...
-            StopIteration
+            Exception: empty set has no points
 
-        We get an element for geodesics without end points in the base ring::
+        We get an element for geodesics without end points in the base ring,
+        see :meth:`HyperbolicGeodesic.an_element`::
 
             sage: H.half_circle(0, 2).an_element()
             (0, 1/3)
 
         """
-        return next(iter(self.vertices()))
+        vertices = self.vertices()
+
+        if not vertices:
+            raise NotImplementedError("cannot return points of this set yet because it has no vertices")
+
+        return next(iter(vertices))
 
     @classmethod
     def _enhance_plot(self, plot, model):
@@ -6353,6 +6359,33 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
         condition = vector((b, c, a)) * isometry - λ * vector(R, (fb, fc, fa))
         return condition.list()
 
+    def an_element(self):
+        r"""
+        Return a finite point on this geodesic.
+
+        ALGORITHM:
+
+        We take the chord in the Klein model that intersects this geodesic
+        perpendicularly and passes through the origin. The point of
+        intersection must be a finite point.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: H.vertical(0).an_element()
+            I
+
+            sage: H.half_circle(0, 2).an_element()
+            (0, 1/3)
+
+        """
+        other = self.parent().geodesic(0, -self._c, self._b, model="klein", check=False)
+        cross = other._intersection(self)
+        assert cross
+        return cross
+
 
 class HyperbolicUnorientedGeodesic(HyperbolicGeodesic):
     # TODO: Check documentation
@@ -6636,17 +6669,6 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
 
         # TODO: Use the bounding-box trick to get mostly rid of concave cases.
         return "concave"
-
-    def an_element(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
-        other = self.parent().geodesic(0, -self._c, self._b, model="klein", check=False)
-        cross = other._intersection(self)
-        assert cross
-        return cross
 
     def parametrize(self, point, model, check=True):
         # TODO: Check documentation.
@@ -10196,7 +10218,7 @@ class HyperbolicEmptySet(HyperbolicConvexSet):
 
     def vertices(self, marked_vertices=True):
         r"""
-        Retrun the vertices of this empty, i.e., an empty set of points.
+        Return the vertices of this empty, i.e., an empty set of points.
 
         INPUT:
 
@@ -10212,6 +10234,27 @@ class HyperbolicEmptySet(HyperbolicConvexSet):
 
         """
         return HyperbolicVertices([])
+
+    def an_element(self):
+        """
+        Return a point in this set, i.e., raise an exception since there are no
+        points.
+
+        See :meth:`HyperbolicConvexSet.an_element` for more interesting
+        examples of this method.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: H.empty_set().an_element()
+            Traceback (most recent call last):
+            ...
+            Exception: empty set has no points
+
+        """
+        raise Exception("empty set has no points")
 
 
 def gl2_to_sim12(m):
