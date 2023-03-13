@@ -4807,36 +4807,138 @@ class HyperbolicConvexSet(Element):
         return plot
 
     def is_empty(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Return whether this set is empty.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: H(0).is_empty()
+            False
+
+            sage: H.empty_set().is_empty()
+            True
+
+        """
         return self.dimension() < 0
 
     def __bool__(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Return whether this set is non-empty.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: bool(H(0))
+            True
+
+            sage: bool(H.empty_set())
+            False
+
+        .. SEEALSO:
+
+            :meth:`HyperbolicConvexSet.is_empty`
+
+        """
         return not self.is_empty()
 
     def dimension(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
-        # TODO: Test that this is a ZZ integer.
+        r"""
+        Return the dimension of this set.
+
+        OUTPUT:
+
+        An integer, one of -1, 0, 1, 2.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+        We treat the empty set as -1-dimensional::
+
+            sage: H.empty_set().dimension()
+            -1
+
+        Points are zero-dimensional::
+
+            sage: H(0).dimension()
+            0
+
+        Geodesics and segments are one-dimensional::
+
+            sage: H.vertical(0).dimension()
+            1
+
+            sage: H(I).segment(2*I).dimension()
+            1
+
+        Polygons and half spaces are two dimensional::
+
+            sage: H.random_element("polygon").dimension()
+            2
+
+            sage: H.vertical(0).left_half_space().dimension()
+            2
+
+        """
         raise NotImplementedError(f"{type(self)} does not implement dimension() yet")
 
+    def _test_dimension(self, **options):
+        r"""
+        Verify that :meth:`dimension` is implemented correctly.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: H.empty_set()._test_dimension()
+
+        """
+        tester = self._tester(**options)
+
+        dimension = self.dimension()
+
+        from sage.all import ZZ
+        tester.assertEqual(dimension.parent(), ZZ)
+
+        tester.assertIn(dimension, [-1, 0, 1, 2])
+
+        tester.assertEqual(self.unoriented().dimension(), dimension)
+        tester.assertEqual(self.is_point(), dimension == 0)
+        tester.assertEqual(self.is_empty(), dimension == -1)
+
     def is_point(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Return whether this set is a single point.
+
+        EXAMPLES:
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: H(0).is_point()
+            True
+
+            sage: H(I).is_point()
+            True
+
+            sage: H.empty_set().is_point()
+            False
+
+            sage: H.vertical(0).is_point()
+            False
+
+        .. SEEALSO::
+
+            :meth:`is_ideal` to check whether this is a finite or an infinite
+            point
+        """
         return self.dimension() == 0
 
     def is_oriented(self):
