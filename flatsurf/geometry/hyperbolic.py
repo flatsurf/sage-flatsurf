@@ -2488,6 +2488,13 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             [  0  -1]
             [1/2   1]
 
+        An isometry mapping unoriented segments, though not the most apparent
+        one::
+
+            sage: H.isometry(H(I).segment(2*I).unoriented(), H(2*I).segment(I).unoriented())
+            [  0  -1]
+            [1/2   0]
+
         .. SEEALSO::
 
             :meth:`HyperbolicConvexSet.apply_isometry` to apply the returned
@@ -2772,14 +2779,12 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             sage: Q = H.polygon(P.half_spaces(), marked_vertices=[I - 1])
             sage: conditions = H._isometry_conditions([], [(P, Q)])
             sage: list(conditions)
-            [[(-1, -1), (1, 1), (1 + I, ∞)],
-             [(-1, 1), (1, ∞), (1 + I, -1 + I)],
-             [(-1, ∞), (1, -1 + I), (1 + I, -1)],
-             [(-1, -1 + I), (1, -1), (1 + I, 1)],
-             [(-1, -1 + I), (1, ∞), (1 + I, 1)],
-             [(-1, ∞), (1, 1), (1 + I, -1)],
-             [(-1, 1), (1, -1), (1 + I, -1 + I)],
-             [(-1, -1), (1, -1 + I), (1 + I, ∞)]]
+            [[({-x + 1 = 0}, {x + 1 = 0}), ({x + 1 = 0}, {(x^2 + y^2) - 1 = 0})],
+             [({-x + 1 = 0}, {(x^2 + y^2) - 1 = 0}), ({x + 1 = 0}, {-x + 1 = 0})],
+             [({-x + 1 = 0}, {-x + 1 = 0}), ({x + 1 = 0}, {x + 1 = 0})],
+             [({-x + 1 = 0}, {x + 1 = 0}), ({x + 1 = 0}, {-x + 1 = 0})],
+             [({-x + 1 = 0}, {-x + 1 = 0}), ({x + 1 = 0}, {(x^2 + y^2) - 1 = 0})],
+             [({-x + 1 = 0}, {(x^2 + y^2) - 1 = 0}), ({x + 1 = 0}, {x + 1 = 0})]]
 
         """
         def degree(preimage, image):
@@ -2803,7 +2808,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             remaining = remaining[1:]
 
             # Extend with a pair of points in "remaining[0]"
-            if x.dimension() == 0:
+            if isinstance(x, HyperbolicPoint):
                 assert y.dimension() == 0
 
                 if pair := self._isometry_untrivialize(x, y, defining):
@@ -2813,7 +2818,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
                     yield conditions
 
             # Extend with a pair of geodesics in "remaining[0]"
-            elif x.dimension() == 1:
+            elif isinstance(x, HyperbolicOrientedGeodesic):
                 assert y.dimension() == 1
 
                 f = x.geodesic()
@@ -5209,12 +5214,48 @@ class HyperbolicConvexSet(Element):
                 tester.assertNotEqual(hash(self), hash(subset))
 
     def _isometry_conditions(self, other):
-        # TODO: Check documentation
-        # TODO: Check INPUTS
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
-        raise NotImplementedError
+        r"""
+        Return an iterable of primitive pairs that must map to each other in an
+        isometry that maps this set to ``other``.
+
+        Helper method for :meth:`HyperbolicPlane._isometry_conditions`.
+
+        When determining an isometry that maps sets to each other, we reduce to
+        an isometry that maps points or geodesics to each other. Here, we
+        produce such more primitive objects that map to each other.
+
+        Sometimes, this mapping is not unique, e.g., when mapping polygons to
+        each other, we may rotate the vertices of the polygon. Therefore, this
+        returns an iterator that produces the possible mappings of primitive
+        objects.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: P = H.polygon([
+            ....:     H.vertical(0).right_half_space(),
+            ....:     H.half_circle(0, 4).left_half_space()],
+            ....:     marked_vertices=[4*I])
+
+            sage: conditions = P._isometry_conditions(P)
+            sage: list(conditions)
+            [[({x ≥ 0}, {(x^2 + y^2) - 4 ≥ 0}),
+              ({(x^2 + y^2) - 4 ≥ 0}, {x ≥ 0}),
+              (4*I, 4*I)],
+             [({x ≥ 0}, {x ≥ 0}),
+              ({(x^2 + y^2) - 4 ≥ 0}, {(x^2 + y^2) - 4 ≥ 0}),
+              (4*I, 4*I)],
+             [({x ≥ 0}, {x ≥ 0}),
+              ({(x^2 + y^2) - 4 ≥ 0}, {(x^2 + y^2) - 4 ≥ 0}),
+              (4*I, 4*I)],
+             [({x ≥ 0}, {(x^2 + y^2) - 4 ≥ 0}),
+              ({(x^2 + y^2) - 4 ≥ 0}, {x ≥ 0}),
+              (4*I, 4*I)]]
+
+        """
+        raise NotImplementedError(f"this {type(self)} does not implement _isometry_conditions yet and cannot be used to compute an isometry")
 
     def _isometry_equations(self, isometry, other, λ):
         # TODO: Check documentation
@@ -5673,7 +5714,6 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
         EXAMPLES::
 
             sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
-
             sage: H = HyperbolicPlane()
 
         Since half spaces are hashable, they can be put in a hash table, such
@@ -5689,11 +5729,29 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
         return hash((type(self), self._geodesic))
 
     def _isometry_conditions(self, other):
-        # TODO: Check documentation
-        # TODO: Check INPUTS
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Return an iterable of primitive pairs that must map to each other in an
+        isometry that maps this set to ``other``.
+
+        Helper method for :meth:`HyperbolicPlane._isometry_conditions`.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: v = H.vertical(0).left_half_space()
+            sage: w = H.vertical(1).right_half_space()
+
+            sage: conditions = v._isometry_conditions(w)
+            sage: list(conditions)
+            [[({-x = 0}, {x - 1 = 0})]]
+
+        .. SEEALSO::
+
+            :meth:`HyperbolicConvexSet._isometry_conditions` for a general description.
+
+        r"""
         yield [(self.boundary(), other.boundary())]
 
 
@@ -6779,13 +6837,31 @@ class HyperbolicUnorientedGeodesic(HyperbolicGeodesic):
 
     """
     def _isometry_conditions(self, other):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
-        self = self.half_spaces()[0].boundary()
-        other = other.half_spaces()[0].boundary()
+        r"""
+        Return an iterable of primitive pairs that must map to each other in an
+        isometry that maps this set to ``other``.
+
+        Helper method for :meth:`HyperbolicPlane._isometry_conditions`.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: v = H.vertical(0).unoriented()
+            sage: w = H.vertical(1).unoriented()
+
+            sage: conditions = v._isometry_conditions(w)
+            sage: list(conditions)
+            [[({-x = 0}, {-x + 1 = 0})], [({-x = 0}, {x - 1 = 0})]]
+
+        .. SEEALSO::
+
+            :meth:`HyperbolicConvexSet._isometry_conditions` for a general description.
+
+        r"""
+        self = self.change(oriented=True)
+        other = other.change(oriented=True)
         yield [(self, other)]
         yield [(self, -other)]
 
@@ -7041,14 +7117,6 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
             )
 
         raise NotImplementedError("cannot parametrize a geodesic over this model yet")
-
-    def _isometry_conditions(self, other):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
-        yield [(self.start(), other.start()), (self.end(), other.end())]
 
 
 class HyperbolicPoint(HyperbolicConvexSet):
@@ -9528,37 +9596,72 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
         return self.parent().polygon(half_spaces=half_spaces, check=False, assume_minimal=True, marked_vertices=marked_vertices)
 
     def _isometry_conditions(self, other):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Return an iterable of primitive pairs that must map to each other in an
+        isometry that maps this set to ``other``.
 
-        # TODO: Return half spaces instead so we get orientations right. However, then we are missing the marked vertices which can also be cyclically permuted :(
-        if self._marked_vertices or other._marked_vertices:
-            self = list(self.vertices())
-            other = list(other.vertices())
+        Helper method for :meth:`HyperbolicPlane._isometry_conditions`.
 
-            if len(self) == len(other):
-                for i in range(len(self)):
-                    yield list(zip(self, other[i:] + other[:i]))
+        EXAMPLES::
 
-                other.reverse()
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
 
-                for i in range(len(self)):
-                    yield list(zip(self, other[i:] + other[:i]))
-        else:
-            self = list(self.half_spaces())
-            other = list(other.half_spaces())
+            sage: P = H.polygon([
+            ....:     H.vertical(0).right_half_space(),
+            ....:     H.half_circle(0, 4).left_half_space()],
+            ....:     marked_vertices=[4*I])
 
-            if len(self) == len(other):
-                for i in range(len(self)):
-                    yield list(zip(self, other[i:] + other[:i]))
+            sage: conditions = P._isometry_conditions(P)
+            sage: list(conditions)
+            [[({x ≥ 0}, {(x^2 + y^2) - 4 ≥ 0}),
+              ({(x^2 + y^2) - 4 ≥ 0}, {x ≥ 0}),
+              (4*I, 4*I)],
+             [({x ≥ 0}, {x ≥ 0}),
+              ({(x^2 + y^2) - 4 ≥ 0}, {(x^2 + y^2) - 4 ≥ 0}),
+              (4*I, 4*I)],
+             [({x ≥ 0}, {x ≥ 0}),
+              ({(x^2 + y^2) - 4 ≥ 0}, {(x^2 + y^2) - 4 ≥ 0}),
+              (4*I, 4*I)],
+             [({x ≥ 0}, {(x^2 + y^2) - 4 ≥ 0}),
+              ({(x^2 + y^2) - 4 ≥ 0}, {x ≥ 0}),
+              (4*I, 4*I)]]
 
-                other.reverse()
+        .. SEEALSO::
 
-                for i in range(len(self)):
-                    yield list(zip(self, other[i:] + other[:i]))
+            :meth:`HyperbolicConvexSet._isometry_conditions` for a general description.
+
+        r"""
+        # We are likely returning too many conditions here.
+        # In particular there are many more ways to determine that no isometry
+        # can possibly exist here.
+
+        for reverse in [False, True]:
+            preimage = list(self.half_spaces())
+            image = list(other.half_spaces())
+
+            if len(preimage) != len(image):
+                continue
+
+            if reverse:
+                image.reverse()
+
+            for i in range(len(image)):
+                image = image[1:] + image[:1]
+
+                if self._marked_vertices:
+                    preimage_vertices = list(self._marked_vertices)
+                    image_vertices = list(other._marked_vertices)
+
+                    if len(preimage_vertices) != len(image_vertices):
+                        continue
+
+                    for j in range(len(image_vertices)):
+                        image_vertices = image_vertices[1:] + image_vertices[:1]
+
+                        yield list(zip(preimage + preimage_vertices, image + image_vertices))
+                else:
+                    yield list(zip(preimage, image))
 
 
 class HyperbolicSegment(HyperbolicConvexSet):
@@ -10168,13 +10271,36 @@ class HyperbolicUnorientedSegment(HyperbolicSegment):
         return hash((frozenset([self._start, self._end]), self.geodesic()))
 
     def _isometry_conditions(self, other):
-        # TODO: Check documentation
-        # TODO: Check INPUTS
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
-        yield [(self.start(), other.start()), (self.end(), other.end())]
-        yield [(self.start(), other.end()), (self.end(), other.start())]
+        r"""
+        Return an iterable of primitive pairs that must map to each other in an
+        isometry that maps this set to ``other``.
+
+        Helper method for :meth:`HyperbolicPlane._isometry_conditions`.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: s = H(I).segment(2*I).unoriented()
+
+            sage: conditions = s._isometry_conditions(s)
+            sage: list(conditions)
+            [[({-x = 0} ∩ {(x^2 + y^2) - 1 ≥ 0} ∩ {(x^2 + y^2) - 4 ≤ 0},
+               {-x = 0} ∩ {(x^2 + y^2) - 1 ≥ 0} ∩ {(x^2 + y^2) - 4 ≤ 0})],
+             [({-x = 0} ∩ {(x^2 + y^2) - 1 ≥ 0} ∩ {(x^2 + y^2) - 4 ≤ 0},
+               {x = 0} ∩ {(x^2 + y^2) - 4 ≤ 0} ∩ {(x^2 + y^2) - 1 ≥ 0})]]
+
+        .. SEEALSO::
+
+            :meth:`HyperbolicConvexSet._isometry_conditions` for a general description.
+
+        r"""
+        self = self.change(oriented=True)
+        other = other.change(oriented=True)
+
+        yield [(self, other)]
+        yield [(self, -other)]
 
 
 class HyperbolicOrientedSegment(HyperbolicSegment, HyperbolicOrientedConvexSet):
@@ -10305,11 +10431,28 @@ class HyperbolicOrientedSegment(HyperbolicSegment, HyperbolicOrientedConvexSet):
         return hash((self._start, self._end, self.geodesic()))
 
     def _isometry_conditions(self, other):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Return an iterable of primitive pairs that must map to each other in an
+        isometry that maps this set to ``other``.
+
+        Helper method for :meth:`HyperbolicPlane._isometry_conditions`.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: s = H(I).segment(2*I)
+
+            sage: conditions = s._isometry_conditions(s)
+            sage: list(conditions)
+            [[(I, I), (2*I, 2*I)]]
+
+        .. SEEALSO::
+
+            :meth:`HyperbolicConvexSet._isometry_conditions` for a general description.
+
+        r"""
         yield [(self.start(), other.start()), (self.end(), other.end())]
 
     def start(self, finite=False):
