@@ -6898,11 +6898,21 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
         return self
 
     def geodesic(self):
-        # TODO: Check documentation
-        # TODO: Check INPUTS
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Return the geodesic underlying this set, i.e., this geodesic itself.
+
+        This method exists to unify the interface between segments and
+        geodesics, see :meth:`HyperbolicSegment.geodesic`.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: H.vertical(0).geodesic() == H.vertical(0)
+            True
+
+        """
         return self
 
     def __hash__(self):
@@ -10520,11 +10530,35 @@ class HyperbolicSegment(HyperbolicConvexSet):
         return self
 
     def geodesic(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Return the geodesic on which this segment lies.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: s = H(I).segment(2*I)
+            sage: s.geodesic()
+            {-x = 0}
+
+        Since the segment is oriented, the geodesic is also oriented::
+
+            sage: s.is_oriented()
+            True
+
+            sage: s.geodesic().is_oriented()
+            True
+
+            sage: s.unoriented().geodesic().is_oriented()
+            False
+
+        .. SEEALSO::
+
+            geodesics also implement this method so that segments and geodesics
+            can be treated uniformly, see :meth:`HyperbolicGeodesic.geodesic`
+
+        """
         geodesic = self._geodesic
         if not self.is_oriented():
             geodesic = geodesic.unoriented()
