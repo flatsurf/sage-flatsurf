@@ -4942,14 +4942,105 @@ class HyperbolicConvexSet(Element):
         return self.dimension() == 0
 
     def is_oriented(self):
-        # TODO: Explain that this is for sets that are not described by listing the half spaces that they are an intersection of.
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
-        # TODO: Test that oriented sets implement _neg_ correctly.
+        r"""
+        Return whether this is a set with an explicit orientation.
+
+        Some sets come in two flavors. There are oriented geodesics and
+        unoriented geodesics. There are oriented segments and unoriented
+        segments.
+
+        This method answers whether a set is of the oriented kind if there is a
+        choice.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+        Normally, geodesics are oriented::
+
+            sage: g = H.vertical(0)
+            sage: g.is_oriented()
+            True
+
+            sage: g.start()
+            0
+
+            sage: g.end()
+            ∞
+
+        We can ask explicitly for an unoriented version::
+
+            sage: h = g.unoriented()
+            sage: h.is_oriented()
+            False
+
+            sage: h.start()
+            Traceback (most recent call last):
+            ...
+            AttributeError: ... has no attribute 'start'
+
+        Segments are oriented::
+
+            sage: s = H(I).segment(2*I)
+            sage: s.is_oriented()
+            True
+
+            sage: s.start()
+            I
+
+            sage: s.end()
+            2*I
+
+        We can ask explicitly for an unoriented segment::
+
+            sage: u = s.unoriented()
+            sage: u.is_oriented()
+            False
+
+            sage: u.start()
+            Traceback (most recent call last):
+            ...
+            AttributeError: ... has no attribute 'start'
+
+        Points are not oriented as there is no choice of orientation::
+
+            sage: H(0).is_oriented()
+            False
+
+        Half spaces are not oriented:
+
+            sage: H.vertical(0).left_half_space().is_oriented()
+            False
+
+        .. SEEALSO::
+
+            :meth:`change` to pick an orientation on an unoriented set
+
+            :meth:`__neg__` to invert the orientation of a set
+
+        """
         return isinstance(self, HyperbolicOrientedConvexSet)
+
+    def _test_is_oriented(self, **options):
+        r"""
+        Verify that this set implements :meth:`is_oriented` correctly.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: H.empty_set()._test_is_oriented()
+
+        """
+        tester = self._tester(**options)
+
+        if self.is_oriented():
+            tester.assertNotEqual(self, -self)
+
+            # Verify that neg inverts the orientation of the set
+            tester.assertEqual(self, -(-self))
 
     def edges(self):
         # TODO: Check documentation.
@@ -9666,6 +9757,8 @@ class HyperbolicSegment(HyperbolicConvexSet):
         # TODO: Check SEEALSO
         # TODO: Check for doctests
         # TODO: Benchmark?
+        self = self.change(oriented=True)
+
         from sage.all import RR
 
         kwds["fill"] = False
@@ -9681,28 +9774,6 @@ class HyperbolicSegment(HyperbolicConvexSet):
         )
 
         return self._enhance_plot(plot, model=model)
-
-    def start(self, finite=False):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
-        if self._start is not None:
-            return self._start
-
-        return self._geodesic.start()
-
-    def end(self, finite=False):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
-        if self._end is not None:
-            return self._end
-
-        return self._geodesic.end()
 
     def _richcmp_(self, other, op):
         r"""
@@ -9865,6 +9936,7 @@ class HyperbolicSegment(HyperbolicConvexSet):
             :meth:`HyperbolicConvexSet.vertices` for more details.
 
         """
+        self = self.change(oriented=True)
         return HyperbolicVertices([self.start(), self.end()])
 
     def dimension(self):
@@ -10159,6 +10231,28 @@ class HyperbolicOrientedSegment(HyperbolicSegment, HyperbolicOrientedConvexSet):
         # TODO: Check for doctests
         # TODO: Benchmark?
         yield [(self.start(), other.start()), (self.end(), other.end())]
+
+    def start(self, finite=False):
+        # TODO: Check documentation.
+        # TODO: Check INPUT
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        # TODO: Benchmark?
+        if self._start is not None:
+            return self._start
+
+        return self._geodesic.start()
+
+    def end(self, finite=False):
+        # TODO: Check documentation.
+        # TODO: Check INPUT
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        # TODO: Benchmark?
+        if self._end is not None:
+            return self._end
+
+        return self._geodesic.end()
 
 
 class HyperbolicEmptySet(HyperbolicConvexSet):
