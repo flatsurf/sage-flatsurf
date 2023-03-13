@@ -4779,11 +4779,26 @@ class HyperbolicConvexSet(Element):
 
     @classmethod
     def _enhance_plot(self, plot, model):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Modify the ``plot`` of this set to improve the resulting plot.
+
+        Currently, this adds the unit circle to plots in the Klein disk model.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: p = H(0)
+            sage: plot = plot([])
+
+            sage: type(p)._enhance_plot(plot, model="half_plane")
+            Graphics object consisting of 0 graphics primitives
+
+            sage: type(p)._enhance_plot(plot, model="klein")
+            Graphics object consisting of 1 graphics primitive
+
+        """
         if model == "klein":
             from sage.all import circle
 
