@@ -5793,48 +5793,65 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
 
 
 class HyperbolicGeodesic(HyperbolicConvexSet):
-    # TODO: Check documentation
-    # TODO: Check INPUTS
-    # TODO: Check SEEALSO
-    # TODO: Check for doctests
-    # TODO: Benchmark?
-    # TODO: Change representation:
-    # I would prefer geodesics to be encoded as dual to the quadratic form.
-    # That is v = (a, b, c) should represent the half space {x in R^3 :  B(v,
-    # x) >= 0} where B is the bilinear form associated to Q. This encoding
-    # makes a much smoother transition between points, ideal points and
-    # geodesics : they are all represented by elements of R^3 (points are Q >
-    # 0, ideal points are Q = 0 and geodesics are Q < 0 (ultra-ideal points)).
-    # See
-    # https://sagemath.zulipchat.com/#narrow/stream/271193-polygon/topic/hyperbolic.20geometry/near/284722650
-    # and implement what's written there.
     r"""
     A geodesic in the hyperbolic plane.
 
     This is the abstract base class of :class:`HyperbolicUnorientedGeodesic`
     and :class:`HyperbolicOrientedGeodesic`.
 
-    TESTS::
+    ALGORITHM:
 
-        sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicGeodesic
+    Internally, we represent geodesics as a triple `a, b, c` such that they satisfy the equation
+
+    .. MATH::
+
+        a + bx + cy = 0
+
+    in the Klein disk model.
+
+    Note that due to this representation we can always compute intersection
+    points of geodesics but we cannot always get the coordinates of the ideal
+    end points of a geodesic (since we would have to take a square root to
+    solve for the points on the unit circle.)
+
+    It might be beneficial to store geodesics differently, see
+    https://sagemath.zulipchat.com/#narrow/stream/271193-polygon/topic/hyperbolic.20geometry/near/284722650
+    for a discussion.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
         sage: H = HyperbolicPlane()
 
-        sage: geodesic = H.vertical(0)
+        sage: H.geodesic(1, 2, 3, model="klein")
+        {2*(x^2 + y^2) + 2*x - 1 = 0}
 
-        sage: isinstance(geodesic, HyperbolicGeodesic)
-        True
+    .. SEEALSO::
 
-        sage: isinstance(geodesic.unoriented(), HyperbolicGeodesic)
-        True
+        :meth:`HyperbolicPlane.geodesic` for various ways of constructing geodesics
 
     """
 
     def __init__(self, parent, a, b, c):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        TESTS::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicGeodesic
+            sage: H = HyperbolicPlane()
+
+            sage: geodesic = H.vertical(0)
+
+            sage: isinstance(geodesic, HyperbolicGeodesic)
+            True
+
+            sage: TestSuite(geodesic).run()
+
+            sage: isinstance(geodesic.unoriented(), HyperbolicGeodesic)
+            True
+
+            sage: TestSuite(geodesic.unoriented()).run()
+
+        """
         super().__init__(parent)
 
         if not isinstance(a, Element) or a.parent() is not parent.base_ring():
