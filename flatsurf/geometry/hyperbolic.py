@@ -4650,17 +4650,21 @@ class HyperbolicConvexSet(Element):
         raise NotImplementedError(f"{type(self)} does not implement _apply_isometry_klein() yet")
 
     def _acted_upon_(self, x, self_on_left):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
         r"""
         Return the result of acting upon this set with ``x``.
 
+        INPUT:
+
+        - ``x`` -- an isometry encoded as a 2×2 matrix, see
+          :meth:`apply_isometry`
+
+        - ``self_on_left`` -- a boolean; whether this is the right action or
+          the left action
+
         EXAMPLES:
 
-        The Möbius transformation that sends `z` to `(1 + 2z)/(3 + 4z)`::
+        We apply the Möbius transformation that sends `z` to `(1 + 2z)/(3 +
+        4z)`::
 
             sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
             sage: H = HyperbolicPlane()
@@ -4678,6 +4682,7 @@ class HyperbolicConvexSet(Element):
             sage: p = HyperbolicPlane()(I + 1)
             sage: assert (m0 * m1) * p == m0 * (m1 * p)
             sage: assert p * (m0 * m1) == (p * m0) * m1
+
         """
         return self.apply_isometry(x, on_right=self_on_left)
 
@@ -4693,8 +4698,10 @@ class HyperbolicConvexSet(Element):
 
             sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
             sage: H = HyperbolicPlane()
+
             sage: H(I).is_subset(H.vertical(0))
             True
+
             sage: H.vertical(0).is_subset(H(I))
             False
 
@@ -4707,17 +4714,28 @@ class HyperbolicConvexSet(Element):
         if self.dimension() > other.dimension():
             return False
 
-        for vertex in self.vertices():
-            if vertex not in other:
-                return False
+        # Make sure that we do not get confused by marked vertices
+        self = self.parent().intersection(*self.half_spaces())
 
-        if self.dimension() <= 1:
-            return True
-
-        # TODO: This is only correct for normalized sets?
         return self.intersection(other) == self
 
-    # TODO: Test that is_subset can compare all kinds of sets by inclusion.
+    def _test_is_subset(self, **options):
+        r"""
+        Verify that :meth:`is_subset` is implemented correctly.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: H.an_element()._test_is_subset()
+
+        """
+        tester = self._tester(**options)
+
+        tester.assertTrue(self.is_subset(self))
+
+        tester.assertTrue(self.is_subset(self.parent().intersection(*self.half_spaces())))
 
     def an_element(self):
         # TODO: Check documentation.
