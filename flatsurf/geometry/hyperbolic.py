@@ -5932,6 +5932,16 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
     https://sagemath.zulipchat.com/#narrow/stream/271193-polygon/topic/hyperbolic.20geometry/near/284722650
     for a discussion.
 
+    INPUT:
+
+    - ``parent`` -- the :class:`HyperbolicPlane` this geodesic lives in
+
+    - ``a`` -- an element of :meth:`HyperbolicPlane.base_ring`
+
+    - ``b`` -- an element of :meth:`HyperbolicPlane.base_ring`
+
+    - ``c`` -- an element of :meth:`HyperbolicPlane.base_ring`
+
     EXAMPLES::
 
         sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
@@ -6785,7 +6795,7 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
             raise TypeError("point must be a point in the hyperbolic plane")
 
         if isinstance(point, HyperbolicPointFromGeodesic):
-            # Short cut the most common case (that _intersection cannot handle.)
+            # Short cut the most common case (that intersection cannot handle.)
             if point._geodesic.unoriented() == self.unoriented():
                 return True
 
@@ -6957,22 +6967,45 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
 
     def _intersection(self, other):
         r"""
-        Return the intersection of this geodesic and ``other`` in the Klein
-        model or in the Euclidean plane if the intersection point is ultra
-        ideal, i.e., not in the unit disk.
+        Return the intersection of this geodesic and ``other``.
 
-        Returns ``None`` if the lines do not intersect in a point.
+        Return ``None`` if they do not intersect in a point.
 
         INPUT:
 
-        - ``other`` -- another hyperbolic point
+        - ``other`` -- another :class:`HyperbolicGeodesic`
 
         EXAMPLES::
 
             sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
             sage: H = HyperbolicPlane(AA)
 
-        ::
+        Geodesics can intersect in a finite point::
+
+            sage: H.vertical(0)._intersection(H.half_circle(0, 1))
+            I
+
+        Geodesics can intersect in an ideal point::
+
+            sage: H.vertical(1)._intersection(H.half_circle(0, 1))
+            1
+
+        Geodesics might intersect in an ultra ideal point::
+
+            sage: H.half_circle(0, 1)._intersection(H.half_circle(1, 8))
+            (-3, 0)
+
+        Or they are parallel in the Klein model::
+
+            sage: H.half_circle(0, 1)._intersection(H.half_circle(0, 4))
+
+        Note that geodesics that overlap do not intersect in a point::
+
+            sage: H.vertical(0)._intersection(H.vertical(0))
+
+            sage: H.vertical(0)._intersection(-H.vertical(0))
+
+        TESTS::
 
             sage: A = -H.vertical(0)
             sage: B = H.vertical(-1)
@@ -6994,9 +7027,19 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
             sage: C._intersection(B)
             ∞
 
+        .. SEEALSO::
+
+            :meth:`HyperbolicConvexSet.intersection` for intersection with more
+            general sets.
+
+            :meth:`HyperbolicHalfPlane.intersection` for the generic
+            intersection of convex sets.
+
         """
-        if not isinstance(other, HyperbolicOrientedGeodesic):
-            raise TypeError("can only intersect with another oriented geodesic")
+        if not isinstance(other, HyperbolicGeodesic):
+            if allow_ultra_ideal:
+                raise NotImplementedError("cannot perform ultra-ideal intersection for these sets yet")
+            return super().intersection(other)
 
         xy = self.parent().geometry.intersection((self._a, self._b, self._c), (other._a, other._b, other._c))
 
@@ -7274,19 +7317,34 @@ class HyperbolicUnorientedGeodesic(HyperbolicGeodesic):
 
 
 class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet):
-    # TODO: Check documentation
-    # TODO: Check INPUTS
-    # TODO: Check SEEALSO
-    # TODO: Check for doctests
-    # TODO: Benchmark?
     r"""
     An oriented geodesic in the hyperbolic plane.
 
-    Internally, we represent geodesics as the chords satisfying the equation `a
-    + bx + cy=0` in the unit disk of the Klein model.
+    Internally, we represent geodesics as the chords satisfying the equation
 
-    The geodesic is oriented such that the half space `a + bx + cy ≥ 0` is on
-    its left.
+    .. MATH::
+
+        a + bx + cy = 0
+
+    in the unit disk of the Klein model.
+
+    The geodesic is oriented such that the half space
+
+    .. MATH::
+
+        a + bx + cy ≥ 0
+
+    is on its left.
+
+    INPUT:
+
+    - ``parent`` -- the :class:`HyperbolicPlane` this geodesic lives in
+
+    - ``a`` -- an element of :meth:`HyperbolicPlane.base_ring`
+
+    - ``b`` -- an element of :meth:`HyperbolicPlane.base_ring`
+
+    - ``c`` -- an element of :meth:`HyperbolicPlane.base_ring`
 
     EXAMPLES::
 
@@ -7302,16 +7360,30 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
         sage: H.geodesic(H(I), 0)
         {x = 0}
 
-    """
+    TESTS::
 
+        sage: from flatsurf.geometry.hyperbolic import HyperbolicOrientedGeodesic
+
+        sage: g = H.vertical(0)
+
+        sage: isinstance(g, HyperbolicOrientedGeodesic)
+        True
+
+        sage: TestSuite(g).run()
+
+    .. SEEALSO::
+
+        :meth:`HyperbolicPlane.geodesic` for the most common ways to construct
+        geodesics.
+
+        :class:`HyperbolicUnorientedGeodesic` for geodesics without an explicit
+        orientation and :class:`HyperbolicGeodesic` for shared functionality of
+        all geodesics.
+
+    """
     def _neg_(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
         r"""
-        Return the reversed geodesic.
+        Return this geodesic with its orientation reversed.
 
         EXAMPLES::
 
@@ -7327,12 +7399,6 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
         )
 
     def start(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
-        # TODO: Should this be in the oriented class? Should there be an equivalent in the unoriented class?
         r"""
         Return the ideal starting point of this geodesic.
 
@@ -7366,12 +7432,6 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
         return self.parent().start(self)
 
     def end(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
-        # TODO: Should this be in the oriented class? Should there be an equivalent in the unoriented class?
         r"""
         Return the ideal end point of this geodesic.
 
@@ -7405,12 +7465,6 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
         return (-self).start()
 
     def left_half_space(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
-        # TODO: Should this be in the oriented class? Should there be an equivalent in the unoriented class?
         r"""
         Return the closed half space to the left of this (oriented) geodesic.
 
@@ -7422,16 +7476,16 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
             sage: H.vertical(0).left_half_space()
             {x ≤ 0}
 
+        .. SEEALSO::
+
+            :meth:`right_half_space` for the corresponding half space on the other side
+
+            :meth:`HyperbolicPlane.half_space` for another method to create half spaces.
+
         """
         return self.parent().half_space(self._a, self._b, self._c, model="klein")
 
     def right_half_space(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
-        # TODO: Should this be in the oriented class? Should there be an equivalent in the unoriented class?
         r"""
         Return the closed half space to the right of this (oriented) geodesic.
 
@@ -7443,26 +7497,82 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
             sage: H.vertical(0).right_half_space()
             {x ≥ 0}
 
+        .. SEEALSO::
+
+            :meth:`left_half_space` for the corresponding half space on the other side
+
+            :meth:`HyperbolicPlane.half_space` for another method to create half spaces.
+
         """
         return (-self).left_half_space()
 
     def _configuration(self, other):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
-        # TODO: Should this be in the oriented class? Should there be an equivalent in the unoriented class?
         r"""
-        Return a classification of the angle between this
-        geodesic and ``other`` in the Klein model.
+        Return a classification of the (Euclidean) angle between this geodesic
+        and ``other`` in the Klein model.
+
+        This is a helper method for :meth:`HyperbolicConvexPolygon._normalize`.
+
+        INPUT:
+
+        - ``other`` -- another :class:`HyperbolicOrientedGeodesic`
+
+        OUTPUT:
+
+        A string explaining how the two geodesics are oriented.
+
+        .. NOTE::
+
+            This check is not robust over inexact rings and should be improved
+            for that use case.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+        Two geodesics can be equal::
+
+            sage: H.vertical(0)._configuration(H.vertical(0))
+            'equal'
+
+        They can be equal with reversed orientation::
+
+            sage: H.vertical(0)._configuration(-H.vertical(0))
+            'negative'
+
+        They can be parallel in the Klein model::
+
+            sage: H.vertical(0)._configuration(H.geodesic(1/2, 2))
+            'parallel'
+
+        They can be parallel but with reversed orientation::
+
+            sage: H.vertical(0)._configuration(H.geodesic(2, 1/2))
+            'anti-parallel'
+
+        Or they can intersect. We can distinguish the case that ``other``
+        crosses over from left-to-right or from right-to-left::
+
+            sage: H.vertical(0)._configuration(H.geodesic(1/3, 2))
+            'concave'
+
+            sage: H.vertical(0)._configuration(H.geodesic(1/2, 3))
+            'convex'
+
+        .. SEEALSO::
+
+            :meth:`_intersection` to compute the (ultra-ideal) intersection of geodesics
 
         """
-        # TODO: Can we make this public somehow?
+        if not isinstance(other, HyperbolicOrientedGeodesic):
+            raise TypeError("other must be an oriented geodesic")
+
         intersection = self._intersection(other)
 
         if intersection is None:
-            # TODO: Use a specialized predicate instead of the _method.
+            # We should use a specialized method of geometry here to make this
+            # more robust over inexact rings.
             orientation = self.parent().geometry._sgn(self._b * other._b + self._c * other._c)
 
             assert orientation != 0
@@ -7485,11 +7595,12 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
 
         assert orientation != 0
 
-        # TODO: Is convex/concave the right term?
+        # Probably convex and concave are not the best terms here.
         if orientation > 0:
             return "convex"
 
-        # TODO: Use the bounding-box trick to get mostly rid of concave cases.
+        # We probably would not need to consider the concave case if we always
+        # packed all geodesics into a bounding box that contains the unit disk.
         return "concave"
 
     def parametrize(self, point, model, check=True):
