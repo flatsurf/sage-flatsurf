@@ -6956,18 +6956,16 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
         return hash((type(self), self.equation(model="klein", normalization=["one", "gcd"])))
 
     def _intersection(self, other):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
-        # TODO: Should this be in the oriented class? Should there be an equivalent in the unoriented class?
         r"""
         Return the intersection of this geodesic and ``other`` in the Klein
         model or in the Euclidean plane if the intersection point is ultra
         ideal, i.e., not in the unit disk.
 
         Returns ``None`` if the lines do not intersect in a point.
+
+        INPUT:
+
+        - ``other`` -- another hyperbolic point
 
         EXAMPLES::
 
@@ -6979,14 +6977,20 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
             sage: A = -H.vertical(0)
             sage: B = H.vertical(-1)
             sage: C = H.vertical(0)
+
             sage: A._intersection(B)
             ∞
+
             sage: A._intersection(C)
+
             sage: B._intersection(A)
             ∞
+
             sage: B._intersection(C)
             ∞
+
             sage: C._intersection(A)
+
             sage: C._intersection(B)
             ∞
 
@@ -7149,18 +7153,6 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
         cross = other._intersection(self)
         assert cross
         return cross
-
-    def edges(self, as_segments=False):
-        # TODO: Check documentation
-        # TODO: Check INPUTS
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
-        edges = [self.change(oriented=True), -self.change(oriented=True)]
-        if as_segments:
-            edges = [self.parent().segment(edge, assume_normalized=True) for edge in edges]
-
-        return HyperbolicEdges(edges)
 
     def vertices(self, marked_vertices=True):
         r"""
@@ -9580,16 +9572,50 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
 
     @cached_method
     def edges(self, as_segments=False):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
-        # TODO: Define in HyperbolicConvexSet
-        # TODO: Check that this works for marked vertices.
         r"""
         Return the :class:`segments <HyperbolicOrientedSegment>` and
         :class:`geodesics <HyperbolicOrientedGeodesic>` defining this polygon.
+
+        This implements :meth:`HyperbolicConvexSet.edges` for polygons.
+
+        INPUT:
+
+        - ``as_segments`` -- a boolean (default: ``False``); whether to also
+          return the geodesics as segments with ideal end points.
+
+        OUTPUT:
+
+        A set of segments and geodesics. Iteration through this set is in
+        counterclockwise order with respect to the points of the set.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+        The edges of a polygon::
+
+            sage: P = H.intersection(
+            ....:   H.vertical(-1).right_half_space(),
+            ....:   H.vertical(1).left_half_space(),
+            ....:   H.half_circle(0, 1).left_half_space(),
+            ....:   H.half_circle(0, 4).right_half_space())
+
+            sage: P.edges()
+            {{-x + 1 = 0} ∩ {2*(x^2 + y^2) - 5*x - 3 ≤ 0}, {-(x^2 + y^2) + 4 = 0} ∩ {(x^2 + y^2) - 5*x + 1 ≥ 0} ∩ {(x^2 + y^2) + 5*x + 1 ≥ 0}, {x + 1 = 0} ∩ {2*(x^2 + y^2) + 5*x - 3 ≤ 0}, {(x^2 + y^2) - 1 = 0}}
+
+            sage: [type(e) for e in P.edges()]
+            [<class 'flatsurf.geometry.hyperbolic.HyperbolicOrientedSegment_with_category'>,
+             <class 'flatsurf.geometry.hyperbolic.HyperbolicOrientedSegment_with_category'>,
+             <class 'flatsurf.geometry.hyperbolic.HyperbolicOrientedSegment_with_category'>,
+             <class 'flatsurf.geometry.hyperbolic.HyperbolicOrientedGeodesic_with_category'>]
+
+            sage: [type(e) for e in P.edges(as_segments=True)]
+            [<class 'flatsurf.geometry.hyperbolic.HyperbolicOrientedSegment_with_category'>,
+             <class 'flatsurf.geometry.hyperbolic.HyperbolicOrientedSegment_with_category'>,
+             <class 'flatsurf.geometry.hyperbolic.HyperbolicOrientedSegment_with_category'>,
+             <class 'flatsurf.geometry.hyperbolic.HyperbolicOrientedSegment_with_category'>]
+
         """
         edges = []
 
