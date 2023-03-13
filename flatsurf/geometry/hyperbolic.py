@@ -6807,11 +6807,20 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
         return self.parent().geometry._zero(a + b * x + c * y)
 
     def dimension(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Return the dimension of this set, i.e., 1.
+
+        This implements :meth:`HyperbolicConvexSet.dimension`.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: H.vertical(0).dimension()
+            1
+
+        """
         from sage.all import ZZ
 
         return ZZ(1)
@@ -7826,11 +7835,20 @@ class HyperbolicPoint(HyperbolicConvexSet):
         return self._enhance_plot(plot, model=model)
 
     def dimension(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Return the dimension of this point, i.e., 0.
+
+        This implements :meth:`HyperbolicConvexSet.dimension`.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: H(0).dimension()
+            0
+
+        """
         from sage.all import ZZ
 
         return ZZ.zero()
@@ -9509,11 +9527,30 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
         )
 
     def dimension(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Return the dimension of this polygon, i.e., 2.
+
+        This implements :meth:`HyperbolicConvexSet.dimension`.
+
+        Note that this also returns 2 if the actual dimension of the polygon is
+        smaller. This is, however, only possible for polygons created with
+        :meth:`HyperbolicHalfPlane.polygon` setting ``check=False``.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: P = H.polygon([
+            ....:     H.vertical(-1).right_half_space(),
+            ....:     H.vertical(1).left_half_space(),
+            ....:     H.half_circle(0, 1).left_half_space(),
+            ....:     H.half_circle(0, 4).right_half_space(),
+            ....: ])
+            sage: P.dimension()
+            2
+
+        """
         from sage.all import ZZ
 
         return ZZ(2)
@@ -10541,10 +10578,24 @@ class HyperbolicSegment(HyperbolicConvexSet):
         return HyperbolicVertices([self.start(), self.end()])
 
     def dimension(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
+        r"""
+        Return the dimension of this segment, i.e., 1.
+
+        This implements :meth:`HyperbolicConvexSet.dimension`.
+
+        Note that this also returns 1 if the actual dimension of the segment is
+        smaller. This is, however, only possible for segments created with
+        :meth:`HyperbolicHalfPlane.segment` setting ``check=False``.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: H(I).segment(2*I).dimension()
+            1
+
+        """
         from sage.all import ZZ
 
         return ZZ(1)
@@ -10984,11 +11035,20 @@ class HyperbolicEmptySet(HyperbolicConvexSet):
         return self._enhance_plot(Graphics(), model=model)
 
     def dimension(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Return the dimension of this set; returns -1 for the empty set.
+
+        This implements :meth:`HyperbolicConvexSet.dimension`.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: H.empty_set().dimension()
+            -1
+
+        """
         from sage.all import ZZ
 
         return ZZ(-1)
