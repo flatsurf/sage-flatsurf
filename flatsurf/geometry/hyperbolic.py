@@ -5411,12 +5411,10 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
         return geodesic.replace("=", cmp)
 
     def half_spaces(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
         r"""
+        Return the half spaces defining this half space, i.e., this half space
+        itself.
+
         Implements :meth:`HyperbolicConvexSet.half_spaces`.
 
         EXAMPLES::
@@ -5432,11 +5430,6 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
         return HyperbolicHalfSpaces([self], assume_sorted=True)
 
     def _neg_(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
         r"""
         Return the closure of the complement of this half space.
 
@@ -5446,6 +5439,9 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
             sage: H = HyperbolicPlane()
 
             sage: S = H.half_circle(0, 1).left_half_space()
+            sage: S
+            {(x^2 + y^2) - 1 ≥ 0}
+
             sage: -S
             {(x^2 + y^2) - 1 ≤ 0}
 
@@ -5453,13 +5449,9 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
         return self._geodesic.right_half_space()
 
     def boundary(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
         r"""
-        Return a geodesic on the boundary of this half space, oriented such that the half space is on its left.
+        Return a geodesic on the boundary of this half space, oriented such
+        that the half space is on its left.
 
         EXAMPLES::
 
@@ -5470,12 +5462,21 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
             sage: S.boundary()
             {-x = 0}
 
+        .. SEEALSO::
+
+            :meth:`HyperbolicOrientedGeodesic.left_half_space` to recover the
+            half space from the oriented geodesic
+
         """
         return self._geodesic
 
     def __contains__(self, point):
         r"""
         Return whether ``point`` is contained in this half space.
+
+        INPUT:
+
+        - ``point`` -- a :class:`HyperbolicPoint`
 
         EXAMPLES::
 
@@ -5644,11 +5645,20 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
         return self
 
     def dimension(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Return the dimension of this half space, i.e., 2.
+
+        This implements :meth:`HyperbolicConvexSet.dimension`.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: H.vertical(0).left_half_space().dimension()
+            2
+
+        """
         from sage.all import ZZ
 
         return ZZ(2)
