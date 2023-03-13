@@ -6162,12 +6162,6 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
         raise NotImplementedError("printing not supported in this model")
 
     def equation(self, model, normalization=None):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
-        # TODO: Explain limitations when ultra ideal (and model=half_plane)
         r"""
         Return an equation for this geodesic as a triple ``a``, ``b``, ``c`` such that:
 
@@ -6175,7 +6169,7 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
           plane is on the geodesic if it satisfies `a(x^2 + y^2) + bx + c = 0`.
 
         - if ``model`` is ``"klein"``, points `(x, y)` in the unit disk satisfy
-          `a + bx + cy = 0`.
+          are on the geodesic if `a + bx + cy = 0`.
 
         INPUT:
 
@@ -6196,6 +6190,49 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
 
         Note that the output might not uniquely describe the geodesic since the
         coefficients are only unique up to scaling.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: v = H.vertical(0)
+            sage: v.equation(model="half_plane")
+            (0, -2, 0)
+
+            sage: v.equation(model="half_plane", normalization="gcd")
+            (0, -1, 0)
+
+            sage: v.equation(model="klein")
+            (0, -1, 0)
+
+        Sometimes, the desired normalization might not be possible (a more
+        realistic example would be exact-real coefficients)::
+
+            sage: H = HyperbolicPlane(ZZ)
+            sage: g = H.geodesic(2, 3, -4, model="half_plane")
+
+            sage: g.equation(model="half_plane", normalization="one")
+            Traceback (most recent call last):
+            ...
+            TypeError: ...
+
+        In this case, we can ask for the best of several normalization::
+
+            sage: g.equation(model="half_plane", normalization=["one", "gcd", None])
+            (2, 3, -4)
+
+        For ultra-ideal geodesics, the equation in the half plane model is not
+        very useful::
+
+            sage: g = H.geodesic(2, 0, 1, model="klein", check=False)
+            sage: g.equation(model="half_plane")  # i.e., 3*(x^2 + y^2) + 1 = 0
+            (3, 0, 1)
+
+        .. SEEALSO::
+
+            :meth:`HyperbolicPlane.geodesic` to create a geodesic from an
+            equation
 
         """
         normalization = normalization or [None]
@@ -6219,7 +6256,6 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
         else:
             raise NotImplementedError("cannot determine equation for this model yet")
 
-        # TODO: Use a specialized predicate instead of the _method.
         sgn = self.parent().geometry._sgn
         sgn = -1 if (
                 sgn(a) < 0
@@ -6231,7 +6267,7 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
             strategy = normalization.pop()
 
             try:
-                a, b, c = HyperbolicGeodesic._normalize_coefficients(a, b, c, sgn, strategy=strategy)
+                a, b, c = HyperbolicGeodesic._normalize_coefficients(a, b, c, strategy=strategy)
                 break
             except Exception:
                 if not normalization:
@@ -6245,12 +6281,39 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
         return a, b, c
 
     @classmethod
-    def _normalize_coefficients(cls, a, b, c, sgn, strategy):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+    def _normalize_coefficients(cls, a, b, c, strategy):
+        r"""
+        Return the normalized coefficients for the equation of a geodesic.
+
+        Helper method for :meth:`equation`.
+
+        INPUT:
+
+        - ``a``, ``b``, ``c`` -- the coefficients of the geodesic equation
+
+        - ``strategy`` -- one of ``"gcd"`` or ``"one"``
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicGeodesic
+
+        Normalize the leading coefficient to be ±1::
+
+            sage: HyperbolicGeodesic._normalize_coefficients(QQ(6), -QQ(10), -QQ(12), strategy="one")
+            (1, -5/3, -2)
+            sage: HyperbolicGeodesic._normalize_coefficients(-QQ(6), QQ(10), QQ(12), strategy="one")
+            (-1, 5/3, 2)
+
+        Divide the coefficients by their GCD::
+
+            sage: HyperbolicGeodesic._normalize_coefficients(QQ(6), -QQ(10), -QQ(12), strategy="gcd")
+            (3, -5, -6)
+            sage: HyperbolicGeodesic._normalize_coefficients(-QQ(6), QQ(10), QQ(12), strategy="gcd")
+            (-3, 5, 6)
+
+        """
+        R = a.parent()
+
         if strategy is None:
             return a, b, c
 
@@ -6258,25 +6321,29 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
             def gcd(*coefficients):
                 coefficients = [c for c in coefficients if c]
                 if len(coefficients) == 1:
-                    return sgn * coefficients[0]
+                    return coefficients[0]
 
                 from sage.all import gcd
                 return gcd(coefficients)
 
             d = gcd(a, b, c)
-            assert d > 0
-            return a / d, b / d, c / d
+            if d < 0:
+                d *= -1
+            return R(a / d), R(b / d), R(c / d)
 
         if strategy == "one":
             if a:
-                d = sgn * a
+                d = a
             elif b:
-                d = sgn * b
+                d = b
             else:
                 assert c
-                d = sgn * c
+                d = c
 
-            return a / d, b / d, c / d
+            if d < 0:
+                d *= -1
+
+            return R(a / d), R(b / d), R(c / d)
 
         raise ValueError(f"unknown normalization {strategy}")
 
