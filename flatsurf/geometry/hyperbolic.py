@@ -5400,30 +5400,15 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
             {(x^2 + y^2) - 1 ≥ 0}
 
         """
-        # TODO: Use geodesic printing instead.
-        # TODO: Use a specialized predicate instead of the _method.
-        sgn = self.parent().geometry._sgn
+        geodesic = repr(self.boundary())
 
-        # Convert to the upper half plane model as a(x^2 + y^2) + bx + c ≥ 0.
-        a, b, c = self.equation(model="half_plane", normalization=["gcd", None])
-
-        # Remove any trailing - signs in the output.
         cmp = "≥"
-        if sgn(a) < 0 or (sgn(a) == 0 and sgn(b) < 0):
-            a *= -1
-            b *= -1
-            c *= -1
+
+        if geodesic.startswith("{-"):
             cmp = "≤"
+            geodesic = repr(-self.boundary())
 
-        from sage.all import PolynomialRing
-
-        R = PolynomialRing(self.parent().base_ring(), names="x")
-        if sgn(a) != 0:
-            return (
-                f"{{{repr(R([0, a]))[:-1]}(x^2 + y^2){repr(R([c, b, 1]))[3:]} {cmp} 0}}"
-            )
-        else:
-            return f"{{{repr(R([c, b]))} {cmp} 0}}"
+        return geodesic.replace("=", cmp)
 
     def half_spaces(self):
         # TODO: Check documentation.
