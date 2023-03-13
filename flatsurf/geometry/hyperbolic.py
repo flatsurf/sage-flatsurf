@@ -4138,14 +4138,13 @@ class HyperbolicConvexSet(Element):
         """
         tester = self._tester(**options)
 
-        try:
-            vertices = self.vertices()
-        except ValueError:
-            # The vertex coordinates might not be representable in the base ring.
-            return
-
-        for vertex in vertices:
-            tester.assertIn(vertex, self)
+        for vertex in self.vertices():
+            try:
+                tester.assertIn(vertex, self)
+            except ValueError:
+                # Currently, containment can often not be decided when points
+                # do not have coordinates over the base ring.
+                pass
 
     def vertices(self, marked_vertices=True):
         r"""
@@ -5017,7 +5016,8 @@ class HyperbolicConvexSet(Element):
 
             :meth:`change` to pick an orientation on an unoriented set
 
-            :meth:`__neg__` to invert the orientation of a set
+            :meth:`__neg__`, i.e., the ``-`` operator, to invert the
+            orientation of a set
 
         """
         return isinstance(self, HyperbolicOrientedConvexSet)
@@ -5042,15 +5042,100 @@ class HyperbolicConvexSet(Element):
             # Verify that neg inverts the orientation of the set
             tester.assertEqual(self, -(-self))
 
-    def edges(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
-        # TODO: Implement by iterating vertices.
-        # TODO: Test that other implementation are consistent with vertices()
-        raise NotImplementedError
+    def edges(self, as_segments=False):
+        r"""
+        Return the :class:`segments <HyperbolicOrientedSegment>` and
+        :class:`geodesics <HyperbolicOrientedGeodesic>` that bound this set.
+
+        INPUT:
+
+        - ``as_segments`` -- a boolean (default: ``False``); whether to also
+          return the geodesics as segments with ideal end points.
+
+        OUTPUT:
+
+        A set of segments and geodesics. Iteration through this set is in
+        counterclockwise order with respect to the points of the set.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+        The edges of a polygon::
+
+            sage: P = H.intersection(
+            ....:   H.vertical(-1).right_half_space(),
+            ....:   H.vertical(1).left_half_space(),
+            ....:   H.half_circle(0, 2).left_half_space())
+
+            sage: P.edges()
+            {{-x + 1 = 0} ∩ {2*(x^2 + y^2) - 3*x - 1 ≥ 0}, {x + 1 = 0} ∩ {2*(x^2 + y^2) + 3*x - 1 ≥ 0}, {(x^2 + y^2) - 2 = 0} ∩ {(x^2 + y^2) + 3*x + 1 ≥ 0} ∩ {(x^2 + y^2) - 3*x + 1 ≥ 0}}
+
+        The single edge of a half space:
+
+            sage: H.vertical(0).left_half_space().edges()
+            {{-x = 0},}
+
+        A geodesic and a segment are bounded by two edges::
+
+            sage: H.vertical(0).edges()
+            {{-x = 0}, {x = 0}}
+
+            sage: H(I).segment(2*I).edges()
+            {{-x = 0} ∩ {(x^2 + y^2) - 1 ≥ 0} ∩ {(x^2 + y^2) - 4 ≤ 0}, {x = 0} ∩ {(x^2 + y^2) - 4 ≤ 0} ∩ {(x^2 + y^2) - 1 ≥ 0}}
+
+        Lower dimensional objects have no edges:
+
+            sage: H(I).edges()
+            {}
+
+            sage: H.empty_set().edges()
+            {}
+
+        """
+        edges = []
+
+        for v, w in self.vertices().pairs():
+            edge = v.segment(w)
+
+            if v.is_ideal() and w.is_ideal():
+                if edge.right_half_space().is_subset(self):
+                    continue
+
+                if as_segments:
+                    edge = self.parent().segment(edge, assume_normalized=True)
+                    assert isinstance(edge, HyperbolicSegment)
+
+            edges.append(edge)
+
+        return HyperbolicEdges(edges)
+
+    def _test_edges(self, **options):
+        r"""
+        Verify that this set implements :meth:`edges` correctly.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: H.empty_set()._test_edges()
+
+        """
+        tester = self._tester(**options)
+
+        if not self.parent().base_ring().is_exact():
+            # Inexact base rings typically do not allow hashing of coordinates
+            # which is needed for the set below.
+            return
+
+        edges = self.edges()
+        endpoints = set([edge.start() for edge in edges] + [edge.end() for edge in edges])
+
+        if self.dimension() > 0:
+            vertices = self.vertices()
+            tester.assertEqual(endpoints, vertices)
 
     def __hash__(self):
         r"""
@@ -5342,6 +5427,14 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
             sage: oo in h
             True
 
+        Currently, this is not implemented for points whose coordinates cannot
+        be represented over the base ring::
+
+            sage: H.half_circle(0, 2).start() in h
+            Traceback (most recent call last):
+            ...
+            ValueError: ...
+
         .. NOTE::
 
             The implementation is currently not very robust over inexact rings.
@@ -5534,14 +5627,11 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
             sage: g.start(), g.end()
             (∞, 0)
 
-        Currently, vertices cannot be computed if some of them have coordinates
-        which do not live over the :meth:`HyperbolicPlane.base_ring`; see
-        :class:`HyperbolicVertices`::
+        Vertices can be computed even though they do not have coordinates over
+        the :meth:`HyperbolicPlane.base_ring`::
 
             sage: H.half_circle(0, 2).left_half_space().vertices()
-            Traceback (most recent call last):
-            ...
-            ValueError: ...
+            {-1.41421356237310, 1.41421356237310}
 
         .. SEEALSO::
 
@@ -6594,6 +6684,81 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
         assert cross
         return cross
 
+    def edges(self, as_segments=False):
+        # TODO: Check documentation
+        # TODO: Check INPUTS
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        # TODO: Benchmark?
+        edges = [self.change(oriented=True), -self.change(oriented=True)]
+        if as_segments:
+            edges = [self.parent().segment(edge, assume_normalized=True) for edge in edges]
+
+        return HyperbolicEdges(edges)
+
+    def vertices(self, marked_vertices=True):
+        r"""
+        Return the ideal end points of this geodesic.
+
+        INPUT:
+
+        - ``marked_vertices`` -- a boolean (default: ``True``), ignored since a
+          geodesic cannot have marked vertices.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: H.vertical(0).vertices()
+            {0, ∞}
+
+        Note that iteration in the set is not consistent with the orientation
+        of the geodesic (it is chosen such that the subset relation on vertices
+        can be checked quickly)::
+
+            sage: v = H.vertical(0)
+            sage: list(v.vertices())
+            [0, ∞]
+
+            sage: list((-v).vertices())
+            [0, ∞]
+
+        Use :meth:`HyperbolicGeodesic.start` and
+        :meth:`HyperbolicGeodesic.end` to get the end points in an order that
+        is consistent with orientation::
+
+            sage: v.start(), v.end()
+            (0, ∞)
+
+            sage: (-v).start(), (-v).end()
+            (∞, 0)
+
+        The vertices can also be determined for an unoriented geodesic::
+
+            sage: v.unoriented().vertices()
+            {0, ∞}
+
+        Vertices can be computed even if they do not have coordinates over the
+        :meth:`HyperbolicPlane.base_ring`::
+
+            sage: H.half_circle(0, 2).vertices()
+            {-1.41421356237310, 1.41421356237310}
+
+        .. NOTE::
+
+            The implementation of this method is not robust over inexact rings.
+
+        .. SEEALSO::
+
+            :meth:`HyperbolicConvexSet.vertices` for more details.
+
+        """
+        if not self.is_oriented():
+            self = self.change(oriented=True)
+
+        return HyperbolicVertices([self.start(), self.end()])
+
 
 class HyperbolicUnorientedGeodesic(HyperbolicGeodesic):
     # TODO: Check documentation
@@ -6613,40 +6778,6 @@ class HyperbolicUnorientedGeodesic(HyperbolicGeodesic):
         {x = 0}
 
     """
-
-    def vertices(self, marked_vertices=True):
-        r"""
-        Return the ideal end points of this unoriented geodesic.
-
-        INPUT:
-
-        - ``marked_vertices`` -- a boolean (default: ``True``), ignored since a
-          geodesic cannot have marked vertices.
-
-        EXAMPLES::
-
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
-            sage: H = HyperbolicPlane()
-
-            sage: H.vertical(0).unoriented().vertices()
-            {0, ∞}
-
-        Currently, vertices cannot be computed if some of them have coordinates
-        which do not live over the :meth:`HyperbolicPlane.base_ring`; see
-        :class:`HyperbolicVertices`::
-
-            sage: H.half_circle(0, 2).unoriented().vertices()
-            Traceback (most recent call last):
-            ...
-            ValueError: ...
-
-        .. SEEALSO::
-
-            :meth:`HyperbolicConvexSet.vertices` for more details.
-
-        """
-        return self.change(oriented=True).vertices()
-
     def _isometry_conditions(self, other):
         # TODO: Check documentation.
         # TODO: Check INPUT
@@ -6910,60 +7041,6 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
             )
 
         raise NotImplementedError("cannot parametrize a geodesic over this model yet")
-
-    def vertices(self, marked_vertices=True):
-        r"""
-        Return the ideal end points of this oriented geodesic.
-
-        INPUT:
-
-        - ``marked_vertices`` -- a boolean (default: ``True``), ignored since a
-          geodesic cannot have marked vertices.
-
-        EXAMPLES::
-
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
-            sage: H = HyperbolicPlane()
-
-            sage: H.vertical(0).vertices()
-            {0, ∞}
-
-        Note that iteration in the set is not consistent with the orientation
-        of the geodesic (it is chosen such that the subset relation on vertices
-        can be checked quickly)::
-
-            sage: v = H.vertical(0)
-            sage: list(v.vertices())
-            [0, ∞]
-
-            sage: list((-v).vertices())
-            [0, ∞]
-
-        Use :meth:`HyperbolicGeodesic.start` and
-        :meth:`HyperbolicGeodesic.end` to get the end points in an order that
-        is consistent with orientation::
-
-            sage: v.start(), v.end()
-            (0, ∞)
-
-            sage: (-v).start(), (-v).end()
-            (∞, 0)
-
-        Currently, vertices cannot be computed if some of them have coordinates
-        which do not live over the :meth:`HyperbolicPlane.base_ring`; see
-        :class:`HyperbolicVertices`::
-
-            sage: H.half_circle(0, 2).vertices()
-            Traceback (most recent call last):
-            ...
-            ValueError: ...
-
-        .. SEEALSO::
-
-            :meth:`HyperbolicConvexSet.vertices` for more details.
-
-        """
-        return HyperbolicVertices([self.start(), self.end()])
 
     def _isometry_conditions(self, other):
         # TODO: Check documentation.
@@ -7235,7 +7312,7 @@ class HyperbolicPoint(HyperbolicConvexSet):
         """
         return self.coordinates(model="half_plane")[1]
 
-    def segment(self, end, check=True, assume_normalized=False):
+    def segment(self, end, check=True):
         # TODO: Check documentation.
         # TODO: Check INPUT
         # TODO: Check SEEALSO
@@ -7253,12 +7330,19 @@ class HyperbolicPoint(HyperbolicConvexSet):
             {-x = 0} ∩ {(x^2 + y^2) - 1 ≤ 0}
 
         """
+        end = self.parent()(end)
+
+        geodesic = self.parent().geodesic(self, end)
+
+        if self.is_ideal() and end.is_ideal():
+            return geodesic
+
         return self.parent().segment(
-            self.parent().geodesic(self, end),
-            start=self,
-            end=end,
+            geodesic,
+            start=self if self.is_finite() else None,
+            end=end if end.is_finite() else None,
             check=check,
-            assume_normalized=assume_normalized,
+            assume_normalized=True,
         )
 
     def plot(self, model="half_plane", **kwds):
@@ -7311,14 +7395,11 @@ class HyperbolicPoint(HyperbolicConvexSet):
             sage: H(oo).vertices()
             {∞,}
 
-        Currently, this does not work for points that have coordinates that do
-        not live in the :meth:`HyperbolicPlane.base_ring`; see
-        :class:`HyperbolicVertices`::
+        Vertices can be computed even if they do not have coordinates over the
+        :meth:`HyperbolicPlane.base_ring`::
 
             sage: H.half_circle(0, 2).start().vertices()
-            Traceback (most recent call last):
-            ...
-            ValueError: ...
+            {-1.41421356237310,}
 
         .. SEEALSO::
 
@@ -9030,8 +9111,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
                 )
             )
 
-        # TODO: Return a SortedSet
-        return edges
+        return HyperbolicEdges(edges)
 
     def vertices(self, marked_vertices=True):
         r"""
@@ -10581,9 +10661,8 @@ def sim12_to_gl2(m):
     raise ValueError('no projection to GL(2, R) in the base ring')
 
 
-# TODO: Rename to OrderedSet?
 # TODO: Allow creating from generator while allowing to answer length immediately.
-class SortedSet:
+class OrderedSet:
     # TODO: Check documentation
     # TODO: Check INPUTS
     # TODO: Check SEEALSO
@@ -10591,7 +10670,7 @@ class SortedSet:
     # TODO: Add a collections.abc class.
     # TODO: Benchmark?
     r"""
-    A set of objects sorted by :meth:`SortedSet.cmp`.
+    A set of objects sorted by :meth:`OrderedSet._lt_`.
 
     This is used to efficiently represent
     :meth:`HyperbolicConvexSet.half_spaces`,
@@ -10607,7 +10686,7 @@ class SortedSet:
         # TODO: Check for doctests
         # TODO: Benchmark?
         if assume_sorted is None:
-            assume_sorted = isinstance(entries, SortedSet)
+            assume_sorted = isinstance(entries, OrderedSet)
 
         if assume_sorted == "rotated":
             min = 0
@@ -10710,7 +10789,7 @@ class SortedSet:
 
         """
         if type(other) != type(self):
-            return False
+            other = type(self)(other)
 
         return self._entries == other._entries
 
@@ -10800,6 +10879,8 @@ class SortedSet:
         # TODO: Check SEEALSO
         # TODO: Check for doctests
         # TODO: Benchmark?
+        if len(self._entries) <= 1:
+            return
         for i in range(len(self._entries)):
             yield self._entries[i-1], self._entries[i]
 
@@ -10814,8 +10895,16 @@ class SortedSet:
                 (i + 1) % len(self._entries)
             ]
 
+    def __getitem__(self, *args, **kwargs):
+        # TODO: Check documentation.
+        # TODO: Check INPUT
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        # TODO: Benchmark?
+        return self._entries.__getitem__(*args, **kwargs)
 
-class HyperbolicVertices(SortedSet):
+
+class HyperbolicVertices(OrderedSet):
     # TODO: Check documentation
     # TODO: Check INPUTS
     # TODO: Check SEEALSO
@@ -10853,13 +10942,42 @@ class HyperbolicVertices(SortedSet):
         # TODO: Check for doctests
         # TODO: Benchmark?
 
+        vertices = list(vertices)
+
         if len(vertices) != 0:
-            # We sort vertices in counterclockwise order. We need to fix a starting
-            # point consistently, namely we choose the leftmost point in the Klein
-            # model and if there are ties the one with minimal y coordinate.
-            # That way we can then order vertices by their slopes with the starting
-            # point to get a counterclockwise walk.
-            self._start = min(vertices, key=lambda vertex: vertex.coordinates(model="klein"))
+            if assume_sorted or len(vertices) == 1:
+                self._start = vertices[0]
+            else:
+                # We sort vertices in counterclockwise order. We need to fix a starting
+                # point consistently, namely we choose the leftmost point in the Klein
+                # model and if there are ties the one with minimal y coordinate.
+                # That way we can then order vertices by their slopes with the starting
+                # point to get a counterclockwise walk.
+
+                # A very common special case is that we are presented with two
+                # end points of a geodesic. This is a hack but getting the
+                # consistent ordering to work with a mix of points without
+                # using their coordinates is a lot of work.
+                if len(vertices) == 2 and isinstance(vertices[0], HyperbolicPointFromGeodesic) and isinstance(vertices[1], HyperbolicPointFromGeodesic) and vertices[0]._geodesic == -vertices[1]._geodesic:
+                    geodesic = vertices[0]._geodesic
+                    # Note that we should use more robust predicates from the "geometry" to
+                    # make this work more reliably over inexact rings.
+                    if geodesic.parent().geometry._zero(geodesic._c):
+                        # This is a vertical in the Klein model. Both end points have the
+                        # same x coordinate.
+                        if geodesic._b > 0:
+                            # This vertical is oriented downwards, so the end point has the
+                            # minimal y coordinate.
+                            vertices.reverse()
+                    elif geodesic._c < 0:
+                        # This geodesic points right-to-left in the Klein model. The
+                        # end point has minimal x coordinate.
+                        vertices.reverse()
+
+                    self._start = vertices[0]
+                    assume_sorted = True
+                else:
+                    self._start = min(vertices, key=lambda vertex: vertex.coordinates(model="klein"))
 
         # _lt_ needs to know the global structure of the convex hull of the vertices.
         # The base class constructor will replace _entries with a sorted version of _entries.
@@ -10918,7 +11036,7 @@ class HyperbolicVertices(SortedSet):
         raise ValueError("cannot decide counterclockwise ordering of three collinear points")
 
 
-class HyperbolicHalfSpaces(SortedSet):
+class HyperbolicHalfSpaces(OrderedSet):
     # TODO: Check documentation
     # TODO: Check INPUTS
     # TODO: Check SEEALSO
@@ -11086,6 +11204,29 @@ class HyperbolicHalfSpaces(SortedSet):
         half_spaces.append(parent.geodesic(start, reference).left_half_space())
 
         return HyperbolicHalfSpaces(half_spaces)
+
+
+class HyperbolicEdges(OrderedSet):
+    # TODO: Check documentation
+    # TODO: Check INPUTS
+    # TODO: Check SEEALSO
+    # TODO: Check for doctests
+    # TODO: Benchmark?
+    @classmethod
+    def _lt_(cls, lhs, rhs):
+        # TODO: Check documentation.
+        # TODO: Check INPUT
+        # TODO: Check SEEALSO
+        # TODO: Check for doctests
+        # TODO: Benchmark?
+        # TODO: This is essentially atan2.
+        if isinstance(lhs, HyperbolicOrientedSegment):
+            lhs = lhs.geodesic()
+
+        if isinstance(rhs, HyperbolicOrientedSegment):
+            rhs = rhs.geodesic()
+
+        return HyperbolicHalfSpaces._lt_(lhs.left_half_space(), rhs.left_half_space())
 
 
 class CartesianPathPlot(GraphicPrimitive):
