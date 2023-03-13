@@ -5259,20 +5259,28 @@ class HyperbolicConvexSet(Element):
 
 
 class HyperbolicOrientedConvexSet(HyperbolicConvexSet):
-    # TODO: Explain that this is for sets that are not described by listing the half spaces that they are an intersection of.
-    # TODO: Check documentation
-    # TODO: Check INPUTS
-    # TODO: Check SEEALSO
-    # TODO: Check for doctests
-    # TODO: Benchmark?
-    def _neg_(self):
-        # TODO: Explain that this is different from the generic neg. Do we still have the generic neg? Maybe we should not.
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
-        raise NotImplementedError
+    r"""
+    Base class for sets that have an explicit orientation.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicOrientedConvexSet
+        sage: H = HyperbolicPlane()
+
+        sage: isinstance(H(0), HyperbolicOrientedConvexSet)
+        False
+
+        sage: isinstance(H.vertical(0), HyperbolicOrientedConvexSet)
+        True
+
+        sage: isinstance(H.vertical(0).unoriented(), HyperbolicOrientedConvexSet)
+        False
+
+    .. SEEALSO::
+
+        :meth:`HyperbolicConvexSet.is_oriented`
+
+    """
 
 
 class HyperbolicHalfSpace(HyperbolicConvexSet):
