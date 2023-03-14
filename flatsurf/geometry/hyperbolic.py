@@ -12332,11 +12332,17 @@ class OrderedSet(collections.abc.Set):
 
     def _merge(self, *sets):
         r"""
-        Return the merge of sorted lists of ``sets``.
+        Return the merge of sorted lists of ``sets`` using merge sort.
+
+        Note that this set itself is not part of the merge.
 
         Naturally, when there are a lot of small sets, such a merge sort takes
         quasi-linear time. However, when there are only a few sets, this runs
         in linear time.
+
+        INPUT:
+
+        - ``sets`` -- iterables that are sorted with respect to :meth:`_lt_`.
 
         EXAMPLES::
 
@@ -12635,15 +12641,23 @@ class OrderedSet(collections.abc.Set):
 
 
 class HyperbolicVertices(OrderedSet):
-    # TODO: Check documentation
-    # TODO: Check INPUTS
-    # TODO: Check SEEALSO
-    # TODO: Check for doctests
-    # TODO: Benchmark?
-    # TODO: Do we need to disable _merge in most cases (probably fine if both sets of vertices define the same polygon?)
     r"""
     A set of vertices on the boundary of a convex set in the hyperbolic plane,
     sorted in counterclockwise order.
+
+    INPUT:
+
+    - ``vertices`` -- an iterable of :class:`HyperbolicPoint`, the vertices of this set
+
+    - ``assume_sorted`` -- a boolean or ``"rotated"`` (default: ``True``);
+      whether to assume that the ``vertices`` are already sorted with respect
+      to :meth:`_lt_`. If ``"rotated"``, we assume that the vertices are sorted
+      modulo a cyclic permutation.
+
+    ALGORITHM:
+
+    We keep vertices sorted in counterclockwise order relative to a fixed
+    reference vertex (the leftmost and bottommost in the Klein model.)
 
     EXAMPLES::
 
@@ -12652,6 +12666,11 @@ class HyperbolicVertices(OrderedSet):
         sage: V = H.vertical(0).vertices()
         sage: V
         {0, ∞}
+
+    Note that in this example, ``0`` is chosen as the reference point::
+
+        sage: V._start
+        0
 
     TESTS::
 
@@ -12664,14 +12683,18 @@ class HyperbolicVertices(OrderedSet):
         :meth:`HyperbolicConvexSet.vertices`
 
     """
-
     def __init__(self, vertices, assume_sorted=None):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        TESTS::
 
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicVertices
+            sage: H = HyperbolicPlane()
+            sage: V = H.vertical(0).vertices()
+
+            sage: isinstance(V, HyperbolicVertices)
+            True
+
+        """
         vertices = list(vertices)
 
         if len(vertices) != 0:
@@ -12715,21 +12738,81 @@ class HyperbolicVertices(OrderedSet):
 
         super().__init__(vertices, assume_sorted=assume_sorted)
 
+    def _merge(self, *sets):
+        r"""
+        Return the merge of sorted lists of ``sets``.
+
+        Note that this set itself is not part of the merge (but its reference
+        point is used.)
+
+        INPUT:
+
+        - ``sets`` -- iterables that are sorted with respect to :meth:`_lt_`.
+
+        .. WARNING::
+
+            For this to work correctly, the result of the merge must eventually
+            have the reference point of this set as its reference point.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicHalfSpaces
+            sage: H = HyperbolicPlane()
+
+            sage: V = H.vertical(0).vertices()
+
+            sage: V._merge([H(1)], [H(0)], [H(oo)])
+            [0, 1, ∞]
+
+        """
+        return super()._merge(*sets)
+
     def _slope(self, vertex):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
+        r"""
+        Return the slope of ``vertex`` with respect to the chosen reference
+        vertex of this set as a tuple (Δy, Δx).
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicHalfSpaces
+            sage: H = HyperbolicPlane()
+
+            sage: V = H.vertical(0).vertices()
+
+        We compute the Euclidean slope from 0 to 1 in the Klein model::
+
+            sage: V._slope(H(1))
+            (1, 1)
+
+        """
         sx, sy = self._start.coordinates(model="klein")
         x, y = vertex.coordinates(model="klein")
         return (y - sy, x - sx)
 
     def _lt_(self, lhs, rhs):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Return whether ``lhs`` should come before ``rhs`` in this set.
+
+        INPUT:
+
+        - ``lhs`` -- a :class:`HyperbolicPoint`
+
+        - ``rhs`` -- a :class:`HyperbolicPoint`
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicHalfSpaces
+            sage: H = HyperbolicPlane()
+
+            sage: V = H.vertical(0).vertices()
+
+        We find that we go counterclockwise from 1 to ∞ when seen from 0 in the
+        Klein model::
+
+            sage: V._lt_(H(oo), H(1))
+            False
+
+        """
         if lhs == self._start:
             return True
         if rhs == self._start:
