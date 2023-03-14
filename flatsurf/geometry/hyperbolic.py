@@ -4547,7 +4547,7 @@ class HyperbolicConvexSet(Element):
             sage: H = HyperbolicPlane()
 
             sage: H.vertical(0).plot()
-            ...Graphics object consisting of 1 graphics primitive
+            Graphics object consisting of 1 graphics primitive
 
         """
         raise NotImplementedError(f"this {type(self)} does not support plotting")
@@ -6415,7 +6415,7 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
             sage: H = HyperbolicPlane()
 
             sage: H.vertical(0).plot()
-            ...Graphics object consisting of 1 graphics primitive
+            Graphics object consisting of 1 graphics primitive
 
         """
         return (
@@ -8226,7 +8226,7 @@ class HyperbolicPoint(HyperbolicConvexSet):
             sage: H = HyperbolicPlane()
 
             sage: H(I).plot()
-            ...Graphics object consisting of 1 graphics primitive
+            Graphics object consisting of 1 graphics primitive
 
         """
         coordinates = self.coordinates(model=model, ring="maybe")
@@ -10498,7 +10498,8 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
         - ``edgecolor`` -- a string (default: ``"blue"``); the color of
           geodesics and segments
 
-        See :func:`hyperbolic_path` for additional supported parameters.
+        See :func:`hyperbolic_path` for additional keyword arguments to
+        customize the plot.
 
         EXAMPLES::
 
@@ -10978,21 +10979,21 @@ class HyperbolicSegment(HyperbolicConvexSet):
 
             sage: s = H.segment(H.vertical(0), start=1, check=False, assume_normalized=True)
             sage: s._check()
-            Traceback (most recent call last)
+            Traceback (most recent call last):
             ...
             ValueError: start point must be on the geodesic
 
             sage: s = H.segment(H.vertical(0), end=1, check=False, assume_normalized=True)
             sage: s._check()
-            Traceback (most recent call last)
+            Traceback (most recent call last):
             ...
             ValueError: end point must be on the geodesic
 
         The end points must be ordered correctly::
 
-            sage: s = H.segment(H.vertical(0), start=2*I, end=I, check=False)
+            sage: s = H.segment(H.vertical(0), start=2*I, end=I, check=False, assume_normalized=True)
             sage: s._check()
-            Traceback (most recent call last)
+            Traceback (most recent call last):
             ...
             ValueError: end point of segment must not be before start point on the underlying geodesic
 
@@ -11003,7 +11004,7 @@ class HyperbolicSegment(HyperbolicConvexSet):
 
             sage: s = H.segment(H.vertical(0), start=I, end=I, check=False, assume_normalized=True)
             sage: s._check(require_normalized=True)
-            Traceback (most recent call last)
+            Traceback (most recent call last):
             ...
             ValueError: end point of segment must be after start point on the underlying geodesic
 
@@ -11026,14 +11027,12 @@ class HyperbolicSegment(HyperbolicConvexSet):
                 raise ValueError("end point of segment must be after start point on the underlying geodesic")
 
     def _normalize(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
-        # TODO: Should this be in the oriented class? Should there be an equivalent in the unoriented class?
         r"""
-        TESTS::
+        Return this set possibly rewritten in a simpler form.
+
+        This implements :meth:`HyperbolicConvexSet._normalize`.
+
+        EXAMPLES::
 
             sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
             sage: H = HyperbolicPlane()
@@ -11042,15 +11041,18 @@ class HyperbolicSegment(HyperbolicConvexSet):
 
             sage: segment = lambda *args, **kwds: H.segment(*args, **kwds, check=False, assume_normalized=True)
 
-        ::
+        A segment that consists of an ideal point, is just that point::
 
             sage: segment(H.vertical(-1), start=H.infinity(), end=H.infinity())._normalize()
             ∞
 
-        ::
-
             sage: segment(H.vertical(0), start=H.infinity(), end=None)._normalize()
             ∞
+
+            sage: segment(-H.vertical(0), start=None, end=H.infinity())._normalize()
+            ∞
+
+        A segment that has two ideal end points is a geodesic::
 
             sage: segment(H.vertical(0), start=None, end=H.infinity())._normalize()
             {-x = 0}
@@ -11058,16 +11060,17 @@ class HyperbolicSegment(HyperbolicConvexSet):
             sage: segment(-H.vertical(0), start=H.infinity(), end=None)._normalize()
             {x = 0}
 
-            sage: segment(-H.vertical(0), start=None, end=H.infinity())._normalize()
-            ∞
-
-        ::
+        Segments that remain segments in normalization::
 
             sage: segment(H.vertical(0), start=I, end=H.infinity())._normalize()
             {-x = 0} ∩ {(x^2 + y^2) - 1 ≥ 0}
 
             sage: segment(-H.vertical(0), start=H.infinity(), end=I)._normalize()
             {x = 0} ∩ {(x^2 + y^2) - 1 ≥ 0}
+
+        .. NOTE::
+
+            This method is not numerically robust and should be improve over inexact rings.
 
         """
         if self._geodesic.is_ultra_ideal():
@@ -11085,7 +11088,8 @@ class HyperbolicSegment(HyperbolicConvexSet):
 
         if start is not None:
             if not start.is_finite():
-                # TODO: Use specialized predicate instead of _method.
+                # We should use a specialized predicate of geometry to make
+                # this more robust over inexact rings.
                 if self.parent().geometry._sgn(λ(start)) > 0:
                     return (
                         self.parent().empty_set() if start.is_ultra_ideal() else start
@@ -11094,7 +11098,8 @@ class HyperbolicSegment(HyperbolicConvexSet):
 
         if end is not None:
             if not end.is_finite():
-                # TODO: Use specialized predicate instead of _method.
+                # We should use a specialized predicate of geometry to make
+                # this more robust over inexact rings.
                 if self.parent().geometry._sgn(λ(end)) < 0:
                     return self.parent().empty_set() if end.is_ultra_ideal() else end
                 end = None
@@ -11183,11 +11188,21 @@ class HyperbolicSegment(HyperbolicConvexSet):
         return self.parent().segment(geodesic, start=start, end=end, oriented=self.is_oriented())
 
     def _endpoint_half_spaces(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Return the half spaces that stop the segment at its endpoints.
+
+        A helper method for printing and :meth:`half_spaces`.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicSegment
+            sage: H = HyperbolicPlane()
+
+            sage: s = H.segment(H.half_circle(0, 1), end=I)
+            sage: list(s._endpoint_half_spaces())
+            [{x ≤ 0}]
+
+        """
         a, b, c = self._geodesic.equation(model="klein")
 
         if self._start is not None:
@@ -11203,32 +11218,65 @@ class HyperbolicSegment(HyperbolicConvexSet):
             )
 
     def _repr_(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Return a printable representation of this segment.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicSegment
+            sage: H = HyperbolicPlane()
+
+            sage: H.segment(H.half_circle(0, 1), end=I)
+            {(x^2 + y^2) - 1 = 0} ∩ {x ≤ 0}
+
+        """
         bounds = [repr(self._geodesic)]
         bounds.extend(repr(half_space) for half_space in self._endpoint_half_spaces())
 
         return " ∩ ".join(bounds)
 
     def half_spaces(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Return a minimal set of half spaces whose intersection is this segment.
+
+        This implements :meth:`HyperbolicConvexSet.half_spaces`.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicSegment
+            sage: H = HyperbolicPlane()
+
+            sage: segment = H.segment(H.half_circle(0, 1), end=I)
+            sage: segment.half_spaces()
+            {{x ≤ 0}, {(x^2 + y^2) - 1 ≤ 0}, {(x^2 + y^2) - 1 ≥ 0}}
+
+        """
         return self._geodesic.half_spaces() + HyperbolicHalfSpaces(
             self._endpoint_half_spaces()
         )
 
     def plot(self, model="half_plane", **kwds):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Return a plot of this segment.
+
+        INPUT:
+
+        - ``model`` -- one of ``"half_plane"`` or ``"klein"`` (default:
+          ``"half_plane"``); in which model to produce the plot
+
+        See :func:`hyperbolic_path` for additional keyword arguments to
+        customize the plot.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicSegment
+            sage: H = HyperbolicPlane()
+
+            sage: segment = H.segment(H.half_circle(0, 1), end=I)
+            sage: segment.plot()
+            Graphics object consisting of 1 graphics primitive
+
+        """
         self = self.change(oriented=True)
 
         from sage.all import RR
