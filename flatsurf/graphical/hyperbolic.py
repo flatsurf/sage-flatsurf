@@ -271,6 +271,7 @@ class CartesianPathPlot(GraphicPrimitive):
         }
 
         from matplotlib.path import Path
+
         path = Path([(0, 0)])
 
         from matplotlib.patches import PathPatch
@@ -325,7 +326,11 @@ class CartesianPathPlot(GraphicPrimitive):
             Redraw after the viewport has been rescaled to make sure that
             infinite rays reach the end of the viewport.
             """
-            patch.set_path(self._create_path(subplot.axes.get_xlim(), subplot.axes.get_ylim(), fill=fill))
+            patch.set_path(
+                self._create_path(
+                    subplot.axes.get_xlim(), subplot.axes.get_ylim(), fill=fill
+                )
+            )
 
         subplot.axes.callbacks.connect("ylim_changed", redraw)
         subplot.axes.callbacks.connect("xlim_changed", redraw)
@@ -372,7 +377,9 @@ class CartesianPathPlot(GraphicPrimitive):
             vertices = [pos]
         elif command.code == "MOVETOINFINITY":
             # We cannot draw lines yet. We don't seem to need them for hyperbolic plots at the moment.
-            raise NotImplementedError("cannot draw a path that starts at an infinite point yet")
+            raise NotImplementedError(
+                "cannot draw a path that starts at an infinite point yet"
+            )
         else:
             raise RuntimeError(f"path must not start with a {command.code} command")
 
@@ -381,7 +388,9 @@ class CartesianPathPlot(GraphicPrimitive):
         codes = [Path.MOVETO]
 
         for command in self._commands[1:]:
-            pos, direction = self._extend_path(vertices, codes, pos, direction, command, fill, xlim, ylim)
+            pos, direction = self._extend_path(
+                vertices, codes, pos, direction, command, fill, xlim, ylim
+            )
 
         return Path(vertices, codes)
 
@@ -512,7 +521,9 @@ class CartesianPathPlot(GraphicPrimitive):
             target = command.args
 
             if direction is not None:
-                vertices.append(CartesianPathPlot._infinity(target, direction, xlim, ylim))
+                vertices.append(
+                    CartesianPathPlot._infinity(target, direction, xlim, ylim)
+                )
                 codes.append(Path.LINETO)
                 direction = None
 
@@ -623,20 +634,31 @@ class CartesianPathPlot(GraphicPrimitive):
                     #         ).get_extents(),
                     #     ]
                     # )
-                    bbox = bbox.union([
-                        bbox,
-                        Bbox.from_bounds(*pos, 0, 0),
-                        Bbox.from_bounds(*target, 0, 0),
-                    ])
+                    bbox = bbox.union(
+                        [
+                            bbox,
+                            Bbox.from_bounds(*pos, 0, 0),
+                            Bbox.from_bounds(*target, 0, 0),
+                        ]
+                    )
                     from sage.all import sgn
+
                     if sgn(pos[0] - center[0]) != sgn(target[0] - center[0]):
                         # The bounding box includes a point that is higher
                         # than the endpoints of the arc.
                         from math import sqrt
-                        bbox = bbox.union([
-                            bbox,
-                            Bbox.from_bounds(center[0], sqrt((pos[0] - center[0]) ** 2 + pos[1]**2), 0, 0)
-                        ])
+
+                        bbox = bbox.union(
+                            [
+                                bbox,
+                                Bbox.from_bounds(
+                                    center[0],
+                                    sqrt((pos[0] - center[0]) ** 2 + pos[1] ** 2),
+                                    0,
+                                    0,
+                                ),
+                            ]
+                        )
 
                     pos = target
                 elif command.code in ["RAYTO", "MOVETOINFINITY"]:
@@ -645,12 +667,12 @@ class CartesianPathPlot(GraphicPrimitive):
                     # is extremely small, then this is not ideal. Maybe we
                     # should make this relative to the entire plot size.
                     from sage.all import vector
+
                     direction = vector(command.args)
                     moved = vector(pos) + direction
-                    bbox = bbox.union([
-                        bbox,
-                        Bbox.from_bounds(pos[0], moved[0], pos[1], moved[1])
-                    ])
+                    bbox = bbox.union(
+                        [bbox, Bbox.from_bounds(pos[0], moved[0], pos[1], moved[1])]
+                    )
                 else:
                     raise NotImplementedError(
                         f"cannot determine bounding box for {command.code} command"
@@ -790,21 +812,34 @@ class HyperbolicPathPlotCommand:
         """
         if cursor is None:
             if self.code != "MOVETO":
-                raise ValueError("when no previous cursor position is specified, command must be MOVETO")
+                raise ValueError(
+                    "when no previous cursor position is specified, command must be MOVETO"
+                )
 
             if model == "half_plane" and self.target == self.target.parent().infinity():
                 return [CartesianPathPlotCommand("MOVETOINFINITY", (0, 1))]
 
             from sage.all import RR
-            return [CartesianPathPlotCommand("MOVETO", self.target.change_ring(RR).coordinates(model=model))]
+
+            return [
+                CartesianPathPlotCommand(
+                    "MOVETO", self.target.change_ring(RR).coordinates(model=model)
+                )
+            ]
 
         if self.code == "LINETO":
-            return HyperbolicPathPlotCommand.create_segment_cartesian(cursor, self.target, model=model)
+            return HyperbolicPathPlotCommand.create_segment_cartesian(
+                cursor, self.target, model=model
+            )
 
         if self.code == "MOVETO":
-            return HyperbolicPathPlotCommand.create_move_cartesian(cursor, self.target, model=model, fill=fill, stroke=stroke)
+            return HyperbolicPathPlotCommand.create_move_cartesian(
+                cursor, self.target, model=model, fill=fill, stroke=stroke
+            )
 
-        raise NotImplementedError("cannot convert this command to a Cartesian plot command yet")
+        raise NotImplementedError(
+            "cannot convert this command to a Cartesian plot command yet"
+        )
 
     @staticmethod
     def make_cartesian(commands, model, fill=True, stroke=True):
@@ -885,7 +920,9 @@ class HyperbolicPathPlotCommand:
         cursor = None
 
         for command in commands:
-            cartesian_commands.extend(command.cartesian(model=model, cursor=cursor, stroke=stroke, fill=fill))
+            cartesian_commands.extend(
+                command.cartesian(model=model, cursor=cursor, stroke=stroke, fill=fill)
+            )
             cursor = command.target
 
         while cartesian_commands and cartesian_commands[-1].code.startswith("MOVE"):
@@ -962,10 +999,13 @@ class HyperbolicPathPlotCommand:
 
         """
         if start == end:
-            raise ValueError(f"cannot draw segment from point {start} to itself ({end})")
+            raise ValueError(
+                f"cannot draw segment from point {start} to itself ({end})"
+            )
 
         if model == "half_plane":
             from sage.all import RR
+
             if start != start.parent().infinity():
                 start_x, start_y = start.change_ring(RR).coordinates(model="half_plane")
 
@@ -994,8 +1034,9 @@ class HyperbolicPathPlotCommand:
 
             real_hyperbolic_plane = HyperbolicPlane(RR)
             geodesic = real_hyperbolic_plane.geodesic(
-                    real_hyperbolic_plane.point(start_x, start_y, model="half_plane"),
-                    real_hyperbolic_plane.point(end_x, end_y, model="half_plane"))
+                real_hyperbolic_plane.point(start_x, start_y, model="half_plane"),
+                real_hyperbolic_plane.point(end_x, end_y, model="half_plane"),
+            )
             center = (
                 (geodesic.start().coordinates()[0] + geodesic.end().coordinates()[0])
                 / 2,
@@ -1003,7 +1044,9 @@ class HyperbolicPathPlotCommand:
             )
 
             return [
-                CartesianPathPlotCommand("RARCTO" if start_x < end_x else "ARCTO", ((end_x, end_y), center))
+                CartesianPathPlotCommand(
+                    "RARCTO" if start_x < end_x else "ARCTO", ((end_x, end_y), center)
+                )
             ]
         elif model == "klein":
             from sage.all import RR
@@ -1069,12 +1112,18 @@ class HyperbolicPathPlotCommand:
                 if end == end.parent().infinity():
                     return [CartesianPathPlotCommand("MOVETOINFINITY", (0, 1))]
 
-                return [CartesianPathPlotCommand("MOVETO", end.change_ring(RR).coordinates())]
+                return [
+                    CartesianPathPlotCommand(
+                        "MOVETO", end.change_ring(RR).coordinates()
+                    )
+                ]
 
             if start == start.parent().infinity():
                 return [
                     CartesianPathPlotCommand("RAYTO", (-1, 0)),
-                    CartesianPathPlotCommand("LINETO", end.change_ring(RR).coordinates()),
+                    CartesianPathPlotCommand(
+                        "LINETO", end.change_ring(RR).coordinates()
+                    ),
                 ]
 
             if end == end.parent().infinity():
@@ -1088,20 +1137,18 @@ class HyperbolicPathPlotCommand:
                 < end.change_ring(RR).coordinates()[0]
             ):
                 return [
-                    CartesianPathPlotCommand("LINETO", end.change_ring(RR).coordinates())
+                    CartesianPathPlotCommand(
+                        "LINETO", end.change_ring(RR).coordinates()
+                    )
                 ]
             else:
                 return [
+                    CartesianPathPlotCommand("RAYTO", (1, 0)),
+                    CartesianPathPlotCommand("RAYTO", (0, 1)),
+                    CartesianPathPlotCommand("RAYTO", (-1, 0)),
                     CartesianPathPlotCommand(
-                        "RAYTO", (1, 0)
+                        "LINETO", end.change_ring(RR).coordinates()
                     ),
-                    CartesianPathPlotCommand(
-                        "RAYTO", (0, 1)
-                    ),
-                    CartesianPathPlotCommand(
-                        "RAYTO", (-1, 0)
-                    ),
-                    CartesianPathPlotCommand("LINETO", end.change_ring(RR).coordinates()),
                 ]
 
         elif model == "klein":
@@ -1110,7 +1157,8 @@ class HyperbolicPathPlotCommand:
             if fill:
                 return [
                     CartesianPathPlotCommand(
-                        "ARCTO", (end.change_ring(RR).coordinates(model="klein"), (0, 0))
+                        "ARCTO",
+                        (end.change_ring(RR).coordinates(model="klein"), (0, 0)),
                     )
                 ]
             else:
@@ -1232,8 +1280,22 @@ def hyperbolic_path(commands, model="half_plane", **options):
 
     try:
         if options.get("fill", None):
-            g.add_primitive(CartesianPathPlot(HyperbolicPathPlotCommand.make_cartesian(commands, model=model, fill=True, stroke=False), {**options, 'thickness': 0}))
-        g.add_primitive(CartesianPathPlot(HyperbolicPathPlotCommand.make_cartesian(commands, model=model, fill=False, stroke=True), {**options, 'fill': False}))
+            g.add_primitive(
+                CartesianPathPlot(
+                    HyperbolicPathPlotCommand.make_cartesian(
+                        commands, model=model, fill=True, stroke=False
+                    ),
+                    {**options, "thickness": 0},
+                )
+            )
+        g.add_primitive(
+            CartesianPathPlot(
+                HyperbolicPathPlotCommand.make_cartesian(
+                    commands, model=model, fill=False, stroke=True
+                ),
+                {**options, "fill": False},
+            )
+        )
     except Exception as e:
         raise RuntimeError(f"Failed to render hyperbolic path {commands}", e)
 
