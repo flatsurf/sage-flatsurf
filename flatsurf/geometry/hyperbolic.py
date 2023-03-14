@@ -1706,7 +1706,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         - ``assume_sorted`` -- boolean (default: ``False``), whether to assume
           that the ``half_spaces`` are already sorted with respect to
-          :meth:`HyperbolicHalfSpace._less_than`. When set, we omit sorting the
+          :meth:`HyperbolicHalfSpaces._lt_`. When set, we omit sorting the
           half spaces explicitly, which is asymptotically the most exponsive
           part of the process of creating a polygon.
 
@@ -1873,7 +1873,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         The intersection of the half spaces is computed in time quasi-linear in
         the number of half spaces. The limiting factor is sorting the half
-        spaces by :meth:`HyperbolicHalfSpace._less_than`. If we know that the
+        spaces by :meth:`HyperbolicHalfSpaces._lt_`. If we know that the
         half spaces are already sorted like that, we can make the process run
         in linear time by setting ``assume_sorted``.
 
@@ -3932,7 +3932,8 @@ class HyperbolicConvexSet(Element):
         r"""
         Return a minimal set of half spaces whose intersection is this convex set.
 
-        The half spaces are ordered by :meth:`HyperbolicHalfSpace._less_than`.
+        Iteration of the half spaces is in counterclockwise order, i.e.,
+        consistent with :meth:`HyperbolicHalfSpaces._lt_`.
 
         EXAMPLES::
 
@@ -3986,10 +3987,10 @@ class HyperbolicConvexSet(Element):
         Subclasses run specific checks here that can be disabled when creating
         objects with ``check=False``.
 
-        If ``require_normalized``, we also check that the object has the
-        correct implementation class, e.g., that a point is a
-        :class:`HyperbolicPoint` and not say a
-        :class:`HyperbolicOrientedSegment` of length zero.
+        INPUT:
+
+        - ``require_normalized`` -- a boolean (default: ``True``); whether to
+          include checks that assume that normalization has already happened
 
         EXAMPLES:
 
@@ -6014,6 +6015,10 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
 
         Implements :meth:`HyperbolicConvexSet._check`.
 
+        INPUT:
+
+        - ``require_normalized`` -- a boolean (default: ``True``); ignored
+
         EXAMPLES::
 
 
@@ -7756,7 +7761,7 @@ class HyperbolicPoint(HyperbolicConvexSet):
         sage: H = HyperbolicPlane()
 
     A point with coordinates in the upper half plane::
-        
+
         sage: p = H(0)
 
     The same point, created as an endpoint of a geodesic::
@@ -7785,6 +7790,10 @@ class HyperbolicPoint(HyperbolicConvexSet):
         Verify that this is a (possibly infinite) point in the hyperbolic plane.
 
         Implements :meth:`HyperbolicConvexSet._check`.
+
+        INPUT:
+
+        - ``require_normalized`` -- a boolean (default: ``True``); ignored
 
         EXAMPLES::
 
@@ -9127,22 +9136,54 @@ class HyperbolicPointFromGeodesic(HyperbolicPoint):
 
 
 class HyperbolicConvexPolygon(HyperbolicConvexSet):
-    # TODO: Check documentation
-    # TODO: Check INPUTS
-    # TODO: Check SEEALSO
-    # TODO: Check for doctests
-    # TODO: Benchmark?
     r"""
     A (possibly unbounded) closed polygon in the :class:`HyperbolicPlane`,
-    i.e., the intersection of a finite number of :class:`half spaces <HyperbolicHalfSpace>`.
-    """
+    i.e., the intersection of a finite number of :class:`half spaces
+    <HyperbolicHalfSpace>`.
 
+    INPUT:
+
+    - ``parent`` -- the :class:`HyperbolicPlane` of which this is a subset
+
+    - ``half_spaces`` -- the :class:`HyperbolicHalfSpace` of which this is an intersection
+
+    - ``vertices`` -- marked vertices that should additionally be kept track of
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+        sage: H = HyperbolicPlane()
+
+        sage: P = H.polygon([
+        ....:     H.vertical(0).right_half_space(),
+        ....:     H.vertical(1).left_half_space(),
+        ....:     H.half_circle(0, 2).left_half_space()])
+
+    .. SEEALSO::
+
+        Use :meth:`HyperbolicPlane.polygon` and
+        :meth:`HyperbolicPlane.intersection` to create polygons in the
+        hyperbolic plane.
+
+    """
     def __init__(self, parent, half_spaces, vertices):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        TESTS::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicConvexPolygon
+            sage: H = HyperbolicPlane()
+
+            sage: P = H.polygon([
+            ....:     H.vertical(0).right_half_space(),
+            ....:     H.vertical(1).left_half_space(),
+            ....:     H.half_circle(0, 2).left_half_space()])
+
+            sage: isinstance(P, HyperbolicConvexPolygon)
+            True
+
+            sage: TestSuite(P).run()
+
+        """
         super().__init__(parent)
 
         if not isinstance(half_spaces, HyperbolicHalfSpaces):
@@ -9152,38 +9193,87 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
         self._marked_vertices = tuple(vertices)
 
     def _check(self, require_normalized=True):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
-        # TODO: Check _marked_vertices not vertices of the polygon if require_normalized
+        r"""
+        Verify that the marked vertices of this polygon are actually on the edges of the polygon.
+
+        This implements :meth:`HyperbolicConvexSet._check`.
+
+        INPUT:
+
+        - ``require_normalized`` -- a boolean (default: ``True``); whether to
+          assume that normalization has already, i.e., marked vertices that are
+          actual vertices have already been removed
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicConvexPolygon
+            sage: H = HyperbolicPlane()
+
+            sage: P = H.polygon([
+            ....:     H.vertical(0).right_half_space(),
+            ....:     H.vertical(1).left_half_space(),
+            ....:     H.half_circle(0, 2).left_half_space()],
+            ....:     marked_vertices=[4], check=False)
+
+            sage: P._check()
+            Traceback (most recent call last):
+            ...
+            ValueError: marked vertex must be on an edge of the polygon
+
+            sage: P = H.polygon([
+            ....:     H.vertical(0).right_half_space(),
+            ....:     H.vertical(1).left_half_space(),
+            ....:     H.half_circle(0, 2).left_half_space()],
+            ....:     marked_vertices=[oo], assume_minimal=True, check=False)
+
+            sage: P._check()
+            Traceback (most recent call last):
+            ...
+            ValueError: marked vertex must not be a non-marked vertex of the polygon
+
+        """
         for vertex in self._marked_vertices:
             if not any([vertex in edge for edge in self.edges()]):
                 raise ValueError("marked vertex must be on an edge of the polygon")
 
-    # TODO: Add examples.
-    def _normalize(self, marked_vertices=False):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
-        # TODO: Check docstring.
-        r"""
-        Return a convex set describing the intersection of the half spaces underlying this polygon.
+        if require_normalized:
+            if any([vertex in self.vertices(marked_vertices=False) for vertex in self._marked_vertices]):
+                raise ValueError("marked vertex must not be a non-marked vertex of the polygon")
 
-        The half spaces are assumed to be sorted respecting :meth:`HyperbolicHalfSpace._less_than`.
+    def _normalize(self, marked_vertices=False):
+        r"""
+        Return a convex set describing the intersection of the half spaces
+        underlying this polygon.
+
+        This implements :meth:`HyperbolicConvex._normalize`.
+
+        The half spaces are assumed to be already sorted respecting
+        :meth:`HyperbolicHalfSpaces._lt_`.
 
         ALGORITHM:
 
-        We compute the intersection of the half spaces in the Klein model in several steps:
+        We compute the intersection of the half spaces in the Klein model in
+        several steps:
 
         * Drop trivially redundant half spaces, e.g., repeated ones.
-        * Handle the case that the intersection is empty or a single point, see :meth:`_euclidean_boundary`.
-        * Compute the intersection of the corresponding half spaces in the Euclidean plane, see :meth:`_normalize_drop_euclidean_redundant`.
-        * Remove redundant half spaces that make no contribution for the unit disk of the Klein model, see :meth:`_normalize_drop_unit_disk_redundant`.
-        * Determine of which nature (point, segment, line, polygon) the intersection of half spaces is and return the resulting set.
+        * Handle the case that the intersection is empty or a single point, see
+          :meth:`_normalize_euclidean_boundary`.
+        * Compute the intersection of the corresponding half spaces in the
+          Euclidean plane, see :meth:`_normalize_drop_euclidean_redundant`.
+        * Remove redundant half spaces that make no contribution for the unit
+          disk of the Klein model, see
+          :meth:`_normalize_drop_unit_disk_redundant`.
+        * Determine of which nature (point, segment, line, polygon) the
+          intersection of half spaces is and return the resulting set.
+
+        INPUT:
+
+        - ``marked_vertices`` -- a boolean (default: ``False``); whether to
+          keep marked vertices when normalizing
+
+        .. NOTE::
+
+            Over inexact rings, this is probably mostly useless.
 
         TESTS::
 
@@ -9218,7 +9308,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
             raise NotImplementedError("cannot model intersection of no half spaces yet")
 
         # Find a segment on the boundary of the intersection.
-        boundary = self._euclidean_boundary()
+        boundary = self._normalize_euclidean_boundary()
 
         if not isinstance(boundary, HyperbolicHalfSpace):
             # When there was no such segment, i.e., the intersection is empty
@@ -9245,17 +9335,15 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
         return self
 
     def _normalize_drop_trivially_redundant(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
-        # TODO: Check docstring.
         r"""
-        Return a sublist of ``half_spaces`` without changing their intersection
-        by removing some trivially redundant half spaces.
+        Return a sublist of the ``half_spaces`` defining this polygon without
+        changing their intersection by removing some trivially redundant half
+        spaces.
 
-        The ``half_spaces`` are assumed to be sorted consistent with :meth:`HyperbolicHalfSpace._less_than`.
+        The ``half_spaces`` are assumed to be sorted consistent with
+        :meth:`HyperbolicHalfSpaces._lt_`.
+
+        This is a helper method for :meth:`_normalize`.
 
         EXAMPLES::
 
@@ -9297,7 +9385,6 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
                 a, b, c = half_space.equation(model="klein")
                 A, B, C = reduced[-1].equation(model="klein")
 
-                # TODO: Use specialized predicates instead of the _methods.
                 equal = self.parent().geometry._equal
                 sgn = self.parent().geometry._sgn
                 if equal(c * B, C * b) and sgn(b) == sgn(B) and sgn(c) == sgn(C):
@@ -9313,16 +9400,9 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
         )
 
     def _normalize_drop_euclidean_redundant(self, boundary):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
-        # TODO: Check docstring.
-        # TODO: Should we remove boundary from the interface?
         r"""
-        Return a minimal sublist of ``half_spaces`` that describe their
-        intersection as half spaces of the Euclidean plane.
+        Return a minimal sublist of the ``half_spaces`` defining this polygon
+        that describe their intersection as half spaces of the Euclidean plane.
 
         Consider the half spaces in the Klein model. Ignoring the unit disk,
         they also describe half spaces in the Euclidean plane.
@@ -9330,6 +9410,8 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
         The half space ``boundary`` must be one of the ``half_spaces`` that
         defines a boundary edge of the intersection polygon in the Euclidean
         plane.
+
+        This is a helper method for :meth:`_normalize`.
 
         ALGORITHM:
 
@@ -9491,12 +9573,15 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
             ....:   H.geodesic(50, 57, -43, model="half_plane").left_half_space(),
             ....:   H.geodesic(3, 2, -3, model="half_plane").left_half_space()
             ....: )
-            sage: P._normalize_drop_euclidean_redundant(boundary=P._euclidean_boundary())
+            sage: P._normalize_drop_euclidean_redundant(boundary=P._normalize_euclidean_boundary())
             {(x^2 + y^2) - x ≥ 0} ∩ {2*x - 1 ≥ 0} ∩ {x - 1 ≥ 0}
 
-        """
-        # TODO: Make all other assumptions clear in the interface.
+        .. NOTE::
 
+            There are some additional assumptions on the input than what is
+            stated here. Please refer to the implementation.
+
+        """
         half_spaces = list(self._half_spaces)
 
         half_spaces = (
@@ -9572,15 +9657,9 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
         )
 
     def _normalize_drop_unit_disk_redundant(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
-        # TODO: Check docstring.
         r"""
-        Return the intersection of the Euclidean ``half_spaces`` with the unit
-        disk.
+        Return the intersection of the Euclidean ``half_spaces`` defining this
+        polygon with the unit disk.
 
         The ``half_spaces`` must be minimal to describe their intersection in
         the Euclidean plane. If that intersection does not intersect the unit
@@ -9588,6 +9667,8 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
 
         Otherwise, return a minimal sublist of ``half_spaces`` that describes
         the intersection inside the unit disk.
+
+        This is a helper method for :meth:`_normalize`.
 
         ALGORITHM:
 
@@ -9730,9 +9811,12 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
             ....: )._normalize_drop_unit_disk_redundant()
             {x = 0} ∩ {(x^2 + y^2) - 4 ≤ 0} ∩ {4*(x^2 + y^2) - 1 ≥ 0}
 
-        """
-        # TODO: Make all assumptions clear in the interface.
+        .. NOTE::
 
+            There are some additional assumptions on the input than what is
+            stated here. Please refer to the implementation.
+
+        """
         required_half_spaces = []
 
         maybe_empty = True
@@ -9801,17 +9885,11 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
             required_half_spaces, check=False, assume_sorted=True, assume_minimal=True, marked_vertices=False,
         )
 
-    def _euclidean_boundary(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+    def _normalize_euclidean_boundary(self):
         r"""
-        TODO: This documentation is not entirely accurate anymore.
-
         Return a half space whose (Euclidean) boundary intersects the boundary
-        of the intersection of ``half_spaces`` in more than a point.
+        of the intersection of the ``half_spaces`` defining this polygon in
+        more than a point.
 
         Consider the half spaces in the Klein model. Ignoring the unit disk,
         they also describe half spaces in the Euclidean plane.
@@ -9823,8 +9901,10 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
         hyperbolic plane, return the :meth:`empty_set`. Otherwise, if the
         intersection is a point in the hyperbolic plane, return that point.
 
-        The ``half_spaces`` must be sorted with respect to
-        :meth:`HyperbolicHalfSpace._less_than`.
+        The ``half_spaces`` must already be sorted with respect to
+        :meth:`HyperbolicHalfSpaces._lt_`.
+
+        This is a helper method for :meth:`_normalize`.
 
         ALGORITHM:
 
@@ -9864,7 +9944,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
             sage: polygon(
             ....:     H.geodesic(2, 1/2).left_half_space(),
             ....:     H.geodesic(-1/2, -2).left_half_space()
-            ....: )._euclidean_boundary()
+            ....: )._normalize_euclidean_boundary()
             {}
 
         An intersection which in the Euclidean plane is a single point but
@@ -9875,18 +9955,18 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
             ....:     H.half_space(0, -1, 0, model="klein"),
             ....:     H.half_space(2, 2, -1, model="klein"),
             ....:     H.half_space(-2, -2, 1, model="klein"),
-            ....: )._euclidean_boundary()
+            ....: )._normalize_euclidean_boundary()
             {}
 
         An intersection which is a single point inside the unit disk::
 
-            sage: polygon(*H(I).half_spaces())._euclidean_boundary()
+            sage: polygon(*H(I).half_spaces())._normalize_euclidean_boundary()
             I
 
         An intersection which is a single point on the boundary of the unit
         disk::
 
-            sage: polygon(*H.infinity().half_spaces())._euclidean_boundary()
+            sage: polygon(*H.infinity().half_spaces())._normalize_euclidean_boundary()
             {x - 1 ≥ 0}
 
         An intersection which is a segment outside of the unit disk::
@@ -9896,7 +9976,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
             ....:     H.vertical(0).right_half_space(),
             ....:     H.half_space(-2, -2, 1, model="klein"),
             ....:     H.half_space(17/8, 2, -1, model="klein"),
-            ....: )._euclidean_boundary()
+            ....: )._normalize_euclidean_boundary()
             {x ≤ 0}
 
         An intersection which is a polygon outside of the unit disk::
@@ -9906,7 +9986,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
             ....:     H.half_space(1, -2, 0, model="klein"),
             ....:     H.half_space(-2, -2, 1, model="klein"),
             ....:     H.half_space(17/8, 2, -1, model="klein"),
-            ....: )._euclidean_boundary()
+            ....: )._normalize_euclidean_boundary()
             {9*(x^2 + y^2) + 32*x + 25 ≥ 0}
 
         An intersection which is an (unbounded) polygon touching the unit disk::
@@ -9914,7 +9994,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
             sage: polygon(
             ....:     H.vertical(-1).left_half_space(),
             ....:     H.vertical(1).right_half_space(),
-            ....: )._euclidean_boundary()
+            ....: )._normalize_euclidean_boundary()
             {x - 1 ≥ 0}
 
         An intersection which is a segment touching the unit disk::
@@ -9924,7 +10004,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
             ....:     H.vertical(0).right_half_space(),
             ....:     H.vertical(-1).left_half_space(),
             ....:     H.geodesic(-1, -2).right_half_space(),
-            ....: )._euclidean_boundary()
+            ....: )._normalize_euclidean_boundary()
             {x ≥ 0}
 
         An intersection which is a polygon inside the unit disk::
@@ -9934,7 +10014,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
             ....:     H.vertical(-1).right_half_space(),
             ....:     H.geodesic(0, -1).right_half_space(),
             ....:     H.geodesic(0, 1).left_half_space(),
-            ....: )._euclidean_boundary()
+            ....: )._normalize_euclidean_boundary()
             {(x^2 + y^2) - x ≥ 0}
 
         A polygon which has no vertices inside the unit disk but intersects the unit disk::
@@ -9944,14 +10024,14 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
             ....:     H.geodesic(-3, -2).left_half_space(),
             ....:     H.geodesic(-1/2, -1/3).left_half_space(),
             ....:     H.geodesic(1/3, 1/2).left_half_space(),
-            ....: )._euclidean_boundary()
+            ....: )._normalize_euclidean_boundary()
             {6*(x^2 + y^2) - 5*x + 1 ≥ 0}
 
         A single half plane::
 
             sage: polygon(
             ....:     H.vertical(0).left_half_space()
-            ....: )._euclidean_boundary()
+            ....: )._normalize_euclidean_boundary()
             {x ≤ 0}
 
         A pair of anti-parallel half planes::
@@ -9959,7 +10039,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
             sage: polygon(
             ....:     H.geodesic(1/2, 2).left_half_space(),
             ....:     H.geodesic(-1/2, -2).right_half_space(),
-            ....: )._euclidean_boundary()
+            ....: )._normalize_euclidean_boundary()
             {2*(x^2 + y^2) - 5*x + 2 ≥ 0}
 
         TESTS:
@@ -9972,7 +10052,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
             ....:    H.geodesic(300, 3389, -1166, model="half_plane").right_half_space(),
             ....:    H.geodesic(5, -24, -5, model="half_plane").left_half_space(),
             ....:    H.geodesic(182, -1135, 522, model="half_plane").left_half_space(),
-            ....: )._euclidean_boundary()
+            ....: )._normalize_euclidean_boundary()
             {5*(x^2 + y^2) - 24*x - 5 ≥ 0}
 
         """
@@ -10009,7 +10089,6 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
                 from sage.all import RealSet, oo
 
                 # Note that RealSet.real_line() would require SageMath 9.4
-                # TODO: This does not do any epsilons yet, i.e., it should probably use predicates somehow.
                 interval = RealSet(-oo, oo)
 
                 for constraining in random_half_spaces:
@@ -10033,7 +10112,9 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
                         intersection, model="euclidean", check=False
                     )
 
-                    # TODO: Fix RealSet in SageMath to work with number fields.
+                    # RealSet in SageMath does not like number fields. We move
+                    # everything through AA (which might not always work) to
+                    # work around this problem.
                     if λ.parent().is_exact():
                         from sage.all import AA
                         rλ = AA(λ)
@@ -10060,14 +10141,33 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
 
                 point = boundary.unparametrize(λ, model="euclidean", check=False)
 
-        return self._extend_to_euclidean_boundary(point)
+        return self._normalize_extend_to_euclidean_boundary(point)
 
-    def _extend_to_euclidean_boundary(self, point):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+    def _normalize_extend_to_euclidean_boundary(self, point):
+        r"""
+        Extend ``point`` to a (Euclidean) half space which intersects the
+        intersection of the ``half_spaces`` defining this polygon in more than
+        one point.
+
+        This is a helper method for :meth:`_normalize_euclidean_boundary`.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+        A helper to create non-normalized polygons for testing::
+
+            sage: polygon = lambda *half_spaces: H.polygon(half_spaces, check=False, assume_sorted=False, assume_minimal=True)
+
+        We extend from a single point to half space::
+
+            sage: P = polygon(*H.infinity().half_spaces())
+
+            sage: P._normalize_extend_to_euclidean_boundary(H.infinity())
+            {x ≤ 0}
+
+        """
         half_spaces = [
             half_space
             for half_space in self._half_spaces
@@ -10103,11 +10203,27 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
         return point
 
     def _normalize_drop_marked_vertices(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Return a copy of this polygon with marked vertices removed that are
+        already vertices of the polygon anyway.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: P = H.polygon([
+            ....:     H.vertical(0).right_half_space(),
+            ....:     H.vertical(1).left_half_space(),
+            ....:     H.half_circle(0, 2).left_half_space()],
+            ....:     marked_vertices=[oo], assume_minimal=True, check=False)
+            sage: P
+            {x - 1 ≤ 0} ∩ {x ≥ 0} ∩ {(x^2 + y^2) - 2 ≥ 0} ∪ {∞}
+
+            sage: P._normalize_drop_marked_vertices()
+            {x - 1 ≤ 0} ∩ {x ≥ 0} ∩ {(x^2 + y^2) - 2 ≥ 0}
+
+        """
         vertices = [vertex for vertex in self._marked_vertices if vertex not in self.vertices(marked_vertices=False)]
 
         return self.parent().polygon(
@@ -10142,19 +10258,6 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
         from sage.all import ZZ
 
         return ZZ(2)
-
-    def equations(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
-        r"""
-        Return the equations describing the boundary of this polygon.
-
-        The output is minimal and sorted by slope in the Klein model.
-        """
-        raise NotImplementedError
 
     @cached_method
     def edges(self, as_segments=False):
@@ -10329,19 +10432,52 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
         return HyperbolicVertices(vertices)
 
     def half_spaces(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Return a minimal set of half spaces whose intersection this polygon is.
+
+        This implements :meth:`HyperbolicConvexSet.half_spaces`.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+        Marked vertices are not encoded in the half spaces in any way::
+
+            sage: P = H.polygon([
+            ....:   H.vertical(1).left_half_space(),
+            ....:   H.vertical(-1).right_half_space(),
+            ....:   H.half_circle(0, 1).left_half_space(),
+            ....:   H.half_circle(0, 4).right_half_space(),
+            ....: ], marked_vertices=[I + 1])
+            sage: P
+            {x - 1 ≤ 0} ∩ {(x^2 + y^2) - 4 ≤ 0} ∩ {x + 1 ≥ 0} ∩ {(x^2 + y^2) - 1 ≥ 0} ∪ {1 + I}
+
+            sage: H.polygon(P.half_spaces())
+            {x - 1 ≤ 0} ∩ {(x^2 + y^2) - 4 ≤ 0} ∩ {x + 1 ≥ 0} ∩ {(x^2 + y^2) - 1 ≥ 0}
+
+        """
         return self._half_spaces
 
     def _repr_(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Return a printable representation of this polygon.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: P = H.polygon([
+            ....:   H.vertical(1).left_half_space(),
+            ....:   H.vertical(-1).right_half_space(),
+            ....:   H.half_circle(0, 1).left_half_space(),
+            ....:   H.half_circle(0, 4).right_half_space(),
+            ....: ], marked_vertices=[I + 1])
+            sage: P
+            {x - 1 ≤ 0} ∩ {(x^2 + y^2) - 4 ≤ 0} ∩ {x + 1 ≥ 0} ∩ {(x^2 + y^2) - 1 ≥ 0} ∪ {1 + I}
+
+        """
         half_spaces = " ∩ ".join([repr(half_space) for half_space in self._half_spaces])
         vertices = ", ".join([repr(vertex) for vertex in self._marked_vertices])
         if vertices:
