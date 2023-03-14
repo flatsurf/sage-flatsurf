@@ -1,4 +1,30 @@
-# TODO
+r"""
+Plotting primitives for subsets of the hyperbolic plane
+
+EXAMPLES::
+
+Usually, the primitives defined here should not be used directly. Instead the
+:meth:`HyperbolicConvexSet.plot` method of hyperbolic sets internally uses
+these primitives::
+
+    sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+
+    sage: H = HyperbolicPlane()
+
+    sage: geodesic = H.vertical(0)
+
+    sage: plot = geodesic.plot()
+
+    sage: list(plot)
+    [CartesianPathPlot([CartesianPathPlotCommand(code='MOVETO', args=(0.000000000000000, 0.000000000000000)), CartesianPathPlotCommand(code='RAYTO', args=(0, 1))])]
+
+.. NOTE::
+
+    The need for these primitives arises because SageMath has no good
+    facilities to plot infinite objects such as lines and rays. However, these are
+    needed to plot subsets of the hyperbolic plane in the upper half plane model.
+
+"""
 ######################################################################
 #  This file is part of sage-flatsurf.
 #
@@ -196,11 +222,6 @@ class CartesianPathPlot(GraphicPrimitive):
         return f"CartesianPathPlot({self._commands})"
 
     def _render_on_subplot(self, subplot):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
         r"""
         Render this path on ``subplot``.
 
@@ -208,9 +229,31 @@ class CartesianPathPlot(GraphicPrimitive):
         The trick here is to register a callback that redraws whenever the
         viewbox of the plot changes, e.g., as more objects are added to the
         plot or as the plot is dragged around.
+
+        This implements the interface required by SageMath's
+        ``GraphicPrimitive``.
+
+        INPUT:
+
+        - ``subplot`` -- the axes of a subplot
+
+        EXAMPLES::
+
+            sage: from flatsurf.graphical.hyperbolic import CartesianPathPlot, CartesianPathPlotCommand
+
+            sage: P = CartesianPathPlot([
+            ....:     CartesianPathPlotCommand("MOVETO", (-1, 0)),
+            ....:     CartesianPathPlotCommand("LINETO", (0, 0)),
+            ....: ])
+
+            sage: from matplotlib.figure import Figure
+            sage: figure = Figure()
+            sage: subplot = figure.add_subplot(111)
+
+            sage: P._render_on_subplot(subplot)
+            <Axes.ArtistList of 1 patches>
+ 
         """
-        # TODO: Use sage's vector or matplotlib builtins more so we do not need to implement basic geometric primitives manually here.
-        # Rewrite options to only contain matplotlib compatible entries
         matplotlib_options = {
             key: value
             for (key, value) in self.options().items()
@@ -277,11 +320,6 @@ class CartesianPathPlot(GraphicPrimitive):
             patch.set_label(options.pop("legend_label"))
 
         def redraw(_=None):
-            # TODO: Check documentation.
-            # TODO: Check INPUT
-            # TODO: Check SEEALSO
-            # TODO: Check for doctests
-            # TODO: Benchmark?
             r"""
             Redraw after the viewport has been rescaled to make sure that
             infinite rays reach the end of the viewport.
@@ -293,12 +331,37 @@ class CartesianPathPlot(GraphicPrimitive):
         redraw()
 
     def _create_path(self, xlim, ylim, fill):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Create a matplotlib path for this primitive in the bounding box given
+        by ``xlim`` and ``ylim``.
 
+        This is a helper method for :meth:`_rendor_on_subplot`.
+
+        INPUT:
+
+        - ``xlim`` -- a pair of floats, the lower and upper horizontal bound of
+          the view box
+
+        - ``ylim`` -- a pair of floats, the lower and upper vertical bound of
+          the view box
+
+        - ``fill`` -- a boolean; whether the area enclosed by this path should
+          be filled
+
+        EXAMPLES::
+
+            sage: from flatsurf.graphical.hyperbolic import CartesianPathPlot, CartesianPathPlotCommand
+
+            sage: P = CartesianPathPlot([
+            ....:     CartesianPathPlotCommand("MOVETO", (-1, 0)),
+            ....:     CartesianPathPlotCommand("LINETO", (0, 0)),
+            ....: ])
+
+            sage: P._create_path([-1, 1], [-1, 1], fill=False)
+            Path(array([[-1.,  0.],
+                   [ 0.,  0.]]), array([1, 2], dtype=uint8))
+
+        """
         # Handle the first command. This controls how the path starts.
         command = self._commands[0]
 
@@ -324,11 +387,40 @@ class CartesianPathPlot(GraphicPrimitive):
 
     @staticmethod
     def _infinity(pos, direction, xlim, ylim):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Return the finite coordinates of a point that ressembles infinity
+        starting from ``pos`` and going in ``direction``.
+
+        This is a helper method for :meth:`_create_path`.
+
+        INPUT:
+
+        - ``pos`` -- a coordinate in the plane as a tuple
+
+        - ``direction`` -- a direction in the plane as a tuple
+
+        - ``xlim`` -- a pair of floats, the lower and upper horizontal bound of
+          the view box
+
+        - ``ylim`` -- a pair of floats, the lower and upper vertical bound of
+          the view box
+
+        EXAMPLES::
+
+            sage: from flatsurf.graphical.hyperbolic import CartesianPathPlot
+
+            sage: CartesianPathPlot._infinity((0., 0.), (0., 1.), (-1024., 1024.), (-1024., 1024.))
+            (0.000000000000000, 5120.00000000000)
+
+            sage: CartesianPathPlot._infinity((0., 0.), (1., 1.), (-1024., 1024.), (-1024., 1024.))
+            (3920.30937574010, 3920.30937574010)
+
+            sage: CartesianPathPlot._infinity((1., 0.), (1., 1.), (-1024., 1024.), (-1024., 1024.))
+            (3920.30937574010, 3919.30937574010)
+
+        """
+        path = Path([(0, 0)])
+
         from sage.all import vector
 
         direction = vector(direction)
@@ -362,19 +454,59 @@ class CartesianPathPlot(GraphicPrimitive):
 
     @staticmethod
     def _extend_path(vertices, codes, pos, direction, command, fill, xlim, ylim):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Extend the matplotlib Path ``vertices`` and ``codes`` by realizing ``command``.
+
+        INPUT:
+
+        - ``vertices`` -- a list of control points
+
+        - ``codes`` -- a list of matplotlib Path plot command
+
+        - ``pos`` -- the current location of the plotted path before executing
+          ``command``
+
+        - ``direction`` -- ``None`` or the direction if the current position is
+          infinite
+
+        - ``command`` -- a :class:`CartesianPathPlotCommand`
+
+        - ``fill`` -- a boolean, whether the interior of the plotted path
+          should be filled
+
+        - ``xlim`` -- a pair of floats, the lower and upper horizontal bound of
+          the view box
+
+        - ``ylim`` -- a pair of floats, the lower and upper vertical bound of
+          the view box
+
+        OUTPUT:
+
+        The new ``pos`` and ``direction`` after executing the ``command``.
+
+        EXAMPLES::
+
+            sage: from flatsurf.graphical.hyperbolic import CartesianPathPlot, CartesianPathPlotCommand
+            sage: from matplotlib.path import Path
+
+            sage: vertices = [(0., 0.)]
+            sage: codes = [Path.MOVETO]
+            sage: pos = (0., 0.)
+            sage: direction = None
+            sage: command = CartesianPathPlotCommand("LINETO", (1., 1.))
+
+            sage: CartesianPathPlot._extend_path(vertices, codes, pos, direction, command, False, (-1024., 1024.), (-1024., 1024.))
+            ((1.00000000000000, 1.00000000000000), None)
+
+            sage: vertices
+            sage: codes
+            [(0.000000000000000, 0.000000000000000), (1.00000000000000, 1.00000000000000)]
+            [1, 2]
+
+        """
         from matplotlib.path import Path
 
         def extend(path):
-            # TODO: Check documentation.
-            # TODO: Check INPUT
-            # TODO: Check SEEALSO
-            # TODO: Check for doctests
-            # TODO: Benchmark?
             vertices.extend(path.vertices[1:])
             codes.extend(path.codes[1:])
 
@@ -405,7 +537,6 @@ class CartesianPathPlot(GraphicPrimitive):
                 # Sweep the bounding box counterclockwise from start to end
                 from sage.all import vector
 
-                # TODO: Is this the correct center?
                 center = vector(((start[0] + end[0]) / 2, (start[1] + end[1]) / 2))
 
                 extend(CartesianPathPlot._arc_path(center, start, end))
@@ -462,6 +593,8 @@ class CartesianPathPlot(GraphicPrimitive):
                     # We simplify the computation of the bounding box here to
                     # speed things up. Since these are hyperbolic arcs, their
                     # center must be at y=0 and the endpoints at y≥0.
+                    # If we want to use this for non-hyperbolic objects, we'd
+                    # have to use this instead:
                     # bbox = bbox.union(
                     #     [
                     #         bbox,
