@@ -1628,7 +1628,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             sage: H.segment(H.vertical(0), start=oo, end=0)
             Traceback (most recent call last):
             ...
-            ValueError: end point of segment must be after start point on the underlying geodesic
+            ValueError: end point of segment must not be before start point on the underlying geodesic
 
             sage: H.segment(H.vertical(0), start=I, end=2*I)
             {-x = 0} ∩ {(x^2 + y^2) - 1 ≥ 0} ∩ {(x^2 + y^2) - 4 ≤ 0}
@@ -1639,7 +1639,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             sage: H.segment(H.vertical(0), start=2*I, end=I)
             Traceback (most recent call last):
             ...
-            ValueError: end point of segment must be after start point on the underlying geodesic
+            ValueError: end point of segment must not be before start point on the underlying geodesic
 
         .. SEEALSO::
 
@@ -9201,8 +9201,8 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
         INPUT:
 
         - ``require_normalized`` -- a boolean (default: ``True``); whether to
-          assume that normalization has already, i.e., marked vertices that are
-          actual vertices have already been removed
+          assume that normalization has already happened, i.e., marked vertices
+          that are actual vertices have already been removed
 
         EXAMPLES::
 
@@ -10885,38 +10885,63 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
 
 
 class HyperbolicSegment(HyperbolicConvexSet):
-    # TODO: Check documentation
-    # TODO: Check INPUTS
-    # TODO: Check SEEALSO
-    # TODO: Check for doctests
-    # TODO: Benchmark?
     r"""
     A segment (possibly infinite) in the hyperbolic plane.
 
     This is an abstract base class of :class:`HyperbolicOrientedSegmented` and
     :class:`HyperbolicUnorientedSegment`.
 
-    TESTS::
+    INPUT:
 
-        sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicSegment
+    - ``parent`` -- the :class:`HyperbolicPlane` containing this segment
+
+    - ``geodesic`` -- the :class:`HyperbolicGeodesic` of which this segment is a subset
+
+    - ``start`` -- a :class:`HyperbolicPoint` or ``None`` (default: ``None``);
+      the finite endpoint of the segment. If ``None``, then the segment extends
+      all the way to the ideal starting point of the geodesic.
+
+    - ``end`` -- a :class:`HyperbolicPoint` or ``None`` (default: ``None``);
+      the finite endpoint of the segment. If ``None``, then the segment extends
+      all the way to the ideal end point of the geodesic.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
         sage: H = HyperbolicPlane()
 
-        sage: segment = H.segment(H.vertical(0), start=I)
+        sage: H.segment(H.vertical(0), start=I)
+        {-x = 0} ∩ {(x^2 + y^2) - 1 ≥ 0}
 
-        sage: isinstance(segment, HyperbolicSegment)
-        True
+        sage: H(I).segment(oo)
+        {-x = 0} ∩ {(x^2 + y^2) - 1 ≥ 0}
 
-        sage: isinstance(segment.unoriented(), HyperbolicSegment)
-        True
+    .. SEEALSO::
+
+        Use :meth:`HyperbolicPlane.segment` or :meth:`HyperbolicPoint.segment`
+        to create segments.
 
     """
-
     def __init__(self, parent, geodesic, start=None, end=None):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        TESTS::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicSegment
+            sage: H = HyperbolicPlane()
+
+            sage: segment = H.segment(H.vertical(0), start=I)
+            sage: isinstance(segment, HyperbolicSegment)
+            True
+
+            sage: TestSuite(segment).run()
+
+            sage: segment = segment.unoriented()
+            sage: isinstance(segment, HyperbolicSegment)
+            True
+
+            sage: TestSuite(segment).run()
+
+        """
         super().__init__(parent)
 
         if not isinstance(geodesic, HyperbolicOrientedGeodesic):
@@ -10933,28 +10958,72 @@ class HyperbolicSegment(HyperbolicConvexSet):
         self._end = end
 
     def _check(self, require_normalized=True):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
-        # TODO: Should this be in the oriented class? Should there be an equivalent in the unoriented class?
-        start = self._start
-        end = self._end
+        r"""
+        Verify that this is a valid segment.
 
-        if start is not None:
-            if start not in self._geodesic:
+        This implements :meth:`HyperbolicConvexSet._check`.
+
+        INPUT:
+
+        - ``require_normalized`` -- a boolean (default: ``True``); whether to
+          assume that normalization has already happened, i.e., segments with
+          no finite end points have been rewritten into geodesics.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicConvexPolygon
+            sage: H = HyperbolicPlane()
+
+        The end points of the segment must be on the defining geodesic::
+
+            sage: s = H.segment(H.vertical(0), start=1, check=False, assume_normalized=True)
+            sage: s._check()
+            Traceback (most recent call last)
+            ...
+            ValueError: start point must be on the geodesic
+
+            sage: s = H.segment(H.vertical(0), end=1, check=False, assume_normalized=True)
+            sage: s._check()
+            Traceback (most recent call last)
+            ...
+            ValueError: end point must be on the geodesic
+
+        The end points must be ordered correctly::
+
+            sage: s = H.segment(H.vertical(0), start=2*I, end=I, check=False)
+            sage: s._check()
+            Traceback (most recent call last)
+            ...
+            ValueError: end point of segment must not be before start point on the underlying geodesic
+
+        The end points must be distinct::
+
+            sage: s = H.segment(H.vertical(0), start=I, end=I, check=False, assume_normalized=True)
+            sage: s._check(require_normalized=False)
+
+            sage: s = H.segment(H.vertical(0), start=I, end=I, check=False, assume_normalized=True)
+            sage: s._check(require_normalized=True)
+            Traceback (most recent call last)
+            ...
+            ValueError: end point of segment must be after start point on the underlying geodesic
+
+        """
+        if self._start is not None:
+            if self._start not in self._geodesic:
                 raise ValueError("start point must be on the geodesic")
 
-        if end is not None:
-            if end not in self._geodesic:
+        if self._end is not None:
+            if self._end not in self._geodesic:
                 raise ValueError("end point must be on the geodesic")
 
-        # TODO: Check end >= start and end > start if require_normalized.
+        start = None if self._start is None else self._geodesic.parametrize(self._start, model="euclidean", check=False)
+        end = None if self._end is None else self._geodesic.parametrize(self._end, model="euclidean", check=False)
 
-        # TODO: Check that end > start even if unoriented since otherwise the printing is wrong.
-
-        # TODO: Check start & end finite if require_normalized.
+        if start is not None and end is not None:
+            if end < start:
+                raise ValueError("end point of segment must not be before start point on the underlying geodesic")
+            if require_normalized and end <= start:
+                raise ValueError("end point of segment must be after start point on the underlying geodesic")
 
     def _normalize(self):
         # TODO: Check documentation.
