@@ -2510,7 +2510,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         if model == "klein":
             isometry = self.isometry(preimage=preimage, image=image, model="half_plane", on_right=on_right, normalized=normalized)
-            return gl2_to_sim12(isometry)
+            return self._isometry_gl2_to_sim12(isometry)
         elif model != "half_plane":
             raise NotImplementedError("unsupported model")
 
@@ -2578,6 +2578,144 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             raise ValueError("no isometry can map these objects to each other")
 
         return isometry
+
+    def _isometry_gl2_to_sim12(self, isometry):
+        r"""
+        Return a lift of the ``isometry`` to a 3×3 matrix in the similitude
+        group `\mathrm{Sim}(1, 2)` describing an isometry in hyperboloid
+        model.
+
+        This is a helper method for :meth:`isometry` and
+        :meth:`HyperbolicConvexSet.apply_isometry` since isometries in the
+        hyperboloid model can be directly applied to our objects which we
+        represent in the Klein model.
+
+        INPUT:
+
+        - ``isometry`` -- a 2×2 matrix with non-zero determinant
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: H._isometry_gl2_to_sim12(matrix(2, [1,1,0,1]))
+            [   1   -1    1]
+            [   1  1/2  1/2]
+            [   1 -1/2  3/2]
+            sage: H._isometry_gl2_to_sim12(matrix(2, [1,0,1,1]))
+            [   1    1    1]
+            [  -1  1/2 -1/2]
+            [   1  1/2  3/2]
+            sage: H._isometry_gl2_to_sim12(matrix(2, [2,0,0,1/2]))
+            [   1    0    0]
+            [   0 17/8 15/8]
+            [   0 15/8 17/8]
+
+        .. SEEALSO::
+
+            :meth:`_isometry_sim12_to_gl2` for an inverse of this construction
+
+        """
+        from sage.matrix.constructor import matrix
+
+        if isometry.dimensions() != (2, 2):
+            raise ValueError("matrix does not encode an isometry in the half plane model")
+
+        a, b, c, d = isometry.list()
+        return matrix(
+            3,
+            [
+                a * d + b * c,
+                a * c - b * d,
+                a * c + b * d,
+                a * b - c * d,
+                (a**2 - b**2 - c**2 + d**2) / 2,
+                (a**2 + b**2 - c**2 - d**2) / 2,
+                a * b + c * d,
+                (a**2 - b**2 + c**2 - d**2) / 2,
+                (a**2 + b**2 + c**2 + d**2) / 2,
+            ],
+        )
+
+    def _isometry_sim12_to_gl2(self, isometry):
+        r"""
+        Return an invertible 2×2 matrix that encodes the same isometry as
+        ``isometry``.
+
+        INPUT:
+
+        - ``isometry`` -- a 3×3 matrix in `\mathrm{Sim}(1, 2)`
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: H._isometry_sim12_to_gl2(matrix(3, [1, -1, 1, 1, 1/2, 1/2, 1, -1/2, 3/2]))
+            [1 1]
+            [0 1]
+
+            sage: H._isometry_sim12_to_gl2(matrix(3, [1, 1, 1, -1, 1/2, -1/2, 1, 1/2, 3/2]))
+            [1 0]
+            [1 1]
+
+            sage: H._isometry_sim12_to_gl2(matrix(3, [1, 0, 0, 0, 17/8, 15/8, 0, 15/8, 17/8]))
+            [  2   0]
+            [  0 1/2]
+
+            sage: H._isometry_sim12_to_gl2(H._isometry_gl2_to_sim12(matrix([[-1, 0], [0, 1]])))
+            [ 1  0]
+            [ 0 -1]
+
+        .. SEEALSO::
+
+            :meth:`_isometry_gl2_to_sim12` for an inverse of this construction
+
+        """
+        from sage.matrix.constructor import matrix
+
+        if isometry.dimensions() != (3, 3):
+            raise ValueError("matrix does not encode an isometry in the Klein model")
+
+        m00, m01, m02, m10, m11, m12, m20, m21, m22 = isometry.list()
+        K = isometry.base_ring()
+        two = K(2)
+
+        so12_det = isometry.determinant()
+        sl2_det = so12_det.nth_root(3)
+        if so12_det.sign() != sl2_det.sign():
+            sl2_det *= -1
+
+        a2 = (m12 + m22 + m21 + m11) / two
+        b2 = (m12 + m22 - m21 - m11) / two
+        c2 = (m21 + m22 - m12 - m11) / two
+        d2 = (m11 + m22 - m12 - m21) / two
+
+        ab = (m10 + m20) / two
+        ac = (m01 + m02) / two
+        ad = (m00 + sl2_det) / two
+        bc = (m00 - sl2_det) / two
+        bd = (m02 - m01) / two
+        cd = (m20 - m10) / two
+
+        # we recover +/- a taking square roots
+        pm_a = a2.sqrt()
+        pm_b = b2.sqrt()
+        pm_c = c2.sqrt()
+        pm_d = d2.sqrt()
+
+        # We could do something less naive as there is no need to iterate
+        import itertools
+        for sa, sb, sc, sd in itertools.product([1, -1], repeat=4):
+            a = sa * pm_a
+            b = sb * pm_b
+            c = sc * pm_c
+            d = sd * pm_d
+            if (a * b == ab and a * c == ac and a * d == ad and b * c == bc and b * d == bd and c * d == cd):
+                return matrix(K, 2, 2, [a, b, c, d])
+
+        raise ValueError('no projection to GL(2, R) in the base ring')
 
     def _isometry_from_primitives(self, pairs):
         r"""
@@ -3011,7 +3149,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
                     [c, d]
                 ])
 
-                isometry = gl2_to_sim12(isometry)
+                isometry = self._isometry_gl2_to_sim12(isometry)
 
                 # Build equations for the symbolic variables and make sure that
                 # the resulting variety is zero-dimensional.
@@ -4607,7 +4745,8 @@ class HyperbolicConvexSet(Element):
         under scaling the matrix with a non-zero real.
 
         In any case, we convert the matrix to a corresponding 3×3 matrix, see
-        :func:`gl2_to_sim12` and apply the isometry in the Klein model.
+        :meth:`HyperbolicPlane._isometry_gl2_to_sim12` and apply the isometry
+        in the Klein model.
 
         To apply an isometry in the Klein model, we lift objects to the
         hyperboloid model, apply the isometry given by the 3×3 matrix there,
@@ -4715,7 +4854,7 @@ class HyperbolicConvexSet(Element):
 
         """
         if model == "half_plane":
-            isometry = gl2_to_sim12(isometry)
+            isometry = self.parent()._isometry_gl2_to_sim12(isometry)
             model = "klein"
 
         if model == "klein":
@@ -7176,11 +7315,11 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, gl2_to_sim12
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: R.<a, b, c, d, λ> = QQ[]
-            sage: isometry = gl2_to_sim12(matrix([[a, b], [c, d]]))
+            sage: isometry = H._isometry_gl2_to_sim12(matrix([[a, b], [c, d]]))
             sage: isometry
             [                            b*c + a*d                             a*c - b*d                             a*c + b*d]
             [                            a*b - c*d 1/2*a^2 - 1/2*b^2 - 1/2*c^2 + 1/2*d^2 1/2*a^2 + 1/2*b^2 - 1/2*c^2 - 1/2*d^2]
@@ -8343,11 +8482,11 @@ class HyperbolicPoint(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, gl2_to_sim12
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: R.<a, b, c, d, λ> = QQ[]
-            sage: isometry = gl2_to_sim12(matrix([[a, b], [c, d]]))
+            sage: isometry = H._isometry_gl2_to_sim12(matrix([[a, b], [c, d]]))
             sage: isometry
             [                            b*c + a*d                             a*c - b*d                             a*c + b*d]
             [                            a*b - c*d 1/2*a^2 - 1/2*b^2 - 1/2*c^2 + 1/2*d^2 1/2*a^2 + 1/2*b^2 - 1/2*c^2 - 1/2*d^2]
@@ -8380,7 +8519,7 @@ class HyperbolicPoint(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, gl2_to_sim12
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: p = H(0)
@@ -12105,119 +12244,6 @@ class HyperbolicEmptySet(HyperbolicConvexSet):
 
         """
         raise Exception("empty set has no points")
-
-
-def gl2_to_sim12(m):
-    # TODO: Check documentation.
-    # TODO: Check INPUT
-    # TODO: Check SEEALSO
-    # TODO: Check for doctests
-    # TODO: Benchmark?
-    r"""
-    Return the lift of the 2x2 matrix ``m`` inside ``SO(1,2)``.
-
-    EXAMPLES::
-
-        sage: from flatsurf.geometry.hyperbolic import gl2_to_sim12
-        sage: gl2_to_sim12(matrix(2, [1,1,0,1]))
-        [   1   -1    1]
-        [   1  1/2  1/2]
-        [   1 -1/2  3/2]
-        sage: gl2_to_sim12(matrix(2, [1,0,1,1]))
-        [   1    1    1]
-        [  -1  1/2 -1/2]
-        [   1  1/2  3/2]
-        sage: gl2_to_sim12(matrix(2, [2,0,0,1/2]))
-        [   1    0    0]
-        [   0 17/8 15/8]
-        [   0 15/8 17/8]
-
-    """
-    from sage.matrix.constructor import matrix
-
-    if m.dimensions() != (2, 2):
-        raise ValueError("matrix does not encode an isometry in the half plane model")
-
-    a, b, c, d = m.list()
-    return matrix(
-        3,
-        [
-            a * d + b * c,
-            a * c - b * d,
-            a * c + b * d,
-            a * b - c * d,
-            (a**2 - b**2 - c**2 + d**2) / 2,
-            (a**2 + b**2 - c**2 - d**2) / 2,
-            a * b + c * d,
-            (a**2 - b**2 + c**2 - d**2) / 2,
-            (a**2 + b**2 + c**2 + d**2) / 2,
-        ],
-    )
-
-
-def sim12_to_gl2(m):
-    r"""
-    Inverse of :func:`gl2_to_sim12`.
-
-    EXAMPLES::
-
-        sage: from flatsurf.geometry.hyperbolic import sim12_to_gl2, gl2_to_sim12
-        sage: sim12_to_gl2(matrix(3, [1, -1, 1, 1, 1/2, 1/2, 1, -1/2, 3/2]))
-        [1 1]
-        [0 1]
-        sage: sim12_to_gl2(matrix(3, [1, 1, 1, -1, 1/2, -1/2, 1, 1/2, 3/2]))
-        [1 0]
-        [1 1]
-        sage: sim12_to_gl2(matrix(3, [1, 0, 0, 0, 17/8, 15/8, 0, 15/8, 17/8]))
-        [  2   0]
-        [  0 1/2]
-        sage: sim12_to_gl2(gl2_to_sim12(matrix([[-1, 0], [0, 1]])))
-        [ 1  0]
-        [ 0 -1]
-    """
-    from sage.matrix.constructor import matrix
-
-    if m.dimensions() != (3, 3):
-        raise ValueError("matrix does not encode an isometry in the Klein model")
-
-    m00, m01, m02, m10, m11, m12, m20, m21, m22 = m.list()
-    K = m.base_ring()
-    two = K(2)
-
-    so12_det = m.determinant()
-    sl2_det = so12_det.nth_root(3)
-    if so12_det.sign() != sl2_det.sign():
-        sl2_det *= -1
-
-    a2 = (m12 + m22 + m21 + m11) / two
-    b2 = (m12 + m22 - m21 - m11) / two
-    c2 = (m21 + m22 - m12 - m11) / two
-    d2 = (m11 + m22 - m12 - m21) / two
-
-    ab = (m10 + m20) / two
-    ac = (m01 + m02) / two
-    ad = (m00 + sl2_det) / two
-    bc = (m00 - sl2_det) / two
-    bd = (m02 - m01) / two
-    cd = (m20 - m10) / two
-
-    # we recover +/- a takings square roots
-    pm_a = a2.sqrt()
-    pm_b = b2.sqrt()
-    pm_c = c2.sqrt()
-    pm_d = d2.sqrt()
-
-    # TODO: do something less naive as there is no need to iterate
-    import itertools
-    for sa, sb, sc, sd in itertools.product([1, -1], repeat=4):
-        a = sa * pm_a
-        b = sb * pm_b
-        c = sc * pm_c
-        d = sd * pm_d
-        if (a * b == ab and a * c == ac and a * d == ad and b * c == bc and b * d == bd and c * d == cd):
-            return matrix(K, 2, 2, [a, b, c, d])
-
-    raise ValueError('no projection to GL(2, R) in the base ring')
 
 
 # TODO: Allow creating from generator while allowing to answer length immediately.
