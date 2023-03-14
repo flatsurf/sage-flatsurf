@@ -11608,11 +11608,6 @@ class HyperbolicSegment(HyperbolicConvexSet):
 
 
 class HyperbolicUnorientedSegment(HyperbolicSegment):
-    # TODO: Check documentation
-    # TODO: Check INPUTS
-    # TODO: Check SEEALSO
-    # TODO: Check for doctests
-    # TODO: Benchmark?
     r"""
     An unoriented (possibly infinity) segment in the hyperbolic plane.
 
@@ -11623,8 +11618,18 @@ class HyperbolicUnorientedSegment(HyperbolicSegment):
 
         sage: segment = H.segment(H.vertical(0), start=I).unoriented()
 
-    """
+    TESTS::
 
+        sage: from flatsurf.geometry.hyperbolic import HyperbolicUnorientedSegment
+        sage: isinstance(segment, HyperbolicUnorientedSegment)
+        True
+
+    .. SEEALSO::
+
+        Use :meth:`HyperbolicPlane.segment` or
+        :meth:`HyperbolicSegment.unoriented` to construct unoriented segments. 
+
+    """
     def __hash__(self):
         r"""
         Return a hash value for this set.
@@ -11636,8 +11641,8 @@ class HyperbolicUnorientedSegment(HyperbolicSegment):
             sage: H = HyperbolicPlane()
             sage: s = H(I).segment(2*I)
 
-        Since an uriented segment is hashable, it can be put in a hash table, such as a
-        Python ``set``::
+        Since an oriented segment is hashable, it can be put in a hash table,
+        such as a Python ``set``::
 
             sage: {s.unoriented(), (-s).unoriented()}
             {{-x = 0} ∩ {(x^2 + y^2) - 1 ≥ 0} ∩ {(x^2 + y^2) - 4 ≤ 0}}
@@ -11679,110 +11684,48 @@ class HyperbolicUnorientedSegment(HyperbolicSegment):
 
 
 class HyperbolicOrientedSegment(HyperbolicSegment, HyperbolicOrientedConvexSet):
-    # TODO: Check documentation
-    # TODO: Check INPUTS
-    # TODO: Check SEEALSO
-    # TODO: Check for doctests
-    # TODO: Benchmark?
     r"""
     An oriented (possibly infinite) segment in the hyperbolic plane such as a
     boundary edge of a :class:`HyperbolicConvexPolygon`.
-    """
 
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+        sage: H = HyperbolicPlane()
+
+        sage: s = H(I).segment(2*I)
+
+    TESTS::
+
+        sage: from flatsurf.geometry.hyperbolic import HyperbolicOrientedSegment
+        sage: isinstance(s, HyperbolicOrientedSegment)
+        True
+
+    .. SEEALSO::
+
+        Use :meth:`HyperbolicPlane.segment` or :meth:`HyperbolicPoint.segment`
+        to construct oriented segments.
+
+    """
     def _neg_(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Return this segment with its orientation reversed.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: s = H(I).segment(2*I)
+            sage: s
+            {-x = 0} ∩ {(x^2 + y^2) - 1 ≥ 0} ∩ {(x^2 + y^2) - 4 ≤ 0}
+
+            sage: -s
+            {x = 0} ∩ {(x^2 + y^2) - 4 ≤ 0} ∩ {(x^2 + y^2) - 1 ≥ 0}
+
+        """
         return self.parent().segment(
             -self._geodesic, self._end, self._start, check=False, assume_normalized=True
-        )
-
-    def _is_valid(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
-        # TODO: Should this be in the oriented class? Should there be an equivalent in the unoriented class?
-        if not self._geodesic._is_valid():
-            return False
-
-        if self._start is not None:
-            if not self._start._is_valid():
-                return False
-
-            if self._start not in self._geodesic:
-                return False
-
-        if self._end is not None:
-            if not self._end._is_valid():
-                return False
-
-            if self._end not in self._geodesic:
-                return False
-
-        if self._start is not None and self._end is not None:
-            if self._start == self._end:
-                return False
-
-        # TODO: Check that the endpoints are ordered correctly.
-
-        return True
-
-    def configuration(self, other):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
-        # TODO: Should this be in the oriented class? Should there be an equivalent in the unoriented class?
-        if self._geodesic == other._geodesic:
-            if self == other:
-                return "equal"
-            raise NotImplementedError(
-                "cannot determine configuration of segments on the same geodesic"
-            )
-
-        if self._geodesic == -other._geodesic:
-            if self == -other:
-                return "negative"
-            raise NotImplementedError(
-                "cannot determine configuration of segments on the same geodesic"
-            )
-
-        intersection = self.intersection(other)
-
-        if intersection is None:
-            raise NotImplementedError(
-                "cannot determine configuration of segments that do not intersect"
-            )
-
-        if intersection.is_finite():
-            if intersection == self.end(finite=True) and intersection == other.start(
-                finite=True
-            ):
-                return "join"
-
-            raise NotImplementedError(
-                "cannot determine configuration of segments that intersect in a finite point"
-            )
-
-        if intersection == self.end():
-            if intersection == other.start():
-                return "join"
-            if intersection == other.end():
-                return "join-at-ends"
-
-        if intersection == self.start():
-            if intersection == other.start():
-                return "join-at-starts"
-            if intersection == other.end():
-                return "join-reversed"
-
-        raise NotImplementedError(
-            "cannot determine configuration of segments that intersect in an infinite point"
         )
 
     def __hash__(self):
@@ -11830,23 +11773,71 @@ class HyperbolicOrientedSegment(HyperbolicSegment, HyperbolicOrientedConvexSet):
         r"""
         yield [(self.start(), other.start()), (self.end(), other.end())]
 
-    def start(self, finite=False):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+    def start(self):
+        r"""
+        Return the start point of this segment.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: s = H(I).segment(2*I)
+            sage: s.start()
+            I
+
+            sage: s.start().is_finite()
+            True
+
+        The start point can also be an ideal point::
+
+            sage: s = H(0).segment(2*I)
+            sage: s.start()
+            0
+
+            sage: s.start().is_ideal()
+            True
+
+        .. SEEALSO::
+
+            :meth:`end`
+
+        """
         if self._start is not None:
             return self._start
 
         return self._geodesic.start()
 
-    def end(self, finite=False):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+    def end(self):
+        r"""
+        Return the end point of this segment.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: s = H(I).segment(2*I)
+            sage: s.end()
+            2*I
+
+            sage: s.end().is_finite()
+            True
+
+        The end point can also be an ideal point::
+
+            sage: s = H(I).segment(oo)
+            sage: s.end()
+            ∞
+
+            sage: s.end().is_ideal()
+            True
+
+        .. SEEALSO::
+
+            :meth:`start`
+
+        """
         if self._end is not None:
             return self._end
 
