@@ -593,6 +593,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             self.real(1),
             self.real(-1),
             self.geodesic(0, 2).start(),
+            self.half_circle(0, 2).start(),
             # Oriented Geodesics
             self.vertical(1),
             self.half_circle(0, 1),
@@ -3964,7 +3965,12 @@ class HyperbolicConvexSet(Element):
         """
         tester = self._tester(**options)
 
-        half_spaces = self.half_spaces()
+        try:
+            half_spaces = self.half_spaces()
+        except ValueError:
+            # We cannot create half spaces defining a point which has no coordinates over the base ring.
+            tester.assertIsInstance(self, HyperbolicPointFromGeodesic)
+            return
 
         tester.assertEqual(self.parent().intersection(*half_spaces), self.unoriented())
 
@@ -4149,7 +4155,7 @@ class HyperbolicConvexSet(Element):
             except ValueError:
                 # Currently, containment can often not be decided when points
                 # do not have coordinates over the base ring.
-                pass
+                tester.assertIsInstance(vertex, HyperbolicPointFromGeodesic)
 
     def vertices(self, marked_vertices=True):
         r"""
@@ -4832,6 +4838,9 @@ class HyperbolicConvexSet(Element):
         if self.dimension() > other.dimension():
             return False
 
+        if self.dimension() == 0:
+            return self in other
+
         # Make sure that we do not get confused by marked vertices
         self = self.parent().intersection(*self.half_spaces())
 
@@ -4853,7 +4862,13 @@ class HyperbolicConvexSet(Element):
 
         tester.assertTrue(self.is_subset(self))
 
-        tester.assertTrue(self.is_subset(self.parent().intersection(*self.half_spaces())))
+        try:
+            half_spaces = self.half_spaces()
+        except ValueError:
+            # We cannot determine half spaces for points whose coordinates are not over the base ring.
+            tester.assertIsInstance(self, HyperbolicPointFromGeodesic)
+        else:
+            tester.assertTrue(self.is_subset(self.parent().intersection(*half_spaces)))
 
     def an_element(self):
         r"""
@@ -8205,20 +8220,16 @@ class HyperbolicPoint(HyperbolicConvexSet):
             ...Graphics object consisting of 1 graphics primitive
 
         """
-        if model == "half_plane":
-            from sage.all import point
+        coordinates = self.coordinates(model=model, ring="maybe")
+        if not coordinates:
+            from sage.all import RR
+            coordinates = self.coordinates(model=model, ring=RR)
 
-            # We need to wrap the coordinates into a list so they are not
-            # interpreted as a list of complex numbers.
-            plot = point([self.coordinates(model="half_plane")], **kwds)
-        elif model == "klein":
-            from sage.all import point
+        from sage.all import point
 
-            # We need to wrap the coordinates into a list so they are not
-            # interpreted as a list of complex numbers.
-            plot = point([self.coordinates(model="klein")], **kwds)
-        else:
-            raise NotImplementedError("cannot plot in this model yet")
+        # We need to wrap the coordinates into a list so they are not
+        # interpreted as a list of complex numbers.
+        plot = point([coordinates], **kwds)
 
         return self._enhance_plot(plot, model=model)
 
@@ -8347,6 +8358,39 @@ class HyperbolicPoint(HyperbolicConvexSet):
         from sage.all import vector
         equations = λ * vector((x, y, z)) - isometry * vector(R, (fx, fy, fz))
         return equations.list()
+
+    def __contains__(self, point):
+        r"""
+        Return whether the set comprised of this point contains ``point``,
+        i.e., whether the points are equal.
+
+        This implements :meth:`HyperbolicConvexSet.__contains__` without
+        relying on :meth:`HyperbolicConvexSet.half_spaces` which can not be
+        computed for points without coordinates in the
+        :meth:`HyperbolicPlane.base_ring`.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, gl2_to_sim12
+            sage: H = HyperbolicPlane()
+
+            sage: p = H(0)
+            sage: q = H.half_circle(0, 2).start()
+
+            sage: p in p
+            True
+
+            sage: p in q
+            False
+
+            sage: q in p
+            False
+
+            sage: q in q
+            True
+
+        """
+        return self == point
 
 
 class HyperbolicPointFromCoordinates(HyperbolicPoint):
@@ -8626,17 +8670,58 @@ class HyperbolicPointFromCoordinates(HyperbolicPoint):
 
 
 class HyperbolicPointFromGeodesic(HyperbolicPoint):
-    # TODO: Check documentation
-    # TODO: Check INPUTS
-    # TODO: Check SEEALSO
-    # TODO: Check for doctests
-    # TODO: Benchmark?
+    r"""
+    An ideal :class:`HyperbolicPoint`, the end point of a geodesic.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+        sage: H = HyperbolicPlane()
+
+        sage: H.vertical(0).start()
+        0
+
+    This class is necessary because not all points have coordinates in the
+    :meth:`HyperbolicPlane.base_ring`::
+
+        sage: p = H.half_circle(0, 2).start()
+
+        sage: p.coordinates(model="klein")
+        Traceback (most recent call last):
+        ...
+        ValueError: ...
+
+        sage: p.coordinates(model="half_plane")
+        Traceback (most recent call last):
+        ...
+        ValueError: ...
+
+    INPUT:
+
+    - ``parent`` -- the :class:`HyperbolicPlane` containing this point
+
+    - ``geodesic`` -- to :class:`HyperbolicOrientedGeodesic` whose :meth:`HyperbolicOrientedGeodesic.start` this point is
+
+    .. SEEALSO::
+
+        Use :meth:`HyperbolicOrientedGeodesic.start` and
+        :meth:`HyperbolicOrientedGeodesic.end` to create endpoints of geodesics
+
+    """
     def __init__(self, parent, geodesic):
-        # TODO: Check documentation
-        # TODO: Check INPUTS
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        TESTS::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicPointFromGeodesic
+            sage: H = HyperbolicPlane()
+
+            sage: p = H.half_circle(0, 2).start()
+            sage: isinstance(p, HyperbolicPointFromGeodesic)
+            True
+
+            sage: TestSuite(p).run()
+
+        """
         super().__init__(parent)
 
         if not isinstance(geodesic, HyperbolicOrientedGeodesic):
@@ -8645,24 +8730,42 @@ class HyperbolicPointFromGeodesic(HyperbolicPoint):
         self._geodesic = geodesic
 
     def is_ideal(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Return whether this is an infinite point, i.e., return ``True`` since
+        this is an endpoint of a geodesic.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: H.vertical(0).start().is_ideal()
+            True
+
+        """
         return True
 
     def is_ultra_ideal(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Return whether this is an ultra ideal point, i.e., return ``False``
+        since this end point of a geodesic is not outside of the unit disk in
+        the Klein model.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: H.vertical(0).start().is_ultra_ideal()
+            False
+
+        """
         return False
 
     def is_finite(self):
         r"""
-        Return whether this ideal point is finite, i.e., return ``False``.
+        Return whether this is a finite point, i.e., return ``False`` since
+        this end point of a geodesic is infinite.
 
         EXAMPLES::
 
@@ -8677,18 +8780,53 @@ class HyperbolicPointFromGeodesic(HyperbolicPoint):
 
     @cached_method
     def _coordinates_klein(self, ring):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
-        # TODO: Did we implement ring?
+        r"""
+        Return the coordinates of this point in the Klein model.
+
+        This is a helper method for :meth:`HyperbolicPoint.coordinates`.
+
+        INPUT:
+
+        - ``ring`` -- see :meth:`HyperbolicPoint.coordinates` for this
+          parameter
+
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: p = H.point(0, 0, model="klein")
+            sage: p._coordinates_klein(ring=None)
+            (0, 0)
+
+        Since the coordinates are given by intersection a line with the unit
+        circle, they might only exist over a quadratic extension::
+
+            sage: p = H.half_circle(0, 2).start()
+            sage: p._coordinates_klein(ring=None)
+            Traceback (most recent call last):
+            ...
+            ValueError: ...
+
+            sage: K.<a> = QuadraticField(2)
+            sage: p._coordinates_klein(ring=K)
+            (-2/3*a, 1/3)
+
+        .. NOTE::
+
+            The implementation of this predicate is not numerically robust over
+            inexact rings and should be improved.
+
+        """
         a, b, c = self._geodesic.equation(model="half_plane")
 
-        # TODO: Use specialized predicates instead of the _methods.
+        # We should probably use a specialized predicate of the geometry to make this
+        # more robust over inexact rings.
         if self.parent().geometry._zero(a):
             point = None
-            # TODO: Use specialized predicates instead of the _methods.
+            # We should probably use a specialized predicate of the geometry to make this
+            # more robust over inexact rings.
             if self.parent().geometry._sgn(b) > 0:
                 point = self.parent().point(0, 1, model="klein", check=False)
             else:
@@ -8716,8 +8854,9 @@ class HyperbolicPointFromGeodesic(HyperbolicPoint):
 
             endpoints = ((-b - sqrt) / (2 * a), (-b + sqrt) / (2 * a))
 
-            # TODO: Use specialized predicates instead of the _methods.
             return self.parent().change_ring(sqrt_ring).point(
+                    # We should probably use a specialized predicate of the geometry to make this
+                    # more robust over inexact rings.
                     (min if self.parent().geometry._sgn(a) > 0 else max)(endpoints),
                     0,
                     model="half_plane",
@@ -8803,16 +8942,25 @@ class HyperbolicPointFromGeodesic(HyperbolicPoint):
         return super()._richcmp_(other, op)
 
     def _repr_(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
         """
-        TESTS::
+        Return a printable representation of this point.
+
+        EXAMPLES:
+
+        We try to represent this point in the upper half plane::
 
             sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
             sage: H = HyperbolicPlane()
+
+            sage: H.vertical(0).start()
+            0
+
+        When this is not possible, we show approximate coordinates::
+
+            sage: H.half_circle(0, 2).start()
+            -1.41421356237310
+
+        TESTS::
 
             sage: geodesic = H.geodesic(733833/5522174119, -242010/5522174119, -105111/788882017, model="klein")
             sage: geodesic.start()
@@ -8827,11 +8975,6 @@ class HyperbolicPointFromGeodesic(HyperbolicPoint):
 
             if coordinates is not None:
                 return repr(self.parent().point(*coordinates, model="half_plane", check=False))
-
-        coordinates = self.coordinates(model="klein", ring="maybe")
-
-        if coordinates is not None:
-            return repr(coordinates)
 
         from sage.all import RR
         return repr(self.change_ring(RR))
