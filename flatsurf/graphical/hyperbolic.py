@@ -7,7 +7,7 @@ Usually, the primitives defined here should not be used directly. Instead the
 :meth:`HyperbolicConvexSet.plot` method of hyperbolic sets internally uses
 these primitives::
 
-    sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+    sage: from flatsurf import HyperbolicPlane
 
     sage: H = HyperbolicPlane()
 
@@ -80,7 +80,7 @@ class CartesianPathPlot(GraphicPrimitive):
     A geodesic plot as a single such path (wrapped in a SageMath graphics
     object)::
 
-        sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+        sage: from flatsurf import HyperbolicPlane
         sage: from flatsurf.graphical.hyperbolic import CartesianPathPlot, CartesianPathPlotCommand
         sage: H = HyperbolicPlane()
         sage: P = H.vertical(0).plot()
@@ -737,7 +737,7 @@ class HyperbolicPathPlotCommand:
 
     EXAMPLES::
 
-        sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+        sage: from flatsurf import HyperbolicPlane
         sage: from flatsurf.graphical.hyperbolic import HyperbolicPathPlotCommand
         sage: H = HyperbolicPlane()
         sage: HyperbolicPathPlotCommand("MOVETO", H(0))
@@ -768,7 +768,7 @@ class HyperbolicPathPlotCommand:
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: from flatsurf.graphical.hyperbolic import HyperbolicPathPlotCommand
             sage: H = HyperbolicPlane()
             sage: command = HyperbolicPathPlotCommand("MOVETO", H(0))
@@ -828,7 +828,7 @@ class HyperbolicPathPlotCommand:
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: from flatsurf.graphical.hyperbolic import HyperbolicPathPlotCommand
             sage: H = HyperbolicPlane()
 
@@ -915,7 +915,7 @@ class HyperbolicPathPlotCommand:
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: from flatsurf.graphical.hyperbolic import HyperbolicPathPlotCommand
             sage: H = HyperbolicPlane()
 
@@ -1044,7 +1044,7 @@ class HyperbolicPathPlotCommand:
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: from flatsurf.graphical.hyperbolic import HyperbolicPathPlotCommand
             sage: H = HyperbolicPlane()
 

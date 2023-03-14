@@ -3,7 +3,7 @@ Two dimensional hyperbolic geometry.
 
 EXAMPLES::
 
-    sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+    sage: from flatsurf import HyperbolicPlane
 
     sage: H = HyperbolicPlane()
 
@@ -320,7 +320,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
     EXAMPLES::
 
-        sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+        sage: from flatsurf import HyperbolicPlane
 
         sage: HyperbolicPlane()
         Hyperbolic Plane over Rational Field
@@ -345,7 +345,8 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         TESTS::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicExactGeometry
+            sage: from flatsurf import HyperbolicPlane
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicExactGeometry
 
             sage: HyperbolicPlane() is HyperbolicPlane(QQ)
             True
@@ -381,7 +382,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         TESTS::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
 
             sage: TestSuite(HyperbolicPlane(QQ)).run()
             sage: TestSuite(HyperbolicPlane(AA)).run()
@@ -410,7 +411,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         Coercions between base rings induce coercion between hyperbolic planes,
         due to the :meth:`construction` functor::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
 
             sage: H = HyperbolicPlane()
             sage: HyperbolicPlane(AA).has_coerce_map_from(H)
@@ -448,7 +449,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
 
             sage: H = HyperbolicPlane()
 
@@ -511,7 +512,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
 
             sage: HyperbolicPlane(QQ).change_ring(AA) is HyperbolicPlane(AA)
             True
@@ -561,7 +562,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
 
             sage: HyperbolicPlane().an_element()
             0
@@ -575,7 +576,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
 
             sage: HyperbolicPlane().some_elements()
             [{}, ∞, 0, 1, -1, ...]
@@ -647,7 +648,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
 
             sage: HyperbolicPlane()._test_some_subsets()
 
@@ -681,7 +682,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
         Make the following randomized tests reproducible::
@@ -801,7 +802,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
 
             sage: H = HyperbolicPlane()
 
@@ -897,7 +898,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
 
             sage: HyperbolicPlane().base_ring()
             Rational Field
@@ -915,7 +916,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
 
             sage: H = HyperbolicPlane()
             sage: H.is_exact()
@@ -934,7 +935,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
 
             sage: H = HyperbolicPlane()
             sage: p = H.infinity()
@@ -964,7 +965,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
 
             sage: H = HyperbolicPlane()
             sage: p = H.real(-2)
@@ -996,7 +997,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
 
             sage: H = HyperbolicPlane()
             sage: H.projective(0, 1)
@@ -1039,7 +1040,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: p = H.start(H.vertical(0))
@@ -1096,7 +1097,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H.point(0, 1, model="half_plane")
@@ -1170,7 +1171,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H.half_circle(0, 1)
@@ -1229,7 +1230,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H.vertical(0)
@@ -1314,7 +1315,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H.geodesic(-1, 1)
@@ -1460,7 +1461,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H.half_space(0, -1, 0, model="half_plane")
@@ -1527,7 +1528,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
         When neither ``start`` nor ``end`` are given, a geodesic is returned::
@@ -1725,7 +1726,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
         A finite convex polygon::
@@ -1929,7 +1930,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
         A polygon can also be created as the convex hull of its vertices::
@@ -2081,7 +2082,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H.intersection(H.vertical(0).left_half_space())
@@ -2127,7 +2128,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
 
             sage: HyperbolicPlane().empty_set()
             {}
@@ -2204,7 +2205,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
         An isometry mapping one point to another; naturally this is not the
@@ -2601,7 +2602,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H._isometry_gl2_to_sim12(matrix(2, [1,1,0,1]))
@@ -2654,7 +2655,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H._isometry_sim12_to_gl2(matrix(3, [1, -1, 1, 1, 1/2, 1/2, 1, -1/2, 3/2]))
@@ -2753,7 +2754,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
         An underdetermined system. Here we are lucky, the midpoint of the
@@ -2838,7 +2839,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H._isometry_untrivialize(H(I), H(I), [])
@@ -2901,7 +2902,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
         Given four points, three points already uniquely determine the isometry::
@@ -2992,7 +2993,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H._isometry_from_single_points(H(I), H(I))
@@ -3059,7 +3060,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
         A case where we can actually map things::
@@ -3252,7 +3253,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: HyperbolicPlane(AA)
             Hyperbolic Plane over Algebraic Real Field
 
@@ -3288,7 +3289,7 @@ class HyperbolicGeometry:
     The specific hyperbolic geometry implementation is picked automatically,
     depending on whether the base ring is exact or not::
 
-        sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+        sage: from flatsurf import HyperbolicPlane
         sage: H = HyperbolicPlane()
         sage: H.geometry
         Exact geometry over Rational Field
@@ -3314,7 +3315,8 @@ class HyperbolicGeometry:
         r"""
         TESTS::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicGeometry
+            sage: from flatsurf import HyperbolicPlane
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicGeometry
             sage: H = HyperbolicPlane()
             sage: isinstance(H.geometry, HyperbolicGeometry)
             True
@@ -3328,7 +3330,7 @@ class HyperbolicGeometry:
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
             sage: H.geometry.base_ring()
             Rational Field
@@ -3357,7 +3359,7 @@ class HyperbolicGeometry:
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane(RR)
             sage: H.geometry._zero(1)
             False
@@ -3386,7 +3388,7 @@ class HyperbolicGeometry:
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
             sage: H.geometry._cmp(0, 0)
             0
@@ -3436,7 +3438,7 @@ class HyperbolicGeometry:
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane(RR)
             sage: H.geometry._sgn(1)
             1
@@ -3467,7 +3469,7 @@ class HyperbolicGeometry:
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane(RR)
             sage: H.geometry._equal(0, 1)
             False
@@ -3501,7 +3503,7 @@ class HyperbolicGeometry:
 
         EXAMPLES:
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H.geometry._determinant(1, 2, 3, 4)
@@ -3521,7 +3523,7 @@ class HyperbolicGeometry:
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
             sage: H.geometry
             Exact geometry over Rational Field
@@ -3546,7 +3548,7 @@ class HyperbolicGeometry:
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H.geometry.projective(1, 0, H.point)
@@ -3580,7 +3582,7 @@ class HyperbolicGeometry:
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H.geometry.half_circle(0, 1, H.geodesic)
@@ -3618,7 +3620,7 @@ class HyperbolicGeometry:
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H.geometry.vertical(0, H.geodesic)
@@ -3655,7 +3657,7 @@ class HyperbolicGeometry:
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H.geometry.classify_point(0, 1, model="half_plane")
@@ -3698,7 +3700,7 @@ class HyperbolicGeometry:
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H.geometry.intersection((0, 1, 0), (0, 0, 1))
@@ -3724,7 +3726,7 @@ class HyperbolicExactGeometry(UniqueRepresentation, HyperbolicGeometry):
 
     EXAMPLES::
 
-        sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+        sage: from flatsurf import HyperbolicPlane
         sage: H = HyperbolicPlane()
         sage: H.geometry
         Exact geometry over Rational Field
@@ -3755,7 +3757,7 @@ class HyperbolicExactGeometry(UniqueRepresentation, HyperbolicGeometry):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
             sage: H.geometry._equal(0, 1)
             False
@@ -3773,7 +3775,7 @@ class HyperbolicExactGeometry(UniqueRepresentation, HyperbolicGeometry):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
             sage: H.geometry.change_ring(QQ) == H.geometry
             True
@@ -3804,7 +3806,7 @@ class HyperbolicExactGeometry(UniqueRepresentation, HyperbolicGeometry):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
             sage: H.geometry
             Exact geometry over Rational Field
@@ -3833,7 +3835,8 @@ class HyperbolicEpsilonGeometry(UniqueRepresentation, HyperbolicGeometry):
 
     EXAMPLES::
 
-        sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicEpsilonGeometry
+        sage: from flatsurf import HyperbolicPlane
+        sage: from flatsurf.geometry.hyperbolic import HyperbolicEpsilonGeometry
         sage: H = HyperbolicPlane(RR, HyperbolicEpsilonGeometry(RR, 1/1024))
 
     The ``epsilon`` affects the notion of equality in this geometry::
@@ -3859,7 +3862,8 @@ class HyperbolicEpsilonGeometry(UniqueRepresentation, HyperbolicGeometry):
         r"""
         TESTS::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicEpsilonGeometry
+            sage: from flatsurf import HyperbolicPlane
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicEpsilonGeometry
             sage: H = HyperbolicPlane(RR)
             sage: isinstance(H.geometry, HyperbolicEpsilonGeometry)
             True
@@ -3881,7 +3885,7 @@ class HyperbolicEpsilonGeometry(UniqueRepresentation, HyperbolicGeometry):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane(RR)
 
             sage: H.geometry._equal(1, 2)
@@ -3916,7 +3920,7 @@ class HyperbolicEpsilonGeometry(UniqueRepresentation, HyperbolicGeometry):
 
         EXAMPLES:
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane(RR)
 
             sage: H.geometry._determinant(1, 2, 3, 4)
@@ -3953,7 +3957,7 @@ class HyperbolicEpsilonGeometry(UniqueRepresentation, HyperbolicGeometry):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane(RR)
 
         The point ``[p: q]`` is the point at infinity if ``q`` is very small in
@@ -4002,7 +4006,7 @@ class HyperbolicEpsilonGeometry(UniqueRepresentation, HyperbolicGeometry):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane(RR)
 
             sage: H.geometry.change_ring(RR) is H.geometry
@@ -4023,7 +4027,7 @@ class HyperbolicEpsilonGeometry(UniqueRepresentation, HyperbolicGeometry):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane(RR)
             sage: H.geometry
             Epsilon geometry with ϵ=1.00000000000000e-6 over Real Field with 53 bits of precision
@@ -4063,7 +4067,8 @@ class HyperbolicConvexSet(Element):
 
     TESTS::
 
-        sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicConvexSet
+        sage: from flatsurf import HyperbolicPlane
+        sage: from flatsurf.geometry.hyperbolic import HyperbolicConvexSet
         sage: H = HyperbolicPlane()
 
         sage: isinstance(H(0), HyperbolicConvexSet)
@@ -4080,7 +4085,7 @@ class HyperbolicConvexSet(Element):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H.vertical(0).left_half_space().half_spaces()
@@ -4101,7 +4106,7 @@ class HyperbolicConvexSet(Element):
 
         TESTS::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H.an_element()._test_half_spaces()
@@ -4137,7 +4142,7 @@ class HyperbolicConvexSet(Element):
 
         EXAMPLES:
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
             sage: P = H.point(0, 0, model="klein")
             sage: P._check()
@@ -4161,7 +4166,7 @@ class HyperbolicConvexSet(Element):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
             sage: segment = H.segment(H.vertical(-1), start=H.infinity(), end=H.infinity(), check=False, assume_normalized=True)
             sage: segment
@@ -4178,7 +4183,7 @@ class HyperbolicConvexSet(Element):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
             sage: segment = H.segment(H.vertical(-1), start=H.infinity(), end=H.infinity(), check=False, assume_normalized=True)
             sage: segment._test_normalize()
@@ -4200,7 +4205,7 @@ class HyperbolicConvexSet(Element):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
             sage: H.vertical(0).unoriented()
             {x = 0}
@@ -4214,7 +4219,7 @@ class HyperbolicConvexSet(Element):
 
         TESTS::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H.an_element()._test_unoriented()
@@ -4230,7 +4235,7 @@ class HyperbolicConvexSet(Element):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
             sage: H.vertical(0).intersection(H.vertical(1))
             ∞
@@ -4248,7 +4253,7 @@ class HyperbolicConvexSet(Element):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H(I) in H.empty_set()
@@ -4286,7 +4291,7 @@ class HyperbolicConvexSet(Element):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
             sage: H.vertical(0)._test_contains()
 
@@ -4321,7 +4326,7 @@ class HyperbolicConvexSet(Element):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
         The empty set has no vertices::
@@ -4372,7 +4377,7 @@ class HyperbolicConvexSet(Element):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H.empty_set().is_finite()
@@ -4421,7 +4426,7 @@ class HyperbolicConvexSet(Element):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H.empty_set().is_ideal()
@@ -4458,7 +4463,7 @@ class HyperbolicConvexSet(Element):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H.empty_set().is_ultra_ideal()
@@ -4495,7 +4500,7 @@ class HyperbolicConvexSet(Element):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H.empty_set()._test_is_finite()
@@ -4531,7 +4536,7 @@ class HyperbolicConvexSet(Element):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: p = H(0)
@@ -4588,7 +4593,7 @@ class HyperbolicConvexSet(Element):
 
         TESTS::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H.an_element()._test_change_ring()
@@ -4615,7 +4620,7 @@ class HyperbolicConvexSet(Element):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: geodesic = H.geodesic(0, 1)
@@ -4650,7 +4655,7 @@ class HyperbolicConvexSet(Element):
 
         TESTS::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H.an_element()._test_change()
@@ -4686,7 +4691,7 @@ class HyperbolicConvexSet(Element):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H.vertical(0).plot()
@@ -4701,7 +4706,7 @@ class HyperbolicConvexSet(Element):
 
         TESTS::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H.an_element()._test_plot()
@@ -4759,7 +4764,7 @@ class HyperbolicConvexSet(Element):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
         The horizontal translation by 1 in the upper half plane model, a
@@ -4908,7 +4913,7 @@ class HyperbolicConvexSet(Element):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: isometry = matrix([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
@@ -4935,7 +4940,7 @@ class HyperbolicConvexSet(Element):
         We apply the Möbius transformation that sends `z` to `(1 + 2z)/(3 +
         4z)`::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
             sage: p = H(I)
             sage: m = matrix([[1, 2], [3, 4]])
@@ -4965,7 +4970,7 @@ class HyperbolicConvexSet(Element):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H(I).is_subset(H.vertical(0))
@@ -4997,7 +5002,7 @@ class HyperbolicConvexSet(Element):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H.an_element()._test_is_subset()
@@ -5021,7 +5026,7 @@ class HyperbolicConvexSet(Element):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
         The returned element can be a finite point::
@@ -5064,7 +5069,7 @@ class HyperbolicConvexSet(Element):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: p = H(0)
@@ -5090,7 +5095,7 @@ class HyperbolicConvexSet(Element):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H(0).is_empty()
@@ -5108,7 +5113,7 @@ class HyperbolicConvexSet(Element):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: bool(H(0))
@@ -5134,7 +5139,7 @@ class HyperbolicConvexSet(Element):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
         We treat the empty set as -1-dimensional::
@@ -5172,7 +5177,7 @@ class HyperbolicConvexSet(Element):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H.empty_set()._test_dimension()
@@ -5197,7 +5202,7 @@ class HyperbolicConvexSet(Element):
 
         EXAMPLES:
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H(0).is_point()
@@ -5232,7 +5237,7 @@ class HyperbolicConvexSet(Element):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
         Normally, geodesics are oriented::
@@ -5307,7 +5312,7 @@ class HyperbolicConvexSet(Element):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H.empty_set()._test_is_oriented()
@@ -5338,7 +5343,7 @@ class HyperbolicConvexSet(Element):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
         The edges of a polygon::
@@ -5396,7 +5401,7 @@ class HyperbolicConvexSet(Element):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H.empty_set()._test_edges()
@@ -5424,7 +5429,7 @@ class HyperbolicConvexSet(Element):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: hash(H.empty_set())
@@ -5456,7 +5461,7 @@ class HyperbolicConvexSet(Element):
 
         TESTS::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H.an_element()._test_plot()
@@ -5505,7 +5510,7 @@ class HyperbolicConvexSet(Element):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: P = H.polygon([
@@ -5538,7 +5543,8 @@ class HyperbolicOrientedConvexSet(HyperbolicConvexSet):
 
     EXAMPLES::
 
-        sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicOrientedConvexSet
+        sage: from flatsurf import HyperbolicPlane
+        sage: from flatsurf.geometry.hyperbolic import HyperbolicOrientedConvexSet
         sage: H = HyperbolicPlane()
 
         sage: isinstance(H(0), HyperbolicOrientedConvexSet)
@@ -5570,7 +5576,7 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
 
     EXAMPLES::
 
-        sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+        sage: from flatsurf import HyperbolicPlane
         sage: H = HyperbolicPlane()
 
         sage: H.half_circle(0, 1).left_half_space()
@@ -5589,7 +5595,8 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
         r"""
         TESTS::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicHalfSpace
+            sage: from flatsurf import HyperbolicPlane
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicHalfSpace
             sage: H = HyperbolicPlane()
 
             sage: h = H.half_circle(0, 1).left_half_space()
@@ -5631,7 +5638,8 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicHalfSpace
+            sage: from flatsurf import HyperbolicPlane
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicHalfSpace
             sage: H = HyperbolicPlane()
 
             sage: h = H.half_circle(0, 1).left_half_space()
@@ -5662,7 +5670,7 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: S = H.half_circle(0, 1).right_half_space()
@@ -5693,7 +5701,7 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: S = H.vertical(0).left_half_space()
@@ -5709,7 +5717,7 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: S = H.half_circle(0, 1).left_half_space()
@@ -5729,7 +5737,7 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: S = H.vertical(0).left_half_space()
@@ -5754,7 +5762,7 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: h = H.vertical(0).left_half_space()
@@ -5811,7 +5819,7 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H.vertical(0).left_half_space() == H.vertical(0).left_half_space()
@@ -5849,7 +5857,7 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: G = H.vertical(0).left_half_space().plot()
@@ -5890,7 +5898,7 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: h = H.vertical(0).left_half_space()
@@ -5930,7 +5938,7 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H.vertical(0).left_half_space().dimension()
@@ -5952,7 +5960,7 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
         The vertices of a half space are the ideal end points of its boundary geodesic::
@@ -6012,7 +6020,7 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: isometry = matrix([[1, -1, 1], [1, 1/2, 1/2], [1, -1/2, 3/2]])
@@ -6028,7 +6036,7 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
         Since half spaces are hashable, they can be put in a hash table, such
@@ -6052,7 +6060,7 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: v = H.vertical(0).left_half_space()
@@ -6108,7 +6116,7 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
 
     EXAMPLES::
 
-        sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+        sage: from flatsurf import HyperbolicPlane
         sage: H = HyperbolicPlane()
 
         sage: H.geodesic(1, 2, 3, model="klein")
@@ -6124,7 +6132,8 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
         r"""
         TESTS::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicGeodesic
+            sage: from flatsurf import HyperbolicPlane
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicGeodesic
             sage: H = HyperbolicPlane()
 
             sage: geodesic = H.vertical(0)
@@ -6166,7 +6175,8 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
         EXAMPLES::
 
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicGeodesic
+            sage: from flatsurf import HyperbolicPlane
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicGeodesic
             sage: H = HyperbolicPlane()
 
             sage: geodesic = H.vertical(0)
@@ -6201,7 +6211,7 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H.vertical(0).is_ideal()
@@ -6239,7 +6249,7 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H.vertical(0).is_ultra_ideal()
@@ -6278,7 +6288,7 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
         If the geodesic is oriented, we print a defining equation of the
@@ -6371,7 +6381,7 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: v = H.vertical(0)
@@ -6533,7 +6543,7 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H.vertical(0).half_spaces()
@@ -6555,7 +6565,7 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H.vertical(0).plot()
@@ -6588,7 +6598,7 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
 
         The pole of a geodesic is an ultra ideal point::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
             sage: p = H.vertical(2).pole(); p
             (1/2, 1)
@@ -6651,7 +6661,7 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
         Without parameters this method returns one of the many
         perpendicular geodesics::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
             sage: v = H.vertical(2)
             sage: v.perpendicular()
@@ -6790,7 +6800,8 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicSegment
+            sage: from flatsurf import HyperbolicPlane
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicSegment
             sage: H = HyperbolicPlane()
             sage: H.vertical(0).midpoint()
             I
@@ -6827,7 +6838,7 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
             sage: H.vertical(0).is_diameter()
             True
@@ -6843,7 +6854,7 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
             sage: H.vertical(0).is_vertical()
             True
@@ -6864,7 +6875,7 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H.vertical(0) == H.vertical(0)
@@ -6933,7 +6944,7 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
         ::
@@ -6996,7 +7007,7 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H.vertical(0).dimension()
@@ -7026,7 +7037,7 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane(AA)
 
         The base ring over which this geodesic is defined can be changed::
@@ -7088,7 +7099,7 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H.vertical(0).geodesic() == H.vertical(0)
@@ -7103,7 +7114,7 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
 
             sage: H = HyperbolicPlane()
 
@@ -7149,7 +7160,7 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane(AA)
 
         Geodesics can intersect in a finite point::
@@ -7236,7 +7247,7 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
         We apply a reflection to a geodesic::
@@ -7320,7 +7331,7 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: R.<a, b, c, d, λ> = QQ[]
@@ -7354,7 +7365,7 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H.vertical(0).an_element()
@@ -7380,7 +7391,7 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H.vertical(0).vertices()
@@ -7439,7 +7450,8 @@ class HyperbolicUnorientedGeodesic(HyperbolicGeodesic):
 
     EXAMPLES::
 
-        sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicUnorientedGeodesic
+        sage: from flatsurf import HyperbolicPlane
+        sage: from flatsurf.geometry.hyperbolic import HyperbolicUnorientedGeodesic
         sage: H = HyperbolicPlane()
 
         sage: H.vertical(0).unoriented()
@@ -7467,7 +7479,7 @@ class HyperbolicUnorientedGeodesic(HyperbolicGeodesic):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: v = H.vertical(0).unoriented()
@@ -7520,7 +7532,7 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
 
     EXAMPLES::
 
-        sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+        sage: from flatsurf import HyperbolicPlane
         sage: H = HyperbolicPlane()
 
         sage: H.vertical(0)
@@ -7559,7 +7571,7 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: -H.vertical(0)
@@ -7576,7 +7588,7 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H.vertical(0).start()
@@ -7609,7 +7621,7 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H.vertical(0).end()
@@ -7642,7 +7654,7 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane(AA)
 
             sage: H.vertical(0).left_half_space()
@@ -7663,7 +7675,7 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane(AA)
 
             sage: H.vertical(0).right_half_space()
@@ -7700,7 +7712,7 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
         Two geodesics can be equal::
@@ -7791,7 +7803,7 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
         We can parametrize points on a geodesic such that the order of the
@@ -7854,7 +7866,7 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
         This method is the inverse of :meth;`parametrize`::
@@ -7901,7 +7913,7 @@ class HyperbolicPoint(HyperbolicConvexSet):
 
     EXAMPLES::
 
-        sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+        sage: from flatsurf import HyperbolicPlane
         sage: H = HyperbolicPlane()
 
     A point with coordinates in the upper half plane::
@@ -7942,7 +7954,8 @@ class HyperbolicPoint(HyperbolicConvexSet):
         EXAMPLES::
 
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicGeodesic
+            sage: from flatsurf import HyperbolicPlane
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicGeodesic
             sage: H = HyperbolicPlane()
 
             sage: p = H(0)
@@ -7970,7 +7983,8 @@ class HyperbolicPoint(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicGeodesic
+            sage: from flatsurf import HyperbolicPlane
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicGeodesic
             sage: H = HyperbolicPlane()
 
             sage: H(0).is_ideal()
@@ -8002,7 +8016,8 @@ class HyperbolicPoint(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicGeodesic
+            sage: from flatsurf import HyperbolicPlane
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicGeodesic
             sage: H = HyperbolicPlane()
 
             sage: H(0).is_ultra_ideal()
@@ -8034,7 +8049,7 @@ class HyperbolicPoint(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H(0).is_finite()
@@ -8068,7 +8083,7 @@ class HyperbolicPoint(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H(I).half_spaces()
@@ -8180,7 +8195,7 @@ class HyperbolicPoint(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H(I).coordinates()
@@ -8278,7 +8293,7 @@ class HyperbolicPoint(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: p = H(I + 2)
@@ -8298,7 +8313,7 @@ class HyperbolicPoint(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
 
             sage: H = HyperbolicPlane()
 
@@ -8323,7 +8338,7 @@ class HyperbolicPoint(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H(0).segment(I)
@@ -8366,7 +8381,7 @@ class HyperbolicPoint(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H(I).plot()
@@ -8394,7 +8409,7 @@ class HyperbolicPoint(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H(0).dimension()
@@ -8416,7 +8431,7 @@ class HyperbolicPoint(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H(oo).vertices()
@@ -8441,7 +8456,7 @@ class HyperbolicPoint(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
 
             sage: H = HyperbolicPlane()
 
@@ -8487,7 +8502,7 @@ class HyperbolicPoint(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: R.<a, b, c, d, λ> = QQ[]
@@ -8524,7 +8539,7 @@ class HyperbolicPoint(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: p = H(0)
@@ -8552,7 +8567,8 @@ class HyperbolicPointFromCoordinates(HyperbolicPoint):
 
     EXAMPLES::
 
-        sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicPointFromCoordinates
+        sage: from flatsurf import HyperbolicPlane
+        sage: from flatsurf.geometry.hyperbolic import HyperbolicPointFromCoordinates
         sage: H = HyperbolicPlane()
 
         sage: H.point(0, 0, model="klein")
@@ -8583,7 +8599,7 @@ class HyperbolicPointFromCoordinates(HyperbolicPoint):
         r"""
         TESTS::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: p = H.point(0, 0, model="klein")
@@ -8612,7 +8628,7 @@ class HyperbolicPointFromCoordinates(HyperbolicPoint):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: p = H.point(0, 0, model="klein")
@@ -8642,7 +8658,7 @@ class HyperbolicPointFromCoordinates(HyperbolicPoint):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H.infinity() == H.projective(1, 0)
@@ -8702,7 +8718,7 @@ class HyperbolicPointFromCoordinates(HyperbolicPoint):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
         We represent points in the upper half plane model if possible::
@@ -8751,7 +8767,7 @@ class HyperbolicPointFromCoordinates(HyperbolicPoint):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
         We change the base ring over which the point is defined::
@@ -8802,7 +8818,7 @@ class HyperbolicPointFromCoordinates(HyperbolicPoint):
 
         TESTS::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: for (a, b, c, d) in [(2, 1, 1, 1), (1, 1, 0, 1), (1, 0, 1, 1), (2, 0, 0 , 1)]:
@@ -8828,7 +8844,7 @@ class HyperbolicPointFromGeodesic(HyperbolicPoint):
 
     EXAMPLES::
 
-        sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+        sage: from flatsurf import HyperbolicPlane
         sage: H = HyperbolicPlane()
 
         sage: H.vertical(0).start()
@@ -8865,7 +8881,8 @@ class HyperbolicPointFromGeodesic(HyperbolicPoint):
         r"""
         TESTS::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicPointFromGeodesic
+            sage: from flatsurf import HyperbolicPlane
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPointFromGeodesic
             sage: H = HyperbolicPlane()
 
             sage: p = H.half_circle(0, 2).start()
@@ -8889,7 +8906,7 @@ class HyperbolicPointFromGeodesic(HyperbolicPoint):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H.vertical(0).start().is_ideal()
@@ -8906,7 +8923,7 @@ class HyperbolicPointFromGeodesic(HyperbolicPoint):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H.vertical(0).start().is_ultra_ideal()
@@ -8922,7 +8939,7 @@ class HyperbolicPointFromGeodesic(HyperbolicPoint):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H.half_circle(0, 2).start().is_finite()
@@ -8946,7 +8963,7 @@ class HyperbolicPointFromGeodesic(HyperbolicPoint):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: p = H.point(0, 0, model="klein")
@@ -9026,7 +9043,7 @@ class HyperbolicPointFromGeodesic(HyperbolicPoint):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H.infinity() == H.projective(1, 0)
@@ -9102,7 +9119,7 @@ class HyperbolicPointFromGeodesic(HyperbolicPoint):
 
         We try to represent this point in the upper half plane::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H.vertical(0).start()
@@ -9151,7 +9168,7 @@ class HyperbolicPointFromGeodesic(HyperbolicPoint):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
         We change the base ring over which the point is defined::
@@ -9188,7 +9205,7 @@ class HyperbolicPointFromGeodesic(HyperbolicPoint):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
 
             sage: H = HyperbolicPlane()
 
@@ -9249,7 +9266,7 @@ class HyperbolicPointFromGeodesic(HyperbolicPoint):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: point = H.half_circle(0, 2).start()
@@ -9295,7 +9312,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
 
     EXAMPLES::
 
-        sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+        sage: from flatsurf import HyperbolicPlane
         sage: H = HyperbolicPlane()
 
         sage: P = H.polygon([
@@ -9314,7 +9331,8 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
         r"""
         TESTS::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicConvexPolygon
+            sage: from flatsurf import HyperbolicPlane
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicConvexPolygon
             sage: H = HyperbolicPlane()
 
             sage: P = H.polygon([
@@ -9350,7 +9368,8 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicConvexPolygon
+            sage: from flatsurf import HyperbolicPlane
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicConvexPolygon
             sage: H = HyperbolicPlane()
 
             sage: P = H.polygon([
@@ -9421,7 +9440,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
 
         TESTS::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
         A helper to create non-normalized polygons for testing::
@@ -9491,7 +9510,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
         A helper to create non-normalized polygons for testing::
@@ -9569,7 +9588,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
         A helper to create non-normalized polygons for testing::
@@ -9829,7 +9848,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
         A helper to create non-normalized polygons for testing::
@@ -10072,7 +10091,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
         A helper to create non-normalized polygons for testing::
@@ -10297,7 +10316,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
         A helper to create non-normalized polygons for testing::
@@ -10353,7 +10372,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: P = H.polygon([
@@ -10386,7 +10405,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: P = H.polygon([
@@ -10423,7 +10442,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
         The edges of a polygon::
@@ -10522,7 +10541,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
         A finite polygon with a marked vertex::
@@ -10583,7 +10602,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
         Marked vertices are not encoded in the half spaces in any way::
@@ -10609,7 +10628,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: P = H.polygon([
@@ -10647,7 +10666,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
         A finite triangle::
@@ -10832,7 +10851,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
         We change the ring over which a polygon is defined::
@@ -10883,7 +10902,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: P = H.polygon([H.vertical(1).left_half_space(), H.vertical(-1).right_half_space()])
@@ -10917,7 +10936,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
 
             sage: H = HyperbolicPlane()
 
@@ -10945,7 +10964,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: isometry = matrix([[1, -1, 1], [1, 1/2, 1/2], [1, -1/2, 3/2]])
@@ -10971,7 +10990,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: P = H.polygon([
@@ -11054,7 +11073,7 @@ class HyperbolicSegment(HyperbolicConvexSet):
 
     EXAMPLES::
 
-        sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+        sage: from flatsurf import HyperbolicPlane
         sage: H = HyperbolicPlane()
 
         sage: H.segment(H.vertical(0), start=I)
@@ -11073,7 +11092,8 @@ class HyperbolicSegment(HyperbolicConvexSet):
         r"""
         TESTS::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicSegment
+            sage: from flatsurf import HyperbolicPlane
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicSegment
             sage: H = HyperbolicPlane()
 
             sage: segment = H.segment(H.vertical(0), start=I)
@@ -11118,7 +11138,8 @@ class HyperbolicSegment(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicConvexPolygon
+            sage: from flatsurf import HyperbolicPlane
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicConvexPolygon
             sage: H = HyperbolicPlane()
 
         The end points of the segment must be on the defining geodesic::
@@ -11180,7 +11201,7 @@ class HyperbolicSegment(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
         We define a helper method for easier testing::
@@ -11283,7 +11304,7 @@ class HyperbolicSegment(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
         We apply an isometry to an oriented segment::
@@ -11341,7 +11362,8 @@ class HyperbolicSegment(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicSegment
+            sage: from flatsurf import HyperbolicPlane
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicSegment
             sage: H = HyperbolicPlane()
 
             sage: s = H.segment(H.half_circle(0, 1), end=I)
@@ -11369,7 +11391,8 @@ class HyperbolicSegment(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicSegment
+            sage: from flatsurf import HyperbolicPlane
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicSegment
             sage: H = HyperbolicPlane()
 
             sage: H.segment(H.half_circle(0, 1), end=I)
@@ -11389,7 +11412,8 @@ class HyperbolicSegment(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicSegment
+            sage: from flatsurf import HyperbolicPlane
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicSegment
             sage: H = HyperbolicPlane()
 
             sage: segment = H.segment(H.half_circle(0, 1), end=I)
@@ -11415,7 +11439,8 @@ class HyperbolicSegment(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicSegment
+            sage: from flatsurf import HyperbolicPlane
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicSegment
             sage: H = HyperbolicPlane()
 
             sage: segment = H.segment(H.half_circle(0, 1), end=I)
@@ -11453,7 +11478,8 @@ class HyperbolicSegment(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicSegment
+            sage: from flatsurf import HyperbolicPlane
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicSegment
             sage: H = HyperbolicPlane()
 
         Oriented segments are equal if they have the same start and end points::
@@ -11500,7 +11526,7 @@ class HyperbolicSegment(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
         We change the ring over which the segment is defined::
@@ -11555,7 +11581,7 @@ class HyperbolicSegment(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: s = H(I).segment(2*I)
@@ -11595,7 +11621,7 @@ class HyperbolicSegment(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: s = H(I).segment(2*I)
@@ -11643,7 +11669,7 @@ class HyperbolicSegment(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H(I).segment(2*I).dimension()
@@ -11665,7 +11691,8 @@ class HyperbolicSegment(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicSegment
+            sage: from flatsurf import HyperbolicPlane
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicSegment
             sage: H = HyperbolicPlane()
             sage: s = H(I).segment(4*I)
             sage: s.midpoint()
@@ -11725,7 +11752,8 @@ class HyperbolicSegment(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicSegment
+            sage: from flatsurf import HyperbolicPlane
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicSegment
             sage: H = HyperbolicPlane()
             sage: s = H(I).segment(4*I)
             sage: s.perpendicular()
@@ -11761,7 +11789,7 @@ class HyperbolicUnorientedSegment(HyperbolicSegment):
 
     EXAMPLES::
 
-        sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+        sage: from flatsurf import HyperbolicPlane
         sage: H = HyperbolicPlane()
 
         sage: segment = H.segment(H.vertical(0), start=I).unoriented()
@@ -11784,7 +11812,7 @@ class HyperbolicUnorientedSegment(HyperbolicSegment):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
 
             sage: H = HyperbolicPlane()
             sage: s = H(I).segment(2*I)
@@ -11807,7 +11835,7 @@ class HyperbolicUnorientedSegment(HyperbolicSegment):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: s = H(I).segment(2*I).unoriented()
@@ -11838,7 +11866,7 @@ class HyperbolicOrientedSegment(HyperbolicSegment, HyperbolicOrientedConvexSet):
 
     EXAMPLES::
 
-        sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+        sage: from flatsurf import HyperbolicPlane
         sage: H = HyperbolicPlane()
 
         sage: s = H(I).segment(2*I)
@@ -11861,7 +11889,7 @@ class HyperbolicOrientedSegment(HyperbolicSegment, HyperbolicOrientedConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: s = H(I).segment(2*I)
@@ -11882,7 +11910,7 @@ class HyperbolicOrientedSegment(HyperbolicSegment, HyperbolicOrientedConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
 
             sage: H = HyperbolicPlane()
             sage: s = H(I).segment(2*I)
@@ -11905,7 +11933,7 @@ class HyperbolicOrientedSegment(HyperbolicSegment, HyperbolicOrientedConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: s = H(I).segment(2*I)
@@ -11927,7 +11955,7 @@ class HyperbolicOrientedSegment(HyperbolicSegment, HyperbolicOrientedConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: s = H(I).segment(2*I)
@@ -11962,7 +11990,7 @@ class HyperbolicOrientedSegment(HyperbolicSegment, HyperbolicOrientedConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: s = H(I).segment(2*I)
@@ -12002,7 +12030,7 @@ class HyperbolicEmptySet(HyperbolicConvexSet):
 
     EXAMPLES::
 
-        sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+        sage: from flatsurf import HyperbolicPlane
         sage: H = HyperbolicPlane()
 
         sage: H.empty_set()
@@ -12032,7 +12060,7 @@ class HyperbolicEmptySet(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H.empty_set() == H.empty_set()
@@ -12052,7 +12080,7 @@ class HyperbolicEmptySet(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H.empty_set()
@@ -12078,7 +12106,7 @@ class HyperbolicEmptySet(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: isometry = matrix([[1, -1, 1], [1, 1/2, 1/2], [1, -1/2, 3/2]])
@@ -12100,7 +12128,7 @@ class HyperbolicEmptySet(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H.empty_set().plot()
@@ -12119,7 +12147,7 @@ class HyperbolicEmptySet(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H.empty_set().dimension()
@@ -12138,7 +12166,7 @@ class HyperbolicEmptySet(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H.empty_set().half_spaces()
@@ -12172,7 +12200,7 @@ class HyperbolicEmptySet(HyperbolicConvexSet):
 
         EXAMPLES:
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H.empty_set().change(ring=AA) == HyperbolicPlane(AA).empty_set()
@@ -12201,7 +12229,7 @@ class HyperbolicEmptySet(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
 
             sage: H = HyperbolicPlane()
 
@@ -12224,7 +12252,7 @@ class HyperbolicEmptySet(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H.empty_set().vertices()
@@ -12243,7 +12271,7 @@ class HyperbolicEmptySet(HyperbolicConvexSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H.empty_set().an_element()
@@ -12279,7 +12307,7 @@ class OrderedSet(collections.abc.Set):
 
     EXAMPLES::
 
-        sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+        sage: from flatsurf import HyperbolicPlane
         sage: H = HyperbolicPlane()
 
         sage: segment = H(I).segment(2*I)
@@ -12292,7 +12320,8 @@ class OrderedSet(collections.abc.Set):
         r"""
         TESTS::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, OrderedSet
+            sage: from flatsurf import HyperbolicPlane
+            sage: from flatsurf.geometry.hyperbolic import OrderedSet
             sage: H = HyperbolicPlane()
 
             sage: vertices = H(I).segment(2*I).vertices()
@@ -12326,7 +12355,8 @@ class OrderedSet(collections.abc.Set):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, OrderedSet
+            sage: from flatsurf import HyperbolicPlane
+            sage: from flatsurf.geometry.hyperbolic import OrderedSet
             sage: H = HyperbolicPlane()
 
             sage: vertices = H(I).segment(2*I).vertices()
@@ -12353,7 +12383,8 @@ class OrderedSet(collections.abc.Set):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicHalfSpaces
+            sage: from flatsurf import HyperbolicPlane
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicHalfSpaces
             sage: H = HyperbolicPlane()
 
             sage: HyperbolicHalfSpaces([])._merge()
@@ -12405,7 +12436,7 @@ class OrderedSet(collections.abc.Set):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H.vertical(0).vertices() == (-H.vertical(0)).vertices()
@@ -12423,7 +12454,7 @@ class OrderedSet(collections.abc.Set):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H.vertical(0).vertices() != H.vertical(1).vertices()
@@ -12439,7 +12470,7 @@ class OrderedSet(collections.abc.Set):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: hash(H.vertical(0).vertices()) != hash(H.vertical(1).vertices())
@@ -12458,7 +12489,7 @@ class OrderedSet(collections.abc.Set):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H.vertical(0).half_spaces() + H.vertical(1).half_spaces()
@@ -12476,7 +12507,7 @@ class OrderedSet(collections.abc.Set):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: H.half_circle(0, 1).vertices()
@@ -12493,7 +12524,7 @@ class OrderedSet(collections.abc.Set):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: vertices = H.half_circle(0, 1).vertices()
@@ -12509,7 +12540,7 @@ class OrderedSet(collections.abc.Set):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: vertices = H.half_circle(0, 1).vertices()
@@ -12532,7 +12563,7 @@ class OrderedSet(collections.abc.Set):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: vertices = H.half_circle(0, 1).vertices()
@@ -12564,7 +12595,7 @@ class OrderedSet(collections.abc.Set):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
         There must be at least three elements to form any triples::
@@ -12610,7 +12641,7 @@ class OrderedSet(collections.abc.Set):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: vertices = H.half_circle(0, 1).vertices()
@@ -12626,7 +12657,7 @@ class OrderedSet(collections.abc.Set):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: vertices = H.half_circle(0, 1).vertices()
@@ -12668,7 +12699,7 @@ class HyperbolicVertices(OrderedSet):
 
     EXAMPLES::
 
-        sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+        sage: from flatsurf import HyperbolicPlane
         sage: H = HyperbolicPlane()
         sage: V = H.vertical(0).vertices()
         sage: V
@@ -12694,7 +12725,8 @@ class HyperbolicVertices(OrderedSet):
         r"""
         TESTS::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicVertices
+            sage: from flatsurf import HyperbolicPlane
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicVertices
             sage: H = HyperbolicPlane()
             sage: V = H.vertical(0).vertices()
 
@@ -12763,7 +12795,8 @@ class HyperbolicVertices(OrderedSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicHalfSpaces
+            sage: from flatsurf import HyperbolicPlane
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicHalfSpaces
             sage: H = HyperbolicPlane()
 
             sage: V = H.vertical(0).vertices()
@@ -12781,7 +12814,8 @@ class HyperbolicVertices(OrderedSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicHalfSpaces
+            sage: from flatsurf import HyperbolicPlane
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicHalfSpaces
             sage: H = HyperbolicPlane()
 
             sage: V = H.vertical(0).vertices()
@@ -12808,7 +12842,8 @@ class HyperbolicVertices(OrderedSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicHalfSpaces
+            sage: from flatsurf import HyperbolicPlane
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicHalfSpaces
             sage: H = HyperbolicPlane()
 
             sage: V = H.vertical(0).vertices()
@@ -12862,7 +12897,7 @@ class HyperbolicHalfSpaces(OrderedSet):
 
     EXAMPLES::
 
-        sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+        sage: from flatsurf import HyperbolicPlane
         sage: H = HyperbolicPlane()
 
         sage: half_spaces = H.vertical(0).half_spaces()
@@ -12903,7 +12938,8 @@ class HyperbolicHalfSpaces(OrderedSet):
 
         TESTS::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicHalfSpaces
+            sage: from flatsurf import HyperbolicPlane
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicHalfSpaces
             sage: H = HyperbolicPlane()
 
         A half space is equal to itself::
@@ -13012,7 +13048,8 @@ class HyperbolicHalfSpaces(OrderedSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicHalfSpaces
+            sage: from flatsurf import HyperbolicPlane
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicHalfSpaces
             sage: H = HyperbolicPlane()
 
             sage: HyperbolicHalfSpaces.convex_hull([H(0), H(1), H(oo)])
@@ -13076,7 +13113,7 @@ class HyperbolicEdges(OrderedSet):
 
     EXAMPLES::
 
-        sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+        sage: from flatsurf import HyperbolicPlane
         sage: H = HyperbolicPlane()
 
         sage: edges = H.vertical(0).edges()
@@ -13101,7 +13138,7 @@ class HyperbolicEdges(OrderedSet):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
             sage: edges = H.vertical(0).edges()
