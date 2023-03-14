@@ -10147,7 +10147,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
         half_spaces = list(self._half_spaces)
 
         half_spaces = (
-            half_spaces[half_spaces.index(boundary) :]
+            half_spaces[half_spaces.index(boundary):]
             + half_spaces[: half_spaces.index(boundary)]
         )
         half_spaces.reverse()
@@ -13078,7 +13078,7 @@ class OrderedSet(collections.abc.Set):
 
         # Divide & Conquer recursively.
         return self._merge(
-            *(self._merge(*sets[: count // 2]), self._merge(*sets[count // 2 :]))
+            *(self._merge(*sets[: count // 2]), self._merge(*sets[count // 2:]))
         )
 
     def __eq__(self, other):
@@ -13740,7 +13740,7 @@ class HyperbolicHalfSpaces(OrderedSet):
         vertices = [
             vertex
             for (i, vertex) in enumerate(vertices)
-            if vertex not in vertices[i + 1 :]
+            if vertex not in vertices[i + 1:]
         ]
         if not vertices:
             raise NotImplementedError("cannot convert convex hull of no points yet")
