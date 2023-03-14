@@ -10680,7 +10680,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
         INPUT:
 
         -- ``marked_vertices`` -- a boolean (default: ``True``) whether to
-        inlude marked vertices in the output
+        include marked vertices in the output
 
         OUTPUT:
 
