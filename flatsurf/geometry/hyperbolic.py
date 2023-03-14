@@ -8350,17 +8350,49 @@ class HyperbolicPoint(HyperbolicConvexSet):
 
 
 class HyperbolicPointFromCoordinates(HyperbolicPoint):
-    # TODO: Check documentation
-    # TODO: Check INPUTS
-    # TODO: Check SEEALSO
-    # TODO: Check for doctests
-    # TODO: Benchmark?
+    r"""
+    A :class:`HyperbolicPoint` with explicit coordinates in the Klein model.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicPointFromCoordinates
+        sage: H = HyperbolicPlane()
+
+        sage: H.point(0, 0, model="klein")
+        I
+
+    Points with coordinates in the half plane model are also stored as points
+    in the Klein model::
+
+        sage: p = H.point(0, 0, model="half_plane")
+
+        sage: isinstance(p, HyperbolicPointFromCoordinates)
+        True
+
+    INPUT:
+
+    - ``parent`` -- the :class:`HyperbolicPlane` containing this point
+
+    - ``x`` -- an element of :meth:`HyperbolicPlane.base_ring`
+
+    - ``y`` -- an element of :meth:`HyperbolicPlane.base_ring`
+
+    .. SEEALSO::
+
+        Use :meth;`HyperbolicPlane.point` to create points from coordinates
+
+    """
     def __init__(self, parent, x, y):
-        # TODO: Check documentation
-        # TODO: Check INPUTS
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        TESTS::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: p = H.point(0, 0, model="klein")
+            sage: TestSuite(p).run()
+
+        """
         super().__init__(parent)
 
         if x.parent() is not parent.base_ring():
@@ -8371,7 +8403,26 @@ class HyperbolicPointFromCoordinates(HyperbolicPoint):
         self._coordinates = (x, y)
 
     def _coordinates_klein(self, ring):
-        # TODO
+        r"""
+        Return the coordinates of this point in the Klein model.
+
+        This is a helper method for :meth:`HyperbolicPoint.coordinates`.
+
+        INPUT:
+
+        - ``ring`` -- see :meth:`HyperbolicPoint.coordinates` for this
+          parameter
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: p = H.point(0, 0, model="klein")
+            sage: p._coordinates_klein(ring=None)
+            (0, 0)
+
+        """
         x, y = self._coordinates
 
         from sage.categories.all import Rings
@@ -8449,20 +8500,24 @@ class HyperbolicPointFromCoordinates(HyperbolicPoint):
         return super()._richcmp_(other, op)
 
     def _repr_(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
         r"""
-        TESTS::
+        Return a printable representation of this point.
+
+        EXAMPLES::
 
             sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
-            sage: geodesic = H.geodesic(733833/5522174119, -242010/5522174119, -105111/788882017, model="klein")
-            sage: geodesic.start()
-            3.03625883227966
+        We represent points in the upper half plane model if possible::
+
+            sage: H.point(0, 0, model="klein")
+            I
+
+        For some points this is not possible without extending the coordinate
+        ring. Then we show their coordinates in the Klein model::
+
+            sage: H.point(1/2, 0, model="klein")
+            (1/2, 0)
 
         """
         if self == self.parent().infinity():
@@ -8471,17 +8526,14 @@ class HyperbolicPointFromCoordinates(HyperbolicPoint):
         if self.is_ultra_ideal():
             return repr(self.coordinates(model="klein"))
 
-        try:
-            x, y = self.coordinates(model="half_plane")
-        except ValueError:
-            # TODO: Use a more specific exception here.
-            # TODO: Unify with the code above?
+        coordinates = self.coordinates(model="half_plane", ring="maybe")
+        if coordinates is None:
             return repr(self.coordinates(model="klein"))
-        else:
-            from sage.all import PowerSeriesRing
 
-            # We represent x + y*I in R[[I]] so we do not have to reimplement printing ourselves.
-            return repr(PowerSeriesRing(self.parent().base_ring(), names="I")([x, y]))
+        from sage.all import PowerSeriesRing
+
+        # We represent x + y*I in R[[I]] so we do not have to reimplement printing ourselves.
+        return repr(PowerSeriesRing(self.parent().base_ring(), names="I")(coordinates))
 
     def change(self, ring=None, geometry=None, oriented=None):
         r"""
@@ -8756,6 +8808,17 @@ class HyperbolicPointFromGeodesic(HyperbolicPoint):
         # TODO: Check SEEALSO
         # TODO: Check for doctests
         # TODO: Benchmark?
+        """
+        TESTS::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: geodesic = H.geodesic(733833/5522174119, -242010/5522174119, -105111/788882017, model="klein")
+            sage: geodesic.start()
+            3.03625883227966
+
+        """
         if self == self.parent().infinity():
             return "∞"
 
