@@ -10492,6 +10492,14 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
 
         - ``model`` -- one of ``"half_plane"`` and ``"klein"``
 
+        - ``color`` -- a string (default: ``"#efffff"``); the fill color of
+          polygons
+
+        - ``edgecolor`` -- a string (default: ``"blue"``); the color of
+          geodesics and segments
+
+        See :func:`hyperbolic_path` for additional supported parameters.
+
         EXAMPLES::
 
             sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
@@ -10629,7 +10637,6 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
                                CartesianPathPlotCommand(code='LINETO', args=(0.000000000000000, 0.000000000000000))])
 
         """
-        # TODO: Document keyword arguments.
         kwds.setdefault("color", "#efffff")
         kwds.setdefault("edgecolor", "blue")
 
