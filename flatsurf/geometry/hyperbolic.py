@@ -11627,7 +11627,7 @@ class HyperbolicUnorientedSegment(HyperbolicSegment):
     .. SEEALSO::
 
         Use :meth:`HyperbolicPlane.segment` or
-        :meth:`HyperbolicSegment.unoriented` to construct unoriented segments. 
+        :meth:`HyperbolicSegment.unoriented` to construct unoriented segments.
 
     """
     def __hash__(self):
@@ -11845,23 +11845,36 @@ class HyperbolicOrientedSegment(HyperbolicSegment, HyperbolicOrientedConvexSet):
 
 
 class HyperbolicEmptySet(HyperbolicConvexSet):
-    # TODO: Check documentation
-    # TODO: Check INPUTS
-    # TODO: Check SEEALSO
-    # TODO: Check for doctests
-    # TODO: Benchmark?
     r"""
     The empty subset of the hyperbolic plane.
+
+    INPUT:
+
+    - ``parent`` -- the :class:`HyperbolicPlane` this is the empty set of
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+        sage: H = HyperbolicPlane()
+
+        sage: H.empty_set()
+        {}
+
+    TESTS::
+
+        sage: from flatsurf.geometry.hyperbolic import HyperbolicEmptySet
+
+        sage: ø = H.empty_set()
+        sage: isinstance(ø, HyperbolicEmptySet)
+        True
+
+        sage: TestSuite(ø).run()
+
+    .. SEEALSO::
+
+        Use :meth:`HyperbolicPlane.empty_set` to construct the empty set.
+
     """
-
-    def __init__(self, parent):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
-        super().__init__(parent)
-
     def _richcmp_(self, other, op):
         r"""
         Return how this set compares to ``other`` with respect to ``op``.
@@ -11886,11 +11899,18 @@ class HyperbolicEmptySet(HyperbolicConvexSet):
         return rich_to_bool(op, -1)
 
     def _repr_(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Return a printable representation of the empty set.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: H.empty_set()
+            {}
+
+        """
         return "{}"
 
     def _apply_isometry_klein(self, isometry, on_right=False):
@@ -11913,7 +11933,6 @@ class HyperbolicEmptySet(HyperbolicConvexSet):
             sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
-
             sage: isometry = matrix([[1, -1, 1], [1, 1/2, 1/2], [1, -1/2, 3/2]])
             sage: H.empty_set()._apply_isometry_klein(isometry) == H.empty_set()
             True
@@ -11922,11 +11941,24 @@ class HyperbolicEmptySet(HyperbolicConvexSet):
         return self
 
     def plot(self, model="half_plane", **kwds):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Return a plot of the empty set.
+
+        INPUT:
+
+        - ``model`` -- one of ``"half_plane"`` and ``"klein"`` (default: ``"half_plane"``)
+
+        Any keyword arguments are ignored.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: H.empty_set().plot()
+            Graphics object consisting of 0 graphics primitives
+
+        """
         from sage.all import Graphics
 
         return self._enhance_plot(Graphics(), model=model)
@@ -11951,11 +11983,20 @@ class HyperbolicEmptySet(HyperbolicConvexSet):
         return ZZ(-1)
 
     def half_spaces(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Return a minimal set of half spaces whose intersection is empty.
+
+        This implements :meth:`HyperbolicConvexSet.half_spaces`.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: H.empty_set().half_spaces()
+            {{(x^2 + y^2) + 4*x + 3 ≤ 0}, {(x^2 + y^2) - 4*x + 3 ≤ 0}}
+
+        """
         return HyperbolicHalfSpaces(
             [
                 self.parent().half_circle(-2, 1).right_half_space(),
