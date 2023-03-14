@@ -251,8 +251,9 @@ class CartesianPathPlot(GraphicPrimitive):
             sage: subplot = figure.add_subplot(111)
 
             sage: P._render_on_subplot(subplot)
+            sage: subplot.patches
             <Axes.ArtistList of 1 patches>
- 
+
         """
         matplotlib_options = {
             key: value
@@ -269,7 +270,6 @@ class CartesianPathPlot(GraphicPrimitive):
         }
 
         from matplotlib.path import Path
-
         path = Path([(0, 0)])
 
         from matplotlib.patches import PathPatch
@@ -370,9 +370,8 @@ class CartesianPathPlot(GraphicPrimitive):
             direction = None
             vertices = [pos]
         elif command.code == "MOVETOINFINITY":
-            direction = command.args
-            # TODO: What's pos?
-            vertices = [self._infinity(pos, direction, xlim, ylim)]
+            # We cannot draw lines yet. We don't seem to need them for hyperbolic plots at the moment.
+            raise NotImplementedError("cannot draw a path that starts at an infinite point yet")
         else:
             raise RuntimeError(f"path must not start with a {command.code} command")
 
@@ -419,6 +418,7 @@ class CartesianPathPlot(GraphicPrimitive):
             (3920.30937574010, 3919.30937574010)
 
         """
+        from matplotlib.path import Path
         path = Path([(0, 0)])
 
         from sage.all import vector
@@ -499,8 +499,8 @@ class CartesianPathPlot(GraphicPrimitive):
             ((1.00000000000000, 1.00000000000000), None)
 
             sage: vertices
-            sage: codes
             [(0.000000000000000, 0.000000000000000), (1.00000000000000, 1.00000000000000)]
+            sage: codes
             [1, 2]
 
         """
@@ -572,12 +572,34 @@ class CartesianPathPlot(GraphicPrimitive):
 
     @cached_method
     def get_minmax_data(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
-        # TODO: Use sage's vector or matplotlib builtins more so we do not need to implement basic geometric primitives manually here.
+        r"""
+        Return a bounding box for this plot.
+
+        This implements the required interface of SageMath's GraphicPrimitive.
+
+        EXAMPLES::
+
+            sage: from flatsurf.graphical.hyperbolic import CartesianPathPlot, CartesianPathPlotCommand
+
+            sage: P = CartesianPathPlot([
+            ....:     CartesianPathPlotCommand("MOVETO", (-1, 0)),
+            ....:     CartesianPathPlotCommand("LINETO", (0, 0)),
+            ....: ])
+
+            sage: P.get_minmax_data()
+            {'xmax': 0.0, 'xmin': -1.0, 'ymax': 0.0, 'ymin': 0.0}
+
+        ::
+
+            sage: P = CartesianPathPlot([
+            ....:     CartesianPathPlotCommand("MOVETO", (0, 0)),
+            ....:     CartesianPathPlotCommand("RAYTO", (0, 1)),
+            ....: ])
+
+            sage: P.get_minmax_data()
+            {'xmin': 0.0, 'xmax': 0.0, 'ymin': 0.0, 'ymax': 1.0}
+
+        """
         try:
             from matplotlib.transforms import Bbox
 
@@ -620,8 +642,17 @@ class CartesianPathPlot(GraphicPrimitive):
 
                     pos = target
                 elif command.code in ["RAYTO", "MOVETOINFINITY"]:
-                    # TODO: Add a bit to the bounding box so these are always visible.
-                    pass
+                    # We just move "1" in the direction of the ray so that
+                    # infinite rays are visible at all. If everything plotted
+                    # is extremely small, then this is not ideal. Maybe we
+                    # should make this relative to the entire plot size.
+                    from sage.all import vector
+                    direction = vector(command.args)
+                    moved = vector(pos) + direction
+                    bbox = bbox.union([
+                        bbox,
+                        Bbox.from_bounds(pos[0], moved[0], pos[1], moved[1])
+                    ])
                 else:
                     raise NotImplementedError(
                         f"cannot determine bounding box for {command.code} command"
@@ -633,19 +664,43 @@ class CartesianPathPlot(GraphicPrimitive):
         except Exception as e:
             raise RuntimeError(e)
 
-    @classmethod
-    def _arc_path(cls, center, start, end, reverse=False):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
-        # TODO: Use sage's vector or matplotlib builtins more so we do not need to implement basic geometric primitives manually here.
+    @staticmethod
+    def _arc_path(center, start, end, reverse=False):
+        r"""
+        Return a matplotlib path approximating an circular arc.
+
+        This is a helper method for :meth:`_extend_path`.
+
+        INPUT:
+
+        - ``center`` -- the center point of the circle completing the arc
+
+        - ``start`` -- the coordinates of the starting point of the arc
+
+        - ``end`` -- the coordinates of the end point of the arc
+
+        - ``reverse`` -- a boolean (default: ``False``); whether the arc should
+          go clockwise from ``end`` to ``start`` instead of going
+          counterclockwise from ``start`` to ``end``.
+
+        EXAMPLES::
+
+            sage: from flatsurf.graphical.hyperbolic import CartesianPathPlot
+
+            sage: CartesianPathPlot._arc_path((0, 0), (1, 0), (0, 1))
+            Path(array([[1.00000000e+00, 0.00000000e+00], ...
+
+        .. NOTE::
+
+            Currently, we are using 32 Bezier segments to approximate an arc.
+            This is probably too many for small arcs and not enough for very
+            big arcs and should be optimized.
+
+        """
         from matplotlib.path import Path
         from math import atan2, pi
         from sage.all import vector
 
-        # TODO: How many segments do we need?
         unit_arc = Path.arc(
             atan2(start[1] - center[1], start[0] - center[0]) / pi * 180,
             atan2(end[1] - center[1], end[0] - center[0]) / pi * 180,
@@ -849,6 +904,15 @@ class HyperbolicPathPlotCommand:
 
         This is a helper function for :meth:`cartesian`.
 
+        INPUT:
+
+        - ``start`` -- a :class:`flatsurf.geometry.HyperbolicPoint`
+
+        - ``end`` -- a :class:`flatsurf.geometry.HyperbolicPoint`
+
+        - ``model`` -- one of ``"half_plane"`` or ``"klein"`` in which model to
+          realize this segment
+
         EXAMPLES::
 
             sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
@@ -892,18 +956,17 @@ class HyperbolicPathPlotCommand:
             sage: HyperbolicPathPlotCommand.create_move_cartesian(H(0), H(oo), model="klein", stroke=False, fill=True)
             [CartesianPathPlotCommand(code='ARCTO', args=((0.000000000000000, 1.00000000000000), (0, 0)))]
 
+        .. NOTE::
+
+            Sometimes there are problems on a very small scale due to our usage
+            of RR internally. We should probably use ball arithmetic to make
+            things more robust.
+
         """
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
-        # TODO: Use sage's vector or matplotlib builtins more so we do not need to implement basic geometric primitives manually here.
         if start == end:
             raise ValueError(f"cannot draw segment from point {start} to itself ({end})")
 
         if model == "half_plane":
-            # TODO: Probably all use of RR should be replaced with ball arithmetic to make things work on a very small scale?
             from sage.all import RR
             if start != start.parent().infinity():
                 start_x, start_y = start.change_ring(RR).coordinates(model="half_plane")
@@ -924,7 +987,8 @@ class HyperbolicPathPlotCommand:
                     )
                 ]
 
-            # TODO: Should we be more careful here?
+            # We should probably be more careful here and not just use a random
+            # epsilon.
             if (start_x - end_x).abs() < (start_y - end_y).abs() * 1e-6:
                 # This segment is (almost) vertical. We plot it as if it were
                 # vertical to avoid numeric issus.
@@ -957,18 +1021,37 @@ class HyperbolicPathPlotCommand:
     @staticmethod
     def create_move_cartesian(start, end, model, stroke=True, fill=True):
         r"""
-        Return a list of :class:`CartesianPathPlot.Command` that
-        represent the open "segment" on the boundary of a polygon
-        connecting ``start`` and ``end``.
+        Return a list of :class:`CartesianPathPlot.Command` that represent the
+        open "segment" on the boundary of a polygon connecting ``start`` and
+        ``end``.
 
         This is a helper function for :meth:`make_cartesian`.
+
+        INPUT:
+
+        - ``start`` -- a :class:`flatsurf.geometry.HyperbolicPoint`
+
+        - ``end`` -- a :class:`flatsurf.geometry.HyperbolicPoint`
+
+        - ``model`` -- one of ``"half_plane"`` or ``"klein"`` in which model to
+          realize this segment
+
+        - ``stroke`` -- a boolean (default: ``True``); whether this is part of
+          a stroke path that is not filled
+
+        - ``fill`` -- a boolean (default: ``True``); whether this is part of a
+          filled path that is not stroked
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: from flatsurf.graphical.hyperbolic import HyperbolicPathPlotCommand
+            sage: H = HyperbolicPlane()
+
+            sage: HyperbolicPathPlotCommand.create_move_cartesian(H(0), H(1), "half_plane", stroke=True, fill=False)
+            [CartesianPathPlotCommand(code='MOVETO', args=(1.00000000000000, 0.000000000000000))]
+
         """
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
-        # TODO: Use sage's vector or matplotlib builtins more so we do not need to implement basic geometric primitives manually here.
         if start == end:
             raise ValueError("cannot move from point to itself")
 
@@ -1051,7 +1134,6 @@ class CartesianPathPlotCommand:
 
     Move the cursor to the origin of the coordinate system::
 
-
         sage: from flatsurf.graphical.hyperbolic import CartesianPathPlotCommand
         sage: P = CartesianPathPlotCommand("MOVETO", (0, 0))
 
@@ -1106,9 +1188,37 @@ class CartesianPathPlotCommand:
     fill=True,
 )
 def hyperbolic_path(commands, model="half_plane", **options):
-    # TODO: Check documentation.
-    # TODO: Check INPUT
-    # TODO: Check SEEALSO
+    r"""
+    Return a SageMath ``Graphics`` object that represents the hyperbolic path
+    encoded by ``commands``.
+
+    INPUT:
+
+    - ``commands`` -- a sequence of :class:`HyperbolicPathPlotCommand`
+
+    - ``model`` -- one of ``"half_plane"`` or ``"klein"``
+
+    Many additional keyword arguments are understood, see
+    :class:`CartesianPathPlot` for details.
+
+    EXAMPLES::
+
+        sage: from flatsurf.graphical.hyperbolic import HyperbolicPathPlotCommand, hyperbolic_path
+
+        sage: hyperbolic_path([
+        ....:     HyperbolicPathPlotCommand("MOVETO", H(0)),
+        ....:     HyperbolicPathPlotCommand("LINETO", H(I + 1)),
+        ....:     HyperbolicPathPlotCommand("LINETO", H(oo)),
+        ....:     HyperbolicPathPlotCommand("LINETO", H(I - 1)),
+        ....:     HyperbolicPathPlotCommand("LINETO", H(0)),
+        ....: ])
+
+    .. SEEALSO::
+
+        :meth:`flatsurf.geometry.HyperbolicConvexSet.plot`
+
+    """
+    # TODO: Check that CartesianPathPlot shows some keywords
     if options["thickness"] is None:
         if options["fill"] and options["edgecolor"] is None:
             options["thickness"] = 0
