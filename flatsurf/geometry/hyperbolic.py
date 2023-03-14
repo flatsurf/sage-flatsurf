@@ -9960,7 +9960,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
         maybe_point = True
         maybe_segment = True
 
-        for A, B, C in self._half_spaces.triples():
+        for A, B, C in self._half_spaces.triples(repeat=True):
             AB = (
                 None
                 if A.boundary()._configuration(B.boundary()) == "concave"
@@ -12331,11 +12331,6 @@ class OrderedSet(collections.abc.Set):
         raise NotImplementedError
 
     def _merge(self, *sets):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
         r"""
         Return the merge of sorted lists of ``sets``.
 
@@ -12392,11 +12387,6 @@ class OrderedSet(collections.abc.Set):
         )
 
     def __eq__(self, other):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
         r"""
         Return whether this set is equal to ``other``.
 
@@ -12404,6 +12394,7 @@ class OrderedSet(collections.abc.Set):
 
             sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
             sage: H = HyperbolicPlane()
+
             sage: H.vertical(0).vertices() == (-H.vertical(0)).vertices()
             True
 
@@ -12414,11 +12405,6 @@ class OrderedSet(collections.abc.Set):
         return self._entries == other._entries
 
     def __ne__(self, other):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
         r"""
         Return whether this set is not equal to ``other``.
 
@@ -12426,6 +12412,7 @@ class OrderedSet(collections.abc.Set):
 
             sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
             sage: H = HyperbolicPlane()
+
             sage: H.vertical(0).vertices() != H.vertical(1).vertices()
             True
 
@@ -12441,6 +12428,7 @@ class OrderedSet(collections.abc.Set):
 
             sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
             sage: H = HyperbolicPlane()
+
             sage: hash(H.vertical(0).vertices()) != hash(H.vertical(1).vertices())
             True
 
@@ -12448,22 +12436,28 @@ class OrderedSet(collections.abc.Set):
         return hash(tuple(self._entries))
 
     def __add__(self, other):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Return the :meth:`_merge` of this set and ``other``.
+
+        INPUT:
+
+        - ``other`` -- another set of the same kind
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: H.vertical(0).half_spaces() + H.vertical(1).half_spaces()
+            {{x ≤ 0}, {x - 1 ≤ 0}, {x ≥ 0}, {x - 1 ≥ 0}}
+
+        """
         if type(self) is not type(other):
-            raise TypeError
+            raise TypeError("both sets must be of the same type")
         entries = self._merge(list(self._entries), list(other._entries))
         return type(self)(entries, assume_sorted=True)
 
     def __repr__(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
         r"""
         Return a printable representation of this set.
 
@@ -12471,6 +12465,7 @@ class OrderedSet(collections.abc.Set):
 
             sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
             sage: H = HyperbolicPlane()
+
             sage: H.half_circle(0, 1).vertices()
             {-1, 1}
 
@@ -12478,53 +12473,164 @@ class OrderedSet(collections.abc.Set):
         return "{" + repr(self._entries)[1:-1] + "}"
 
     def __iter__(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Return an iterator of this set.
+
+        Iteration happens in sorted order, consistent with :meth:`_lt`.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: vertices = H.half_circle(0, 1).vertices()
+            sage: list(vertices)
+            [-1, 1]
+
+        """
         return iter(self._entries)
 
     def __len__(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Return the cardinality of this set.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: vertices = H.half_circle(0, 1).vertices()
+            sage: len(vertices)
+            2
+
+        """
         return len(self._entries)
 
-    def pairs(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
-        if len(self._entries) <= 1:
+    def pairs(self, repeat=False):
+        r"""
+        Return an iterable that iterates over all consecutive pairs of elements
+        in this set; including the pair formed by the last element and the
+        first element.
+
+        INPUT:
+
+        - ``repeat`` -- a boolean (default: ``False``); whether to produce pair
+          consisting of the first element twice if there is only one element
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: vertices = H.half_circle(0, 1).vertices()
+            sage: list(vertices.pairs())
+            [(1, -1), (-1, 1)]
+
+        .. SEEALSO::
+
+            :meth:`triples`
+
+        """
+        if len(self._entries) <= 1 and not repeat:
             return
+
         for i in range(len(self._entries)):
             yield self._entries[i-1], self._entries[i]
 
-    def triples(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+    def triples(self, repeat=False):
+        r"""
+        Return an iterable that iterates over all consecutive triples of
+        elements in this set; including the triples formed by wrapping around
+        the end of the set.
+
+        INPUT:
+
+        - ``repeat`` -- a boolean (default: ``False``); whether to produce
+          triples by wrapping around even if there are fewer than three
+          elements
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+        There must be at least three elements to form any triples::
+
+            sage: vertices = H.half_circle(0, 1).vertices()
+            sage: list(vertices.triples())
+            []
+
+            sage: half_spaces = H(I).segment(2*I).half_spaces()
+            sage: list(half_spaces.triples())
+            [({(x^2 + y^2) - 1 ≥ 0}, {x ≤ 0}, {(x^2 + y^2) - 4 ≤ 0}),
+             ({x ≤ 0}, {(x^2 + y^2) - 4 ≤ 0}, {x ≥ 0}),
+             ({(x^2 + y^2) - 4 ≤ 0}, {x ≥ 0}, {(x^2 + y^2) - 1 ≥ 0}),
+             ({x ≥ 0}, {(x^2 + y^2) - 1 ≥ 0}, {x ≤ 0})]
+
+        However, we can force triples to be produced by wrapping around with
+        ``repeat``::
+
+            sage: vertices = H.half_circle(0, 1).vertices()
+            sage: list(vertices.triples(repeat=True))
+            [(1, -1, 1), (-1, 1, -1)]
+
+        .. SEEALSO::
+
+            :meth:`pairs`
+
+        """
+        if len(self._entries) <= 2 and not repeat:
+            return
+
         for i in range(len(self._entries)):
             yield self._entries[i - 1], self._entries[i], self._entries[
                 (i + 1) % len(self._entries)
             ]
 
     def __getitem__(self, *args, **kwargs):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Return items from this set by index.
+
+        INPUT:
+
+        Any arguments that can be used to access a tuple are accepted.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: vertices = H.half_circle(0, 1).vertices()
+            sage: vertices[0]
+            -1
+
+        """
         return self._entries.__getitem__(*args, **kwargs)
 
     def __contains__(self, x):
-        # TODO: This should be implemented more efficiently
+        r"""
+        Return whether this set contains ``x``.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: vertices = H.half_circle(0, 1).vertices()
+
+            sage: H(0) in vertices
+            False
+
+            sage: H(1) in vertices
+            True
+
+        .. NOTE::
+
+            Presently, this method is not used. It only exists to satisfy the
+            conditions of the Python abc for sets. It could be implemented more
+            efficiently.
+
+        """
         return x in self._entries
 
 
