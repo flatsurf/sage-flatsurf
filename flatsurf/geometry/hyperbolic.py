@@ -209,6 +209,7 @@ We can also intersect objects that are not half spaces::
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 ######################################################################
 
+import collections.abc
 from dataclasses import dataclass
 
 from sage.structure.parent import Parent
@@ -12246,14 +12247,7 @@ class HyperbolicEmptySet(HyperbolicConvexSet):
         raise Exception("empty set has no points")
 
 
-# TODO: Allow creating from generator while allowing to answer length immediately.
-class OrderedSet:
-    # TODO: Check documentation
-    # TODO: Check INPUTS
-    # TODO: Check SEEALSO
-    # TODO: Check for doctests
-    # TODO: Add a collections.abc class.
-    # TODO: Benchmark?
+class OrderedSet(collections.abc.Set):
     r"""
     A set of objects sorted by :meth:`OrderedSet._lt_`.
 
@@ -12262,14 +12256,43 @@ class OrderedSet:
     :meth:`HyperbolicConvexSet.vertices`, and
     :meth:`HyperbolicConvexSet.edges`. In particular, it allows us to create
     and merge such sets in linear time.
+
+    This is an abstract base class for specialized sets such as
+    :class:`HyperbolicHalfSpaces`, :class:`HyperbolicVertices`, and
+    :class:`HyperbolicEdges`.
+
+    INPUT:
+
+    - ``entries`` -- an iterable, the elements of this set
+
+    - ``assume_sorted`` -- a boolean or ``"rotated"`` (default: ``True``); whether to assume
+      that the ``entries`` are already sorted with respect to :meth:`_lt_`. If
+      ``"rotated"``, we assume that the entries are sorted modulo a cyclic permutation.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+        sage: H = HyperbolicPlane()
+
+        sage: segment = H(I).segment(2*I)
+        sage: segment.vertices()
+        {I, 2*I}
+
     """
 
     def __init__(self, entries, assume_sorted=None):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        TESTS::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, OrderedSet
+            sage: H = HyperbolicPlane()
+
+            sage: vertices = H(I).segment(2*I).vertices()
+
+            sage: isinstance(vertices, OrderedSet)
+            True
+
+        """
         if assume_sorted is None:
             assume_sorted = isinstance(entries, OrderedSet)
 
@@ -12288,11 +12311,22 @@ class OrderedSet:
         self._entries = tuple(entries)
 
     def _lt_(self, lhs, rhs):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Return whether ``lhs`` should come before ``rhs`` in this set.
+
+        Subclasses must implement this method.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, OrderedSet
+            sage: H = HyperbolicPlane()
+
+            sage: vertices = H(I).segment(2*I).vertices()
+
+            sage: vertices._lt_(vertices[0], vertices[1])
+            True
+
+        """
         raise NotImplementedError
 
     def _merge(self, *sets):
@@ -12487,6 +12521,10 @@ class OrderedSet:
         # TODO: Check for doctests
         # TODO: Benchmark?
         return self._entries.__getitem__(*args, **kwargs)
+
+    def __contains__(self, x):
+        # TODO: This should be implemented more efficiently
+        return x in self._entries
 
 
 class HyperbolicVertices(OrderedSet):
