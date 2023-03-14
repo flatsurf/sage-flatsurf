@@ -12986,9 +12986,9 @@ class CartesianPathPlot(GraphicPrimitive):
         if "rgbcolor" in options:
             color = to_mpl_color(options.pop("rgbcolor"))
 
-        edge_color = None
-        if "edgecolor" in options:
-            edge_color = to_mpl_color(options.pop("edgecolor"))
+        edge_color = options.pop("edgecolor", None)
+        if edge_color is not None:
+            edge_color = to_mpl_color(edge_color)
 
         if edge_color is None:
             if color is None:
