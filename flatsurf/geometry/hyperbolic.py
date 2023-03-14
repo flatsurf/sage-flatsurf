@@ -13041,14 +13041,17 @@ class OrderedSet(collections.abc.Set):
             sage: HyperbolicHalfSpaces([])._merge()
             []
 
+            sage: HyperbolicHalfSpaces([])._merge([H.vertical(0).left_half_space()], [H.vertical(0).left_half_space()])
+            [{x ≤ 0}]
+
             sage: HyperbolicHalfSpaces([])._merge(*[[half_space] for half_space in H.real(0).half_spaces()])
             [{(x^2 + y^2) + x ≤ 0}, {x ≥ 0}]
 
             sage: HyperbolicHalfSpaces([])._merge(list(H.real(0).half_spaces()), list(H.real(0).half_spaces()))
-            [{(x^2 + y^2) + x ≤ 0}, {(x^2 + y^2) + x ≤ 0}, {x ≥ 0}, {x ≥ 0}]
+            [{(x^2 + y^2) + x ≤ 0}, {x ≥ 0}]
 
             sage: HyperbolicHalfSpaces([])._merge(*[[half_space] for half_space in list(H.real(0).half_spaces()) * 2])
-            [{(x^2 + y^2) + x ≤ 0}, {(x^2 + y^2) + x ≤ 0}, {x ≥ 0}, {x ≥ 0}]
+            [{(x^2 + y^2) + x ≤ 0}, {x ≥ 0}]
 
         """
         # A standard merge-sort implementation.
@@ -13069,8 +13072,11 @@ class OrderedSet(collections.abc.Set):
             while A and B:
                 if self._lt_(A[-1], B[-1]):
                     merged.append(B.pop())
-                else:
+                elif self._lt_(B[-1], A[-1]):
                     merged.append(A.pop())
+                else:
+                    # Drop duplicate from set
+                    A.pop()
 
             merged.reverse()
 
@@ -13552,7 +13558,7 @@ class HyperbolicVertices(OrderedSet):
                 return dx_lhs > dx_rhs
 
         raise ValueError(
-            "cannot decide counterclockwise ordering of three collinear points"
+            "cannot decide counterclockwise ordering of exactly three collinear points"
         )
 
 
@@ -13728,53 +13734,90 @@ class HyperbolicHalfSpaces(OrderedSet):
             {{(x^2 + y^2) - x ≥ 0}, {x - 1 ≤ 0}, {x ≥ 0}}
 
             sage: HyperbolicHalfSpaces.convex_hull([H(1/2), H(-1/2), H(1), H(I), H(I + 1), H(oo)])
-            {{(x^2 + y^2) - x ≥ 0}, {x - 1 ≤ 0}, {x ≥ 0}}
+            {{2*(x^2 + y^2) - 3*x + 1 ≥ 0}, {x - 1 ≤ 0}, {2*x + 1 ≥ 0}, {4*(x^2 + y^2) - 1 ≥ 0}}
 
         .. SEEALSO::
 
             :meth:`HyperbolicPlane.convex_hull`
 
         """
-        # TODO: Can we use the sorting that HyperbolicVertices provides?
-        # TODO: Make this work when the points are not on the convex hull
-        vertices = [
-            vertex
-            for (i, vertex) in enumerate(vertices)
-            if vertex not in vertices[i + 1:]
-        ]
         if not vertices:
-            raise NotImplementedError("cannot convert convex hull of no points yet")
+            # We cannot return empty_set() because we do not know the HyperbolicPlane this lives in.
+            raise NotImplementedError("cannot compute convex hull of empty set of vertices")
 
-        if all(vertex == vertices[0] for vertex in vertices):
-            return vertices[0].half_spaces()
+        H = vertices[0].parent()
 
-        parent = vertices[0].parent()
+        vertices = set(vertices)
+
+        if len(vertices) == 1:
+            return next(iter(vertices)).half_spaces()
+
+        vertices = [vertex.coordinates(model="klein") for vertex in vertices]
+        reference = min(vertices)
+
+        class Slope:
+            def __init__(self, xy):
+                self.dx = xy[0] - reference[0]
+                self.dy = xy[1] - reference[1]
+
+            def __eq__(self, other):
+                if self.dx == 0 and self.dy == 0:
+                    return other.dx == 0 and other.dy == 0
+
+                # Return whether the two points have the same slope relative to "reference"
+                return self.dy * other.dx == other.dy * self.dx
+
+            def __lt__(self, other):
+                # Return whether the self has smaller slope relative to "reference" or
+                if self.dy * other.dx < other.dy * self.dx:
+                    return True
+                if self.dy * other.dx > other.dy * self.dx:
+                    return False
+                # if slopes are the same, sort by distance
+                if self.dx ** 2 + self.dy ** 2 < other.dx ** 2 + other.dy ** 2:
+                    return True
+                return False
+
+        vertices.sort(key=Slope)
+
+        assert vertices[0] == reference
+
+        # Drop collinear points
+        filtered = []
+        for i, vertex in enumerate(vertices):
+            if i + 1 == len(vertices):
+                filtered.append(vertex)
+                continue
+
+            slope = Slope(vertex)
+            next_slope = Slope(vertices[i + 1])
+
+            if slope == next_slope:
+                continue
+
+            filtered.append(vertex)
+            continue
+
+        hull = []
+
+        def ccw(A, B, C):
+            r"""
+            Return whether the vectors A->B, B->C describe a counter-clockwise turn.
+            """
+            return (B[0] - A[0]) * (C[1] - B[1]) > (C[0] - B[0]) * (B[1] - A[1])
+
+        for vertex in filtered:
+            while len(hull) >= 2 and not ccw(hull[-2], hull[-1], vertex):
+                hull.pop()
+            hull.append(vertex)
+
+        assert hull[0] == reference
+
+        hull = [H.point(*xy, model="klein") for xy in hull]
 
         half_spaces = []
-
-        # Determine the half spaces defining the convex hull of the
-        # vertices by iterating through the vertices in counterclockwise
-        # order (this is using the assumption that all the vertices are on
-        # the boundary of the convex hull.)
-        reference = min(
-            vertices, key=lambda vertex: -vertex.coordinates(model="klein")[1]
-        )
-        rays = []
-        for vertex in vertices:
-            if vertex == reference:
-                continue
-            ray = parent.geodesic(reference, vertex).left_half_space()
-            rays.append(ray)
-            ray.vertex = vertex
-
-        rays = HyperbolicHalfSpaces(rays)
-
-        start = reference
-        for ray in rays:
-            end = ray.vertex
-            half_spaces.append(parent.geodesic(start, end).left_half_space())
-            start = end
-        half_spaces.append(parent.geodesic(start, reference).left_half_space())
+        for i in range(len(hull)):
+            half_spaces.append(H.geodesic(hull[i-1], hull[i]).left_half_space())
 
         return HyperbolicHalfSpaces(half_spaces)
 
