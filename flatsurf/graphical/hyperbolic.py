@@ -1219,7 +1219,6 @@ def hyperbolic_path(commands, model="half_plane", **options):
         :meth:`flatsurf.geometry.HyperbolicConvexSet.plot`
 
     """
-    # TODO: Check that CartesianPathPlot shows some keywords
     if options["thickness"] is None:
         if options["fill"] and options["edgecolor"] is None:
             options["thickness"] = 0
