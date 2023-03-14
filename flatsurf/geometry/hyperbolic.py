@@ -4532,7 +4532,7 @@ class HyperbolicConvexSet(Element):
 
         INPUT:
 
-        - ``model`` -- one of ``"half_plane"`` and ``"klein"``
+        - ``model`` -- one of ``"half_plane"`` and ``"klein"`` (default: ``"half_plane"``)
 
         EXAMPLES::
 
@@ -5683,6 +5683,10 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
         See :meth:`HyperbolicConvexPolygon.plot` for the supported keyword
         arguments.
 
+        INPUT:
+
+        - ``model`` -- one of ``"half_plane"`` and ``"klein"`` (default: ``"half_plane"``)
+
         EXAMPLES::
 
             sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
@@ -6380,6 +6384,10 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
         Return a plot of this geodesic in the hyperbolic ``model``.
 
         See :meth:`HyperbolicSegment.plot` for the supported keyword arguments.
+
+        INPUT:
+
+        - ``model`` -- one of ``"half_plane"`` and ``"klein"`` (default: ``"half_plane"``)
 
         EXAMPLES::
 
@@ -8097,11 +8105,6 @@ class HyperbolicPoint(HyperbolicConvexSet):
         return coordinates
 
     def real(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
         r"""
         Return the real part of this point in the upper half plane model.
 
@@ -8114,15 +8117,14 @@ class HyperbolicPoint(HyperbolicConvexSet):
             sage: p.real()
             2
 
+        .. SEEALSO::
+
+            :meth:`imag`
+
         """
         return self.coordinates(model="half_plane")[0]
 
     def imag(self):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
         r"""
         Return the imaginary part of this point in the upper half plane model.
 
@@ -8136,17 +8138,20 @@ class HyperbolicPoint(HyperbolicConvexSet):
             sage: p.imag()
             1
 
+        .. SEEALSO::
+
+            :meth:`real`
+
         """
         return self.coordinates(model="half_plane")[1]
 
-    def segment(self, end, check=True):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+    def segment(self, end):
         r"""
         Return the oriented segment from this point to ``end``.
+
+        INPUT:
+
+        - ``end`` -- another :class:`HyperbolicPoint`
 
         EXAMPLES::
 
@@ -8155,6 +8160,15 @@ class HyperbolicPoint(HyperbolicConvexSet):
 
             sage: H(0).segment(I)
             {-x = 0} ∩ {(x^2 + y^2) - 1 ≤ 0}
+
+        A geodesic is returned when both endpoints are ideal points::
+
+            sage: H(0).segment(1) == H.geodesic(0, 1)
+            True
+
+        .. SEEALSO::
+
+            :meth:`HyperbolicPlane.segment` for other ways to construct segments
 
         """
         end = self.parent()(end)
@@ -8168,16 +8182,29 @@ class HyperbolicPoint(HyperbolicConvexSet):
             geodesic,
             start=self if self.is_finite() else None,
             end=end if end.is_finite() else None,
-            check=check,
             assume_normalized=True,
         )
 
     def plot(self, model="half_plane", **kwds):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+        r"""
+        Return a plot of this subset.
+
+        See :meth:`HyperbolicConvexPolygon.plot` for the supported keyword
+        arguments.
+
+        INPUT:
+
+        - ``model`` -- one of ``"half_plane"`` and ``"klein"`` (default: ``"half_plane"``)
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: H(I).plot()
+            ...Graphics object consisting of 1 graphics primitive
+
+        """
         if model == "half_plane":
             from sage.all import point
 
@@ -8191,7 +8218,7 @@ class HyperbolicPoint(HyperbolicConvexSet):
             # interpreted as a list of complex numbers.
             plot = point([self.coordinates(model="klein")], **kwds)
         else:
-            raise NotImplementedError
+            raise NotImplementedError("cannot plot in this model yet")
 
         return self._enhance_plot(plot, model=model)
 
