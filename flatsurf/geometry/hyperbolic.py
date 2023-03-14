@@ -5543,7 +5543,9 @@ class HyperbolicConvexSet(Element):
         ::
 
             sage: from flatsurf.geometry.hyperbolic import HyperbolicConvexPolygon
-            sage: HyperbolicConvexPolygon.random_set(H)
+            sage: P = HyperbolicConvexPolygon.random_set(H)
+            sage: P.dimension()
+            2
 
         .. SEEALSO::
 
