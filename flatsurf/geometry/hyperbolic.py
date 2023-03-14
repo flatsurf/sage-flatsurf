@@ -2514,18 +2514,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         # We need a mild form of backtracking to collect all possible triples
         # that define the isometry.
-        def search_isometry(pairs):
-            for conditions in self._isometry_conditions([], pairs):
-                for isometry in self._isometry_from_primitives(conditions):
-                    if isometry is None:
-                        continue
-
-                    if any([preimage.apply_isometry(isometry, on_right=True) != image for (preimage, image) in pairs]):
-                        continue
-
-                    return isometry
-
-        isometry = search_isometry(list(zip(preimage, image)))
+        isometry = self._isometry_from_pairs(list(zip(preimage, image)))
 
         if isometry is None:
             raise ValueError("no isometry can map these objects to each other")
@@ -2669,6 +2658,52 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
                 return matrix(K, 2, 2, [a, b, c, d])
 
         raise ValueError('no projection to GL(2, R) in the base ring')
+
+    def _isometry_from_pairs(self, pairs):
+        r"""
+        Return a right isometry compatible with given (preimage, image) pairs.
+
+        This is helper method for :meth:`isometry`.
+
+        ALGORITHM:
+
+        We extract pairs of primitive elements (points and geodesics) from
+        ``pairs`` that necessarily need to map to each other for the mappings
+        in ``pairs`` to be satisfied. (Based on the idea that there is only one
+        isometry mapping three points in a prescribed way.) For these pairs of
+        primitive elements, we determine the isometries mapping them (there
+        might be more than one when we cannot extract three points) and check
+        whether they map all ``pairs`` correctly.
+
+        There is a bit of backtracking needed in :meth:`_isometry_conditions`
+        since, e.g., there is no a unique isometry mapping two polygons to each
+        other since we can, e.g., permute the edges of the polygon cyclically.
+
+        INPUT:
+
+        - ``pairs`` -- a sequence of pairs of hyperbolic sets
+
+        EXAMPLES::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: H._isometry_from_pairs([(H(0), H(1)), (H(1), H(2)), (H(2), H(3))])
+            [ 1 -1]
+            [ 0  1]
+
+        """
+        for conditions in self._isometry_conditions([], pairs):
+            for isometry in self._isometry_from_primitives(conditions):
+                if isometry is None:
+                    continue
+
+                if any([preimage.apply_isometry(isometry, on_right=True) != image for (preimage, image) in pairs]):
+                    continue
+
+                return isometry
+
+        return None
 
     def _isometry_from_primitives(self, pairs):
         r"""
