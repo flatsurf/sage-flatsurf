@@ -722,79 +722,26 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             :meth:`some_elements` for a curated list of representative subsets.
 
         """
-        kinds = ["empty_set", "point", "oriented geodesic", "unoriented geodesic", "half_space", "oriented segment", "unoriented segment", "polygon"]
+        kinds = {
+            "empty_set": HyperbolicEmptySet,
+            "point": HyperbolicPointFromCoordinates,
+            "oriented geodesic": HyperbolicOrientedGeodesic,
+            "unoriented geodesic": HyperbolicUnorientedGeodesic,
+            "half_space": HyperbolicHalfSpace,
+            "oriented segment": HyperbolicOrientedSegment,
+            "unoriented segment": HyperbolicUnorientedSegment,
+            "polygon": HyperbolicConvexPolygon,
+        }
 
         if kind is None:
             from sage.all import randint
 
-            kind = kinds[randint(0, len(kinds) - 1)]
+            kind = list(kinds.keys())[randint(0, len(kinds) - 1)]
 
-        if kind == "empty_set":
-            set = self.empty_set()
-        elif kind == "point":
-            set = self.point(
-                self.base_ring().random_element(),
-                self.base_ring().random_element().abs(),
-                model="half_plane",
-                check=False,
-            )
-        elif "geodesic" in kind:
-            a = self.random_element("point")
-            b = self.random_element("point")
-            while b == a:
-                b = self.random_element("point")
-
-            set = self.geodesic(a, b)
-        elif kind == "half_space":
-            set = self.random_element("geodesic").left_half_space()
-        elif "segment" in kind:
-            a = self.random_element("point")
-            b = self.random_element("point")
-            while a == b or (not a.is_finite() and not b.is_finite()):
-                b = self.random_element("point")
-
-            set = self.segment(self.geodesic(a, b), start=a, end=b)
-        elif kind == "polygon":
-            from sage.all import ZZ
-
-            interior_points = []
-            count = ZZ.random_element().abs() + 3
-
-            while len(interior_points) < count:
-                p = self.random_element("point")
-                if p.is_ideal():
-                    continue
-                interior_points.append(p)
-
-            half_spaces = []
-
-            while len(half_spaces) < len(interior_points):
-                half_space = self.random_element("half_space")
-
-                for p in interior_points:
-                    if p in half_space:
-                        continue
-
-                    a, b, c = half_space.equation(model="klein")
-
-                    x, y = p.coordinates(model="klein")
-
-                    a = -(b * x + c * y)
-
-                    half_space = self.half_space(a, b, c, model="klein")
-
-                    assert p in half_space
-
-                half_spaces.append(half_space)
-
-            set = self.polygon(half_spaces)
-        else:
+        if kind not in kinds:
             raise ValueError(f"kind must be one of {kinds}")
 
-        if "unoriented" in kind:
-            set = set.unoriented()
-
-        return set
+        return kinds[kind].random_set(self)
 
     def _element_constructor_(self, x):
         r"""
@@ -5536,6 +5483,40 @@ class HyperbolicConvexSet(Element):
         """
         raise NotImplementedError(f"this {type(self)} does not implement _isometry_conditions yet and cannot be used to compute an isometry")
 
+    @classmethod
+    def random_set(cls, parent):
+        r"""
+        Return a random convex set.
+
+        Concrete hyperbolic classes should override this method to provide random sets.
+
+        INPUT:
+
+        - ``parent`` -- the :class:`HyperbolicPlane` the set should live in
+
+        EXAMPLES::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+        Given a hyperbolic object, we can create another one of the same kind::
+
+            sage: p = H(I)
+            sage: type(p).random_set(H)  # random output
+            7
+
+        ::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicConvexPolygon
+            sage: HyperbolicConvexPolygon.random_set(H)
+
+        .. SEEALSO::
+
+            :meth:`HyperbolicPlane.random_element`
+
+        """
+        raise NotImplementedError(f"{cls} does not support producing random sets yet")
+
 
 class HyperbolicOrientedConvexSet(HyperbolicConvexSet):
     r"""
@@ -6076,6 +6057,35 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
 
         r"""
         yield [(self.boundary(), other.boundary())]
+
+    @classmethod
+    def random_set(cls, parent):
+        r"""
+        Return a random half space.
+
+        This implements :meth:`HyperbolicConvexSet.random_set`.
+
+        INPUT:
+
+        - ``parent`` -- the :class:`HyperbolicPlane` containing the half plane
+
+        EXAMPLES::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicHalfSpace
+            sage: x = HyperbolicHalfSpace.random_set(H)
+
+            sage: x.dimension()
+            2
+
+        .. SEEALSO::
+
+            :meth:`HyperbolicPlane.random_element`
+
+        """
+        return HyperbolicOrientedGeodesic.random_set(parent).left_half_space()
 
 
 class HyperbolicGeodesic(HyperbolicConvexSet):
@@ -7220,8 +7230,6 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
 
         """
         if not isinstance(other, HyperbolicGeodesic):
-            if allow_ultra_ideal:
-                raise NotImplementedError("cannot perform ultra-ideal intersection for these sets yet")
             return super().intersection(other)
 
         xy = self.parent().geometry.intersection((self._a, self._b, self._c), (other._a, other._b, other._c))
@@ -7470,6 +7478,7 @@ class HyperbolicUnorientedGeodesic(HyperbolicGeodesic):
         :meth:`HyperbolicPlane.geodesic` to create geodesics from points or equations
 
     """
+
     def _isometry_conditions(self, other):
         r"""
         Return an iterable of primitive pairs that must map to each other in an
@@ -7498,6 +7507,35 @@ class HyperbolicUnorientedGeodesic(HyperbolicGeodesic):
         other = other.change(oriented=True)
         yield [(self, other)]
         yield [(self, -other)]
+
+    @classmethod
+    def random_set(cls, parent):
+        r"""
+        Return a random unoriented geodesic.
+
+        This implements :meth:`HyperbolicConvexSet.random_set`.
+
+        INPUT:
+
+        - ``parent`` -- the :class:`HyperbolicPlane` containing the geodesic
+
+        EXAMPLES::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicUnorientedGeodesic
+            sage: x = HyperbolicUnorientedGeodesic.random_set(H)
+
+            sage: x.dimension()
+            1
+
+        .. SEEALSO::
+
+            :meth:`HyperbolicPlane.random_element`
+
+        """
+        return HyperbolicOrientedGeodesic.random_set(parent).unoriented()
 
 
 class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet):
@@ -7565,6 +7603,7 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
         all geodesics.
 
     """
+
     def _neg_(self):
         r"""
         Return this geodesic with its orientation reversed.
@@ -7901,6 +7940,40 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
 
         raise NotImplementedError("cannot parametrize a geodesic over this model yet")
 
+    @classmethod
+    def random_set(cls, parent):
+        r"""
+        Return a random oriented geodesic.
+
+        This implements :meth:`HyperbolicConvexSet.random_set`.
+
+        INPUT:
+
+        - ``parent`` -- the :class:`HyperbolicPlane` containing the geodesic
+
+        EXAMPLES::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicOrientedGeodesic
+            sage: x = HyperbolicOrientedGeodesic.random_set(H)
+
+            sage: x.dimension()
+            1
+
+        .. SEEALSO::
+
+            :meth:`HyperbolicPlane.random_element`
+
+        """
+        a = HyperbolicPointFromCoordinates.random_set(parent)
+        b = a
+        while b == a:
+            b = HyperbolicPointFromCoordinates.random_set(parent)
+
+        return parent.geodesic(a, b)
+
 
 class HyperbolicPoint(HyperbolicConvexSet):
     r"""
@@ -7941,6 +8014,7 @@ class HyperbolicPoint(HyperbolicConvexSet):
         :meth:`HyperbolicHalfPlane.point` for ways to create points
 
     """
+
     def _check(self, require_normalized=True):
         r"""
         Verify that this is a (possibly infinite) point in the hyperbolic plane.
@@ -8595,6 +8669,7 @@ class HyperbolicPointFromCoordinates(HyperbolicPoint):
         Use :meth;`HyperbolicPlane.point` to create points from coordinates
 
     """
+
     def __init__(self, parent, x, y):
         r"""
         TESTS::
@@ -8837,6 +8912,40 @@ class HyperbolicPointFromCoordinates(HyperbolicPoint):
         x, y, z = isometry * vector(self.parent().base_ring(), [x, y, 1])
         return self.parent().point(x / z, y / z, model="klein")
 
+    @classmethod
+    def random_set(cls, parent):
+        r"""
+        Return a random hyperbolic point.
+
+        This implements :meth:`HyperbolicConvexSet.random_set`.
+
+        INPUT:
+
+        - ``parent`` -- the :class:`HyperbolicPlane` containing the point
+
+        EXAMPLES::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPointFromCoordinates
+            sage: x = HyperbolicPointFromCoordinates.random_set(H)
+
+            sage: x.dimension()
+            0
+
+        .. SEEALSO::
+
+            :meth:`HyperbolicPlane.random_element`
+
+        """
+        return parent.point(
+            parent.base_ring().random_element(),
+            parent.base_ring().random_element().abs(),
+            model="half_plane",
+            check=False,
+        )
+
 
 class HyperbolicPointFromGeodesic(HyperbolicPoint):
     r"""
@@ -8877,6 +8986,7 @@ class HyperbolicPointFromGeodesic(HyperbolicPoint):
         :meth:`HyperbolicOrientedGeodesic.end` to create endpoints of geodesics
 
     """
+
     def __init__(self, parent, geodesic):
         r"""
         TESTS::
@@ -9327,6 +9437,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
         hyperbolic plane.
 
     """
+
     def __init__(self, parent, half_spaces, vertices):
         r"""
         TESTS::
@@ -11049,6 +11160,71 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
                 else:
                     yield list(zip(preimage, image))
 
+    @classmethod
+    def random_set(cls, parent):
+        r"""
+        Return a random hyperbolic convex polygon.
+
+        This implements :meth:`HyperbolicConvexSet.random_set`.
+
+        INPUT:
+
+        - ``parent`` -- the :class:`HyperbolicPlane` containing the polygon
+
+        EXAMPLES::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicConvexPolygon
+            sage: x = HyperbolicConvexPolygon.random_set(H)
+
+            sage: x.dimension()
+            2
+
+        .. SEEALSO::
+
+            :meth:`HyperbolicPlane.random_element`
+
+        """
+        while True:
+            from sage.all import ZZ
+
+            interior_points = []
+            count = ZZ.random_element().abs() + 3
+
+            while len(interior_points) < count:
+                p = HyperbolicPointFromCoordinates.random_set(parent)
+                if p.is_ideal():
+                    continue
+                interior_points.append(p)
+
+            half_spaces = []
+
+            while len(half_spaces) < len(interior_points):
+                half_space = HyperbolicHalfSpace.random_set(parent)
+
+                for p in interior_points:
+                    if p in half_space:
+                        continue
+
+                    a, b, c = half_space.equation(model="klein")
+
+                    x, y = p.coordinates(model="klein")
+
+                    a = -(b * x + c * y)
+
+                    half_space = parent.half_space(a, b, c, model="klein")
+
+                    assert p in half_space
+
+                half_spaces.append(half_space)
+
+            polygon = parent.polygon(half_spaces)
+
+            if isinstance(polygon, HyperbolicConvexPolygon):
+                return polygon
+
 
 class HyperbolicSegment(HyperbolicConvexSet):
     r"""
@@ -11088,6 +11264,7 @@ class HyperbolicSegment(HyperbolicConvexSet):
         to create segments.
 
     """
+
     def __init__(self, parent, geodesic, start=None, end=None):
         r"""
         TESTS::
@@ -11806,6 +11983,7 @@ class HyperbolicUnorientedSegment(HyperbolicSegment):
         :meth:`HyperbolicSegment.unoriented` to construct unoriented segments.
 
     """
+
     def __hash__(self):
         r"""
         Return a hash value for this set.
@@ -11858,6 +12036,35 @@ class HyperbolicUnorientedSegment(HyperbolicSegment):
         yield [(self, other)]
         yield [(self, -other)]
 
+    @classmethod
+    def random_set(cls, parent):
+        r"""
+        Return a random unoriented segment.
+
+        This implements :meth:`HyperbolicConvexSet.random_set`.
+
+        INPUT:
+
+        - ``parent`` -- the :class:`HyperbolicPlane` containing the segment
+
+        EXAMPLES::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicUnorientedSegment
+            sage: x = HyperbolicUnorientedSegment.random_set(H)
+
+            sage: x.dimension()
+            1
+
+        .. SEEALSO::
+
+            :meth:`HyperbolicPlane.random_element`
+
+        """
+        return HyperbolicOrientedSegment.random_set(parent).unoriented()
+
 
 class HyperbolicOrientedSegment(HyperbolicSegment, HyperbolicOrientedConvexSet):
     r"""
@@ -11883,6 +12090,7 @@ class HyperbolicOrientedSegment(HyperbolicSegment, HyperbolicOrientedConvexSet):
         to construct oriented segments.
 
     """
+
     def _neg_(self):
         r"""
         Return this segment with its orientation reversed.
@@ -12019,6 +12227,40 @@ class HyperbolicOrientedSegment(HyperbolicSegment, HyperbolicOrientedConvexSet):
 
         return self._geodesic.end()
 
+    @classmethod
+    def random_set(cls, parent):
+        r"""
+        Return a random oriented segment.
+
+        This implements :meth:`HyperbolicConvexSet.random_set`.
+
+        INPUT:
+
+        - ``parent`` -- the :class:`HyperbolicPlane` containing the segment
+
+        EXAMPLES::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicOrientedSegment
+            sage: x = HyperbolicOrientedSegment.random_set(H)
+
+            sage: x.dimension()
+            1
+
+        .. SEEALSO::
+
+            :meth:`HyperbolicPlane.random_element`
+
+        """
+        a = HyperbolicPointFromCoordinates.random_set(parent)
+        b = HyperbolicPointFromCoordinates.random_set(parent)
+        while a == b or (not a.is_finite() and not b.is_finite()):
+            b = HyperbolicPointFromCoordinates.random_set(parent)
+
+        return parent.segment(parent.geodesic(a, b), start=a, end=b)
+
 
 class HyperbolicEmptySet(HyperbolicConvexSet):
     r"""
@@ -12051,6 +12293,7 @@ class HyperbolicEmptySet(HyperbolicConvexSet):
         Use :meth:`HyperbolicPlane.empty_set` to construct the empty set.
 
     """
+
     def _richcmp_(self, other, op):
         r"""
         Return how this set compares to ``other`` with respect to ``op``.
@@ -12281,6 +12524,35 @@ class HyperbolicEmptySet(HyperbolicConvexSet):
 
         """
         raise Exception("empty set has no points")
+
+    @classmethod
+    def random_set(cls, parent):
+        r"""
+        Return a random empty set, i.e., the empty set.
+
+        This implements :meth:`HyperbolicConvexSet.random_set`.
+
+        INPUT:
+
+        - ``parent`` -- the :class:`HyperbolicPlane` this is the empty set of.
+
+        EXAMPLES::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicEmptySet
+            sage: x = HyperbolicEmptySet.random_set(H)
+
+            sage: x.dimension()
+            -1
+
+        .. SEEALSO::
+
+            :meth:`HyperbolicPlane.random_element`
+
+        """
+        return parent.empty_set()
 
 
 class OrderedSet(collections.abc.Set):
@@ -12721,6 +12993,7 @@ class HyperbolicVertices(OrderedSet):
         :meth:`HyperbolicConvexSet.vertices` to obtain such a set
 
     """
+
     def __init__(self, vertices, assume_sorted=None):
         r"""
         TESTS::

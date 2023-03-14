@@ -52,6 +52,7 @@ from sage.misc.decorators import options, rename_keyword
 
 from flatsurf.geometry.hyperbolic import HyperbolicPoint, HyperbolicPlane
 
+
 class CartesianPathPlot(GraphicPrimitive):
     r"""
     A plotted path in the hyperbolic plane, i.e., a sequence of commands and
@@ -418,9 +419,6 @@ class CartesianPathPlot(GraphicPrimitive):
             (3920.30937574010, 3919.30937574010)
 
         """
-        from matplotlib.path import Path
-        path = Path([(0, 0)])
-
         from sage.all import vector
 
         direction = vector(direction)
@@ -1241,4 +1239,3 @@ def hyperbolic_path(commands, model="half_plane", **options):
         g.legend(True)
         g._legend_colors = [options["legend_color"]]
     return g
-
