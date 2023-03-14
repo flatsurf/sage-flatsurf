@@ -2000,6 +2000,13 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             ....: )
             {2*(x^2 + y^2) - x ≥ 0} ∩ {(x^2 + y^2) - 2*x - 8 ≤ 0} ∩ {8*(x^2 + y^2) + 6*x + 1 ≥ 0}
 
+        TESTS:
+
+        A trivial case that did not work initially:
+
+            sage: H.convex_hull(H(0), H(1), H(oo), H(I), H(I + 1))
+            {(x^2 + y^2) - x ≥ 0} ∩ {x - 1 ≤ 0} ∩ {x ≥ 0}
+
         .. SEEALSO::
 
             :meth:`HyperbolicHalfSpaces.convex_hull` for the underlying implementation
@@ -2043,7 +2050,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         polygon = self.polygon(edges, marked_vertices=marked_vertices)
 
-        assert all(subset.is_subset(polygon) for subset in subsets), "convex hull does not contain all the sets is supposed to be the convex hull of"
+        assert all(subset.is_subset(polygon) for subset in subsets), "convex hull does not contain all the sets it is supposed to be the convex hull of"
 
         return polygon
 
@@ -12680,7 +12687,7 @@ class HyperbolicVertices(OrderedSet):
 
     .. SEEALSO::
 
-        :meth:`HyperbolicConvexSet.vertices`
+        :meth:`HyperbolicConvexSet.vertices` to obtain such a set
 
     """
     def __init__(self, vertices, assume_sorted=None):
@@ -12850,19 +12857,30 @@ class HyperbolicVertices(OrderedSet):
 
 
 class HyperbolicHalfSpaces(OrderedSet):
-    # TODO: Check documentation
-    # TODO: Check INPUTS
-    # TODO: Check SEEALSO
-    # TODO: Check for doctests
-    # TODO: Benchmark?
+    r"""
+    A set of half spaces in the hyperbolic plane ordered counterclockwise.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+        sage: H = HyperbolicPlane()
+        sage: half_spaces = H.vertical(0).half_spaces()
+        sage: half_spaces
+        {{x ≤ 0}, {x ≥ 0}}
+
+    TESTS::
+
+        sage: from flatsurf.geometry.hyperbolic import HyperbolicHalfSpaces
+
+        sage: isinstance(half_spaces, HyperbolicHalfSpaces)
+        True
+
+    .. SEEALSO::
+
+        :meth:`HyperbolicConvexSet.half_spaces` to obtain such a set
+    """
     @classmethod
     def _lt_(cls, lhs, rhs):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
-        # TODO: This is essentially atan2.
         r"""
         Return whether the half space ``lhs`` is smaller than ``rhs`` in a cyclic
         ordering of normal vectors, i.e., order half spaces by whether their
@@ -12871,6 +12889,16 @@ class HyperbolicHalfSpaces(OrderedSet):
 
         This ordering is such that :meth:`HyperbolicPlane.intersection` can be
         computed in linear time for two hyperbolic convex sets.
+
+        INPUT:
+
+        - ``lhs`` -- a :class:`HyperbolicHalfSpace`
+
+        - ``rhs`` -- a :class:`HyperbolicHalfSpace`
+
+        .. NOTE::
+
+            The implementation is not very robust over inexact rings and should be improved for that use case.
 
         TESTS::
 
@@ -12931,14 +12959,7 @@ class HyperbolicHalfSpaces(OrderedSet):
         a, b, c = lhs.equation(model="klein")
         aa, bb, cc = rhs.equation(model="klein")
 
-        # TODO: Should we use predicates here? If so, which?
-
         def normal_points_left(b, c):
-            # TODO: Check documentation.
-            # TODO: Check INPUT
-            # TODO: Check SEEALSO
-            # TODO: Check for doctests
-            # TODO: Benchmark?
             return b < 0 or (b == 0 and c < 0)
 
         if normal_points_left(b, c) != normal_points_left(bb, cc):
@@ -12974,13 +12995,42 @@ class HyperbolicHalfSpaces(OrderedSet):
 
         return cmp < 0
 
-    @classmethod
-    def convex_hull(cls, vertices):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
+    @staticmethod
+    def convex_hull(vertices):
+        r"""
+        Return the convex hull of ``vertices`` as a ordered set of half spaces.
+
+        INPUT:
+
+        - ``vertices`` -- a sequence of :class:`HyperbolicPoint`
+
+        ALGORITHM:
+
+        We use the classical Euclidean Graham scan algorithm in the Klein
+        model.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicHalfSpaces
+            sage: H = HyperbolicPlane()
+
+            sage: HyperbolicHalfSpaces.convex_hull([H(0), H(1), H(oo)])
+            {{(x^2 + y^2) - x ≥ 0}, {x - 1 ≤ 0}, {x ≥ 0}}
+
+            sage: HyperbolicHalfSpaces.convex_hull([H(0), H(1), H(I), H(oo)])
+            {{(x^2 + y^2) - x ≥ 0}, {x - 1 ≤ 0}, {x ≥ 0}}
+
+            sage: HyperbolicHalfSpaces.convex_hull([H(0), H(1), H(I), H(I + 1), H(oo)])
+            {{(x^2 + y^2) - x ≥ 0}, {x - 1 ≤ 0}, {x ≥ 0}}
+
+            sage: HyperbolicHalfSpaces.convex_hull([H(1/2), H(-1/2), H(1), H(I), H(I + 1), H(oo)])
+            {{(x^2 + y^2) - x ≥ 0}, {x - 1 ≤ 0}, {x ≥ 0}}
+
+        .. SEEALSO::
+
+            :meth:`HyperbolicPlane.convex_hull`
+
+        """
         # TODO: Can we use the sorting that HyperbolicVertices provides?
         # TODO: Make this work when the points are not on the convex hull
         vertices = [vertex for (i, vertex) in enumerate(vertices) if vertex not in vertices[i + 1:]]
