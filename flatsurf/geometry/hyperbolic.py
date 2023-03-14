@@ -12864,6 +12864,7 @@ class HyperbolicHalfSpaces(OrderedSet):
 
         sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
         sage: H = HyperbolicPlane()
+
         sage: half_spaces = H.vertical(0).half_spaces()
         sage: half_spaces
         {{x ≤ 0}, {x ≥ 0}}
@@ -13070,19 +13071,44 @@ class HyperbolicHalfSpaces(OrderedSet):
 
 
 class HyperbolicEdges(OrderedSet):
-    # TODO: Check documentation
-    # TODO: Check INPUTS
-    # TODO: Check SEEALSO
-    # TODO: Check for doctests
-    # TODO: Benchmark?
+    r"""
+    A set of hyperbolic segments and geodesics ordered counterclockwise.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+        sage: H = HyperbolicPlane()
+
+        sage: edges = H.vertical(0).edges()
+        sage: edges
+        {{-x = 0}, {x = 0}}
+
+    TESTS::
+
+        sage: from flatsurf.geometry.hyperbolic import HyperbolicEdges
+        sage: isinstance(edges, HyperbolicEdges)
+        True
+
+    .. SEEALSO::
+
+        :meth:`HyperbolicConvexSet.edges` to obtain such a set
+
+    """
     @classmethod
     def _lt_(cls, lhs, rhs):
-        # TODO: Check documentation.
-        # TODO: Check INPUT
-        # TODO: Check SEEALSO
-        # TODO: Check for doctests
-        # TODO: Benchmark?
-        # TODO: This is essentially atan2.
+        r"""
+        Return whether ``lhs`` should come before ``rhs`` in the ordering of this set.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: edges = H.vertical(0).edges()
+            sage: edges._lt_(edges[0], edges[1])
+            True
+
+        """
         if isinstance(lhs, HyperbolicOrientedSegment):
             lhs = lhs.geodesic()
 
