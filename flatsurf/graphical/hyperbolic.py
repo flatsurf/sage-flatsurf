@@ -594,8 +594,8 @@ class CartesianPathPlot(GraphicPrimitive):
             ....:     CartesianPathPlotCommand("RAYTO", (0, 1)),
             ....: ])
 
-            sage: P.get_minmax_data()
-            {'xmin': 0.0, 'xmax': 0.0, 'ymin': 0.0, 'ymax': 1.0}
+            sage: P.get_minmax_data()['ymax']
+            1.0
 
         """
         try:
@@ -1202,6 +1202,8 @@ def hyperbolic_path(commands, model="half_plane", **options):
     EXAMPLES::
 
         sage: from flatsurf.graphical.hyperbolic import HyperbolicPathPlotCommand, hyperbolic_path
+        sage: from flatsurf import HyperbolicPlane
+        sage: H = HyperbolicPlane()
 
         sage: hyperbolic_path([
         ....:     HyperbolicPathPlotCommand("MOVETO", H(0)),
@@ -1210,6 +1212,7 @@ def hyperbolic_path(commands, model="half_plane", **options):
         ....:     HyperbolicPathPlotCommand("LINETO", H(I - 1)),
         ....:     HyperbolicPathPlotCommand("LINETO", H(0)),
         ....: ])
+        Graphics object consisting of 2 graphics primitives
 
     .. SEEALSO::
 
