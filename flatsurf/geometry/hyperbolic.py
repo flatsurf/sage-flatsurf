@@ -5003,9 +5003,10 @@ class HyperbolicConvexSet(Element):
 
             # Check that the matrix defines an isometry in the hyperboloid
             # model, see CFJK "Hyperbolic Geometry" Theorem 10.1
+            from sage.all import diagonal_matrix
             D = (
                 isometry.transpose()
-                * isometry.parent().diagonal_matrix([1, 1, -1])
+                * diagonal_matrix(isometry.parent().base_ring(), [1, 1, -1])
                 * isometry
             )
 
