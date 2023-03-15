@@ -1,0 +1,838 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="polygon" href="polygon.html" /><link rel="prev" title="The flatsurf.graphical Package" href="../graphical.html" />
+
+    <!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
+        <title>hyperbolic - sage-flatsurf 0.4.7 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    <link rel="stylesheet" type="text/css" href="https://doc.sagemath.org/html/en/reference/_static/custom-furo.css" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  --color-brand-primary: #0f0fff;
+  --color-brand-content: #0f0fff;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #272822;
+  --color-code-foreground: #f8f8f2;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #272822;
+  --color-code-foreground: #f8f8f2;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">sage-flatsurf 0.4.7 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo only-light" src="../_static/logo.svg" alt="Light Logo"/>
+    <img class="sidebar-logo only-dark" src="../_static/logo.svg" alt="Dark Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">sage-flatsurf 0.4.7 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul>
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installing sage-flatsurf</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html">The Developer’s Guide for sage-flatsurf</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../examples/defining_surfaces.html">Defining Surfaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/graphics_configuration.html">Graphics Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/linear_action_and_delaunay.html">The GL(2,R) Action, the Veech Group, Delaunay Decomposition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/rel_deformations.html">Relative Period Deformations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/saddle_connections.html">Working with Saddle Connections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/apisa_wright.html">Exploring Orbit Closures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/siegel_veech.html">Siegel-Veech Constants</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/straight_line_flow.html">Straight-Line Flow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/warwick-2017.html">Notes from the Warwick EPSRC Symposium on “Computation in geometric topology”</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/boshernitzan_conjecture.html">Boshernitzan’s Conjectures</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../geometry.html">The flatsurf.geometry Package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/chamanara.html"><code class="docutils literal notranslate"><span class="pre">chamanara</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/circle.html"><code class="docutils literal notranslate"><span class="pre">circle</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/cone_surface.html"><code class="docutils literal notranslate"><span class="pre">cone_surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/delaunay.html"><code class="docutils literal notranslate"><span class="pre">delaunay</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/dilation_surface.html"><code class="docutils literal notranslate"><span class="pre">dilation_surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/finitely_generated_matrix_group.html"><code class="docutils literal notranslate"><span class="pre">finitely_generated_matrix_group</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/fundamental_group.html"><code class="docutils literal notranslate"><span class="pre">fundamental_group</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/gl2r_orbit_closure.html"><code class="docutils literal notranslate"><span class="pre">gl2r_orbit_closure</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/half_dilation_surface.html"><code class="docutils literal notranslate"><span class="pre">half_dilation_surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/half_translation_surface.html"><code class="docutils literal notranslate"><span class="pre">half_translation_surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/hyperbolic.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/interval_exchange_transformation.html"><code class="docutils literal notranslate"><span class="pre">interval_exchange_transformation</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/l_infinity_delaunay_cells.html"><code class="docutils literal notranslate"><span class="pre">l_infinity_delaunay_cells</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/mappings.html"><code class="docutils literal notranslate"><span class="pre">mappings</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/matrix_2x2.html"><code class="docutils literal notranslate"><span class="pre">matrix_2x2</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/mega_wollmilchsau.html"><code class="docutils literal notranslate"><span class="pre">mega_wollmilchsau</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/minimal_cover.html"><code class="docutils literal notranslate"><span class="pre">minimal_cover</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/polygon.html"><code class="docutils literal notranslate"><span class="pre">polygon</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/polyhedra.html"><code class="docutils literal notranslate"><span class="pre">polyhedra</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/pyflatsurf_conversion.html"><code class="docutils literal notranslate"><span class="pre">pyflatsurf_conversion</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/rational_cone_surface.html"><code class="docutils literal notranslate"><span class="pre">rational_cone_surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/rational_similarity_surface.html"><code class="docutils literal notranslate"><span class="pre">rational_similarity_surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/relative_homology.html"><code class="docutils literal notranslate"><span class="pre">relative_homology</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/similarity.html"><code class="docutils literal notranslate"><span class="pre">similarity</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/similarity_surface_generators.html"><code class="docutils literal notranslate"><span class="pre">similarity_surface_generators</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/similarity_surface.html"><code class="docutils literal notranslate"><span class="pre">similarity_surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/straight_line_trajectory.html"><code class="docutils literal notranslate"><span class="pre">straight_line_trajectory</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/subfield.html"><code class="docutils literal notranslate"><span class="pre">subfield</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/surface_objects.html"><code class="docutils literal notranslate"><span class="pre">surface_objects</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/surface.html"><code class="docutils literal notranslate"><span class="pre">surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/tangent_bundle.html"><code class="docutils literal notranslate"><span class="pre">tangent_bundle</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/thurston_veech.html"><code class="docutils literal notranslate"><span class="pre">thurston_veech</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/translation_surface.html"><code class="docutils literal notranslate"><span class="pre">translation_surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/xml.html"><code class="docutils literal notranslate"><span class="pre">xml</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../graphical.html">The flatsurf.graphical Package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">hyperbolic</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="polygon.html"><code class="docutils literal notranslate"><span class="pre">polygon</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="straight_line_trajectory.html"><code class="docutils literal notranslate"><span class="pre">straight_line_trajectory</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="surface_point.html"><code class="docutils literal notranslate"><span class="pre">surface_point</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="surface.html"><code class="docutils literal notranslate"><span class="pre">surface</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <section id="module-flatsurf.graphical.hyperbolic">
+<span id="hyperbolic"></span><h1><code class="docutils literal notranslate"><span class="pre">hyperbolic</span></code><a class="headerlink" href="#module-flatsurf.graphical.hyperbolic" title="Permalink to this heading">#</a></h1>
+<p>Plotting primitives for subsets of the hyperbolic plane</p>
+<p>EXAMPLES:</p>
+<p>Usually, the primitives defined here should not be used directly. Instead the
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">HyperbolicConvexSet.plot()</span></code> method of hyperbolic sets internally uses
+these primitives:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">HyperbolicPlane</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">H</span> <span class="o">=</span> <span class="n">HyperbolicPlane</span><span class="p">()</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">geodesic</span> <span class="o">=</span> <span class="n">H</span><span class="o">.</span><span class="n">vertical</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">plot</span> <span class="o">=</span> <span class="n">geodesic</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">plot</span><span class="p">)</span>
+<span class="p">[</span><span class="n">CartesianPathPlot</span><span class="p">([</span><span class="n">CartesianPathPlotCommand</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="s1">&#39;MOVETO&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="mf">0.000000000000000</span><span class="p">,</span> <span class="mf">0.000000000000000</span><span class="p">)),</span> <span class="n">CartesianPathPlotCommand</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="s1">&#39;RAYTO&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))])]</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The need for these primitives arises because SageMath has no good
+facilities to plot infinite objects such as lines and rays. However, these are
+needed to plot subsets of the hyperbolic plane in the upper half plane model.</p>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="flatsurf.graphical.hyperbolic.CartesianPathPlot">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flatsurf.graphical.hyperbolic.</span></span><span class="sig-name descname"><span class="pre">CartesianPathPlot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">commands</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/graphical/hyperbolic.html#CartesianPathPlot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.hyperbolic.CartesianPathPlot" title="Permalink to this definition">#</a></dt>
+<dd><p>A plotted path in the hyperbolic plane, i.e., a sequence of commands and
+associated control points in the hyperbolic plane.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">plot</span></code> methods of most hyperbolic convex sets rely on such a path.
+Usually, such a path should not be produced directly.</p>
+<p>This can be considered a more generic version of
+<code class="xref py py-class docutils literal notranslate"><span class="pre">sage.plot.line.Line</span></code> and <code class="xref py py-class docutils literal notranslate"><span class="pre">sage.plot.polygon.Polygon</span></code> since
+this is not limited to finite line segments. At the same time this
+generalizes matplotlib’s <code class="docutils literal notranslate"><span class="pre">Path</span></code> somewhat, again by allowing infinite rays
+and lines.</p>
+<p>INPUT:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">commands</span></code> – a sequence of <code class="xref py py-class docutils literal notranslate"><span class="pre">HyperbolicPath.Command</span></code> describing
+the path.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">options</span></code> – a dict or <code class="docutils literal notranslate"><span class="pre">None</span></code> (the default), options to affect the
+plotting of the path; the options accepted are the same that
+<code class="xref py py-class docutils literal notranslate"><span class="pre">sage.plot.polygon.Polygon</span></code> accepts.</p></li>
+</ul>
+<p>EXAMPLES:</p>
+<p>A geodesic plot as a single such path (wrapped in a SageMath graphics
+object):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">HyperbolicPlane</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.graphical.hyperbolic</span> <span class="kn">import</span> <span class="n">CartesianPathPlot</span><span class="p">,</span> <span class="n">CartesianPathPlotCommand</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">H</span> <span class="o">=</span> <span class="n">HyperbolicPlane</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">P</span> <span class="o">=</span> <span class="n">H</span><span class="o">.</span><span class="n">vertical</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">P</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">CartesianPathPlot</span><span class="p">)</span>
+<span class="kc">True</span>
+</pre></div>
+</div>
+<p>The sequence of commands should always start with a move command to
+establish the starting point of the plot; note that coordinates are always
+given in the Cartesian two dimension plot coordinate system:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">P</span> <span class="o">=</span> <span class="n">CartesianPathPlot</span><span class="p">([</span>
+<span class="o">....</span><span class="p">:</span>     <span class="n">CartesianPathPlotCommand</span><span class="p">(</span><span class="s2">&quot;MOVETO&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+<span class="o">....</span><span class="p">:</span> <span class="p">])</span>
+</pre></div>
+</div>
+<p>After the initial move, a sequence of arcs can be drawn to represent
+objects in the upper half plane model; the parameters is the center and the
+end point of the arc:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">P</span> <span class="o">=</span> <span class="n">CartesianPathPlot</span><span class="p">([</span>
+<span class="o">....</span><span class="p">:</span>     <span class="n">CartesianPathPlotCommand</span><span class="p">(</span><span class="s2">&quot;MOVETO&quot;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span>
+<span class="o">....</span><span class="p">:</span>     <span class="n">CartesianPathPlotCommand</span><span class="p">(</span><span class="s2">&quot;ARCTO&quot;</span><span class="p">,</span> <span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))),</span>
+<span class="o">....</span><span class="p">:</span> <span class="p">])</span>
+</pre></div>
+</div>
+<p>We can also draw segments to represent objects in the Klein disk model:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">P</span> <span class="o">=</span> <span class="n">CartesianPathPlot</span><span class="p">([</span>
+<span class="o">....</span><span class="p">:</span>     <span class="n">CartesianPathPlotCommand</span><span class="p">(</span><span class="s2">&quot;MOVETO&quot;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span>
+<span class="o">....</span><span class="p">:</span>     <span class="n">CartesianPathPlotCommand</span><span class="p">(</span><span class="s2">&quot;LINETO&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span>
+<span class="o">....</span><span class="p">:</span> <span class="p">])</span>
+</pre></div>
+</div>
+<p>Additionally, we can draw rays to represent verticals in the upper half
+plane model; the parameter is the direction of the ray, i.e., (0, 1) for
+a vertical:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">P</span> <span class="o">=</span> <span class="n">CartesianPathPlot</span><span class="p">([</span>
+<span class="o">....</span><span class="p">:</span>     <span class="n">CartesianPathPlotCommand</span><span class="p">(</span><span class="s2">&quot;MOVETO&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span>
+<span class="o">....</span><span class="p">:</span>     <span class="n">CartesianPathPlotCommand</span><span class="p">(</span><span class="s2">&quot;RAYTO&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span>
+<span class="o">....</span><span class="p">:</span> <span class="p">])</span>
+</pre></div>
+</div>
+<p>Similarly, we can also move the cursor to an infinitely far point in a
+certain direction. This can be used to plot a half plane, e.g., the point
+with non-negative real part:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">P</span> <span class="o">=</span> <span class="n">CartesianPathPlot</span><span class="p">([</span>
+<span class="o">....</span><span class="p">:</span>     <span class="n">CartesianPathPlotCommand</span><span class="p">(</span><span class="s2">&quot;MOVETO&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span>
+<span class="o">....</span><span class="p">:</span>     <span class="n">CartesianPathPlotCommand</span><span class="p">(</span><span class="s2">&quot;MOVETOINFINITY&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span>
+<span class="o">....</span><span class="p">:</span>     <span class="n">CartesianPathPlotCommand</span><span class="p">(</span><span class="s2">&quot;MOVETOINFINITY&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span>
+<span class="o">....</span><span class="p">:</span>     <span class="n">CartesianPathPlotCommand</span><span class="p">(</span><span class="s2">&quot;LINETO&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span>
+<span class="o">....</span><span class="p">:</span> <span class="p">])</span>
+</pre></div>
+</div>
+<p>In a similar way, we can also draw an actual line, here the real axis:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">P</span> <span class="o">=</span> <span class="n">CartesianPathPlot</span><span class="p">([</span>
+<span class="o">....</span><span class="p">:</span>     <span class="n">CartesianPathPlotCommand</span><span class="p">(</span><span class="s2">&quot;MOVETOINFINITY&quot;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span>
+<span class="o">....</span><span class="p">:</span>     <span class="n">CartesianPathPlotCommand</span><span class="p">(</span><span class="s2">&quot;RAYTO&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span>
+<span class="o">....</span><span class="p">:</span> <span class="p">])</span>
+</pre></div>
+</div>
+<p>Finally, we can draw an arc in clockwise direction; here we plot the point
+in the upper half plane of norm between 1 and 2:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">P</span> <span class="o">=</span> <span class="n">CartesianPathPlot</span><span class="p">([</span>
+<span class="o">....</span><span class="p">:</span>     <span class="n">CartesianPathPlotCommand</span><span class="p">(</span><span class="s2">&quot;MOVETO&quot;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span>
+<span class="o">....</span><span class="p">:</span>     <span class="n">CartesianPathPlotCommand</span><span class="p">(</span><span class="s2">&quot;ARCTO&quot;</span><span class="p">,</span> <span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">))),</span>
+<span class="o">....</span><span class="p">:</span>     <span class="n">CartesianPathPlotCommand</span><span class="p">(</span><span class="s2">&quot;MOVETO&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span>
+<span class="o">....</span><span class="p">:</span>     <span class="n">CartesianPathPlotCommand</span><span class="p">(</span><span class="s2">&quot;RARCTO&quot;</span><span class="p">,</span> <span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">))),</span>
+<span class="o">....</span><span class="p">:</span>     <span class="n">CartesianPathPlotCommand</span><span class="p">(</span><span class="s2">&quot;MOVETO&quot;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span>
+<span class="o">....</span><span class="p">:</span> <span class="p">])</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#flatsurf.graphical.hyperbolic.hyperbolic_path" title="flatsurf.graphical.hyperbolic.hyperbolic_path"><code class="xref py py-func docutils literal notranslate"><span class="pre">hyperbolic_path()</span></code></a> to create a <code class="docutils literal notranslate"><span class="pre">Graphics</span></code> containing a
+<a class="reference internal" href="#flatsurf.graphical.hyperbolic.CartesianPathPlot" title="flatsurf.graphical.hyperbolic.CartesianPathPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">CartesianPathPlot</span></code></a>, most likely you want to use that
+function if you want to use this functionality in plots of your own.</p>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="flatsurf.graphical.hyperbolic.CartesianPathPlot.get_minmax_data">
+<span class="sig-name descname"><span class="pre">get_minmax_data</span></span><a class="reference internal" href="../_modules/flatsurf/graphical/hyperbolic.html#CartesianPathPlot.get_minmax_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.hyperbolic.CartesianPathPlot.get_minmax_data" title="Permalink to this definition">#</a></dt>
+<dd><p>File: /usr/share/miniconda3/envs/test/lib/python3.10/site-packages/flatsurf/graphical/hyperbolic.py (starting at line 582)</p>
+<p>Return a bounding box for this plot.</p>
+<p>This implements the required interface of SageMath’s GraphicPrimitive.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.graphical.hyperbolic</span> <span class="kn">import</span> <span class="n">CartesianPathPlot</span><span class="p">,</span> <span class="n">CartesianPathPlotCommand</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">P</span> <span class="o">=</span> <span class="n">CartesianPathPlot</span><span class="p">([</span>
+<span class="o">....</span><span class="p">:</span>     <span class="n">CartesianPathPlotCommand</span><span class="p">(</span><span class="s2">&quot;MOVETO&quot;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span>
+<span class="o">....</span><span class="p">:</span>     <span class="n">CartesianPathPlotCommand</span><span class="p">(</span><span class="s2">&quot;LINETO&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span>
+<span class="o">....</span><span class="p">:</span> <span class="p">])</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">P</span><span class="o">.</span><span class="n">get_minmax_data</span><span class="p">()</span>
+<span class="p">{</span><span class="s1">&#39;xmax&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s1">&#39;xmin&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="s1">&#39;ymax&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s1">&#39;ymin&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">}</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">P</span> <span class="o">=</span> <span class="n">CartesianPathPlot</span><span class="p">([</span>
+<span class="o">....</span><span class="p">:</span>     <span class="n">CartesianPathPlotCommand</span><span class="p">(</span><span class="s2">&quot;MOVETO&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span>
+<span class="o">....</span><span class="p">:</span>     <span class="n">CartesianPathPlotCommand</span><span class="p">(</span><span class="s2">&quot;RAYTO&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span>
+<span class="o">....</span><span class="p">:</span> <span class="p">])</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">P</span><span class="o">.</span><span class="n">get_minmax_data</span><span class="p">()[</span><span class="s1">&#39;ymax&#39;</span><span class="p">]</span>
+<span class="mf">1.0</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="flatsurf.graphical.hyperbolic.CartesianPathPlotCommand">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flatsurf.graphical.hyperbolic.</span></span><span class="sig-name descname"><span class="pre">CartesianPathPlotCommand</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/graphical/hyperbolic.html#CartesianPathPlotCommand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.hyperbolic.CartesianPathPlotCommand" title="Permalink to this definition">#</a></dt>
+<dd><p>A plot command in the plot coordinate system.</p>
+<p>EXAMPLES:</p>
+<p>Move the cursor to the origin of the coordinate system:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.graphical.hyperbolic</span> <span class="kn">import</span> <span class="n">CartesianPathPlotCommand</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">P</span> <span class="o">=</span> <span class="n">CartesianPathPlotCommand</span><span class="p">(</span><span class="s2">&quot;MOVETO&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Draw a line segment to another point:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">P</span> <span class="o">=</span> <span class="n">CartesianPathPlotCommand</span><span class="p">(</span><span class="s2">&quot;LINETO&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Draw a ray from the current position in a specific direction:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">P</span> <span class="o">=</span> <span class="n">CartesianPathPlotCommand</span><span class="p">(</span><span class="s2">&quot;RAYTO&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Move the cursor to a point at infinity in a specific direction:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">P</span> <span class="o">=</span> <span class="n">CartesianPathPlotCommand</span><span class="p">(</span><span class="s2">&quot;MOVETOINFINITY&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>When already at a point at infinity, then this draws a line:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">P</span> <span class="o">=</span> <span class="n">CartesianPathPlotCommand</span><span class="p">(</span><span class="s2">&quot;RAYTO&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>When at a point at infinity, we can also draw a ray to a finite point:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">P</span> <span class="o">=</span> <span class="n">CartesianPathPlotCommand</span><span class="p">(</span><span class="s2">&quot;LINETO&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Finally, we can draw counterclockwise and clockwise sectors of the circle,
+i.e., arcs by specifying the other endpoint and the center of the circle:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">P</span> <span class="o">=</span> <span class="n">CartesianPathPlotCommand</span><span class="p">(</span><span class="s2">&quot;ARCTO&quot;</span><span class="p">,</span> <span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)))</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">P</span> <span class="o">=</span> <span class="n">CartesianPathPlotCommand</span><span class="p">(</span><span class="s2">&quot;RARCTO&quot;</span><span class="p">,</span> <span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)))</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#flatsurf.graphical.hyperbolic.CartesianPathPlot" title="flatsurf.graphical.hyperbolic.CartesianPathPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">CartesianPathPlot</span></code></a> which draws a sequence of such commands with
+matplotlib.</p>
+<p><a class="reference internal" href="#flatsurf.graphical.hyperbolic.HyperbolicPathPlotCommand.make_cartesian" title="flatsurf.graphical.hyperbolic.HyperbolicPathPlotCommand.make_cartesian"><code class="xref py py-meth docutils literal notranslate"><span class="pre">HyperbolicPathPlotCommand.make_cartesian()</span></code></a> to generate a sequence
+of such commands from a sequence of plot commands in the hyperbolic plane.</p>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="flatsurf.graphical.hyperbolic.CartesianPathPlotCommand.args">
+<span class="sig-name descname"><span class="pre">args</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span></em><a class="headerlink" href="#flatsurf.graphical.hyperbolic.CartesianPathPlotCommand.args" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="flatsurf.graphical.hyperbolic.CartesianPathPlotCommand.code">
+<span class="sig-name descname"><span class="pre">code</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#flatsurf.graphical.hyperbolic.CartesianPathPlotCommand.code" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="flatsurf.graphical.hyperbolic.HyperbolicPathPlotCommand">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flatsurf.graphical.hyperbolic.</span></span><span class="sig-name descname"><span class="pre">HyperbolicPathPlotCommand</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicPoint" title="flatsurf.geometry.hyperbolic.HyperbolicPoint"><span class="pre">HyperbolicPoint</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/graphical/hyperbolic.html#HyperbolicPathPlotCommand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.hyperbolic.HyperbolicPathPlotCommand" title="Permalink to this definition">#</a></dt>
+<dd><p>A step in a hyperbolic plot.</p>
+<p>Such a step is independent of the model chosen for the plot. It merely
+draws a segment (<code class="docutils literal notranslate"><span class="pre">LINETO</span></code>) in the hyperbolic plan or performs a movement
+without drawing a segment (<code class="docutils literal notranslate"><span class="pre">MOVETO</span></code>).</p>
+<p>Each command has a parameter, the point to which the command moves.</p>
+<p>A sequence of such commands cannot be plotted directly. It is first
+converted into a sequence of <a class="reference internal" href="#flatsurf.graphical.hyperbolic.CartesianPathPlotCommand" title="flatsurf.graphical.hyperbolic.CartesianPathPlotCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">CartesianPathPlotCommand</span></code></a> which
+realizes the commands in a specific hyperbolic model.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">HyperbolicPlane</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.graphical.hyperbolic</span> <span class="kn">import</span> <span class="n">HyperbolicPathPlotCommand</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">H</span> <span class="o">=</span> <span class="n">HyperbolicPlane</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">HyperbolicPathPlotCommand</span><span class="p">(</span><span class="s2">&quot;MOVETO&quot;</span><span class="p">,</span> <span class="n">H</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+<span class="n">HyperbolicPathPlotCommand</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="s1">&#39;MOVETO&#39;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.graphical.hyperbolic.HyperbolicPathPlotCommand.cartesian">
+<span class="sig-name descname"><span class="pre">cartesian</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cursor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stroke</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/graphical/hyperbolic.html#HyperbolicPathPlotCommand.cartesian"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.hyperbolic.HyperbolicPathPlotCommand.cartesian" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the sequence of commands that realizes this plot in the
+Cartesian plot coordinate system.</p>
+<p>INPUT:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">model</span></code> – one of <code class="docutils literal notranslate"><span class="pre">&quot;half_plane&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;klein&quot;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cursor</span></code> – a point in the hyperbolic plane or <code class="docutils literal notranslate"><span class="pre">None</span></code> (the
+default); assume that the cursor has been positioned at <code class="docutils literal notranslate"><span class="pre">cursor</span></code>
+before this command.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fill</span></code> – a boolean; whether to return commands that produce the
+correct polygon to represent the area of the polygon.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">stroke</span></code> – a boolean; whether to return commands that produce the
+correct polygon to represent the lines of the polygon.</p></li>
+</ul>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">HyperbolicPlane</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.graphical.hyperbolic</span> <span class="kn">import</span> <span class="n">HyperbolicPathPlotCommand</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">H</span> <span class="o">=</span> <span class="n">HyperbolicPlane</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">command</span> <span class="o">=</span> <span class="n">HyperbolicPathPlotCommand</span><span class="p">(</span><span class="s2">&quot;MOVETO&quot;</span><span class="p">,</span> <span class="n">H</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">command</span><span class="o">.</span><span class="n">cartesian</span><span class="p">(</span><span class="s2">&quot;half_plane&quot;</span><span class="p">)</span>
+<span class="p">[</span><span class="n">CartesianPathPlotCommand</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="s1">&#39;MOVETO&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="mf">0.000000000000000</span><span class="p">,</span> <span class="mf">0.000000000000000</span><span class="p">))]</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">command</span><span class="o">.</span><span class="n">cartesian</span><span class="p">(</span><span class="s2">&quot;klein&quot;</span><span class="p">)</span>
+<span class="p">[</span><span class="n">CartesianPathPlotCommand</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="s1">&#39;MOVETO&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="mf">0.000000000000000</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.00000000000000</span><span class="p">))]</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">command</span> <span class="o">=</span> <span class="n">HyperbolicPathPlotCommand</span><span class="p">(</span><span class="s2">&quot;LINETO&quot;</span><span class="p">,</span> <span class="n">H</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">command</span><span class="o">.</span><span class="n">cartesian</span><span class="p">(</span><span class="s2">&quot;half_plane&quot;</span><span class="p">,</span> <span class="n">cursor</span><span class="o">=</span><span class="n">H</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+<span class="p">[</span><span class="n">CartesianPathPlotCommand</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="s1">&#39;RARCTO&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">((</span><span class="mf">1.00000000000000</span><span class="p">,</span> <span class="mf">0.000000000000000</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.500000000000000</span><span class="p">,</span> <span class="mi">0</span><span class="p">)))]</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">command</span><span class="o">.</span><span class="n">cartesian</span><span class="p">(</span><span class="s2">&quot;klein&quot;</span><span class="p">,</span> <span class="n">cursor</span><span class="o">=</span><span class="n">H</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+<span class="p">[</span><span class="n">CartesianPathPlotCommand</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="s1">&#39;LINETO&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="mf">1.00000000000000</span><span class="p">,</span> <span class="mf">0.000000000000000</span><span class="p">))]</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">command</span> <span class="o">=</span> <span class="n">HyperbolicPathPlotCommand</span><span class="p">(</span><span class="s2">&quot;LINETO&quot;</span><span class="p">,</span> <span class="n">H</span><span class="p">(</span><span class="n">oo</span><span class="p">))</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">command</span><span class="o">.</span><span class="n">cartesian</span><span class="p">(</span><span class="s2">&quot;half_plane&quot;</span><span class="p">,</span> <span class="n">cursor</span><span class="o">=</span><span class="n">H</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+<span class="p">[</span><span class="n">CartesianPathPlotCommand</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="s1">&#39;RAYTO&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))]</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">command</span><span class="o">.</span><span class="n">cartesian</span><span class="p">(</span><span class="s2">&quot;klein&quot;</span><span class="p">,</span> <span class="n">cursor</span><span class="o">=</span><span class="n">H</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+<span class="p">[</span><span class="n">CartesianPathPlotCommand</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="s1">&#39;LINETO&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="mf">0.000000000000000</span><span class="p">,</span> <span class="mf">1.00000000000000</span><span class="p">))]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="flatsurf.graphical.hyperbolic.HyperbolicPathPlotCommand.code">
+<span class="sig-name descname"><span class="pre">code</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#flatsurf.graphical.hyperbolic.HyperbolicPathPlotCommand.code" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.graphical.hyperbolic.HyperbolicPathPlotCommand.create_move_cartesian">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_move_cartesian</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stroke</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/graphical/hyperbolic.html#HyperbolicPathPlotCommand.create_move_cartesian"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.hyperbolic.HyperbolicPathPlotCommand.create_move_cartesian" title="Permalink to this definition">#</a></dt>
+<dd><p>Return a list of <code class="xref py py-class docutils literal notranslate"><span class="pre">CartesianPathPlot.Command</span></code> that represent the
+open “segment” on the boundary of a polygon connecting <code class="docutils literal notranslate"><span class="pre">start</span></code> and
+<code class="docutils literal notranslate"><span class="pre">end</span></code>.</p>
+<p>This is a helper function for <a class="reference internal" href="#flatsurf.graphical.hyperbolic.HyperbolicPathPlotCommand.make_cartesian" title="flatsurf.graphical.hyperbolic.HyperbolicPathPlotCommand.make_cartesian"><code class="xref py py-meth docutils literal notranslate"><span class="pre">make_cartesian()</span></code></a>.</p>
+<p>INPUT:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">start</span></code> – a <code class="xref py py-class docutils literal notranslate"><span class="pre">flatsurf.geometry.HyperbolicPoint</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">end</span></code> – a <code class="xref py py-class docutils literal notranslate"><span class="pre">flatsurf.geometry.HyperbolicPoint</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">model</span></code> – one of <code class="docutils literal notranslate"><span class="pre">&quot;half_plane&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;klein&quot;</span></code> in which model to
+realize this segment</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">stroke</span></code> – a boolean (default: <code class="docutils literal notranslate"><span class="pre">True</span></code>); whether this is part of
+a stroke path that is not filled</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fill</span></code> – a boolean (default: <code class="docutils literal notranslate"><span class="pre">True</span></code>); whether this is part of a
+filled path that is not stroked</p></li>
+</ul>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">HyperbolicPlane</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.graphical.hyperbolic</span> <span class="kn">import</span> <span class="n">HyperbolicPathPlotCommand</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">H</span> <span class="o">=</span> <span class="n">HyperbolicPlane</span><span class="p">()</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">HyperbolicPathPlotCommand</span><span class="o">.</span><span class="n">create_move_cartesian</span><span class="p">(</span><span class="n">H</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">H</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="s2">&quot;half_plane&quot;</span><span class="p">,</span> <span class="n">stroke</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="p">[</span><span class="n">CartesianPathPlotCommand</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="s1">&#39;MOVETO&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="mf">1.00000000000000</span><span class="p">,</span> <span class="mf">0.000000000000000</span><span class="p">))]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.graphical.hyperbolic.HyperbolicPathPlotCommand.create_segment_cartesian">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_segment_cartesian</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/graphical/hyperbolic.html#HyperbolicPathPlotCommand.create_segment_cartesian"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.hyperbolic.HyperbolicPathPlotCommand.create_segment_cartesian" title="Permalink to this definition">#</a></dt>
+<dd><p>Return a sequence of <a class="reference internal" href="#flatsurf.graphical.hyperbolic.CartesianPathPlotCommand" title="flatsurf.graphical.hyperbolic.CartesianPathPlotCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">CartesianPathPlotCommand</span></code></a> that represent
+the closed boundary of a <code class="xref py py-class docutils literal notranslate"><span class="pre">HyperbolicConvexPolygon</span></code>, namely the segment
+to <code class="docutils literal notranslate"><span class="pre">end</span></code> (from the previous position <code class="docutils literal notranslate"><span class="pre">start</span></code>.)</p>
+<p>This is a helper function for <a class="reference internal" href="#flatsurf.graphical.hyperbolic.HyperbolicPathPlotCommand.cartesian" title="flatsurf.graphical.hyperbolic.HyperbolicPathPlotCommand.cartesian"><code class="xref py py-meth docutils literal notranslate"><span class="pre">cartesian()</span></code></a>.</p>
+<p>INPUT:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">start</span></code> – a <code class="xref py py-class docutils literal notranslate"><span class="pre">flatsurf.geometry.HyperbolicPoint</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">end</span></code> – a <code class="xref py py-class docutils literal notranslate"><span class="pre">flatsurf.geometry.HyperbolicPoint</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">model</span></code> – one of <code class="docutils literal notranslate"><span class="pre">&quot;half_plane&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;klein&quot;</span></code> in which model to
+realize this segment</p></li>
+</ul>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">HyperbolicPlane</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.graphical.hyperbolic</span> <span class="kn">import</span> <span class="n">HyperbolicPathPlotCommand</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">H</span> <span class="o">=</span> <span class="n">HyperbolicPlane</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>A finite segment in the hyperbolic plane; note that we assume that
+“cursor” is at <code class="docutils literal notranslate"><span class="pre">start</span></code>, so only the command that goes to <code class="docutils literal notranslate"><span class="pre">end</span></code> is
+returned:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">HyperbolicPathPlotCommand</span><span class="o">.</span><span class="n">create_segment_cartesian</span><span class="p">(</span><span class="n">H</span><span class="p">(</span><span class="n">I</span><span class="p">),</span> <span class="n">H</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">I</span><span class="p">),</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;half_plane&quot;</span><span class="p">)</span>
+<span class="p">[</span><span class="n">CartesianPathPlotCommand</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="s1">&#39;LINETO&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="mf">0.000000000000000</span><span class="p">,</span> <span class="mf">2.00000000000000</span><span class="p">))]</span>
+</pre></div>
+</div>
+<p>An infinite segment:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">HyperbolicPathPlotCommand</span><span class="o">.</span><span class="n">create_segment_cartesian</span><span class="p">(</span><span class="n">H</span><span class="p">(</span><span class="n">I</span><span class="p">),</span> <span class="n">H</span><span class="p">(</span><span class="n">oo</span><span class="p">),</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;half_plane&quot;</span><span class="p">)</span>
+<span class="p">[</span><span class="n">CartesianPathPlotCommand</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="s1">&#39;RAYTO&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))]</span>
+</pre></div>
+</div>
+<p>A segment that is infinite on both ends; it looks the same because the
+starting point is not rendered here:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">HyperbolicPathPlotCommand</span><span class="o">.</span><span class="n">create_segment_cartesian</span><span class="p">(</span><span class="n">H</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">H</span><span class="p">(</span><span class="n">oo</span><span class="p">),</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;half_plane&quot;</span><span class="p">)</span>
+<span class="p">[</span><span class="n">CartesianPathPlotCommand</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="s1">&#39;RAYTO&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))]</span>
+</pre></div>
+</div>
+<p>Note that this is a “closed” boundary of the polygon that is left of
+that segment unlike the “open” version produced by
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">_hyperbolic_move()</span></code> which contains the entire positive real axis:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">HyperbolicPathPlotCommand</span><span class="o">.</span><span class="n">create_move_cartesian</span><span class="p">(</span><span class="n">H</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">H</span><span class="p">(</span><span class="n">oo</span><span class="p">),</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;half_plane&quot;</span><span class="p">,</span> <span class="n">stroke</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="p">[</span><span class="n">CartesianPathPlotCommand</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="s1">&#39;MOVETOINFINITY&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))]</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">HyperbolicPathPlotCommand</span><span class="o">.</span><span class="n">create_move_cartesian</span><span class="p">(</span><span class="n">H</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">H</span><span class="p">(</span><span class="n">oo</span><span class="p">),</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;half_plane&quot;</span><span class="p">,</span> <span class="n">stroke</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="p">[</span><span class="n">CartesianPathPlotCommand</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="s1">&#39;RAYTO&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span>
+ <span class="n">CartesianPathPlotCommand</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="s1">&#39;RAYTO&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))]</span>
+</pre></div>
+</div>
+<p>The corresponding difference in the Klein model:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">HyperbolicPathPlotCommand</span><span class="o">.</span><span class="n">create_segment_cartesian</span><span class="p">(</span><span class="n">H</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">H</span><span class="p">(</span><span class="n">oo</span><span class="p">),</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;klein&quot;</span><span class="p">)</span>
+<span class="p">[</span><span class="n">CartesianPathPlotCommand</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="s1">&#39;LINETO&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="mf">0.000000000000000</span><span class="p">,</span> <span class="mf">1.00000000000000</span><span class="p">))]</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">HyperbolicPathPlotCommand</span><span class="o">.</span><span class="n">create_move_cartesian</span><span class="p">(</span><span class="n">H</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">H</span><span class="p">(</span><span class="n">oo</span><span class="p">),</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;klein&quot;</span><span class="p">,</span> <span class="n">stroke</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="p">[</span><span class="n">CartesianPathPlotCommand</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="s1">&#39;MOVETO&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="mf">0.000000000000000</span><span class="p">,</span> <span class="mf">1.00000000000000</span><span class="p">))]</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">HyperbolicPathPlotCommand</span><span class="o">.</span><span class="n">create_move_cartesian</span><span class="p">(</span><span class="n">H</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">H</span><span class="p">(</span><span class="n">oo</span><span class="p">),</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;klein&quot;</span><span class="p">,</span> <span class="n">stroke</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="p">[</span><span class="n">CartesianPathPlotCommand</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="s1">&#39;ARCTO&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">((</span><span class="mf">0.000000000000000</span><span class="p">,</span> <span class="mf">1.00000000000000</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)))]</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Sometimes there are problems on a very small scale due to our usage
+of RR internally. We should probably use ball arithmetic to make
+things more robust.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.graphical.hyperbolic.HyperbolicPathPlotCommand.make_cartesian">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">make_cartesian</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">commands</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stroke</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/graphical/hyperbolic.html#HyperbolicPathPlotCommand.make_cartesian"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.hyperbolic.HyperbolicPathPlotCommand.make_cartesian" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the sequence of <a class="reference internal" href="#flatsurf.graphical.hyperbolic.CartesianPathPlotCommand" title="flatsurf.graphical.hyperbolic.CartesianPathPlotCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">CartesianPathPlotCommand</span></code></a> that realizes
+the hyperbolic <code class="docutils literal notranslate"><span class="pre">commands</span></code> in the <code class="docutils literal notranslate"><span class="pre">model</span></code>.</p>
+<p>INPUT:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">commands</span></code> – a sequence of <a class="reference internal" href="#flatsurf.graphical.hyperbolic.HyperbolicPathPlotCommand" title="flatsurf.graphical.hyperbolic.HyperbolicPathPlotCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">HyperbolicPathPlotCommand</span></code></a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">model</span></code> – one of <code class="docutils literal notranslate"><span class="pre">&quot;half_plane&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;klein&quot;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fill</span></code> – a boolean; whether to return commands that produce the
+correct polygon to represent the area of the polygon.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">stroke</span></code> – a boolean; whether to return commands that produce the
+correct polygon to represent the lines of the polygon.</p></li>
+</ul>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">HyperbolicPlane</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.graphical.hyperbolic</span> <span class="kn">import</span> <span class="n">HyperbolicPathPlotCommand</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">H</span> <span class="o">=</span> <span class="n">HyperbolicPlane</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>A finite closed triangle in the hyperbolic plane:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">commands</span> <span class="o">=</span> <span class="p">[</span>
+<span class="o">....</span><span class="p">:</span>     <span class="n">HyperbolicPathPlotCommand</span><span class="p">(</span><span class="s2">&quot;MOVETO&quot;</span><span class="p">,</span> <span class="n">H</span><span class="p">(</span><span class="n">I</span><span class="p">)),</span>
+<span class="o">....</span><span class="p">:</span>     <span class="n">HyperbolicPathPlotCommand</span><span class="p">(</span><span class="s2">&quot;LINETO&quot;</span><span class="p">,</span> <span class="n">H</span><span class="p">(</span><span class="n">I</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)),</span>
+<span class="o">....</span><span class="p">:</span>     <span class="n">HyperbolicPathPlotCommand</span><span class="p">(</span><span class="s2">&quot;LINETO&quot;</span><span class="p">,</span> <span class="n">H</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">I</span><span class="p">)),</span>
+<span class="o">....</span><span class="p">:</span>     <span class="n">HyperbolicPathPlotCommand</span><span class="p">(</span><span class="s2">&quot;LINETO&quot;</span><span class="p">,</span> <span class="n">H</span><span class="p">(</span><span class="n">I</span><span class="p">)),</span>
+<span class="o">....</span><span class="p">:</span> <span class="p">]</span>
+</pre></div>
+</div>
+<p>And its corresponding plot in different models:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">HyperbolicPathPlotCommand</span><span class="o">.</span><span class="n">make_cartesian</span><span class="p">(</span><span class="n">commands</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;half_plane&quot;</span><span class="p">)</span>
+<span class="p">[</span><span class="n">CartesianPathPlotCommand</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="s1">&#39;MOVETO&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="mf">0.000000000000000</span><span class="p">,</span> <span class="mf">1.00000000000000</span><span class="p">)),</span>
+ <span class="n">CartesianPathPlotCommand</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="s1">&#39;RARCTO&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">((</span><span class="mf">1.00000000000000</span><span class="p">,</span> <span class="mf">1.00000000000000</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.500000000000000</span><span class="p">,</span> <span class="mi">0</span><span class="p">))),</span>
+ <span class="n">CartesianPathPlotCommand</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="s1">&#39;ARCTO&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">((</span><span class="mf">0.000000000000000</span><span class="p">,</span> <span class="mf">2.00000000000000</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.00000000000000</span><span class="p">,</span> <span class="mi">0</span><span class="p">))),</span>
+ <span class="n">CartesianPathPlotCommand</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="s1">&#39;LINETO&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="mf">0.000000000000000</span><span class="p">,</span> <span class="mf">1.00000000000000</span><span class="p">))]</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">HyperbolicPathPlotCommand</span><span class="o">.</span><span class="n">make_cartesian</span><span class="p">(</span><span class="n">commands</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;klein&quot;</span><span class="p">)</span>
+<span class="p">[</span><span class="n">CartesianPathPlotCommand</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="s1">&#39;MOVETO&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="mf">0.000000000000000</span><span class="p">,</span> <span class="mf">0.000000000000000</span><span class="p">)),</span>
+ <span class="n">CartesianPathPlotCommand</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="s1">&#39;LINETO&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="mf">0.666666666666667</span><span class="p">,</span> <span class="mf">0.333333333333333</span><span class="p">)),</span>
+ <span class="n">CartesianPathPlotCommand</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="s1">&#39;LINETO&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="mf">0.000000000000000</span><span class="p">,</span> <span class="mf">0.600000000000000</span><span class="p">)),</span>
+ <span class="n">CartesianPathPlotCommand</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="s1">&#39;LINETO&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="mf">0.000000000000000</span><span class="p">,</span> <span class="mf">0.000000000000000</span><span class="p">))]</span>
+</pre></div>
+</div>
+<p>Asking for a polygon that works for both fill and stroke is not always
+possible:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">commands</span> <span class="o">=</span> <span class="p">[</span>
+<span class="o">....</span><span class="p">:</span>     <span class="n">HyperbolicPathPlotCommand</span><span class="p">(</span><span class="s2">&quot;MOVETO&quot;</span><span class="p">,</span> <span class="n">H</span><span class="p">(</span><span class="mi">0</span><span class="p">)),</span>
+<span class="o">....</span><span class="p">:</span>     <span class="n">HyperbolicPathPlotCommand</span><span class="p">(</span><span class="s2">&quot;MOVETO&quot;</span><span class="p">,</span> <span class="n">H</span><span class="p">(</span><span class="mi">1</span><span class="p">)),</span>
+<span class="o">....</span><span class="p">:</span>     <span class="n">HyperbolicPathPlotCommand</span><span class="p">(</span><span class="s2">&quot;LINETO&quot;</span><span class="p">,</span> <span class="n">H</span><span class="p">(</span><span class="n">oo</span><span class="p">)),</span>
+<span class="o">....</span><span class="p">:</span>     <span class="n">HyperbolicPathPlotCommand</span><span class="p">(</span><span class="s2">&quot;LINETO&quot;</span><span class="p">,</span> <span class="n">H</span><span class="p">(</span><span class="mi">0</span><span class="p">)),</span>
+<span class="o">....</span><span class="p">:</span> <span class="p">]</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">HyperbolicPathPlotCommand</span><span class="o">.</span><span class="n">make_cartesian</span><span class="p">(</span><span class="n">commands</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;half_plane&quot;</span><span class="p">)</span>
+<span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+<span class="o">...</span>
+<span class="ne">ValueError</span><span class="p">:</span> <span class="n">exactly</span> <span class="n">one</span> <span class="n">of</span> <span class="n">fill</span> <span class="o">&amp;</span> <span class="n">stroke</span> <span class="n">must</span> <span class="n">be</span> <span class="nb">set</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">HyperbolicPathPlotCommand</span><span class="o">.</span><span class="n">make_cartesian</span><span class="p">(</span><span class="n">commands</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;half_plane&quot;</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">stroke</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="p">[</span><span class="n">CartesianPathPlotCommand</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="s1">&#39;MOVETO&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="mf">0.000000000000000</span><span class="p">,</span> <span class="mf">0.000000000000000</span><span class="p">)),</span>
+ <span class="n">CartesianPathPlotCommand</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="s1">&#39;MOVETO&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="mf">1.00000000000000</span><span class="p">,</span> <span class="mf">0.000000000000000</span><span class="p">)),</span>
+ <span class="n">CartesianPathPlotCommand</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="s1">&#39;RAYTO&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span>
+ <span class="n">CartesianPathPlotCommand</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="s1">&#39;LINETO&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="mf">0.000000000000000</span><span class="p">,</span> <span class="mf">0.000000000000000</span><span class="p">))]</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">HyperbolicPathPlotCommand</span><span class="o">.</span><span class="n">make_cartesian</span><span class="p">(</span><span class="n">commands</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;half_plane&quot;</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">stroke</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="p">[</span><span class="n">CartesianPathPlotCommand</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="s1">&#39;MOVETO&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="mf">0.000000000000000</span><span class="p">,</span> <span class="mf">0.000000000000000</span><span class="p">)),</span>
+ <span class="n">CartesianPathPlotCommand</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="s1">&#39;LINETO&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="mf">1.00000000000000</span><span class="p">,</span> <span class="mf">0.000000000000000</span><span class="p">)),</span>
+ <span class="n">CartesianPathPlotCommand</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="s1">&#39;RAYTO&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span>
+ <span class="n">CartesianPathPlotCommand</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="s1">&#39;LINETO&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="mf">0.000000000000000</span><span class="p">,</span> <span class="mf">0.000000000000000</span><span class="p">))]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="flatsurf.graphical.hyperbolic.HyperbolicPathPlotCommand.target">
+<span class="sig-name descname"><span class="pre">target</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicPoint" title="flatsurf.geometry.hyperbolic.HyperbolicPoint"><span class="pre">HyperbolicPoint</span></a></em><a class="headerlink" href="#flatsurf.graphical.hyperbolic.HyperbolicPathPlotCommand.target" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="flatsurf.graphical.hyperbolic.hyperbolic_path">
+<span class="sig-prename descclassname"><span class="pre">flatsurf.graphical.hyperbolic.</span></span><span class="sig-name descname"><span class="pre">hyperbolic_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">commands</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'half_plane'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">options</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/graphical/hyperbolic.html#hyperbolic_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.hyperbolic.hyperbolic_path" title="Permalink to this definition">#</a></dt>
+<dd><p>Return a SageMath <code class="docutils literal notranslate"><span class="pre">Graphics</span></code> object that represents the hyperbolic path
+encoded by <code class="docutils literal notranslate"><span class="pre">commands</span></code>.</p>
+<p>INPUT:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">commands</span></code> – a sequence of <a class="reference internal" href="#flatsurf.graphical.hyperbolic.HyperbolicPathPlotCommand" title="flatsurf.graphical.hyperbolic.HyperbolicPathPlotCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">HyperbolicPathPlotCommand</span></code></a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">model</span></code> – one of <code class="docutils literal notranslate"><span class="pre">&quot;half_plane&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;klein&quot;</span></code></p></li>
+</ul>
+<p>Many additional keyword arguments are understood, see
+<a class="reference internal" href="#flatsurf.graphical.hyperbolic.CartesianPathPlot" title="flatsurf.graphical.hyperbolic.CartesianPathPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">CartesianPathPlot</span></code></a> for details.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.graphical.hyperbolic</span> <span class="kn">import</span> <span class="n">HyperbolicPathPlotCommand</span><span class="p">,</span> <span class="n">hyperbolic_path</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">HyperbolicPlane</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">H</span> <span class="o">=</span> <span class="n">HyperbolicPlane</span><span class="p">()</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">hyperbolic_path</span><span class="p">([</span>
+<span class="o">....</span><span class="p">:</span>     <span class="n">HyperbolicPathPlotCommand</span><span class="p">(</span><span class="s2">&quot;MOVETO&quot;</span><span class="p">,</span> <span class="n">H</span><span class="p">(</span><span class="mi">0</span><span class="p">)),</span>
+<span class="o">....</span><span class="p">:</span>     <span class="n">HyperbolicPathPlotCommand</span><span class="p">(</span><span class="s2">&quot;LINETO&quot;</span><span class="p">,</span> <span class="n">H</span><span class="p">(</span><span class="n">I</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)),</span>
+<span class="o">....</span><span class="p">:</span>     <span class="n">HyperbolicPathPlotCommand</span><span class="p">(</span><span class="s2">&quot;LINETO&quot;</span><span class="p">,</span> <span class="n">H</span><span class="p">(</span><span class="n">oo</span><span class="p">)),</span>
+<span class="o">....</span><span class="p">:</span>     <span class="n">HyperbolicPathPlotCommand</span><span class="p">(</span><span class="s2">&quot;LINETO&quot;</span><span class="p">,</span> <span class="n">H</span><span class="p">(</span><span class="n">I</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)),</span>
+<span class="o">....</span><span class="p">:</span>     <span class="n">HyperbolicPathPlotCommand</span><span class="p">(</span><span class="s2">&quot;LINETO&quot;</span><span class="p">,</span> <span class="n">H</span><span class="p">(</span><span class="mi">0</span><span class="p">)),</span>
+<span class="o">....</span><span class="p">:</span> <span class="p">])</span>
+<span class="o">...</span><span class="n">Graphics</span> <span class="nb">object</span> <span class="n">consisting</span> <span class="n">of</span> <span class="mi">2</span> <span class="n">graphics</span> <span class="n">primitives</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.HyperbolicConvexSet.plot()</span></code></p>
+</div>
+</dd></dl>
+
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="polygon.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title"><code class="docutils literal notranslate"><span class="pre">polygon</span></code></div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="../graphical.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">The flatsurf.graphical Package</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2016-2022, the sage-flatsurf authors
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">hyperbolic</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.graphical.hyperbolic.CartesianPathPlot"><code class="docutils literal notranslate"><span class="pre">CartesianPathPlot</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.graphical.hyperbolic.CartesianPathPlot.get_minmax_data"><code class="docutils literal notranslate"><span class="pre">CartesianPathPlot.get_minmax_data</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flatsurf.graphical.hyperbolic.CartesianPathPlotCommand"><code class="docutils literal notranslate"><span class="pre">CartesianPathPlotCommand</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.graphical.hyperbolic.CartesianPathPlotCommand.args"><code class="docutils literal notranslate"><span class="pre">CartesianPathPlotCommand.args</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.hyperbolic.CartesianPathPlotCommand.code"><code class="docutils literal notranslate"><span class="pre">CartesianPathPlotCommand.code</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flatsurf.graphical.hyperbolic.HyperbolicPathPlotCommand"><code class="docutils literal notranslate"><span class="pre">HyperbolicPathPlotCommand</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.graphical.hyperbolic.HyperbolicPathPlotCommand.cartesian"><code class="docutils literal notranslate"><span class="pre">HyperbolicPathPlotCommand.cartesian()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.hyperbolic.HyperbolicPathPlotCommand.code"><code class="docutils literal notranslate"><span class="pre">HyperbolicPathPlotCommand.code</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.hyperbolic.HyperbolicPathPlotCommand.create_move_cartesian"><code class="docutils literal notranslate"><span class="pre">HyperbolicPathPlotCommand.create_move_cartesian()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.hyperbolic.HyperbolicPathPlotCommand.create_segment_cartesian"><code class="docutils literal notranslate"><span class="pre">HyperbolicPathPlotCommand.create_segment_cartesian()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.hyperbolic.HyperbolicPathPlotCommand.make_cartesian"><code class="docutils literal notranslate"><span class="pre">HyperbolicPathPlotCommand.make_cartesian()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.graphical.hyperbolic.HyperbolicPathPlotCommand.target"><code class="docutils literal notranslate"><span class="pre">HyperbolicPathPlotCommand.target</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flatsurf.graphical.hyperbolic.hyperbolic_path"><code class="docutils literal notranslate"><span class="pre">hyperbolic_path()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/scripts/furo.js"></script>
+    </body>
+</html>

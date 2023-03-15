@@ -190,6 +190,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../geometry/gl2r_orbit_closure.html"><code class="docutils literal notranslate"><span class="pre">gl2r_orbit_closure</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/half_dilation_surface.html"><code class="docutils literal notranslate"><span class="pre">half_dilation_surface</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/half_translation_surface.html"><code class="docutils literal notranslate"><span class="pre">half_translation_surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/hyperbolic.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/interval_exchange_transformation.html"><code class="docutils literal notranslate"><span class="pre">interval_exchange_transformation</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/l_infinity_delaunay_cells.html"><code class="docutils literal notranslate"><span class="pre">l_infinity_delaunay_cells</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/mappings.html"><code class="docutils literal notranslate"><span class="pre">mappings</span></code></a></li>
@@ -216,6 +217,7 @@
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../graphical.html">The flatsurf.graphical Package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../graphical/hyperbolic.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../graphical/polygon.html"><code class="docutils literal notranslate"><span class="pre">polygon</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../graphical/straight_line_trajectory.html"><code class="docutils literal notranslate"><span class="pre">straight_line_trajectory</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../graphical/surface_point.html"><code class="docutils literal notranslate"><span class="pre">surface_point</span></code></a></li>
@@ -494,7 +496,7 @@ Assume that a rational triangle <span class="math notranslate nohighlight">\(\De
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[a: (-1/6*c^9 + 19/12*c^7 - 31/6*c^5 + 20/3*c^3 - 11/4*c ~ 0.021843021)] [b: (1/12*c^9 - 3/4*c^7 + 7/3*c^5 - 3*c^3 + 17/12*c ~ 0.021308356)] [c: (1/12*c^9 - 11/12*c^7 + 7/2*c^5 - 16/3*c^3 + 8/3*c ~ 0.0060649905)] [d: (-1/6*c^9 + 5/3*c^7 - 71/12*c^5 + 35/4*c^3 - 53/12*c ~ 0.011638631)] [e: (1/6*c^9 - 5/3*c^7 + 35/6*c^5 - 33/4*c^3 + 15/4*c ~ 0.014008439)] [f: (1/12*c^9 - 3/4*c^7 + 7/3*c^5 - 3*c^3 + 17/12*c ~ 0.021308356)] [g: (-1/12*c^7 + 2/3*c^5 - 19/12*c^3 + 1*c ~ 0.035851459)] [h: (-1/12*c^9 + 11/12*c^7 - 43/12*c^5 + 35/6*c^3 - 10/3*c ~ 0.019582080)] [i: (-1/12*c^3 + 1/3*c ~ 0.013364908)] / [g] [b] [d] [i] [e] [a] [c] [h] [f]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[a: (-1/20*c^9 + 19/40*c^7 - 31/20*c^5 + 2*c^3 - 33/40*c ~ 0.0065529062)] [b: (1/40*c^9 - 9/40*c^7 + 7/10*c^5 - 9/10*c^3 + 17/40*c ~ 0.0063925068)] [c: (1/40*c^9 - 11/40*c^7 + 21/20*c^5 - 8/5*c^3 + 4/5*c ~ 0.0018194971)] [d: (-1/20*c^9 + 1/2*c^7 - 71/40*c^5 + 21/8*c^3 - 53/40*c ~ 0.0034915894)] [e: (1/20*c^9 - 1/2*c^7 + 7/4*c^5 - 99/40*c^3 + 9/8*c ~ 0.0042025316)] [f: (1/40*c^9 - 9/40*c^7 + 7/10*c^5 - 9/10*c^3 + 17/40*c ~ 0.0063925068)] [g: (-1/40*c^7 + 1/5*c^5 - 19/40*c^3 + 3/10*c ~ 0.010755438)] [h: (-1/40*c^9 + 11/40*c^7 - 43/40*c^5 + 7/4*c^3 - 1*c ~ 0.0058746239)] [i: (-1/40*c^3 + 1/10*c ~ 0.0040094723)] / [g] [b] [d] [i] [e] [a] [c] [h] [f]
 </pre></div>
 </div>
 </div>
@@ -514,7 +516,7 @@ Assume that a rational triangle <span class="math notranslate nohighlight">\(\De
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[b: (1/12*c^9 - 3/4*c^7 + 7/3*c^5 - 3*c^3 + 17/12*c ~ 0.021308356)] [c: (1/12*c^9 - 11/12*c^7 + 7/2*c^5 - 16/3*c^3 + 8/3*c ~ 0.0060649905)] [d: (-1/6*c^9 + 5/3*c^7 - 71/12*c^5 + 35/4*c^3 - 53/12*c ~ 0.011638631)] [e: (1/6*c^9 - 5/3*c^7 + 35/6*c^5 - 33/4*c^3 + 15/4*c ~ 0.014008439)] [f: (1/12*c^9 - 3/4*c^7 + 7/3*c^5 - 3*c^3 + 17/12*c ~ 0.021308356)] [a: (-1/6*c^9 + 19/12*c^7 - 31/6*c^5 + 20/3*c^3 - 11/4*c ~ 0.021843021)] [g: (1/6*c^9 - 5/3*c^7 + 35/6*c^5 - 33/4*c^3 + 15/4*c ~ 0.014008439)] [h: (-1/12*c^9 + 11/12*c^7 - 43/12*c^5 + 35/6*c^3 - 10/3*c ~ 0.019582080)] [i: (-1/12*c^3 + 1/3*c ~ 0.013364908)] / [g] [b] [d] [i] [e] [a] [c] [h] [f]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[b: (1/40*c^9 - 9/40*c^7 + 7/10*c^5 - 9/10*c^3 + 17/40*c ~ 0.0063925068)] [c: (1/40*c^9 - 11/40*c^7 + 21/20*c^5 - 8/5*c^3 + 4/5*c ~ 0.0018194971)] [d: (-1/20*c^9 + 1/2*c^7 - 71/40*c^5 + 21/8*c^3 - 53/40*c ~ 0.0034915894)] [e: (1/20*c^9 - 1/2*c^7 + 7/4*c^5 - 99/40*c^3 + 9/8*c ~ 0.0042025316)] [f: (1/40*c^9 - 9/40*c^7 + 7/10*c^5 - 9/10*c^3 + 17/40*c ~ 0.0063925068)] [a: (-1/20*c^9 + 19/40*c^7 - 31/20*c^5 + 2*c^3 - 33/40*c ~ 0.0065529062)] [g: (1/20*c^9 - 1/2*c^7 + 7/4*c^5 - 99/40*c^3 + 9/8*c ~ 0.0042025316)] [h: (-1/40*c^9 + 11/40*c^7 - 43/40*c^5 + 7/4*c^3 - 1*c ~ 0.0058746239)] [i: (-1/40*c^3 + 1/10*c ~ 0.0040094723)] / [g] [b] [d] [i] [e] [a] [c] [h] [f]
 </pre></div>
 </div>
 </div>
@@ -528,7 +530,7 @@ Assume that a rational triangle <span class="math notranslate nohighlight">\(\De
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[b: (-1/12*c^9 + 11/12*c^7 - 7/2*c^5 + 21/4*c^3 - 7/3*c ~ 0.0072999173)] [c: (1/12*c^9 - 11/12*c^7 + 7/2*c^5 - 16/3*c^3 + 8/3*c ~ 0.0060649905)] [d: (-1/6*c^9 + 5/3*c^7 - 71/12*c^5 + 35/4*c^3 - 53/12*c ~ 0.011638631)] [e: (1/6*c^9 - 5/3*c^7 + 35/6*c^5 - 33/4*c^3 + 15/4*c ~ 0.014008439)] [f: (1/12*c^9 - 3/4*c^7 + 7/3*c^5 - 3*c^3 + 17/12*c ~ 0.021308356)] [a: (-1/6*c^9 + 19/12*c^7 - 31/6*c^5 + 20/3*c^3 - 11/4*c ~ 0.021843021)] [g: (1/6*c^9 - 5/3*c^7 + 35/6*c^5 - 33/4*c^3 + 15/4*c ~ 0.014008439)] [h: (-1/12*c^9 + 11/12*c^7 - 43/12*c^5 + 35/6*c^3 - 10/3*c ~ 0.019582080)] [i: (-1/12*c^3 + 1/3*c ~ 0.013364908)] / [g] [b] [d] [i] [e] [a] [c] [h] [f]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[b: (-1/40*c^9 + 11/40*c^7 - 21/20*c^5 + 63/40*c^3 - 7/10*c ~ 0.0021899752)] [c: (1/40*c^9 - 11/40*c^7 + 21/20*c^5 - 8/5*c^3 + 4/5*c ~ 0.0018194971)] [d: (-1/20*c^9 + 1/2*c^7 - 71/40*c^5 + 21/8*c^3 - 53/40*c ~ 0.0034915894)] [e: (1/20*c^9 - 1/2*c^7 + 7/4*c^5 - 99/40*c^3 + 9/8*c ~ 0.0042025316)] [f: (1/40*c^9 - 9/40*c^7 + 7/10*c^5 - 9/10*c^3 + 17/40*c ~ 0.0063925068)] [a: (-1/20*c^9 + 19/40*c^7 - 31/20*c^5 + 2*c^3 - 33/40*c ~ 0.0065529062)] [g: (1/20*c^9 - 1/2*c^7 + 7/4*c^5 - 99/40*c^3 + 9/8*c ~ 0.0042025316)] [h: (-1/40*c^9 + 11/40*c^7 - 43/40*c^5 + 7/4*c^3 - 1*c ~ 0.0058746239)] [i: (-1/40*c^3 + 1/10*c ~ 0.0040094723)] / [g] [b] [d] [i] [e] [a] [c] [h] [f]
 </pre></div>
 </div>
 </div>
@@ -544,7 +546,7 @@ Assume that a rational triangle <span class="math notranslate nohighlight">\(\De
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[d: (-1/6*c^9 + 5/3*c^7 - 71/12*c^5 + 35/4*c^3 - 53/12*c ~ 0.011638631)] [e: (1/6*c^9 - 5/3*c^7 + 35/6*c^5 - 33/4*c^3 + 15/4*c ~ 0.014008439)] [f: (1/12*c^9 - 3/4*c^7 + 7/3*c^5 - 3*c^3 + 17/12*c ~ 0.021308356)] [a: (-1/6*c^9 + 19/12*c^7 - 31/6*c^5 + 20/3*c^3 - 11/4*c ~ 0.021843021)] [b: (-1/12*c^9 + 11/12*c^7 - 7/2*c^5 + 21/4*c^3 - 7/3*c ~ 0.0072999173)] [c: (1/12*c^9 - 11/12*c^7 + 7/2*c^5 - 16/3*c^3 + 8/3*c ~ 0.0060649905)] [g: (1/6*c^9 - 5/3*c^7 + 35/6*c^5 - 49/6*c^3 + 41/12*c ~ 0.00064353093)] [h: (-1/12*c^9 + 11/12*c^7 - 43/12*c^5 + 35/6*c^3 - 10/3*c ~ 0.019582080)] [i: (-1/12*c^3 + 1/3*c ~ 0.013364908)] / [g] [b] [d] [i] [e] [a] [c] [h] [f]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[d: (-1/20*c^9 + 1/2*c^7 - 71/40*c^5 + 21/8*c^3 - 53/40*c ~ 0.0034915894)] [e: (1/20*c^9 - 1/2*c^7 + 7/4*c^5 - 99/40*c^3 + 9/8*c ~ 0.0042025316)] [f: (1/40*c^9 - 9/40*c^7 + 7/10*c^5 - 9/10*c^3 + 17/40*c ~ 0.0063925068)] [a: (-1/20*c^9 + 19/40*c^7 - 31/20*c^5 + 2*c^3 - 33/40*c ~ 0.0065529062)] [b: (-1/40*c^9 + 11/40*c^7 - 21/20*c^5 + 63/40*c^3 - 7/10*c ~ 0.0021899752)] [c: (1/40*c^9 - 11/40*c^7 + 21/20*c^5 - 8/5*c^3 + 4/5*c ~ 0.0018194971)] [g: (1/20*c^9 - 1/2*c^7 + 7/4*c^5 - 49/20*c^3 + 41/40*c ~ 0.00019305928)] [h: (-1/40*c^9 + 11/40*c^7 - 43/40*c^5 + 7/4*c^3 - 1*c ~ 0.0058746239)] [i: (-1/40*c^3 + 1/10*c ~ 0.0040094723)] / [g] [b] [d] [i] [e] [a] [c] [h] [f]
 </pre></div>
 </div>
 </div>
@@ -566,7 +568,7 @@ Assume that a rational triangle <span class="math notranslate nohighlight">\(\De
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[f: (1/12*c^9 - 11/12*c^7 + 7/2*c^5 - 16/3*c^3 + 8/3*c ~ 0.0060649905)] [a: (-1/6*c^9 + 19/12*c^7 - 31/6*c^5 + 20/3*c^3 - 11/4*c ~ 0.021843021)] [d: (-5/12*c^9 + 49/12*c^7 - 169/12*c^5 + 119/6*c^3 - 107/12*c ~ 0.0030516523)] [b: (1/3*c^9 - 19/6*c^7 + 127/12*c^5 - 175/12*c^3 + 79/12*c ~ 0.0042482650)] [c: (1/12*c^9 - 11/12*c^7 + 7/2*c^5 - 16/3*c^3 + 8/3*c ~ 0.0060649905)] [g: (1/6*c^9 - 5/3*c^7 + 35/6*c^5 - 49/6*c^3 + 41/12*c ~ 0.00064353093)] [h: (-1/12*c^9 + 11/12*c^7 - 43/12*c^5 + 35/6*c^3 - 10/3*c ~ 0.019582080)] [e: (1/12*c^9 - 11/12*c^7 + 7/2*c^5 - 16/3*c^3 + 8/3*c ~ 0.0060649905)] [i: (-1/12*c^9 + 11/12*c^7 - 7/2*c^5 + 21/4*c^3 - 7/3*c ~ 0.0072999173)] / [e] [a] [c] [h] [i] [b] [g] [d] [f]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[f: (1/40*c^9 - 11/40*c^7 + 21/20*c^5 - 8/5*c^3 + 4/5*c ~ 0.0018194971)] [a: (-1/20*c^9 + 19/40*c^7 - 31/20*c^5 + 2*c^3 - 33/40*c ~ 0.0065529062)] [d: (-1/8*c^9 + 49/40*c^7 - 169/40*c^5 + 119/20*c^3 - 107/40*c ~ 0.00091549570)] [b: (1/10*c^9 - 19/20*c^7 + 127/40*c^5 - 35/8*c^3 + 79/40*c ~ 0.0012744795)] [c: (1/40*c^9 - 11/40*c^7 + 21/20*c^5 - 8/5*c^3 + 4/5*c ~ 0.0018194971)] [g: (1/20*c^9 - 1/2*c^7 + 7/4*c^5 - 49/20*c^3 + 41/40*c ~ 0.00019305928)] [h: (-1/40*c^9 + 11/40*c^7 - 43/40*c^5 + 7/4*c^3 - 1*c ~ 0.0058746239)] [e: (1/40*c^9 - 11/40*c^7 + 21/20*c^5 - 8/5*c^3 + 4/5*c ~ 0.0018194971)] [i: (-1/40*c^9 + 11/40*c^7 - 21/20*c^5 + 63/40*c^3 - 7/10*c ~ 0.0021899752)] / [e] [a] [c] [h] [i] [b] [g] [d] [f]
 </pre></div>
 </div>
 </div>
@@ -580,7 +582,7 @@ Assume that a rational triangle <span class="math notranslate nohighlight">\(\De
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[a: (-1/6*c^9 + 19/12*c^7 - 31/6*c^5 + 20/3*c^3 - 11/4*c ~ 0.021843021)] [d: (-5/12*c^9 + 49/12*c^7 - 169/12*c^5 + 119/6*c^3 - 107/12*c ~ 0.0030516523)] [b: (1/3*c^9 - 19/6*c^7 + 127/12*c^5 - 175/12*c^3 + 79/12*c ~ 0.0042482650)] [c: (1/12*c^9 - 11/12*c^7 + 7/2*c^5 - 16/3*c^3 + 8/3*c ~ 0.0060649905)] [g: (1/6*c^9 - 5/3*c^7 + 35/6*c^5 - 49/6*c^3 + 41/12*c ~ 0.00064353093)] [h: (-1/12*c^9 + 11/12*c^7 - 43/12*c^5 + 35/6*c^3 - 10/3*c ~ 0.019582080)] [e: (1/12*c^9 - 11/12*c^7 + 7/2*c^5 - 16/3*c^3 + 8/3*c ~ 0.0060649905)] [i: (-1/12*c^9 + 11/12*c^7 - 7/2*c^5 + 21/4*c^3 - 7/3*c ~ 0.0072999173)] / [a] [c] [h] [i] [b] [g] [d] [e]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[a: (-1/20*c^9 + 19/40*c^7 - 31/20*c^5 + 2*c^3 - 33/40*c ~ 0.0065529062)] [d: (-1/8*c^9 + 49/40*c^7 - 169/40*c^5 + 119/20*c^3 - 107/40*c ~ 0.00091549570)] [b: (1/10*c^9 - 19/20*c^7 + 127/40*c^5 - 35/8*c^3 + 79/40*c ~ 0.0012744795)] [c: (1/40*c^9 - 11/40*c^7 + 21/20*c^5 - 8/5*c^3 + 4/5*c ~ 0.0018194971)] [g: (1/20*c^9 - 1/2*c^7 + 7/4*c^5 - 49/20*c^3 + 41/40*c ~ 0.00019305928)] [h: (-1/40*c^9 + 11/40*c^7 - 43/40*c^5 + 7/4*c^3 - 1*c ~ 0.0058746239)] [e: (1/40*c^9 - 11/40*c^7 + 21/20*c^5 - 8/5*c^3 + 4/5*c ~ 0.0018194971)] [i: (-1/40*c^9 + 11/40*c^7 - 21/20*c^5 + 63/40*c^3 - 7/10*c ~ 0.0021899752)] / [a] [c] [h] [i] [b] [g] [d] [e]
 </pre></div>
 </div>
 </div>
@@ -595,7 +597,7 @@ Assume that a rational triangle <span class="math notranslate nohighlight">\(\De
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[d: (-5/12*c^9 + 49/12*c^7 - 169/12*c^5 + 119/6*c^3 - 107/12*c ~ 0.0030516523)] [b: (1/3*c^9 - 19/6*c^7 + 127/12*c^5 - 175/12*c^3 + 79/12*c ~ 0.0042482650)] [c: (1/12*c^9 - 11/12*c^7 + 7/2*c^5 - 16/3*c^3 + 8/3*c ~ 0.0060649905)] [g: (1/6*c^9 - 5/3*c^7 + 35/6*c^5 - 49/6*c^3 + 41/12*c ~ 0.00064353093)] [h: (-1/12*c^9 + 11/12*c^7 - 43/12*c^5 + 35/6*c^3 - 10/3*c ~ 0.019582080)] [e: (1/12*c^9 - 11/12*c^7 + 7/2*c^5 - 16/3*c^3 + 8/3*c ~ 0.0060649905)] [i: (-1/12*c^9 + 11/12*c^7 - 7/2*c^5 + 21/4*c^3 - 7/3*c ~ 0.0072999173)] / [c] [h] [i] [b] [g] [d] [e]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[d: (-1/8*c^9 + 49/40*c^7 - 169/40*c^5 + 119/20*c^3 - 107/40*c ~ 0.00091549570)] [b: (1/10*c^9 - 19/20*c^7 + 127/40*c^5 - 35/8*c^3 + 79/40*c ~ 0.0012744795)] [c: (1/40*c^9 - 11/40*c^7 + 21/20*c^5 - 8/5*c^3 + 4/5*c ~ 0.0018194971)] [g: (1/20*c^9 - 1/2*c^7 + 7/4*c^5 - 49/20*c^3 + 41/40*c ~ 0.00019305928)] [h: (-1/40*c^9 + 11/40*c^7 - 43/40*c^5 + 7/4*c^3 - 1*c ~ 0.0058746239)] [e: (1/40*c^9 - 11/40*c^7 + 21/20*c^5 - 8/5*c^3 + 4/5*c ~ 0.0018194971)] [i: (-1/40*c^9 + 11/40*c^7 - 21/20*c^5 + 63/40*c^3 - 7/10*c ~ 0.0021899752)] / [c] [h] [i] [b] [g] [d] [e]
 </pre></div>
 </div>
 </div>
@@ -609,7 +611,7 @@ Assume that a rational triangle <span class="math notranslate nohighlight">\(\De
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[d: (-1/3*c^9 + 7/2*c^7 - 77/6*c^5 + 75/4*c^3 - 101/12*c ~ 0.00059139588)] [h: (1/6*c^9 - 5/3*c^7 + 35/6*c^5 - 49/6*c^3 + 41/12*c ~ 0.00064353093)] [c: (1/3*c^9 - 10/3*c^7 + 47/4*c^5 - 17*c^3 + 49/6*c ~ 0.0023698072)] [g: (1/6*c^9 - 5/3*c^7 + 35/6*c^5 - 49/6*c^3 + 41/12*c ~ 0.00064353093)] [b: (-1/6*c^9 + 11/6*c^7 - 7*c^5 + 127/12*c^3 - 5*c ~ 0.0012349268)] [i: (-1/4*c^9 + 9/4*c^7 - 85/12*c^5 + 37/4*c^3 - 47/12*c ~ 0.0018167255)] / [h] [d] [c] [b] [g] [i]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[d: (-1/10*c^9 + 21/20*c^7 - 77/20*c^5 + 45/8*c^3 - 101/40*c ~ 0.00017741877)] [h: (1/20*c^9 - 1/2*c^7 + 7/4*c^5 - 49/20*c^3 + 41/40*c ~ 0.00019305928)] [c: (1/10*c^9 - 1*c^7 + 141/40*c^5 - 51/10*c^3 + 49/20*c ~ 0.00071094216)] [g: (1/20*c^9 - 1/2*c^7 + 7/4*c^5 - 49/20*c^3 + 41/40*c ~ 0.00019305928)] [b: (-1/20*c^9 + 11/20*c^7 - 21/10*c^5 + 127/40*c^3 - 3/2*c ~ 0.00037047805)] [i: (-3/40*c^9 + 27/40*c^7 - 17/8*c^5 + 111/40*c^3 - 47/40*c ~ 0.00054501765)] / [h] [d] [c] [b] [g] [i]
 </pre></div>
 </div>
 </div>
@@ -624,7 +626,7 @@ Assume that a rational triangle <span class="math notranslate nohighlight">\(\De
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[d: (-1/3*c^9 + 7/2*c^7 - 77/6*c^5 + 75/4*c^3 - 101/12*c ~ 0.00059139588)] [h: (1/6*c^9 - 5/3*c^7 + 35/6*c^5 - 49/6*c^3 + 41/12*c ~ 0.00064353093)] / [h] [d]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[d: (-1/10*c^9 + 21/20*c^7 - 77/20*c^5 + 45/8*c^3 - 101/40*c ~ 0.00017741877)] [h: (1/20*c^9 - 1/2*c^7 + 7/4*c^5 - 49/20*c^3 + 41/40*c ~ 0.00019305928)] / [h] [d]
 </pre></div>
 </div>
 </div>
