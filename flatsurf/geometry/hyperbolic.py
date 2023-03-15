@@ -3022,7 +3022,8 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             if isinstance(x, HyperbolicPoint):
                 assert y.dimension() == 0
 
-                if pair := self._isometry_untrivialize(x, y, defining):
+                pair = self._isometry_untrivialize(x, y, defining)
+                if pair:
                     defining.append(pair)
 
                 for conditions in self._isometry_conditions(defining[:], remaining):
@@ -3035,7 +3036,8 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
                 f = x.geodesic()
                 g = y.geodesic()
 
-                if pair := self._isometry_untrivialize(f, g, defining):
+                pair = self._isometry_untrivialize(f, g, defining):
+                if pair:
                     defining.append(pair)
 
                 for conditions in self._isometry_conditions(
