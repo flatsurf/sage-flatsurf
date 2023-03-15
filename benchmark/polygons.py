@@ -16,17 +16,25 @@
 #  You should have received a copy of the GNU General Public License
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ********************************************************************
-import flatsurf
+from flatsurf import polygons
 
 
 def time_triangle(angles):
-    flatsurf.polygons.triangle(*angles)
+    r"""
+    Time how quickly we can form a triangle from a given triple of angles.
+
+    The runtime of this should be mostly bound by the time it takes to
+    construct the underlying number field.
+    """
+    polygons.triangle(*angles)
 
 
-time_triangle.params = ([
-    [ 3,  4,  5],
-    [22, 23, 24],
-    [23, 24, 25],
-    [24, 25, 26],
-    # [26, 48, 75], -- takes 20s in early 2022
-])
+time_triangle.params = [
+    # We pass the parameters as sets since otherwise asv tries to be smart and
+    # runs with the columns of the following matrix instead of the rows.
+    set([3, 4, 5]),
+    set([22, 23, 24]),
+    set([23, 24, 25]),
+    set([24, 25, 26]),
+    set([26, 48, 75]),
+]
