@@ -6,6 +6,7 @@ The flatsurf.graphical Package
 .. toctree::
    :maxdepth: 2
 
+   graphical/hyperbolic
    graphical/polygon
    graphical/straight_line_trajectory
    graphical/surface_point
