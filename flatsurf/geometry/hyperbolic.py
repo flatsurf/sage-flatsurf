@@ -3036,7 +3036,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
                 f = x.geodesic()
                 g = y.geodesic()
 
-                pair = self._isometry_untrivialize(f, g, defining):
+                pair = self._isometry_untrivialize(f, g, defining)
                 if pair:
                     defining.append(pair)
 
