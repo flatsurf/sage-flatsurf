@@ -31,7 +31,7 @@ jobs:
         shell: bash -l {0}
         run: |
           cd doc
-          make html SPHINXOPTS="-W -n"
+          make html SPHINXOPTS="-W -n --keep-going"
           # Do not run Jekyll to create GitHub Pages but take HTML files as they are.
           touch _build/html/.nojekyll
       - name: provide documentation as artifact for netlify workflow
