@@ -326,10 +326,10 @@ class CartesianPathPlot(GraphicPrimitive):
             Redraw after the viewport has been rescaled to make sure that
             infinite rays reach the end of the viewport.
             """
-            patch.set_path(
-                self._create_path(
-                    subplot.axes.get_xlim(), subplot.axes.get_ylim(), fill=fill
-                )
+            # We use ._path directly since .set_path is not available in old
+            # versions of matplotlib
+            patch._path = self._create_path(
+                subplot.axes.get_xlim(), subplot.axes.get_ylim(), fill=fill
             )
 
         subplot.axes.callbacks.connect("ylim_changed", redraw)
