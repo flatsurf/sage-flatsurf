@@ -9070,7 +9070,7 @@ class HyperbolicPointFromCoordinates(HyperbolicPoint):
         from sage.all import PowerSeriesRing
 
         # We represent x + y*I in R[[I]] so we do not have to reimplement printing ourselves.
-        return repr(PowerSeriesRing(self.parent().base_ring(), names="I")(coordinates))
+        return repr(PowerSeriesRing(self.parent().base_ring(), names="I")(list(coordinates)))
 
     def change(self, ring=None, geometry=None, oriented=None):
         r"""
