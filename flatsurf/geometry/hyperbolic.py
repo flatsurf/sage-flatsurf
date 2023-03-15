@@ -4170,13 +4170,19 @@ class HyperbolicConvexSet(Element):
         the `__init__` should not take care of any such normalization and
         accept any input that can possibly be made sense of.
 
-        Comparison with ``==`` should mean "is essentially indistinguishable from":
-        Implementing == to mean anything else would get us into trouble in the long run. In
-        particular we cannot implement <= to mean "is subset of" since then an
-        oriented and an unoriented geodesic would be `==`. So, objects of a
-        different type are never equal. We do, however, treat objects as equal
-        that only differ in their exact representation such as the geodesic x =
-        1 and the geodesic 2x = 2.
+        Comparison with ``==`` should mean "is essentially indistinguishable
+        from": Implementing == to mean anything else would get us into trouble
+        in the long run. In particular we cannot implement <= to mean "is
+        subset of" since then an oriented and an unoriented geodesic would be
+        `==`. So, objects of a different type should almost never be equal. A
+        notable exception are objects that are indistinguishable to the end
+        user but use different implementations: the starting point of the
+        geodesic going from 0 to infinity, a
+        :class:`HyperbolicPointFromGeodesic`, and the point with coordinates
+        (0, 0) in the upper half plane model, a
+        :class:`HyperbolicPointFromCoordinates`, are equal. Note that we also
+        treat objects as equal that only differ in their exact representation
+        such as the geodesic x = 1 and the geodesic 2x = 2.
 
     TESTS::
 
