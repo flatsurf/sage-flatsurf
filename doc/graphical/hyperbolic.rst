@@ -1,5 +1,5 @@
 ``hyperbolic``
-===========
+==============
 
 .. automodule:: flatsurf.graphical.hyperbolic
    :members:

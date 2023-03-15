@@ -12808,7 +12808,7 @@ class HyperbolicEmptySet(HyperbolicConvexSet):
         r"""
         Return a copy of the empty set.
 
-        EXAMPLES::
+        INPUT:
 
         - ``ring`` -- a ring (default: ``None`` to keep the current
           :meth:`base_ring`); the ring over which the empty set will be

@@ -1,7 +1,7 @@
 r"""
 Plotting primitives for subsets of the hyperbolic plane
 
-EXAMPLES::
+EXAMPLES:
 
 Usually, the primitives defined here should not be used directly. Instead the
 :meth:`HyperbolicConvexSet.plot` method of hyperbolic sets internally uses
