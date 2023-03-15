@@ -3312,7 +3312,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
                     assert (
                         λ0 in self.base_ring() and λ0 != 0
-                    ), f"did not deduce a non-zero constant for {λ0=} from {equation}"
+                    ), f"did not deduce a non-zero constant for λ0={λ0} from {equation}"
 
                     # We could now patch the existing Gröbner basis and solve directly, but
                     # we just solve again for the correct value of λ0.
