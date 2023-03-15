@@ -4821,7 +4821,7 @@ class HyperbolicConvexSet(Element):
             sage: H = HyperbolicPlane()
 
             sage: H.vertical(0).plot()
-            Graphics object consisting of 1 graphics primitive
+            ...Graphics object consisting of 1 graphics primitive
 
         """
         raise NotImplementedError(f"this {type(self)} does not support plotting")
@@ -5211,10 +5211,10 @@ class HyperbolicConvexSet(Element):
             sage: plot = plot([])
 
             sage: type(p)._enhance_plot(plot, model="half_plane")
-            Graphics object consisting of 0 graphics primitives
+            ...Graphics object consisting of 0 graphics primitives
 
             sage: type(p)._enhance_plot(plot, model="klein")
-            Graphics object consisting of 1 graphics primitive
+            ...Graphics object consisting of 1 graphics primitive
 
         """
         if model == "klein":
@@ -6796,7 +6796,7 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
             sage: H = HyperbolicPlane()
 
             sage: H.vertical(0).plot()
-            Graphics object consisting of 1 graphics primitive
+            ...Graphics object consisting of 1 graphics primitive
 
         """
         return (
@@ -8700,7 +8700,7 @@ class HyperbolicPoint(HyperbolicConvexSet):
             sage: H = HyperbolicPlane()
 
             sage: H(I).plot()
-            Graphics object consisting of 1 graphics primitive
+            ...Graphics object consisting of 1 graphics primitive
 
         """
         coordinates = self.coordinates(model=model, ring="maybe")
@@ -11982,7 +11982,7 @@ class HyperbolicSegment(HyperbolicConvexSet):
 
             sage: segment = H.segment(H.half_circle(0, 1), end=I)
             sage: segment.plot()
-            Graphics object consisting of 1 graphics primitive
+            ...Graphics object consisting of 1 graphics primitive
 
         """
         self = self.change(oriented=True)
@@ -12757,7 +12757,7 @@ class HyperbolicEmptySet(HyperbolicConvexSet):
             sage: H = HyperbolicPlane()
 
             sage: H.empty_set().plot()
-            Graphics object consisting of 0 graphics primitives
+            ...Graphics object consisting of 0 graphics primitives
 
         """
         from sage.all import Graphics

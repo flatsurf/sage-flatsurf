@@ -1260,7 +1260,7 @@ def hyperbolic_path(commands, model="half_plane", **options):
         ....:     HyperbolicPathPlotCommand("LINETO", H(I - 1)),
         ....:     HyperbolicPathPlotCommand("LINETO", H(0)),
         ....: ])
-        Graphics object consisting of 2 graphics primitives
+        ...Graphics object consisting of 2 graphics primitives
 
     .. SEEALSO::
 
