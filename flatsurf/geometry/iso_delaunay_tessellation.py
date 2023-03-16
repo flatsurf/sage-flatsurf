@@ -393,7 +393,7 @@ class IsoDelaunayTessellation(Parent):
 
             a, b, c, d = isomorphism
             from sage.all import matrix
-            mob = matrix(2, [a, -b, -c, d])
+            mob = matrix(self.base_ring(), 2, [a, -b, -c, d])
             image_edge = tessellation_edge.apply_isometry(mob, model='half_plane')
 
             assert image_edge in tessellation_face_.edges()
