@@ -7,6 +7,7 @@ from six.moves import range, map, filter, zip
 from six import iteritems
 
 from sage.matrix.constructor import identity_matrix
+from sage.misc.cachefunc import cached_method
 
 from .surface import Surface
 from .half_translation_surface import HalfTranslationSurface
@@ -16,6 +17,15 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
     r"""
     A surface with a flat metric and conical singularities whose cone angles are a multiple of pi.
     """
+
+    @cached_method
+    def veech_group(self):
+        from flatsurf.geometry.iso_delaunay_tessellation import IsoDelaunayTessellation
+        from flatsurf.geometry.veech_group import VeechGroup
+
+        idt = IsoDelaunayTessellation(self)
+        idt.explore()
+        return VeechGroup(idt)
 
     def minimal_translation_cover(self):
         return self
