@@ -314,47 +314,47 @@ vertex and edge labels. Defaults to False.</p>
 </ul>
 <p>The <a class="reference internal" href="#flatsurf.graphical.surface.GraphicalSurface.plot" title="flatsurf.graphical.surface.GraphicalSurface.plot"><code class="xref py py-meth docutils literal notranslate"><span class="pre">plot()</span></code></a> method calls some other built in methods: <a class="reference internal" href="#flatsurf.graphical.surface.GraphicalSurface.plot_polygon" title="flatsurf.graphical.surface.GraphicalSurface.plot_polygon"><code class="xref py py-meth docutils literal notranslate"><span class="pre">plot_polygon()</span></code></a>,
 <a class="reference internal" href="#flatsurf.graphical.surface.GraphicalSurface.plot_polygon_label" title="flatsurf.graphical.surface.GraphicalSurface.plot_polygon_label"><code class="xref py py-meth docutils literal notranslate"><span class="pre">plot_polygon_label()</span></code></a>, <a class="reference internal" href="#flatsurf.graphical.surface.GraphicalSurface.plot_edge" title="flatsurf.graphical.surface.GraphicalSurface.plot_edge"><code class="xref py py-meth docutils literal notranslate"><span class="pre">plot_edge()</span></code></a> and <a class="reference internal" href="#flatsurf.graphical.surface.GraphicalSurface.plot_edge_label" title="flatsurf.graphical.surface.GraphicalSurface.plot_edge_label"><code class="xref py py-meth docutils literal notranslate"><span class="pre">plot_edge_label()</span></code></a>. These in turn
-call methods in <code class="xref py py-class docutils literal notranslate"><span class="pre">GraphicalPolygon</span></code>.</p>
+call methods in <a class="reference internal" href="polygon.html#flatsurf.graphical.polygon.GraphicalPolygon" title="flatsurf.graphical.polygon.GraphicalPolygon"><code class="xref py py-class docutils literal notranslate"><span class="pre">GraphicalPolygon</span></code></a>.</p>
 <ul class="simple">
 <li><dl class="simple">
-<dt><code class="docutils literal notranslate"><span class="pre">polygon_options</span></code> – Options passed to <code class="xref py py-meth docutils literal notranslate"><span class="pre">graphical_polygon.GraphicalPolygon.plot_polygon()</span></code> when</dt><dd><p>plotting a polygon right-side up.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">polygon_options</span></code> – Options passed to <a class="reference internal" href="polygon.html#flatsurf.graphical.polygon.GraphicalPolygon.plot_polygon" title="flatsurf.graphical.polygon.GraphicalPolygon.plot_polygon"><code class="xref py py-meth docutils literal notranslate"><span class="pre">polygon.GraphicalPolygon.plot_polygon()</span></code></a> when</dt><dd><p>plotting a polygon right-side up.</p>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
-<dt><code class="docutils literal notranslate"><span class="pre">upside_down_polygon_options</span></code> – Options passed to</dt><dd><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">graphical_polygon.GraphicalPolygon.plot_polygon()</span></code> when plotting a polygon upside-down.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">upside_down_polygon_options</span></code> – Options passed to</dt><dd><p><a class="reference internal" href="polygon.html#flatsurf.graphical.polygon.GraphicalPolygon.plot_polygon" title="flatsurf.graphical.polygon.GraphicalPolygon.plot_polygon"><code class="xref py py-meth docutils literal notranslate"><span class="pre">polygon.GraphicalPolygon.plot_polygon()</span></code></a> when plotting a polygon upside-down.</p>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
-<dt><code class="docutils literal notranslate"><span class="pre">polygon_label_options</span></code> – Options passed to <code class="xref py py-meth docutils literal notranslate"><span class="pre">graphical_polygon.GraphicalPolygon.plot_label()</span></code></dt><dd><p>when plotting a polygon label.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">polygon_label_options</span></code> – Options passed to <a class="reference internal" href="polygon.html#flatsurf.graphical.polygon.GraphicalPolygon.plot_label" title="flatsurf.graphical.polygon.GraphicalPolygon.plot_label"><code class="xref py py-meth docutils literal notranslate"><span class="pre">polygon.GraphicalPolygon.plot_label()</span></code></a></dt><dd><p>when plotting a polygon label.</p>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
-<dt><code class="docutils literal notranslate"><span class="pre">non_adjacent_edge_options</span></code> – Options passed to</dt><dd><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">graphical_polygon.GraphicalPolygon.plot_edge()</span></code> when plotting a polygon edge which is not
+<dt><code class="docutils literal notranslate"><span class="pre">non_adjacent_edge_options</span></code> – Options passed to</dt><dd><p><a class="reference internal" href="polygon.html#flatsurf.graphical.polygon.GraphicalPolygon.plot_edge" title="flatsurf.graphical.polygon.GraphicalPolygon.plot_edge"><code class="xref py py-meth docutils literal notranslate"><span class="pre">polygon.GraphicalPolygon.plot_edge()</span></code></a> when plotting a polygon edge which is not
 adjacent to the edge it is glued to.</p>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
-<dt><code class="docutils literal notranslate"><span class="pre">adjacent_edge_options</span></code> – Options passed to</dt><dd><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">graphical_polygon.GraphicalPolygon.plot_edge()</span></code> when plotting a polygon edge which is
+<dt><code class="docutils literal notranslate"><span class="pre">adjacent_edge_options</span></code> – Options passed to</dt><dd><p><a class="reference internal" href="polygon.html#flatsurf.graphical.polygon.GraphicalPolygon.plot_edge" title="flatsurf.graphical.polygon.GraphicalPolygon.plot_edge"><code class="xref py py-meth docutils literal notranslate"><span class="pre">polygon.GraphicalPolygon.plot_edge()</span></code></a> when plotting a polygon edge which is
 adjacent to the edge it is glued to.</p>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
-<dt><code class="docutils literal notranslate"><span class="pre">self_glued_edge_options</span></code> – Options passed to <code class="xref py py-meth docutils literal notranslate"><span class="pre">graphical_polygon.GraphicalPolygon.plot_edge()</span></code></dt><dd><p>when plotting a polygon edge which is glued to itself.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">self_glued_edge_options</span></code> – Options passed to <a class="reference internal" href="polygon.html#flatsurf.graphical.polygon.GraphicalPolygon.plot_edge" title="flatsurf.graphical.polygon.GraphicalPolygon.plot_edge"><code class="xref py py-meth docutils literal notranslate"><span class="pre">polygon.GraphicalPolygon.plot_edge()</span></code></a></dt><dd><p>when plotting a polygon edge which is glued to itself.</p>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
-<dt><code class="docutils literal notranslate"><span class="pre">edge_label_options</span></code> – Options passed to <code class="xref py py-meth docutils literal notranslate"><span class="pre">graphical_polygon.GraphicalPolygon.edge_label()</span></code></dt><dd><p>when plotting a edge label.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">edge_label_options</span></code> – Options passed to <a class="reference internal" href="polygon.html#flatsurf.graphical.polygon.GraphicalPolygon.plot_edge_label" title="flatsurf.graphical.polygon.GraphicalPolygon.plot_edge_label"><code class="xref py py-meth docutils literal notranslate"><span class="pre">polygon.GraphicalPolygon.plot_edge_label()</span></code></a></dt><dd><p>when plotting a edge label.</p>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
-<dt><code class="docutils literal notranslate"><span class="pre">zero_flag_options</span></code> – Options passed to</dt><dd><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">graphical_polygon.GraphicalPolygon.plot_zero_flag()</span></code> when plotting a zero_flag.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">zero_flag_options</span></code> – Options passed to</dt><dd><p><a class="reference internal" href="polygon.html#flatsurf.graphical.polygon.GraphicalPolygon.plot_zero_flag" title="flatsurf.graphical.polygon.GraphicalPolygon.plot_zero_flag"><code class="xref py py-meth docutils literal notranslate"><span class="pre">polygon.GraphicalPolygon.plot_zero_flag()</span></code></a> when plotting a zero_flag.</p>
 </dd>
 </dl>
 </li>
@@ -399,7 +399,7 @@ is called to make all polygons visible.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="flatsurf.graphical.surface.GraphicalSurface.adjacent_edge_options">
 <span class="sig-name descname"><span class="pre">adjacent_edge_options</span></span><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.adjacent_edge_options" title="Permalink to this definition">#</a></dt>
-<dd><p>Options passed to <code class="xref py py-meth docutils literal notranslate"><span class="pre">graphical_polygon.GraphicalPolygon.plot_edge()</span></code>
+<dd><p>Options passed to <a class="reference internal" href="polygon.html#flatsurf.graphical.polygon.GraphicalPolygon.plot_edge" title="flatsurf.graphical.polygon.GraphicalPolygon.plot_edge"><code class="xref py py-meth docutils literal notranslate"><span class="pre">polygon.GraphicalPolygon.plot_edge()</span></code></a>
 when plotting a polygon edge which is adjacent to the edge it is glued to.</p>
 </dd></dl>
 
@@ -442,7 +442,7 @@ maximal x-and y- coordinates of a visible graphical polygon.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="flatsurf.graphical.surface.GraphicalSurface.edge_label_options">
 <span class="sig-name descname"><span class="pre">edge_label_options</span></span><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.edge_label_options" title="Permalink to this definition">#</a></dt>
-<dd><p>Options passed to <code class="xref py py-meth docutils literal notranslate"><span class="pre">graphical_polygon.GraphicalPolygon.edge_label()</span></code> when plotting a polygon label.</p>
+<dd><p>Options passed to <a class="reference internal" href="polygon.html#flatsurf.graphical.polygon.GraphicalPolygon.plot_edge_label" title="flatsurf.graphical.polygon.GraphicalPolygon.plot_edge_label"><code class="xref py py-meth docutils literal notranslate"><span class="pre">polygon.GraphicalPolygon.plot_edge_label()</span></code></a> when plotting a polygon label.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -591,7 +591,7 @@ provided.</p></li>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="flatsurf.graphical.surface.GraphicalSurface.non_adjacent_edge_options">
 <span class="sig-name descname"><span class="pre">non_adjacent_edge_options</span></span><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.non_adjacent_edge_options" title="Permalink to this definition">#</a></dt>
-<dd><p>Options passed to <code class="xref py py-meth docutils literal notranslate"><span class="pre">graphical_polygon.GraphicalPolygon.plot_edge()</span></code> when plotting a polygon edge
+<dd><p>Options passed to <a class="reference internal" href="polygon.html#flatsurf.graphical.polygon.GraphicalPolygon.plot_edge" title="flatsurf.graphical.polygon.GraphicalPolygon.plot_edge"><code class="xref py py-meth docutils literal notranslate"><span class="pre">polygon.GraphicalPolygon.plot_edge()</span></code></a> when plotting a polygon edge
 which is not adjacent to the edge it is glued to.</p>
 </dd></dl>
 
@@ -662,7 +662,7 @@ are also merged into the corresponding attribute before plotting; see
 <dt class="sig sig-object py" id="flatsurf.graphical.surface.GraphicalSurface.plot_edge">
 <span class="sig-name descname"><span class="pre">plot_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graphical_polygon</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_adjacent</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_self_glued</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/graphical/surface.html#GraphicalSurface.plot_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.plot_edge" title="Permalink to this definition">#</a></dt>
 <dd><p>Internal method for plotting a polygon’s edge returning a Graphics2D.</p>
-<p>The method calls <code class="xref py py-meth docutils literal notranslate"><span class="pre">graphical_polygon.GraphicalPolygon.plot_edge()</span></code>.
+<p>The method calls <a class="reference internal" href="polygon.html#flatsurf.graphical.polygon.GraphicalPolygon.plot_edge" title="flatsurf.graphical.polygon.GraphicalPolygon.plot_edge"><code class="xref py py-meth docutils literal notranslate"><span class="pre">polygon.GraphicalPolygon.plot_edge()</span></code></a>.
 Depending on the geometry of the edge pair, it passes one of the attributes
 <code class="docutils literal notranslate"><span class="pre">adjacent_edge_options</span></code>, <code class="docutils literal notranslate"><span class="pre">self_glued_edge_options</span></code> or <code class="docutils literal notranslate"><span class="pre">non_adjacent_edge_options</span></code>.</p>
 <p>Override this method for fine control of how the edge is drawn.</p>
@@ -688,7 +688,7 @@ Depending on the geometry of the edge pair, it passes one of the attributes
 <dt class="sig sig-object py" id="flatsurf.graphical.surface.GraphicalSurface.plot_edge_label">
 <span class="sig-name descname"><span class="pre">plot_edge_label</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graphical_polygon</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/graphical/surface.html#GraphicalSurface.plot_edge_label"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.plot_edge_label" title="Permalink to this definition">#</a></dt>
 <dd><p>Internal method for plotting an edge label.
-Calls <code class="xref py py-meth docutils literal notranslate"><span class="pre">graphical_polygon.GraphicalPolygon.plot_edge_label()</span></code> passing
+Calls <a class="reference internal" href="polygon.html#flatsurf.graphical.polygon.GraphicalPolygon.plot_edge_label" title="flatsurf.graphical.polygon.GraphicalPolygon.plot_edge_label"><code class="xref py py-meth docutils literal notranslate"><span class="pre">polygon.GraphicalPolygon.plot_edge_label()</span></code></a> passing
 the attribute <code class="docutils literal notranslate"><span class="pre">edge_label_options</span></code>.</p>
 <p>Override this method for fine control of how the edge is drawn.</p>
 <p>INPUT:</p>
@@ -704,7 +704,7 @@ the attribute <code class="docutils literal notranslate"><span class="pre">edge_
 <dt class="sig sig-object py" id="flatsurf.graphical.surface.GraphicalSurface.plot_polygon">
 <span class="sig-name descname"><span class="pre">plot_polygon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graphical_polygon</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upside_down</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/graphical/surface.html#GraphicalSurface.plot_polygon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.plot_polygon" title="Permalink to this definition">#</a></dt>
 <dd><p>Internal method for plotting polygons returning a Graphics object.</p>
-<p>Calls <code class="xref py py-meth docutils literal notranslate"><span class="pre">graphical_polygon.GraphicalPolygon.plot_polygon()</span></code> passing
+<p>Calls <a class="reference internal" href="polygon.html#flatsurf.graphical.polygon.GraphicalPolygon.plot_polygon" title="flatsurf.graphical.polygon.GraphicalPolygon.plot_polygon"><code class="xref py py-meth docutils literal notranslate"><span class="pre">polygon.GraphicalPolygon.plot_polygon()</span></code></a> passing
 the attribute <code class="docutils literal notranslate"><span class="pre">upside_down_polygon_options</span></code> if the polygon is upside down
 and <code class="docutils literal notranslate"><span class="pre">polygon_options</span></code> otherwise.</p>
 <p>Override this method for fine control of how the polygons are drawn.</p>
@@ -720,8 +720,8 @@ and <code class="docutils literal notranslate"><span class="pre">polygon_options
 <dt class="sig sig-object py" id="flatsurf.graphical.surface.GraphicalSurface.plot_polygon_label">
 <span class="sig-name descname"><span class="pre">plot_polygon_label</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graphical_polygon</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upside_down</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/graphical/surface.html#GraphicalSurface.plot_polygon_label"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.plot_polygon_label" title="Permalink to this definition">#</a></dt>
 <dd><p>Internal method for plotting polygon labels returning a Graphics2D.</p>
-<p>Calls <code class="xref py py-meth docutils literal notranslate"><span class="pre">graphical_polygon.GraphicalPolygon.plot_polygon_label()</span></code> passing
-the attribute <code class="docutils literal notranslate"><span class="pre">polygon_label_options</span></code>.</p>
+<p>Calls <a class="reference internal" href="polygon.html#flatsurf.graphical.polygon.GraphicalPolygon.plot_label" title="flatsurf.graphical.polygon.GraphicalPolygon.plot_label"><code class="xref py py-meth docutils literal notranslate"><span class="pre">polygon.GraphicalPolygon.plot_label()</span></code></a> passing the
+attribute <code class="docutils literal notranslate"><span class="pre">polygon_label_options</span></code>.</p>
 <p>Override this method for fine control of how the polygons are drawn.</p>
 <p>INPUT:</p>
 <ul class="simple">
@@ -735,7 +735,7 @@ the attribute <code class="docutils literal notranslate"><span class="pre">polyg
 <dt class="sig sig-object py" id="flatsurf.graphical.surface.GraphicalSurface.plot_zero_flag">
 <span class="sig-name descname"><span class="pre">plot_zero_flag</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graphical_polygon</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/graphical/surface.html#GraphicalSurface.plot_zero_flag"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.plot_zero_flag" title="Permalink to this definition">#</a></dt>
 <dd><p>Internal method for plotting a polygon’s zero_flag and returning a Graphics2D.
-Simply calls <code class="xref py py-meth docutils literal notranslate"><span class="pre">graphical_polygon.GraphicalPolygon.plot_zero_flag()</span></code> passing
+Simply calls <a class="reference internal" href="polygon.html#flatsurf.graphical.polygon.GraphicalPolygon.plot_zero_flag" title="flatsurf.graphical.polygon.GraphicalPolygon.plot_zero_flag"><code class="xref py py-meth docutils literal notranslate"><span class="pre">polygon.GraphicalPolygon.plot_zero_flag()</span></code></a> passing
 the attribute` <cite>zero_flag_options`</cite>.</p>
 <p>Override this method for fine control of how the edge is drawn.</p>
 <p>INPUT:</p>
@@ -748,13 +748,13 @@ the attribute` <cite>zero_flag_options`</cite>.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="flatsurf.graphical.surface.GraphicalSurface.polygon_label_options">
 <span class="sig-name descname"><span class="pre">polygon_label_options</span></span><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.polygon_label_options" title="Permalink to this definition">#</a></dt>
-<dd><p>Options passed to <code class="xref py py-meth docutils literal notranslate"><span class="pre">graphical_polygon.GraphicalPolygon.plot_label()</span></code> when plotting a polygon label.</p>
+<dd><p>Options passed to <a class="reference internal" href="polygon.html#flatsurf.graphical.polygon.GraphicalPolygon.plot_label" title="flatsurf.graphical.polygon.GraphicalPolygon.plot_label"><code class="xref py py-meth docutils literal notranslate"><span class="pre">polygon.GraphicalPolygon.plot_label()</span></code></a> when plotting a polygon label.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="flatsurf.graphical.surface.GraphicalSurface.polygon_options">
 <span class="sig-name descname"><span class="pre">polygon_options</span></span><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.polygon_options" title="Permalink to this definition">#</a></dt>
-<dd><p>Options passed to <code class="xref py py-meth docutils literal notranslate"><span class="pre">graphical_polygon.GraphicalPolygon.plot_polygon()</span></code> when plotting a polygon right-side up.</p>
+<dd><p>Options passed to <a class="reference internal" href="polygon.html#flatsurf.graphical.polygon.GraphicalPolygon.plot_polygon" title="flatsurf.graphical.polygon.GraphicalPolygon.plot_polygon"><code class="xref py py-meth docutils literal notranslate"><span class="pre">polygon.GraphicalPolygon.plot_polygon()</span></code></a> when plotting a polygon right-side up.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -787,7 +787,7 @@ edge labeling if edge_labels=”letter” is used.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="flatsurf.graphical.surface.GraphicalSurface.self_glued_edge_options">
 <span class="sig-name descname"><span class="pre">self_glued_edge_options</span></span><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.self_glued_edge_options" title="Permalink to this definition">#</a></dt>
-<dd><p>Options passed to <code class="xref py py-meth docutils literal notranslate"><span class="pre">graphical_polygon.GraphicalPolygon.plot_edge()</span></code> when plotting a polygon edge
+<dd><p>Options passed to <a class="reference internal" href="polygon.html#flatsurf.graphical.polygon.GraphicalPolygon.plot_edge" title="flatsurf.graphical.polygon.GraphicalPolygon.plot_edge"><code class="xref py py-meth docutils literal notranslate"><span class="pre">polygon.GraphicalPolygon.plot_edge()</span></code></a> when plotting a polygon edge
 which is glued to itself.</p>
 </dd></dl>
 
@@ -888,7 +888,7 @@ is and the surface is infinite.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="flatsurf.graphical.surface.GraphicalSurface.upside_down_polygon_options">
 <span class="sig-name descname"><span class="pre">upside_down_polygon_options</span></span><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.upside_down_polygon_options" title="Permalink to this definition">#</a></dt>
-<dd><p>Options passed to <code class="xref py py-meth docutils literal notranslate"><span class="pre">graphical_polygon.GraphicalPolygon.plot_polygon()</span></code> when plotting a polygon upside-down.</p>
+<dd><p>Options passed to <a class="reference internal" href="polygon.html#flatsurf.graphical.polygon.GraphicalPolygon.plot_polygon" title="flatsurf.graphical.polygon.GraphicalPolygon.plot_polygon"><code class="xref py py-meth docutils literal notranslate"><span class="pre">polygon.GraphicalPolygon.plot_polygon()</span></code></a> when plotting a polygon upside-down.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -978,7 +978,7 @@ is and the surface is infinite.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="flatsurf.graphical.surface.GraphicalSurface.zero_flag_options">
 <span class="sig-name descname"><span class="pre">zero_flag_options</span></span><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.zero_flag_options" title="Permalink to this definition">#</a></dt>
-<dd><p>Options passed to <code class="xref py py-meth docutils literal notranslate"><span class="pre">graphical_polygon.GraphicalPolygon.plot_zero_flag()</span></code> when plotting a zero_flag.</p>
+<dd><p>Options passed to <a class="reference internal" href="polygon.html#flatsurf.graphical.polygon.GraphicalPolygon.plot_zero_flag" title="flatsurf.graphical.polygon.GraphicalPolygon.plot_zero_flag"><code class="xref py py-meth docutils literal notranslate"><span class="pre">polygon.GraphicalPolygon.plot_zero_flag()</span></code></a> when plotting a zero_flag.</p>
 </dd></dl>
 
 </dd></dl>
@@ -1006,7 +1006,7 @@ is and the surface is infinite.</p>
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2016-2022, the sage-flatsurf authors
+                Copyright &#169; 2016-2023, the sage-flatsurf authors
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             

@@ -285,32 +285,11 @@
 <dt class="sig sig-object py" id="flatsurf.geometry.finitely_generated_matrix_group.FinitelyGenerated2x2MatrixGroup">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.finitely_generated_matrix_group.</span></span><span class="sig-name descname"><span class="pre">FinitelyGenerated2x2MatrixGroup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">matrices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">matrix_space</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/finitely_generated_matrix_group.html#FinitelyGenerated2x2MatrixGroup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.finitely_generated_matrix_group.FinitelyGenerated2x2MatrixGroup" title="Permalink to this definition">#</a></dt>
 <dd><p>Finitely generated group of 2x2 matrices with real coefficients</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="flatsurf.geometry.finitely_generated_matrix_group.FinitelyGenerated2x2MatrixGroup.an_element">
-<span class="sig-name descname"><span class="pre">an_element</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/finitely_generated_matrix_group.html#FinitelyGenerated2x2MatrixGroup.an_element"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.finitely_generated_matrix_group.FinitelyGenerated2x2MatrixGroup.an_element" title="Permalink to this definition">#</a></dt>
-<dd><p>File: sage/structure/parent.pyx (starting at line 2675)</p>
-<p>Returns a (preferably typical) element of this parent.</p>
-<p>This is used both for illustration and testing purposes. If
-the set <code class="docutils literal notranslate"><span class="pre">self</span></code> is empty, <a class="reference internal" href="#flatsurf.geometry.finitely_generated_matrix_group.FinitelyGenerated2x2MatrixGroup.an_element" title="flatsurf.geometry.finitely_generated_matrix_group.FinitelyGenerated2x2MatrixGroup.an_element"><code class="xref py py-meth docutils literal notranslate"><span class="pre">an_element()</span></code></a> raises the
-exception <code class="xref py py-class docutils literal notranslate"><span class="pre">EmptySetError</span></code>.</p>
-<p>This calls <code class="xref py py-meth docutils literal notranslate"><span class="pre">_an_element_()</span></code> (which see), and caches the
-result. Parent are thus encouraged to override <code class="xref py py-meth docutils literal notranslate"><span class="pre">_an_element_()</span></code>.</p>
-<p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">CDF</span><span class="o">.</span><span class="n">an_element</span><span class="p">()</span>
-<span class="mf">1.0</span><span class="o">*</span><span class="n">I</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">ZZ</span><span class="p">[[</span><span class="s1">&#39;t&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">an_element</span><span class="p">()</span>
-<span class="n">t</span>
-</pre></div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference external" href="https://doc.sagemath.org/html/en/reference/groups/sage/groups/group.html#module-sage.groups.group" title="(in Reference Manual v9.8)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">sage.groups.group</span></code></a> for the general interface of groups
+like this in SageMath</p>
 </div>
-<p>In case the set is empty, an <code class="xref py py-class docutils literal notranslate"><span class="pre">EmptySetError</span></code> is raised:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">Set</span><span class="p">([])</span><span class="o">.</span><span class="n">an_element</span><span class="p">()</span>
-<span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
-<span class="o">...</span>
-<span class="n">EmptySetError</span>
-</pre></div>
-</div>
-</dd></dl>
-
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.finitely_generated_matrix_group.FinitelyGenerated2x2MatrixGroup.cardinality">
 <span class="sig-name descname"><span class="pre">cardinality</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/finitely_generated_matrix_group.html#FinitelyGenerated2x2MatrixGroup.cardinality"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.finitely_generated_matrix_group.FinitelyGenerated2x2MatrixGroup.cardinality" title="Permalink to this definition">#</a></dt>
@@ -521,7 +500,7 @@ eigenvalues?)</p>
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2016-2022, the sage-flatsurf authors
+                Copyright &#169; 2016-2023, the sage-flatsurf authors
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -549,7 +528,6 @@ eigenvalues?)</p>
             <ul>
 <li><a class="reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">finitely_generated_matrix_group</span></code></a><ul>
 <li><a class="reference internal" href="#flatsurf.geometry.finitely_generated_matrix_group.FinitelyGenerated2x2MatrixGroup"><code class="docutils literal notranslate"><span class="pre">FinitelyGenerated2x2MatrixGroup</span></code></a><ul>
-<li><a class="reference internal" href="#flatsurf.geometry.finitely_generated_matrix_group.FinitelyGenerated2x2MatrixGroup.an_element"><code class="docutils literal notranslate"><span class="pre">FinitelyGenerated2x2MatrixGroup.an_element()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.finitely_generated_matrix_group.FinitelyGenerated2x2MatrixGroup.cardinality"><code class="docutils literal notranslate"><span class="pre">FinitelyGenerated2x2MatrixGroup.cardinality()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.finitely_generated_matrix_group.FinitelyGenerated2x2MatrixGroup.gen"><code class="docutils literal notranslate"><span class="pre">FinitelyGenerated2x2MatrixGroup.gen()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.finitely_generated_matrix_group.FinitelyGenerated2x2MatrixGroup.is_abelian"><code class="docutils literal notranslate"><span class="pre">FinitelyGenerated2x2MatrixGroup.is_abelian()</span></code></a></li>

@@ -1470,7 +1470,8 @@
 <div class="viewcode-block" id="SimilaritySurface.subdivide"><a class="viewcode-back" href="../../../geometry/similarity_surface.html#flatsurf.geometry.similarity_surface.SimilaritySurface.subdivide">[docs]</a>    <span class="k">def</span> <span class="nf">subdivide</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a copy of this surface whose polygons have been partitioned into</span>
-<span class="sd">        smaller triangles with :meth:`Polygon.subdivide`.</span>
+<span class="sd">        smaller triangles with</span>
+<span class="sd">        :meth:`.polygon.ConvexPolygon.subdivide`.</span>
 
 <span class="sd">        EXAMPLES::</span>
 
@@ -2329,9 +2330,10 @@
 <span class="sd">        ``cached=False`` is provided as a keyword option then a new</span>
 <span class="sd">        GraphicalSurface is returned.</span>
 
-<span class="sd">        All other parameters are passed on to :class:`GraphicalSurface` or</span>
-<span class="sd">        :meth:`GraphicalSurface.process_options`. Note that this mutates the</span>
-<span class="sd">        cached graphical surface for future calls.</span>
+<span class="sd">        All other parameters are passed on to</span>
+<span class="sd">        :class:`~flatsurf.graphical.surface.GraphicalSurface` or its</span>
+<span class="sd">        :meth:`~flatsurf.graphical.surface.GraphicalSurface.process_options`.</span>
+<span class="sd">        Note that this mutates the cached graphical surface for future calls.</span>
 
 <span class="sd">        EXAMPLES:</span>
 
@@ -2362,7 +2364,9 @@
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a plot of the surface.</span>
 
-<span class="sd">        The parameters are passed on to :meth:`graphical_surface` and :meth:`GraphicalSurface.plot`. Consult their documentation for details.</span>
+<span class="sd">        The parameters are passed on to :meth:`graphical_surface` and</span>
+<span class="sd">        :meth:`flatsurf.graphical.surface.GraphicalSurface.plot`. Consult their</span>
+<span class="sd">        documentation for details.</span>
 
 <span class="sd">        EXAMPLES::</span>
 
@@ -2372,7 +2376,7 @@
 <span class="sd">            Graphics object consisting of 21 graphics primitives</span>
 
 <span class="sd">        Keywords are passed on to the underlying plotting routines, see</span>
-<span class="sd">        :meth:`GraphicalSurface.plot` for details::</span>
+<span class="sd">        :meth:`flatsurf.graphical.surface.GraphicalSurface.plot` for details::</span>
 
 <span class="sd">            sage: S.plot(fill=None)</span>
 <span class="sd">            ...Graphics object consisting of 21 graphics primitives</span>
@@ -2649,7 +2653,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2016-2022, the sage-flatsurf authors
+                Copyright &#169; 2016-2023, the sage-flatsurf authors
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             

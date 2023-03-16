@@ -257,12 +257,11 @@
         </div>
         <article role="main">
           <h1>Source code for flatsurf.geometry.similarity</h1><div class="highlight"><pre>
-<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
-<span class="c1">#*********************************************************************</span>
+<span></span><span class="c1">#*********************************************************************</span>
 <span class="c1">#  This file is part of sage-flatsurf.</span>
 <span class="c1">#</span>
 <span class="c1">#        Copyright (C) 2016-2020 Vincent Delecroix</span>
-<span class="c1">#                      2020      Julian Rüth</span>
+<span class="c1">#                      2020-2023 Julian Rüth</span>
 <span class="c1">#</span>
 <span class="c1">#  sage-flatsurf is free software: you can redistribute it and/or modify</span>
 <span class="c1">#  it under the terms of the GNU General Public License as published by</span>
@@ -798,8 +797,27 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_ring</span><span class="o">.</span><span class="n">zero</span><span class="p">(),</span> <span class="c1"># t</span>
                 <span class="n">ZZ_1</span><span class="p">)</span>              <span class="c1"># sign</span></div>
 
-<div class="viewcode-block" id="SimilarityGroup.an_element"><a class="viewcode-back" href="../../../geometry/similarity.html#flatsurf.geometry.similarity.SimilarityGroup.an_element">[docs]</a>    <span class="k">def</span> <span class="nf">an_element</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span></div>
+    <span class="k">def</span> <span class="nf">_an_element_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a typical element of this group.</span>
+
+<span class="sd">        EXAMPLES:</span>
+
+<span class="sd">            sage: from flatsurf.geometry.similarity import SimilarityGroup</span>
+
+<span class="sd">            sage: SimilarityGroup(QQ)._an_element_()</span>
+<span class="sd">            (x, y) |-&gt; (3*x + 4*y + 2, 4*x - 3*y - 1)</span>
+
+<span class="sd">            sage: SimilarityGroup(QQ).an_element()</span>
+<span class="sd">            (x, y) |-&gt; (3*x + 4*y + 2, 4*x - 3*y - 1)</span>
+
+<span class="sd">        .. SEEALSO::</span>
+
+<span class="sd">            :meth:`sage.structure.parent.Parent.an_element` which relies on</span>
+<span class="sd">            this method and should be called instead</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
 
 <div class="viewcode-block" id="SimilarityGroup.is_abelian"><a class="viewcode-back" href="../../../geometry/similarity.html#flatsurf.geometry.similarity.SimilarityGroup.is_abelian">[docs]</a>    <span class="k">def</span> <span class="nf">is_abelian</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="kc">False</span></div>
@@ -818,7 +836,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2016-2022, the sage-flatsurf authors
+                Copyright &#169; 2016-2023, the sage-flatsurf authors
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             

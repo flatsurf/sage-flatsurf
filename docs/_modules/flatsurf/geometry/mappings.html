@@ -258,7 +258,26 @@
         <article role="main">
           <h1>Source code for flatsurf.geometry.mappings</h1><div class="highlight"><pre>
 <span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Mappings between translation surfaces.&quot;&quot;&quot;</span>
-
+<span class="c1">#*********************************************************************</span>
+<span class="c1">#  This file is part of sage-flatsurf.</span>
+<span class="c1">#</span>
+<span class="c1">#        Copyright (C) 2016-2022 W. Patrick Hooper</span>
+<span class="c1">#                      2016-2022 Vincent Delecroix</span>
+<span class="c1">#                           2023 Julian Rüth</span>
+<span class="c1">#</span>
+<span class="c1">#  sage-flatsurf is free software: you can redistribute it and/or modify</span>
+<span class="c1">#  it under the terms of the GNU General Public License as published by</span>
+<span class="c1">#  the Free Software Foundation, either version 2 of the License, or</span>
+<span class="c1">#  (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1">#  sage-flatsurf is distributed in the hope that it will be useful,</span>
+<span class="c1">#  but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1">#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1">#  GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1">#  You should have received a copy of the GNU General Public License</span>
+<span class="c1">#  along with sage-flatsurf. If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
+<span class="c1">#*********************************************************************</span>
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span><span class="p">,</span> <span class="n">print_function</span><span class="p">,</span> <span class="n">division</span>
 <span class="kn">from</span> <span class="nn">six.moves</span> <span class="kn">import</span> <span class="nb">range</span><span class="p">,</span> <span class="nb">map</span><span class="p">,</span> <span class="nb">filter</span><span class="p">,</span> <span class="nb">zip</span>
 <span class="kn">from</span> <span class="nn">six</span> <span class="kn">import</span> <span class="n">iteritems</span>
@@ -304,61 +323,6 @@
     <span class="k">def</span> <span class="fm">__rmul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">other</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">SurfaceMappingComposition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">other</span><span class="p">)</span></div>
 
-
-<span class="c1">#class FinitelyPerturbedSurface(Surface):</span>
-<span class="c1">#    def __init__(self, surface, polygon_dictionary=None, glue_dictionary=None, base_label=None, ring=None):</span>
-<span class="c1">#        r&quot;&quot;&quot;</span>
-<span class="c1">#        </span>
-<span class="c1">#        Warning: No checks are made to make sure the surface is reasonable.</span>
-<span class="c1">#        </span>
-<span class="c1">#        PARAMETERS::</span>
-<span class="c1">#            surface: The surface this is based on.</span>
-<span class="c1">#            polygon_dictionary: A dictionary mapping labels to polygons which will override whatever was on the original surface.</span>
-<span class="c1">#            glue_dictionary: A dictionary mapping edges to edges, which will override whatever was on the original surface. It will automatically be made symmetric.</span>
-<span class="c1">#            base_label: A label representing the base_label on the new surface.</span>
-<span class="c1">#            ring: A new ring containing the vertices.</span>
-<span class="c1">#        &quot;&quot;&quot;</span>
-<span class="c1">#        self._s=surface</span>
-<span class="c1">#        if polygon_dictionary is None:</span>
-<span class="c1">#            self._pdict={}</span>
-<span class="c1">#        else:</span>
-<span class="c1">#            self._pdict=dict(polygon_dictionary)</span>
-<span class="c1">#        self._gdict={}</span>
-<span class="c1">#        if not glue_dictionary is None:</span>
-<span class="c1">#            for edge1,edge2 in iteritems(glue_dictionary):</span>
-<span class="c1">#                self._gdict[edge1]=edge2</span>
-<span class="c1">#                self._gdict[edge2]=edge1</span>
-<span class="c1">#        if base_label is None:</span>
-<span class="c1">#            self._base_label = surface.base_label()</span>
-<span class="c1">#        else:</span>
-<span class="c1">#            self._base_label = base_label</span>
-<span class="c1">#        if ring is None:</span>
-<span class="c1">#            self._ring = surface.base_ring()</span>
-<span class="c1">#        else:</span>
-<span class="c1">#            self._ring = ring</span>
-<span class="c1">#        self._is_finite = surface.is_finite()</span>
-<span class="c1">#        Surface.__init__(self, )</span>
-
-<span class="c1">#    def base_ring(self):</span>
-<span class="c1">#        return self._ring</span>
-
-<span class="c1">#    def base_label(self):</span>
-<span class="c1">#        return self._base_label</span>
-
-<span class="c1">#    def polygon(self, lab):</span>
-<span class="c1">#        p = self._pdict.get(lab)</span>
-<span class="c1">#        if p is None:</span>
-<span class="c1">#            return self._s.polygon(lab)</span>
-<span class="c1">#        return p</span>
-
-<span class="c1">#    def opposite_edge(self, p, e):</span>
-<span class="c1">#        edge = self._gdict.get((p,e))</span>
-<span class="c1">#        if edge is None:</span>
-<span class="c1">#            return self._s.opposite_edge(p,e)</span>
-<span class="c1">#        return edge</span>
-
-<span class="c1">#    def is_finite(self):</span>
-<span class="c1">#        return self._is_finite</span>
 
 <div class="viewcode-block" id="SurfaceMappingComposition"><a class="viewcode-back" href="../../../geometry/mappings.html#flatsurf.geometry.mappings.SurfaceMappingComposition">[docs]</a><span class="k">class</span> <span class="nc">SurfaceMappingComposition</span><span class="p">(</span><span class="n">SurfaceMapping</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -417,8 +381,15 @@
 
 <div class="viewcode-block" id="MatrixListDeformedSurface"><a class="viewcode-back" href="../../../geometry/mappings.html#flatsurf.geometry.mappings.MatrixListDeformedSurface">[docs]</a><span class="k">class</span> <span class="nc">MatrixListDeformedSurface</span><span class="p">(</span><span class="n">Surface</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Apply a different matrix to each polygon in the surface. </span>
+<span class="sd">    Apply a different matrix to each polygon in the surface.</span>
 <span class="sd">    Here matrix_function is a python function mapping labels to 2x2 matrices with positive determinant.</span>
+
+<span class="sd">    .. WARNING::</span>
+
+<span class="sd">        Note that only some methods are forwarding correctly to the underlying</span>
+<span class="sd">        surface ``_s``. Others are incorrectly mutating/querying this surface</span>
+<span class="sd">        object which should be stateless (but is not.)</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">surface</span><span class="p">,</span> <span class="n">matrix_function</span><span class="p">,</span> <span class="n">ring</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">=</span><span class="n">surface</span>
@@ -434,7 +405,16 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_base_ring</span></div>
 
 <div class="viewcode-block" id="MatrixListDeformedSurface.base_label"><a class="viewcode-back" href="../../../geometry/mappings.html#flatsurf.geometry.mappings.MatrixListDeformedSurface.base_label">[docs]</a>    <span class="k">def</span> <span class="nf">base_label</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the label of a special chosen polygon in this surface.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">base_label</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="MatrixListDeformedSurface.change_base_label"><a class="viewcode-back" href="../../../geometry/mappings.html#flatsurf.geometry.mappings.MatrixListDeformedSurface.change_base_label">[docs]</a>    <span class="k">def</span> <span class="nf">change_base_label</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_base_label</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the :meth:`base_label` to ``new_base_label``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">change_base_label</span><span class="p">(</span><span class="n">new_base_label</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="MatrixListDeformedSurface.polygon"><a class="viewcode-back" href="../../../geometry/mappings.html#flatsurf.geometry.mappings.MatrixListDeformedSurface.polygon">[docs]</a>    <span class="k">def</span> <span class="nf">polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lab</span><span class="p">):</span>
         <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">lab</span><span class="p">)</span>
@@ -1216,7 +1196,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2016-2022, the sage-flatsurf authors
+                Copyright &#169; 2016-2023, the sage-flatsurf authors
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             

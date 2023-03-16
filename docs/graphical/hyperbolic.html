@@ -263,8 +263,8 @@
 <p>Plotting primitives for subsets of the hyperbolic plane</p>
 <p>EXAMPLES:</p>
 <p>Usually, the primitives defined here should not be used directly. Instead the
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">HyperbolicConvexSet.plot()</span></code> method of hyperbolic sets internally uses
-these primitives:</p>
+<a class="reference internal" href="../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicConvexSet.plot" title="flatsurf.geometry.hyperbolic.HyperbolicConvexSet.plot"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.hyperbolic.HyperbolicConvexSet.plot()</span></code></a> method of
+hyperbolic sets internally uses these primitives:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">HyperbolicPlane</span>
 
 <span class="n">sage</span><span class="p">:</span> <span class="n">H</span> <span class="o">=</span> <span class="n">HyperbolicPlane</span><span class="p">()</span>
@@ -290,18 +290,17 @@ needed to plot subsets of the hyperbolic plane in the upper half plane model.</p
 associated control points in the hyperbolic plane.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">plot</span></code> methods of most hyperbolic convex sets rely on such a path.
 Usually, such a path should not be produced directly.</p>
-<p>This can be considered a more generic version of
-<code class="xref py py-class docutils literal notranslate"><span class="pre">sage.plot.line.Line</span></code> and <code class="xref py py-class docutils literal notranslate"><span class="pre">sage.plot.polygon.Polygon</span></code> since
-this is not limited to finite line segments. At the same time this
-generalizes matplotlib’s <code class="docutils literal notranslate"><span class="pre">Path</span></code> somewhat, again by allowing infinite rays
-and lines.</p>
+<p>This can be considered a more generic version of <code class="docutils literal notranslate"><span class="pre">sage.plot.line.Line</span></code>
+and <code class="docutils literal notranslate"><span class="pre">sage.plot.polygon.Polygon</span></code> since this is not limited to finite line
+segments. At the same time this generalizes matplotlib’s <code class="docutils literal notranslate"><span class="pre">Path</span></code> somewhat,
+again by allowing infinite rays and lines.</p>
 <p>INPUT:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">commands</span></code> – a sequence of <code class="xref py py-class docutils literal notranslate"><span class="pre">HyperbolicPath.Command</span></code> describing
-the path.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">commands</span></code> – a sequence of <a class="reference internal" href="#flatsurf.graphical.hyperbolic.HyperbolicPathPlotCommand" title="flatsurf.graphical.hyperbolic.HyperbolicPathPlotCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">HyperbolicPathPlotCommand</span></code></a>
+describing the path.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">options</span></code> – a dict or <code class="docutils literal notranslate"><span class="pre">None</span></code> (the default), options to affect the
-plotting of the path; the options accepted are the same that
-<code class="xref py py-class docutils literal notranslate"><span class="pre">sage.plot.polygon.Polygon</span></code> accepts.</p></li>
+plotting of the path; the options accepted are the same that <code class="docutils literal notranslate"><span class="pre">Polygon</span></code>
+of <a class="reference external" href="https://doc.sagemath.org/html/en/reference/plotting/sage/plot/polygon.html#module-sage.plot.polygon" title="(in Reference Manual v9.8)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">sage.plot.polygon</span></code></a> accepts.</p></li>
 </ul>
 <p>EXAMPLES:</p>
 <p>A geodesic plot as a single such path (wrapped in a SageMath graphics
@@ -385,7 +384,7 @@ function if you want to use this functionality in plots of your own.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="flatsurf.graphical.hyperbolic.CartesianPathPlot.get_minmax_data">
 <span class="sig-name descname"><span class="pre">get_minmax_data</span></span><a class="reference internal" href="../_modules/flatsurf/graphical/hyperbolic.html#CartesianPathPlot.get_minmax_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.hyperbolic.CartesianPathPlot.get_minmax_data" title="Permalink to this definition">#</a></dt>
-<dd><p>File: /usr/share/miniconda3/envs/test/lib/python3.10/site-packages/flatsurf/graphical/hyperbolic.py (starting at line 582)</p>
+<dd><p>File: /usr/share/miniconda3/envs/test/lib/python3.10/site-packages/flatsurf/graphical/hyperbolic.py (starting at line 581)</p>
 <p>Return a bounding box for this plot.</p>
 <p>This implements the required interface of SageMath’s GraphicPrimitive.</p>
 <p>EXAMPLES:</p>
@@ -536,14 +535,14 @@ correct polygon to represent the lines of the polygon.</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.graphical.hyperbolic.HyperbolicPathPlotCommand.create_move_cartesian">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_move_cartesian</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stroke</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/graphical/hyperbolic.html#HyperbolicPathPlotCommand.create_move_cartesian"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.hyperbolic.HyperbolicPathPlotCommand.create_move_cartesian" title="Permalink to this definition">#</a></dt>
-<dd><p>Return a list of <code class="xref py py-class docutils literal notranslate"><span class="pre">CartesianPathPlot.Command</span></code> that represent the
+<dd><p>Return a list of <a class="reference internal" href="#flatsurf.graphical.hyperbolic.CartesianPathPlotCommand" title="flatsurf.graphical.hyperbolic.CartesianPathPlotCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">CartesianPathPlotCommand</span></code></a> that represent the
 open “segment” on the boundary of a polygon connecting <code class="docutils literal notranslate"><span class="pre">start</span></code> and
 <code class="docutils literal notranslate"><span class="pre">end</span></code>.</p>
 <p>This is a helper function for <a class="reference internal" href="#flatsurf.graphical.hyperbolic.HyperbolicPathPlotCommand.make_cartesian" title="flatsurf.graphical.hyperbolic.HyperbolicPathPlotCommand.make_cartesian"><code class="xref py py-meth docutils literal notranslate"><span class="pre">make_cartesian()</span></code></a>.</p>
 <p>INPUT:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">start</span></code> – a <code class="xref py py-class docutils literal notranslate"><span class="pre">flatsurf.geometry.HyperbolicPoint</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">end</span></code> – a <code class="xref py py-class docutils literal notranslate"><span class="pre">flatsurf.geometry.HyperbolicPoint</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">start</span></code> – a <a class="reference internal" href="../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicPoint" title="flatsurf.geometry.hyperbolic.HyperbolicPoint"><code class="xref py py-class docutils literal notranslate"><span class="pre">HyperbolicPoint</span></code></a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">end</span></code> – a <a class="reference internal" href="../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicPoint" title="flatsurf.geometry.hyperbolic.HyperbolicPoint"><code class="xref py py-class docutils literal notranslate"><span class="pre">HyperbolicPoint</span></code></a></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">model</span></code> – one of <code class="docutils literal notranslate"><span class="pre">&quot;half_plane&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;klein&quot;</span></code> in which model to
 realize this segment</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">stroke</span></code> – a boolean (default: <code class="docutils literal notranslate"><span class="pre">True</span></code>); whether this is part of
@@ -566,13 +565,14 @@ filled path that is not stroked</p></li>
 <dt class="sig sig-object py" id="flatsurf.graphical.hyperbolic.HyperbolicPathPlotCommand.create_segment_cartesian">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_segment_cartesian</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/graphical/hyperbolic.html#HyperbolicPathPlotCommand.create_segment_cartesian"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.hyperbolic.HyperbolicPathPlotCommand.create_segment_cartesian" title="Permalink to this definition">#</a></dt>
 <dd><p>Return a sequence of <a class="reference internal" href="#flatsurf.graphical.hyperbolic.CartesianPathPlotCommand" title="flatsurf.graphical.hyperbolic.CartesianPathPlotCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">CartesianPathPlotCommand</span></code></a> that represent
-the closed boundary of a <code class="xref py py-class docutils literal notranslate"><span class="pre">HyperbolicConvexPolygon</span></code>, namely the segment
-to <code class="docutils literal notranslate"><span class="pre">end</span></code> (from the previous position <code class="docutils literal notranslate"><span class="pre">start</span></code>.)</p>
+the closed boundary of a
+<a class="reference internal" href="../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicConvexPolygon" title="flatsurf.geometry.hyperbolic.HyperbolicConvexPolygon"><code class="xref py py-class docutils literal notranslate"><span class="pre">HyperbolicConvexPolygon</span></code></a>, namely
+the segment to <code class="docutils literal notranslate"><span class="pre">end</span></code> (from the previous position <code class="docutils literal notranslate"><span class="pre">start</span></code>.)</p>
 <p>This is a helper function for <a class="reference internal" href="#flatsurf.graphical.hyperbolic.HyperbolicPathPlotCommand.cartesian" title="flatsurf.graphical.hyperbolic.HyperbolicPathPlotCommand.cartesian"><code class="xref py py-meth docutils literal notranslate"><span class="pre">cartesian()</span></code></a>.</p>
 <p>INPUT:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">start</span></code> – a <code class="xref py py-class docutils literal notranslate"><span class="pre">flatsurf.geometry.HyperbolicPoint</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">end</span></code> – a <code class="xref py py-class docutils literal notranslate"><span class="pre">flatsurf.geometry.HyperbolicPoint</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">start</span></code> – a <a class="reference internal" href="../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicPoint" title="flatsurf.geometry.hyperbolic.HyperbolicPoint"><code class="xref py py-class docutils literal notranslate"><span class="pre">HyperbolicPoint</span></code></a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">end</span></code> – a <a class="reference internal" href="../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicPoint" title="flatsurf.geometry.hyperbolic.HyperbolicPoint"><code class="xref py py-class docutils literal notranslate"><span class="pre">HyperbolicPoint</span></code></a></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">model</span></code> – one of <code class="docutils literal notranslate"><span class="pre">&quot;half_plane&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;klein&quot;</span></code> in which model to
 realize this segment</p></li>
 </ul>
@@ -602,7 +602,8 @@ starting point is not rendered here:</p>
 </div>
 <p>Note that this is a “closed” boundary of the polygon that is left of
 that segment unlike the “open” version produced by
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">_hyperbolic_move()</span></code> which contains the entire positive real axis:</p>
+<a class="reference internal" href="#flatsurf.graphical.hyperbolic.HyperbolicPathPlotCommand.create_move_cartesian" title="flatsurf.graphical.hyperbolic.HyperbolicPathPlotCommand.create_move_cartesian"><code class="xref py py-meth docutils literal notranslate"><span class="pre">create_move_cartesian()</span></code></a> which contains the entire positive real
+axis:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">HyperbolicPathPlotCommand</span><span class="o">.</span><span class="n">create_move_cartesian</span><span class="p">(</span><span class="n">H</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">H</span><span class="p">(</span><span class="n">oo</span><span class="p">),</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;half_plane&quot;</span><span class="p">,</span> <span class="n">stroke</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="p">[</span><span class="n">CartesianPathPlotCommand</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="s1">&#39;MOVETOINFINITY&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))]</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">HyperbolicPathPlotCommand</span><span class="o">.</span><span class="n">create_move_cartesian</span><span class="p">(</span><span class="n">H</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">H</span><span class="p">(</span><span class="n">oo</span><span class="p">),</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;half_plane&quot;</span><span class="p">,</span> <span class="n">stroke</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -735,7 +736,7 @@ encoded by <code class="docutils literal notranslate"><span class="pre">commands
 </div>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.HyperbolicConvexSet.plot()</span></code></p>
+<p><a class="reference internal" href="../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicConvexSet.plot" title="flatsurf.geometry.hyperbolic.HyperbolicConvexSet.plot"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.hyperbolic.HyperbolicConvexSet.plot()</span></code></a></p>
 </div>
 </dd></dl>
 
@@ -770,7 +771,7 @@ encoded by <code class="docutils literal notranslate"><span class="pre">commands
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2016-2022, the sage-flatsurf authors
+                Copyright &#169; 2016-2023, the sage-flatsurf authors
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             

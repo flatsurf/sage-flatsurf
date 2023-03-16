@@ -291,6 +291,7 @@
 <span class="c1"># ****************************************************************************</span>
 <span class="c1">#       Copyright (C) 2013-2019 Vincent Delecroix &lt;20100.delecroix@gmail.com&gt;</span>
 <span class="c1">#                     2013-2019 W. Patrick Hooper &lt;wphooper@gmail.com&gt;</span>
+<span class="c1">#                     2023 Julian Rüth &lt;julian.rueth@fsfe.org&gt;</span>
 <span class="c1">#</span>
 <span class="c1">#  Distributed under the terms of the GNU General Public License (GPL)</span>
 <span class="c1">#  as published by the Free Software Foundation; either version 2 of</span>
@@ -462,6 +463,12 @@
 <div class="viewcode-block" id="FinitelyGenerated2x2MatrixGroup"><a class="viewcode-back" href="../../../geometry/finitely_generated_matrix_group.html#flatsurf.geometry.finitely_generated_matrix_group.FinitelyGenerated2x2MatrixGroup">[docs]</a><span class="k">class</span> <span class="nc">FinitelyGenerated2x2MatrixGroup</span><span class="p">(</span><span class="n">Group</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Finitely generated group of 2x2 matrices with real coefficients</span>
+
+<span class="sd">    .. SEEALSO::</span>
+
+<span class="sd">        :py:mod:`sage.groups.group` for the general interface of groups</span>
+<span class="sd">        like this in SageMath</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">matrices</span><span class="p">,</span> <span class="n">matrix_space</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">matrix_space</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -621,8 +628,30 @@
 <div class="viewcode-block" id="FinitelyGenerated2x2MatrixGroup.one"><a class="viewcode-back" href="../../../geometry/finitely_generated_matrix_group.html#flatsurf.geometry.finitely_generated_matrix_group.FinitelyGenerated2x2MatrixGroup.one">[docs]</a>    <span class="k">def</span> <span class="nf">one</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_matrix_space</span><span class="o">.</span><span class="n">identity_matrix</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="FinitelyGenerated2x2MatrixGroup.an_element"><a class="viewcode-back" href="../../../geometry/finitely_generated_matrix_group.html#flatsurf.geometry.finitely_generated_matrix_group.FinitelyGenerated2x2MatrixGroup.an_element">[docs]</a>    <span class="k">def</span> <span class="nf">an_element</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generators</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+    <span class="k">def</span> <span class="nf">_an_element_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a typical element of this group, namely a generator.</span>
+
+<span class="sd">        EXAMPLES:</span>
+
+<span class="sd">            sage: from flatsurf.geometry.finitely_generated_matrix_group import FinitelyGenerated2x2MatrixGroup</span>
+<span class="sd">            sage: G = FinitelyGenerated2x2MatrixGroup([identity_matrix(2)])</span>
+
+<span class="sd">            sage: G._an_element_()</span>
+<span class="sd">            [1 0]</span>
+<span class="sd">            [0 1]</span>
+
+<span class="sd">            sage: G.an_element()</span>
+<span class="sd">            [1 0]</span>
+<span class="sd">            [0 1]</span>
+
+<span class="sd">        .. SEEALSO::</span>
+
+<span class="sd">            :meth:`sage.structure.parent.Parent.an_element` which relies on</span>
+<span class="sd">            this method and should be called instead</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generators</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
 <div class="viewcode-block" id="FinitelyGenerated2x2MatrixGroup.gen"><a class="viewcode-back" href="../../../geometry/finitely_generated_matrix_group.html#flatsurf.geometry.finitely_generated_matrix_group.FinitelyGenerated2x2MatrixGroup.gen">[docs]</a>    <span class="k">def</span> <span class="nf">gen</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generators</span><span class="p">[</span><span class="n">i</span><span class="p">]</span></div></div>
@@ -638,7 +667,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2016-2022, the sage-flatsurf authors
+                Copyright &#169; 2016-2023, the sage-flatsurf authors
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             

@@ -270,7 +270,7 @@
 <span class="c1">#</span>
 <span class="c1">#       Copyright (C) 2013-2019 Vincent Delecroix &lt;20100.delecroix@gmail.com&gt;</span>
 <span class="c1">#                     2013-2019 W. Patrick Hooper &lt;wphooper@gmail.com&gt;</span>
-<span class="c1">#                          2022 Julian Rüth &lt;julian.rueth@fsfe.org&gt;</span>
+<span class="c1">#                     2022-2023 Julian Rüth &lt;julian.rueth@fsfe.org&gt;</span>
 <span class="c1">#</span>
 <span class="c1">#  sage-flatsurf is free software: you can redistribute it and/or modify</span>
 <span class="c1">#  it under the terms of the GNU General Public License as published by</span>
@@ -342,33 +342,33 @@
 
 <span class="sd">    The :meth:`plot` method calls some other built in methods: :meth:`plot_polygon`,</span>
 <span class="sd">    :meth:`plot_polygon_label`, :meth:`plot_edge` and :meth:`plot_edge_label`. These in turn</span>
-<span class="sd">    call methods in :class:`GraphicalPolygon`.</span>
+<span class="sd">    call methods in :class:`~.polygon.GraphicalPolygon`.</span>
 
-<span class="sd">    - ``polygon_options`` -- Options passed to :meth:`graphical_polygon.GraphicalPolygon.plot_polygon` when</span>
+<span class="sd">    - ``polygon_options`` -- Options passed to :meth:`.polygon.GraphicalPolygon.plot_polygon` when</span>
 <span class="sd">        plotting a polygon right-side up.</span>
 
 <span class="sd">    - ``upside_down_polygon_options`` -- Options passed to</span>
-<span class="sd">        :meth:`graphical_polygon.GraphicalPolygon.plot_polygon` when plotting a polygon upside-down.</span>
+<span class="sd">        :meth:`.polygon.GraphicalPolygon.plot_polygon` when plotting a polygon upside-down.</span>
 
-<span class="sd">    - ``polygon_label_options`` -- Options passed to :meth:`graphical_polygon.GraphicalPolygon.plot_label`</span>
+<span class="sd">    - ``polygon_label_options`` -- Options passed to :meth:`.polygon.GraphicalPolygon.plot_label`</span>
 <span class="sd">        when plotting a polygon label.</span>
 
 <span class="sd">    - ``non_adjacent_edge_options`` -- Options passed to</span>
-<span class="sd">        :meth:`graphical_polygon.GraphicalPolygon.plot_edge` when plotting a polygon edge which is not</span>
+<span class="sd">        :meth:`.polygon.GraphicalPolygon.plot_edge` when plotting a polygon edge which is not</span>
 <span class="sd">        adjacent to the edge it is glued to.</span>
 
 <span class="sd">    - ``adjacent_edge_options`` -- Options passed to</span>
-<span class="sd">        :meth:`graphical_polygon.GraphicalPolygon.plot_edge` when plotting a polygon edge which is</span>
+<span class="sd">        :meth:`.polygon.GraphicalPolygon.plot_edge` when plotting a polygon edge which is</span>
 <span class="sd">        adjacent to the edge it is glued to.</span>
 
-<span class="sd">    - ``self_glued_edge_options`` -- Options passed to :meth:`graphical_polygon.GraphicalPolygon.plot_edge`</span>
+<span class="sd">    - ``self_glued_edge_options`` -- Options passed to :meth:`.polygon.GraphicalPolygon.plot_edge`</span>
 <span class="sd">        when plotting a polygon edge which is glued to itself.</span>
 
-<span class="sd">    - ``edge_label_options`` -- Options passed to :meth:`graphical_polygon.GraphicalPolygon.edge_label`</span>
+<span class="sd">    - ``edge_label_options`` -- Options passed to :meth:`.polygon.GraphicalPolygon.plot_edge_label`</span>
 <span class="sd">        when plotting a edge label.</span>
 
 <span class="sd">    - ``zero_flag_options`` -- Options passed to</span>
-<span class="sd">        :meth:`graphical_polygon.GraphicalPolygon.plot_zero_flag` when plotting a zero_flag.</span>
+<span class="sd">        :meth:`.polygon.GraphicalPolygon.plot_zero_flag` when plotting a zero_flag.</span>
 
 <span class="sd">    INPUT:</span>
 
@@ -432,7 +432,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">polygon_options</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;lightgray&quot;</span><span class="p">}</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Options passed to :meth:`graphical_polygon.GraphicalPolygon.plot_polygon` when plotting a polygon right-side up.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Options passed to :meth:`.polygon.GraphicalPolygon.plot_polygon` when plotting a polygon right-side up.&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">will_plot_upside_down_polygons</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -440,7 +440,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">upside_down_polygon_options</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;lightgray&quot;</span><span class="p">,</span> <span class="s2">&quot;zorder&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">}</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Options passed to :meth:`graphical_polygon.GraphicalPolygon.plot_polygon` when plotting a polygon upside-down.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Options passed to :meth:`.polygon.GraphicalPolygon.plot_polygon` when plotting a polygon upside-down.&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">will_plot_polygon_labels</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -448,7 +448,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">polygon_label_options</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="s2">&quot;vertical_alignment&quot;</span><span class="p">:</span> <span class="s2">&quot;center&quot;</span><span class="p">,</span> <span class="s2">&quot;horizontal_alignment&quot;</span><span class="p">:</span> <span class="s2">&quot;center&quot;</span><span class="p">}</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Options passed to :meth:`graphical_polygon.GraphicalPolygon.plot_label` when plotting a polygon label.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Options passed to :meth:`.polygon.GraphicalPolygon.plot_label` when plotting a polygon label.&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">will_plot_edges</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -461,7 +461,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">non_adjacent_edge_options</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;blue&quot;</span><span class="p">}</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Options passed to :meth:`graphical_polygon.GraphicalPolygon.plot_edge` when plotting a polygon edge</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Options passed to :meth:`.polygon.GraphicalPolygon.plot_edge` when plotting a polygon edge</span>
 <span class="sd">        which is not adjacent to the edge it is glued to.&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">will_plot_adjacent_edges</span> <span class="o">=</span> <span class="kc">True</span>
@@ -470,7 +470,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">adjacent_edge_options</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;blue&quot;</span><span class="p">,</span> <span class="s2">&quot;linestyle&quot;</span><span class="p">:</span> <span class="s2">&quot;:&quot;</span><span class="p">}</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Options passed to :meth:`graphical_polygon.GraphicalPolygon.plot_edge`</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Options passed to :meth:`.polygon.GraphicalPolygon.plot_edge`</span>
 <span class="sd">        when plotting a polygon edge which is adjacent to the edge it is glued to.&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">will_plot_self_glued_edges</span> <span class="o">=</span> <span class="kc">True</span>
@@ -479,7 +479,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">self_glued_edge_options</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;red&quot;</span><span class="p">}</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Options passed to :meth:`graphical_polygon.GraphicalPolygon.plot_edge` when plotting a polygon edge</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Options passed to :meth:`.polygon.GraphicalPolygon.plot_edge` when plotting a polygon edge</span>
 <span class="sd">        which is glued to itself.&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">will_plot_edge_labels</span> <span class="o">=</span> <span class="kc">True</span>
@@ -488,7 +488,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">edge_label_options</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;blue&quot;</span><span class="p">}</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Options passed to :meth:`graphical_polygon.GraphicalPolygon.edge_label` when plotting a polygon label.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Options passed to :meth:`.polygon.GraphicalPolygon.plot_edge_label` when plotting a polygon label.&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">will_plot_zero_flags</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -496,7 +496,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">zero_flag_options</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;green&quot;</span><span class="p">,</span> <span class="s2">&quot;thickness&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">}</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Options passed to :meth:`graphical_polygon.GraphicalPolygon.plot_zero_flag` when plotting a zero_flag.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Options passed to :meth:`.polygon.GraphicalPolygon.plot_zero_flag` when plotting a zero_flag.&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">process_options</span><span class="p">(</span><span class="n">adjacencies</span><span class="o">=</span><span class="n">adjacencies</span><span class="p">,</span> <span class="n">polygon_labels</span><span class="o">=</span><span class="n">polygon_labels</span><span class="p">,</span> <span class="n">edge_labels</span><span class="o">=</span><span class="n">edge_labels</span><span class="p">)</span>
 
@@ -964,7 +964,7 @@
             <span class="k">if</span> <span class="n">return_all</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">ret</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Point or vector is not in a visible graphical_polygon.&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Point or vector is not in a visible graphical polygon.&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">gp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graphical_polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
             <span class="n">coords</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">transform_back</span><span class="p">(</span><span class="n">point</span><span class="p">)</span>
@@ -1091,7 +1091,7 @@
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Internal method for plotting polygons returning a Graphics object.</span>
 
-<span class="sd">        Calls :meth:`graphical_polygon.GraphicalPolygon.plot_polygon` passing</span>
+<span class="sd">        Calls :meth:`.polygon.GraphicalPolygon.plot_polygon` passing</span>
 <span class="sd">        the attribute ``upside_down_polygon_options`` if the polygon is upside down</span>
 <span class="sd">        and ``polygon_options`` otherwise.</span>
 
@@ -1114,8 +1114,8 @@
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Internal method for plotting polygon labels returning a Graphics2D.</span>
 
-<span class="sd">        Calls :meth:`graphical_polygon.GraphicalPolygon.plot_polygon_label` passing</span>
-<span class="sd">        the attribute ``polygon_label_options``.</span>
+<span class="sd">        Calls :meth:`.polygon.GraphicalPolygon.plot_label` passing the</span>
+<span class="sd">        attribute ``polygon_label_options``.</span>
 
 <span class="sd">        Override this method for fine control of how the polygons are drawn.</span>
 
@@ -1133,7 +1133,7 @@
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Internal method for plotting a polygon&#39;s edge returning a Graphics2D.</span>
 
-<span class="sd">        The method calls :meth:`graphical_polygon.GraphicalPolygon.plot_edge`.</span>
+<span class="sd">        The method calls :meth:`.polygon.GraphicalPolygon.plot_edge`.</span>
 <span class="sd">        Depending on the geometry of the edge pair, it passes one of the attributes</span>
 <span class="sd">        ``adjacent_edge_options``, ``self_glued_edge_options`` or ``non_adjacent_edge_options``.</span>
 
@@ -1163,7 +1163,7 @@
 <div class="viewcode-block" id="GraphicalSurface.plot_edge_label"><a class="viewcode-back" href="../../../graphical/surface.html#flatsurf.graphical.surface.GraphicalSurface.plot_edge_label">[docs]</a>    <span class="k">def</span> <span class="nf">plot_edge_label</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">edge_label</span><span class="p">,</span> <span class="n">graphical_polygon</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Internal method for plotting an edge label.</span>
-<span class="sd">        Calls :meth:`graphical_polygon.GraphicalPolygon.plot_edge_label` passing</span>
+<span class="sd">        Calls :meth:`.polygon.GraphicalPolygon.plot_edge_label` passing</span>
 <span class="sd">        the attribute ``edge_label_options``.</span>
 
 <span class="sd">        Override this method for fine control of how the edge is drawn.</span>
@@ -1183,7 +1183,7 @@
 <div class="viewcode-block" id="GraphicalSurface.plot_zero_flag"><a class="viewcode-back" href="../../../graphical/surface.html#flatsurf.graphical.surface.GraphicalSurface.plot_zero_flag">[docs]</a>    <span class="k">def</span> <span class="nf">plot_zero_flag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">graphical_polygon</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Internal method for plotting a polygon&#39;s zero_flag and returning a Graphics2D.</span>
-<span class="sd">        Simply calls :meth:`graphical_polygon.GraphicalPolygon.plot_zero_flag` passing</span>
+<span class="sd">        Simply calls :meth:`.polygon.GraphicalPolygon.plot_zero_flag` passing</span>
 <span class="sd">        the attribute` `zero_flag_options``.</span>
 
 <span class="sd">        Override this method for fine control of how the edge is drawn.</span>
@@ -1333,7 +1333,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2016-2022, the sage-flatsurf authors
+                Copyright &#169; 2016-2023, the sage-flatsurf authors
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             

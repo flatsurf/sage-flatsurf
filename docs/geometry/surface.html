@@ -268,7 +268,7 @@ namely <a class="reference internal" href="#flatsurf.geometry.surface.Surface_li
 that make up a surface by non-negative integers and the latter can use
 arbitrary labels. Additionally, there are lots of other surface representations
 that are not really implementing data structures but essentially just wrap
-these two, e.g., a <code class="xref py py-class docutils literal notranslate"><span class="pre">MinimalTranslationCover</span></code>.</p>
+these two, e.g., a <a class="reference internal" href="minimal_cover.html#flatsurf.geometry.minimal_cover.MinimalTranslationCover" title="flatsurf.geometry.minimal_cover.MinimalTranslationCover"><code class="xref py py-class docutils literal notranslate"><span class="pre">minimal_cover.MinimalTranslationCover</span></code></a>.</p>
 <p>All these surface implementations inherit from <a class="reference internal" href="#flatsurf.geometry.surface.Surface" title="flatsurf.geometry.surface.Surface"><code class="xref py py-class docutils literal notranslate"><span class="pre">Surface</span></code></a> which describes
 the contract that all surfaces must satisfy. As an absolute minimum, they
 implement <a class="reference internal" href="#flatsurf.geometry.surface.Surface.polygon" title="flatsurf.geometry.surface.Surface.polygon"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Surface.polygon()</span></code></a> which maps polygon labels to actual polygons,
@@ -292,11 +292,11 @@ and <a class="reference internal" href="#flatsurf.geometry.surface.Surface.oppos
 </div>
 <p>There are two separate hierarchies of surfaces in sage-flatsurf. The underlying
 data of a surface described by the subclasses of <a class="reference internal" href="#flatsurf.geometry.surface.Surface" title="flatsurf.geometry.surface.Surface"><code class="xref py py-class docutils literal notranslate"><span class="pre">Surface</span></code></a> here and the
-<code class="xref py py-class docutils literal notranslate"><span class="pre">SimilaritySurface</span></code> and its subclasses which wrap a <a class="reference internal" href="#flatsurf.geometry.surface.Surface" title="flatsurf.geometry.surface.Surface"><code class="xref py py-class docutils literal notranslate"><span class="pre">Surface</span></code></a>.
-While a <a class="reference internal" href="#flatsurf.geometry.surface.Surface" title="flatsurf.geometry.surface.Surface"><code class="xref py py-class docutils literal notranslate"><span class="pre">Surface</span></code></a> essentially provides the raw data of a surface, a
-<code class="xref py py-class docutils literal notranslate"><span class="pre">SimilaritySurface</span></code> then adds mathematical knowledge to that data
-structure, e.g., by declaring that the data describes a
-<code class="xref py py-class docutils literal notranslate"><span class="pre">TranslationSurface</span></code>:</p>
+<a class="reference internal" href="similarity_surface.html#flatsurf.geometry.similarity_surface.SimilaritySurface" title="flatsurf.geometry.similarity_surface.SimilaritySurface"><code class="xref py py-class docutils literal notranslate"><span class="pre">similarity_surface.SimilaritySurface</span></code></a> and its subclasses which wrap a
+<a class="reference internal" href="#flatsurf.geometry.surface.Surface" title="flatsurf.geometry.surface.Surface"><code class="xref py py-class docutils literal notranslate"><span class="pre">Surface</span></code></a>. While a <a class="reference internal" href="#flatsurf.geometry.surface.Surface" title="flatsurf.geometry.surface.Surface"><code class="xref py py-class docutils literal notranslate"><span class="pre">Surface</span></code></a> essentially provides the raw data of
+a surface, a <a class="reference internal" href="similarity_surface.html#flatsurf.geometry.similarity_surface.SimilaritySurface" title="flatsurf.geometry.similarity_surface.SimilaritySurface"><code class="xref py py-class docutils literal notranslate"><span class="pre">similarity_surface.SimilaritySurface</span></code></a> then adds
+mathematical knowledge to that data structure, e.g., by declaring that the data
+describes a <a class="reference internal" href="translation_surface.html#flatsurf.geometry.translation_surface.TranslationSurface" title="flatsurf.geometry.translation_surface.TranslationSurface"><code class="xref py py-class docutils literal notranslate"><span class="pre">translation_surface.TranslationSurface</span></code></a>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">TranslationSurface</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">T</span> <span class="o">=</span> <span class="n">TranslationSurface</span><span class="p">(</span><span class="n">S</span><span class="p">)</span>
 </pre></div>
@@ -331,6 +331,11 @@ returns the pair (<code class="docutils literal notranslate"><span class="pre">l
 <dt class="sig sig-object py" id="flatsurf.geometry.surface.ExtraLabel">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.surface.</span></span><span class="sig-name descname"><span class="pre">ExtraLabel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface.html#ExtraLabel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface.ExtraLabel" title="Permalink to this definition">#</a></dt>
 <dd><p>Used to spit out new labels.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="flatsurf.geometry.surface.ExtraLabel._next">
+<span class="sig-name descname"><span class="pre">_next</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#flatsurf.geometry.surface.ExtraLabel._next" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -339,6 +344,11 @@ returns the pair (<code class="docutils literal notranslate"><span class="pre">l
 <dd><p>Implements a total ordering on labels, which may be of varying types.</p>
 <p>We use hashes, so if hash(label1) &lt; hash(label2) we declare label1 &lt; label2.</p>
 <p>For objects with the same hash, we store an arbitrary ordering.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.surface.LabelComparator._get_resolver_index">
+<span class="sig-name descname"><span class="pre">_get_resolver_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label_hash</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface.html#LabelComparator._get_resolver_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface.LabelComparator._get_resolver_index" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.surface.LabelComparator.ge">
 <span class="sig-name descname"><span class="pre">ge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">l1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface.html#LabelComparator.ge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface.LabelComparator.ge" title="Permalink to this definition">#</a></dt>
@@ -464,8 +474,8 @@ is oriented.</p>
 <p>Concrete implementations of a surface must implement at least
 <a class="reference internal" href="#flatsurf.geometry.surface.Surface.polygon" title="flatsurf.geometry.surface.Surface.polygon"><code class="xref py py-meth docutils literal notranslate"><span class="pre">polygon()</span></code></a> and <a class="reference internal" href="#flatsurf.geometry.surface.Surface.opposite_edge" title="flatsurf.geometry.surface.Surface.opposite_edge"><code class="xref py py-meth docutils literal notranslate"><span class="pre">opposite_edge()</span></code></a>.</p>
 <p>To be able to modify a surface, subclasses should also implement
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">_change_polygon()</span></code>, <code class="xref py py-meth docutils literal notranslate"><span class="pre">_set_edge_pairing()</span></code>, <code class="xref py py-meth docutils literal notranslate"><span class="pre">_add_polygon()</span></code>,
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">_remove_polygon()</span></code>.</p>
+<a class="reference internal" href="#flatsurf.geometry.surface.Surface._change_polygon" title="flatsurf.geometry.surface.Surface._change_polygon"><code class="xref py py-meth docutils literal notranslate"><span class="pre">_change_polygon()</span></code></a>, <a class="reference internal" href="#flatsurf.geometry.surface.Surface._set_edge_pairing" title="flatsurf.geometry.surface.Surface._set_edge_pairing"><code class="xref py py-meth docutils literal notranslate"><span class="pre">_set_edge_pairing()</span></code></a>, <a class="reference internal" href="#flatsurf.geometry.surface.Surface._add_polygon" title="flatsurf.geometry.surface.Surface._add_polygon"><code class="xref py py-meth docutils literal notranslate"><span class="pre">_add_polygon()</span></code></a>,
+<a class="reference internal" href="#flatsurf.geometry.surface.Surface._remove_polygon" title="flatsurf.geometry.surface.Surface._remove_polygon"><code class="xref py py-meth docutils literal notranslate"><span class="pre">_remove_polygon()</span></code></a>.</p>
 <p>For concrete implementations of a Surface, see, e.g., <a class="reference internal" href="#flatsurf.geometry.surface.Surface_list" title="flatsurf.geometry.surface.Surface_list"><code class="xref py py-class docutils literal notranslate"><span class="pre">Surface_list</span></code></a>
 and <a class="reference internal" href="#flatsurf.geometry.surface.Surface_dict" title="flatsurf.geometry.surface.Surface_dict"><code class="xref py py-class docutils literal notranslate"><span class="pre">Surface_dict</span></code></a>.</p>
 <p>INPUT:</p>
@@ -500,6 +510,65 @@ with <a class="reference internal" href="#flatsurf.geometry.surface.Surface.set_
 </pre></div>
 </div>
 <dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.surface.Surface.__mutate">
+<span class="sig-name descname"><span class="pre">__mutate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#flatsurf.geometry.surface.Surface.__mutate" title="Permalink to this definition">#</a></dt>
+<dd><p>Called before a mutation occurs. Do not call directly.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.surface.Surface._add_polygon">
+<span class="sig-name descname"><span class="pre">_add_polygon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_polygon</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gluing_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface.html#Surface._add_polygon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface.Surface._add_polygon" title="Permalink to this definition">#</a></dt>
+<dd><p>Internal method used by add_polygon(). Should not be called directly.</p>
+<p>Mutable surfaces should implement this method.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.surface.Surface._change_polygon">
+<span class="sig-name descname"><span class="pre">_change_polygon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_polygon</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gluing_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface.html#Surface._change_polygon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface.Surface._change_polygon" title="Permalink to this definition">#</a></dt>
+<dd><p>Internal method used by change_polygon(). Should not be called directly.</p>
+<p>Mutable surfaces should implement this method.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.surface.Surface._remove_polygon">
+<span class="sig-name descname"><span class="pre">_remove_polygon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface.html#Surface._remove_polygon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface.Surface._remove_polygon" title="Permalink to this definition">#</a></dt>
+<dd><p>Internal method used by remove_polygon(). Should not be called directly.</p>
+<p>Mutable surfaces should implement this method.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.surface.Surface._set_edge_pairing">
+<span class="sig-name descname"><span class="pre">_set_edge_pairing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface.html#Surface._set_edge_pairing"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface.Surface._set_edge_pairing" title="Permalink to this definition">#</a></dt>
+<dd><p>Internal method used by change_edge_gluing(). Should not be called directly.</p>
+<p>Mutable surfaces should implement this method.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.surface.Surface._test_base_label">
+<span class="sig-name descname"><span class="pre">_test_base_label</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">options</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface.html#Surface._test_base_label"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface.Surface._test_base_label" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.surface.Surface._test_base_ring">
+<span class="sig-name descname"><span class="pre">_test_base_ring</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">options</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface.html#Surface._test_base_ring"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface.Surface._test_base_ring" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.surface.Surface._test_gluings">
+<span class="sig-name descname"><span class="pre">_test_gluings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">options</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface.html#Surface._test_gluings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface.Surface._test_gluings" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.surface.Surface._test_override">
+<span class="sig-name descname"><span class="pre">_test_override</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">options</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface.html#Surface._test_override"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface.Surface._test_override" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.surface.Surface._test_polygons">
+<span class="sig-name descname"><span class="pre">_test_polygons</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">options</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface.html#Surface._test_polygons"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface.Surface._test_polygons" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.surface.Surface.add_polygon">
 <span class="sig-name descname"><span class="pre">add_polygon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_polygon</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gluing_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface.html#Surface.add_polygon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface.Surface.add_polygon" title="Permalink to this definition">#</a></dt>
 <dd><p>Adds a the provided polygon to the surface. Utilizes gluing_list
@@ -528,7 +597,7 @@ from the label provided).</p>
 <dt class="sig sig-object py" id="flatsurf.geometry.surface.Surface.base_label">
 <span class="sig-name descname"><span class="pre">base_label</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface.html#Surface.base_label"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface.Surface.base_label" title="Permalink to this definition">#</a></dt>
 <dd><p>Return the label of a special chosen polygon in the surface.</p>
-<p>When no specific choice was made with <code class="xref py py-meth docutils literal notranslate"><span class="pre">set_base_label()</span></code>, this
+<p>When no specific choice was made with <a class="reference internal" href="#flatsurf.geometry.surface.Surface.change_base_label" title="flatsurf.geometry.surface.Surface.change_base_label"><code class="xref py py-meth docutils literal notranslate"><span class="pre">change_base_label()</span></code></a>, this
 might just be the initial polygon, i.e., the one that was first added
 in the construction of this surface.</p>
 <p>This label is for example used as the starting position when walking
@@ -694,7 +763,8 @@ if the base_label is removed.</p>
 <dt class="sig sig-object py" id="flatsurf.geometry.surface.Surface.subdivide">
 <span class="sig-name descname"><span class="pre">subdivide</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface.html#Surface.subdivide"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface.Surface.subdivide" title="Permalink to this definition">#</a></dt>
 <dd><p>Return a copy of this surface whose polygons have been partitioned into
-smaller triangles with <code class="xref py py-meth docutils literal notranslate"><span class="pre">Polygon.subdivide()</span></code>.</p>
+smaller triangles with
+<a class="reference internal" href="polygon.html#flatsurf.geometry.polygon.ConvexPolygon.subdivide" title="flatsurf.geometry.polygon.ConvexPolygon.subdivide"><code class="xref py py-meth docutils literal notranslate"><span class="pre">polygon.ConvexPolygon.subdivide()</span></code></a>.</p>
 <p>EXAMPLES:</p>
 <p>A surface consisting of a single triangle:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface</span> <span class="kn">import</span> <span class="n">Surface_dict</span>
@@ -837,13 +907,14 @@ applications.</p>
 gluing data.</p>
 <p>Each <code class="docutils literal notranslate"><span class="pre">_p[label]</span></code> is typically a pair <code class="docutils literal notranslate"><span class="pre">(polygon,</span> <span class="pre">gluing_dict)</span></code> where
 <code class="docutils literal notranslate"><span class="pre">gluing_dict</span></code> is maps <code class="docutils literal notranslate"><span class="pre">other_label</span></code> to <code class="docutils literal notranslate"><span class="pre">other_edge</span></code> such that
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">opposite_edge(label,</span> <span class="pre">edge)()</span></code> returns <code class="docutils literal notranslate"><span class="pre">_p[label][1][edge]</span></code>.</p>
+<a class="reference internal" href="#flatsurf.geometry.surface.Surface.opposite_edge" title="flatsurf.geometry.surface.Surface.opposite_edge"><code class="xref py py-meth docutils literal notranslate"><span class="pre">opposite_edge(label,</span> <span class="pre">edge)</span></code></a> returns
+<code class="docutils literal notranslate"><span class="pre">_p[label][1][edge]</span></code>.</p>
 <p>INPUT:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">base_ring</span></code> – ring or <code class="docutils literal notranslate"><span class="pre">None</span></code> (default: <code class="docutils literal notranslate"><span class="pre">None</span></code>); the ring
 containing the coordinates of the vertices of the polygons. If <code class="docutils literal notranslate"><span class="pre">None</span></code>,
-the <code class="xref py py-meth docutils literal notranslate"><span class="pre">base_ring()</span></code> will be the one of <code class="docutils literal notranslate"><span class="pre">surface</span></code>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">surface</span></code> – <a class="reference internal" href="#flatsurf.geometry.surface.Surface" title="flatsurf.geometry.surface.Surface"><code class="xref py py-class docutils literal notranslate"><span class="pre">Surface</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">SimilaritySurface</span></code>, or
+the <a class="reference internal" href="#flatsurf.geometry.surface.Surface.base_ring" title="flatsurf.geometry.surface.Surface.base_ring"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Surface.base_ring()</span></code></a> will be the one of <code class="docutils literal notranslate"><span class="pre">surface</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">surface</span></code> – <a class="reference internal" href="#flatsurf.geometry.surface.Surface" title="flatsurf.geometry.surface.Surface"><code class="xref py py-class docutils literal notranslate"><span class="pre">Surface</span></code></a>, <a class="reference internal" href="similarity_surface.html#flatsurf.geometry.similarity_surface.SimilaritySurface" title="flatsurf.geometry.similarity_surface.SimilaritySurface"><code class="xref py py-class docutils literal notranslate"><span class="pre">similarity_surface.SimilaritySurface</span></code></a>, or
 <code class="docutils literal notranslate"><span class="pre">None</span></code> (default: <code class="docutils literal notranslate"><span class="pre">None</span></code>); a surface to be copied or referenced (see
 <code class="docutils literal notranslate"><span class="pre">copy</span></code>). If <code class="docutils literal notranslate"><span class="pre">None</span></code>, the surface is initially empty.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">copy</span></code> – boolean or <code class="docutils literal notranslate"><span class="pre">None</span></code> (default: <code class="docutils literal notranslate"><span class="pre">None</span></code>); whether the data
@@ -866,6 +937,36 @@ surface is mutable. When <code class="docutils literal notranslate"><span class=
 <span class="n">sage</span><span class="p">:</span> <span class="n">TestSuite</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
 </pre></div>
 </div>
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.surface.Surface_dict._add_polygon">
+<span class="sig-name descname"><span class="pre">_add_polygon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_polygon</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gluing_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface.html#Surface_dict._add_polygon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface.Surface_dict._add_polygon" title="Permalink to this definition">#</a></dt>
+<dd><p>Internal method used by add_polygon(). Should not be called directly.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.surface.Surface_dict._change_edge_gluing">
+<span class="sig-name descname"><span class="pre">_change_edge_gluing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#flatsurf.geometry.surface.Surface_dict._change_edge_gluing" title="Permalink to this definition">#</a></dt>
+<dd><p>Internal method used by set_edge_pairing(). Should not be called directly.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.surface.Surface_dict._change_polygon">
+<span class="sig-name descname"><span class="pre">_change_polygon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_polygon</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gluing_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface.html#Surface_dict._change_polygon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface.Surface_dict._change_polygon" title="Permalink to this definition">#</a></dt>
+<dd><p>Internal method used by change_polygon(). Should not be called directly.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.surface.Surface_dict._remove_polygon">
+<span class="sig-name descname"><span class="pre">_remove_polygon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface.html#Surface_dict._remove_polygon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface.Surface_dict._remove_polygon" title="Permalink to this definition">#</a></dt>
+<dd><p>Internal method used by remove_polygon(). Should not be called directly.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.surface.Surface_dict._set_edge_pairing">
+<span class="sig-name descname"><span class="pre">_set_edge_pairing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface.html#Surface_dict._set_edge_pairing"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface.Surface_dict._set_edge_pairing" title="Permalink to this definition">#</a></dt>
+<dd><p>Internal method used by set_edge_pairing(). Should not be called directly.</p>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.surface.Surface_dict.label_iterator">
 <span class="sig-name descname"><span class="pre">label_iterator</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface.html#Surface_dict.label_iterator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface.Surface_dict.label_iterator" title="Permalink to this definition">#</a></dt>
@@ -902,15 +1003,17 @@ returns the pair (<code class="docutils literal notranslate"><span class="pre">p
 gluing data.</p>
 <p>Each <code class="docutils literal notranslate"><span class="pre">_p[label]</span></code> is typically a pair <code class="docutils literal notranslate"><span class="pre">(polygon,</span> <span class="pre">gluing_list)</span></code> where
 <code class="docutils literal notranslate"><span class="pre">gluing_list</span></code> is a list of pairs <code class="docutils literal notranslate"><span class="pre">(other_label,</span> <span class="pre">other_edge)</span></code> such that
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">opposite_edge(label,</span> <span class="pre">edge)()</span></code> returns <code class="docutils literal notranslate"><span class="pre">_p[label][1][edge]</span></code>.</p>
+<a class="reference internal" href="#flatsurf.geometry.surface.Surface.opposite_edge" title="flatsurf.geometry.surface.Surface.opposite_edge"><code class="xref py py-meth docutils literal notranslate"><span class="pre">opposite_edge(label,</span> <span class="pre">edge)</span></code></a> returns
+<code class="docutils literal notranslate"><span class="pre">_p[label][1][edge]</span></code>.</p>
 <p>INPUT:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">base_ring</span></code> – ring or <code class="docutils literal notranslate"><span class="pre">None</span></code> (default: <code class="docutils literal notranslate"><span class="pre">None</span></code>); the ring
 containing the coordinates of the vertices of the polygons. If <code class="docutils literal notranslate"><span class="pre">None</span></code>,
-the <code class="xref py py-meth docutils literal notranslate"><span class="pre">base_ring()</span></code> will be the one of <code class="docutils literal notranslate"><span class="pre">surface</span></code>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">surface</span></code> – <a class="reference internal" href="#flatsurf.geometry.surface.Surface" title="flatsurf.geometry.surface.Surface"><code class="xref py py-class docutils literal notranslate"><span class="pre">Surface</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">SimilaritySurface</span></code>, or
-<code class="docutils literal notranslate"><span class="pre">None</span></code> (default: <code class="docutils literal notranslate"><span class="pre">None</span></code>); a surface to be copied or referenced (see
-<code class="docutils literal notranslate"><span class="pre">copy</span></code>). If <code class="docutils literal notranslate"><span class="pre">None</span></code>, the surface is initially empty.</p></li>
+the <a class="reference internal" href="#flatsurf.geometry.surface.Surface.base_ring" title="flatsurf.geometry.surface.Surface.base_ring"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Surface.base_ring()</span></code></a> will be the one of <code class="docutils literal notranslate"><span class="pre">surface</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">surface</span></code> – <a class="reference internal" href="#flatsurf.geometry.surface.Surface" title="flatsurf.geometry.surface.Surface"><code class="xref py py-class docutils literal notranslate"><span class="pre">Surface</span></code></a>,
+<a class="reference internal" href="similarity_surface.html#flatsurf.geometry.similarity_surface.SimilaritySurface" title="flatsurf.geometry.similarity_surface.SimilaritySurface"><code class="xref py py-class docutils literal notranslate"><span class="pre">similarity_surface.SimilaritySurface</span></code></a>, or <code class="docutils literal notranslate"><span class="pre">None</span></code> (default:
+<code class="docutils literal notranslate"><span class="pre">None</span></code>); a surface to be copied or referenced (see <code class="docutils literal notranslate"><span class="pre">copy</span></code>). If
+<code class="docutils literal notranslate"><span class="pre">None</span></code>, the surface is initially empty.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">copy</span></code> – boolean or <code class="docutils literal notranslate"><span class="pre">None</span></code> (default: <code class="docutils literal notranslate"><span class="pre">None</span></code>); whether the data
 underlying <code class="docutils literal notranslate"><span class="pre">surface</span></code> is copied into this surface or just a reference to
 that surface is kept. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, a sensible default is chosen, namely
@@ -989,6 +1092,77 @@ surface is mutable. When <code class="docutils literal notranslate"><span class=
 </pre></div>
 </div>
 <dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.surface.Surface_list.__get_label">
+<span class="sig-name descname"><span class="pre">__get_label</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ref_label</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#flatsurf.geometry.surface.Surface_list.__get_label" title="Permalink to this definition">#</a></dt>
+<dd><p>Returns a corresponding label. Creates a new label if necessary.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.surface.Surface_list._add_polygon">
+<span class="sig-name descname"><span class="pre">_add_polygon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_polygon</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gluing_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface.html#Surface_list._add_polygon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface.Surface_list._add_polygon" title="Permalink to this definition">#</a></dt>
+<dd><p>Internal method used by add_polygon(). Should not be called directly.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface</span> <span class="kn">import</span> <span class="n">Surface_list</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">p</span><span class="o">=</span><span class="n">polygons</span><span class="o">.</span><span class="n">regular_ngon</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">s</span><span class="o">=</span><span class="n">Surface_list</span><span class="p">(</span><span class="n">base_ring</span><span class="o">=</span><span class="n">p</span><span class="o">.</span><span class="n">base_ring</span><span class="p">())</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="mi">3</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span> <span class="p">(</span><span class="o">-</span><span class="n">matrix</span><span class="o">.</span><span class="n">identity</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span><span class="o">*</span><span class="n">p</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+<span class="mi">30</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">change_polygon_gluings</span><span class="p">(</span><span class="mi">3</span><span class="p">,[(</span><span class="mi">30</span><span class="p">,</span><span class="n">e</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">)])</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">change_base_label</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">num_polygons</span><span class="p">()</span>
+<span class="mi">2</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">TestSuite</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">remove_polygon</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+<span class="mi">6</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">change_polygon_gluings</span><span class="p">(</span><span class="mi">6</span><span class="p">,[(</span><span class="mi">30</span><span class="p">,</span><span class="n">e</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">)])</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">num_polygons</span><span class="p">()</span>
+<span class="mi">2</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">TestSuite</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">change_base_label</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">remove_polygon</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">label</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">((</span><span class="o">-</span><span class="n">matrix</span><span class="o">.</span><span class="n">identity</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span><span class="o">*</span><span class="n">p</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">change_polygon_gluings</span><span class="p">(</span><span class="mi">6</span><span class="p">,[(</span><span class="n">label</span><span class="p">,</span><span class="n">e</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">)])</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">TestSuite</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.surface.Surface_list._change_edge_gluing">
+<span class="sig-name descname"><span class="pre">_change_edge_gluing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#flatsurf.geometry.surface.Surface_list._change_edge_gluing" title="Permalink to this definition">#</a></dt>
+<dd><p>Internal method used by change_edge_gluing(). Should not be called directly.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.surface.Surface_list._change_polygon">
+<span class="sig-name descname"><span class="pre">_change_polygon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_polygon</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gluing_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface.html#Surface_list._change_polygon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface.Surface_list._change_polygon" title="Permalink to this definition">#</a></dt>
+<dd><p>Internal method used by change_polygon(). Should not be called directly.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.surface.Surface_list._remove_polygon">
+<span class="sig-name descname"><span class="pre">_remove_polygon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface.html#Surface_list._remove_polygon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface.Surface_list._remove_polygon" title="Permalink to this definition">#</a></dt>
+<dd><p>Internal method used by remove_polygon(). Should not be called directly.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.surface.Surface_list._set_edge_pairing">
+<span class="sig-name descname"><span class="pre">_set_edge_pairing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface.html#Surface_list._set_edge_pairing"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface.Surface_list._set_edge_pairing" title="Permalink to this definition">#</a></dt>
+<dd><p>Internal method used by change_edge_gluing(). Should not be called directly.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.surface.Surface_list._validate_init_parameters">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_validate_init_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_ring</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">surface</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mutable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">finite</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface.html#Surface_list._validate_init_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface.Surface_list._validate_init_parameters" title="Permalink to this definition">#</a></dt>
+<dd><p>Helper method for <code class="docutils literal notranslate"><span class="pre">__init__</span></code> that validates the parameters and
+returns them in the same order with defaults filled in.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.surface.Surface_list.label_iterator">
 <span class="sig-name descname"><span class="pre">label_iterator</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface.html#Surface_list.label_iterator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface.Surface_list.label_iterator" title="Permalink to this definition">#</a></dt>
 <dd><p>Iterator over all polygon labels.</p>
@@ -1066,7 +1240,7 @@ surface.</p>
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2016-2022, the sage-flatsurf authors
+                Copyright &#169; 2016-2023, the sage-flatsurf authors
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -1098,8 +1272,12 @@ surface.</p>
 <li><a class="reference internal" href="#flatsurf.geometry.surface.BaseRingChangedSurface.polygon"><code class="docutils literal notranslate"><span class="pre">BaseRingChangedSurface.polygon()</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#flatsurf.geometry.surface.ExtraLabel"><code class="docutils literal notranslate"><span class="pre">ExtraLabel</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.ExtraLabel"><code class="docutils literal notranslate"><span class="pre">ExtraLabel</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.ExtraLabel._next"><code class="docutils literal notranslate"><span class="pre">ExtraLabel._next</span></code></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#flatsurf.geometry.surface.LabelComparator"><code class="docutils literal notranslate"><span class="pre">LabelComparator</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.LabelComparator._get_resolver_index"><code class="docutils literal notranslate"><span class="pre">LabelComparator._get_resolver_index()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.surface.LabelComparator.ge"><code class="docutils literal notranslate"><span class="pre">LabelComparator.ge()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.surface.LabelComparator.gt"><code class="docutils literal notranslate"><span class="pre">LabelComparator.gt()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.surface.LabelComparator.le"><code class="docutils literal notranslate"><span class="pre">LabelComparator.le()</span></code></a></li>
@@ -1125,6 +1303,16 @@ surface.</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#flatsurf.geometry.surface.Surface"><code class="docutils literal notranslate"><span class="pre">Surface</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.Surface.__mutate"><code class="docutils literal notranslate"><span class="pre">Surface.__mutate()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.Surface._add_polygon"><code class="docutils literal notranslate"><span class="pre">Surface._add_polygon()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.Surface._change_polygon"><code class="docutils literal notranslate"><span class="pre">Surface._change_polygon()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.Surface._remove_polygon"><code class="docutils literal notranslate"><span class="pre">Surface._remove_polygon()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.Surface._set_edge_pairing"><code class="docutils literal notranslate"><span class="pre">Surface._set_edge_pairing()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.Surface._test_base_label"><code class="docutils literal notranslate"><span class="pre">Surface._test_base_label()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.Surface._test_base_ring"><code class="docutils literal notranslate"><span class="pre">Surface._test_base_ring()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.Surface._test_gluings"><code class="docutils literal notranslate"><span class="pre">Surface._test_gluings()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.Surface._test_override"><code class="docutils literal notranslate"><span class="pre">Surface._test_override()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.Surface._test_polygons"><code class="docutils literal notranslate"><span class="pre">Surface._test_polygons()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.surface.Surface.add_polygon"><code class="docutils literal notranslate"><span class="pre">Surface.add_polygon()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.surface.Surface.add_polygons"><code class="docutils literal notranslate"><span class="pre">Surface.add_polygons()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.surface.Surface.area"><code class="docutils literal notranslate"><span class="pre">Surface.area()</span></code></a></li>
@@ -1154,6 +1342,11 @@ surface.</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#flatsurf.geometry.surface.Surface_dict"><code class="docutils literal notranslate"><span class="pre">Surface_dict</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.Surface_dict._add_polygon"><code class="docutils literal notranslate"><span class="pre">Surface_dict._add_polygon()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.Surface_dict._change_edge_gluing"><code class="docutils literal notranslate"><span class="pre">Surface_dict._change_edge_gluing()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.Surface_dict._change_polygon"><code class="docutils literal notranslate"><span class="pre">Surface_dict._change_polygon()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.Surface_dict._remove_polygon"><code class="docutils literal notranslate"><span class="pre">Surface_dict._remove_polygon()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.Surface_dict._set_edge_pairing"><code class="docutils literal notranslate"><span class="pre">Surface_dict._set_edge_pairing()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.surface.Surface_dict.label_iterator"><code class="docutils literal notranslate"><span class="pre">Surface_dict.label_iterator()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.surface.Surface_dict.num_polygons"><code class="docutils literal notranslate"><span class="pre">Surface_dict.num_polygons()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.surface.Surface_dict.opposite_edge"><code class="docutils literal notranslate"><span class="pre">Surface_dict.opposite_edge()</span></code></a></li>
@@ -1161,6 +1354,13 @@ surface.</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#flatsurf.geometry.surface.Surface_list"><code class="docutils literal notranslate"><span class="pre">Surface_list</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.Surface_list.__get_label"><code class="docutils literal notranslate"><span class="pre">Surface_list.__get_label()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.Surface_list._add_polygon"><code class="docutils literal notranslate"><span class="pre">Surface_list._add_polygon()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.Surface_list._change_edge_gluing"><code class="docutils literal notranslate"><span class="pre">Surface_list._change_edge_gluing()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.Surface_list._change_polygon"><code class="docutils literal notranslate"><span class="pre">Surface_list._change_polygon()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.Surface_list._remove_polygon"><code class="docutils literal notranslate"><span class="pre">Surface_list._remove_polygon()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.Surface_list._set_edge_pairing"><code class="docutils literal notranslate"><span class="pre">Surface_list._set_edge_pairing()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface.Surface_list._validate_init_parameters"><code class="docutils literal notranslate"><span class="pre">Surface_list._validate_init_parameters()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.surface.Surface_list.label_iterator"><code class="docutils literal notranslate"><span class="pre">Surface_list.label_iterator()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.surface.Surface_list.num_polygons"><code class="docutils literal notranslate"><span class="pre">Surface_list.num_polygons()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.surface.Surface_list.opposite_edge"><code class="docutils literal notranslate"><span class="pre">Surface_list.opposite_edge()</span></code></a></li>

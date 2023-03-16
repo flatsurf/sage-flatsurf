@@ -268,7 +268,7 @@
 <span class="sd">that make up a surface by non-negative integers and the latter can use</span>
 <span class="sd">arbitrary labels. Additionally, there are lots of other surface representations</span>
 <span class="sd">that are not really implementing data structures but essentially just wrap</span>
-<span class="sd">these two, e.g., a :class:`MinimalTranslationCover`.</span>
+<span class="sd">these two, e.g., a :class:`.minimal_cover.MinimalTranslationCover`.</span>
 
 <span class="sd">All these surface implementations inherit from :class:`Surface` which describes</span>
 <span class="sd">the contract that all surfaces must satisfy. As an absolute minimum, they</span>
@@ -295,11 +295,11 @@
 
 <span class="sd">There are two separate hierarchies of surfaces in sage-flatsurf. The underlying</span>
 <span class="sd">data of a surface described by the subclasses of :class:`Surface` here and the</span>
-<span class="sd">:class:`SimilaritySurface` and its subclasses which wrap a :class:`Surface`.</span>
-<span class="sd">While a :class:`Surface` essentially provides the raw data of a surface, a</span>
-<span class="sd">:class:`SimilaritySurface` then adds mathematical knowledge to that data</span>
-<span class="sd">structure, e.g., by declaring that the data describes a</span>
-<span class="sd">:class:`TranslationSurface`::</span>
+<span class="sd">:class:`.similarity_surface.SimilaritySurface` and its subclasses which wrap a</span>
+<span class="sd">:class:`Surface`. While a :class:`Surface` essentially provides the raw data of</span>
+<span class="sd">a surface, a :class:`.similarity_surface.SimilaritySurface` then adds</span>
+<span class="sd">mathematical knowledge to that data structure, e.g., by declaring that the data</span>
+<span class="sd">describes a :class:`.translation_surface.TranslationSurface`::</span>
 
 <span class="sd">    sage: from flatsurf import TranslationSurface</span>
 <span class="sd">    sage: T = TranslationSurface(S)</span>
@@ -455,37 +455,37 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-    <span class="k">def</span> <span class="nf">_change_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">new_polygon</span><span class="p">,</span> <span class="n">gluing_list</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Surface._change_polygon"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Surface._change_polygon">[docs]</a>    <span class="k">def</span> <span class="nf">_change_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">new_polygon</span><span class="p">,</span> <span class="n">gluing_list</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Internal method used by change_polygon(). Should not be called directly.</span>
 
 <span class="sd">        Mutable surfaces should implement this method.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-    <span class="k">def</span> <span class="nf">_set_edge_pairing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label1</span><span class="p">,</span> <span class="n">edge1</span><span class="p">,</span> <span class="n">label2</span><span class="p">,</span> <span class="n">edge2</span><span class="p">):</span>
+<div class="viewcode-block" id="Surface._set_edge_pairing"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Surface._set_edge_pairing">[docs]</a>    <span class="k">def</span> <span class="nf">_set_edge_pairing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label1</span><span class="p">,</span> <span class="n">edge1</span><span class="p">,</span> <span class="n">label2</span><span class="p">,</span> <span class="n">edge2</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Internal method used by change_edge_gluing(). Should not be called directly.</span>
 
 <span class="sd">        Mutable surfaces should implement this method.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-    <span class="k">def</span> <span class="nf">_add_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_polygon</span><span class="p">,</span> <span class="n">gluing_list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Surface._add_polygon"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Surface._add_polygon">[docs]</a>    <span class="k">def</span> <span class="nf">_add_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_polygon</span><span class="p">,</span> <span class="n">gluing_list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Internal method used by add_polygon(). Should not be called directly.</span>
 
 <span class="sd">        Mutable surfaces should implement this method.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-    <span class="k">def</span> <span class="nf">_remove_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
+<div class="viewcode-block" id="Surface._remove_polygon"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Surface._remove_polygon">[docs]</a>    <span class="k">def</span> <span class="nf">_remove_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Internal method used by remove_polygon(). Should not be called directly.</span>
 
 <span class="sd">        Mutable surfaces should implement this method.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="Surface.num_polygons"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Surface.num_polygons">[docs]</a>    <span class="k">def</span> <span class="nf">num_polygons</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -582,7 +582,7 @@
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the label of a special chosen polygon in the surface.</span>
 
-<span class="sd">        When no specific choice was made with :meth:`set_base_label`, this</span>
+<span class="sd">        When no specific choice was made with :meth:`change_base_label`, this</span>
 <span class="sd">        might just be the initial polygon, i.e., the one that was first added</span>
 <span class="sd">        in the construction of this surface.</span>
 
@@ -718,7 +718,8 @@
 <div class="viewcode-block" id="Surface.subdivide"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Surface.subdivide">[docs]</a>    <span class="k">def</span> <span class="nf">subdivide</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a copy of this surface whose polygons have been partitioned into</span>
-<span class="sd">        smaller triangles with :meth:`Polygon.subdivide`.</span>
+<span class="sd">        smaller triangles with</span>
+<span class="sd">        :meth:`.polygon.ConvexPolygon.subdivide`.</span>
 
 <span class="sd">        EXAMPLES:</span>
 
@@ -959,21 +960,21 @@
     <span class="k">def</span> <span class="fm">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span> <span class="o">==</span> <span class="n">other</span>
 
-    <span class="k">def</span> <span class="nf">_test_base_ring</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+<div class="viewcode-block" id="Surface._test_base_ring"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Surface._test_base_ring">[docs]</a>    <span class="k">def</span> <span class="nf">_test_base_ring</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
         <span class="c1"># Test that the base_label is associated to a polygon</span>
         <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tester</span><span class="p">(</span><span class="o">**</span><span class="n">options</span><span class="p">)</span>
         <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">Rings</span>
-        <span class="n">tester</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span> <span class="ow">in</span> <span class="n">Rings</span><span class="p">())</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span> <span class="ow">in</span> <span class="n">Rings</span><span class="p">())</span></div>
 
-    <span class="k">def</span> <span class="nf">_test_base_label</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+<div class="viewcode-block" id="Surface._test_base_label"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Surface._test_base_label">[docs]</a>    <span class="k">def</span> <span class="nf">_test_base_label</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
         <span class="c1"># Test that the base_label is associated to a polygon</span>
         <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tester</span><span class="p">(</span><span class="o">**</span><span class="n">options</span><span class="p">)</span>
         <span class="kn">from</span> <span class="nn">.polygon</span> <span class="kn">import</span> <span class="n">ConvexPolygon</span>
         <span class="n">tester</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_label</span><span class="p">()),</span> <span class="n">ConvexPolygon</span><span class="p">),</span> \
             <span class="s2">&quot;polygon(base_label) does not return a ConvexPolygon. &quot;</span><span class="o">+</span>\
-            <span class="s2">&quot;Here base_label=&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_label</span><span class="p">()))</span>
+            <span class="s2">&quot;Here base_label=&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_label</span><span class="p">()))</span></div>
 
-    <span class="k">def</span> <span class="nf">_test_gluings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+<div class="viewcode-block" id="Surface._test_gluings"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Surface._test_gluings">[docs]</a>    <span class="k">def</span> <span class="nf">_test_gluings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
         <span class="c1"># iterate over pairs with pair1 glued to pair2</span>
         <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tester</span><span class="p">(</span><span class="o">**</span><span class="n">options</span><span class="p">)</span>
 
@@ -992,9 +993,9 @@
                         <span class="s2">&quot;edge (</span><span class="si">{}</span><span class="s2">, </span><span class="si">{}</span><span class="s2">) is not glued&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lab</span><span class="p">,</span> <span class="n">k</span><span class="p">))</span>
                 <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">f</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
                 <span class="n">tester</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span>
-                        <span class="s2">&quot;edge gluing is not a pairing:</span><span class="se">\n</span><span class="si">{}</span><span class="s2"> -&gt; </span><span class="si">{}</span><span class="s2"> -&gt; </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">g</span><span class="p">))</span>
+                        <span class="s2">&quot;edge gluing is not a pairing:</span><span class="se">\n</span><span class="si">{}</span><span class="s2"> -&gt; </span><span class="si">{}</span><span class="s2"> -&gt; </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">g</span><span class="p">))</span></div>
 
-    <span class="k">def</span> <span class="nf">_test_override</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+<div class="viewcode-block" id="Surface._test_override"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Surface._test_override">[docs]</a>    <span class="k">def</span> <span class="nf">_test_override</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
         <span class="c1"># Test that the required methods have been overridden and that some other methods have not been overridden.</span>
 
         <span class="c1"># Of course, we don&#39;t care if the methods are overridden or not we just want to warn the programmer.</span>
@@ -1021,9 +1022,9 @@
             <span class="n">tester</span><span class="o">.</span><span class="n">assertNotEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_add_polygon</span><span class="o">.</span><span class="vm">__func__</span><span class="p">,</span> <span class="n">Surface</span><span class="o">.</span><span class="n">_add_polygon</span><span class="p">,</span> <span class="s2">&quot;Method _add_polygon of Surface must be overridden in a mutable surface. &quot;</span><span class="o">+</span>\
                 <span class="s2">&quot;The Surface is of type &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span><span class="o">+</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
             <span class="n">tester</span><span class="o">.</span><span class="n">assertNotEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_remove_polygon</span><span class="o">.</span><span class="vm">__func__</span><span class="p">,</span> <span class="n">Surface</span><span class="o">.</span><span class="n">_remove_polygon</span><span class="p">,</span> <span class="s2">&quot;Method _remove_polygon of Surface must be overridden in a mutable surface. &quot;</span><span class="o">+</span>\
-                <span class="s2">&quot;The Surface is of type &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span><span class="o">+</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
+                <span class="s2">&quot;The Surface is of type &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span><span class="o">+</span><span class="s2">&quot;.&quot;</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">_test_polygons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+<div class="viewcode-block" id="Surface._test_polygons"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Surface._test_polygons">[docs]</a>    <span class="k">def</span> <span class="nf">_test_polygons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
         <span class="c1"># Test that the base_label is associated to a polygon</span>
         <span class="k">if</span> <span class="s1">&#39;tester&#39;</span> <span class="ow">in</span> <span class="n">options</span><span class="p">:</span>
             <span class="n">tester</span> <span class="o">=</span> <span class="n">options</span><span class="p">[</span><span class="s1">&#39;tester&#39;</span><span class="p">]</span>
@@ -1037,7 +1038,7 @@
             <span class="n">it</span> <span class="o">=</span> <span class="n">islice</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">label_iterator</span><span class="p">(),</span> <span class="mi">30</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">it</span><span class="p">:</span>
             <span class="n">tester</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">),</span> <span class="n">ConvexPolygon</span><span class="p">),</span> \
-                <span class="s2">&quot;polygon(label) does not return a ConvexPolygon when label=&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">label</span><span class="p">))</span></div>
+                <span class="s2">&quot;polygon(label) does not return a ConvexPolygon when label=&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">label</span><span class="p">))</span></div></div>
 
 
 <div class="viewcode-block" id="Surface_list"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Surface_list">[docs]</a><span class="k">class</span> <span class="nc">Surface_list</span><span class="p">(</span><span class="n">Surface</span><span class="p">):</span>
@@ -1051,17 +1052,19 @@
 
 <span class="sd">    Each ``_p[label]`` is typically a pair ``(polygon, gluing_list)`` where</span>
 <span class="sd">    ``gluing_list`` is a list of pairs ``(other_label, other_edge)`` such that</span>
-<span class="sd">    :meth:`opposite_edge(label, edge)` returns ``_p[label][1][edge]``.</span>
+<span class="sd">    :meth:`opposite_edge(label, edge) &lt;Surface.opposite_edge&gt;` returns</span>
+<span class="sd">    ``_p[label][1][edge]``.</span>
 
 <span class="sd">    INPUT:</span>
 
 <span class="sd">    - ``base_ring`` -- ring or ``None`` (default: ``None``); the ring</span>
 <span class="sd">      containing the coordinates of the vertices of the polygons. If ``None``,</span>
-<span class="sd">      the :meth:`base_ring` will be the one of ``surface``.</span>
+<span class="sd">      the :meth:`Surface.base_ring` will be the one of ``surface``.</span>
 
-<span class="sd">    - ``surface`` -- :class:`Surface`, :class:`SimilaritySurface`, or</span>
-<span class="sd">      ``None`` (default: ``None``); a surface to be copied or referenced (see</span>
-<span class="sd">      ``copy``). If ``None``, the surface is initially empty.</span>
+<span class="sd">    - ``surface`` -- :class:`Surface`,</span>
+<span class="sd">      :class:`.similarity_surface.SimilaritySurface`, or ``None`` (default:</span>
+<span class="sd">      ``None``); a surface to be copied or referenced (see ``copy``). If</span>
+<span class="sd">      ``None``, the surface is initially empty.</span>
 
 <span class="sd">    - ``copy`` -- boolean or ``None`` (default: ``None``); whether the data</span>
 <span class="sd">      underlying ``surface`` is copied into this surface or just a reference to</span>
@@ -1180,7 +1183,7 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">mutable</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">set_immutable</span><span class="p">()</span>
 
-    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="Surface_list._validate_init_parameters"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Surface_list._validate_init_parameters">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_validate_init_parameters</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">base_ring</span><span class="p">,</span> <span class="n">surface</span><span class="p">,</span> <span class="n">copy</span><span class="p">,</span> <span class="n">mutable</span><span class="p">,</span> <span class="n">finite</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper method for ``__init__`` that validates the parameters and</span>
@@ -1228,7 +1231,7 @@
 
             <span class="n">finite</span> <span class="o">=</span> <span class="n">surface</span><span class="o">.</span><span class="n">is_finite</span><span class="p">()</span>
 
-        <span class="k">return</span> <span class="n">base_ring</span><span class="p">,</span> <span class="n">surface</span><span class="p">,</span> <span class="n">copy</span><span class="p">,</span> <span class="n">mutable</span><span class="p">,</span> <span class="n">finite</span>
+        <span class="k">return</span> <span class="n">base_ring</span><span class="p">,</span> <span class="n">surface</span><span class="p">,</span> <span class="n">copy</span><span class="p">,</span> <span class="n">mutable</span><span class="p">,</span> <span class="n">finite</span></div>
 
     <span class="k">def</span> <span class="nf">__get_label</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ref_label</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -1310,7 +1313,7 @@
 
     <span class="c1"># Methods for changing the surface</span>
 
-    <span class="k">def</span> <span class="nf">_change_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">new_polygon</span><span class="p">,</span> <span class="n">gluing_list</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Surface_list._change_polygon"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Surface_list._change_polygon">[docs]</a>    <span class="k">def</span> <span class="nf">_change_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">new_polygon</span><span class="p">,</span> <span class="n">gluing_list</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Internal method used by change_polygon(). Should not be called directly.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1324,9 +1327,9 @@
         <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">new_polygon</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
             <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span><span class="p">[</span><span class="kc">None</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">new_polygon</span><span class="o">.</span><span class="n">num_edges</span><span class="p">())]</span>
         <span class="k">if</span> <span class="n">gluing_list</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">change_polygon_gluings</span><span class="p">(</span><span class="n">label</span><span class="p">,</span><span class="n">gluing_list</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">change_polygon_gluings</span><span class="p">(</span><span class="n">label</span><span class="p">,</span><span class="n">gluing_list</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">_set_edge_pairing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label1</span><span class="p">,</span> <span class="n">edge1</span><span class="p">,</span> <span class="n">label2</span><span class="p">,</span> <span class="n">edge2</span><span class="p">):</span>
+<div class="viewcode-block" id="Surface_list._set_edge_pairing"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Surface_list._set_edge_pairing">[docs]</a>    <span class="k">def</span> <span class="nf">_set_edge_pairing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label1</span><span class="p">,</span> <span class="n">edge1</span><span class="p">,</span> <span class="n">label2</span><span class="p">,</span> <span class="n">edge2</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Internal method used by change_edge_gluing(). Should not be called directly.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1343,12 +1346,12 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No known polygon with provided label2=&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">label2</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Provided label2=&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">label2</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot; was removed from the surface.&quot;</span><span class="p">)</span>
-        <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">edge2</span><span class="p">]</span><span class="o">=</span><span class="p">(</span><span class="n">label1</span><span class="p">,</span><span class="n">edge1</span><span class="p">)</span>
+        <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">edge2</span><span class="p">]</span><span class="o">=</span><span class="p">(</span><span class="n">label1</span><span class="p">,</span><span class="n">edge1</span><span class="p">)</span></div>
 
     <span class="c1"># TODO: deprecation alias?</span>
     <span class="n">_change_edge_gluing</span> <span class="o">=</span> <span class="n">_set_edge_pairing</span>
 
-    <span class="k">def</span> <span class="nf">_add_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_polygon</span><span class="p">,</span> <span class="n">gluing_list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Surface_list._add_polygon"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Surface_list._add_polygon">[docs]</a>    <span class="k">def</span> <span class="nf">_add_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_polygon</span><span class="p">,</span> <span class="n">gluing_list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Internal method used by add_polygon(). Should not be called directly.</span>
 
@@ -1418,7 +1421,7 @@
         <span class="k">if</span> <span class="n">gluing_list</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">change_polygon_gluings</span><span class="p">(</span><span class="n">new_label</span><span class="p">,</span><span class="n">gluing_list</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_num_polygons</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="k">return</span> <span class="n">new_label</span>
+        <span class="k">return</span> <span class="n">new_label</span></div>
 
 <div class="viewcode-block" id="Surface_list.num_polygons"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Surface_list.num_polygons">[docs]</a>    <span class="k">def</span> <span class="nf">num_polygons</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -1446,7 +1449,7 @@
                     <span class="k">yield</span> <span class="n">i</span>
                 <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span></div>
 
-    <span class="k">def</span> <span class="nf">_remove_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
+<div class="viewcode-block" id="Surface_list._remove_polygon"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Surface_list._remove_polygon">[docs]</a>    <span class="k">def</span> <span class="nf">_remove_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Internal method used by remove_polygon(). Should not be called directly.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1465,7 +1468,7 @@
                 <span class="k">if</span> <span class="n">ref_label</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_int_to_ref</span><span class="p">[</span><span class="n">label</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span>
                     <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ref_to_int</span><span class="p">[</span><span class="n">ref_label</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_num_polygons</span> <span class="o">-=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_num_polygons</span> <span class="o">-=</span> <span class="mi">1</span></div>
 
 <div class="viewcode-block" id="Surface_list.ramified_cover"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Surface_list.ramified_cover">[docs]</a>    <span class="k">def</span> <span class="nf">ramified_cover</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -1550,15 +1553,16 @@
 
 <span class="sd">    Each ``_p[label]`` is typically a pair ``(polygon, gluing_dict)`` where</span>
 <span class="sd">    ``gluing_dict`` is maps ``other_label`` to ``other_edge`` such that</span>
-<span class="sd">    :meth:`opposite_edge(label, edge)` returns ``_p[label][1][edge]``.</span>
+<span class="sd">    :meth:`opposite_edge(label, edge) &lt;Surface.opposite_edge&gt;` returns</span>
+<span class="sd">    ``_p[label][1][edge]``.</span>
 
 <span class="sd">    INPUT:</span>
 
 <span class="sd">    - ``base_ring`` -- ring or ``None`` (default: ``None``); the ring</span>
 <span class="sd">      containing the coordinates of the vertices of the polygons. If ``None``,</span>
-<span class="sd">      the :meth:`base_ring` will be the one of ``surface``.</span>
+<span class="sd">      the :meth:`Surface.base_ring` will be the one of ``surface``.</span>
 
-<span class="sd">    - ``surface`` -- :class:`Surface`, :class:`SimilaritySurface`, or</span>
+<span class="sd">    - ``surface`` -- :class:`Surface`, :class:`.similarity_surface.SimilaritySurface`, or</span>
 <span class="sd">      ``None`` (default: ``None``); a surface to be copied or referenced (see</span>
 <span class="sd">      ``copy``). If ``None``, the surface is initially empty.</span>
 
@@ -1652,7 +1656,7 @@
 
     <span class="c1"># Methods for changing the surface</span>
 
-    <span class="k">def</span> <span class="nf">_change_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">new_polygon</span><span class="p">,</span> <span class="n">gluing_list</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Surface_dict._change_polygon"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Surface_dict._change_polygon">[docs]</a>    <span class="k">def</span> <span class="nf">_change_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">new_polygon</span><span class="p">,</span> <span class="n">gluing_list</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Internal method used by change_polygon(). Should not be called directly.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1678,9 +1682,9 @@
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">!=</span> <span class="n">new_polygon</span><span class="o">.</span><span class="n">num_edges</span><span class="p">():</span>
             <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">new_polygon</span><span class="o">.</span><span class="n">num_edges</span><span class="p">())]</span>
         <span class="k">if</span> <span class="n">gluing_list</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">change_polygon_gluings</span><span class="p">(</span><span class="n">label</span><span class="p">,</span><span class="n">gluing_list</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">change_polygon_gluings</span><span class="p">(</span><span class="n">label</span><span class="p">,</span><span class="n">gluing_list</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">_set_edge_pairing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label1</span><span class="p">,</span> <span class="n">edge1</span><span class="p">,</span> <span class="n">label2</span><span class="p">,</span> <span class="n">edge2</span><span class="p">):</span>
+<div class="viewcode-block" id="Surface_dict._set_edge_pairing"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Surface_dict._set_edge_pairing">[docs]</a>    <span class="k">def</span> <span class="nf">_set_edge_pairing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label1</span><span class="p">,</span> <span class="n">edge1</span><span class="p">,</span> <span class="n">label2</span><span class="p">,</span> <span class="n">edge2</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Internal method used by set_edge_pairing(). Should not be called directly.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1727,11 +1731,11 @@
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">data1</span><span class="p">[</span><span class="n">edge2</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">label1</span><span class="p">,</span> <span class="n">edge1</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;edge </span><span class="si">{}</span><span class="s2"> is out of range in polygon with label2=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">edge2</span><span class="p">,</span> <span class="n">label2</span><span class="p">))</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;edge </span><span class="si">{}</span><span class="s2"> is out of range in polygon with label2=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">edge2</span><span class="p">,</span> <span class="n">label2</span><span class="p">))</span></div>
 
     <span class="n">_change_edge_gluing</span> <span class="o">=</span> <span class="n">_set_edge_pairing</span>
 
-    <span class="k">def</span> <span class="nf">_add_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_polygon</span><span class="p">,</span> <span class="n">gluing_list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Surface_dict._add_polygon"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Surface_dict._add_polygon">[docs]</a>    <span class="k">def</span> <span class="nf">_add_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_polygon</span><span class="p">,</span> <span class="n">gluing_list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Internal method used by add_polygon(). Should not be called directly.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1757,7 +1761,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="p">[</span><span class="n">new_label</span><span class="p">]</span><span class="o">=</span><span class="n">data</span>
         <span class="k">if</span> <span class="n">gluing_list</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">change_polygon_gluings</span><span class="p">(</span><span class="n">new_label</span><span class="p">,</span><span class="n">gluing_list</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">new_label</span>
+        <span class="k">return</span> <span class="n">new_label</span></div>
 
 <div class="viewcode-block" id="Surface_dict.num_polygons"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Surface_dict.num_polygons">[docs]</a>    <span class="k">def</span> <span class="nf">num_polygons</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -1784,7 +1788,7 @@
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">Surface</span><span class="o">.</span><span class="n">label_iterator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
                 <span class="k">yield</span> <span class="n">i</span></div>
 
-    <span class="k">def</span> <span class="nf">_remove_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
+<div class="viewcode-block" id="Surface_dict._remove_polygon"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Surface_dict._remove_polygon">[docs]</a>    <span class="k">def</span> <span class="nf">_remove_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Internal method used by remove_polygon(). Should not be called directly.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1803,7 +1807,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
                 <span class="c1"># Assume on faith we are removing a polygon in the base_surface.</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></div>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></div></div>
 
 
 <div class="viewcode-block" id="BaseRingChangedSurface"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.BaseRingChangedSurface">[docs]</a><span class="k">class</span> <span class="nc">BaseRingChangedSurface</span><span class="p">(</span><span class="n">Surface</span><span class="p">):</span>
@@ -2034,7 +2038,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_hash_collision_resolver</span> <span class="o">=</span> <span class="p">{}</span>
 
-    <span class="k">def</span> <span class="nf">_get_resolver_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label_hash</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
+<div class="viewcode-block" id="LabelComparator._get_resolver_index"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.LabelComparator._get_resolver_index">[docs]</a>    <span class="k">def</span> <span class="nf">_get_resolver_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label_hash</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">lst</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hash_collision_resolver</span><span class="p">[</span><span class="n">label_hash</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
@@ -2045,7 +2049,7 @@
                 <span class="k">return</span> <span class="n">i</span>
         <span class="c1"># At this point we know label is not in lst</span>
         <span class="n">lst</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
-        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">lst</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">lst</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span></div>
 
 <div class="viewcode-block" id="LabelComparator.lt"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.LabelComparator.lt">[docs]</a>    <span class="k">def</span> <span class="nf">lt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">l1</span><span class="p">,</span> <span class="n">l2</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -2091,7 +2095,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2016-2022, the sage-flatsurf authors
+                Copyright &#169; 2016-2023, the sage-flatsurf authors
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             

@@ -260,6 +260,7 @@
 <span></span><span class="c1"># ****************************************************************************</span>
 <span class="c1">#       Copyright (C) 2013-2019 Vincent Delecroix &lt;20100.delecroix@gmail.com&gt;</span>
 <span class="c1">#                     2013-2019 W. Patrick Hooper &lt;wphooper@gmail.com&gt;</span>
+<span class="c1">#                          2023 Julian Rüth &lt;julian.rueth@fsfe.org&gt;</span>
 <span class="c1">#</span>
 <span class="c1">#  Distributed under the terms of the GNU General Public License (GPL)</span>
 <span class="c1">#  as published by the Free Software Foundation; either version 2 of</span>
@@ -290,7 +291,7 @@
 <span class="sd">    A half-dilation surface is a (G,X) structure for the group of dilatations</span>
 <span class="sd">    `G = \RR^*` acting on the plane `X = \RR^2`. If you want to consider only</span>
 <span class="sd">    the oriented case, have a look at</span>
-<span class="sd">    :meth:`flatsurf.dilation_surface.DilationSurface`.</span>
+<span class="sd">    :class:`~.dilation_surface.DilationSurface`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__rmul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">matrix</span><span class="p">):</span>
@@ -651,7 +652,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2016-2022, the sage-flatsurf authors
+                Copyright &#169; 2016-2023, the sage-flatsurf authors
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             

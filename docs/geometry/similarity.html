@@ -399,32 +399,6 @@ and (ax+by+s,bx-ay+t) if sign=-1</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="flatsurf.geometry.similarity.SimilarityGroup.an_element">
-<span class="sig-name descname"><span class="pre">an_element</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/similarity.html#SimilarityGroup.an_element"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity.SimilarityGroup.an_element" title="Permalink to this definition">#</a></dt>
-<dd><p>File: sage/structure/parent.pyx (starting at line 2675)</p>
-<p>Returns a (preferably typical) element of this parent.</p>
-<p>This is used both for illustration and testing purposes. If
-the set <code class="docutils literal notranslate"><span class="pre">self</span></code> is empty, <a class="reference internal" href="#flatsurf.geometry.similarity.SimilarityGroup.an_element" title="flatsurf.geometry.similarity.SimilarityGroup.an_element"><code class="xref py py-meth docutils literal notranslate"><span class="pre">an_element()</span></code></a> raises the
-exception <code class="xref py py-class docutils literal notranslate"><span class="pre">EmptySetError</span></code>.</p>
-<p>This calls <code class="xref py py-meth docutils literal notranslate"><span class="pre">_an_element_()</span></code> (which see), and caches the
-result. Parent are thus encouraged to override <code class="xref py py-meth docutils literal notranslate"><span class="pre">_an_element_()</span></code>.</p>
-<p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">CDF</span><span class="o">.</span><span class="n">an_element</span><span class="p">()</span>
-<span class="mf">1.0</span><span class="o">*</span><span class="n">I</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">ZZ</span><span class="p">[[</span><span class="s1">&#39;t&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">an_element</span><span class="p">()</span>
-<span class="n">t</span>
-</pre></div>
-</div>
-<p>In case the set is empty, an <code class="xref py py-class docutils literal notranslate"><span class="pre">EmptySetError</span></code> is raised:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">Set</span><span class="p">([])</span><span class="o">.</span><span class="n">an_element</span><span class="p">()</span>
-<span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
-<span class="o">...</span>
-<span class="n">EmptySetError</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.similarity.SimilarityGroup.base_ring">
 <span class="sig-name descname"><span class="pre">base_ring</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/similarity.html#SimilarityGroup.base_ring"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity.SimilarityGroup.base_ring" title="Permalink to this definition">#</a></dt>
 <dd><p>File: sage/structure/category_object.pyx (starting at line 556)</p>
@@ -537,7 +511,7 @@ in a bigger ring, the <code class="docutils literal notranslate"><span class="pr
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2016-2022, the sage-flatsurf authors
+                Copyright &#169; 2016-2023, the sage-flatsurf authors
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -578,7 +552,6 @@ in a bigger ring, the <code class="docutils literal notranslate"><span class="pr
 </li>
 <li><a class="reference internal" href="#flatsurf.geometry.similarity.SimilarityGroup"><code class="docutils literal notranslate"><span class="pre">SimilarityGroup</span></code></a><ul>
 <li><a class="reference internal" href="#flatsurf.geometry.similarity.SimilarityGroup.Element"><code class="docutils literal notranslate"><span class="pre">SimilarityGroup.Element</span></code></a></li>
-<li><a class="reference internal" href="#flatsurf.geometry.similarity.SimilarityGroup.an_element"><code class="docutils literal notranslate"><span class="pre">SimilarityGroup.an_element()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.similarity.SimilarityGroup.base_ring"><code class="docutils literal notranslate"><span class="pre">SimilarityGroup.base_ring()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.similarity.SimilarityGroup.is_abelian"><code class="docutils literal notranslate"><span class="pre">SimilarityGroup.is_abelian()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.similarity.SimilarityGroup.one"><code class="docutils literal notranslate"><span class="pre">SimilarityGroup.one()</span></code></a></li>

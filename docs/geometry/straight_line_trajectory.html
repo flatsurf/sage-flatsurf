@@ -412,8 +412,10 @@ and the second set consists of segments of traj that contain the point.</p>
 <dt class="sig sig-object py" id="flatsurf.geometry.straight_line_trajectory.AbstractStraightLineTrajectory.plot">
 <span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">options</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/straight_line_trajectory.html#AbstractStraightLineTrajectory.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.straight_line_trajectory.AbstractStraightLineTrajectory.plot" title="Permalink to this definition">#</a></dt>
 <dd><p>Plot this trajectory by converting to a graphical trajectory.</p>
-<p>If any arguments are provided in <cite>*args</cite> it must be only one argument containing a GraphicalSurface.
-The keyword arguments in <cite>**options</cite> are passed on to <code class="xref py py-func docutils literal notranslate"><span class="pre">GraphicalStraightLineTrajectory.plot()</span></code>.</p>
+<p>If any arguments are provided in <cite>*args</cite> it must be only one argument
+containing a GraphicalSurface. The keyword arguments in <cite>**options</cite> are
+passed on to
+<a class="reference internal" href="../graphical/straight_line_trajectory.html#flatsurf.graphical.straight_line_trajectory.GraphicalStraightLineTrajectory.plot" title="flatsurf.graphical.straight_line_trajectory.GraphicalStraightLineTrajectory.plot"><code class="xref py py-func docutils literal notranslate"><span class="pre">flatsurf.graphical.straight_line_trajectory.GraphicalStraightLineTrajectory.plot()</span></code></a>.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">T</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">square_torus</span><span class="p">()</span>
@@ -684,7 +686,6 @@ segments and flowing in polygons.</p>
 necessarily a number between 0 and 1. It is given relatively to the length
 of the induced interval in the iet)</p></li>
 </ul>
-<p>(see the methods <code class="xref py py-meth docutils literal notranslate"><span class="pre">_prev()</span></code> and <code class="xref py py-meth docutils literal notranslate"><span class="pre">_next()</span></code>)</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.straight_line_trajectory.StraightLineTrajectoryTranslation.combinatorial_length">
 <span class="sig-name descname"><span class="pre">combinatorial_length</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/straight_line_trajectory.html#StraightLineTrajectoryTranslation.combinatorial_length"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.straight_line_trajectory.StraightLineTrajectoryTranslation.combinatorial_length" title="Permalink to this definition">#</a></dt>
@@ -840,7 +841,7 @@ sage: L.segments()
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2016-2022, the sage-flatsurf authors
+                Copyright &#169; 2016-2023, the sage-flatsurf authors
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
