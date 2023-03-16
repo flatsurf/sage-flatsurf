@@ -379,6 +379,12 @@ class FinitelyGenerated2x2MatrixGroup(Group):
             sage: G = FinitelyGenerated2x2MatrixGroup([identity_matrix(2)])
 
             sage: G._an_element_()
+            [1 0]
+            [0 1]
+
+            sage: G.an_element()
+            [1 0]
+            [0 1]
 
         .. SEEALSO::
 

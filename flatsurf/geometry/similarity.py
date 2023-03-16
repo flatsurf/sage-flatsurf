@@ -547,6 +547,10 @@ class SimilarityGroup(UniqueRepresentation, Group):
             sage: from flatsurf.geometry.similarity import SimilarityGroup
 
             sage: SimilarityGroup(QQ)._an_element_()
+            (x, y) |-> (3*x + 4*y + 2, 4*x - 3*y - 1)
+
+            sage: SimilarityGroup(QQ).an_element()
+            (x, y) |-> (3*x + 4*y + 2, 4*x - 3*y - 1)
 
         .. SEEALSO::
 
