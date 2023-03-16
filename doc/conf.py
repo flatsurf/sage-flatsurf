@@ -7,6 +7,7 @@ extensions = [
     'sphinx.ext.todo',
     'sphinx.ext.mathjax',
     'sphinx.ext.viewcode',
+    'sphinx.ext.intersphinx',
     'myst_nb',
 ]
 
@@ -24,7 +25,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'sage-flatsurf'
-copyright = u'2016-2022, the sage-flatsurf authors'
+copyright = u'2016-2023, the sage-flatsurf authors'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -34,6 +35,9 @@ release = version
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 exclude_patterns = ['_build', 'news']
+
+# Allow linking to external projects, e.g., SageMath
+intersphinx_mapping = {'sage': ('https://doc.sagemath.org/html/en/reference', None)}
 
 # -- Options for HTML output ----------------------------------------------
 

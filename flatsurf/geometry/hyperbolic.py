@@ -413,8 +413,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         EXAMPLES:
 
-        Coercions between base rings induce coercion between hyperbolic planes,
-        due to the :meth:`construction` functor::
+        Coercions between base rings induce coercion between hyperbolic planes::
 
             sage: from flatsurf import HyperbolicPlane
 
@@ -514,7 +513,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         INPUT:
 
         - ``ring`` -- a ring or ``None``; if ``None``, uses the current
-          :meth:`base_ring`.
+          :meth:`~HyperbolicPlane.base_ring`.
 
         - ``geometry`` -- a geometry or ``None``; if ``None``, tries to convert
           the existing geometry to ``ring``.
@@ -1466,7 +1465,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         - ``geodesic`` -- a :meth:`geodesic` in this space.
 
         - ``start`` -- ``None`` or a :meth:`point` on the ``geodesic``, e.g.,
-          obtained from the :meth:`HyperbolicOrientedGeodesic.intersection` of
+          obtained from the :meth:`HyperbolicGeodesic._intersection` of
           ``geodesic`` with another geodesic. If ``None``, the segment starts
           at the infinite :meth:`HyperbolicOrientedGeodesic.start` point of the
           geodesic.
@@ -2080,7 +2079,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         .. SEEALSO::
 
             :meth:`HyperbolicPlane.polygon` for a specialized version for the intersection of half spaces
-            :meth:`HyperbolicPLane.convex_hull` to compute the convex hull of subspaces
+            :meth:`HyperbolicPlane.convex_hull` to compute the convex hull of subspaces
 
         """
         subsets = [self(subset) for subset in subsets]
@@ -2144,7 +2143,8 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         If ``model`` is ``"half_plane"``, returns a 2×2 matrix over the
         :meth:`base_ring`, if ``model`` is ``"klein"``, returns a 3×3 matrix
         over the base ring.
-        See :meth:`apply_isometry` for meaning of this matrix.
+        See :meth:`HyperbolicConvexSet.apply_isometry` for meaning of this
+        matrix.
 
         ALGORITHM:
 
@@ -3883,7 +3883,8 @@ class HyperbolicExactGeometry(UniqueRepresentation, HyperbolicGeometry):
 
     def change_ring(self, ring):
         r"""
-        Return this geometry with the :meth:`base_ring` changed to ``ring``.
+        Return this geometry with the :meth:`~HyperbolicGeometry.base_ring`
+        changed to ``ring``.
 
         EXAMPLES::
 
@@ -4023,13 +4024,13 @@ class HyperbolicEpsilonGeometry(UniqueRepresentation, HyperbolicGeometry):
 
         INPUT:
 
-        - ``a`` -- an element of the :meth:`base_ring`
+        - ``a`` -- an element of the :meth:`~HyperbolicGeometry.base_ring`
 
-        - ``b`` -- an element of the :meth:`base_ring`
+        - ``b`` -- an element of the :meth:`~HyperbolicGeometry.base_ring`
 
-        - ``c`` -- an element of the :meth:`base_ring`
+        - ``c`` -- an element of the :meth:`~HyperbolicGeometry.base_ring`
 
-        - ``d`` -- an element of the :meth:`base_ring`
+        - ``d`` -- an element of the :meth:`~HyperbolicGeometry.base_ring`
 
         EXAMPLES:
 
@@ -4062,9 +4063,9 @@ class HyperbolicEpsilonGeometry(UniqueRepresentation, HyperbolicGeometry):
 
         INPUT:
 
-        - ``p`` -- an element of the :meth:`base_ring`
+        - ``p`` -- an element of the :meth:`~HyperbolicGeometry.base_ring`
 
-        - ``q`` -- an element of the :meth:`base_ring`
+        - ``q`` -- an element of the :meth:`~HyperbolicGeometry.base_ring`
 
         - ``point`` -- the :meth:`HyperbolicPlane.point` to create points
 
@@ -4741,7 +4742,8 @@ class HyperbolicConvexSet(Element):
         INPUT:
 
         - ``ring`` -- a ring (default: ``None`` to keep the current
-          :meth:`base_ring`); the ring over which the new set will be defined.
+          :meth:`~HyperbolicPlane.base_ring`); the ring over which the new set
+          will be defined.
 
         - ``geometry`` -- a :class:`HyperbolicGeometry` (default: ``None`` to
           keep the current geometry); the geometry that will be used for the
@@ -5042,8 +5044,9 @@ class HyperbolicConvexSet(Element):
 
         INPUT:
 
-        - ``isometry`` -- a 3×3 matrix over the :meth:`base_ring` describing an
-          isometry in the hyperboloid model.
+        - ``isometry`` -- a 3×3 matrix over the
+          :meth:`~HyperbolicPlane.base_ring` describing an isometry in the
+          hyperboloid model.
 
         - ``on_right`` -- a boolean (default: ``False``); whether to return the
           result of the right action.
@@ -5442,8 +5445,10 @@ class HyperbolicConvexSet(Element):
 
             :meth:`change` to pick an orientation on an unoriented set
 
-            :meth:`__neg__`, i.e., the ``-`` operator, to invert the
-            orientation of a set
+            :meth:`HyperbolicHalfSpace._neg_`,
+            :meth:`HyperbolicOrientedGeodesic._neg_`,
+            :meth:`HyperbolicOrientedSegment._neg_` i.e., the ``-`` operator,
+            to invert the orientation of a set
 
         """
         return isinstance(self, HyperbolicOrientedConvexSet)
@@ -6067,8 +6072,8 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
         INPUT:
 
         - ``ring`` -- a ring (default: ``None`` to keep the current
-          :meth:`base_ring`); the ring over which the new half space will be
-          defined.
+          :meth:`~HyperbolicPlane.base_ring`); the ring over which the new half
+          space will be defined.
 
         - ``geometry`` -- a :class:`HyperbolicGeometry` (default: ``None`` to
           keep the current geometry); the geometry that will be used for the
@@ -6076,7 +6081,7 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
 
         - ``oriented`` -- a boolean (default: ``None`` to keep the current
           orientedness); must be ``None`` or ``False`` since half spaces cannot
-          have an explicit orientation. See :meth:`is_oriented`.
+          have an explicit orientation. See :meth:`~HyperbolicConvexSet.is_oriented`.
 
         EXAMPLES::
 
@@ -6161,9 +6166,9 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
             sage: list((-h).vertices())
             [0, ∞]
 
-        Use :meth:`HyperbolicGeodesic.start` and
-        :meth:`HyperbolicGeodesic.end` on the :meth:`boundary` to get the end
-        points in an order consistent with the orientation::
+        Use :meth:`HyperbolicOrientedGeodesic.start` and
+        :meth:`HyperbolicOrientedGeodesic.end` on the :meth:`boundary` to get
+        the end points in an order consistent with the orientation::
 
             sage: g = h.boundary()
             sage: g.start(), g.end()
@@ -6194,8 +6199,9 @@ class HyperbolicHalfSpace(HyperbolicConvexSet):
 
         INPUT:
 
-        - ``isometry`` -- a 3×3 matrix over the :meth:`base_ring` describing an
-          isometry in the hyperboloid model.
+        - ``isometry`` -- a 3×3 matrix over the
+          :meth:`~HyperbolicPlane.base_ring` describing an isometry in the
+          hyperboloid model.
 
         - ``on_right`` -- a boolean (default: ``False``) whether to return the
           result of the right action.
@@ -7268,7 +7274,7 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
         INPUT:
 
         - ``ring`` -- a ring (default: ``None`` to keep the current
-          :meth:`base_ring`); the ring over which the new geodesic will be
+          :meth:`~HyperbolicPlane.base_ring`); the ring over which the new geodesic will be
           defined.
 
         - ``geometry`` -- a :class:`HyperbolicGeometry` (default: ``None`` to
@@ -7464,7 +7470,7 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
             :meth:`HyperbolicConvexSet.intersection` for intersection with more
             general sets.
 
-            :meth:`HyperbolicHalfPlane.intersection` for the generic
+            :meth:`HyperbolicPlane.intersection` for the generic
             intersection of convex sets.
 
         """
@@ -7488,8 +7494,9 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
 
         INPUT:
 
-        - ``isometry`` -- a 3×3 matrix over the :meth:`base_ring` describing an
-          isometry in the hyperboloid model.
+        - ``isometry`` -- a 3×3 matrix over the
+          :meth:`~HyperbolicPlane.base_ring` describing an isometry in the
+          hyperboloid model.
 
         - ``on_right`` -- a boolean (default: ``False``); whether to return the
           result of the right action.
@@ -7659,9 +7666,9 @@ class HyperbolicGeodesic(HyperbolicConvexSet):
             sage: list((-v).vertices())
             [0, ∞]
 
-        Use :meth:`HyperbolicGeodesic.start` and
-        :meth:`HyperbolicGeodesic.end` to get the end points in an order that
-        is consistent with orientation::
+        Use :meth:`HyperbolicOrientedGeodesic.start` and
+        :meth:`HyperbolicOrientedGeodesic.end` to get the end points in an
+        order that is consistent with orientation::
 
             sage: v.start(), v.end()
             (0, ∞)
@@ -8028,7 +8035,7 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
 
         .. SEEALSO::
 
-            :meth:`_intersection` to compute the (ultra-ideal) intersection of geodesics
+            :meth:`~HyperbolicGeodesic._intersection` to compute the (ultra-ideal) intersection of geodesics
 
         """
         if not isinstance(other, HyperbolicOrientedGeodesic):
@@ -8256,7 +8263,7 @@ class HyperbolicPoint(HyperbolicConvexSet):
 
     .. SEEALSO::
 
-        :meth:`HyperbolicHalfPlane.point` for ways to create points
+        :meth:`HyperbolicPlane.point` for ways to create points
 
     """
 
@@ -9085,7 +9092,8 @@ class HyperbolicPointFromCoordinates(HyperbolicPoint):
         INPUT:
 
         - ``ring`` -- a ring (default: ``None`` to keep the current
-          :meth:`base_ring`); the ring over which the point will be defined.
+          :meth:`~HyperbolicPlane.base_ring`); the ring over which the point
+          will be defined.
 
         - ``geometry`` -- a :class:`HyperbolicGeometry` (default: ``None`` to
           keep the current geometry); the geometry that will be used for the
@@ -9145,8 +9153,9 @@ class HyperbolicPointFromCoordinates(HyperbolicPoint):
 
         INPUT:
 
-        - ``isometry`` -- a 3×3 matrix over the :meth:`base_ring` describing an
-          isometry in the hyperboloid model.
+        - ``isometry`` -- a 3×3 matrix over the
+          :meth:`~HyperbolicPlane.base_ring` describing an isometry in the
+          hyperboloid model.
 
         - ``on_right`` -- a boolean (default: ``False``) whether to return the
           result of the right action.
@@ -9539,7 +9548,8 @@ class HyperbolicPointFromGeodesic(HyperbolicPoint):
         INPUT:
 
         - ``ring`` -- a ring (default: ``None`` to keep the current
-          :meth:`base_ring`); the ring over which the point will be defined.
+          :meth:`~HyperbolicPlane.base_ring`); the ring over which the point
+          will be defined.
 
         - ``geometry`` -- a :class:`HyperbolicGeometry` (default: ``None`` to
           keep the current geometry); the geometry that will be used for the
@@ -9644,8 +9654,9 @@ class HyperbolicPointFromGeodesic(HyperbolicPoint):
 
         INPUT:
 
-        - ``isometry`` -- a 3×3 matrix over the :meth:`base_ring` describing an
-          isometry in the hyperboloid model.
+        - ``isometry`` -- a 3×3 matrix over the
+          :meth:`~HyperbolicPlane.base_ring` describing an isometry in the
+          hyperboloid model.
 
         - ``on_right`` -- a boolean (default: ``False``) whether to return the
           result of the right action.
@@ -9804,7 +9815,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
         Return a convex set describing the intersection of the half spaces
         underlying this polygon.
 
-        This implements :meth:`HyperbolicConvex._normalize`.
+        This implements :meth:`HyperbolicConvexSet._normalize`.
 
         The half spaces are assumed to be already sorted respecting
         :meth:`HyperbolicHalfSpaces._lt_`.
@@ -10238,7 +10249,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
 
         The ``half_spaces`` must be minimal to describe their intersection in
         the Euclidean plane. If that intersection does not intersect the unit
-        disk, then return the :meth:`empty_set`.
+        disk, then return the :meth:`HyperbolicPlane.empty_set`.
 
         Otherwise, return a minimal sublist of ``half_spaces`` that describes
         the intersection inside the unit disk.
@@ -10477,8 +10488,9 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
         one of the ``half_spaces`` which is returned by this method.
 
         If this is not the case, and the intersection is empty in the
-        hyperbolic plane, return the :meth:`empty_set`. Otherwise, if the
-        intersection is a point in the hyperbolic plane, return that point.
+        hyperbolic plane, return the :meth:`HyperbolicPlane.empty_set`.
+        Otherwise, if the intersection is a point in the hyperbolic plane,
+        return that point.
 
         The ``half_spaces`` must already be sorted with respect to
         :meth:`HyperbolicHalfSpaces._lt_`.
@@ -10826,7 +10838,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
 
         Note that this also returns 2 if the actual dimension of the polygon is
         smaller. This is, however, only possible for polygons created with
-        :meth:`HyperbolicHalfPlane.polygon` setting ``check=False``.
+        :meth:`HyperbolicPlane.polygon` setting ``check=False``.
 
         EXAMPLES::
 
@@ -11263,8 +11275,8 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
         INPUT:
 
         - ``ring`` -- a ring (default: ``None`` to keep the current
-          :meth:`base_ring`); the ring over which the polygon will be
-          defined.
+          :meth:`~HyperbolicPlane.base_ring`); the ring over which the polygon
+          will be defined.
 
         - ``geometry`` -- a :class:`HyperbolicGeometry` (default: ``None`` to
           keep the current geometry); the geometry that will be used for the
@@ -11272,7 +11284,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
 
         - ``oriented`` -- a boolean (default: ``None`` to keep the current
           orientedness); must be ``None`` or ``False`` since polygons cannot
-          have an explicit orientation. See :meth:`is_oriented`.
+          have an explicit orientation. See :meth:`~HyperbolicConvexSet.is_oriented`.
 
         EXAMPLES::
 
@@ -11391,8 +11403,9 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
 
         INPUT:
 
-        - ``isometry`` -- a 3×3 matrix over the :meth:`base_ring` describing an
-          isometry in the hyperboloid model.
+        - ``isometry`` -- a 3×3 matrix over the
+          :meth:`~HyperbolicPlane.base_ring` describing an isometry in the
+          hyperboloid model.
 
         - ``on_right`` -- a boolean (default: ``False``) whether to return the
           result of the right action.
@@ -11567,7 +11580,7 @@ class HyperbolicSegment(HyperbolicConvexSet):
     r"""
     A segment (possibly infinite) in the hyperbolic plane.
 
-    This is an abstract base class of :class:`HyperbolicOrientedSegmented` and
+    This is an abstract base class of :class:`HyperbolicOrientedSegment` and
     :class:`HyperbolicUnorientedSegment`.
 
     INPUT:
@@ -11829,8 +11842,9 @@ class HyperbolicSegment(HyperbolicConvexSet):
 
         INPUT:
 
-        - ``isometry`` -- a 3×3 matrix over the :meth:`base_ring` describing an
-          isometry in the hyperboloid model.
+        - ``isometry`` -- a 3×3 matrix over the
+          :meth:`~HyperbolicPlane.base_ring` describing an isometry in the
+          hyperboloid model.
 
         - ``on_right`` -- a boolean (default: ``False``) whether to return the
           result of the right action.
@@ -12060,8 +12074,8 @@ class HyperbolicSegment(HyperbolicConvexSet):
         Return a modified copy of this segment.
 
         - ``ring`` -- a ring (default: ``None`` to keep the current
-          :meth:`base_ring`); the ring over which the new half space will be
-          defined.
+          :meth:`~HyperbolicPlane.base_ring`); the ring over which the new half
+          space will be defined.
 
         - ``geometry`` -- a :class:`HyperbolicGeometry` (default: ``None`` to
           keep the current geometry); the geometry that will be used for the
@@ -12069,7 +12083,7 @@ class HyperbolicSegment(HyperbolicConvexSet):
 
         - ``oriented`` -- a boolean (default: ``None`` to keep the current
           orientedness); must be ``None`` or ``False`` since half spaces cannot
-          have an explicit orientation. See :meth:`is_oriented`.
+          have an explicit orientation. See :meth:`~HyperbolicConvexSet.is_oriented`.
 
         EXAMPLES::
 
@@ -12194,8 +12208,9 @@ class HyperbolicSegment(HyperbolicConvexSet):
             sage: (-s).vertices()
             {I, 2*I}
 
-        Use :meth:`start` and :meth:`end` to get the vertices in an order that
-        is consistent with the orientation::
+        Use :meth:`~HyperbolicOrientedSegment.start` and
+        :meth:`~HyperbolicOrientedSegment.end` to get the vertices in an order
+        that is consistent with the orientation::
 
             sage: s.start(), s.end()
             (I, 2*I)
@@ -12224,7 +12239,7 @@ class HyperbolicSegment(HyperbolicConvexSet):
 
         Note that this also returns 1 if the actual dimension of the segment is
         smaller. This is, however, only possible for segments created with
-        :meth:`HyperbolicHalfPlane.segment` setting ``check=False``.
+        :meth:`HyperbolicPlane.segment` setting ``check=False``.
 
         EXAMPLES::
 
@@ -12267,7 +12282,6 @@ class HyperbolicSegment(HyperbolicConvexSet):
 
         .. SEEALSO::
 
-            :meth:`HyperbolicConvexPolygon.centroid` for a generalization of this
             :meth:`HyperbolicSegment.perpendicular` for the perpendicular bisector
 
         """
@@ -12368,7 +12382,8 @@ class HyperbolicUnorientedSegment(HyperbolicSegment):
     .. SEEALSO::
 
         Use :meth:`HyperbolicPlane.segment` or
-        :meth:`HyperbolicSegment.unoriented` to construct unoriented segments.
+        :meth:`~HyperbolicConvexSet.unoriented` to construct unoriented
+        segments.
 
     """
 
@@ -12729,8 +12744,9 @@ class HyperbolicEmptySet(HyperbolicConvexSet):
 
         INPUT:
 
-        - ``isometry`` -- a 3×3 matrix over the :meth:`base_ring` describing an
-          isometry in the hyperboloid model.
+        - ``isometry`` -- a 3×3 matrix over the
+          :meth:`~HyperbolicPlane.base_ring` describing an isometry in the
+          hyperboloid model.
 
         - ``on_right`` -- a boolean (default: ``False``) whether to return the
           result of the right action.
@@ -12818,8 +12834,8 @@ class HyperbolicEmptySet(HyperbolicConvexSet):
         INPUT:
 
         - ``ring`` -- a ring (default: ``None`` to keep the current
-          :meth:`base_ring`); the ring over which the empty set will be
-          defined.
+          :meth:`HyperbolicPlane.base_ring`); the ring over which the empty set
+          will be defined.
 
         - ``geometry`` -- a :class:`HyperbolicGeometry` (default: ``None`` to
           keep the current geometry); the geometry that will be used for the
@@ -13186,7 +13202,7 @@ class OrderedSet(collections.abc.Set):
         r"""
         Return an iterator of this set.
 
-        Iteration happens in sorted order, consistent with :meth:`_lt`.
+        Iteration happens in sorted order, consistent with :meth:`_lt_`.
 
         EXAMPLES::
 
