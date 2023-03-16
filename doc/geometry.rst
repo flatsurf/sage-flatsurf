@@ -16,6 +16,7 @@ The flatsurf.geometry Package
    geometry/gl2r_orbit_closure
    geometry/half_dilation_surface
    geometry/half_translation_surface
+   geometry/hyperbolic
    geometry/interval_exchange_transformation
    geometry/l_infinity_delaunay_cells
    geometry/mappings

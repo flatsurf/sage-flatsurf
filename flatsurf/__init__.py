@@ -23,4 +23,6 @@ from .geometry.translation_surface import TranslationSurface
 
 from .geometry.gl2r_orbit_closure import GL2ROrbitClosure
 
+from .geometry.hyperbolic import HyperbolicPlane
+
 del absolute_import, print_function
