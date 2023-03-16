@@ -4,8 +4,8 @@ Plotting primitives for subsets of the hyperbolic plane
 EXAMPLES:
 
 Usually, the primitives defined here should not be used directly. Instead the
-:meth:`HyperbolicConvexSet.plot` method of hyperbolic sets internally uses
-these primitives::
+:meth:`flatsurf.geometry.hyperbolic.HyperbolicConvexSet.plot` method of
+hyperbolic sets internally uses these primitives::
 
     sage: from flatsurf import HyperbolicPlane
 
@@ -61,20 +61,19 @@ class CartesianPathPlot(GraphicPrimitive):
     The ``plot`` methods of most hyperbolic convex sets rely on such a path.
     Usually, such a path should not be produced directly.
 
-    This can be considered a more generic version of
-    :class:`sage.plot.line.Line` and :class:`sage.plot.polygon.Polygon` since
-    this is not limited to finite line segments. At the same time this
-    generalizes matplotlib's ``Path`` somewhat, again by allowing infinite rays
-    and lines.
+    This can be considered a more generic version of ``sage.plot.line.Line``
+    and ``sage.plot.polygon.Polygon`` since this is not limited to finite line
+    segments. At the same time this generalizes matplotlib's ``Path`` somewhat,
+    again by allowing infinite rays and lines.
 
     INPUT:
 
-    - ``commands`` -- a sequence of :class:`HyperbolicPath.Command` describing
-      the path.
+    - ``commands`` -- a sequence of :class:`HyperbolicPathPlotCommand`
+      describing the path.
 
     - ``options`` -- a dict or ``None`` (the default), options to affect the
-      plotting of the path; the options accepted are the same that
-      :class:`sage.plot.polygon.Polygon` accepts.
+      plotting of the path; the options accepted are the same that ``Polygon``
+      of :mod:`sage.plot.polygon` accepts.
 
     EXAMPLES:
 
@@ -934,16 +933,17 @@ class HyperbolicPathPlotCommand:
     def create_segment_cartesian(start, end, model):
         r"""
         Return a sequence of :class:`CartesianPathPlotCommand` that represent
-        the closed boundary of a :class:`HyperbolicConvexPolygon`, namely the segment
-        to ``end`` (from the previous position ``start``.)
+        the closed boundary of a
+        :class:`~flatsurf.geometry.hyperbolic.HyperbolicConvexPolygon`, namely
+        the segment to ``end`` (from the previous position ``start``.)
 
         This is a helper function for :meth:`cartesian`.
 
         INPUT:
 
-        - ``start`` -- a :class:`flatsurf.geometry.HyperbolicPoint`
+        - ``start`` -- a :class:`~flatsurf.geometry.hyperbolic.HyperbolicPoint`
 
-        - ``end`` -- a :class:`flatsurf.geometry.HyperbolicPoint`
+        - ``end`` -- a :class:`~flatsurf.geometry.hyperbolic.HyperbolicPoint`
 
         - ``model`` -- one of ``"half_plane"`` or ``"klein"`` in which model to
           realize this segment
@@ -974,7 +974,8 @@ class HyperbolicPathPlotCommand:
 
         Note that this is a "closed" boundary of the polygon that is left of
         that segment unlike the "open" version produced by
-        :meth:`_hyperbolic_move` which contains the entire positive real axis::
+        :meth:`create_move_cartesian` which contains the entire positive real
+        axis::
 
             sage: HyperbolicPathPlotCommand.create_move_cartesian(H(0), H(oo), model="half_plane", stroke=True, fill=False)
             [CartesianPathPlotCommand(code='MOVETOINFINITY', args=(0, 1))]
@@ -1062,7 +1063,7 @@ class HyperbolicPathPlotCommand:
     @staticmethod
     def create_move_cartesian(start, end, model, stroke=True, fill=True):
         r"""
-        Return a list of :class:`CartesianPathPlot.Command` that represent the
+        Return a list of :class:`CartesianPathPlotCommand` that represent the
         open "segment" on the boundary of a polygon connecting ``start`` and
         ``end``.
 
@@ -1070,9 +1071,9 @@ class HyperbolicPathPlotCommand:
 
         INPUT:
 
-        - ``start`` -- a :class:`flatsurf.geometry.HyperbolicPoint`
+        - ``start`` -- a :class:`~flatsurf.geometry.hyperbolic.HyperbolicPoint`
 
-        - ``end`` -- a :class:`flatsurf.geometry.HyperbolicPoint`
+        - ``end`` -- a :class:`~flatsurf.geometry.hyperbolic.HyperbolicPoint`
 
         - ``model`` -- one of ``"half_plane"`` or ``"klein"`` in which model to
           realize this segment
@@ -1264,7 +1265,7 @@ def hyperbolic_path(commands, model="half_plane", **options):
 
     .. SEEALSO::
 
-        :meth:`flatsurf.geometry.HyperbolicConvexSet.plot`
+        :meth:`flatsurf.geometry.hyperbolic.HyperbolicConvexSet.plot`
 
     """
     if options["thickness"] is None:
