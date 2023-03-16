@@ -1757,7 +1757,7 @@ class ConvexPolygon(Polygon):
         Return a list of triangles that partition this polygon.
 
         For each edge of the polygon one triangle is created that joins this
-        edge to the :meth:`centroid` of this polygon.
+        edge to the :meth:`centroid <Polygon.centroid>` of this polygon.
 
         EXAMPLES::
 

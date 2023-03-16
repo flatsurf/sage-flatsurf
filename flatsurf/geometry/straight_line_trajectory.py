@@ -1,3 +1,23 @@
+#*********************************************************************
+#  This file is part of sage-flatsurf.
+#
+#        Copyright (C) 2016-2022 W. Patrick Hooper
+#                      2016-2022 Vincent Delecroix
+#                           2023 Julian Rüth
+#
+#  sage-flatsurf is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  sage-flatsurf is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
+#*********************************************************************
 from __future__ import absolute_import, print_function, division
 from six.moves import range, map, filter, zip
 from six import iteritems
@@ -209,8 +229,10 @@ class AbstractStraightLineTrajectory:
         r"""
         Plot this trajectory by converting to a graphical trajectory.
 
-        If any arguments are provided in `*args` it must be only one argument containing a GraphicalSurface.
-        The keyword arguments in `**options` are passed on to :func:`GraphicalStraightLineTrajectory.plot`.
+        If any arguments are provided in `*args` it must be only one argument
+        containing a GraphicalSurface. The keyword arguments in `**options` are
+        passed on to
+        :func:`flatsurf.graphical.straight_line_trajectory.GraphicalStraightLineTrajectory.plot`.
 
         EXAMPLES::
 
@@ -652,7 +674,6 @@ class StraightLineTrajectoryTranslation(AbstractStraightLineTrajectory):
       necessarily a number between 0 and 1. It is given relatively to the length
       of the induced interval in the iet)
 
-    (see the methods :meth:`_prev` and :meth:`_next`)
     """
     def __init__(self, tangent_vector):
         t = tangent_vector.polygon_label()

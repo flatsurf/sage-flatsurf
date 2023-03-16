@@ -9,7 +9,7 @@ namely :class:`Surface_list` and `Surface_dict`. The former labels the polygons
 that make up a surface by non-negative integers and the latter can use
 arbitrary labels. Additionally, there are lots of other surface representations
 that are not really implementing data structures but essentially just wrap
-these two, e.g., a :class:`MinimalTranslationCover`.
+these two, e.g., a :class:`.minimal_cover.MinimalTranslationCover`.
 
 All these surface implementations inherit from :class:`Surface` which describes
 the contract that all surfaces must satisfy. As an absolute minimum, they
@@ -36,11 +36,11 @@ We built a torus by gluing the opposite sides of a square::
 
 There are two separate hierarchies of surfaces in sage-flatsurf. The underlying
 data of a surface described by the subclasses of :class:`Surface` here and the
-:class:`SimilaritySurface` and its subclasses which wrap a :class:`Surface`.
-While a :class:`Surface` essentially provides the raw data of a surface, a
-:class:`SimilaritySurface` then adds mathematical knowledge to that data
-structure, e.g., by declaring that the data describes a
-:class:`TranslationSurface`::
+:class:`.similarity_surface.SimilaritySurface` and its subclasses which wrap a
+:class:`Surface`. While a :class:`Surface` essentially provides the raw data of
+a surface, a :class:`.similarity_surface.SimilaritySurface` then adds
+mathematical knowledge to that data structure, e.g., by declaring that the data
+describes a :class:`.translation_surface.TranslationSurface`::
 
     sage: from flatsurf import TranslationSurface
     sage: T = TranslationSurface(S)
@@ -323,7 +323,7 @@ class Surface(SageObject):
         r"""
         Return the label of a special chosen polygon in the surface.
 
-        When no specific choice was made with :meth:`set_base_label`, this
+        When no specific choice was made with :meth:`change_base_label`, this
         might just be the initial polygon, i.e., the one that was first added
         in the construction of this surface.
 
@@ -459,7 +459,8 @@ class Surface(SageObject):
     def subdivide(self):
         r"""
         Return a copy of this surface whose polygons have been partitioned into
-        smaller triangles with :meth:`Polygon.subdivide`.
+        smaller triangles with
+        :meth:`.polygon.ConvexPolygon.subdivide`.
 
         EXAMPLES:
 
@@ -792,17 +793,19 @@ class Surface_list(Surface):
 
     Each ``_p[label]`` is typically a pair ``(polygon, gluing_list)`` where
     ``gluing_list`` is a list of pairs ``(other_label, other_edge)`` such that
-    :meth:`opposite_edge(label, edge)` returns ``_p[label][1][edge]``.
+    :meth:`opposite_edge(label, edge) <Surface.opposite_edge>` returns
+    ``_p[label][1][edge]``.
 
     INPUT:
 
     - ``base_ring`` -- ring or ``None`` (default: ``None``); the ring
       containing the coordinates of the vertices of the polygons. If ``None``,
-      the :meth:`base_ring` will be the one of ``surface``.
+      the :meth:`Surface.base_ring` will be the one of ``surface``.
 
-    - ``surface`` -- :class:`Surface`, :class:`SimilaritySurface`, or
-      ``None`` (default: ``None``); a surface to be copied or referenced (see
-      ``copy``). If ``None``, the surface is initially empty.
+    - ``surface`` -- :class:`Surface`,
+      :class:`.similarity_surface.SimilaritySurface`, or ``None`` (default:
+      ``None``); a surface to be copied or referenced (see ``copy``). If
+      ``None``, the surface is initially empty.
 
     - ``copy`` -- boolean or ``None`` (default: ``None``); whether the data
       underlying ``surface`` is copied into this surface or just a reference to
@@ -1291,15 +1294,16 @@ class Surface_dict(Surface):
 
     Each ``_p[label]`` is typically a pair ``(polygon, gluing_dict)`` where
     ``gluing_dict`` is maps ``other_label`` to ``other_edge`` such that
-    :meth:`opposite_edge(label, edge)` returns ``_p[label][1][edge]``.
+    :meth:`opposite_edge(label, edge) <Surface.opposite_edge>` returns
+    ``_p[label][1][edge]``.
 
     INPUT:
 
     - ``base_ring`` -- ring or ``None`` (default: ``None``); the ring
       containing the coordinates of the vertices of the polygons. If ``None``,
-      the :meth:`base_ring` will be the one of ``surface``.
+      the :meth:`Surface.base_ring` will be the one of ``surface``.
 
-    - ``surface`` -- :class:`Surface`, :class:`SimilaritySurface`, or
+    - ``surface`` -- :class:`Surface`, :class:`.similarity_surface.SimilaritySurface`, or
       ``None`` (default: ``None``); a surface to be copied or referenced (see
       ``copy``). If ``None``, the surface is initially empty.
 

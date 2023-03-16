@@ -32,6 +32,7 @@ EXAMPLES::
 # ****************************************************************************
 #       Copyright (C) 2013-2019 Vincent Delecroix <20100.delecroix@gmail.com>
 #                     2013-2019 W. Patrick Hooper <wphooper@gmail.com>
+#                     2023 Julian Rüth <julian.rueth@fsfe.org>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #  as published by the Free Software Foundation; either version 2 of
@@ -203,6 +204,12 @@ def matrix_multiplicative_order(m):
 class FinitelyGenerated2x2MatrixGroup(Group):
     r"""
     Finitely generated group of 2x2 matrices with real coefficients
+
+    .. SEEALSO::
+
+        :py:mod:`sage.groups.group` for the general interface of groups
+        like this in SageMath
+
     """
     def __init__(self, matrices, matrix_space=None, category=None):
         if matrix_space is None:
@@ -362,7 +369,23 @@ class FinitelyGenerated2x2MatrixGroup(Group):
     def one(self):
         return self._matrix_space.identity_matrix()
 
-    def an_element(self):
+    def _an_element_(self):
+        r"""
+        Return a typical element of this group, namely a generator.
+
+        EXAMPLES:
+
+            sage: from flatsurf.geometry.finitely_generated_matrix_group import FinitelyGenerated2x2MatrixGroup
+            sage: G = FinitelyGenerated2x2MatrixGroup([identity_matrix(2)])
+
+            sage: G._an_element_()
+
+        .. SEEALSO::
+
+            :meth:`sage.structure.parent.Parent.an_element` which relies on
+            this method and should be called instead
+
+        """
         return self._generators[0]
 
     def gen(self, i):

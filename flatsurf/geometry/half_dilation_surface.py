@@ -31,7 +31,7 @@ class HalfDilationSurface(SimilaritySurface):
     A half-dilation surface is a (G,X) structure for the group of dilatations
     `G = \RR^*` acting on the plane `X = \RR^2`. If you want to consider only
     the oriented case, have a look at
-    :meth:`flatsurf.dilation_surface.DilationSurface`.
+    :meth:`~.dilation_surface.DilationSurface`.
     """
 
     def __rmul__(self,matrix):

@@ -1211,7 +1211,8 @@ class SimilaritySurface(SageObject):
     def subdivide(self):
         r"""
         Return a copy of this surface whose polygons have been partitioned into
-        smaller triangles with :meth:`Polygon.subdivide`.
+        smaller triangles with
+        :meth:`.polygon.ConvexPolygon.subdivide`.
 
         EXAMPLES::
 
@@ -2070,9 +2071,10 @@ class SimilaritySurface(SageObject):
         ``cached=False`` is provided as a keyword option then a new
         GraphicalSurface is returned.
 
-        All other parameters are passed on to :class:`GraphicalSurface` or
-        :meth:`GraphicalSurface.process_options`. Note that this mutates the
-        cached graphical surface for future calls.
+        All other parameters are passed on to
+        :class:`~flatsurf.graphical.surface.GraphicalSurface` or its
+        :meth:`~flatsurf.graphical.surface.GraphicalSurface.process_options`.
+        Note that this mutates the cached graphical surface for future calls.
 
         EXAMPLES:
 
@@ -2103,7 +2105,9 @@ class SimilaritySurface(SageObject):
         r"""
         Return a plot of the surface.
 
-        The parameters are passed on to :meth:`graphical_surface` and :meth:`GraphicalSurface.plot`. Consult their documentation for details.
+        The parameters are passed on to :meth:`graphical_surface` and
+        :meth:`flatsurf.graphical.surface.GraphicalSurface.plot`. Consult their
+        documentation for details.
 
         EXAMPLES::
 
@@ -2113,7 +2117,7 @@ class SimilaritySurface(SageObject):
             Graphics object consisting of 21 graphics primitives
 
         Keywords are passed on to the underlying plotting routines, see
-        :meth:`GraphicalSurface.plot` for details::
+        :meth:`flatsurf.graphical.surface.GraphicalSurface.plot` for details::
 
             sage: S.plot(fill=None)
             ...Graphics object consisting of 21 graphics primitives

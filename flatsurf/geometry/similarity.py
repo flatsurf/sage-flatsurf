@@ -1,9 +1,8 @@
-# -*- coding: utf-8 -*-
 #*********************************************************************
 #  This file is part of sage-flatsurf.
 #
 #        Copyright (C) 2016-2020 Vincent Delecroix
-#                      2020      Julian Rüth
+#                      2020-2023 Julian Rüth
 #
 #  sage-flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -539,7 +538,22 @@ class SimilarityGroup(UniqueRepresentation, Group):
                 self._ring.zero(), # t
                 ZZ_1)              # sign
 
-    def an_element(self):
+    def _an_element_(self):
+        r"""
+        Return a typical element of this group.
+
+        EXAMPLES:
+
+            sage: from flatsurf.geometry.similarity import SimilarityGroup
+
+            sage: SimilarityGroup(QQ)._an_element_()
+
+        .. SEEALSO::
+
+            :meth:`sage.structure.parent.Parent.an_element` which relies on
+            this method and should be called instead
+
+        """
         return self(3, 4, 2, -1, -1)
 
     def is_abelian(self):
