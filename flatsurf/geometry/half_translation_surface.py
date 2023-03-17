@@ -238,11 +238,11 @@ class HalfTranslationSurface(HalfDilationSurface, RationalConeSurface):
 
         Verify that #89 has been resolved::
 
-            sage: from pyexactreal import ExactReals  # optional: pyexactreal
+            sage: from pyexactreal import ExactReals  # optional: exactreal
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.square_torus()
-            sage: S = S.change_ring(ExactReals())  # optional: pyexactreal
-            sage: S.normalize_coordinates()  # optional: pyexactreal
+            sage: S = S.change_ring(ExactReals())  # optional: exactreal
+            sage: S.normalize_coordinates()  # optional: exactreal
             Traceback (most recent call last):
             ...
             NotImplementedError: base ring must be a field to normalize coordinates of the surface
