@@ -233,11 +233,30 @@ class HalfTranslationSurface(HalfDilationSurface, RationalConeSurface):
             sage: S, _ = S.normalized_coordinates()
             sage: S
             TranslationSurface built from 6 polygons
+
+        TESTS:
+
+        Verify that #89 has been resolved::
+
+            sage: from pyexactreal import ExactReals  # optional: pyexactreal
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: S = S.change_ring(ExactReals())  # optional: pyexactreal
+            sage: S.normalize_coordinates()  # optional: pyexactreal
+            Traceback (most recent call last):
+            ...
+            NotImplementedError: base ring must be a field to normalize coordinates of the surface
+
         """
         if not self.is_finite():
             raise ValueError('the surface must be finite')
+
         if self.base_ring() is QQ:
             return (self, matrix(QQ, 2, 2, 1))
+
+        from sage.categories.all import Fields
+        if self.base_ring() not in Fields():
+            raise NotImplementedError("base ring must be a field to normalize coordinates of the surface")
 
         lab = next(self.label_iterator())
         p = self.polygon(lab)
