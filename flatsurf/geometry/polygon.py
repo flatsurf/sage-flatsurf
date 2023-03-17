@@ -28,7 +28,7 @@ EXAMPLES::
 #  This file is part of sage-flatsurf.
 #
 #        Copyright (C) 2016-2020 Vincent Delecroix
-#                      2020-2022 Julian Rüth
+#                      2020-2023 Julian Rüth
 #
 #  sage-flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -1042,6 +1042,45 @@ class Polygon(Element):
             total += (self.vertex(i)[0]+self.vertex(i+1)[0])*self.edge(i)[1]
         return total/ZZ_2
 
+    def centroid(self):
+        r"""
+        Return the coordinates of the centroid of this polygon.
+
+        ALGORITHM:
+
+        We use the customary formula of the centroid of polygons, see
+        https://en.wikipedia.org/wiki/Centroid#Of_a_polygon
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.polygon import polygons
+            sage: P = polygons.regular_ngon(4); P
+            Polygon: (0, 0), (1, 0), (1, 1), (0, 1)
+            sage: P.centroid()
+            (1/2, 1/2)
+
+            sage: P = polygons.regular_ngon(8); P
+            Polygon: (0, 0), (1, 0), (1/2*a + 1, 1/2*a), (1/2*a + 1, 1/2*a + 1), (1, a + 1), (0, a + 1), (-1/2*a, 1/2*a + 1), (-1/2*a, 1/2*a)
+            sage: P.centroid()
+            (1/2, 1/2*a + 1/2)
+
+            sage: P = polygons.regular_ngon(11)
+            sage: C = P.centroid()
+            sage: P = P.translate(-C)
+            sage: P.centroid()
+            (0, 0)
+
+        """
+        x,y = list(zip(*self.vertices()))
+        nvertices = len(x)
+        A = self.area()
+
+        from sage.all import vector
+        return vector((
+            ~(6*A) * sum([(x[i-1] + x[i]) * (x[i-1]*y[i] - x[i]*y[i-1]) for i in range(nvertices)]),
+            ~(6*A) * sum([(y[i-1] + y[i]) * (x[i-1]*y[i] - x[i]*y[i-1]) for i in range(nvertices)])
+        ))
+
     def j_invariant(self):
         r"""
         Return the Kenyon-Smille J-invariant of this polygon.
@@ -1712,6 +1751,80 @@ class ConvexPolygon(Polygon):
             if not circle.point_position(self.vertex(i))==0:
                 raise ValueError("Vertex "+str(i)+" is not on the circle.")
         return circle
+
+    def subdivide(self):
+        r"""
+        Return a list of triangles that partition this polygon.
+
+        For each edge of the polygon one triangle is created that joins this
+        edge to the :meth:`centroid <Polygon.centroid>` of this polygon.
+
+        EXAMPLES::
+
+            sage: from flatsurf import polygons
+            sage: P = polygons.regular_ngon(3); P
+            Polygon: (0, 0), (1, 0), (1/2, 1/2*a)
+            sage: P.subdivide()
+            [Polygon: (0, 0), (1, 0), (1/2, 1/6*a),
+             Polygon: (1, 0), (1/2, 1/2*a), (1/2, 1/6*a),
+             Polygon: (1/2, 1/2*a), (0, 0), (1/2, 1/6*a)]
+
+        ::
+
+            sage: P = polygons.regular_ngon(4)
+            sage: P.subdivide()
+            [Polygon: (0, 0), (1, 0), (1/2, 1/2),
+             Polygon: (1, 0), (1, 1), (1/2, 1/2),
+             Polygon: (1, 1), (0, 1), (1/2, 1/2),
+             Polygon: (0, 1), (0, 0), (1/2, 1/2)]
+
+        Sometimes alternating with :meth:`subdivide_edges` can produce a more
+        uniform subdivision::
+
+            sage: P = polygons.regular_ngon(4)
+            sage: P.subdivide_edges(2).subdivide()
+            [Polygon: (0, 0), (1/2, 0), (1/2, 1/2),
+             Polygon: (1/2, 0), (1, 0), (1/2, 1/2),
+             Polygon: (1, 0), (1, 1/2), (1/2, 1/2),
+             Polygon: (1, 1/2), (1, 1), (1/2, 1/2),
+             Polygon: (1, 1), (1/2, 1), (1/2, 1/2),
+             Polygon: (1/2, 1), (0, 1), (1/2, 1/2),
+             Polygon: (0, 1), (0, 1/2), (1/2, 1/2),
+             Polygon: (0, 1/2), (0, 0), (1/2, 1/2)]
+
+        """
+        vertices = self.vertices()
+        center = self.centroid()
+        return [self.parent()(vertices=(vertices[i], vertices[(i+1) % len(vertices)], center)) for i in range(len(vertices))]
+
+    def subdivide_edges(self, parts=2):
+        r"""
+        Return a copy of this polygon whose edges have been split into
+        ``parts`` equal parts each.
+
+        INPUT:
+
+        - ``parts`` -- a positive integer (default: 2)
+
+        EXAMPLES::
+
+            sage: from flatsurf import polygons
+            sage: P = polygons.regular_ngon(3); P
+            Polygon: (0, 0), (1, 0), (1/2, 1/2*a)
+            sage: P.subdivide_edges(1) == P
+            True
+            sage: P.subdivide_edges(2)
+            Polygon: (0, 0), (1/2, 0), (1, 0), (3/4, 1/4*a), (1/2, 1/2*a), (1/4, 1/4*a)
+            sage: P.subdivide_edges(3)
+            Polygon: (0, 0), (1/3, 0), (2/3, 0), (1, 0), (5/6, 1/6*a), (2/3, 1/3*a), (1/2, 1/2*a), (1/3, 1/3*a), (1/6, 1/6*a)
+
+        """
+        if parts < 1:
+            raise ValueError("parts must be a positive integer")
+
+        steps = [e / parts for e in self.edges()]
+        return self.parent()(edges=[e for e in steps for p in range(parts)])
+
 
 class Polygons(UniqueRepresentation, Parent):
     Element = Polygon

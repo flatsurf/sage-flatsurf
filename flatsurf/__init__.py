@@ -25,4 +25,6 @@ from .geometry.gl2r_orbit_closure import GL2ROrbitClosure
 
 from .geometry.iso_delaunay_tessellation import IsoDelaunayTessellation
 
+from .geometry.hyperbolic import HyperbolicPlane
+
 del absolute_import, print_function

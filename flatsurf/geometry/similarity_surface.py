@@ -6,7 +6,7 @@ Similarity surfaces.
 #  This file is part of sage-flatsurf.
 #
 #        Copyright (C) 2016-2020 Vincent Delecroix
-#                      2020-2022 Julian Rüth
+#                      2020-2023 Julian Rüth
 #
 #  sage-flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -1208,6 +1208,49 @@ class SimilaritySurface(SageObject):
                 pair = old_to_new_labels[pair]
             self.underlying_surface().change_edge_gluing(new_label, e, pair[0], pair[1])
 
+    def subdivide(self):
+        r"""
+        Return a copy of this surface whose polygons have been partitioned into
+        smaller triangles with
+        :meth:`.polygon.ConvexPolygon.subdivide`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.veech_double_n_gon(5)
+            sage: S.subdivide()
+            TranslationSurface built from 10 polygons
+            sage: S.subdivide().subdivide()
+            TranslationSurface built from 30 polygons
+
+        Sometimes a more uniform subdivision can be obtained by alternating
+        between :meth:`subdivide_edges` and this method::
+
+            sage: S.subdivide_edges().subdivide()
+            TranslationSurface built from 20 polygons
+
+        """
+        return self.__class__(self._s.subdivide())
+
+    def subdivide_edges(self, parts=2):
+        r"""
+        Return a copy of this surface whose edges have been split into
+        ``parts`` equal pieces each.
+
+        INPUT:
+
+        - ``parts`` -- a positive integer (default: 2)
+
+        EXAMPLES:
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.veech_double_n_gon(5)
+            sage: S.subdivide_edges()
+            TranslationSurface built from 2 polygons
+
+        """
+        return self.__class__(self._s.subdivide_edges(parts=parts))
+
     def singularity(self, l, v, limit=None):
         r"""
         Represents the Singularity associated to the v-th vertex of the polygon with
@@ -2028,9 +2071,10 @@ class SimilaritySurface(SageObject):
         ``cached=False`` is provided as a keyword option then a new
         GraphicalSurface is returned.
 
-        All other parameters are passed on to :class:`GraphicalSurface` or
-        :meth:`GraphicalSurface.process_options`. Note that this mutates the
-        cached graphical surface for future calls.
+        All other parameters are passed on to
+        :class:`~flatsurf.graphical.surface.GraphicalSurface` or its
+        :meth:`~flatsurf.graphical.surface.GraphicalSurface.process_options`.
+        Note that this mutates the cached graphical surface for future calls.
 
         EXAMPLES:
 
@@ -2061,7 +2105,9 @@ class SimilaritySurface(SageObject):
         r"""
         Return a plot of the surface.
 
-        The parameters are passed on to :meth:`graphical_surface` and :meth:`GraphicalSurface.plot`. Consult their documentation for details.
+        The parameters are passed on to :meth:`graphical_surface` and
+        :meth:`flatsurf.graphical.surface.GraphicalSurface.plot`. Consult their
+        documentation for details.
 
         EXAMPLES::
 
@@ -2071,7 +2117,7 @@ class SimilaritySurface(SageObject):
             Graphics object consisting of 21 graphics primitives
 
         Keywords are passed on to the underlying plotting routines, see
-        :meth:`GraphicalSurface.plot` for details::
+        :meth:`flatsurf.graphical.surface.GraphicalSurface.plot` for details::
 
             sage: S.plot(fill=None)
             ...Graphics object consisting of 21 graphics primitives

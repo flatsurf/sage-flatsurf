@@ -26,7 +26,6 @@ class HalfTranslationSurface(HalfDilationSurface, RationalConeSurface):
     r"""
     A half translation surface has gluings between polygons whose monodromy is +I or -I.
     """
-    # TODO: Add singularities(), vertices() and angle(vertex)
     def angles(self, numerical=False, return_adjacent_edges=False):
         r"""
         Return the set of angles around the vertices of the surface.
@@ -77,7 +76,6 @@ class HalfTranslationSurface(HalfDilationSurface, RationalConeSurface):
         edges = set(self.edge_iterator())
         angles = []
 
-        # TODO: Why do we have two implementations here?
         if return_adjacent_edges:
             while edges:
                 # Note that iteration order here is different for different

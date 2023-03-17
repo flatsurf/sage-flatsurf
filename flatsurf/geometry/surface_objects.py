@@ -565,13 +565,13 @@ class SaddleConnection(SageObject):
 
     def intersections(self, traj, count_singularities = False, include_segments = False):
         r"""
-        See documentation of :func:`~straight_line_trajectory.AbstractStraightLineTrajectory.intersections`
+        See documentation of :meth:`~.straight_line_trajectory.AbstractStraightLineTrajectory.intersections`
         """
         return self.trajectory().intersections(traj, count_singularities, include_segments)
 
     def intersects(self, traj, count_singularities = False):
         r"""
-        See documentation of :func:`~straight_line_trajectory.AbstractStraightLineTrajectory.intersects`
+        See documentation of :meth:`~.straight_line_trajectory.AbstractStraightLineTrajectory.intersects`
         """
         return self.trajectory().intersects(traj, count_singularities=count_singularities)
 
