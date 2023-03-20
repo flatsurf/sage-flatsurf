@@ -11,7 +11,7 @@ EXAMPLES::
 #
 #       Copyright (C) 2013-2019 Vincent Delecroix <20100.delecroix@gmail.com>
 #                     2013-2019 W. Patrick Hooper <wphooper@gmail.com>
-#                          2022 Julian Rüth <julian.rueth@fsfe.org>
+#                     2022-2023 Julian Rüth <julian.rueth@fsfe.org>
 #
 #  sage-flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -83,33 +83,33 @@ class GraphicalSurface:
 
     The :meth:`plot` method calls some other built in methods: :meth:`plot_polygon`,
     :meth:`plot_polygon_label`, :meth:`plot_edge` and :meth:`plot_edge_label`. These in turn
-    call methods in :class:`GraphicalPolygon`.
+    call methods in :class:`~.polygon.GraphicalPolygon`.
 
-    - ``polygon_options`` -- Options passed to :meth:`graphical_polygon.GraphicalPolygon.plot_polygon` when
+    - ``polygon_options`` -- Options passed to :meth:`.polygon.GraphicalPolygon.plot_polygon` when
         plotting a polygon right-side up.
 
     - ``upside_down_polygon_options`` -- Options passed to
-        :meth:`graphical_polygon.GraphicalPolygon.plot_polygon` when plotting a polygon upside-down.
+        :meth:`.polygon.GraphicalPolygon.plot_polygon` when plotting a polygon upside-down.
 
-    - ``polygon_label_options`` -- Options passed to :meth:`graphical_polygon.GraphicalPolygon.plot_label`
+    - ``polygon_label_options`` -- Options passed to :meth:`.polygon.GraphicalPolygon.plot_label`
         when plotting a polygon label.
 
     - ``non_adjacent_edge_options`` -- Options passed to
-        :meth:`graphical_polygon.GraphicalPolygon.plot_edge` when plotting a polygon edge which is not
+        :meth:`.polygon.GraphicalPolygon.plot_edge` when plotting a polygon edge which is not
         adjacent to the edge it is glued to.
 
     - ``adjacent_edge_options`` -- Options passed to
-        :meth:`graphical_polygon.GraphicalPolygon.plot_edge` when plotting a polygon edge which is
+        :meth:`.polygon.GraphicalPolygon.plot_edge` when plotting a polygon edge which is
         adjacent to the edge it is glued to.
 
-    - ``self_glued_edge_options`` -- Options passed to :meth:`graphical_polygon.GraphicalPolygon.plot_edge`
+    - ``self_glued_edge_options`` -- Options passed to :meth:`.polygon.GraphicalPolygon.plot_edge`
         when plotting a polygon edge which is glued to itself.
 
-    - ``edge_label_options`` -- Options passed to :meth:`graphical_polygon.GraphicalPolygon.edge_label`
+    - ``edge_label_options`` -- Options passed to :meth:`.polygon.GraphicalPolygon.plot_edge_label`
         when plotting a edge label.
 
     - ``zero_flag_options`` -- Options passed to
-        :meth:`graphical_polygon.GraphicalPolygon.plot_zero_flag` when plotting a zero_flag.
+        :meth:`.polygon.GraphicalPolygon.plot_zero_flag` when plotting a zero_flag.
 
     INPUT:
 
@@ -173,7 +173,7 @@ class GraphicalSurface:
         """
 
         self.polygon_options = {"color": "lightgray"}
-        r"""Options passed to :meth:`graphical_polygon.GraphicalPolygon.plot_polygon` when plotting a polygon right-side up."""
+        r"""Options passed to :meth:`.polygon.GraphicalPolygon.plot_polygon` when plotting a polygon right-side up."""
 
         self.will_plot_upside_down_polygons = False
         r"""
@@ -181,7 +181,7 @@ class GraphicalSurface:
         """
 
         self.upside_down_polygon_options = {"color": "lightgray", "zorder": -1}
-        r"""Options passed to :meth:`graphical_polygon.GraphicalPolygon.plot_polygon` when plotting a polygon upside-down."""
+        r"""Options passed to :meth:`.polygon.GraphicalPolygon.plot_polygon` when plotting a polygon upside-down."""
 
         self.will_plot_polygon_labels = True
         r"""
@@ -189,7 +189,7 @@ class GraphicalSurface:
         """
 
         self.polygon_label_options = {"color": "black", "vertical_alignment": "center", "horizontal_alignment": "center"}
-        r"""Options passed to :meth:`graphical_polygon.GraphicalPolygon.plot_label` when plotting a polygon label."""
+        r"""Options passed to :meth:`.polygon.GraphicalPolygon.plot_label` when plotting a polygon label."""
 
         self.will_plot_edges = True
         r"""
@@ -202,7 +202,7 @@ class GraphicalSurface:
         """
 
         self.non_adjacent_edge_options = {"color": "blue"}
-        r"""Options passed to :meth:`graphical_polygon.GraphicalPolygon.plot_edge` when plotting a polygon edge
+        r"""Options passed to :meth:`.polygon.GraphicalPolygon.plot_edge` when plotting a polygon edge
         which is not adjacent to the edge it is glued to."""
 
         self.will_plot_adjacent_edges = True
@@ -211,7 +211,7 @@ class GraphicalSurface:
         """
 
         self.adjacent_edge_options = {"color": "blue", "linestyle": ":"}
-        r"""Options passed to :meth:`graphical_polygon.GraphicalPolygon.plot_edge`
+        r"""Options passed to :meth:`.polygon.GraphicalPolygon.plot_edge`
         when plotting a polygon edge which is adjacent to the edge it is glued to."""
 
         self.will_plot_self_glued_edges = True
@@ -220,7 +220,7 @@ class GraphicalSurface:
         """
 
         self.self_glued_edge_options = {"color": "red"}
-        r"""Options passed to :meth:`graphical_polygon.GraphicalPolygon.plot_edge` when plotting a polygon edge
+        r"""Options passed to :meth:`.polygon.GraphicalPolygon.plot_edge` when plotting a polygon edge
         which is glued to itself."""
 
         self.will_plot_edge_labels = True
@@ -229,7 +229,7 @@ class GraphicalSurface:
         """
 
         self.edge_label_options = {"color": "blue"}
-        r"""Options passed to :meth:`graphical_polygon.GraphicalPolygon.edge_label` when plotting a polygon label."""
+        r"""Options passed to :meth:`.polygon.GraphicalPolygon.plot_edge_label` when plotting a polygon label."""
 
         self.will_plot_zero_flags = False
         r"""
@@ -237,7 +237,7 @@ class GraphicalSurface:
         """
 
         self.zero_flag_options = {"color": "green", "thickness": 0.5}
-        r"""Options passed to :meth:`graphical_polygon.GraphicalPolygon.plot_zero_flag` when plotting a zero_flag."""
+        r"""Options passed to :meth:`.polygon.GraphicalPolygon.plot_zero_flag` when plotting a zero_flag."""
 
         self.process_options(adjacencies=adjacencies, polygon_labels=polygon_labels, edge_labels=edge_labels)
 
@@ -705,7 +705,7 @@ class GraphicalSurface:
             if return_all:
                 return ret
             else:
-                raise ValueError("Point or vector is not in a visible graphical_polygon.")
+                raise ValueError("Point or vector is not in a visible graphical polygon.")
         else:
             gp = self.graphical_polygon(label)
             coords = gp.transform_back(point)
@@ -832,7 +832,7 @@ class GraphicalSurface:
         r"""
         Internal method for plotting polygons returning a Graphics object.
 
-        Calls :meth:`graphical_polygon.GraphicalPolygon.plot_polygon` passing
+        Calls :meth:`.polygon.GraphicalPolygon.plot_polygon` passing
         the attribute ``upside_down_polygon_options`` if the polygon is upside down
         and ``polygon_options`` otherwise.
 
@@ -855,8 +855,8 @@ class GraphicalSurface:
         r"""
         Internal method for plotting polygon labels returning a Graphics2D.
 
-        Calls :meth:`graphical_polygon.GraphicalPolygon.plot_polygon_label` passing
-        the attribute ``polygon_label_options``.
+        Calls :meth:`.polygon.GraphicalPolygon.plot_label` passing the
+        attribute ``polygon_label_options``.
 
         Override this method for fine control of how the polygons are drawn.
 
@@ -874,7 +874,7 @@ class GraphicalSurface:
         r"""
         Internal method for plotting a polygon's edge returning a Graphics2D.
 
-        The method calls :meth:`graphical_polygon.GraphicalPolygon.plot_edge`.
+        The method calls :meth:`.polygon.GraphicalPolygon.plot_edge`.
         Depending on the geometry of the edge pair, it passes one of the attributes
         ``adjacent_edge_options``, ``self_glued_edge_options`` or ``non_adjacent_edge_options``.
 
@@ -904,7 +904,7 @@ class GraphicalSurface:
     def plot_edge_label(self, p, e, edge_label, graphical_polygon):
         r"""
         Internal method for plotting an edge label.
-        Calls :meth:`graphical_polygon.GraphicalPolygon.plot_edge_label` passing
+        Calls :meth:`.polygon.GraphicalPolygon.plot_edge_label` passing
         the attribute ``edge_label_options``.
 
         Override this method for fine control of how the edge is drawn.
@@ -924,7 +924,7 @@ class GraphicalSurface:
     def plot_zero_flag(self, label, graphical_polygon):
         r"""
         Internal method for plotting a polygon's zero_flag and returning a Graphics2D.
-        Simply calls :meth:`graphical_polygon.GraphicalPolygon.plot_zero_flag` passing
+        Simply calls :meth:`.polygon.GraphicalPolygon.plot_zero_flag` passing
         the attribute` `zero_flag_options``.
 
         Override this method for fine control of how the edge is drawn.

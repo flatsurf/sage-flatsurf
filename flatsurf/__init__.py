@@ -27,4 +27,6 @@ from .geometry.homology import SimplicialHomology
 from .geometry.cohomology import SimplicialCohomology
 from .geometry.harmonic_differentials import HarmonicDifferentials
 
+from .geometry.hyperbolic import HyperbolicPlane
+
 del absolute_import, print_function

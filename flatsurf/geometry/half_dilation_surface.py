@@ -1,6 +1,7 @@
 # ****************************************************************************
 #       Copyright (C) 2013-2019 Vincent Delecroix <20100.delecroix@gmail.com>
 #                     2013-2019 W. Patrick Hooper <wphooper@gmail.com>
+#                          2023 Julian Rüth <julian.rueth@fsfe.org>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #  as published by the Free Software Foundation; either version 2 of
@@ -31,7 +32,7 @@ class HalfDilationSurface(SimilaritySurface):
     A half-dilation surface is a (G,X) structure for the group of dilatations
     `G = \RR^*` acting on the plane `X = \RR^2`. If you want to consider only
     the oriented case, have a look at
-    :meth:`flatsurf.dilation_surface.DilationSurface`.
+    :class:`~.dilation_surface.DilationSurface`.
     """
 
     def __rmul__(self,matrix):

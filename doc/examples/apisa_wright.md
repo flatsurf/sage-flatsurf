@@ -121,7 +121,8 @@ for i, dec in enumerate(O.decompositions(16, bfs=True)): # optional: pyflatsurf
      new_dim = O.dimension()
      if old_dim != new_dim:
          holonomies = [cyl.circumferenceHolonomy() for cyl in dec.cylinders()]
-         areas = [cyl.area() for cyl in dec.cylinders()]
+         # .area() as reported by liblatsurf is actually twice the area
+         areas = [cyl.area()/2 for cyl in dec.cylinders()]
          moduli = [(v.x()*v.x() + v.y()*v.y()) / area for v, area in zip(holonomies, areas)]
          u = dec.vertical().vertical()
          print("saddle connection number", i)
