@@ -13,13 +13,13 @@ class MinimalTranslationCover(Surface):
 
     EXAMPLES::
 
-        sage: from flatsurf import *
+        sage: from flatsurf import Surface_dict, ConvexPolygons, SimilaritySurface, TranslationSurface
         sage: from flatsurf.geometry.minimal_cover import MinimalTranslationCover
-        sage: s = Surface_list(QQ)
+        sage: s = Surface_dict(QQ)
         sage: P = ConvexPolygons(QQ)
-        sage: s.add_polygon(P(vertices=[(0,0),(5,0),(0,5)]))
+        sage: s.add_polygon(P(vertices=[(0,0),(5,0),(0,5)]), label=0)
         0
-        sage: s.add_polygon(P(vertices=[(0,0),(3,4),(-4,3)]))
+        sage: s.add_polygon(P(vertices=[(0,0),(3,4),(-4,3)]), label=1)
         1
         sage: s.change_polygon_gluings(0,[(1,2),(1,1),(1,0)])
         sage: s.set_immutable()
@@ -56,11 +56,12 @@ class MinimalTranslationCover(Surface):
             from flatsurf.geometry.rational_cone_surface import RationalConeSurface
             finite = True
             if not isinstance(self._ss, RationalConeSurface):
-                ss_copy = self._ss.reposition_polygons(relabel=True)
+                ss_copy = self._ss.reposition_polygons()
                 try:
                     rcs = RationalConeSurface(ss_copy)
                     rcs._test_edge_matrix()
                 except AssertionError:
+                    # TODO: No, we do not get to catch an assertion.
                     finite = False
 
         self._F = self._ss.base_ring()
@@ -82,6 +83,13 @@ class MinimalTranslationCover(Surface):
         bb = b * m[0][0] + a * m[1][0]
         return ((p2, aa, bb), e2)
 
+    def unused_label(self, ignore=()):
+        label = 0
+        while True:
+            if label not in ignore:
+                return label
+            label += 1
+
 
 class MinimalHalfTranslationCover(Surface):
     r"""
@@ -89,13 +97,13 @@ class MinimalHalfTranslationCover(Surface):
 
     EXAMPLES::
 
-        sage: from flatsurf import *
+        sage: from flatsurf import Surface_dict, ConvexPolygons, SimilaritySurface, HalfTranslationSurface
         sage: from flatsurf.geometry.minimal_cover import MinimalHalfTranslationCover
-        sage: s = Surface_list(QQ)
+        sage: s = Surface_dict(QQ)
         sage: P = ConvexPolygons(QQ)
-        sage: s.add_polygon(P(vertices=[(0,0),(5,0),(0,5)]))
+        sage: s.add_polygon(P(vertices=[(0,0),(5,0),(0,5)]), label=0)
         0
-        sage: s.add_polygon(P(vertices=[(0,0),(3,4),(-4,3)]))
+        sage: s.add_polygon(P(vertices=[(0,0),(3,4),(-4,3)]), label=1)
         1
         sage: s.change_polygon_gluings(0,[(1,2),(1,1),(1,0)])
         sage: s.set_immutable()
@@ -132,11 +140,12 @@ class MinimalHalfTranslationCover(Surface):
             from flatsurf.geometry.rational_cone_surface import RationalConeSurface
             finite = True
             if not isinstance(self._ss, RationalConeSurface):
-                ss_copy = self._ss.reposition_polygons(relabel=True)
+                ss_copy = self._ss.reposition_polygons()
                 try:
                     rcs = RationalConeSurface(ss_copy)
                     rcs._test_edge_matrix()
                 except AssertionError:
+                    # TODO: No, we don't get to catch assertion errors. Remove this everywhere.
                     # print("Warning: Could be indicating infinite surface falsely.")
                     finite=False
 

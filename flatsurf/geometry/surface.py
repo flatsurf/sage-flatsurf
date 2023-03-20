@@ -21,10 +21,10 @@ EXAMPLES:
 We built a torus by gluing the opposite sides of a square::
 
     sage: from flatsurf import polygons
-    sage: from flatsurf.geometry.surface import Surface_list
+    sage: from flatsurf.geometry.surface import Surface_dict
 
-    sage: S = Surface_list(QQ)
-    sage: S.add_polygon(polygons(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]))
+    sage: S = Surface_dict(QQ)
+    sage: S.add_polygon(polygons(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]), label=0)
     0
     sage: S.set_edge_pairing(0, 0, 0, 2)
     sage: S.set_edge_pairing(0, 1, 0, 3)
@@ -114,6 +114,9 @@ class Surface(SageObject):
         sage: from flatsurf.geometry.surface import Surface, Surface_list, Surface_dict
 
         sage: S = Surface_list(QQ)
+        doctest:warning
+        ...
+        UserWarning: Surface_list is deprecated and will be removed from a future version of sage-flaturf. Use Surface_dict instead.
         sage: isinstance(S, Surface)
         True
 
@@ -419,6 +422,9 @@ class Surface(SageObject):
             self._set_edge_pairing(label, e, pp, ee)
 
     def add_polygons(self, polygons):
+        import warnings
+        warnings.warn("add_polygons() is deprecated. Use a loop instead.")
+
         return [self.add_polygon(p) for p in polygons]
 
     def add_polygon(self, new_polygon, gluing_list=None, label=None):
@@ -437,6 +443,7 @@ class Surface(SageObject):
         """
         self.__mutate()
         assert gluing_list is None or new_polygon.num_edges() == len(gluing_list)
+
         return self._add_polygon(new_polygon, gluing_list, label)
 
     def remove_polygon(self, label):
@@ -781,6 +788,56 @@ class Surface(SageObject):
             tester.assertTrue(isinstance(self.polygon(label), ConvexPolygon), \
                 "polygon(label) does not return a ConvexPolygon when label="+str(label))
 
+    def ramified_cover(self, d, data):
+        r"""
+        Make a ramified cover of this surface.
+
+        INPUT:
+
+        - ``d`` - integer (the degree of the cover)
+
+        - ``data`` - a dictionary which to a pair ``(label, edge_num)`` associates a permutation
+          of {1,...,d}
+        """
+        from sage.groups.perm_gps.permgroup_named import SymmetricGroup
+        G = SymmetricGroup(d)
+        for k in data:
+            data[k] = G(data[k])
+        cover = Surface_dict(base_ring=self.base_ring())
+        labels = list(self.label_iterator())
+        edges = set(self.edge_iterator())
+        cover_labels = {}
+        for i in range(1,d+1):
+            for lab in self.label_iterator():
+                cover_labels[(lab, i)] = cover.add_polygon(self.polygon(lab), label=cover.num_polygons())
+        while edges:
+            lab, e = elab = edges.pop()
+            llab, ee = eelab = self.opposite_edge(lab, e)
+            edges.remove(eelab)
+            if elab in data:
+                if eelab in data:
+                    if not (data[elab] * data[eelab]).is_one():
+                        raise ValueError("inconsistent covering data")
+                s = data[elab]
+            elif eelab in data:
+                s = ~data[eelab]
+            else:
+                s = G.one()
+
+            for i in range(1, d+1):
+                p0 = cover_labels[(lab, i)]
+                p1 = cover_labels[(lab, s(i))]
+                cover.set_edge_pairing(p0, e, p1, ee)
+        return cover
+
+    def unused_label(self, ignore=()):
+        if self.is_finite():
+            label = self.num_polygons()
+            while label in self.label_iterator() or label in ignore:
+                label += 1
+            return label
+        raise NotImplementedError(f"{type(self)} does not implement unused_label() yet")
+
 
 class Surface_list(Surface):
     r"""
@@ -818,10 +875,9 @@ class Surface_list(Surface):
 
     EXAMPLES::
 
-        sage: from flatsurf import *
-        sage: from flatsurf.geometry.surface import Surface_list
-        sage: p=polygons.regular_ngon(5)
-        sage: s=Surface_list(base_ring=p.base_ring())
+        sage: from flatsurf import Surface_list, polygons, similarity_surfaces
+        sage: p = polygons.regular_ngon(5)
+        sage: s = Surface_list(base_ring=p.base_ring())
         sage: s.add_polygon(p) # gets label 0
         0
         sage: s.add_polygon( (-matrix.identity(2))*p ) # gets label 1
@@ -835,59 +891,64 @@ class Surface_list(Surface):
 
         sage: p = polygons(vertices=[(0,0),(4,0),(0,3)])
         sage: s = similarity_surfaces.billiard(p)
-        sage: ts=s.minimal_cover(cover_type="translation").copy(relabel=True, mutable=True)
+        sage: ts=s.minimal_cover(cover_type="translation").copy(mutable=True)
         sage: # Explore the surface a bit
-        sage: ts.polygon(0)
+        sage: ts.base_label()
+        (0, 1, 0)
+        sage: ts.polygon((0, 1, 0))
         Polygon: (0, 0), (4, 0), (0, 3)
-        sage: ts.opposite_edge(0,0)
-        (1, 2)
-        sage: ts.polygon(1)
+        sage: ts.opposite_edge((0, 1, 0), 0)
+        ((1, 1, 0), 2)
+        sage: ts.polygon((1, 1, 0))
         Polygon: (0, 0), (0, -3), (4, 0)
         sage: s = ts.underlying_surface()
-        sage: l=s.add_polygon(polygons.square(side=4))
-        sage: s.change_edge_gluing(0,0,l,2)
-        sage: s.change_edge_gluing(1,2,l,0)
-        sage: s.change_edge_gluing(l,1,l,3)
-        sage: print("Glued in label is "+str(l))
-        Glued in label is 2
+        sage: s.add_polygon(polygons.square(side=4), label="square")
+        'square'
+        sage: s.change_edge_gluing((0, 1, 0),0,'square',2)
+        sage: s.change_edge_gluing((1, 1, 0),2,'square',0)
+        sage: s.change_edge_gluing('square',1,'square',3)
         sage: count = 0
         sage: for x in ts.edge_iterator(gluings=True):
         ....:     print(x)
         ....:     count=count+1
         ....:     if count>15:
         ....:         break
-        ((0, 0), (2, 2))
-        ((0, 1), (3, 1))
-        ((0, 2), (4, 0))
-        ((2, 0), (1, 2))
-        ((2, 1), (2, 3))
-        ((2, 2), (0, 0))
-        ((2, 3), (2, 1))
-        ((3, 0), (5, 2))
-        ((3, 1), (0, 1))
-        ((3, 2), (6, 0))
-        ((4, 0), (0, 2))
-        ((4, 1), (7, 1))
-        ((4, 2), (8, 0))
-        ((1, 0), (8, 2))
-        ((1, 1), (9, 1))
-        ((1, 2), (2, 0))
+        (((0, 1, 0), 0), ('square', 2))
+        (((0, 1, 0), 1), ((1, 7/25, -24/25), 1))
+        (((0, 1, 0), 2), ((1, -1, 0), 0))
+        (('square', 0), ((1, 1, 0), 2))
+        (('square', 1), ('square', 3))
+        (('square', 2), ((0, 1, 0), 0))
+        (('square', 3), ('square', 1))
+        (((1, 7/25, -24/25), 0), ((0, -7/25, 24/25), 2))
+        (((1, 7/25, -24/25), 1), ((0, 1, 0), 1))
+        (((1, 7/25, -24/25), 2), ((0, 7/25, -24/25), 0))
+        (((1, -1, 0), 0), ((0, 1, 0), 2))
+        (((1, -1, 0), 1), ((0, -7/25, -24/25), 1))
+        (((1, -1, 0), 2), ((0, -1, 0), 0))
+        (((1, 1, 0), 0), ((0, -1, 0), 2))
+        (((1, 1, 0), 1), ((0, 7/25, 24/25), 1))
+        (((1, 1, 0), 2), ('square', 0))
         sage: count = 0
         sage: for l,p in ts.label_iterator(polygons=True):
         ....:     print(str(l)+" -> "+str(p))
         ....:     count=count+1
         ....:     if count>5:
         ....:         break
-        0 -> Polygon: (0, 0), (4, 0), (0, 3)
-        2 -> Polygon: (0, 0), (4, 0), (4, 4), (0, 4)
-        3 -> Polygon: (0, 0), (-72/25, -21/25), (28/25, -96/25)
-        4 -> Polygon: (0, 0), (0, 3), (-4, 0)
-        1 -> Polygon: (0, 0), (0, -3), (4, 0)
-        5 -> Polygon: (0, 0), (-28/25, 96/25), (-72/25, -21/25)
+        (0, 1, 0) -> Polygon: (0, 0), (4, 0), (0, 3)
+        square -> Polygon: (0, 0), (4, 0), (4, 4), (0, 4)
+        (1, 7/25, -24/25) -> Polygon: (0, 0), (-72/25, -21/25), (28/25, -96/25)
+        (1, -1, 0) -> Polygon: (0, 0), (0, 3), (-4, 0)
+        (1, 1, 0) -> Polygon: (0, 0), (0, -3), (4, 0)
+        (0, -7/25, 24/25) -> Polygon: (0, 0), (-28/25, 96/25), (-72/25, -21/25)
 
     """
 
     def __init__(self, base_ring=None, surface=None, copy=None, mutable=None):
+        # Surface_list provides no real advantage over a Surface_dict (the performance gains are minimal when called from Python.)
+        import warnings
+        warnings.warn("Surface_list is deprecated and will be removed from a future version of sage-flaturf. Use Surface_dict instead.")
+
         self._p = []  # list of pairs (polygon, gluings)
         self._reference_surface = None
         self._removed_labels = []
@@ -1102,6 +1163,9 @@ class Surface_list(Surface):
             sage: from flatsurf.geometry.surface import Surface_list
             sage: p=polygons.regular_ngon(5)
             sage: s=Surface_list(base_ring=p.base_ring())
+            doctest:warning
+            ...
+            UserWarning: Surface_list is deprecated and will be removed from a future version of sage-flaturf. Use Surface_dict instead.
             sage: s.add_polygon(p, label=3)
             3
             sage: s.add_polygon( (-matrix.identity(2))*p, label=30)
@@ -1175,11 +1239,11 @@ class Surface_list(Surface):
         Iterator over all polygon labels.
         """
         if self._reference_surface is not None:
-            for i in Surface.label_iterator(self):
-                yield i
+            for label in super().label_iterator():
+                yield label
         elif self._num_polygons == len(self._p):
-            for i in range(self.num_polygons()):
-                yield i
+            for label in range(self.num_polygons()):
+                yield label
         else:
             # We've removed some labels
             found=0
@@ -1211,48 +1275,6 @@ class Surface_list(Surface):
                     del self._ref_to_int[ref_label]
         self._num_polygons -= 1
 
-    def ramified_cover(self, d, data):
-        r"""
-        Make a ramified cover of this surface.
-
-        INPUT:
-
-        - ``d`` - integer (the degree of the cover)
-
-        - ``data`` - a dictionary which to a pair ``(label, edge_num)`` associates a permutation
-          of {1,...,d}
-        """
-        from sage.groups.perm_gps.permgroup_named import SymmetricGroup
-        G = SymmetricGroup(d)
-        for k in data:
-            data[k] = G(data[k])
-        cover = Surface_list(base_ring=self.base_ring())
-        labels = list(self.label_iterator())
-        edges = set(self.edge_iterator())
-        cover_labels = {}
-        for i in range(1,d+1):
-            for lab in self.label_iterator():
-                cover_labels[(lab, i)] = cover.add_polygon(self.polygon(lab))
-        while edges:
-            lab, e = elab = edges.pop()
-            llab, ee = eelab = self.opposite_edge(lab, e)
-            edges.remove(eelab)
-            if elab in data:
-                if eelab in data:
-                    if not (data[elab] * data[eelab]).is_one():
-                        raise ValueError("inconsistent covering data")
-                s = data[elab]
-            elif eelab in data:
-                s = ~data[eelab]
-            else:
-                s = G.one()
-
-            for i in range(1, d+1):
-                p0 = cover_labels[(lab, i)]
-                p1 = cover_labels[(lab, s(i))]
-                cover.set_edge_pairing(p0, e, p1, ee)
-        return cover
-
 
 def surface_list_from_polygons_and_gluings(polygons, gluings, mutable=False):
     r"""
@@ -1260,6 +1282,9 @@ def surface_list_from_polygons_and_gluings(polygons, gluings, mutable=False):
     and produce a Surface_list from it. The mutable parameter determines the mutability of the resulting
     surface.
     """
+    import warnings
+    warnings.warn("surface_list_from_polygons_and_gluings() is deprecated and will be removed from a future version of sage-flatsurf. Build a Surface_dict explicitly instead.")
+
     if not (isinstance(polygons,list) or isinstance(polygons,tuple)):
         raise ValueError("polygons must be a list or tuple.")
     field = polygons[0].parent().field()
@@ -1482,8 +1507,14 @@ class Surface_dict(Surface):
         """
         data=[new_polygon, [None for i in range(new_polygon.num_edges())] ]
         if label is None:
-            new_label = ExtraLabel()
+            import warnings
+            warnings.warn("calling add_polygon() without a label is deprecated and will be an error in future versions of sage-flatsurf. Explicitly specify a label such as .num_polygons().")
+
+            new_label = ExtraLabel(nowarn=True)
         else:
+            # TODO: We do not actually check whether this label is used in
+            # _reference_surface. In fact, we should deprecate
+            # reference_surface and have a join-surface instead.
             try:
                 old_data = self._p[label]
                 if old_data is None:
@@ -1499,10 +1530,26 @@ class Surface_dict(Surface):
                 #    raise ValueError("Can not assign this label to a Surface_dict containing a reference surface,"+\
                 #        "which may already contain this label.")
                 new_label = label
+
+        assert new_label is not None
+
+        if self._base_label is None:
+            self._base_label = new_label
+
         self._p[new_label]=data
+
         if gluing_list is not None:
             self.change_polygon_gluings(new_label,gluing_list)
         return new_label
+
+    def unused_label(self, ignore=()):
+        if self._reference_surface is None:
+            return super().unused_label(ignore=ignore)
+
+        if self.is_finite():
+            return super().unused_label(ignore=ignore)
+
+        return self._reference_surface.unused_label(tuple(ignore) + tuple(self._p))
 
     def num_polygons(self):
         r"""
@@ -1523,11 +1570,9 @@ class Surface_dict(Surface):
         Iterator over all polygon labels.
         """
         if self._reference_surface is None:
-            for i in self._p:
-                yield i
+            return iter(self._p)
         else:
-            for i in Surface.label_iterator(self):
-                yield i
+            return super().label_iterator()
 
     def _remove_polygon(self, label):
         r"""
@@ -1735,13 +1780,23 @@ class LabelWalker:
 class ExtraLabel(SageObject):
     r"""
     Used to spit out new labels.
+
+    .. WARNING::
+
+        This label is not globally unique. In particular it is not unique when
+        running code in parallel and passing around pickles of surfaces.
+
     """
     _next=int(0)
 
-    def __init__(self, value=None):
+    def __init__(self, value=None, nowarn=False):
         r"""
         Construct a new label.
         """
+        if not nowarn:
+            import warnings
+            warnings.warn("ExtraLabel is deprecated and will be removed in a future version of sage-flatsurf. Please use a unique label instead.")
+
         if value is None:
             self._label = int(ExtraLabel._next)
             ExtraLabel._next = ExtraLabel._next + 1

@@ -12,7 +12,6 @@ from sage.geometry.polyhedron.constructor import Polyhedron
 from sage.functions.other import sqrt
 
 from flatsurf.geometry.polygon import ConvexPolygons
-from flatsurf.geometry.surface import surface_list_from_polygons_and_gluings
 from flatsurf.geometry.cone_surface import ConeSurface
 from flatsurf.geometry.straight_line_trajectory import StraightLineTrajectory, SegmentInPolygon 
 from flatsurf.geometry.tangent_bundle import SimilaritySurfaceTangentVector
@@ -219,24 +218,24 @@ def polyhedron_to_cone_surface(polyhedron, use_AA=False, scaling_factor=ZZ(1)):
         m = face_map_data[p][3]
         polygon_vertices_AA.append([trans + m * v for v in vs])
 
+    from flatsurf.geometry.surface import Surface_dict
     if use_AA is True:
         Polys = ConvexPolygons(AA)
-        polygons = []
+
+        S = Surface_dict(AA)
+
         for vs in polygon_vertices_AA:
-            polygons.append(Polys(vertices=vs))
-        S = ConeSurface(surface_list_from_polygons_and_gluings(polygons,
-                                                               gluings))
-        return S, \
-            ConeSurfaceToPolyhedronMap(S, polyhedron, face_map_data)
+            S.add_polygon(Polys(vertices=vs), label=S.num_polygons())
+
     else:
         elts = []
         for vs in polygon_vertices_AA:
             for v in vs:
                 elts.append(v[0])
                 elts.append(v[1])
-                
+
         # Find the best number field:
-        field,elts2,hom = number_field_elements_from_algebraics(elts,minimal=True)
+        field, elts2, hom = number_field_elements_from_algebraics(elts, minimal=True)
         if field==QQ:
             # Defined over the rationals!
             polygon_vertices_field2=[]
@@ -248,12 +247,8 @@ def polyhedron_to_cone_surface(polyhedron, use_AA=False, scaling_factor=ZZ(1)):
                     j=j+2
                 polygon_vertices_field2.append(vs2)
             Polys=ConvexPolygons(field)
-            polygons=[]
-            for vs in polygon_vertices_field2:
-                polygons.append(Polys(vertices=vs))
-            S=ConeSurface(surface_list_from_polygons_and_gluings(polygons,gluings))
-            return S, \
-                ConeSurfaceToPolyhedronMap(S,polyhedron,face_map_data)
+
+            S = Surface_dict(field)
 
         else:        
             # Unfortunately field doesn't come with an real embedding (which is given by hom!)
@@ -271,12 +266,18 @@ def polyhedron_to_cone_surface(polyhedron, use_AA=False, scaling_factor=ZZ(1)):
                     j=j+2
                 polygon_vertices_field2.append(vs2)
             Polys=ConvexPolygons(field2)
-            polygons=[]
-            for vs in polygon_vertices_field2:
-                polygons.append(Polys(vertices=vs))
-            S=ConeSurface(surface_list_from_polygons_and_gluings(polygons,gluings))
-            return S, \
-                ConeSurfaceToPolyhedronMap(S,polyhedron,face_map_data)
+
+            S = Surface_dict(field2)
+
+        for vs in polygon_vertices_field2:
+            S.add_polygon(Polys(vertices=vs), label=S.num_polygons())
+
+    for (p, e), (pp, ee) in gluings.items():
+        S.set_edge_pairing(p, e, pp, ee)
+
+    S = ConeSurface(S)
+
+    return S, ConeSurfaceToPolyhedronMap(S, polyhedron, face_map_data)
 
 
 def platonic_tetrahedron():

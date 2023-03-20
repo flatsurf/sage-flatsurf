@@ -109,11 +109,12 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
             sage: TestSuite(ss).run()
 
         Make sure first vertex is sent to origin::
-            sage: from flatsurf import *
+
+            sage: from flatsurf import ConvexPolygons, Surface_dict, TranslationSurface
             sage: P = ConvexPolygons(QQ)
             sage: p = P(vertices = ([(1,1),(2,1),(2,2),(1,2)]))
-            sage: s = Surface_list(QQ)
-            sage: s.add_polygon(p)
+            sage: s = Surface_dict(QQ)
+            sage: s.add_polygon(p, label=0)
             0
             sage: s.change_polygon_gluings(0, [(0,2),(0,3),(0,0),(0,1)])
             sage: s.change_base_label(0)
@@ -651,6 +652,14 @@ class AbstractOrigami(Surface):
         if e==3:
             return self.left(p),1
         raise ValueError
+
+    def unused_label(self, ignore=()):
+        import uuid
+        while True:
+            new_label = str(uuid.uuid4())
+            if new_label in self._domain or new_label in ignore:
+                continue
+            return new_label
 
 
 class Origami(AbstractOrigami):

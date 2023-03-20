@@ -24,7 +24,7 @@ from six.moves import range, map, filter, zip
 from six import iteritems
 
 from flatsurf.geometry.polygon import ConvexPolygons, wedge_product
-from flatsurf.geometry.surface import Surface, Surface_list, Surface_dict, ExtraLabel
+from flatsurf.geometry.surface import Surface, Surface_dict
 from flatsurf.geometry.similarity_surface import SimilaritySurface
 
 from sage.rings.infinity import Infinity
@@ -201,14 +201,14 @@ class SimilarityJoinPolygonsMapping(SurfaceMapping):
 
     EXAMPLES::
 
-        sage: from flatsurf.geometry.surface import Surface_list
+        sage: from flatsurf.geometry.surface import Surface_dict
         sage: from flatsurf.geometry.translation_surface import TranslationSurface
         sage: from flatsurf.geometry.polygon import ConvexPolygons
         sage: P = ConvexPolygons(QQ)
-        sage: s0=Surface_list(base_ring=QQ)
-        sage: s0.add_polygon(P([(1,0),(0,1),(-1,-1)])) # gets label=0
+        sage: s0=Surface_dict(base_ring=QQ)
+        sage: s0.add_polygon(P([(1,0),(0,1),(-1,-1)]), label=0)
         0
-        sage: s0.add_polygon(P([(-1,0),(0,-1),(1,1)])) # gets label=1
+        sage: s0.add_polygon(P([(-1,0),(0,-1),(1,1)]), label=1)
         1
         sage: s0.change_polygon_gluings(0,[(1,0),(1,1),(1,2)])
         sage: s0.set_immutable()
@@ -367,25 +367,25 @@ class SplitPolygonsMapping(SurfaceMapping):
         sage: from flatsurf import *
         sage: s=translation_surfaces.veech_2n_gon(4)
         sage: from flatsurf.geometry.mappings import SplitPolygonsMapping
-        sage: m = SplitPolygonsMapping(s,0,0,2)
+        sage: m = SplitPolygonsMapping(s,0,0,2, new_label="split")
         sage: s2=m.codomain()
         sage: TestSuite(s2).run()
         sage: for pair in s2.label_iterator(polygons=True):
         ....:     print(pair)
         (0, Polygon: (0, 0), (1/2*a + 1, 1/2*a), (1/2*a + 1, 1/2*a + 1), (1, a + 1), (0, a + 1), (-1/2*a, 1/2*a + 1), (-1/2*a, 1/2*a))
-        (ExtraLabel(0), Polygon: (0, 0), (-1/2*a - 1, -1/2*a), (-1/2*a, -1/2*a))
+        ('split', Polygon: (0, 0), (-1/2*a - 1, -1/2*a), (-1/2*a, -1/2*a))
         sage: for glue in s2.edge_iterator(gluings=True):
         ....:     print(glue)
-        ((0, 0), (ExtraLabel(0), 0))
+        ((0, 0), ('split', 0))
         ((0, 1), (0, 5))
         ((0, 2), (0, 6))
-        ((0, 3), (ExtraLabel(0), 1))
-        ((0, 4), (ExtraLabel(0), 2))
+        ((0, 3), ('split', 1))
+        ((0, 4), ('split', 2))
         ((0, 5), (0, 1))
         ((0, 6), (0, 2))
-        ((ExtraLabel(0), 0), (0, 0))
-        ((ExtraLabel(0), 1), (0, 3))
-        ((ExtraLabel(0), 2), (0, 4))
+        (('split', 0), (0, 0))
+        (('split', 1), (0, 3))
+        (('split', 2), (0, 4))
     """
     
     def __init__(self, s, p, v1, v2, new_label = None):
@@ -394,6 +394,10 @@ class SplitPolygonsMapping(SurfaceMapping):
         
         Warning: We do not ensure that new_label is not already in the list of labels unless it is None (as by default).
         """
+        if new_label is None:
+            import warnings
+            warnings.warn("creating a SplitPolygonsMapping without a new_label is deprecated. Speficy a new_label explicitly, e.g., new_label='split'")
+
         if s.is_mutable():
             raise ValueError("The surface should be immutable.")
 
@@ -531,10 +535,14 @@ class SplitPolygonsMapping(SurfaceMapping):
                 tangent_vector.vector(), \
                 ring = ring)
 
-def subdivide_a_polygon(s):
+def subdivide_a_polygon(s, new_label=None):
     r"""
     Return a SurfaceMapping which cuts one polygon along a diagonal or None if the surface is triangulated.
     """
+    if new_label is None:
+        import warnings
+        warnings.warn("calling subdivide_a_polygon() without specficying a new_label is deprecated and will not be possible anymore in a future version of sage-flatsurf. Explicitly specify a new label, e.g., new_label='split'.")
+
     from flatsurf.geometry.polygon import wedge_product
     for l,poly in s.label_iterator(polygons=True):
         n = poly.num_edges() 
@@ -543,7 +551,7 @@ def subdivide_a_polygon(s):
                 e1=poly.edge(i)
                 e2=poly.edge((i+1)%n)
                 if wedge_product(e1,e2) != 0:
-                    return SplitPolygonsMapping(s,l,i, (i+2)%n)
+                    return SplitPolygonsMapping(s,l,i, (i+2)%n, new_label=new_label)
             raise ValueError("Unable to triangulate polygon with label "+str(l)+\
                 ": "+str(poly))
     return None
@@ -570,12 +578,19 @@ def triangulation_mapping(s):
         Polygon: (0, 0), (-1/2*a - 1, -1/2*a), (-1/2*a, -1/2*a)
     """
     assert(s.is_finite())
-    m=subdivide_a_polygon(s)
+
+    def new_label(s):
+        new_label = s.num_polygons()
+        while new_label in s.label_iterator():
+            new_label += 1
+        return new_label
+
+    m=subdivide_a_polygon(s, new_label=new_label(s))
     if m is None:
         return None
     s1=m.codomain()
     while True:
-        m2=subdivide_a_polygon(s1)
+        m2=subdivide_a_polygon(s1, new_label=new_label(s1))
         if m2 is None:
             return m
         s1=m2.codomain()

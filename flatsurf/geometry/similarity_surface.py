@@ -40,7 +40,7 @@ from sage.modules.free_module_element import vector
 from .similarity import SimilarityGroup
 from .polygon import ConvexPolygons, wedge_product
 
-from .surface import Surface, Surface_dict, Surface_list, LabelComparator
+from .surface import Surface, Surface_dict, LabelComparator
 from .surface_objects import Singularity, SaddleConnection, SurfacePoint
 from .circle import Circle
 from .matrix_2x2 import similarity_from_vectors
@@ -71,18 +71,18 @@ class SimilaritySurface(SageObject):
         sage: similarity_surfaces.self_glued_polygon(P)
         HalfTranslationSurface built from 1 polygon
 
-    The second way is to build a surface (using e.g. :class:`flatsurf.geometry.surface.Surface_list`)
+    The second way is to build a surface (using e.g. :class:`flatsurf.geometry.surface.Surface_dict`)
     and then use this surface as an argument for class:`SimilaritySurface`)::
 
         sage: from flatsurf.geometry.similarity_surface import SimilaritySurface
-        sage: from flatsurf.geometry.surface import Surface_list
+        sage: from flatsurf.geometry.surface import Surface_dict
         sage: P = polygons(vertices=[(0,0), (1,0), (1,1), (0,1)])
-        sage: Stop = Surface_list(QQ)
-        sage: Stop.add_polygon(P)
+        sage: Stop = Surface_dict(QQ)
+        sage: Stop.add_polygon(P, label=0)
         0
-        sage: Stop.add_polygon(2*P)
+        sage: Stop.add_polygon(2*P, label=1)
         1
-        sage: Stop.add_polygon(3*P)
+        sage: Stop.add_polygon(3*P, label=2)
         2
         sage: Stop.set_edge_pairing(0, 1, 1, 3)
         sage: Stop.set_edge_pairing(0, 0, 2, 2)
@@ -103,8 +103,8 @@ class SimilaritySurface(SageObject):
     check that the test suite fails as expected::
 
         sage: P = polygons(vertices=[(0,0), (1,0), (1,1), (0,1)])
-        sage: Stop = Surface_list(QQ)
-        sage: Stop.add_polygon(P)
+        sage: Stop = Surface_dict(QQ)
+        sage: Stop.add_polygon(P, label=0)
         0
         sage: S = SimilaritySurface(Stop)
         sage: TestSuite(S).run()
@@ -295,6 +295,9 @@ class SimilaritySurface(SageObject):
         else:
             return self._s.label_iterator()
 
+    def unused_label(self, ignore=()):
+        return self._s.unused_label(ignore=ignore)
+
     def edge_iterator(self, gluings=False):
         r"""
         Iterate over the edges of polygons, which are pairs (l,e) where l is a polygon label, 0 <= e < N and N is the number of edges of the polygon with label l.
@@ -304,14 +307,20 @@ class SimilaritySurface(SageObject):
 
         EXAMPLES::
 
-            sage: from flatsurf import ConvexPolygons
+            sage: from flatsurf import ConvexPolygons, TranslationSurface, Surface_dict
             sage: P = ConvexPolygons(QQ)
-            sage: tri0=P([(1,0),(0,1),(-1,-1)])
-            sage: tri1=P([(-1,0),(0,-1),(1,1)])
-            sage: gluings=[((0,0),(1,0)),((0,1),(1,1)),((0,2),(1,2))]
-            sage: from flatsurf.geometry.surface import surface_list_from_polygons_and_gluings
-            sage: from flatsurf.geometry.translation_surface import TranslationSurface
-            sage: s=TranslationSurface(surface_list_from_polygons_and_gluings([tri0,tri1], gluings))
+            sage: s = Surface_dict(QQ)
+            sage: s.add_polygon(P([(1,0),(0,1),(-1,-1)]), label=0)
+            0
+            sage: s.add_polygon(P([(-1,0),(0,-1),(1,1)]), label=1)
+            1
+
+            sage: s.set_edge_pairing(0, 0, 1, 0)
+            sage: s.set_edge_pairing(0, 1, 1, 1)
+            sage: s.set_edge_pairing(0, 2, 1, 2)
+
+            sage: s = TranslationSurface(s)
+
             sage: for edge in s.edge_iterator():
             ....:     print(edge)
             (0, 0)
@@ -652,9 +661,10 @@ class SimilaritySurface(SageObject):
         r"""
         Returns a copy of this surface. The method takes several flags to modify how the copy is taken.
 
-        If relabel is True, then instead of returning an exact copy, it returns a copy indexed by the
-        non-negative integers. This uses the Surface_list implementation. If relabel is False (default),
-        then we return an exact copy. The returned surface uses the Surface_dict implementation.
+        If relabel is True, then instead of returning an exact copy, it returns
+        a copy indexed by the non-negative integers. If relabel is False
+        (default), then we return an exact copy. The returned surface uses the
+        Surface_dict implementation.
 
         The mutability flag returns if the resulting surface should be mutable or not. By default, the
         resulting surface will not be mutable.
@@ -698,6 +708,10 @@ class SimilaritySurface(SageObject):
             sage: ss.base_ring().discriminant()
             -44
         """
+        if relabel:
+            from warnings import warn
+            warn("copy(relabel=True) is deprecated and will be removed in a future version of sage-flatsurf. Use relabel() instead.")
+
         s = None  # This will be the surface we copy. (Likely we will set s=self below.)
         if new_field is not None and optimal_number_field:
             raise ValueError("You can not set a new_field and also set optimal_number_field=True.")
@@ -748,6 +762,8 @@ class SimilaritySurface(SageObject):
             s = self
         if s.is_finite():
             if relabel:
+                # TODO: Implement relabeling without Surface_list
+                from flatsurf.geometry.surface import Surface_list
                 return self.__class__(Surface_list(surface=s, copy=not lazy, mutable=mutable))
             else:
                 return self.__class__(Surface_dict(surface=s, copy=not lazy, mutable=mutable))
@@ -757,6 +773,8 @@ class SimilaritySurface(SageObject):
             if self.underlying_surface().is_mutable():
                 raise ValueError("An infinite surface can only be copied if it is immutable.")
             if relabel:
+                # TODO: Implement relabeling without Surface_list
+                from flatsurf.geometry.surface import Surface_list
                 return self.__class__(Surface_list(surface=s, copy=False, mutable=mutable))
             else:
                 return self.__class__(Surface_dict(surface=s, copy=False, mutable=mutable))
@@ -822,8 +840,8 @@ class SimilaritySurface(SageObject):
             False
 
             sage: s = similarity_surfaces.right_angle_triangle(ZZ(1),ZZ(1))
-            sage: from flatsurf.geometry.surface import Surface_list
-            sage: s = s.__class__(Surface_list(surface=s, mutable=True))
+            sage: from flatsurf.geometry.surface import Surface_dict
+            sage: s = s.__class__(Surface_dict(surface=s, mutable=True))
             sage: try:
             ....:     s.triangle_flip(0,0,in_place=True)
             ....: except ValueError as e:
@@ -852,8 +870,8 @@ class SimilaritySurface(SageObject):
 
             sage: p = polygons((2,0),(-1,3),(-1,-3))
             sage: s = similarity_surfaces.self_glued_polygon(p)
-            sage: from flatsurf.geometry.surface import Surface_list
-            sage: s = s.__class__(Surface_list(surface=s,mutable=True))
+            sage: from flatsurf.geometry.surface import Surface_dict
+            sage: s = s.__class__(Surface_dict(surface=s,mutable=True))
             sage: s.triangle_flip(0,1,in_place=True)
             HalfTranslationSurface built from 1 polygon
             sage: for x in s.label_iterator(polygons=True):
@@ -1151,6 +1169,10 @@ class SimilaritySurface(SageObject):
 
         The change will be done in place.
         """
+        if new_label is None:
+            import warnings
+            warnings.warn("subdivide_polygon() without specifying a label is deprecated and will be removed from a future version of sage-flatsurf. Explicitly specify a label instead, e.g., use subdivid_polygon(label=surface.num_polygons()).")
+
         poly=self.polygon(p)
         ne=poly.num_edges()
         if v1<0 or v2<0 or v1>=ne or v2>=ne:
@@ -1345,7 +1367,7 @@ class SimilaritySurface(SageObject):
             raise ValueError("this method is only available for finite surfaces")
         return type(self)(self._s.ramified_cover(degree, data))
 
-    def minimal_cover(self, cover_type = "translation"):
+    def minimal_cover(self, cover_type="translation"):
         r"""
         Return the minimal translation or half-translation cover of the surface.
 
@@ -1358,11 +1380,11 @@ class SimilaritySurface(SageObject):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.surface import Surface_list
-            sage: s = Surface_list(QQ)
+            sage: from flatsurf import Surface_dict
+            sage: s = Surface_dict(QQ)
             sage: from flatsurf.geometry.polygon import polygons
             sage: square = polygons.square(field=QQ)
-            sage: s.add_polygon(square)
+            sage: s.add_polygon(square, label=0)
             0
             sage: s.change_edge_gluing(0,0,0,1)
             sage: s.change_edge_gluing(0,2,0,3)
@@ -1510,6 +1532,10 @@ class SimilaritySurface(SageObject):
         surface (because polygons are presented with rotations) then after this
         change it will be representable as a translation surface.
         """
+        if relabel:
+            import warnings
+            warnings.warn("reposition_polygons(relabel=True) is deprecated and will be removed from a future version of sage-flatsurf. Do not specify relabel at all instead and use the relabel() method explicitly if you need a relabeling to happen.")
+
         if not self.is_finite():
             raise NotImplementedError("Only implemented for finite surfaces.")
         if in_place:
@@ -1581,6 +1607,10 @@ class SimilaritySurface(SageObject):
             sage: s.polygon(0).num_edges()
             3
         """
+        if relabel:
+            import warnings
+            warnings.warn("Calling triangulate() with relabel=True is deprecated and will be removed in a future version of sage-flatsurf. Triangulate without relabeling and then call relabel() instead.")
+
         if label is None:
             # We triangulate the whole surface
             if self.is_finite():
@@ -1598,7 +1628,7 @@ class SimilaritySurface(SageObject):
                 if in_place:
                     raise ValueError("You can't triangulate an infinite surface in place.")
                 from flatsurf.geometry.delaunay import LazyTriangulatedSurface
-                return self.__class__(LazyTriangulatedSurface(self))
+                return self.__class__(LazyTriangulatedSurface(self, relabel=relabel))
         else:
             poly = self.polygon(label)
             n=poly.num_edges()
@@ -1621,7 +1651,12 @@ class SimilaritySurface(SageObject):
                         # This is in case the polygon is a triangle with subdivided edge.
                         e3=poly.edge((i+2)%n)
                         if wedge_product(e1+e2,e3) != 0:
-                            s.subdivide_polygon(label,i,(i+2)%n)
+                            from flatsurf import Surface_list
+                            if isinstance(s._s, Surface_list):
+                                new_label=None
+                            else:
+                                new_label = s.unused_label()
+                            s.subdivide_polygon(label,i,(i+2)%n, new_label=new_label)
                             break
             return s
         raise RuntimeError("Failed to return anything!")
@@ -1771,6 +1806,8 @@ class SimilaritySurface(SageObject):
             sage: m = matrix([[2,1],[1,1]])
             sage: s = m*translation_surfaces.infinite_staircase()
             sage: ss = s.delaunay_triangulation(relabel=True)
+            doctest:warning
+            ...
             sage: ss.base_label()
             0
             sage: ss.polygon(0)
@@ -1779,6 +1816,10 @@ class SimilaritySurface(SageObject):
             sage: ss.is_delaunay_triangulated(limit=10)
             True
         """
+        if relabel:
+            import warnings
+            warnings.warn("Running delaunay_triangulation with relabel=True is deprecated and will be an error in future versions of sage-flatsurf. Do not set relabel explicitly instead.")
+
         if not self.is_finite() and limit is None:
             if in_place:
                 raise ValueError("in_place delaunay triangulation is not possible for infinite surfaces unless a limit is set.")

@@ -340,13 +340,17 @@ class LInfinityMarkedTriangulation:
         from sage.rings.rational_field import QQ
         C = ConvexPolygons(QQ)
 
+        from flatsurf import Surface_dict, TranslationSurface
+        S = Surface_dict(QQ)
+
         triangles = []
         for p in range(self._n):
             e1 = (b[6*p], b[6*p+1])
             e2 = (b[6*p+2], b[6*p+3])
             e3 = (b[6*p+4], b[6*p+5])
-            triangles.append(C([e1,e2,e3]))
-        
-        from .surface import surface_list_from_polygons_and_gluings
-        from .translation_surface import TranslationSurface
-        return TranslationSurface(surface_list_from_polygons_and_gluings(triangles, self._edge_identifications))
+            S.add_polygon(C([e1,e2,e3]), label=S.num_polygons())
+
+        for (p, e), (pp, ee) in self._edge_identifications.items():
+            S.set_edge_pairing(p, e, pp, ee)
+
+        return TranslationSurface(S)

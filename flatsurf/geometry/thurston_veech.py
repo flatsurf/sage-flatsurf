@@ -46,7 +46,7 @@ from surface_dynamics.flat_surfaces.origamis.origami import Origami
 from surface_dynamics.misc.permutation import perm_dense_cycles
 
 from .polygon import ConvexPolygons
-from .surface import Surface_list
+from .surface import Surface_dict
 from .translation_surface import TranslationSurface
 
 class ThurstonVeech:
@@ -169,9 +169,9 @@ class ThurstonVeech:
             vi = v[self._vcycles[i]]
             P.append(C(edges=[(vi,0),(0,hi),(-vi,0),(0,-hi)]))
 
-        surface = Surface_list(base_ring=K)
+        surface = Surface_dict(base_ring=K)
         for p in P:
-            surface.add_polygon(p)
+            surface.add_polygon(p, label=surface.num_polygons())
         r = self._o.r_tuple()
         u = self._o.u_tuple()
         for i in range(self._o.nb_squares()):

@@ -11,12 +11,12 @@ class RationalSimilaritySurface(SimilaritySurface):
 
     EXAMPLES::
 
-        sage: from flatsurf import *
-        sage: s = Surface_list(AA)
+        sage: from flatsurf import Surface_dict, ConvexPolygons
+        sage: s = Surface_dict(AA)
         sage: CP = ConvexPolygons(AA)
-        sage: s.add_polygon(CP(vertices=[(0,0),(2,0),(1,1)]))
+        sage: s.add_polygon(CP(vertices=[(0,0),(2,0),(1,1)]), label=0)
         0
-        sage: s.add_polygon(CP(vertices=[(0,0),(1,0),(1,sqrt(3))]))
+        sage: s.add_polygon(CP(vertices=[(0,0),(1,0),(1,sqrt(3))]), label=1)
         1
         sage: for i in range(3):
         ....:     s.change_edge_gluing(0,i,1,i)
@@ -29,12 +29,11 @@ class RationalSimilaritySurface(SimilaritySurface):
 
     Example of a similarity surface which is not rational::
 
-        sage: from flatsurf import *
-        sage: s = Surface_list(QQ)
+        sage: s = Surface_dict(QQ)
         sage: CP = ConvexPolygons(QQ)
-        sage: s.add_polygon(CP(vertices=[(0,0),(2,0),(1,1)]))
+        sage: s.add_polygon(CP(vertices=[(0,0),(2,0),(1,1)]), label=0)
         0
-        sage: s.add_polygon(CP(vertices=[(0,0),(1,0),(1,2)]))
+        sage: s.add_polygon(CP(vertices=[(0,0),(1,0),(1,2)]), label=1)
         1
         sage: for i in range(3):
         ....:     s.change_edge_gluing(0,i,1,i)

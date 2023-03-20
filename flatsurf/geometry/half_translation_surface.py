@@ -265,14 +265,14 @@ class HalfTranslationSurface(HalfDilationSurface, RationalConeSurface):
             K, new_hols, _ = subfield_from_elements(self.base_ring(), hols)
 
         from .polygon import ConvexPolygons
-        from .surface import Surface_list
-        S = Surface_list(K)
+        from .surface import Surface_dict
+        S = Surface_dict(K)
         C = ConvexPolygons(K)
         relabelling = {}
         k = 0
         for lab in self.label_iterator():
             m = self.polygon(lab).num_edges()
-            relabelling[lab] = S.add_polygon(C(edges=[(new_hols[k + 2*i], new_hols[k + 2*i+1]) for i in range(m)]))
+            relabelling[lab] = S.add_polygon(C(edges=[(new_hols[k + 2*i], new_hols[k + 2*i+1]) for i in range(m)]), label=S.num_polygons())
             k += 2 * m
 
         for (p1,e1),(p2,e2) in self.edge_iterator(gluings=True):

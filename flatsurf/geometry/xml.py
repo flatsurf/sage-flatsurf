@@ -4,12 +4,22 @@ readable format using XML.
 
 We also have a function to recreate the surface from the string/file.
 
+.. WARNING::
+
+    This entire functionality is deprecated and will be removed in a future version of sage-flatsurf.
+    To our knowledge nobody is using this functionality. There are also problems in
+    the implementation (manually building an XML string) and it only works for
+    the deprecated :class:`Surface_list`.
+
 EXAMPLES::
 
     sage: from flatsurf import *
     sage: from flatsurf.geometry.xml import *
     sage: s=translation_surfaces.square_torus().underlying_surface()
     sage: ss=surface_from_xml_string(surface_to_xml_string(s))
+    doctest:warning
+    ...
+    UserWarning: surface_from_xml_string() is deprecated and will be removed in a future version of sage-flatsurf
     sage: print(ss==s)
     True
 """
@@ -34,6 +44,9 @@ def surface_to_xml_string(s, complain=True):
     Also the surface should be defined over the rationals. Otherwise a ValueError is raised, which
     can be disabled by setting complain=False.
     """
+    import warnings
+    warnings.warn("surface_to_xml_string() is deprecated and will be removed in a future version of sage-flatsurf")
+
     if not s.is_finite():
         raise ValueError("Can only xml encode a finite surface.")
     from flatsurf.geometry.similarity_surface import SimilaritySurface
@@ -124,6 +137,9 @@ def surface_to_xml_file(s,filename,complain=True):
     
     The complain flag is passed to surface_to_xml_string.
     """
+    import warnings
+    warnings.warn("surface_to_xml_file() is deprecated and will be removed in a future version of sage-flatsurf")
+
     string = surface_to_xml_string(s,complain=complain)
     f = open(filename, 'w')
     f.write('<?xml version="1.0"?>\n')
@@ -137,6 +153,9 @@ def surface_from_xml_string(string):
     Currently, this works only if the surface stored was a Surface_list and the surface was defined
     over QQ.
     """
+    import warnings
+    warnings.warn("surface_from_xml_string() is deprecated and will be removed in a future version of sage-flatsurf")
+
     import xml.etree.ElementTree as ET
     tree = ET.fromstring(string)
     return _surface_from_ElementTree(tree)
@@ -148,6 +167,9 @@ def surface_from_xml_file(filename):
     Currently, this works only if the surface stored was a Surface_list and the surface was defined
     over QQ.
     """
+    import warnings
+    warnings.warn("surface_from_xml_file() is deprecated and will be removed in a future version of sage-flatsurf")
+
     import xml.etree.ElementTree as ET
     tree = ET.parse(filename)
     return _surface_from_ElementTree(tree)

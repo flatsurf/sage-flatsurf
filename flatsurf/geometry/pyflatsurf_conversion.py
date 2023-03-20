@@ -248,13 +248,13 @@ def from_pyflatsurf(T):
     Verify that #137 has been resolved::
 
         sage: from flatsurf import polygons
-        sage: from flatsurf.geometry.surface import Surface_list
+        sage: from flatsurf.geometry.surface import Surface_dict
         sage: from flatsurf.geometry.translation_surface import TranslationSurface
         sage: from flatsurf.geometry.gl2r_orbit_closure import GL2ROrbitClosure
         sage: from flatsurf.geometry.pyflatsurf_conversion import from_pyflatsurf
         sage: P = polygons.regular_ngon(10)
-        sage: S = Surface_list(P.base_ring())
-        sage: S.add_polygon(P)
+        sage: S = Surface_dict(P.base_ring())
+        sage: S.add_polygon(P, label=0)
         0
         sage: for i in range(5): S.set_edge_pairing(0, i, 0, 5+i)
         sage: M = TranslationSurface(S)
@@ -271,8 +271,8 @@ def from_pyflatsurf(T):
 
     ring = sage_ring(T)
 
-    from flatsurf.geometry.surface import Surface_list
-    S = Surface_list(ring)
+    from flatsurf.geometry.surface import Surface_dict
+    S = Surface_dict(ring)
 
     from flatsurf.geometry.polygon import ConvexPolygons
     P = ConvexPolygons(ring)
@@ -287,7 +287,7 @@ def from_pyflatsurf(T):
         vectors = [T.fromHalfEdge(he) for he in face]
         vectors = [V([ring(to_sage_ring(v.x())), ring(to_sage_ring(v.y()))]) for v in vectors]
         triangle = P(vectors)
-        face_id = S.add_polygon(triangle)
+        face_id = S.add_polygon(triangle, label=S.num_polygons())
 
         assert(a not in half_edges)
         half_edges[a] = (face_id, 0)

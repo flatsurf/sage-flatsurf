@@ -589,10 +589,10 @@ class StraightLineTrajectory(AbstractStraightLineTrajectory):
 
         An example in a cone surface covered by the torus::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import Surface_dict, RationalConeSurface, polygons
             sage: p = polygons.square()
-            sage: s = Surface_list(base_ring=p.base_ring())
-            sage: s.add_polygon(p,[(0,3),(0,2),(0,1),(0,0)])
+            sage: s = Surface_dict(base_ring=p.base_ring())
+            sage: s.add_polygon(p,[(0,3),(0,2),(0,1),(0,0)], 0)
             0
             sage: s.set_immutable()
             sage: t = RationalConeSurface(s)

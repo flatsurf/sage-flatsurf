@@ -131,12 +131,12 @@ class HalfDilationSurface(SimilaritySurface):
         TESTS::
 
             sage: from flatsurf import *
-            sage: s = Surface_list(base_ring=QQ)
+            sage: s = Surface_dict(base_ring=QQ)
             sage: t1 = polygons((1,0),(-1,1),(0,-1))
             sage: t2 = polygons((0,1),(-1,0),(1,-1))
-            sage: s.add_polygon(polygons(vertices=[(0,0), (1,0), (0,1)]))
+            sage: s.add_polygon(polygons(vertices=[(0,0), (1,0), (0,1)]), label=0)
             0
-            sage: s.add_polygon(polygons(vertices=[(1,1), (0,1), (1,0)]))
+            sage: s.add_polygon(polygons(vertices=[(1,1), (0,1), (1,0)]), label=1)
             1
             sage: s.change_polygon_gluings(0, [(1,0), (1,1), (1,2)])
             sage: s = TranslationSurface(s)
@@ -247,8 +247,8 @@ class HalfDilationSurface(SimilaritySurface):
                 from flatsurf.geometry.surface import Surface_dict
                 s = self.__class__(Surface_dict(surface=self,mutable=True))
         else:
-            from flatsurf.geometry.surface import Surface_list
-            s = self.__class__(Surface_list(surface=self.triangulate(in_place=in_place),mutable=True))
+            from flatsurf.geometry.surface import Surface_dict
+            s = self.__class__(Surface_dict(surface=self.triangulate(in_place=in_place),mutable=True))
 
         if direction is None:
             base_ring = self.base_ring()
@@ -341,6 +341,9 @@ class GL2RImageSurface(Surface):
             pp,ee = self._s.opposite_edge(p,polygon.num_edges()-1-e)
             polygon2 = self._s.polygon(pp)
             return pp,polygon2.num_edges()-1-ee
+
+    def unused_label(self, ignore=()):
+        return self._s.unused_label(ignore=ignore)
 
 class GL2RMapping(SurfaceMapping):
     r"""

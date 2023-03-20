@@ -16,7 +16,7 @@ surfaces.
 from __future__ import absolute_import, print_function, division
 from six.moves import range, map, filter, zip
 
-from flatsurf.geometry.surface import Surface, Surface_list
+from flatsurf.geometry.surface import Surface
 
 
 class LazyTriangulatedSurface(Surface):
@@ -41,21 +41,34 @@ class LazyTriangulatedSurface(Surface):
         sage: from flatsurf.geometry.delaunay import *
         sage: s=translation_surfaces.infinite_staircase()
         sage: ss=TranslationSurface(LazyTriangulatedSurface(s,relabel=True))
+        doctest:warning
+        ...
+        UserWarning: Creating a LazyTriangulatedSurface with relabel=True is deprecated and will be removed in a future version of sage-flatsurf.
+        doctest:warning
+        ...
+        UserWarning: copy(relabel=True) is deprecated and will be removed in a future version of sage-flatsurf. Use relabel() instead.
+        doctest:warning
+        ...
+        UserWarning: Surface_list is deprecated and will be removed from a future version of sage-flaturf. Use Surface_dict instead.
         sage: ss.polygon(0).num_edges()
+        doctest:warning
+        ...
+        UserWarning: subdivide_polygon() without specifying a label is deprecated and will be removed from a future version of sage-flatsurf. Explicitly specify a label instead, e.g., use subdivid_polygon(label=surface.num_polygons()).
         3
         sage: TestSuite(ss).run(skip="_test_pickling")
     """
     def __init__(self, similarity_surface, relabel=True):
+        if relabel:
+            import warnings
+            warnings.warn("Creating a LazyTriangulatedSurface with relabel=True is deprecated and will be removed in a future version of sage-flatsurf.")
 
         if similarity_surface.is_mutable():
             raise ValueError("Surface must be immutable.")
         
         # This surface will converge to the Delaunay Triangulation
-        self._s = similarity_surface.copy(relabel=relabel, lazy=True, \
-            mutable=True)
+        self._s = similarity_surface.copy(relabel=relabel, lazy=True, mutable=True)
 
-        Surface.__init__(self, self._s.base_ring(), self._s.base_label(), \
-            mutable=False, finite=self._s.is_finite())
+        Surface.__init__(self, self._s.base_ring(), self._s.base_label(), mutable=False, finite=self._s.is_finite())
 
     def polygon(self, lab):
         r"""
@@ -106,10 +119,25 @@ class LazyDelaunayTriangulatedSurface(Surface):
         sage: from flatsurf.geometry.delaunay import *
         sage: s=translation_surfaces.infinite_staircase()
         sage: ss=TranslationSurface(LazyDelaunayTriangulatedSurface(s,relabel=True))
+        doctest:warning
+        ...
+        UserWarning: Creating a LazyDelaunayTriangulatedSurface with relabel=True is deprecated and will be removed in a future version of sage-flatsurf.
+        doctest:warning
+        ...
+        UserWarning: copy(relabel=True) is deprecated and will be removed in a future version of sage-flatsurf. Use relabel() instead.
+        doctest:warning
+        ...
+        UserWarning: Surface_list is deprecated and will be removed from a future version of sage-flaturf. Use Surface_dict instead.
+        doctest:warning
+        ...
+        UserWarning: subdivide_polygon() without specifying a label is deprecated and will be removed from a future version of sage-flatsurf. Explicitly specify a label instead, e.g., use subdivid_polygon(label=surface.num_polygons()).
         sage: ss.polygon(0).num_edges()
         3
         sage: TestSuite(ss).run(skip="_test_pickling")
         sage: ss.is_delaunay_triangulated(limit=100)
+        doctest:warning
+        ...
+        UserWarning: subdivide_polygon() without specifying a label is deprecated and will be removed from a future version of sage-flatsurf. Explicitly specify a label instead, e.g., use subdivid_polygon(label=surface.num_polygons()).
         True
 
     Chamanara example::
@@ -137,6 +165,10 @@ class LazyDelaunayTriangulatedSurface(Surface):
         r"""
         Construct a lazy Delaunay triangulation of the provided similarity_surface.
         """
+        if relabel:
+            import warnings
+            warnings.warn("Creating a LazyDelaunayTriangulatedSurface with relabel=True is deprecated and will be removed in a future version of sage-flatsurf.")
+
         if similarity_surface.underlying_surface().is_mutable():
             raise ValueError("Surface must be immutable.")
 
@@ -327,6 +359,18 @@ class LazyDelaunaySurface(LazyDelaunayTriangulatedSurface):
         sage: s=chamanara_surface(QQ(1/2))
         sage: m=matrix([[3,4],[-4,3]])*matrix([[4,0],[0,1/4]])
         sage: ss=TranslationSurface(LazyDelaunaySurface(m*s))
+        doctest:warning
+        ...
+        UserWarning: Creating a LazyDelaunaySurface with relabel=True is deprecated and will be removed in a future version of sage-flatsurf.
+        doctest:warning
+        ...
+        UserWarning: copy(relabel=True) is deprecated and will be removed in a future version of sage-flatsurf. Use relabel() instead.
+        doctest:warning
+        ...
+        UserWarning: Surface_list is deprecated and will be removed from a future version of sage-flaturf. Use Surface_dict instead.
+        doctest:warning
+        ...
+        UserWarning: subdivide_polygon() without specifying a label is deprecated and will be removed from a future version of sage-flatsurf. Explicitly specify a label instead, e.g., use subdivid_polygon(label=surface.num_polygons()).
         sage: ss.is_delaunay_decomposed(limit=100)
         True
         sage: TestSuite(ss).run(skip="_test_pickling")
@@ -335,8 +379,11 @@ class LazyDelaunaySurface(LazyDelaunayTriangulatedSurface):
     def __init__(self, similarity_surface, direction=None, relabel=True):
         r"""
         Construct a lazy Delaunay triangulation of the provided similarity_surface.
-        
         """
+        if relabel:
+            import warnings
+            warnings.warn("Creating a LazyDelaunaySurface with relabel=True is deprecated and will be removed in a future version of sage-flatsurf.")
+
         if similarity_surface.underlying_surface().is_mutable():
             raise ValueError("Surface must be immutable.")
 

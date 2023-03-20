@@ -34,7 +34,7 @@ ZZ_2 = ZZ(2)
 
 from .polygon import polygons, ConvexPolygons, Polygon, ConvexPolygon, build_faces
 
-from .surface import Surface, Surface_list
+from .surface import Surface, Surface_dict
 from .translation_surface import TranslationSurface
 from .dilation_surface import DilationSurface
 from .similarity_surface import SimilaritySurface
@@ -441,9 +441,9 @@ class SimilaritySurfaceGenerators:
             SimilaritySurface built from 2 polygons
             sage: TestSuite(ex).run()
         """
-        s = Surface_list(base_ring=QQ)
-        s.add_polygon(polygons(vertices=[(0,0), (2,-2), (2,0)],ring=QQ)) # gets label 0
-        s.add_polygon(polygons(vertices=[(0,0), (2,0), (1,3)],ring=QQ)) # gets label 1
+        s = Surface_dict(base_ring=QQ)
+        s.add_polygon(polygons(vertices=[(0,0), (2,-2), (2,0)],ring=QQ), label=0)
+        s.add_polygon(polygons(vertices=[(0,0), (2,0), (1,3)],ring=QQ), label=1)
         s.change_polygon_gluings(0, [(1,1), (1,2), (1,0)])
         s.set_immutable()
         return SimilaritySurface(s)
@@ -460,8 +460,8 @@ class SimilaritySurfaceGenerators:
             sage: s = similarity_surfaces.self_glued_polygon(p)
             sage: TestSuite(s).run()
         """
-        s = Surface_list(base_ring=P.base_ring(), mutable=True)
-        s.add_polygon(P,[(0,i) for i in range(P.num_edges())])
+        s = Surface_dict(base_ring=P.base_ring(), mutable=True)
+        s.add_polygon(P,[(0,i) for i in range(P.num_edges())], label=0)
         s.set_immutable()
         return HalfTranslationSurface(s)
 
@@ -571,11 +571,11 @@ class SimilaritySurfaceGenerators:
 
         m = len(P)
         Q = []
-        surface = Surface_list(base_ring=base_ring)
+        surface = Surface_dict(base_ring=base_ring)
         for p in P:
-            surface.add_polygon(p)
+            surface.add_polygon(p, label=surface.num_polygons())
         for p in P:
-            surface.add_polygon(polygons(edges=[V((-x,y)) for x,y in reversed(p.edges())]))
+            surface.add_polygon(polygons(edges=[V((-x,y)) for x,y in reversed(p.edges())]), label=surface.num_polygons())
         for (p1,e1,p2,e2) in internal_edges:
             surface.set_edge_pairing(p1, e1, p2, e2)
             ne1 = surface.polygon(p1).num_edges()
@@ -605,9 +605,9 @@ class SimilaritySurfaceGenerators:
         r = matrix(2, [-1,0,0,1])
         Q = polygons(edges=[r*v for v in reversed(P.edges())])
 
-        surface = Surface_list(base_ring = P.base_ring())
-        surface.add_polygon(P) # gets label 0)
-        surface.add_polygon(Q) # gets label 1
+        surface = Surface_dict(base_ring = P.base_ring())
+        surface.add_polygon(P, label=0)
+        surface.add_polygon(Q, label=1)
         surface.change_polygon_gluings(0,[(1,n-i-1) for i in range(n)])
         surface.set_immutable()
         return ConeSurface(surface)
@@ -631,9 +631,9 @@ class SimilaritySurfaceGenerators:
             F = F.fraction_field()
         V = VectorSpace(F,2)
         P = ConvexPolygons(F)
-        s = Surface_list(base_ring=F)
-        s.add_polygon(P([V((w,0)),V((-w,h)),V((0,-h))])) # gets label 0
-        s.add_polygon(P([V((0,h)),V((-w,-h)),V((w,0))])) # gets label 1
+        s = Surface_dict(base_ring=F)
+        s.add_polygon(P([V((w,0)),V((-w,h)),V((0,-h))]), label=0)
+        s.add_polygon(P([V((0,h)),V((-w,-h)),V((w,0))]), label=1)
         s.change_polygon_gluings(0,[(1,2),(1,1),(1,0)])
         s.set_immutable()
         return ConeSurface(s)
@@ -668,10 +668,10 @@ class DilationSurfaceGenerators:
             sage: TestSuite(ds).run()
 
         """
-        s = Surface_list(base_ring=a.parent().fraction_field())
+        s = Surface_dict(base_ring=a.parent().fraction_field())
         CP = ConvexPolygons(s.base_ring())
-        s.add_polygon(CP(edges=[(0,1),(-1,0),(0,-1),(1,0)])) # label 0
-        s.add_polygon(CP(edges=[(0,1),(-a,0),(0,-1),(a,0)])) # label 1
+        s.add_polygon(CP(edges=[(0,1),(-1,0),(0,-1),(1,0)]), label=0)
+        s.add_polygon(CP(edges=[(0,1),(-a,0),(0,-1),(a,0)]), label=1)
         s.change_edge_gluing(0, 0, 1, 2)
         s.change_edge_gluing(0, 1, 1, 3)
         s.change_edge_gluing(0, 2, 1, 0)
@@ -716,15 +716,15 @@ class DilationSurfaceGenerators:
             sage: TestSuite(ds).run()
         """
         field = Sequence([a, b, c, d]).universe().fraction_field()
-        s = Surface_list(base_ring=QQ)
+        s = Surface_dict(base_ring=QQ)
         CP = ConvexPolygons(field)
         hexagon = CP(edges=[(a,0), (1-a,b), (0,1-b), (-c,0), (c-1,-d), (0,d-1)])
-        s.add_polygon(hexagon) # polygon 0
+        s.add_polygon(hexagon, label=0)
         s.change_base_label(0)
         triangle1 = CP(edges=[(1-a,0), (0,b), (a-1,-b)])
-        s.add_polygon(triangle1) # polygon 1
+        s.add_polygon(triangle1, label=1)
         triangle2 = CP(edges=[(1-c,d), (c-1,0), (0,-d)])
-        s.add_polygon(triangle2) # polygon 2
+        s.add_polygon(triangle2, label=2)
         s.change_edge_gluing(0, 0, 0, 3)
         s.change_edge_gluing(0, 2, 0, 5)
         s.change_edge_gluing(0, 1, 1, 2)
@@ -778,10 +778,12 @@ class HalfTranslationSurfaceGenerators:
 
         Prev = [C(vertices=[(x, -y) for x,y in reversed(p.vertices())]) for p in P]
 
-        S = Surface_list(base_ring = C.base_ring())
+        S = Surface_dict(base_ring = C.base_ring())
         S.rename("StepBilliard(w=[%s], h=[%s])" % (', '.join(map(str, w)), ', '.join(map(str, h))))
-        S.add_polygons(P)    # get labels 0, ..., n-1
-        S.add_polygons(Prev) # get labels n, n+1, ..., 2n-1
+        for p in P:
+            S.add_polygon(p, label=S.num_polygons())
+        for p in Prev:
+            S.add_polygon(p, label=S.num_polygons())
 
         # reflection gluings
         # (gluings between the polygon and its reflection)
@@ -861,9 +863,9 @@ class TranslationSurfaceGenerators:
             field = py_scalar_parent(field)
         if not field.is_field():
             field = field.fraction_field()
-        s = Surface_list(base_ring=field)
+        s = Surface_dict(base_ring=field)
         p = polygons(vertices=[(0,0), u, u+v, v], base_ring=field)
-        s.add_polygon(p, [(0,2),(0,3),(0,0),(0,1)])
+        s.add_polygon(p, [(0,2),(0,3),(0,0),(0,1)], label=0)
         s.set_immutable()
         return TranslationSurface(s)
 
@@ -881,8 +883,8 @@ class TranslationSurfaceGenerators:
             sage: TestSuite(s).run()
         """
         p = polygons.regular_ngon(2*n)
-        s = Surface_list(base_ring=p.base_ring())
-        s.add_polygon(p,[ ( 0, (i+n)%(2*n) ) for i in range(2*n)] )
+        s = Surface_dict(base_ring=p.base_ring())
+        s.add_polygon(p,[ ( 0, (i+n)%(2*n) ) for i in range(2*n)] , label=0)
         s.set_immutable()
         return TranslationSurface(s)
 
@@ -899,10 +901,10 @@ class TranslationSurfaceGenerators:
         """
         from sage.matrix.constructor import Matrix
         p = polygons.regular_ngon(n)
-        s = Surface_list(base_ring=p.base_ring())
+        s = Surface_dict(base_ring=p.base_ring())
         m = Matrix([[-1,0],[0,-1]])
-        s.add_polygon(p) # label=0
-        s.add_polygon(m*p, [(0,i) for i in range(n)])
+        s.add_polygon(p, label=0)
+        s.add_polygon(m*p, [(0,i) for i in range(n)], label=1)
         s.set_immutable()
         return TranslationSurface(s)
 
@@ -1031,12 +1033,12 @@ class TranslationSurfaceGenerators:
 
         # (lambda,lambda) square on top
         # twisted (w,0), (t,h)
-        s = Surface_list(base_ring=K)
+        s = Surface_dict(base_ring=K)
         if rel:
             if rel < 0 or rel > w - l:
                 raise ValueError("invalid rel argument")
-            s.add_polygon(polygons(vertices=[(0,0),(l,0),(l+rel,l),(rel,l)], ring=K))
-            s.add_polygon(polygons(vertices=[(0,0),(rel,0),(rel+l,0),(w,0),(w+t,h),(l+rel+t,h),(t+l,h),(t,h)], ring=K))
+            s.add_polygon(polygons(vertices=[(0,0),(l,0),(l+rel,l),(rel,l)], ring=K), label=0)
+            s.add_polygon(polygons(vertices=[(0,0),(rel,0),(rel+l,0),(w,0),(w+t,h),(l+rel+t,h),(t+l,h),(t,h)], ring=K), label=1)
             s.set_edge_pairing(0, 1, 0, 3)
             s.set_edge_pairing(0, 0, 1, 6)
             s.set_edge_pairing(0, 2, 1, 1)
@@ -1044,8 +1046,8 @@ class TranslationSurfaceGenerators:
             s.set_edge_pairing(1, 3, 1, 7)
             s.set_edge_pairing(1, 0, 1, 5)
         else:
-            s.add_polygon(polygons(vertices=[(0,0),(l,0),(l,l),(0,l)], ring=K))
-            s.add_polygon(polygons(vertices=[(0,0),(l,0),(w,0),(w+t,h),(l+t,h),(t,h)], ring=K))
+            s.add_polygon(polygons(vertices=[(0,0),(l,0),(l,l),(0,l)], ring=K), label=0)
+            s.add_polygon(polygons(vertices=[(0,0),(l,0),(w,0),(w+t,h),(l+t,h),(t,h)], ring=K), label=1)
             s.set_edge_pairing(0, 1, 0, 3)
             s.set_edge_pairing(0, 0, 1, 4)
             s.set_edge_pairing(0, 2, 1, 0)
@@ -1091,10 +1093,10 @@ class TranslationSurfaceGenerators:
         if not field.is_field():
             field = field.fraction_field()
 
-        s = Surface_list(base_ring=field)
-        s.add_polygon(polygons((l3,0),(0,l2),(-l3,0),(0,-l2), ring=field))
-        s.add_polygon(polygons((l3,0),(0,l1),(-l3,0),(0,-l1), ring=field))
-        s.add_polygon(polygons((l4,0),(0,l2),(-l4,0),(0,-l2), ring=field))
+        s = Surface_dict(base_ring=field)
+        s.add_polygon(polygons((l3,0),(0,l2),(-l3,0),(0,-l2), ring=field), label=0)
+        s.add_polygon(polygons((l3,0),(0,l1),(-l3,0),(0,-l1), ring=field), label=1)
+        s.add_polygon(polygons((l4,0),(0,l2),(-l4,0),(0,-l2), ring=field), label=2)
         s.change_edge_gluing(0,0,1,2)
         s.change_edge_gluing(0,1,2,3)
         s.change_edge_gluing(0,2,1,0)
@@ -1122,10 +1124,10 @@ class TranslationSurfaceGenerators:
         o = ZZ_2*polygons.regular_ngon(2*n)
         p1 = polygons(*[o.edge((2*i+n)%(2*n)) for i in range(n)])
         p2 = polygons(*[o.edge((2*i+n+1)%(2*n)) for i in range(n)])
-        s = Surface_list(base_ring=o.parent().field())
-        s.add_polygon(o)
-        s.add_polygon(p1)
-        s.add_polygon(p2)
+        s = Surface_dict(base_ring=o.parent().field())
+        s.add_polygon(o, label=0)
+        s.add_polygon(p1, label=1)
+        s.add_polygon(p2, label=2)
         s.change_polygon_gluings(1, [(0,2*i) for i in range(n)])
         s.change_polygon_gluings(2, [(0,2*i+1) for i in range(n)])
         s.set_immutable()
@@ -1200,16 +1202,16 @@ class TranslationSurfaceGenerators:
         a = ring(a)
         b = ring(b)
         P = ConvexPolygons(ring)
-        s = Surface_list(base_ring=ring)
+        s = Surface_dict(base_ring=ring)
         half = QQ((1,2))
         p0 = P(vertices=[(0,0),(a,0),(a,1),(0,1)])
         p1 = P(vertices=[(a,0),(a,-b),(a+half,-b-half),(a+1,-b),(a+1,0),(a+1,1),(a+1,b+1),(a+half,b+1+half),(a,b+1),(a,1)])
         p2 = P(vertices=[(a+1,0),(2*a+1,0),(2*a+1,1),(a+1,1)])
         p3 = P(vertices=[(2*a+1,0), (2*a+1+half,-half),(4*a+1+half,-half),(4*a+2,0),(4*a+2,1),(4*a+1+half,1+half),(2*a+1+half,1+half),(2*a+1,1)])
-        s.add_polygon(p0)
-        s.add_polygon(p1)
-        s.add_polygon(p2)
-        s.add_polygon(p3)
+        s.add_polygon(p0, label=0)
+        s.add_polygon(p1, label=1)
+        s.add_polygon(p2, label=2)
+        s.add_polygon(p3, label=3)
         s.set_edge_pairing(0, 0, 0, 2)
         s.set_edge_pairing(0, 1, 1, 9)
         s.set_edge_pairing(0, 3, 3, 3)
@@ -1294,20 +1296,20 @@ class TranslationSurfaceGenerators:
         for i in range(1,g+1):
             q[i]=V(( (2*a-a**i-a**(i+1))/(2*(1-a)), (a-a**(g-i+2))/(1-a) ))
         P = ConvexPolygons(field)
-        s = Surface_list(field)
+        s = Surface_dict(field)
         T = [None] * (2*g+1)
         Tp = [None] * (2*g+1)
         from sage.matrix.constructor import Matrix
         m=Matrix([[1,0],[0,-1]])
         for i in range(1,g+1):
             # T_i is (P_0,Q_i,Q_{i-1})
-            T[i]=s.add_polygon(P(edges=[ q[i]-p[0], q[i-1]-q[i], p[0]-q[i-1] ]))
+            T[i]=s.add_polygon(P(edges=[ q[i]-p[0], q[i-1]-q[i], p[0]-q[i-1] ]), label=s.num_polygons())
             # T_{g+i} is (P_i,Q_{i-1},Q_{i})
-            T[g+i]=s.add_polygon(P(edges=[ q[i-1]-p[i], q[i]-q[i-1], p[i]-q[i] ]))
+            T[g+i]=s.add_polygon(P(edges=[ q[i-1]-p[i], q[i]-q[i-1], p[i]-q[i] ]), label=s.num_polygons())
             # T'_i is (P'_0,Q'_{i-1},Q'_i)
-            Tp[i]=s.add_polygon(m*s.polygon(T[i]))
+            Tp[i]=s.add_polygon(m*s.polygon(T[i]), label=s.num_polygons())
             # T'_{g+i} is (P'_i,Q'_i, Q'_{i-1})
-            Tp[g+i]=s.add_polygon(m*s.polygon(T[g+i]))
+            Tp[g+i]=s.add_polygon(m*s.polygon(T[g+i]), label=s.num_polygons())
         for i in range(1,g):
             s.change_edge_gluing(T[i],0,T[i+1],2)
             s.change_edge_gluing(Tp[i],2,Tp[i+1],0)
@@ -1372,8 +1374,6 @@ class TranslationSurfaceGenerators:
             sage: from flatsurf.geometry.similarity_surface_generators import flipper_nf_element_to_sage
             sage: a = flipper_nf_element_to_sage(h.dilatation())  # optional - flipper
         """
-        from .surface import surface_list_from_polygons_and_gluings
-
         f = h.flat_structure()
 
         x = next(itervalues(f.edge_vectors)).x
@@ -1387,19 +1387,22 @@ class TranslationSurfaceGenerators:
 
         C = ConvexPolygons(K)
 
-        polys = []
-        adjacencies = {}
-        for i,t in enumerate(f.triangulation):
-            for j,k in enumerate(t):
-                adjacencies[(i,j)] = to_polygon_number[~k]
+        S = Surface_dict(K)
+
+        for i, t in enumerate(f.triangulation):
             try:
                 poly = C([edge_vectors[i] for i in tuple(t)])
             except ValueError:
                 raise ValueError("t = {}, edges = {}".format(
                     t, [edge_vectors[i].n(digits=6) for i in t]))
-            polys.append(poly)
 
-        return HalfTranslationSurface(surface_list_from_polygons_and_gluings(polys, adjacencies))
+            S.add_polygon(poly, label=S.num_polygons())
+
+        for i, t in enumerate(f.triangulation):
+            for j, k in enumerate(t):
+                S.set_edge_pairing(i, j, to_polygon_number[~k])
+
+        return HalfTranslationSurface(S)
 
     @staticmethod
     def origami(r, u, rr=None, uu=None, domain=None):
