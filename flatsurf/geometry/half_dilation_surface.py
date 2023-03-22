@@ -15,11 +15,16 @@ from six import iteritems
 
 from flatsurf.geometry.surface import Surface
 from flatsurf.geometry.similarity_surface import SimilaritySurface
-from flatsurf.geometry.mappings import SurfaceMapping, IdentityMapping, SurfaceMappingComposition
+from flatsurf.geometry.mappings import (
+    SurfaceMapping,
+    IdentityMapping,
+    SurfaceMappingComposition,
+)
 from flatsurf.geometry.polygon import ConvexPolygons
 
 from sage.env import SAGE_VERSION
-if SAGE_VERSION >= '8.2':
+
+if SAGE_VERSION >= "8.2":
     from sage.structure.element import is_Matrix
 else:
     from sage.matrix.matrix import is_Matrix
@@ -35,7 +40,7 @@ class HalfDilationSurface(SimilaritySurface):
     :class:`~.dilation_surface.DilationSurface`.
     """
 
-    def __rmul__(self,matrix):
+    def __rmul__(self, matrix):
         r"""
         EXAMPLES::
 
@@ -62,20 +67,20 @@ class HalfDilationSurface(SimilaritySurface):
         """
         if not is_Matrix(matrix):
             raise NotImplementedError("Only implemented for matrices.")
-        if not matrix.dimensions!=(2,2):
+        if not matrix.dimensions != (2, 2):
             raise NotImplementedError("Only implemented for 2x2 matrices.")
-        return self.__class__(GL2RImageSurface(self,matrix)).copy()
+        return self.__class__(GL2RImageSurface(self, matrix)).copy()
 
-    def apply_matrix(self,m,in_place=True, mapping=False):
+    def apply_matrix(self, m, in_place=True, mapping=False):
         r"""
         Carry out the GL(2,R) action of m on this surface and return the result.
-        
-        If in_place=True, then this is done in place and changes the surface. 
+
+        If in_place=True, then this is done in place and changes the surface.
         This can only be carried out if the surface is finite and mutable.
-        
-        If mapping=True, then we return a GL2RMapping between this surface and its image. 
+
+        If mapping=True, then we return a GL2RMapping between this surface and its image.
         In this case in_place must be False.
-        
+
         If in_place=False, then a copy is made before the deformation.
         """
         if mapping is True:
@@ -84,45 +89,51 @@ class HalfDilationSurface(SimilaritySurface):
         if not in_place:
             if self.is_finite():
                 from sage.structure.element import get_coercion_model
+
                 cm = get_coercion_model()
                 field = cm.common_parent(self.base_ring(), m.base_ring())
-                s=self.copy(mutable=True, new_field=field)
+                s = self.copy(mutable=True, new_field=field)
                 return s.apply_matrix(m)
             else:
-                return m*self
+                return m * self
         else:
             # Make sure m is in the right state
             from sage.matrix.constructor import Matrix
-            m=Matrix(self.base_ring(), 2, 2, m)
-            assert m.det()!=self.base_ring().zero(), "Can not deform by degenerate matrix."
-            assert self.is_finite(), "In place GL(2,R) action only works for finite surfaces."
-            us=self.underlying_surface()
+
+            m = Matrix(self.base_ring(), 2, 2, m)
+            assert (
+                m.det() != self.base_ring().zero()
+            ), "Can not deform by degenerate matrix."
+            assert (
+                self.is_finite()
+            ), "In place GL(2,R) action only works for finite surfaces."
+            us = self.underlying_surface()
             assert us.is_mutable(), "In place changes only work for mutable surfaces."
             for label in self.label_iterator():
-                us.change_polygon(label,m*self.polygon(label))
-            if m.det()<self.base_ring().zero():
+                us.change_polygon(label, m * self.polygon(label))
+            if m.det() < self.base_ring().zero():
                 # Polygons were all reversed orientation. Need to redo gluings.
-                
+
                 # First pass record new gluings in a dictionary.
-                new_glue={}
-                seen_labels=set()
+                new_glue = {}
+                seen_labels = set()
                 for p1 in self.label_iterator():
-                    n1=self.polygon(p1).num_edges()
+                    n1 = self.polygon(p1).num_edges()
                     for e1 in range(n1):
-                        p2,e2=self.opposite_edge(p1,e1)
-                        n2=self.polygon(p2).num_edges()
+                        p2, e2 = self.opposite_edge(p1, e1)
+                        n2 = self.polygon(p2).num_edges()
                         if p2 in seen_labels:
                             pass
-                        elif p1==p2 and e1>e2:
+                        elif p1 == p2 and e1 > e2:
                             pass
                         else:
-                            new_glue[(p1, n1-1-e1)]=(p2, n2-1-e2)
+                            new_glue[(p1, n1 - 1 - e1)] = (p2, n2 - 1 - e2)
                     seen_labels.add(p1)
                 # Second pass: reassign gluings
-                for (p1,e1),(p2,e2) in iteritems(new_glue):
-                    us.change_edge_gluing(p1,e1,p2,e2)
+                for (p1, e1), (p2, e2) in iteritems(new_glue):
+                    us.change_edge_gluing(p1, e1, p2, e2)
             return self
-                
+
     def _edge_needs_flip_Linfinity(self, p1, e1, p2, e2):
         r"""
         Check whether the provided edge which bounds two triangles should be flipped
@@ -175,7 +186,7 @@ class HalfDilationSurface(SimilaritySurface):
         edge2R = poly2.edge(e2 + 1)
 
         sim = self.edge_transformation(p2, e2)
-        m = sim.derivative()   # matrix carrying p2 to p1
+        m = sim.derivative()  # matrix carrying p2 to p1
         if not m.is_one():
             edge2 = m * edge2
             edge2L = m * edge2L
@@ -183,8 +194,8 @@ class HalfDilationSurface(SimilaritySurface):
 
         # convexity check of the quadrilateral
         from flatsurf.geometry.polygon import wedge_product
-        if wedge_product(edge2L, edge1R) <= 0 or \
-           wedge_product(edge1L, edge2R) <=0:
+
+        if wedge_product(edge2L, edge1R) <= 0 or wedge_product(edge1L, edge2R) <= 0:
             return False
 
         # compare the norms
@@ -193,7 +204,9 @@ class HalfDilationSurface(SimilaritySurface):
         n = max(abs(new_edge[0]), abs(new_edge[1]))
         return n < n1
 
-    def l_infinity_delaunay_triangulation(self, triangulated=False, in_place=False, limit=None, direction=None):
+    def l_infinity_delaunay_triangulation(
+        self, triangulated=False, in_place=False, limit=None, direction=None
+    ):
         r"""
         Returns a L-infinity Delaunay triangulation of a surface, or make some
         triangle flips to get closer to the Delaunay decomposition.
@@ -239,20 +252,26 @@ class HalfDilationSurface(SimilaritySurface):
             sage: TestSuite(s).run()
         """
         if not self.is_finite():
-            raise NotImplementedError("no L-infinity Delaunay implemented for infinite surfaces")
+            raise NotImplementedError(
+                "no L-infinity Delaunay implemented for infinite surfaces"
+            )
         if triangulated:
             if in_place:
                 s = self
             else:
                 from flatsurf.geometry.surface import Surface_dict
-                s = self.__class__(Surface_dict(surface=self,mutable=True))
+
+                s = self.__class__(Surface_dict(surface=self, mutable=True))
         else:
             from flatsurf.geometry.surface import Surface_list
-            s = self.__class__(Surface_list(surface=self.triangulate(in_place=in_place),mutable=True))
+
+            s = self.__class__(
+                Surface_list(surface=self.triangulate(in_place=in_place), mutable=True)
+            )
 
         if direction is None:
             base_ring = self.base_ring()
-            direction = self.vector_space()( (base_ring.zero(), base_ring.one()) )
+            direction = self.vector_space()((base_ring.zero(), base_ring.one()))
         else:
             assert not direction.is_zero()
 
@@ -271,6 +290,7 @@ class HalfDilationSurface(SimilaritySurface):
                     triangles.add(p2)
                     limit -= 1
         return s
+
 
 class GL2RImageSurface(Surface):
     r"""
@@ -292,60 +312,64 @@ class GL2RImageSurface(Surface):
 
         if surface.is_mutable():
             if surface.is_finite():
-                self._s=surface.copy()
+                self._s = surface.copy()
             else:
                 raise ValueError("Can not apply matrix to mutable infinite surface.")
         else:
-            self._s=surface
+            self._s = surface
 
         det = m.determinant()
 
-        if det>0:
-            self._det_sign=1
-        elif det<0:
-            self._det_sign=-1
+        if det > 0:
+            self._det_sign = 1
+        elif det < 0:
+            self._det_sign = -1
         else:
             raise ValueError("Can not apply matrix with zero determinant to surface.")
 
-        self._m=m
+        self._m = m
 
         if ring is None:
             if m.base_ring() == self._s.base_ring():
                 base_ring = self._s.base_ring()
             else:
                 from sage.structure.element import get_coercion_model
+
                 cm = get_coercion_model()
                 base_ring = cm.common_parent(m.base_ring(), self._s.base_ring())
         else:
-            base_ring=ring
+            base_ring = ring
 
         self._P = ConvexPolygons(base_ring)
 
-        super().__init__(base_ring, self._s.base_label(), finite=self._s.is_finite(), mutable=False)
+        super().__init__(
+            base_ring, self._s.base_label(), finite=self._s.is_finite(), mutable=False
+        )
 
     def polygon(self, lab):
-        if self._det_sign==1:
+        if self._det_sign == 1:
             p = self._s.polygon(lab)
-            edges = [ self._m * p.edge(e) for e in range(p.num_edges())]
+            edges = [self._m * p.edge(e) for e in range(p.num_edges())]
             return self._P(edges)
         else:
             p = self._s.polygon(lab)
-            edges = [ self._m * (-p.edge(e)) for e in range(p.num_edges()-1,-1,-1)]
+            edges = [self._m * (-p.edge(e)) for e in range(p.num_edges() - 1, -1, -1)]
             return self._P(edges)
 
     def opposite_edge(self, p, e):
-        if self._det_sign==1:
-            return self._s.opposite_edge(p,e)
+        if self._det_sign == 1:
+            return self._s.opposite_edge(p, e)
         else:
             polygon = self._s.polygon(p)
-            pp,ee = self._s.opposite_edge(p,polygon.num_edges()-1-e)
+            pp, ee = self._s.opposite_edge(p, polygon.num_edges() - 1 - e)
             polygon2 = self._s.polygon(pp)
-            return pp,polygon2.num_edges()-1-ee
+            return pp, polygon2.num_edges() - 1 - ee
+
 
 class GL2RMapping(SurfaceMapping):
     r"""
     This class pushes a surface forward under a matrix.
-    
+
     Note that for matrices of negative determinant we need to relabel edges (because
     edges must have a counterclockwise cyclic order). For each n-gon in the surface,
     we relabel edges according to the involution e mapsto n-1-e.
@@ -359,25 +383,28 @@ class GL2RMapping(SurfaceMapping):
         sage: m=GL2RMapping(s,mat)
         sage: TestSuite(m.codomain()).run()
     """
+
     def __init__(self, s, m, ring=None):
         r"""
         Hit the surface s with the 2x2 matrix m which should have positive determinant.
         """
-        codomain = s.__class__(GL2RImageSurface(s,m,ring = ring))
-        self._m=m
-        self._im=~m
+        codomain = s.__class__(GL2RImageSurface(s, m, ring=ring))
+        self._m = m
+        self._im = ~m
         SurfaceMapping.__init__(self, s, codomain)
 
-    def push_vector_forward(self,tangent_vector):
+    def push_vector_forward(self, tangent_vector):
         r"""Applies the mapping to the provided vector."""
         return self.codomain().tangent_vector(
-                tangent_vector.polygon_label(), \
-                self._m*tangent_vector.point(), \
-                self._m*tangent_vector.vector())
+            tangent_vector.polygon_label(),
+            self._m * tangent_vector.point(),
+            self._m * tangent_vector.vector(),
+        )
 
-    def pull_vector_back(self,tangent_vector):
+    def pull_vector_back(self, tangent_vector):
         r"""Applies the inverse of the mapping to the provided vector."""
         return self.domain().tangent_vector(
-                tangent_vector.polygon_label(), \
-                self._im*tangent_vector.point(), \
-                self._im*tangent_vector.vector())
+            tangent_vector.polygon_label(),
+            self._im * tangent_vector.point(),
+            self._im * tangent_vector.vector(),
+        )

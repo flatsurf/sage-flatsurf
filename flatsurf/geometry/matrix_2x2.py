@@ -28,6 +28,7 @@ from sage.rings.all import AA, QQbar, RR
 from sage.matrix.constructor import matrix, identity_matrix
 from sage.modules.free_module_element import vector
 
+
 def similarity_from_vectors(u, v, matrix_space=None):
     r"""
     Return the unique similarity matrix that maps ``u`` to ``v``.
@@ -85,14 +86,15 @@ def similarity_from_vectors(u, v, matrix_space=None):
 
     if matrix_space is None:
         from sage.matrix.matrix_space import MatrixSpace
+
         matrix_space = MatrixSpace(u.base_ring(), 2)
 
     if u == v:
         return matrix_space.one()
 
-    sqnorm_u = u[0]*u[0] + u[1]*u[1]
-    cos_uv = (u[0]*v[0] + u[1]*v[1]) / sqnorm_u
-    sin_uv = (u[0]*v[1] - u[1]*v[0]) / sqnorm_u
+    sqnorm_u = u[0] * u[0] + u[1] * u[1]
+    cos_uv = (u[0] * v[0] + u[1] * v[1]) / sqnorm_u
+    sin_uv = (u[0] * v[1] - u[1] * v[0]) / sqnorm_u
 
     m = matrix_space([cos_uv, -sin_uv, sin_uv, cos_uv])
     m.set_immutable()
@@ -207,8 +209,8 @@ def angle(u, v, numerical=False, assume_rational=False):
             uu = u
             vv = v
 
-        cos_uv = (uu[0]*vv[0] + uu[1]*vv[1]) / sqnorm_u
-        sin_uv = (uu[0]*vv[1] - uu[1]*vv[0]) / sqnorm_u
+        cos_uv = (uu[0] * vv[0] + uu[1] * vv[1]) / sqnorm_u
+        sin_uv = (uu[0] * vv[1] - uu[1] * vv[0]) / sqnorm_u
 
         is_rational = is_cosine_sine_of_rational(cos_uv, sin_uv)
     elif assume_rational:
@@ -221,31 +223,31 @@ def angle(u, v, numerical=False, assume_rational=False):
     v0 = float(v[0])
     v1 = float(v[1])
 
-    cos_uv = (u0*v0 + u1*v1) / math.sqrt((u0*u0 + u1*u1)*(v0*v0 + v1*v1))
+    cos_uv = (u0 * v0 + u1 * v1) / math.sqrt((u0 * u0 + u1 * u1) * (v0 * v0 + v1 * v1))
     if cos_uv < -1.0:
         assert cos_uv > -1.0000001
         cos_uv = -1.0
     elif cos_uv > 1.0:
         assert cos_uv < 1.0000001
         cos_uv = 1.0
-    angle = math.acos(cos_uv) / (2 * math.pi)   # rat number between 0 and 1/2
+    angle = math.acos(cos_uv) / (2 * math.pi)  # rat number between 0 and 1/2
 
     if numerical or not is_rational:
-        return 1.0 - angle if u0 * v1 - u1*v0 < 0 else angle
+        return 1.0 - angle if u0 * v1 - u1 * v0 < 0 else angle
     else:
         # fast and dirty way using floating point approximation
         # (see below for a slow but exact method)
         angle_rat = RR(angle).nearby_rational(0.00000001)
         if angle_rat.denominator() > 100:
             raise NotImplementedError("the numerical method used is not smart enough!")
-        return 1 - angle_rat if u0*v1 - u1*v0 < 0 else angle_rat
+        return 1 - angle_rat if u0 * v1 - u1 * v0 < 0 else angle_rat
 
         # a neater way is provided below by working only with number fields
         # but this method is slower...
-        #sqnorm_u = u[0]*u[0] + u[1]*u[1]
-        #sqnorm_v = v[0]*v[0] + v[1]*v[1]
+        # sqnorm_u = u[0]*u[0] + u[1]*u[1]
+        # sqnorm_v = v[0]*v[0] + v[1]*v[1]
         #
-        #if sqnorm_u != sqnorm_v:
+        # if sqnorm_u != sqnorm_v:
         #    # we need to take a square root in order that u and v have the
         #    # same norm
         #    u = (1 / AA(sqnorm_u)).sqrt() * u.change_ring(AA)
@@ -253,5 +255,5 @@ def angle(u, v, numerical=False, assume_rational=False):
         #    sqnorm_u = AA.one()
         #    sqnorm_v = AA.one()
         #
-        #cos_uv = (u[0]*v[0] + u[1]*v[1]) / sqnorm_u
-        #sin_uv = (u[0]*v[1] - u[1]*v[0]) / sqnorm_u
+        # cos_uv = (u[0]*v[0] + u[1]*v[1]) / sqnorm_u
+        # sin_uv = (u[0]*v[1] - u[1]*v[0]) / sqnorm_u
