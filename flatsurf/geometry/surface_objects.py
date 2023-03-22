@@ -605,7 +605,7 @@ class SaddleConnection(SageObject):
             self._direction,
         )
 
-    @cached_method(key=lambda limit, cache: None)
+    @cached_method(key=lambda self, limit, cache: None)
     def trajectory(self, limit=1000, cache=None):
         r"""
         Return a straight line trajectory representing this saddle connection.
