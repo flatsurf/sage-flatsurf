@@ -24,15 +24,28 @@ Calta-McMullen Veech surfaces in H(2)
 import sys
 import pytest
 
-pytest.importorskip('pyflatsurf')
+pytest.importorskip("pyflatsurf")
 
 from sage.all import polygen, NumberField, AA, QQ
 from flatsurf import translation_surfaces, GL2ROrbitClosure
 
-@pytest.mark.parametrize("w,h,t,e", [(2,1,0,0), (3,1,0,0), (3,1,0,1), (4,1,0,1),
-               (4,1,0,2), (3,2,0,0), (4,2,1,0), (4,2,0,1), (4,2,1,1)])
-def test_H2(w,h,t,e):
-    S = translation_surfaces.mcmullen_genus2_prototype(w,h,t,e)
+
+@pytest.mark.parametrize(
+    "w,h,t,e",
+    [
+        (2, 1, 0, 0),
+        (3, 1, 0, 0),
+        (3, 1, 0, 1),
+        (4, 1, 0, 1),
+        (4, 1, 0, 2),
+        (3, 2, 0, 0),
+        (4, 2, 1, 0),
+        (4, 2, 0, 1),
+        (4, 2, 1, 1),
+    ],
+)
+def test_H2(w, h, t, e):
+    S = translation_surfaces.mcmullen_genus2_prototype(w, h, t, e)
     O = GL2ROrbitClosure(S)
     for d in O.decompositions(5, 50):
         assert d.parabolic()

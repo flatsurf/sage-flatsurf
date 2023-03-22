@@ -12,10 +12,15 @@ from __future__ import absolute_import, print_function, division
 from six.moves import range, map, filter, zip
 
 from flatsurf.graphical.surface import GraphicalSurface
+
 # The real vector space:
 from flatsurf.graphical.polygon import V
 
-from flatsurf.geometry.straight_line_trajectory import SegmentInPolygon, StraightLineTrajectory
+from flatsurf.geometry.straight_line_trajectory import (
+    SegmentInPolygon,
+    StraightLineTrajectory,
+)
+
 
 class GraphicalSegmentInPolygon:
     def __init__(self, segment, graphical_surface):
@@ -24,12 +29,18 @@ class GraphicalSegmentInPolygon:
         """
         self._gs = graphical_surface
         self._seg = segment
-        label=self.polygon_label()
-        self._start=self._gs.graphical_polygon(label).transform(segment.start().point())
+        label = self.polygon_label()
+        self._start = self._gs.graphical_polygon(label).transform(
+            segment.start().point()
+        )
         if self._seg.is_edge():
-            self._end=self._gs.graphical_polygon(label).transform(self._seg.start().polygon().vertex(self._seg.edge()+1))
+            self._end = self._gs.graphical_polygon(label).transform(
+                self._seg.start().polygon().vertex(self._seg.edge() + 1)
+            )
         else:
-            self._end=self._gs.graphical_polygon(label).transform(segment.end().point())
+            self._end = self._gs.graphical_polygon(label).transform(
+                segment.end().point()
+            )
 
     def polygon_label(self):
         return self._seg.polygon_label()
@@ -60,23 +71,29 @@ class GraphicalSegmentInPolygon:
         """
         if self._gs.is_visible(self.polygon_label()):
             from sage.plot.line import line2d
-            return line2d([self.start(), self.end()],**options)
+
+            return line2d([self.start(), self.end()], **options)
         else:
             from sage.plot.graphics import Graphics
+
             return Graphics()
+
 
 class GraphicalStraightLineTrajectory:
     r"""
     Allows for the rendering of a straight-line trajectory through a graphical surface.
     """
-    def __init__(self, trajectory, graphical_surface = None):
+
+    def __init__(self, trajectory, graphical_surface=None):
         if graphical_surface is None:
             self._gs = trajectory.surface().graphical_surface()
         else:
             assert trajectory.surface() == graphical_surface.get_surface()
             self._gs = graphical_surface
         self._traj = trajectory
-        self._segments = [GraphicalSegmentInPolygon(s, self._gs) for s in self._traj.segments()]
+        self._segments = [
+            GraphicalSegmentInPolygon(s, self._gs) for s in self._traj.segments()
+        ]
 
     def plot(self, **options):
         r"""
@@ -95,6 +112,7 @@ class GraphicalStraightLineTrajectory:
             ...Graphics object consisting of 119 graphics primitives
         """
         from sage.plot.graphics import Graphics
+
         p = Graphics()
         for seg in self._segments:
             p += seg.plot(**options)

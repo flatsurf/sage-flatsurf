@@ -7,6 +7,7 @@ from .surface import Surface
 from .half_translation_surface import HalfTranslationSurface
 from .dilation_surface import DilationSurface
 
+
 class MinimalTranslationCover(Surface):
     r"""
     We label copy by cartesian product (polygon from bot, matrix).
@@ -40,12 +41,15 @@ class MinimalTranslationCover(Surface):
         sage: S  # long time (above)
         TranslationSurface built from 82 polygons
     """
+
     def __init__(self, similarity_surface):
         if similarity_surface.underlying_surface().is_mutable():
             if similarity_surface.is_finite():
                 self._ss = similarity_surface.copy()
             else:
-                raise ValueError("Can not construct MinimalTranslationCover of a surface that is mutable and infinite.")
+                raise ValueError(
+                    "Can not construct MinimalTranslationCover of a surface that is mutable and infinite."
+                )
         else:
             self._ss = similarity_surface
 
@@ -54,6 +58,7 @@ class MinimalTranslationCover(Surface):
             finite = False
         else:
             from flatsurf.geometry.rational_cone_surface import RationalConeSurface
+
             finite = True
             if not isinstance(self._ss, RationalConeSurface):
                 ss_copy = self._ss.reposition_polygons(relabel=True)
@@ -66,13 +71,15 @@ class MinimalTranslationCover(Surface):
         self._F = self._ss.base_ring()
         base_label = (self._ss.base_label(), self._F.one(), self._F.zero())
 
-        Surface.__init__(self, self._ss.base_ring(), base_label, finite=finite, mutable=False)
+        Surface.__init__(
+            self, self._ss.base_ring(), base_label, finite=finite, mutable=False
+        )
 
     def polygon(self, lab):
         if not isinstance(lab, tuple) or len(lab) != 3:
             raise ValueError("invalid label {!r}".format(lab))
         p = self._ss.polygon(lab[0])
-        return matrix([[lab[1], -lab[2]],[lab[2],lab[1]]]) * self._ss.polygon(lab[0])
+        return matrix([[lab[1], -lab[2]], [lab[2], lab[1]]]) * self._ss.polygon(lab[0])
 
     def opposite_edge(self, p, e):
         pp, a, b = p  # this is the polygon m * ss.polygon(p)
@@ -116,12 +123,15 @@ class MinimalHalfTranslationCover(Surface):
         sage: S  # long time (above)
         HalfTranslationSurface built from 82 polygons
     """
+
     def __init__(self, similarity_surface):
         if similarity_surface.underlying_surface().is_mutable():
             if similarity_surface.is_finite():
                 self._ss = similarity_surface.copy()
             else:
-                raise ValueError("Can not construct MinimalTranslationCover of a surface that is mutable and infinite.")
+                raise ValueError(
+                    "Can not construct MinimalTranslationCover of a surface that is mutable and infinite."
+                )
         else:
             self._ss = similarity_surface
 
@@ -130,6 +140,7 @@ class MinimalHalfTranslationCover(Surface):
             finite = False
         else:
             from flatsurf.geometry.rational_cone_surface import RationalConeSurface
+
             finite = True
             if not isinstance(self._ss, RationalConeSurface):
                 ss_copy = self._ss.reposition_polygons(relabel=True)
@@ -138,22 +149,24 @@ class MinimalHalfTranslationCover(Surface):
                     rcs._test_edge_matrix()
                 except AssertionError:
                     # print("Warning: Could be indicating infinite surface falsely.")
-                    finite=False
+                    finite = False
 
         self._F = self._ss.base_ring()
-        base_label=(self._ss.base_label(), self._F.one(), self._F.zero())
+        base_label = (self._ss.base_label(), self._F.one(), self._F.zero())
 
-        Surface.__init__(self, self._ss.base_ring(), base_label, finite=finite, mutable=False)
+        Surface.__init__(
+            self, self._ss.base_ring(), base_label, finite=finite, mutable=False
+        )
 
     def polygon(self, lab):
         if not isinstance(lab, tuple) or len(lab) != 3:
             raise ValueError("invalid label {!r}".format(lab))
         p = self._ss.polygon(lab[0])
-        return matrix([[lab[1], -lab[2]],[lab[2],lab[1]]]) * self._ss.polygon(lab[0])
+        return matrix([[lab[1], -lab[2]], [lab[2], lab[1]]]) * self._ss.polygon(lab[0])
 
     def opposite_edge(self, p, e):
-        pp,a,b = p  # this is the polygon m * ss.polygon(p)
-        p2,e2 = self._ss.opposite_edge(pp, e)
+        pp, a, b = p  # this is the polygon m * ss.polygon(p)
+        p2, e2 = self._ss.opposite_edge(pp, e)
         m = self._ss.edge_matrix(pp, e)
         aa = a * m[0][0] + b * m[1][0]
         bb = b * m[0][0] - a * m[1][0]
@@ -161,6 +174,7 @@ class MinimalHalfTranslationCover(Surface):
             return ((p2, aa, bb), e2)
         else:
             return ((p2, -aa, -bb), e2)
+
 
 class MinimalPlanarCover(Surface):
     r"""
@@ -181,12 +195,15 @@ class MinimalPlanarCover(Surface):
         4
         sage: TestSuite(s).run(skip="_test_pickling")
     """
-    def __init__(self, similarity_surface, base_label = None):
+
+    def __init__(self, similarity_surface, base_label=None):
         if similarity_surface.underlying_surface().is_mutable():
             if similarity_surface.is_finite():
-                self._ss=similarity_surface.copy()
+                self._ss = similarity_surface.copy()
             else:
-                raise ValueError("Can not construct MinimalPlanarCover of a surface that is mutable and infinite.")
+                raise ValueError(
+                    "Can not construct MinimalPlanarCover of a surface that is mutable and infinite."
+                )
         else:
             self._ss = similarity_surface
 
@@ -194,11 +211,13 @@ class MinimalPlanarCover(Surface):
             base_label = self._ss.base_label()
 
         # The similarity group containing edge identifications.
-        self._sg = self._ss.edge_transformation(self._ss.base_label(),0).parent()
+        self._sg = self._ss.edge_transformation(self._ss.base_label(), 0).parent()
 
-        new_base_label=(self._ss.base_label(), self._sg.one())
+        new_base_label = (self._ss.base_label(), self._sg.one())
 
-        Surface.__init__(self, self._ss.base_ring(), new_base_label, finite=False, mutable=False)
+        Surface.__init__(
+            self, self._ss.base_ring(), new_base_label, finite=False, mutable=False
+        )
 
     def polygon(self, lab):
         r"""
@@ -217,7 +236,7 @@ class MinimalPlanarCover(Surface):
 
     def opposite_edge(self, p, e):
         pp, m = p  # this is the polygon m * ss.polygon(p)
-        p2, e2 = self._ss.opposite_edge(pp,e)
-        me = self._ss.edge_transformation(pp,e)
+        p2, e2 = self._ss.opposite_edge(pp, e)
+        me = self._ss.edge_transformation(pp, e)
         mm = m * ~me
         return ((p2, mm), e2)

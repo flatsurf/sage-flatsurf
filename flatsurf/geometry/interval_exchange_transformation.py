@@ -3,6 +3,7 @@ from six.moves import range, map, filter, zip
 
 from sage.structure.sage_object import SageObject
 
+
 class FlowPolygonMap(SageObject):
     r"""
     The map obtained as the return map of the flow on the sides of a (convex)
@@ -31,6 +32,7 @@ class FlowPolygonMap(SageObject):
         sage: [T.forward_image(2,x) for x in range(1)]
         [(0, 1)]
     """
+
     def __init__(self, ring, bot_labels, bot_lengths, top_labels, top_lengths):
         r"""
         INPUT:
@@ -49,22 +51,21 @@ class FlowPolygonMap(SageObject):
         assert all(x > ring.zero() for x in top_lengths)
         assert len(bot_labels) == len(bot_lengths)
         assert len(top_labels) == len(top_lengths)
-        assert sum(top_lengths)  == sum(bot_lengths)
+        assert sum(top_lengths) == sum(bot_lengths)
 
         self._ring = ring
 
         self._bot_labels = bot_labels
         self._top_labels = top_labels
-        self._bot_labels_to_index = {j:i for i,j in enumerate(bot_labels)}
-        self._top_labels_to_index = {j:i for i,j in enumerate(top_labels)}
+        self._bot_labels_to_index = {j: i for i, j in enumerate(bot_labels)}
+        self._top_labels_to_index = {j: i for i, j in enumerate(top_labels)}
         if len(self._bot_labels) != len(self._bot_labels_to_index):
             raise ValueError("non unique labels for bot: {}".format(bot_labels))
         if len(self._top_labels) != len(self._top_labels_to_index):
             raise ValueError("non unique labels in top: {}".format(top_labels))
 
-        self._bot_lengths = list(map(ring,bot_lengths))
-        self._top_lengths = list(map(ring,top_lengths))
-
+        self._bot_lengths = list(map(ring, bot_lengths))
+        self._top_lengths = list(map(ring, top_lengths))
 
         # forward image of intervals
         it = 0
@@ -72,7 +73,7 @@ class FlowPolygonMap(SageObject):
         self._forward_images = []
         for ib in range(len(bot_lengths)):
             lenb = bot_lengths[ib]
-            self._forward_images.append((it,lt-x1))
+            self._forward_images.append((it, lt - x1))
 
             while lenb and lenb >= x1:
                 lenb -= x1
@@ -90,7 +91,7 @@ class FlowPolygonMap(SageObject):
         self._backward_images = []
         for it in range(len(top_lengths)):
             lent = top_lengths[it]
-            self._backward_images.append((ib,lb-x1))
+            self._backward_images.append((ib, lb - x1))
 
             while lent and lent >= x1:
                 lent -= x1
@@ -137,15 +138,15 @@ class FlowPolygonMap(SageObject):
         i = self._bot_labels_to_index[i]
         if x < self._ring.zero() or x > self._bot_lengths[i]:
             raise ValueError("x = {} is out of the interval".format(x))
-        j,y = self._forward_images[i]
-        if x+y < self._top_lengths[j]:
-            return (self._top_labels[j], x+y)
-        x -= self._top_lengths[j]-y
+        j, y = self._forward_images[i]
+        if x + y < self._top_lengths[j]:
+            return (self._top_labels[j], x + y)
+        x -= self._top_lengths[j] - y
         j += 1
         while x > self._top_lengths[j]:
             x -= self._top_lengths[j]
             j += 1
-        return (self._top_labels[j],x)
+        return (self._top_labels[j], x)
 
     def backward_image(self, i, x):
         r"""
@@ -191,12 +192,12 @@ class FlowPolygonMap(SageObject):
         i = self._top_labels_to_index[i]
         if x < self._ring.zero() or x > self._top_lengths[i]:
             raise ValueError("x = {} is out of the interval".format(x))
-        j,y = self._backward_images[i]
-        if x+y < self._bot_lengths[j]:
-            return (self._bot_labels[j], x+y)
-        x -= self._bot_lengths[j]-y
+        j, y = self._backward_images[i]
+        if x + y < self._bot_lengths[j]:
+            return (self._bot_labels[j], x + y)
+        x -= self._bot_lengths[j] - y
         j += 1
         while x > self._bot_lengths[j]:
             x -= self._bot_lengths[j]
             j += 1
-        return (self._bot_labels[j],x)
+        return (self._bot_labels[j], x)

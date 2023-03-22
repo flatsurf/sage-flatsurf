@@ -13,6 +13,7 @@ from six.moves import range, map, filter, zip
 
 from flatsurf.geometry.half_dilation_surface import HalfDilationSurface
 
+
 class DilationSurface(HalfDilationSurface):
     r"""
     Dilation surface.

@@ -5012,6 +5012,7 @@ class HyperbolicConvexSet(Element):
             # Check that the matrix defines an isometry in the hyperboloid
             # model, see CFJK "Hyperbolic Geometry" Theorem 10.1
             from sage.all import diagonal_matrix
+
             D = (
                 isometry.transpose()
                 * diagonal_matrix(isometry.parent().base_ring(), [1, 1, -1])
@@ -9083,7 +9084,9 @@ class HyperbolicPointFromCoordinates(HyperbolicPoint):
         from sage.all import PowerSeriesRing
 
         # We represent x + y*I in R[[I]] so we do not have to reimplement printing ourselves.
-        return repr(PowerSeriesRing(self.parent().base_ring(), names="I")(list(coordinates)))
+        return repr(
+            PowerSeriesRing(self.parent().base_ring(), names="I")(list(coordinates))
+        )
 
     def change(self, ring=None, geometry=None, oriented=None):
         r"""
@@ -10167,7 +10170,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
         half_spaces = list(self._half_spaces)
 
         half_spaces = (
-            half_spaces[half_spaces.index(boundary):]
+            half_spaces[half_spaces.index(boundary) :]
             + half_spaces[: half_spaces.index(boundary)]
         )
         half_spaces.reverse()
@@ -13109,7 +13112,7 @@ class OrderedSet(collections.abc.Set):
 
         # Divide & Conquer recursively.
         return self._merge(
-            *(self._merge(*sets[: count // 2]), self._merge(*sets[count // 2:]))
+            *(self._merge(*sets[: count // 2]), self._merge(*sets[count // 2 :]))
         )
 
     def __eq__(self, other):
@@ -13768,7 +13771,9 @@ class HyperbolicHalfSpaces(OrderedSet):
         """
         if not vertices:
             # We cannot return empty_set() because we do not know the HyperbolicPlane this lives in.
-            raise NotImplementedError("cannot compute convex hull of empty set of vertices")
+            raise NotImplementedError(
+                "cannot compute convex hull of empty set of vertices"
+            )
 
         H = vertices[0].parent()
 
@@ -13799,7 +13804,7 @@ class HyperbolicHalfSpaces(OrderedSet):
                 if self.dy * other.dx > other.dy * self.dx:
                     return False
                 # if slopes are the same, sort by distance
-                if self.dx ** 2 + self.dy ** 2 < other.dx ** 2 + other.dy ** 2:
+                if self.dx**2 + self.dy**2 < other.dx**2 + other.dy**2:
                     return True
                 return False
 
@@ -13842,7 +13847,7 @@ class HyperbolicHalfSpaces(OrderedSet):
 
         half_spaces = []
         for i in range(len(hull)):
-            half_spaces.append(H.geodesic(hull[i-1], hull[i]).left_half_space())
+            half_spaces.append(H.geodesic(hull[i - 1], hull[i]).left_half_space())
 
         return HyperbolicHalfSpaces(half_spaces)
 

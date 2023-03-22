@@ -165,18 +165,22 @@ class GL2ROrbitClosure:
 
     def __init__(self, surface):
         from flatsurf.geometry.translation_surface import TranslationSurface
+
         if isinstance(surface, TranslationSurface):
             base_ring = surface.base_ring()
             from flatsurf.geometry.pyflatsurf_conversion import to_pyflatsurf
+
             self._surface = to_pyflatsurf(surface)
         else:
             from flatsurf.geometry.pyflatsurf_conversion import sage_ring
+
             base_ring = sage_ring(surface)
             self._surface = surface
 
         # A model of the vector space R² in libflatsurf, e.g., to represent the
         # vector associated to a saddle connection.
         from flatsurf.features import pyflatsurf_feature
+
         pyflatsurf_feature.require()
         import pyflatsurf.vector
 
@@ -193,7 +197,7 @@ class GL2ROrbitClosure:
             if e.positive() not in v and e.negative() not in v:
                 self.spanning_set.append(e)
         self.d = len(self.spanning_set)
-        assert 3*self.d - 3 == self._surface.size()
+        assert 3 * self.d - 3 == self._surface.size()
         assert m.rank() == self.d
         m = m.transpose()
         # projection matrix from Z^E to H_1(S, Sigma; Z) in the basis
@@ -276,9 +280,10 @@ class GL2ROrbitClosure:
             H_3(4, 0^4)
         """
         from surface_dynamics import AbelianStratum
+
         surface = self._surface
         angles = [surface.angle(v) for v in surface.vertices()]
-        return AbelianStratum([a-1 for a in angles])
+        return AbelianStratum([a - 1 for a in angles])
 
     def base_ring(self):
         r"""
@@ -334,7 +339,8 @@ class GL2ROrbitClosure:
         M = self._U.echelon_form()
 
         from flatsurf.geometry.subfield import subfield_from_elements
-        L, elts, phi = subfield_from_elements(M.base_ring(), M[:self._U_rank].list())
+
+        L, elts, phi = subfield_from_elements(M.base_ring(), M[: self._U_rank].list())
 
         return L
 
@@ -349,7 +355,10 @@ class GL2ROrbitClosure:
         return min([h1, h2, h3], key=lambda x: x.index())
 
     def __repr__(self):
-        return "GL(2,R)-orbit closure of dimension at least %d in %s (ambient dimension %d)" % (self._U_rank, self.ambient_stratum(), self.d)
+        return (
+            "GL(2,R)-orbit closure of dimension at least %d in %s (ambient dimension %d)"
+            % (self._U_rank, self.ambient_stratum(), self.d)
+        )
 
     def holonomy(self, v):
         r"""
@@ -377,7 +386,7 @@ class GL2ROrbitClosure:
         return self.V(v) * self.Hdual
 
     def tangent_space_basis(self):
-        return self._U[:self._U_rank].rows()
+        return self._U[: self._U_rank].rows()
 
     def lift(self, v):
         r"""
@@ -427,17 +436,20 @@ class GL2ROrbitClosure:
         n = self._surface.edges().size()
         k = len(self.spanning_set)
         assert k + len(bdry) == n + 1
-        A = matrix(QQ, n+1, n)
+        A = matrix(QQ, n + 1, n)
         for i, e in enumerate(self.spanning_set):
             A[i, e.index()] = 1
         for i, b in enumerate(bdry):
-            A[k+i, :] = b
+            A[k + i, :] = b
         u = vector(self.V2.base_ring(), n + 1)
         u[:k] = v
         from sage.all import Fields
+
         if not self.V2.base_ring() in Fields():
             assert all(uu._backend.coefficients().size() == 1 for uu in u)
-            u = u.parent().change_ring(self.V2.base_ring().base_ring())([uu._backend.coefficients()[0] for uu in u])
+            u = u.parent().change_ring(self.V2.base_ring().base_ring())(
+                [uu._backend.coefficients()[0] for uu in u]
+            )
         return A.solve_right(u)
 
     def absolute_homology(self):
@@ -448,13 +460,22 @@ class GL2ROrbitClosure:
         rows = []
 
         from flatsurf.features import pyflatsurf_feature
+
         pyflatsurf_feature.require()
         import pyflatsurf
 
         for e in self.spanning_set:
             r = [0] * m
-            i = vert_index[pyflatsurf.flatsurf.Vertex.target(e.positive(), self._surface.combinatorial())]
-            j = vert_index[pyflatsurf.flatsurf.Vertex.source(e.positive(), self._surface.combinatorial())]
+            i = vert_index[
+                pyflatsurf.flatsurf.Vertex.target(
+                    e.positive(), self._surface.combinatorial()
+                )
+            ]
+            j = vert_index[
+                pyflatsurf.flatsurf.Vertex.source(
+                    e.positive(), self._surface.combinatorial()
+                )
+            ]
             if i != j:
                 r[i] = 1
                 r[j] = -1
@@ -489,7 +510,9 @@ class GL2ROrbitClosure:
             sage: O.absolute_dimension()  # long time (above), optional: pyflatsurf
             6
         """
-        return (self.absolute_homology().matrix() * self._U[:self._U_rank].transpose()).rank()
+        return (
+            self.absolute_homology().matrix() * self._U[: self._U_rank].transpose()
+        ).rank()
 
     def _spanning_tree(self, root=None):
         r"""
@@ -573,7 +596,7 @@ class GL2ROrbitClosure:
             i1 = f1.edge().index()
             i2 = f2.edge().index()
             i3 = f3.edge().index()
-            proj[i1] = -s1*(s2*proj[i2] + s3*proj[i3])
+            proj[i1] = -s1 * (s2 * proj[i2] + s3 * proj[i3])
             for j in range(n):
                 assert proj[j, i1] == 0
 
@@ -590,7 +613,7 @@ class GL2ROrbitClosure:
         all_edges = set([e.positive() for e in spanning_set])
         all_edges.update([e.negative() for e in spanning_set])
         contour = []
-        contour_inv = {}   # half edge -> position in contour
+        contour_inv = {}  # half edge -> position in contour
         while h not in contour_inv:
             contour_inv[h] = len(contour)
             contour.append(h)
@@ -612,7 +635,7 @@ class GL2ROrbitClosure:
                 pi1, pi2 = pi2, pi1
             else:
                 si = 1
-            for j in range(i+1, len(spanning_set)):
+            for j in range(i + 1, len(spanning_set)):
                 ej = spanning_set[j]
                 pj1 = contour_inv[ej.positive()]
                 pj2 = contour_inv[ej.negative()]
@@ -626,9 +649,12 @@ class GL2ROrbitClosure:
                 # pi1 pi2 pj1 pj2: pi2 < pj1
                 # pi1 pj1 pj2 pi2: pi1 < pj1 and pj2 < pi2
                 # pj1 pi1 pi2 pj2: pj1 < pi1 and pi2 < pj2
-                if (pj2 < pi1) or (pi2 < pj1) or \
-                   (pj1 > pi1 and pj2 < pi2) or \
-                   (pj1 < pi1 and pj2 > pi2):
+                if (
+                    (pj2 < pi1)
+                    or (pi2 < pj1)
+                    or (pj1 > pi1 and pj2 < pi2)
+                    or (pj1 < pi1 and pj2 > pi2)
+                ):
                     # no intersection
                     continue
 
@@ -638,8 +664,8 @@ class GL2ROrbitClosure:
                 else:
                     # other sign
                     assert pi1 < pj2 < pi2, (pi1, pi2, pj1, pj2)
-                    Omega[i, j] = -si*sj
-                Omega[j, i] = - Omega[i, j]
+                    Omega[i, j] = -si * sj
+                Omega[j, i] = -Omega[i, j]
         return Omega
 
     def boundaries(self):
@@ -692,10 +718,13 @@ class GL2ROrbitClosure:
         v = self.V2(v)
 
         from flatsurf.features import pyflatsurf_feature
+
         pyflatsurf_feature.require()
         import pyflatsurf
 
-        decomposition = pyflatsurf.flatsurf.makeFlowDecomposition(self._surface, v.vector)
+        decomposition = pyflatsurf.flatsurf.makeFlowDecomposition(
+            self._surface, v.vector
+        )
 
         if limit != 0:
             decomposition.decompose(int(limit))
@@ -711,13 +740,16 @@ class GL2ROrbitClosure:
         slopes = None
 
         from flatsurf.features import cppyy_feature
+
         cppyy_feature.require()
         import cppyy
 
         for connection in connections:
             direction = connection.vector()
             if slopes is None:
-                slopes = cppyy.gbl.std.set[type(direction), type(direction).CompareSlope]()
+                slopes = cppyy.gbl.std.set[
+                    type(direction), type(direction).CompareSlope
+                ]()
             if slopes.find(direction) != slopes.end():
                 continue
             slopes.insert(direction)
@@ -778,7 +810,9 @@ class GL2ROrbitClosure:
             return False
 
         for decomposition in self.decompositions_depth_first(bound, limit):
-            if decomposition.parabolic() == False:  # noqa, we are comparing to a boost tribool so this cannot be replaced by "is False"
+            if (
+                decomposition.parabolic() == False
+            ):  # noqa, we are comparing to a boost tribool so this cannot be replaced by "is False"
                 return False
 
         return Unknown
@@ -811,7 +845,9 @@ class GL2ROrbitClosure:
             sage: O.cylinder_circumference(c1, *kz) # optional: pyflatsurf
             (0, 0, -1, 0)
         """
-        if component.cylinder() != True:  # noqa, we are comparing to a boost tribool so this cannot be replaced by "is not True"
+        if (
+            component.cylinder() != True
+        ):  # noqa, we are comparing to a boost tribool so this cannot be replaced by "is not True"
             raise ValueError
 
         perimeters = [p for p in component.perimeter()]
@@ -821,7 +857,7 @@ class GL2ROrbitClosure:
         i = sc_index[sc]
         if i < 0:
             s = -1
-            i = -i-1
+            i = -i - 1
         else:
             s = 1
         v = s * proj.column(i)
@@ -842,6 +878,7 @@ class GL2ROrbitClosure:
 
         From A. Wright cylinder deformation Theorem.
         """
+
         def eliminate_denominators(fractions):
             r"""
             Given a list of ``fractions``, pairs of numerators `n_i` and
@@ -853,22 +890,35 @@ class GL2ROrbitClosure:
             try:
                 return [x.parent()(x / y) for x, y in fractions]
             except (ValueError, ArithmeticError, NotImplementedError):
-                denominators = set([denominator for numerator, denominator in fractions])
-                return [numerator * prod(
-                    [d for d in denominators if denominator != d]
-                ) for (numerator, denominator) in fractions]
+                denominators = set(
+                    [denominator for numerator, denominator in fractions]
+                )
+                return [
+                    numerator * prod([d for d in denominators if denominator != d])
+                    for (numerator, denominator) in fractions
+                ]
 
         module_fractions = []
         vcyls = []
         kz = self.flow_decomposition_kontsevich_zorich_cocycle(decomposition)
         for component in decomposition.components():
-            if component.cylinder() == False:  # noqa, we are comparing to a boost tribool so this cannot be replaced by "is False"
+            if (
+                component.cylinder() == False
+            ):  # noqa, we are comparing to a boost tribool so this cannot be replaced by "is False"
                 continue
-            elif component.cylinder() == True:  # noqa, we are comparing to a boost tribool so this cannot be replaced with "is True"
+            elif (
+                component.cylinder() == True
+            ):  # noqa, we are comparing to a boost tribool so this cannot be replaced with "is True"
                 vcyls.append(self.cylinder_circumference(component, *kz))
 
-                width = self.V2._isomorphic_vector_space.base_ring()(self.V2.base_ring()(component.width()))
-                height = self.V2._isomorphic_vector_space.base_ring()(self.V2.base_ring()(component.vertical().project(component.circumferenceHolonomy())))
+                width = self.V2._isomorphic_vector_space.base_ring()(
+                    self.V2.base_ring()(component.width())
+                )
+                height = self.V2._isomorphic_vector_space.base_ring()(
+                    self.V2.base_ring()(
+                        component.vertical().project(component.circumferenceHolonomy())
+                    )
+                )
                 module_fractions.append((width, height))
             else:
                 return []
@@ -878,11 +928,18 @@ class GL2ROrbitClosure:
 
         modules = eliminate_denominators(module_fractions)
 
-        if hasattr(modules[0], '_backend'):
+        if hasattr(modules[0], "_backend"):
             # Make sure all modules live in the same K-Module so that .coefficients() below produces coefficient lists of the same length.
             from functools import reduce
-            parent = reduce(lambda m, n: m.span(m, n), [module._backend.module() for module in modules], modules[0]._backend.module())
-            modules = [module.parent()(module._backend.promote(parent)) for module in modules]
+
+            parent = reduce(
+                lambda m, n: m.span(m, n),
+                [module._backend.module() for module in modules],
+                modules[0]._backend.module(),
+            )
+            modules = [
+                module.parent()(module._backend.promote(parent)) for module in modules
+            ]
 
         def to_rational_vector(x):
             r"""
@@ -892,15 +949,30 @@ class GL2ROrbitClosure:
             """
             if x.parent() in [ZZ, QQ]:
                 ret = [QQ(x)]
-            elif hasattr(x, 'vector'):
+            elif hasattr(x, "vector"):
                 ret = x.vector()
-            elif hasattr(x, 'renf_elem'):
+            elif hasattr(x, "renf_elem"):
                 ret = x.parent().number_field(x).vector()
-            elif hasattr(x, '_backend'):
+            elif hasattr(x, "_backend"):
                 from itertools import chain
-                ret = list(chain(*[to_rational_vector(self.V2.base_ring().base_ring()(self.V2.base_ring().base_ring()(c))) for c in x._backend.coefficients()]))
+
+                ret = list(
+                    chain(
+                        *[
+                            to_rational_vector(
+                                self.V2.base_ring().base_ring()(
+                                    self.V2.base_ring().base_ring()(c)
+                                )
+                            )
+                            for c in x._backend.coefficients()
+                        ]
+                    )
+                )
             else:
-                raise NotImplementedError("cannot turn %s, i.e., a %s, into a rational vector yet" % (x, type(x)))
+                raise NotImplementedError(
+                    "cannot turn %s, i.e., a %s, into a rational vector yet"
+                    % (x, type(x))
+                )
 
             assert all(y in QQ for y in ret)
             return ret
@@ -911,9 +983,18 @@ class GL2ROrbitClosure:
         relations = self._left_kernel_matrix(M)
         assert len(vcyls) == len(module_fractions) == relations.ncols()
 
-        vectors = [sum(t * vcyl * module[1] for (t, vcyl, module) in zip(relation, vcyls, module_fractions)) for relation in self._right_kernel_matrix(relations).rows()]
+        vectors = [
+            sum(
+                t * vcyl * module[1]
+                for (t, vcyl, module) in zip(relation, vcyls, module_fractions)
+            )
+            for relation in self._right_kernel_matrix(relations).rows()
+        ]
 
-        assert all(v.base_ring() is self.V2._isomorphic_vector_space.base_ring() for v in vectors)
+        assert all(
+            v.base_ring() is self.V2._isomorphic_vector_space.base_ring()
+            for v in vectors
+        )
 
         return vectors
 
@@ -969,7 +1050,7 @@ class GL2ROrbitClosure:
             i1 = sc_index[sc1]
             if i1 < 0:
                 s1 = -1
-                i1 = -i1-1
+                i1 = -i1 - 1
             else:
                 s1 = 1
             comp = components[sc_comp[sc1]]
@@ -981,10 +1062,10 @@ class GL2ROrbitClosure:
                 j = sc_index[sc]
                 if j < 0:
                     s = -1
-                    j = -j-1
+                    j = -j - 1
                 else:
                     s = 1
-                proj[i1] = - s1 * s * proj[j]
+                proj[i1] = -s1 * s * proj[j]
 
             spanning_set.remove(i1)
             for j in range(n):
@@ -1036,8 +1117,12 @@ class GL2ROrbitClosure:
             [ 1  0]
             [-2  1]
         """
-        sc_pos = []  # list of positive boundary saddle connections (store only one orientation for each)
-        sc_index = {}  # inverse of sc_pos (and also reverse orientation with negative index)
+        sc_pos = (
+            []
+        )  # list of positive boundary saddle connections (store only one orientation for each)
+        sc_index = (
+            {}
+        )  # inverse of sc_pos (and also reverse orientation with negative index)
         sc_comp = {}
         n_saddles = 0
         components = list(decomposition.components())
@@ -1049,10 +1134,12 @@ class GL2ROrbitClosure:
                 if sc not in sc_index:
                     sc_index[sc] = n_saddles
                     sc_pos.append(sc)
-                    sc_index[-sc] = -n_saddles-1
+                    sc_index[-sc] = -n_saddles - 1
                     n_saddles += 1
 
-        t, spanning_set, proj = self._flow_decomposition_spanning_tree(decomposition, sc_index, sc_comp)
+        t, spanning_set, proj = self._flow_decomposition_spanning_tree(
+            decomposition, sc_index, sc_comp
+        )
         assert proj.rank() == len(spanning_set) == n_saddles - n_components + 1
         proj = proj.transpose()
         proj = matrix(ZZ, [r for r in proj.rows() if not r.is_zero()])
@@ -1127,7 +1214,9 @@ class GL2ROrbitClosure:
         while True:
             if self._p is not None:
                 try:
-                    self._Ubar = self._U.apply_map(phi=self._p.reduce, R=self._p.residue_field())
+                    self._Ubar = self._U.apply_map(
+                        phi=self._p.reduce, R=self._p.residue_field()
+                    )
                     break
                 except ValueError:
                     # The matrix _U cannot be reduced mod p because some entries have negative valuation.
@@ -1136,6 +1225,7 @@ class GL2ROrbitClosure:
             p = 2**30 if self._p is None else self._p.p()
 
             from sage.all import next_prime
+
             self._p = ZZ.valuation(next_prime(p)).extensions(self._U.base_ring())[0]
 
         return self._Ubar.rank()
@@ -1232,7 +1322,12 @@ class GL2ROrbitClosure:
 
         """
         from flatsurf.geometry.pyflatsurf_conversion import from_pyflatsurf
-        return (GL2ROrbitClosure, (self._surface,), {'_U': self._U, '_U_rank': self._U_rank})
+
+        return (
+            GL2ROrbitClosure,
+            (self._surface,),
+            {"_U": self._U, "_U_rank": self._U_rank},
+        )
 
     @classmethod
     def _right_kernel_matrix(cls, M):
@@ -1255,17 +1350,17 @@ class GL2ROrbitClosure:
         height = M.height()
 
         if height >= 2**256:
-            algorithm = 'flint'
+            algorithm = "flint"
         elif columns >= 64 and rows >= 64:
-            algorithm = 'padic'
+            algorithm = "padic"
         elif rows * columns <= 32:
-            algorithm = 'flint'
+            algorithm = "flint"
         else:
-            algorithm = 'pari'
+            algorithm = "pari"
 
-        if algorithm == 'pari':
+        if algorithm == "pari":
             ker = M.__pari__().matker().mattranspose().sage()
-        elif algorithm == 'flint':
+        elif algorithm == "flint":
             ker = M._rational_kernel_flint().transpose()
         else:
             ker = M._rational_kernel_iml().transpose()
