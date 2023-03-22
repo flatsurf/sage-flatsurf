@@ -15,7 +15,6 @@ dependencies:
   - pyeantic>=1.2.1,<2
   - pyexactreal>=2.3.0,<3
   - pyflatsurf>=3.11.1,<4
-  - pylint>=2.16,<3
   - python=3.9
   - ruamel.yaml
   - sage-flatsurf=0.4.6
