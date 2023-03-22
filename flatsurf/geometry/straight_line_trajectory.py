@@ -315,7 +315,7 @@ class AbstractStraightLineTrajectory:
 
         coding = self.coding()
         label = coding[0][0]
-        edges = [e for l, e in coding[1:]]
+        edges = [e for _, e in coding[1:]]
         edges.append(self.surface().opposite_edge(coding[0][0], coding[0][1])[1])
         return Cylinder(self.surface(), label, edges)
 

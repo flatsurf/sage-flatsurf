@@ -24,7 +24,7 @@ Discriminant loci in H(1,1)
 import sys
 import pytest
 
-pytest.importorskip("pyflatsurf")
+pytest.importorskip("pyflatsurf")  # noqa
 
 from sage.all import polygen, NumberField, AA, QQ
 from flatsurf import translation_surfaces, GL2ROrbitClosure
@@ -35,16 +35,16 @@ def test_D9_number_field():
     K = NumberField(x**3 - 2, "a", embedding=AA(2) ** QQ((1, 3)))
     a = K.gen()
     S = translation_surfaces.mcmullen_genus2_prototype(2, 1, 0, -1, a / 4)
-    O = GL2ROrbitClosure(S)
-    for d in O.decompositions(5):
+    orbit_closure = GL2ROrbitClosure(S)
+    for d in orbit_closure.decompositions(5):
         ncyl = len(d.cylinders())
         nmin = len(d.minimalComponents())
         nund = len(d.undeterminedComponents())
         assert nund == 0
         assert (nmin == 0) or (ncyl == 0 and 1 <= nmin <= 2)
-        O.update_tangent_space_from_flow_decomposition(d)
-    assert O.dimension() == 3
-    assert O.field_of_definition() == QQ
+        orbit_closure.update_tangent_space_from_flow_decomposition(d)
+    assert orbit_closure.dimension() == 3
+    assert orbit_closure.field_of_definition() == QQ
 
 
 def test_D9_exact_real():
@@ -59,28 +59,28 @@ def test_D9_exact_real():
     S = translation_surfaces.mcmullen_genus2_prototype(
         2, 1, 0, -1, R.random_element([0.1, 0.2])
     )
-    O = GL2ROrbitClosure(S)
-    for d in O.decompositions(5):
+    orbit_closure = GL2ROrbitClosure(S)
+    for d in orbit_closure.decompositions(5):
         ncyl = len(d.cylinders())
         nmin = len(d.minimalComponents())
         nund = len(d.undeterminedComponents())
         assert nund == 0
         assert (nmin == 0) or (ncyl == 0 and 1 <= nmin <= 2)
-        O.update_tangent_space_from_flow_decomposition(d)
-    assert O.dimension() == 3
+        orbit_closure.update_tangent_space_from_flow_decomposition(d)
+    assert orbit_closure.dimension() == 3
 
 
 def test_D33():
     S = translation_surfaces.mcmullen_genus2_prototype(4, 2, 1, 1, QQ((1, 4)))
-    O = GL2ROrbitClosure(S)
-    for d in O.decompositions(5, 100):
+    orbit_closure = GL2ROrbitClosure(S)
+    for d in orbit_closure.decompositions(5, 100):
         ncyl = len(d.cylinders())
         nmin = len(d.minimalComponents())
         nund = len(d.undeterminedComponents())
         assert nund == 0
         assert (nmin == 0) or (ncyl == 0 and nmin == 2)
-        O.update_tangent_space_from_flow_decomposition(d)
-    assert O.dimension() == 3
-    K = O.field_of_definition()
+        orbit_closure.update_tangent_space_from_flow_decomposition(d)
+    assert orbit_closure.dimension() == 3
+    K = orbit_closure.field_of_definition()
     assert K.degree() == 2
     assert K.discriminant() == 33

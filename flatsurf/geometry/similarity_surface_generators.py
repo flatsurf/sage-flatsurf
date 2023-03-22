@@ -29,9 +29,6 @@ from sage.structure.element import get_coercion_model, parent
 from sage.misc.cachefunc import cached_method
 from sage.structure.sequence import Sequence
 
-ZZ_1 = ZZ(1)
-ZZ_2 = ZZ(2)
-
 from .polygon import polygons, ConvexPolygons, Polygon, ConvexPolygon, build_faces
 
 from .surface import Surface, Surface_list
@@ -41,6 +38,10 @@ from .similarity_surface import SimilaritySurface
 from .half_translation_surface import HalfTranslationSurface
 from .cone_surface import ConeSurface
 from .rational_cone_surface import RationalConeSurface
+
+
+ZZ_1 = ZZ(1)
+ZZ_2 = ZZ(2)
 
 
 def flipper_nf_to_sage(K, name="a"):
@@ -64,11 +65,11 @@ def flipper_nf_to_sage(K, name="a"):
         1.122462048309373?
     """
     r = K.lmbda.interval()
-    l = r.lower * ZZ(10) ** (-r.precision)
-    u = r.upper * ZZ(10) ** (-r.precision)
+    lower = r.lower * ZZ(10) ** (-r.precision)
+    upper = r.upper * ZZ(10) ** (-r.precision)
 
     p = QQ["x"](K.coefficients)
-    s = AA.polynomial_root(p, RIF(l, u))
+    s = AA.polynomial_root(p, RIF(lower, upper))
     return NumberField(p, name, embedding=s)
 
 
@@ -138,27 +139,25 @@ class EInfinitySurface(Surface):
     @cached_method
     def get_white(self, n):
         r"""Get the weight of the white endpoint of edge n."""
-        l = self._l
         if n == 0 or n == 1:
-            return l
+            return self._l
         if n == -1:
-            return l - 1
+            return self._l - 1
         if n == 2:
-            return 1 - 3 * l + l**2
+            return 1 - 3 * self._l + self._l**2
         if n > 2:
             x = self.get_white(n - 1)
             y = self.get_black(n)
-            return l * y - x
+            return self._l * y - x
         return self.get_white(-n)
 
     @cached_method
     def get_black(self, n):
         r"""Get the weight of the black endpoint of edge n."""
-        l = self._l
         if n == 0:
             return self.base_ring().one()
         if n == 1 or n == -1 or n == 2:
-            return l - 1
+            return self._l - 1
         if n > 2:
             x = self.get_black(n - 1)
             y = self.get_white(n - 1)
@@ -1051,7 +1050,7 @@ class TranslationSurfaceGenerators:
             if base_ring is None:
                 emb = AA.polynomial_root(poly, RIF(0, w))
                 K = NumberField(poly, "l", embedding=emb)
-                l = K.gen()
+                λ = K.gen()
             else:
                 K = base_ring
                 roots = poly.roots(K, multiplicities=False)
@@ -1059,7 +1058,7 @@ class TranslationSurfaceGenerators:
                     raise ValueError("invalid base ring")
                 roots.sort(key=lambda x: x.numerical_approx())
                 assert roots[0] < 0 and roots[0] > 0
-                l = roots[1]
+                λ = roots[1]
         else:
             if base_ring is None:
                 K = QQ
@@ -1067,34 +1066,34 @@ class TranslationSurfaceGenerators:
                 K = base_ring
             D = e**2 + 4 * w * h
             d = D.sqrt()
-            l = (e + d) / 2
+            λ = (e + d) / 2
 
         try:
             rel = K(rel)
         except TypeError:
             K = get_coercion_model().common_parent(K, parent(rel))
-            l = K(l)
+            λ = K(λ)
             rel = K(rel)
 
         # (lambda,lambda) square on top
         # twisted (w,0), (t,h)
         s = Surface_list(base_ring=K)
         if rel:
-            if rel < 0 or rel > w - l:
+            if rel < 0 or rel > w - λ:
                 raise ValueError("invalid rel argument")
             s.add_polygon(
-                polygons(vertices=[(0, 0), (l, 0), (l + rel, l), (rel, l)], ring=K)
+                polygons(vertices=[(0, 0), (λ, 0), (λ + rel, λ), (rel, λ)], ring=K)
             )
             s.add_polygon(
                 polygons(
                     vertices=[
                         (0, 0),
                         (rel, 0),
-                        (rel + l, 0),
+                        (rel + λ, 0),
                         (w, 0),
                         (w + t, h),
-                        (l + rel + t, h),
-                        (t + l, h),
+                        (λ + rel + t, h),
+                        (t + λ, h),
                         (t, h),
                     ],
                     ring=K,
@@ -1107,10 +1106,10 @@ class TranslationSurfaceGenerators:
             s.set_edge_pairing(1, 3, 1, 7)
             s.set_edge_pairing(1, 0, 1, 5)
         else:
-            s.add_polygon(polygons(vertices=[(0, 0), (l, 0), (l, l), (0, l)], ring=K))
+            s.add_polygon(polygons(vertices=[(0, 0), (λ, 0), (λ, λ), (0, λ)], ring=K))
             s.add_polygon(
                 polygons(
-                    vertices=[(0, 0), (l, 0), (w, 0), (w + t, h), (l + t, h), (t, h)],
+                    vertices=[(0, 0), (λ, 0), (w, 0), (w + t, h), (λ + t, h), (t, h)],
                     ring=K,
                 )
             )
@@ -1223,7 +1222,7 @@ class TranslationSurfaceGenerators:
 
                      1
                    <--->
-           
+
                     /\           2a
                    /  \      +------+
                a  b|   | a  /        \

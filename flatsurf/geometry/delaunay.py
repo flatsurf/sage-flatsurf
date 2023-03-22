@@ -195,10 +195,10 @@ class LazyDelaunayTriangulatedSurface(Surface):
                 "Asked for an edge of a polygon not known to be Delaunay. Make sure you obtain polygon labels by walking through the surface."
             )
 
-    def _certify_or_improve(self, l):
+    def _certify_or_improve(self, label):
         r"""
         This method attempts to develop the circumscribing disk about the polygon
-        with label l into the surface.
+        with label ``label`` into the surface.
 
         The method returns True if this is successful. In this case the label
         is added to the set _certified_labels. It returns False if it failed to
@@ -209,14 +209,14 @@ class LazyDelaunayTriangulatedSurface(Surface):
         into triangles. If it encounters a pair of triangles which need a diagonal
         flip then it does the flip.
         """
-        if l in self._certified_labels:
+        if label in self._certified_labels:
             # Already certified.
             return True
-        p = self._s.polygon(l)
+        p = self._s.polygon(label)
         if p.num_edges() > 3:
             # not triangulated!
-            self._s.triangulate(in_place=True, label=l)
-            p = self._s.polygon(l)
+            self._s.triangulate(in_place=True, label=label)
+            p = self._s.polygon(label)
             # Made major changes to the polygon with label l.
             return False
         c = p.circumscribing_circle()
@@ -234,7 +234,7 @@ class LazyDelaunayTriangulatedSurface(Surface):
                     # Start at the beginning with label l and edge e.
                     # The 3rd coordinate in the tuple represents what edge to develop
                     # through in the triangle opposite this edge.
-                    edge_stack = [(l, e, 1, c)]
+                    edge_stack = [(label, e, 1, c)]
                 ll, ee, step, cc = edge_stack[len(edge_stack) - 1]
 
                 lll, eee = self._s.opposite_edge(ll, ee)
@@ -260,7 +260,7 @@ class LazyDelaunayTriangulatedSurface(Surface):
                         )
 
                         # If we touch the original polygon, then we return False.
-                        if l == ll or l == lll:
+                        if label == ll or label == lll:
                             return False
                         # We might have flipped a polygon from earlier in the chain
                         # In this case we need to trim the stack down so that we recheck
@@ -313,7 +313,7 @@ class LazyDelaunayTriangulatedSurface(Surface):
                 if len(edge_stack) == 0:
                     # We're done with this edge
                     edge_certified = True
-        self._certified_labels.add(l)
+        self._certified_labels.add(label)
         return True
 
 
@@ -383,25 +383,25 @@ class LazyDelaunaySurface(LazyDelaunayTriangulatedSurface):
             mutable=False,
         )
 
-    def _certify_decomposition(self, l):
-        if l in self._decomposition_certified_labels:
+    def _certify_decomposition(self, label):
+        if label in self._decomposition_certified_labels:
             return
-        assert l in self._certified_labels
+        assert label in self._certified_labels
         changed = True
         while changed:
             changed = False
-            p = self._s.polygon(l)
+            p = self._s.polygon(label)
             for e in range(p.num_edges()):
-                ll, ee = self._s.opposite_edge(l, e)
+                ll, ee = self._s.opposite_edge(label, e)
                 while not self._certify_or_improve(ll):
-                    ll, ee = self._s.opposite_edge(l, e)
-                if self._s._edge_needs_join(l, e):
+                    ll, ee = self._s.opposite_edge(label, e)
+                if self._s._edge_needs_join(label, e):
                     # ll should not have already been certified!
                     assert ll not in self._decomposition_certified_labels
-                    self._s.join_polygons(l, e, in_place=True)
+                    self._s.join_polygons(label, e, in_place=True)
                     changed = True
                     break
-        self._decomposition_certified_labels.add(l)
+        self._decomposition_certified_labels.add(label)
 
     def polygon(self, label):
         if label in self._decomposition_certified_labels:

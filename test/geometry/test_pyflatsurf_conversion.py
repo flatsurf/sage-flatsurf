@@ -24,7 +24,7 @@ Discriminant loci in H(1,1)
 import sys
 import pytest
 
-pytest.importorskip("pyflatsurf")
+pytest.importorskip("pyflatsurf")  # noqa
 
 from flatsurf import translation_surfaces
 from flatsurf.geometry.pyflatsurf_conversion import to_pyflatsurf
@@ -35,8 +35,8 @@ def test_origami1():
 
     G = SymmetricGroup(2)
     r = u = G("(1,2)")
-    O = translation_surfaces.origami(r, u)
-    S = to_pyflatsurf(O)
+    origami = translation_surfaces.origami(r, u)
+    S = to_pyflatsurf(origami)
     assert (
         str(S)
         == "FlatTriangulationCombinatorial(vertices = (1, -3, 2, -1, 6, -5)(-2, 4, -6, 5, -4, 3), faces = (1, 2, 3)(-1, -5, -6)(-2, -3, -4)(4, 5, 6)) with vectors {1: (1, 1), 2: (-1, 0), 3: (0, -1), 4: (1, 1), 5: (-1, 0), 6: (0, -1)}"
@@ -49,11 +49,12 @@ def test_origami2():
     G = SymmetricGroup(3)
     r = G("(1,2,3)")
     u = G("(1,2)")
-    O = translation_surfaces.origami(r, u)
-    S = to_pyflatsurf(O)
+    origami = translation_surfaces.origami(r, u)
+    S = to_pyflatsurf(origami)
     assert (
         str(S)
-        == "FlatTriangulationCombinatorial(vertices = (1, -3, 8, -7, 3, -2, 4, -6, 5, -4, 9, -8, 7, -9, 2, -1, 6, -5), faces = (1, 2, 3)(-1, -5, -6)(-2, -9, -4)(-3, -7, -8)(4, 5, 6)(7, 8, 9)) with vectors {1: (1, 1), 2: (-1, 0), 3: (0, -1), 4: (1, 1), 5: (-1, 0), 6: (0, -1), 7: (1, 1), 8: (-1, 0), 9: (0, -1)}"
+        == "FlatTriangulationCombinatorial(vertices = (1, -3, 8, -7, 3, -2, 4, -6, 5, -4, 9, -8, 7, -9, 2, -1, 6, -5), faces = (1, 2, 3)(-1, -5, -6)(-2, -9, -4)(-3, -7, -8)(4, 5, 6)(7, 8, 9)) "
+        "with vectors {1: (1, 1), 2: (-1, 0), 3: (0, -1), 4: (1, 1), 5: (-1, 0), 6: (0, -1), 7: (1, 1), 8: (-1, 0), 9: (0, -1)}"
     )
 
 
