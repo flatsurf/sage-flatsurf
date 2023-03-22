@@ -19,7 +19,7 @@ class MegaWollmilchsauGroupElement(MultiplicativeGroupElement):
     @staticmethod
     def quat_to_tuple(r):
         r"""Convert an element in the quaternion algebra to a quadruple"""
-        if type(r) == type(1):
+        if isinstance(r, int):
             return (r, 0, 0, 0)
         else:
             return (r[0], r[1], r[2], r[3])
