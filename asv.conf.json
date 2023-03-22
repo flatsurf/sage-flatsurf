@@ -10,6 +10,7 @@
     "cppyy>=2.0.0,<3": [],
     "cxx-compiler": [],
     "gap-defaults": [],
+    "matplotlib-base": [],
     "pip+flipper": [],
     "pyeantic": ["1.0.3"],
     "pyexactreal": ["2.2.1"],

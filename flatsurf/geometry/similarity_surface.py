@@ -6,7 +6,7 @@ Similarity surfaces.
 #  This file is part of sage-flatsurf.
 #
 #        Copyright (C) 2016-2020 Vincent Delecroix
-#                      2020-2022 Julian Rüth
+#                      2020-2023 Julian Rüth
 #
 #  sage-flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -1208,6 +1208,49 @@ class SimilaritySurface(SageObject):
                 pair = old_to_new_labels[pair]
             self.underlying_surface().change_edge_gluing(new_label, e, pair[0], pair[1])
 
+    def subdivide(self):
+        r"""
+        Return a copy of this surface whose polygons have been partitioned into
+        smaller triangles with
+        :meth:`.polygon.ConvexPolygon.subdivide`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.veech_double_n_gon(5)
+            sage: S.subdivide()
+            TranslationSurface built from 10 polygons
+            sage: S.subdivide().subdivide()
+            TranslationSurface built from 30 polygons
+
+        Sometimes a more uniform subdivision can be obtained by alternating
+        between :meth:`subdivide_edges` and this method::
+
+            sage: S.subdivide_edges().subdivide()
+            TranslationSurface built from 20 polygons
+
+        """
+        return self.__class__(self._s.subdivide())
+
+    def subdivide_edges(self, parts=2):
+        r"""
+        Return a copy of this surface whose edges have been split into
+        ``parts`` equal pieces each.
+
+        INPUT:
+
+        - ``parts`` -- a positive integer (default: 2)
+
+        EXAMPLES:
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.veech_double_n_gon(5)
+            sage: S.subdivide_edges()
+            TranslationSurface built from 2 polygons
+
+        """
+        return self.__class__(self._s.subdivide_edges(parts=parts))
+
     def singularity(self, l, v, limit=None):
         r"""
         Represents the Singularity associated to the v-th vertex of the polygon with
@@ -2026,33 +2069,12 @@ class SimilaritySurface(SageObject):
 
         By default this returns a cached version of the GraphicalSurface. If
         ``cached=False`` is provided as a keyword option then a new
-        GraphicalSurface is returned. Other keyword options:
+        GraphicalSurface is returned.
 
-        INPUT:
-
-        - ``cached`` -- a boolean (default ``True``). If true return a cached
-          GraphicalSurface. Otherwise we make a new one.
-
-        - ``polygon_labels`` -- a boolean (default ``True``) whether the label
-          of polygons are displayed
-
-        - ``edge_labels`` -- option to control the display of edge labels. It
-          can be one of
-
-            - ``False`` or ``None`` for no labels
-
-            - ``'gluings'`` -- to put on each side of each non-adjacent edge, the
-              name of the polygon to which it is glued
-
-            - ``'number'`` -- to put on each side of each edge the number of the
-              edge
-
-            - ``'gluings and numbers'`` -- full information
-
-            - ``'letter'`` -- add matching letters to glued edges in an arbitrary way
-
-        - ``default_position_function`` -- a function mapping polygon labels to
-          similarities describing the position of the corresponding polygon.
+        All other parameters are passed on to
+        :class:`~flatsurf.graphical.surface.GraphicalSurface` or its
+        :meth:`~flatsurf.graphical.surface.GraphicalSurface.process_options`.
+        Note that this mutates the cached graphical surface for future calls.
 
         EXAMPLES:
 
@@ -2081,34 +2103,11 @@ class SimilaritySurface(SageObject):
 
     def plot(self, *args, **kwds):
         r"""
-        Returns a plot of the surface.
+        Return a plot of the surface.
 
-        There may be zero or one argument. If provided the single argument
-        should be a GraphicalSurface whick will be used in the plot.
-
-        INPUT:
-
-        - ``polygon_labels`` -- a boolean (default ``True``) whether the label
-          of polygons are displayed
-
-        - ``edge_labels`` -- option to control the display of edge labels. It
-          can be one of
-
-            - ``False`` or ``None`` for no labels
-
-            - ``'gluings'`` -- to put on each side of each non-adjacent edge, the
-              name of the polygon to which it is glued
-
-            - ``'number'`` -- to put on each side of each edge the number of the
-              edge
-
-            - ``'gluings and number'`` -- full information
-
-        - ``adjacencies`` -- a list of pairs ``(p,e)`` to be used to set
-          adjacencies of polygons.
-
-        - ``default_position_function`` -- a function mapping polygon labels to
-          similarities describing the position of the corresponding polygon.
+        The parameters are passed on to :meth:`graphical_surface` and
+        :meth:`flatsurf.graphical.surface.GraphicalSurface.plot`. Consult their
+        documentation for details.
 
         EXAMPLES::
 
@@ -2117,23 +2116,44 @@ class SimilaritySurface(SageObject):
             sage: S.plot()
             Graphics object consisting of 21 graphics primitives
 
-        TESTS::
+        Keywords are passed on to the underlying plotting routines, see
+        :meth:`flatsurf.graphical.surface.GraphicalSurface.plot` for details::
 
-            sage: S.plot()
-            Graphics object consisting of 21 graphics primitives
+            sage: S.plot(fill=None)
+            ...Graphics object consisting of 21 graphics primitives
+
+        Note that some keywords mutate the underlying cached graphical surface,
+        see :meth:`graphical_surface`::
+
+            sage: S.plot(edge_labels='gluings and number')
+            ...Graphics object consisting of 23 graphics primitives
 
         """
         if len(args) > 1:
-            raise ValueError("SimilaritySurface.plot() can take at most one non-keyword argument.")
-        if len(args)==1:
+            raise ValueError("plot() can take at most one non-keyword argument")
+
+        graphical_surface_keywords = {
+            key: kwds.pop(key) for key in ["cached", "adjacencies", "polygon_labels", "edge_labels", "default_position_function"] if key in kwds
+        }
+
+        if len(args) == 1:
             from flatsurf.graphical.surface import GraphicalSurface
             if not isinstance(args[0], GraphicalSurface):
-                raise ValueError("If an argument is provided, it must be a GraphicalSurface.")
+                raise TypeError("non-keyword argument must be a GraphicalSurface")
+
+            import warnings
+            warnings.warn("Passing a GraphicalSurface to plot() is deprecated because it mutates that GraphicalSurface. This functionality will be removed in a future version of sage-flatsurf. Call process_options() and plot() on the GraphicalSurface explicitly instead.")
+
             gs = args[0]
-            gs.process_options(**kwds)
+            gs.process_options(**graphical_surface_keywords)
         else:
-            gs = self.graphical_surface(**kwds)
-        return gs.plot()
+            # It's very surprising that plot mutates the underlying cached
+            # graphical surface. We should change that and make the graphical
+            # surface not cached. See
+            # https://github.com/flatsurf/sage-flatsurf/issues/97
+            gs = self.graphical_surface(**graphical_surface_keywords)
+
+        return gs.plot(**kwds)
 
     def plot_polygon(self, label, graphical_surface = None,
                      plot_polygon = True, plot_edges = True, plot_edge_labels = True,
