@@ -286,8 +286,11 @@ class Similarity(MultiplicativeGroupElement):
             sage: g(p, ring=AA).parent()
             ConvexPolygons(Algebraic Real Field)
         """
+        # pylint misunderstands the metaclass machinery that SageMath uses here, so we disable it.
+        # pylint: disable=no-value-for-parameter
         if ring is not None and ring not in Rings():
             raise TypeError("ring must be a ring")
+        # pylint: enable=no-value-for-parameter
 
         if isinstance(w, ConvexPolygon):
             if ring is None:
@@ -456,25 +459,37 @@ class SimilarityGroup(UniqueRepresentation, Group):
             sage: TestSuite(SimilarityGroup(AA)).run()
         """
         self._ring = base_ring
+        # pylint misunderstands the metaclass machinery that SageMath uses here, so we disable it.
+        # pylint: disable=no-value-for-parameter
         Group.__init__(self, category=Groups().Infinite())
+        # pylint: enable=no-value-for-parameter
 
     @cached_method
     def _matrix_space_2x2(self):
         from sage.matrix.matrix_space import MatrixSpace
 
+        # pylint misunderstands the metaclass machinery that SageMath uses here, so we disable it.
+        # pylint: disable=no-value-for-parameter
         return MatrixSpace(self._ring, 2)
+        # pylint: enable=no-value-for-parameter
 
     @cached_method
     def _matrix_space_3x3(self):
         from sage.matrix.matrix_space import MatrixSpace
 
+        # pylint misunderstands the metaclass machinery that SageMath uses here, so we disable it.
+        # pylint: disable=no-value-for-parameter
         return MatrixSpace(self._ring, 3)
+        # pylint: enable=no-value-for-parameter
 
     @cached_method
     def _vector_space(self):
         from sage.modules.free_module import VectorSpace
 
+        # pylint misunderstands the metaclass machinery that SageMath uses here, so we disable it.
+        # pylint: disable=no-value-for-parameter
         return VectorSpace(self._ring, 2)
+        # pylint: enable=no-value-for-parameter
 
     def _element_constructor_(self, *args, **kwds):
         r"""
