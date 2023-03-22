@@ -6,7 +6,7 @@ not always work. We use this file to pretend that pytest
 is not installed, see
 https://trac.sagemath.org/ticket/31103#comment:49
 """
-#*********************************************************************
+# *********************************************************************
 #  This file is part of sage-flatsurf.
 #
 #        Copyright (C) 2021 Julian Rüth
@@ -23,5 +23,5 @@ https://trac.sagemath.org/ticket/31103#comment:49
 #
 #  You should have received a copy of the GNU General Public License
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
-#*********************************************************************
+# *********************************************************************
 raise ModuleNotFoundError

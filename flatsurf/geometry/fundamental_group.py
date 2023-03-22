@@ -60,10 +60,11 @@ def intersection(i0, j0, i1, j1):
     else:
         return (j0 < j1 < i0) - (j0 < i1 < i0)
 
+
 class Path(MultiplicativeGroupElement):
-# activating the following somehow break the discovery of the Python _mul_
-# method below...
-#    __slots__ = ['_polys', '_edges', '_edges_rev']
+    # activating the following somehow break the discovery of the Python _mul_
+    # method below...
+    #    __slots__ = ['_polys', '_edges', '_edges_rev']
 
     def __init__(self, parent, polys, edge, edge_rev, check=True, reduced=False):
         self._polys = tuple(polys)
@@ -85,11 +86,11 @@ class Path(MultiplicativeGroupElement):
     def _poly_cross_dict(self):
         d = {p: [] for p in self.parent()._s.label_iterator()}
         d[self._polys[0]].append((self._edges_rev[-1], self._edges[0]))
-        for i in range(1, len(self._polys)-1):
+        for i in range(1, len(self._polys) - 1):
             p = self._polys[i]
-            e0 = self._edges_rev[i-1]
+            e0 = self._edges_rev[i - 1]
             e1 = self._edges[i]
-            d[p].append((e0,e1))
+            d[p].append((e0, e1))
         return d
 
     def __hash__(self):
@@ -110,9 +111,11 @@ class Path(MultiplicativeGroupElement):
             sage: a*b == a*b
             True
         """
-        return parent(self) is parent(other) and \
-               self._polys == other._polys and  \
-               self._edges == other._edges 
+        return (
+            parent(self) is parent(other)
+            and self._polys == other._polys
+            and self._edges == other._edges
+        )
 
     def __ne__(self, other):
         r"""
@@ -129,23 +132,28 @@ class Path(MultiplicativeGroupElement):
             sage: a*b != a*b
             False
         """
-        return parent(self) is not parent(other) or \
-               self._polys != other._polys or \
-               self._edges != other._edges
+        return (
+            parent(self) is not parent(other)
+            or self._polys != other._polys
+            or self._edges != other._edges
+        )
 
     def _check(self):
-        if not(len(self._polys)-1 == len(self._edges) == len(self._edges_rev)):
-            raise ValueError("polys = {}\nedges = {}\nedges_rev={}".format(
-                self._polys, self._edges, self._edges_rev))
+        if not (len(self._polys) - 1 == len(self._edges) == len(self._edges_rev)):
+            raise ValueError(
+                "polys = {}\nedges = {}\nedges_rev={}".format(
+                    self._polys, self._edges, self._edges_rev
+                )
+            )
         assert self._polys[0] == self.parent()._b == self._polys[-1]
 
     def is_one(self):
         return not self._edges
 
     def _repr_(self):
-        return "".join("{} --{}-- ".format(p,e)
-              for p,e in zip(self._polys, self._edges)) + \
-               "{}".format(self._polys[-1]) 
+        return "".join(
+            "{} --{}-- ".format(p, e) for p, e in zip(self._polys, self._edges)
+        ) + "{}".format(self._polys[-1])
 
     def _mul_(self, other):
         r"""
@@ -169,15 +177,16 @@ class Path(MultiplicativeGroupElement):
             return None
 
         i = 0
-        while i < len(se) and i < len(oe) and se[-i-1] == oe_r[i]:
+        while i < len(se) and i < len(oe) and se[-i - 1] == oe_r[i]:
             i += 1
 
         P = self.parent()
         return P.element_class(
-                P,
-                sp[:len(sp)-i] + op[i+1:],
-                se[:len(se)-i]+ oe[i:],
-                se_r[:len(se_r)-i] + oe_r[i:])
+            P,
+            sp[: len(sp) - i] + op[i + 1 :],
+            se[: len(se) - i] + oe[i:],
+            se_r[: len(se_r) - i] + oe_r[i:],
+        )
 
     def __invert__(self):
         r"""
@@ -194,10 +203,8 @@ class Path(MultiplicativeGroupElement):
         """
         P = self.parent()
         return P.element_class(
-                P,
-                self._polys[::-1],
-                self._edges_rev[::-1],
-                self._edges[::-1])
+            P, self._polys[::-1], self._edges_rev[::-1], self._edges[::-1]
+        )
 
     def intersection(self, other):
         r"""
@@ -266,9 +273,9 @@ class Path(MultiplicativeGroupElement):
         oi = other._poly_cross_dict()
         n = 0
         for p in self.parent()._s.label_iterator():
-            for e0,e1 in si[p]:
-                for f0,f1 in oi[p]:
-                    n += intersection(e0,e1,f0,f1)
+            for e0, e1 in si[p]:
+                for f0, f1 in oi[p]:
+                    n += intersection(e0, e1, f0, f1)
         return n
 
 
@@ -312,7 +319,7 @@ class FundamentalGroup(UniqueRepresentation, Group):
             ...
             AssertionError
         """
-        if len(args) == 1 and isinstance(args[0], (tuple,list)):
+        if len(args) == 1 and isinstance(args[0], (tuple, list)):
             args = args[0]
         s = self._s
         p = [self._b]
@@ -320,16 +327,14 @@ class FundamentalGroup(UniqueRepresentation, Group):
         er = []
         for i in args:
             i = int(i) % s.polygon(p[-1]).num_edges()
-            q,j = s.opposite_edge(p[-1],i)
+            q, j = s.opposite_edge(p[-1], i)
             p.append(q)
             e.append(i)
             er.append(j)
         return self.element_class(self, p, e, er)
 
     def _repr_(self):
-        return "Fundamental group of {} based at polygon {}".format(
-                self._s,
-                self._b)
+        return "Fundamental group of {} based at polygon {}".format(self._s, self._b)
 
     @cached_method
     def one(self):
@@ -352,31 +357,31 @@ class FundamentalGroup(UniqueRepresentation, Group):
         """
         p = self._b
         s = self._s
-        tree = {}   # a tree whose root is base_label
+        tree = {}  # a tree whose root is base_label
         basis = []
 
-        tree[p] = (None,None,None)
+        tree[p] = (None, None, None)
 
-        wait = [] # list of edges of the dual graph, ie p1 -- (e1,e2) --> p2
+        wait = []  # list of edges of the dual graph, ie p1 -- (e1,e2) --> p2
         for e in range(s.polygon(p).num_edges()):
-            pp,ee = s.opposite_edge(p,e)
-            wait.append((pp,ee,p,e))
+            pp, ee = s.opposite_edge(p, e)
+            wait.append((pp, ee, p, e))
         while wait:
-            p1,e1,p2,e2 = wait.pop()
+            p1, e1, p2, e2 = wait.pop()
             assert p2 in tree
-            if p1 in tree: # new cycle?
-                if (p1,e1) > (p2,e2):
+            if p1 in tree:  # new cycle?
+                if (p1, e1) > (p2, e2):
                     continue
                 polys = [p1]
                 edges = []
                 edges_rev = []
 
-                p1,e,e_back = tree[p1]
+                p1, e, e_back = tree[p1]
                 while p1 is not None:
                     edges.append(e_back)
                     edges_rev.append(e)
                     polys.append(p1)
-                    p1,e,e_back = tree[p1]
+                    p1, e, e_back = tree[p1]
                 polys.reverse()
                 edges.reverse()
                 edges_rev.reverse()
@@ -385,12 +390,12 @@ class FundamentalGroup(UniqueRepresentation, Group):
                 edges.append(e1)
                 edges_rev.append(e2)
 
-                p2,e,e_back = tree[p2]
+                p2, e, e_back = tree[p2]
                 while p2 is not None:
                     edges.append(e)
                     edges_rev.append(e_back)
                     polys.append(p2)
-                    p2,e,e_back = tree[p2]
+                    p2, e, e_back = tree[p2]
 
                 basis.append((polys, edges, edges_rev))
 

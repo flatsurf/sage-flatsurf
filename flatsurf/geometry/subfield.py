@@ -34,7 +34,8 @@ from sage.categories.fields import Fields
 from sage.rings.qqbar import do_polred
 from sage.rings.number_field.number_field import CyclotomicField
 
-def number_field_elements_from_algebraics(elts, name='a'):
+
+def number_field_elements_from_algebraics(elts, name="a"):
     r"""
     The native Sage function ``number_field_elements_from_algebraics`` currently
     returns number field *without* embedding. This function return field with
@@ -58,13 +59,15 @@ def number_field_elements_from_algebraics(elts, name='a'):
 
     # general case
     from sage.rings.qqbar import number_field_elements_from_algebraics
-    field,elts,phi = number_field_elements_from_algebraics(elts, minimal=True)
+
+    field, elts, phi = number_field_elements_from_algebraics(elts, minimal=True)
 
     polys = [x.polynomial() for x in elts]
     K = NumberField(field.polynomial(), name, embedding=AA(phi(field.gen())))
     gen = K.gen()
 
     return K, [x.polynomial()(gen) for x in elts]
+
 
 def subfield_from_elements(self, alpha, name=None, polred=True, threshold=None):
     r"""
@@ -177,7 +180,9 @@ def subfield_from_elements(self, alpha, name=None, polred=True, threshold=None):
         if d == self.degree():
             return (self, alpha, Hom(self, self, Fields()).identity())
         B = U.basis()
-        new_vecs = [(self(B[i]) * self(B[j])).vector() for i in range(d) for j in range(i, d)]
+        new_vecs = [
+            (self(B[i]) * self(B[j])).vector() for i in range(d) for j in range(i, d)
+        ]
         if any(vv not in U for vv in new_vecs):
             U = V.subspace(list(B) + new_vecs)
             modified = True
@@ -217,6 +222,7 @@ def subfield_from_elements(self, alpha, name=None, polred=True, threshold=None):
     new_alpha = [K(M.solve_left(elt.vector())) for elt in alpha]
 
     return (K, new_alpha, hom)
+
 
 def is_embedded_subfield(K, L, certificate=False):
     r"""
@@ -267,6 +273,7 @@ def is_embedded_subfield(K, L, certificate=False):
             return (True, K.hom(L, [r])) if certificate else True
     return (False, None) if certificate else False
 
+
 def chebyshev_T(n, c):
     r"""
     Return the Chebyshev polynomial T_n so that
@@ -303,9 +310,10 @@ def chebyshev_T(n, c):
         return parent(c)(2)
     T0 = 2
     T1 = c
-    for i in range(n-1):
+    for i in range(n - 1):
         T0, T1 = T1, c * T1 - T0
     return T1
+
 
 def tan_chebyshev_T(n, c):
     r"""
@@ -325,9 +333,10 @@ def tan_chebyshev_T(n, c):
     """
     P = c
     Q = parent(c)(1)
-    for i in range(n-1):
+    for i in range(n - 1):
         P, Q = c * Q + P, Q - c * P
     return P, Q
+
 
 def cos_minpoly_odd_prime(p, var):
     r"""
@@ -350,16 +359,17 @@ def cos_minpoly_odd_prime(p, var):
     """
     T0 = 2
     T1 = var
-    k = (p-1)//2
-    s = (-1)**k
+    k = (p - 1) // 2
+    s = (-1) ** k
     minpoly = s * (1 - T1)
-    for i in range(k-1):
+    for i in range(k - 1):
         T0, T1 = T1, var * T1 - T0
         minpoly += s * T1
         s *= -1
     return minpoly
 
-def cos_minpoly(n, var='x'):
+
+def cos_minpoly(n, var="x"):
     r"""
     Return the minimal polynomial of 2 cos pi/n
 
@@ -405,7 +415,7 @@ def cos_minpoly(n, var='x'):
     if not facs:
         # 0. n = 2^k
         # ([KoRoTr2015] Lemma 12)
-        return chebyshev_T(2**(k-1), var)
+        return chebyshev_T(2 ** (k - 1), var)
 
     # 1. Compute M_{n0} = M_{p1 ... ps}
     # ([KoRoTr2015] Lemma 14 and Lemma 15)
@@ -417,13 +427,14 @@ def cos_minpoly(n, var='x'):
 
     # 2. Compute M_{2^k p1^{a1} ... ps^{as}}
     # ([KoRoTr2015] Lemma 12)
-    nn = 2**k * prod(p**(a-1) for p,a in facs)
+    nn = 2**k * prod(p ** (a - 1) for p, a in facs)
     if nn != 1:
         M = M(chebyshev_T(nn, var))
 
     return M
 
-def sin_minpoly(n, var='x'):
+
+def sin_minpoly(n, var="x"):
     r"""
     Return the minimal polynomial of 2 cos pi/n
 
@@ -446,19 +457,20 @@ def sin_minpoly(n, var='x'):
     n = ZZ(n)
     # use sin(π/n) = cos((n-2)π/(2n))
     if n % 2:
-        return cos_minpoly(2*n)
+        return cos_minpoly(2 * n)
     elif n % 4 == 2:
         # n = 4k+2
         # (n-2)/(2n) = k/(2k+1)
-        p = cos_minpoly(n//2)
+        p = cos_minpoly(n // 2)
         if n % 8 == 2:
             P = p.parent()
             d = p.degree()
-            return P([(-1)**(i+d) * c for i, c in enumerate(p)])
+            return P([(-1) ** (i + d) * c for i, c in enumerate(p)])
         else:
             return p
     else:
         return cos_minpoly(n)
+
 
 def tan_minpoly(n):
     r"""
@@ -480,16 +492,17 @@ def tan_minpoly(n):
         sage: all((QQbar.zeta(2*n).imag() / QQbar.zeta(2*n).real()).minpoly() == tan_minpoly(n) for n in range(3,15))
         True
     """
-    N = 2*n
+    N = 2 * n
     while N % 4:
         N *= 2
     K = CyclotomicField(N)
-    z = K.gen() ** (N // (2*n))
+    z = K.gen() ** (N // (2 * n))
     I = K.gen() ** (N // 4)
 
     sin = (z - z.conjugate()) / I
-    cos = (z + z.conjugate())
+    cos = z + z.conjugate()
     return (sin / cos).minpoly()
+
 
 def atan_minpoly(n):
     r"""
@@ -511,13 +524,13 @@ def atan_minpoly(n):
         sage: all((QQbar.zeta(2*n).real() / QQbar.zeta(2*n).imag()).minpoly() == atan_minpoly(n) for n in range(3,15))
         True
     """
-    N = 2*n
+    N = 2 * n
     while N % 4:
         N *= 2
     K = CyclotomicField(N)
-    z = K.gen() ** (N // (2*n))
+    z = K.gen() ** (N // (2 * n))
     I = K.gen() ** (N // 4)
 
     sin = (z - z.conjugate()) / I
-    cos = (z + z.conjugate())
+    cos = z + z.conjugate()
     return (cos / sin).minpoly()
