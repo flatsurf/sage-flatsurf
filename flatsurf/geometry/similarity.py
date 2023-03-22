@@ -168,7 +168,7 @@ class Similarity(MultiplicativeGroupElement):
         """
         return self._sign * (self._a * self._a + self._b * self._b)
 
-    def _mul_(left, right):
+    def _mul_(self, right):
         r"""
         Composition
 
@@ -189,12 +189,12 @@ class Similarity(MultiplicativeGroupElement):
             ....:     assert g1.matrix()*g2.matrix() == (g1*g2).matrix()
             ....:     assert (g1*g2).matrix()*g3.matrix() == (g1*g2*g3).matrix()
         """
-        a = left._a * right._a - left._sign * left._b * right._b
-        b = left._b * right._a + left._sign * left._a * right._b
-        s = left._a * right._s - left._sign * left._b * right._t + left._s
-        t = left._b * right._s + left._sign * left._a * right._t + left._t
-        sign = left._sign * right._sign
-        P = left.parent()
+        a = self._a * right._a - self._sign * self._b * right._b
+        b = self._b * right._a + self._sign * self._a * right._b
+        s = self._a * right._s - self._sign * self._b * right._t + self._s
+        t = self._b * right._s + self._sign * self._a * right._t + self._t
+        sign = self._sign * right._sign
+        P = self.parent()
         return P.element_class(P, a, b, s, t, sign)
 
     def __invert__(self):
@@ -224,7 +224,7 @@ class Similarity(MultiplicativeGroupElement):
             sign,
         )
 
-    def _div_(left, right):
+    def _div_(self, right):
         det = right.det()
 
         inv_a = right._sign * right._a
@@ -232,18 +232,18 @@ class Similarity(MultiplicativeGroupElement):
         inv_s = -right._sign * right._a * right._s - right._sign * right._b * right._t
         inv_t = right._b * right._s - right._a * right._t
 
-        a = (left._a * inv_a - left._sign * left._b * inv_b) / det
-        b = (left._b * inv_a + left._sign * left._a * inv_b) / det
-        s = (left._a * inv_s - left._sign * left._b * inv_t) / det + left._s
-        t = (left._b * inv_s + left._sign * left._a * inv_t) / det + left._t
+        a = (self._a * inv_a - self._sign * self._b * inv_b) / det
+        b = (self._b * inv_a + self._sign * self._a * inv_b) / det
+        s = (self._a * inv_s - self._sign * self._b * inv_t) / det + self._s
+        t = (self._b * inv_s + self._sign * self._a * inv_t) / det + self._t
 
-        return left.parent().element_class(
-            left.parent(),
-            left.base_ring()(a),
-            left.base_ring()(b),
-            left.base_ring()(s),
-            left.base_ring()(t),
-            left._sign * right._sign,
+        return self.parent().element_class(
+            self.parent(),
+            self.base_ring()(a),
+            self.base_ring()(b),
+            self.base_ring()(s),
+            self.base_ring()(t),
+            self._sign * right._sign,
         )
 
     def __hash__(self):
