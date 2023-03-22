@@ -9,7 +9,7 @@ namely :class:`Surface_list` and `Surface_dict`. The former labels the polygons
 that make up a surface by non-negative integers and the latter can use
 arbitrary labels. Additionally, there are lots of other surface representations
 that are not really implementing data structures but essentially just wrap
-these two, e.g., a :class:`MinimalTranslationCover`.
+these two, e.g., a :class:`.minimal_cover.MinimalTranslationCover`.
 
 All these surface implementations inherit from :class:`Surface` which describes
 the contract that all surfaces must satisfy. As an absolute minimum, they
@@ -36,11 +36,11 @@ We built a torus by gluing the opposite sides of a square::
 
 There are two separate hierarchies of surfaces in sage-flatsurf. The underlying
 data of a surface described by the subclasses of :class:`Surface` here and the
-:class:`SimilaritySurface` and its subclasses which wrap a :class:`Surface`.
-While a :class:`Surface` essentially provides the raw data of a surface, a
-:class:`SimilaritySurface` then adds mathematical knowledge to that data
-structure, e.g., by declaring that the data describes a
-:class:`TranslationSurface`::
+:class:`.similarity_surface.SimilaritySurface` and its subclasses which wrap a
+:class:`Surface`. While a :class:`Surface` essentially provides the raw data of
+a surface, a :class:`.similarity_surface.SimilaritySurface` then adds
+mathematical knowledge to that data structure, e.g., by declaring that the data
+describes a :class:`.translation_surface.TranslationSurface`::
 
     sage: from flatsurf import TranslationSurface
     sage: T = TranslationSurface(S)
@@ -54,9 +54,9 @@ We can recover the underlying surface again::
 # ********************************************************************
 #  This file is part of sage-flatsurf.
 #
-#        Copyright (C) 2016-2020 Pat Hooper
+#        Copyright (C) 2016-2020 W. Patrick Hooper
 #                      2019-2020 Vincent Delecroix
-#                      2020-2021 Julian Rüth
+#                      2020-2023 Julian Rüth
 #
 #  sage-flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -121,6 +121,16 @@ class Surface(SageObject):
         sage: isinstance(S, Surface)
         True
 
+    TESTS:
+
+    Users are being warned if they try to define a surface over an inexact ring::
+
+        sage: S = Surface_list(RR)
+        ...
+        UserWarning: surface defined over an inexact ring; many operations in sage-flatsurf are not going to work correctly over this ring
+        sage: isinstance(S, Surface)
+        True
+
     """
 
     def __init__(self, base_ring, base_label, finite, mutable):
@@ -130,6 +140,10 @@ class Surface(SageObject):
         from sage.all import Rings
         if base_ring not in Rings():
             raise ValueError("base_ring must be a ring")
+
+        if not base_ring.is_exact():
+            from warnings import warn
+            warn("surface defined over an inexact ring; many operations in sage-flatsurf are not going to work correctly over this ring")
 
         if mutable not in [False, True]:
             raise ValueError("mutable must be either True or False")
@@ -169,7 +183,7 @@ class Surface(SageObject):
         r"""
         Return the polygon with the provided label.
 
-        This method must be overriden in subclasses.
+        This method must be overridden in subclasses.
         """
         raise NotImplementedError
 
@@ -178,7 +192,7 @@ class Surface(SageObject):
         Given the label ``l`` of a polygon and an edge ``e`` in that polygon
         returns the pair (``ll``, ``ee``) to which this edge is glued.
 
-        This method must be overriden in subclasses.
+        This method must be overridden in subclasses.
         """
         raise NotImplementedError
 
@@ -301,7 +315,7 @@ class Surface(SageObject):
         r"""
         The field on which the coordinates of ``self`` live.
 
-        This method must be overriden in subclasses!
+        This method must be overridden in subclasses!
         """
         return self._base_ring
 
@@ -309,7 +323,7 @@ class Surface(SageObject):
         r"""
         Return the label of a special chosen polygon in the surface.
 
-        When no specific choice was made with :meth:`set_base_label`, this
+        When no specific choice was made with :meth:`change_base_label`, this
         might just be the initial polygon, i.e., the one that was first added
         in the construction of this surface.
 
@@ -345,14 +359,6 @@ class Surface(SageObject):
         """
         self._mutable = False
 
-    def make_immutable(self):
-        r"""
-        Mark this surface as immutable.
-        """
-        from sage.misc.superseded import deprecation
-        deprecation(13109, "Do not use .make_immutable(). Use .set_immutable() instead.")
-        self._mutable = False
-
     def walker(self):
         r"""
         Return a LabelWalker which walks over the surface in a canonical way.
@@ -385,7 +391,8 @@ class Surface(SageObject):
 
     def set_edge_pairing(self, label1, edge1, label2, edge2):
         r"""
-        Updates the gluing so that (label,edge1) is glued to (label2, edge2).
+        Update the gluing so that (``label1``, ``edge1``) is glued to
+        (``label2``, ``edge2``).
         """
         self.__mutate()
         self._set_edge_pairing(label1, edge1, label2, edge2)
@@ -448,6 +455,189 @@ class Surface(SageObject):
         """
         self.__mutate()
         self._base_label=new_base_label
+
+    def subdivide(self):
+        r"""
+        Return a copy of this surface whose polygons have been partitioned into
+        smaller triangles with
+        :meth:`.polygon.ConvexPolygon.subdivide`.
+
+        EXAMPLES:
+
+        A surface consisting of a single triangle::
+
+            sage: from flatsurf.geometry.surface import Surface_dict
+            sage: from flatsurf.geometry.polygon import Polygon, ConvexPolygons
+
+            sage: S = Surface_dict(QQ)
+            sage: P = ConvexPolygons(QQ)
+            sage: S.add_polygon(P([(1, 0), (0, 1), (-1, -1)]), label="Δ")
+            'Δ'
+
+        Subdivision of this surface yields a surface with three triangles::
+
+            sage: T = S.subdivide()
+            sage: list(T.label_iterator())
+            [('Δ', 0), ('Δ', 1), ('Δ', 2)]
+
+        Note that the new labels are old labels plus an index. We verify that
+        the triangles are glued correctly::
+
+            sage: list(T.edge_gluing_iterator())
+            [((('Δ', 0), 0), None),
+             ((('Δ', 0), 1), (('Δ', 1), 2)),
+             ((('Δ', 0), 2), (('Δ', 2), 1)),
+             ((('Δ', 1), 0), None),
+             ((('Δ', 1), 1), (('Δ', 2), 2)),
+             ((('Δ', 1), 2), (('Δ', 0), 1)),
+             ((('Δ', 2), 0), None),
+             ((('Δ', 2), 1), (('Δ', 0), 2)),
+             ((('Δ', 2), 2), (('Δ', 1), 1))]
+
+        If we add another polygon to the original surface and glue things, we
+        can see how existing gluings are preserved when subdividing::
+
+            sage: S.add_polygon(P([(1, 0), (0, 1), (-1, 0), (0, -1)]), label='□')
+            '□'
+
+            sage: S.change_edge_gluing("Δ", 0, "□", 2)
+            sage: S.change_edge_gluing("□", 1, "□", 3)
+
+            sage: T = S.subdivide()
+
+            sage: list(T.label_iterator())
+            [('Δ', 0), ('Δ', 1), ('Δ', 2), ('□', 0), ('□', 1), ('□', 2), ('□', 3)]
+            sage: list(sorted(T.edge_gluing_iterator()))
+            [((('Δ', 0), 0), (('□', 2), 0)),
+             ((('Δ', 0), 1), (('Δ', 1), 2)),
+             ((('Δ', 0), 2), (('Δ', 2), 1)),
+             ((('Δ', 1), 0), None),
+             ((('Δ', 1), 1), (('Δ', 2), 2)),
+             ((('Δ', 1), 2), (('Δ', 0), 1)),
+             ((('Δ', 2), 0), None),
+             ((('Δ', 2), 1), (('Δ', 0), 2)),
+             ((('Δ', 2), 2), (('Δ', 1), 1)),
+             ((('□', 0), 0), None),
+             ((('□', 0), 1), (('□', 1), 2)),
+             ((('□', 0), 2), (('□', 3), 1)),
+             ((('□', 1), 0), (('□', 3), 0)),
+             ((('□', 1), 1), (('□', 2), 2)),
+             ((('□', 1), 2), (('□', 0), 1)),
+             ((('□', 2), 0), (('Δ', 0), 0)),
+             ((('□', 2), 1), (('□', 3), 2)),
+             ((('□', 2), 2), (('□', 1), 1)),
+             ((('□', 3), 0), (('□', 1), 0)),
+             ((('□', 3), 1), (('□', 0), 2)),
+             ((('□', 3), 2), (('□', 2), 1))]
+
+        """
+        labels = list(self.label_iterator())
+        polygons = [self.polygon(l) for l in labels]
+
+        subdivisions = [p.subdivide() for p in polygons]
+
+        from flatsurf.geometry.surface import Surface_dict
+        surface = Surface_dict(base_ring=self._base_ring)
+
+        # Add subdivided polygons
+        for s, subdivision in enumerate(subdivisions):
+            label = labels[s]
+            for p, polygon in enumerate(subdivision):
+                surface.add_polygon(polygon, label=(label, p))
+
+        surface.change_base_label((self._base_label, 0))
+
+        # Add gluings between subdivided polygons
+        for s, subdivision in enumerate(subdivisions):
+            label = labels[s]
+            for p in range(len(subdivision)):
+                surface.change_edge_gluing((label, p), 1, (label, (p + 1)%len(subdivision)), 2)
+
+                # Add gluing from original surface
+                opposite = self.opposite_edge(label, p)
+                if opposite is not None:
+                    surface.change_edge_gluing((label, p), 0, opposite, 0)
+
+        return surface
+
+    def subdivide_edges(self, parts=2):
+        r"""
+        Return a copy of this surface whose edges have been split into
+        ``parts`` equal pieces each.
+
+        INPUT:
+
+        - ``parts`` -- a positive integer (default: 2)
+
+        EXAMPLES:
+
+        A surface consisting of a single triangle::
+
+            sage: from flatsurf.geometry.surface import Surface_dict
+            sage: from flatsurf.geometry.polygon import Polygon, ConvexPolygons
+
+            sage: S = Surface_dict(QQ)
+            sage: P = ConvexPolygons(QQ)
+            sage: S.add_polygon(P([(1, 0), (0, 1), (-1, -1)]), label="Δ")
+            'Δ'
+
+        Subdividing this triangle yields a triangle with marked points along
+        the edges::
+
+            sage: T = S.subdivide_edges()
+
+        If we add another polygon to the original surface and glue them, we
+        can see how existing gluings are preserved when subdividing::
+
+            sage: S.add_polygon(P([(1, 0), (0, 1), (-1, 0), (0, -1)]), label='□')
+            '□'
+
+            sage: S.change_edge_gluing("Δ", 0, "□", 2)
+            sage: S.change_edge_gluing("□", 1, "□", 3)
+
+            sage: T = S.subdivide_edges()
+            sage: list(sorted(T.edge_gluing_iterator()))
+            [(('Δ', 0), ('□', 5)),
+             (('Δ', 1), ('□', 4)),
+             (('Δ', 2), None),
+             (('Δ', 3), None),
+             (('Δ', 4), None),
+             (('Δ', 5), None),
+             (('□', 0), None),
+             (('□', 1), None),
+             (('□', 2), ('□', 7)),
+             (('□', 3), ('□', 6)),
+             (('□', 4), ('Δ', 1)),
+             (('□', 5), ('Δ', 0)),
+             (('□', 6), ('□', 3)),
+             (('□', 7), ('□', 2))]
+
+        """
+        labels = list(self.label_iterator())
+        polygons = [self.polygon(l) for l in labels]
+
+        subdivideds = [p.subdivide_edges(parts=parts) for p in polygons]
+
+        from flatsurf.geometry.surface import Surface_dict
+        surface = Surface_dict(base_ring=self._base_ring)
+
+        # Add subdivided polygons
+        for s, subdivided in enumerate(subdivideds):
+            surface.add_polygon(subdivided, label=labels[s])
+
+        surface.change_base_label(self._base_label)
+
+        # Reestablish gluings between polygons
+        for label, polygon, subdivided in zip(labels, polygons, subdivideds):
+            for e in range(polygon.num_edges()):
+                opposite = self.opposite_edge(label, e)
+                if opposite is not None:
+                    for p in range(parts):
+                        surface.change_edge_gluing(label, e * parts + p, opposite[0], opposite[1] * parts + (parts - p - 1))
+
+        return surface
+
+
 
     def __hash__(self):
         r"""
@@ -603,17 +793,19 @@ class Surface_list(Surface):
 
     Each ``_p[label]`` is typically a pair ``(polygon, gluing_list)`` where
     ``gluing_list`` is a list of pairs ``(other_label, other_edge)`` such that
-    :meth:`opposite_edge(label, edge)` returns ``_p[label][1][edge]``.
+    :meth:`opposite_edge(label, edge) <Surface.opposite_edge>` returns
+    ``_p[label][1][edge]``.
 
     INPUT:
 
     - ``base_ring`` -- ring or ``None`` (default: ``None``); the ring
       containing the coordinates of the vertices of the polygons. If ``None``,
-      the :meth:`base_ring` will be the one of ``surface``.
+      the :meth:`Surface.base_ring` will be the one of ``surface``.
 
-    - ``surface`` -- :class:`Surface`, :class:`SimilaritySurface`, or
-      ``None`` (default: ``None``); a surface to be copied or referenced (see
-      ``copy``). If ``None``, the surface is initially empty.
+    - ``surface`` -- :class:`Surface`,
+      :class:`.similarity_surface.SimilaritySurface`, or ``None`` (default:
+      ``None``); a surface to be copied or referenced (see ``copy``). If
+      ``None``, the surface is initially empty.
 
     - ``copy`` -- boolean or ``None`` (default: ``None``); whether the data
       underlying ``surface`` is copied into this surface or just a reference to
@@ -837,7 +1029,7 @@ class Surface_list(Surface):
         try:
             data = self._p[p]
         except KeyError:
-             raise ValueError("No known polygon with provided label")
+            raise ValueError("No known polygon with provided label")
         if data is None:
             raise ValueError("Provided label was removed.")
         glue = data[1]
@@ -857,7 +1049,7 @@ class Surface_list(Surface):
                 glue[e] = return_value
                 return return_value
         else:
-            # Sucessfully return edge data
+            # Successfully return edge data
             return oe
 
     # Methods for changing the surface
@@ -875,7 +1067,7 @@ class Surface_list(Surface):
         data[0]=new_polygon
         if data[1] is None or new_polygon.num_edges() != len(data[1]):
             data[1]=[None for e in range(new_polygon.num_edges())]
-        if not gluing_list is None:
+        if gluing_list is not None:
             self.change_polygon_gluings(label,gluing_list)
 
     def _set_edge_pairing(self, label1, edge1, label2, edge2):
@@ -943,13 +1135,13 @@ class Surface_list(Surface):
             else:
                 new_label = len(self._p)
                 self._p.append(data)
-                if not self._reference_surface is None:
+                if self._reference_surface is not None:
                     # Need a blank in this list for algorithmic reasons
                     self._int_to_ref.append(None)
         else:
             new_label=int(label)
             if new_label<len(self._p):
-                if not self._p[new_label] is None:
+                if self._p[new_label] is not None:
                     raise ValueError("Trying to add a polygon with label="+str(label)+" which already indexes a polygon.")
                 self._p[new_label]=data
             else:
@@ -958,16 +1150,16 @@ class Surface_list(Surface):
                 for i in range(len(self._p),new_label):
                     self._p.append(None)
                     self._removed_labels.append(i)
-                    if not self._reference_surface is None:
+                    if self._reference_surface is not None:
                         # Need a blank in this list for algorithmic reasons
                         self._int_to_ref.append(None)
 
                 self._p.append(data)
-                if not self._reference_surface is None:
+                if self._reference_surface is not None:
                     # Need a blank in this list for algorithmic reasons
                     self._int_to_ref.append(None)
 
-        if not gluing_list is None:
+        if gluing_list is not None:
             self.change_polygon_gluings(new_label,gluing_list)
         self._num_polygons += 1
         return new_label
@@ -982,7 +1174,7 @@ class Surface_list(Surface):
         r"""
         Iterator over all polygon labels.
         """
-        if not self._reference_surface is None:
+        if self._reference_surface is not None:
             for i in Surface.label_iterator(self):
                 yield i
         elif self._num_polygons == len(self._p):
@@ -993,7 +1185,7 @@ class Surface_list(Surface):
             found=0
             i=0
             while found < self._num_polygons:
-                if not self._p[i] is None:
+                if self._p[i] is not None:
                     found += 1
                     yield i
                 i += 1
@@ -1004,17 +1196,17 @@ class Surface_list(Surface):
         """
         if label == len(self._p)-1:
             self._p.pop()
-            if not self._reference_surface is None:
+            if self._reference_surface is not None:
                 ref_label = self._int_to_ref.pop()
                 assert(len(self._int_to_ref)==label)
-                if not ref_label is None:
+                if ref_label is not None:
                     del self._ref_to_int[ref_label]
         else:
             self._p[label]=None
             self._removed_labels.append(label)
-            if not self._reference_surface is None:
+            if self._reference_surface is not None:
                 ref_label = self._int_to_ref[label]
-                if not ref_label is None:
+                if ref_label is not None:
                     self._int_to_ref[label]=None
                     del self._ref_to_int[ref_label]
         self._num_polygons -= 1
@@ -1102,15 +1294,16 @@ class Surface_dict(Surface):
 
     Each ``_p[label]`` is typically a pair ``(polygon, gluing_dict)`` where
     ``gluing_dict`` is maps ``other_label`` to ``other_edge`` such that
-    :meth:`opposite_edge(label, edge)` returns ``_p[label][1][edge]``.
+    :meth:`opposite_edge(label, edge) <Surface.opposite_edge>` returns
+    ``_p[label][1][edge]``.
 
     INPUT:
 
     - ``base_ring`` -- ring or ``None`` (default: ``None``); the ring
       containing the coordinates of the vertices of the polygons. If ``None``,
-      the :meth:`base_ring` will be the one of ``surface``.
+      the :meth:`Surface.base_ring` will be the one of ``surface``.
 
-    - ``surface`` -- :class:`Surface`, :class:`SimilaritySurface`, or
+    - ``surface`` -- :class:`Surface`, :class:`.similarity_surface.SimilaritySurface`, or
       ``None`` (default: ``None``); a surface to be copied or referenced (see
       ``copy``). If ``None``, the surface is initially empty.
 
@@ -1192,11 +1385,11 @@ class Surface_dict(Surface):
         try:
             data = self._p[p]
         except KeyError:
-             self.polygon(p)
-             data=self._p[p]
+            self.polygon(p)
+            data = self._p[p]
         if data is None:
             raise ValueError("Label "+str(p)+" was removed from the surface.")
-        gluing_data=data[1]
+        gluing_data = data[1]
         try:
             return gluing_data[e]
         except IndexError:
@@ -1229,7 +1422,7 @@ class Surface_dict(Surface):
                     self._p[label]=data
         if len(data[1]) != new_polygon.num_edges():
             data[1] = [None for e in range(new_polygon.num_edges())]
-        if not gluing_list is None:
+        if gluing_list is not None:
             self.change_polygon_gluings(label,gluing_list)
 
     def _set_edge_pairing(self, label1, edge1, label2, edge2):
@@ -1299,7 +1492,7 @@ class Surface_dict(Surface):
                 else:
                     raise ValueError("label={} already used by another polygon".format(label))
             except KeyError:
-                # This seems inconvienient to enforce:
+                # This seems inconvenient to enforce:
                 #
                 #if not self._reference_surface is None:
                 #    # Can not be sure we are not overwriting a polygon in the reference surface.
@@ -1475,22 +1668,22 @@ class LabelWalker:
         r"""
         Finds a new label, stores it, and returns it. Returns None if we have already found all labels.
         """
-        while len(self._walk)>0:
-            label,e = self._walk.popleft()
-            opposite_label,opposite_edge=self._s.opposite_edge(label,e)
-            e=e+1
+        while len(self._walk) > 0:
+            label, e = self._walk.popleft()
+            opposite_label, opposite_edge = self._s.opposite_edge(label, e)
+            e = e + 1
             if e < self._s.polygon(label).num_edges():
-                self._walk.appendleft((label,e))
-            if not opposite_label in self._label_dict:
-                n=len(self._labels)
+                self._walk.appendleft((label, e))
+            if opposite_label not in self._label_dict:
+                n = len(self._labels)
                 self._labels.append(opposite_label)
-                self._label_dict[opposite_label]=n
-                self._walk.append((opposite_label,0))
-                self._label_edge_back[opposite_label]=opposite_edge
+                self._label_dict[opposite_label] = n
+                self._walk.append((opposite_label, 0))
+                self._label_edge_back[opposite_label] = opposite_edge
                 return opposite_label
         return None
 
-    def find_new_labels(self,n):
+    def find_new_labels(self, n):
         r"""
         Look for n new labels. Return the list of labels found.
         """
@@ -1506,7 +1699,7 @@ class LabelWalker:
     def find_all_labels(self):
         assert(self._s.is_finite())
         label = self.find_a_new_label()
-        while not label is None:
+        while label is not None:
             label = self.find_a_new_label()
 
     def number_to_label(self, n):
@@ -1575,9 +1768,10 @@ class ExtraLabel(SageObject):
 class LabelComparator(object):
     r"""
     Implements a total ordering on labels, which may be of varying types.
-    
+
     We use hashes, so if hash(label1) < hash(label2) we declare label1 < label2.
-    For objects with the same hash, we store an arbitary ordering.
+
+    For objects with the same hash, we store an arbitrary ordering.
     """
     def __init__(self):
         r"""
@@ -1597,7 +1791,7 @@ class LabelComparator(object):
         # At this point we know label is not in lst
         lst.append(label)
         return len(lst)-1
-            
+
     def lt(self, l1, l2):
         r"""
         Return the truth value of l1 < l2.
@@ -1612,19 +1806,19 @@ class LabelComparator(object):
         if l1 == l2:
             return False
         return self._get_resolver_index(h1, l1) < self._get_resolver_index(h1, l2)
-    
+
     def le(self, l1, l2):
         r"""
         Return the truth value of l1 <= l2.
         """
         return self.lt(l1, l2) or l1 == l2
-    
+
     def gt(self, l1, l2):
         r"""
         Return the truth value of l1 > l2.
         """
         return self.lt(l2, l1)
-    
+
     def ge(self, l1, l2):
         r"""
         Return the truth value of l1 >= l2.

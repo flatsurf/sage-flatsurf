@@ -1,3 +1,23 @@
+#*********************************************************************
+#  This file is part of sage-flatsurf.
+#
+#        Copyright (C) 2016-2022 W. Patrick Hooper
+#                      2016-2022 Vincent Delecroix
+#                           2023 Julian Rüth
+#
+#  sage-flatsurf is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  sage-flatsurf is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
+#*********************************************************************
 from __future__ import absolute_import, print_function, division
 from six.moves import range, map, filter, zip
 from six import iteritems
@@ -58,6 +78,7 @@ def get_linearity_coeff(u, v):
     else:
         raise ValueError("zero vector")
 
+
 class SegmentInPolygon:
     r"""
     Maximal segment in a polygon of a similarity surface
@@ -72,7 +93,7 @@ class SegmentInPolygon:
         Segment in polygon 0 starting at (1/3, -1/3) and ending at (1/3, 0)
     """
     def __init__(self, start, end=None):
-        if not end is None:
+        if end is not None:
             # WARNING: here we assume that both start and end are on the
             # boundary
             self._start = start
@@ -80,6 +101,18 @@ class SegmentInPolygon:
         else:
             self._end = start.forward_to_polygon_boundary()
             self._start = self._end.forward_to_polygon_boundary()
+
+    def __hash__(self):
+        r"""
+        TESTS::
+
+            sage: from flatsurf import similarity_surfaces
+            sage: from flatsurf.geometry.straight_line_trajectory import SegmentInPolygon
+            sage: s = similarity_surfaces.example()
+            sage: v = s.tangent_vector(0, (1/3,-1/4), (0,1))
+            sage: h = hash(SegmentInPolygon(v))
+        """
+        return hash((self._start, self._end))
 
     def __eq__(self, other):
         return type(self) is type(other) and \
@@ -174,28 +207,6 @@ class SegmentInPolygon:
         return SegmentInPolygon(self._start.invert()).invert()
 
 
-    # DEPRECATED STUFF THAT WILL BE REMOVED
-
-    def start_point(self):
-        from sage.misc.superseded import deprecation
-        deprecation(1, "do not use start_point but start().point()")
-        return self._start.point()
-
-    def start_direction(self):
-        from sage.misc.superseded import deprecation
-        deprecation(1, "do not use start_direction but start().vector()")
-        return self._start.vector()
-
-    def end_point(self):
-        from sage.misc.superseded import deprecation
-        deprecation(1, "do not use end_point but end().point()")
-        return self._end.point()
-
-    def end_direction(self):
-        from sage.misc.superseded import deprecation
-        deprecation(1, "do not use end_direction but end().vector()")
-        return self._end.vector()
-
 class AbstractStraightLineTrajectory:
     r"""
     You need to implement:
@@ -218,8 +229,10 @@ class AbstractStraightLineTrajectory:
         r"""
         Plot this trajectory by converting to a graphical trajectory.
 
-        If any arguments are provided in `*args` it must be only one argument containing a GraphicalSurface.
-        The keyword arguments in `**options` are passed on to :func:`GraphicalStraightLineTrajectory.plot`.
+        If any arguments are provided in `*args` it must be only one argument
+        containing a GraphicalSurface. The keyword arguments in `**options` are
+        passed on to
+        :func:`flatsurf.graphical.straight_line_trajectory.GraphicalStraightLineTrajectory.plot`.
 
         EXAMPLES::
 
@@ -227,10 +240,10 @@ class AbstractStraightLineTrajectory:
             sage: T = translation_surfaces.square_torus()
             sage: v = T.tangent_vector(0, (0,0), (5,7))
             sage: L = v.straight_line_trajectory()
-            sage: L.plot()               # not tested (problem with matplotlib font caches on Travis)
-            Graphics object consisting of 1 graphics primitive
-            sage: L.plot(color='red')    # not tested (problem with matplotlib font caches on Travis)
-            Graphics object consisting of 1 graphics primitive
+            sage: L.plot()
+            ...Graphics object consisting of 1 graphics primitive
+            sage: L.plot(color='red')
+            ...Graphics object consisting of 1 graphics primitive
         """
         if len(args) > 1:
             raise ValueError("SimilaritySurface.plot() can take at most one non-keyword argument.")
@@ -344,7 +357,7 @@ class AbstractStraightLineTrajectory:
             ....:     assert w.count('a') == y-1
             ....:     assert w.count('b') == x-1
         """
-        ans = []
+        coding = []
 
         segments = self.segments()
 
@@ -355,7 +368,7 @@ class AbstractStraightLineTrajectory:
             e = start._position.get_edge()
             lab = (p,e) if alphabet is None else alphabet.get((p,e))
             if lab is not None:
-                ans.append(lab)
+                coding.append(lab)
 
         for i in range(len(segments)-1):
             s = segments[i]
@@ -364,7 +377,7 @@ class AbstractStraightLineTrajectory:
             e = end._position.get_edge()
             lab = (p,e) if alphabet is None else alphabet.get((p,e))
             if lab is not None:
-                ans.append(lab)
+                coding.append(lab)
 
         s = segments[-1]
         end = s.end()
@@ -374,9 +387,9 @@ class AbstractStraightLineTrajectory:
             e = end._position.get_edge()
             lab = (p,e) if alphabet is None else alphabet.get((p,e))
             if lab is not None:
-                ans.append(lab)
+                coding.append(lab)
 
-        return ans
+        return coding
 
     def initial_tangent_vector(self):
         return self.segment(0).start()
@@ -384,17 +397,17 @@ class AbstractStraightLineTrajectory:
     def terminal_tangent_vector(self):
         return self.segment(-1).end()
 
-    def intersects(self, traj, count_singularities = False):
+    def intersects(self, traj, count_singularities=False):
         r"""
         Return true if this trajectory intersects the other trajectory.
         """
         try:
-            next(self.intersections(traj, count_singularities = count_singularities))
+            next(self.intersections(traj, count_singularities=count_singularities))
         except StopIteration:
             return False
         return True
 
-    def intersections(self, traj, count_singularities = False, include_segments = False):
+    def intersections(self, traj, count_singularities=False, include_segments=False):
         r"""
         Return the set of SurfacePoints representing the intersections
         of this trajectory with the provided trajectory or SaddleConnection.
@@ -408,8 +421,8 @@ class AbstractStraightLineTrajectory:
 
         EXAMPLES::
 
-            sage: from flatsurf import *
-            sage: s=translation_surfaces.square_torus()
+            sage: from flatsurf import translation_surfaces
+            sage: s = translation_surfaces.square_torus()
             sage: traj1 = s.tangent_vector(0,(1/2,0),(1,1)).straight_line_trajectory()
             sage: traj1.flow(3)
             sage: traj1.is_closed()
@@ -420,6 +433,14 @@ class AbstractStraightLineTrajectory:
             True
             sage: sum(1 for _ in traj1.intersections(traj2))
             2
+
+            sage: for p, (segs1, segs2) in traj1.intersections(traj2, include_segments=True):
+            ....:     print(p)
+            ....:     print(len(segs1), len(segs2))
+            Surface point with 2 coordinate representations
+            2 2
+            Surface point with 2 coordinate representations
+            2 2
         """
         # Partition the segments making up the trajectories by label.
         if isinstance(traj,SaddleConnection):
@@ -457,15 +478,14 @@ class AbstractStraightLineTrajectory:
                                 if new_point not in intersection_points:
                                     intersection_points.add(new_point)
                                     if include_segments:
-                                        segments[new_point]=({seg1},{seg2})
+                                        segments[new_point] = ({seg1}, {seg2})
                                     else:
                                         yield new_point
                                 elif include_segments:
-                                    segments[new_point][0].append(seg1)
-                                    segments[new_point][1].append(seg2)
+                                    segments[new_point][0].add(seg1)
+                                    segments[new_point][1].add(seg2)
         if include_segments:
-            for x in iteritems(segments):
-                yield x
+            yield from segments.items()
 
 
 
@@ -601,7 +621,7 @@ class StraightLineTrajectory(AbstractStraightLineTrajectory):
 
     def flow(self, steps):
         r"""
-        Append or preprend segments to the trajectory.
+        Append or prepend segments to the trajectory.
         If steps is positive, attempt to append this many segments.
         If steps is negative, attempt to prepend this many segments.
         Will fail gracefully the trajectory hits a singularity or closes up.
@@ -654,7 +674,6 @@ class StraightLineTrajectoryTranslation(AbstractStraightLineTrajectory):
       necessarily a number between 0 and 1. It is given relatively to the length
       of the induced interval in the iet)
 
-    (see the methods :meth:`_prev` and :meth:`_next`)
     """
     def __init__(self, tangent_vector):
         t = tangent_vector.polygon_label()

@@ -13,9 +13,12 @@ kernelspec:
 ---
 
 # Exploring Orbit Closures
-The file demonstrates how to use the `flatsurf` programs to compute the
-`GL(2,R)`-orbit closure of a surface. This example was interesting to
-P. Apisa and A. Wright.
+
+We demonstrate how to use sage-flatsurf to compute the `GL(2,R)`-orbit closure
+of a surface. This example was interesting to P. Apisa and A. Wright.
+
+Parts of this rely on the C++ library libflatsurf. Please consult our
+installation guide if it is not available on your system yet.
 
 +++
 
@@ -118,7 +121,8 @@ for i, dec in enumerate(O.decompositions(16, bfs=True)): # optional: pyflatsurf
      new_dim = O.dimension()
      if old_dim != new_dim:
          holonomies = [cyl.circumferenceHolonomy() for cyl in dec.cylinders()]
-         areas = [cyl.area() for cyl in dec.cylinders()]
+         # .area() as reported by liblatsurf is actually twice the area
+         areas = [cyl.area()/2 for cyl in dec.cylinders()]
          moduli = [(v.x()*v.x() + v.y()*v.y()) / area for v, area in zip(holonomies, areas)]
          u = dec.vertical().vertical()
          print("saddle connection number", i)
