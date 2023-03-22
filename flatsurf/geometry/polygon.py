@@ -613,10 +613,7 @@ class MatrixActionOnPolygons(Action):
         from sage.matrix.matrix_space import MatrixSpace
 
         R = polygons.base_ring()
-        # pylint misunderstands the metaclass machinery that SageMath uses here.
-        # pylint: disable=no-value-for-parameter
         Action.__init__(self, MatrixSpace(R, 2), polygons, True, operator.mul)
-        # pylint: enable=no-value-for-parameter
 
     def _act_(self, g, x):
         r"""
@@ -1976,11 +1973,8 @@ class Polygons(UniqueRepresentation, Parent):
 
     def __init__(self, ring):
         Parent.__init__(self, category=Sets())
-        # pylint misunderstands the metaclass machinery that SageMath uses here.
-        # pylint: disable=no-value-for-parameter
         if ring not in Rings():
             raise ValueError("'ring' must be a ring")
-        # pylint: enable=no-value-for-parameter
         self._ring = ring
         self.register_action(MatrixActionOnPolygons(self))
 
@@ -2882,8 +2876,6 @@ class EquiangularPolygons:
             sage: E.billiard_unfolding_stratum("translation", True)
             H_8(8, 2^3, 0^2)
         """
-        # pylint misunderstands the metaclass machinery that SageMath uses here.
-        # pylint: disable=no-value-for-parameter
         angles = self.billiard_unfolding_angles(cover_type)
         if all(a.is_integer() for a in angles):
             from surface_dynamics import AbelianStratum
@@ -2908,7 +2900,6 @@ class EquiangularPolygons:
                     if marked_points or a != 1
                 }
             )
-        # pylint: enable=no-value-for-parameter
 
     def billiard_unfolding_stratum_dimension(
         self, cover_type="translation", marked_points=False
@@ -3350,11 +3341,8 @@ class PolygonCreator:
         self._v = []
         self._w = []
 
-        # pylint misunderstands the metaclass machinery that SageMath uses here.
-        # pylint: disable=no-value-for-parameter
         if field not in Fields():
             raise TypeError("field must be a field")
-        # pylint: enable=no-value-for-parameter
 
         self._field = field
 

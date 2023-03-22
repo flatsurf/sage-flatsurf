@@ -174,10 +174,7 @@ def subfield_from_elements(self, alpha, name=None, polred=True, threshold=None):
 
     # Trivial maximal case (an element generating the field)
     if any(a.minpoly().degree() == self.degree() for a in alpha):
-        # pylint misunderstands the metaclass machinery that SageMath uses here.
-        # pylint: disable=no-value-for-parameter
         return (self, alpha, Hom(self, self, Fields()).identity())
-        # pylint: enable=no-value-for-parameter
 
     # Saturate with multiplication
     vecs = [(a * a.denominator()).vector() for a in alpha]
@@ -187,10 +184,7 @@ def subfield_from_elements(self, alpha, name=None, polred=True, threshold=None):
         modified = False
         d = U.dimension()
         if d == self.degree():
-            # pylint misunderstands the metaclass machinery that SageMath uses here.
-            # pylint: disable=no-value-for-parameter
             return (self, alpha, Hom(self, self, Fields()).identity())
-            # pylint: enable=no-value-for-parameter
         B = U.basis()
         new_vecs = [
             (self(B[i]) * self(B[j])).vector() for i in range(d) for j in range(i, d)
