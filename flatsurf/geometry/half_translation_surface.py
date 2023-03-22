@@ -26,6 +26,7 @@ class HalfTranslationSurface(HalfDilationSurface, RationalConeSurface):
     r"""
     A half translation surface has gluings between polygons whose monodromy is +I or -I.
     """
+
     def angles(self, numerical=False, return_adjacent_edges=False):
         r"""
         Return the set of angles around the vertices of the surface.
@@ -81,18 +82,22 @@ class HalfTranslationSurface(HalfDilationSurface, RationalConeSurface):
                 # Note that iteration order here is different for different
                 # versions of Python. Therefore, the output in the doctest
                 # above is random.
-                pair = p,e = next(iter(edges))
+                pair = p, e = next(iter(edges))
                 ve = self.polygon(p).edge(e)
                 angle = 0
                 adjacent_edges = []
                 while pair in edges:
                     adjacent_edges.append(pair)
                     edges.remove(pair)
-                    f = (e-1) % self.polygon(p).num_edges()
+                    f = (e - 1) % self.polygon(p).num_edges()
                     ve = self.polygon(p).edge(e)
                     vf = -self.polygon(p).edge(f)
-                    ppair = pp,ff = self.opposite_edge(p, f)
-                    angle += (ve[0] > 0 and vf[0] <= 0) or (ve[0] < 0 and vf[0] >= 0) or (ve[0] == vf[0] == 0)
+                    ppair = pp, ff = self.opposite_edge(p, f)
+                    angle += (
+                        (ve[0] > 0 and vf[0] <= 0)
+                        or (ve[0] < 0 and vf[0] >= 0)
+                        or (ve[0] == vf[0] == 0)
+                    )
                     pair, p, e = ppair, pp, ff
                 if numerical:
                     angles.append((float(angle) / 2, adjacent_edges))
@@ -100,20 +105,24 @@ class HalfTranslationSurface(HalfDilationSurface, RationalConeSurface):
                     angles.append((QQ((angle, 2)), adjacent_edges))
         else:
             while edges:
-                pair = p,e = next(iter(edges))
+                pair = p, e = next(iter(edges))
                 angle = 0
                 while pair in edges:
                     edges.remove(pair)
-                    f = (e-1) % self.polygon(p).num_edges()
+                    f = (e - 1) % self.polygon(p).num_edges()
                     ve = self.polygon(p).edge(e)
                     vf = -self.polygon(p).edge(f)
-                    ppair = pp,ff = self.opposite_edge(p, f)
-                    angle += (ve[0] > 0 and vf[0] <= 0) or (ve[0] < 0 and vf[0] >= 0) or (ve[0] == vf[0] == 0)
+                    ppair = pp, ff = self.opposite_edge(p, f)
+                    angle += (
+                        (ve[0] > 0 and vf[0] <= 0)
+                        or (ve[0] < 0 and vf[0] >= 0)
+                        or (ve[0] == vf[0] == 0)
+                    )
                     pair, p, e = ppair, pp, ff
                 if numerical:
                     angles.append(float(angle) / 2)
                 else:
-                    angles.append(QQ((angle,2)))
+                    angles.append(QQ((angle, 2)))
 
         return angles
 
@@ -131,7 +140,8 @@ class HalfTranslationSurface(HalfDilationSurface, RationalConeSurface):
         if all(x.denominator() == 1 for x in angles):
             raise NotImplementedError
         from surface_dynamics import QuadraticStratum
-        return QuadraticStratum(*[2*a-2 for a in angles])
+
+        return QuadraticStratum(*[2 * a - 2 for a in angles])
 
     def _test_edge_matrix(self, **options):
         r"""
@@ -139,6 +149,7 @@ class HalfTranslationSurface(HalfDilationSurface, RationalConeSurface):
         """
         tester = self._tester(**options)
         from flatsurf.geometry.similarity_surface import SimilaritySurface
+
         if self.is_finite():
             it = self.label_iterator()
         else:
@@ -149,9 +160,13 @@ class HalfTranslationSurface(HalfDilationSurface, RationalConeSurface):
             for e in range(p.num_edges()):
                 # Warning: check the matrices computed from the edges,
                 # rather the ones overridden by TranslationSurface.
-                m = SimilaritySurface.edge_matrix(self,lab,e)
-                tester.assertTrue(m.is_one() or (-m).is_one(),
-                    "edge_matrix between edge e={} and e'={} has matrix\n{}\nwhich is neither a translation nor a rotation by pi".format((lab,e), self.opposite_edge((lab,e)), m))
+                m = SimilaritySurface.edge_matrix(self, lab, e)
+                tester.assertTrue(
+                    m.is_one() or (-m).is_one(),
+                    "edge_matrix between edge e={} and e'={} has matrix\n{}\nwhich is neither a translation nor a rotation by pi".format(
+                        (lab, e), self.opposite_edge((lab, e)), m
+                    ),
+                )
 
     def holonomy_field(self):
         r"""
@@ -235,7 +250,7 @@ class HalfTranslationSurface(HalfDilationSurface, RationalConeSurface):
             TranslationSurface built from 6 polygons
         """
         if not self.is_finite():
-            raise ValueError('the surface must be finite')
+            raise ValueError("the surface must be finite")
         if self.base_ring() is QQ:
             return (self, matrix(QQ, 2, 2, 1))
 
@@ -247,8 +262,8 @@ class HalfTranslationSurface(HalfDilationSurface, RationalConeSurface):
         while wedge_product(u, v) == 0:
             i += 1
             u = p.edge(i)
-            v = -p.edge(i-1)
-        M = matrix(2, [u,v]).transpose().inverse()
+            v = -p.edge(i - 1)
+        M = matrix(2, [u, v]).transpose().inverse()
         assert M.det() > 0
         hols = []
         for lab in self.label_iterator():
@@ -259,23 +274,33 @@ class HalfTranslationSurface(HalfDilationSurface, RationalConeSurface):
                 hols.append(w[1])
         if self.base_ring() is AA:
             from .subfield import number_field_elements_from_algebraics
+
             K, new_hols = number_field_elements_from_algebraics(hols)
         else:
             from .subfield import subfield_from_elements
+
             K, new_hols, _ = subfield_from_elements(self.base_ring(), hols)
 
         from .polygon import ConvexPolygons
         from .surface import Surface_dict
+
         S = Surface_dict(K)
         C = ConvexPolygons(K)
         relabelling = {}
         k = 0
         for lab in self.label_iterator():
             m = self.polygon(lab).num_edges()
-            relabelling[lab] = S.add_polygon(C(edges=[(new_hols[k + 2*i], new_hols[k + 2*i+1]) for i in range(m)]), label=S.num_polygons())
+            relabelling[lab] = S.add_polygon(
+                C(
+                    edges=[
+                        (new_hols[k + 2 * i], new_hols[k + 2 * i + 1]) for i in range(m)
+                    ]
+                ),
+                label=S.num_polygons(),
+            )
             k += 2 * m
 
-        for (p1,e1),(p2,e2) in self.edge_iterator(gluings=True):
+        for (p1, e1), (p2, e2) in self.edge_iterator(gluings=True):
             S.set_edge_pairing(relabelling[p1], e1, relabelling[p2], e2)
 
         return (type(self)(S), M)

@@ -4,6 +4,7 @@ from six.moves import range, map, filter, zip
 from .similarity_surface import SimilaritySurface
 from .matrix_2x2 import is_cosine_sine_of_rational
 
+
 class RationalSimilaritySurface(SimilaritySurface):
     r"""
     A similarity surface such that the monodromy around any loop is similarity
@@ -46,6 +47,7 @@ class RationalSimilaritySurface(SimilaritySurface):
         ...
         The following tests failed: _test_edge_matrix
     """
+
     def _test_edge_matrix(self, **options):
         r"""
         Check the compatibility condition
@@ -59,6 +61,7 @@ class RationalSimilaritySurface(SimilaritySurface):
             it = self.label_iterator()
         else:
             from itertools import islice
+
             it = islice(self.label_iterator(), 30)
 
         for lab in it:
@@ -66,9 +69,9 @@ class RationalSimilaritySurface(SimilaritySurface):
             for e in range(p.num_edges()):
                 # Warning: check the matrices computed from the edges,
                 # rather the ones overridden by TranslationSurface.
-                m = SimilaritySurface.edge_matrix(self,lab,e)
-                a = AA(m[0,0])
-                b = AA(m[1,0])
+                m = SimilaritySurface.edge_matrix(self, lab, e)
+                a = AA(m[0, 0])
+                b = AA(m[1, 0])
                 q = (a**2 + b**2).sqrt()
                 a /= q
                 b /= q

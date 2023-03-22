@@ -10,6 +10,7 @@ class RationalConeSurface(ConeSurface):
     A Euclidean cone surface such that the rotational part of the monodromy around any loop
     is a finite order rotation.
     """
+
     def _test_edge_matrix(self, **options):
         r"""
         Check the compatibility condition
@@ -17,10 +18,12 @@ class RationalConeSurface(ConeSurface):
         tester = self._tester(**options)
 
         from .similarity_surface import SimilaritySurface
+
         if self.is_finite():
             it = self.label_iterator()
         else:
             from itertools import islice
+
             it = islice(self.label_iterator(), 30)
 
         for lab in it:

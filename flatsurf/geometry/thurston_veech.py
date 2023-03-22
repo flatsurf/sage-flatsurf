@@ -49,6 +49,7 @@ from .polygon import ConvexPolygons
 from .surface import Surface_dict
 from .translation_surface import TranslationSurface
 
+
 class ThurstonVeech:
     def __init__(self, hp, vp):
         r"""
@@ -93,9 +94,11 @@ class ThurstonVeech:
         E.set_immutable()
 
     def __repr__(self):
-        return "ThurstonVeech(\"{}\", \"{}\")".format(self._o.r().cycle_string(singletons=True),
-                                              self._o.u().cycle_string(singletons=True))
-    
+        return 'ThurstonVeech("{}", "{}")'.format(
+            self._o.r().cycle_string(singletons=True),
+            self._o.u().cycle_string(singletons=True),
+        )
+
     def stratum(self):
         return self._o.stratum()
 
@@ -135,7 +138,7 @@ class ThurstonVeech:
         else:
             fwd, bck, q = do_polred(pf.minpoly())
             im_gen = fwd(pf)
-            K = NumberField(q, 'a', embedding=im_gen)
+            K = NumberField(q, "a", embedding=im_gen)
             pf = bck(K.gen())
 
         # Compute widths of the cylinders via Perron-Frobenius
@@ -167,7 +170,7 @@ class ThurstonVeech:
         for i in range(self._o.nb_squares()):
             hi = h[self._hcycles[i]]
             vi = v[self._vcycles[i]]
-            P.append(C(edges=[(vi,0),(0,hi),(-vi,0),(0,-hi)]))
+            P.append(C(edges=[(vi, 0), (0, hi), (-vi, 0), (0, -hi)]))
 
         surface = Surface_dict(base_ring=K)
         for p in P:

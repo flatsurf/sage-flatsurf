@@ -31,12 +31,13 @@ commensurable moduli ("parabolic direction").
 import sys
 import pytest
 
-pytest.importorskip('pyflatsurf')
+pytest.importorskip("pyflatsurf")
 
 import sage.all
 from flatsurf import translation_surfaces, GL2ROrbitClosure
 
-@pytest.mark.parametrize("n,bound", [(4,4),(5,4),(6,4),(7,4),(8,4)])
+
+@pytest.mark.parametrize("n,bound", [(4, 4), (5, 4), (6, 4), (7, 4), (8, 4)])
 def test_veech_2n_gon(n, bound):
     S = translation_surfaces.veech_2n_gon(n)
     O = GL2ROrbitClosure(S)
@@ -45,7 +46,8 @@ def test_veech_2n_gon(n, bound):
         O.update_tangent_space_from_flow_decomposition(d)
     assert O.dimension() == O.absolute_dimension() == 2
 
-@pytest.mark.parametrize("n,bound", [(3,4),(5,4),(7,4),(9,4)])
+
+@pytest.mark.parametrize("n,bound", [(3, 4), (5, 4), (7, 4), (9, 4)])
 def test_veech_double_n_gon(n, bound):
     S = translation_surfaces.veech_double_n_gon(n)
     O = GL2ROrbitClosure(S)

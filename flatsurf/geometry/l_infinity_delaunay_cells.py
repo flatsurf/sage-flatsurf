@@ -12,11 +12,11 @@ from six.moves import range, map, filter, zip
 from sage.misc.cachefunc import cached_method
 
 # the types of edges
-V_NONE = 0   # start vertex has no horizontal/vertical separatrix
-V_LEFT = 1   # horizontal separatrix going right
+V_NONE = 0  # start vertex has no horizontal/vertical separatrix
+V_LEFT = 1  # horizontal separatrix going right
 V_RIGHT = 2  # horizontal separatrix going left
-V_BOT = 3    # vertical separatrix going up
-V_TOP = 4    # vertical separatrix going down
+V_BOT = 3  # vertical separatrix going up
+V_TOP = 4  # vertical separatrix going down
 
 # helpers to build polytope inequalities
 def sign_and_norm_conditions(dim, i, s):
@@ -42,13 +42,14 @@ def sign_and_norm_conditions(dim, i, s):
         [[0, -1], [0, 0], [1, -1], [1, 0]]
     """
     l_sign = [0] * (dim + 1)
-    l_sign[i+1] = s
+    l_sign[i + 1] = s
 
     l_norm = [0] * (dim + 1)
-    l_norm[i+1] = -s
+    l_norm[i + 1] = -s
     l_norm[0] = 1
 
     return (l_sign, l_norm)
+
 
 def opposite_condition(dim, i, j):
     r"""
@@ -73,48 +74,51 @@ def opposite_condition(dim, i, j):
         [[0, 0], [1, -1]]
     """
     l = [0] * (dim + 1)
-    l[i+1] = 1
-    l[j+1] = 1
+    l[i + 1] = 1
+    l[j + 1] = 1
 
     return l
+
 
 def bottom_top_delaunay_condition(dim, p1, e1, p2, e2):
     r"""
     Delaunay condition for bottom-top pairs of triangles
     """
     # re(e2p1) <= im(e1) + im(e2m1)
-    e2m1 = (e2+2)%3
-    e2p1 = (e2+1)%3
+    e2m1 = (e2 + 2) % 3
+    e2p1 = (e2 + 1) % 3
 
-    im_e2m1 = 2*(3*p2 + e2m1) + 1
-    re_e2p1 = 2*(3*p2 + e2p1)
-    im_e1   = 2*(3*p1 + e1) + 1
+    im_e2m1 = 2 * (3 * p2 + e2m1) + 1
+    re_e2p1 = 2 * (3 * p2 + e2p1)
+    im_e1 = 2 * (3 * p1 + e1) + 1
 
-    l = [0]*(dim+1)
-    l[im_e1+1] = 1
-    l[im_e2m1+1] = 1
-    l[re_e2p1+1] = -1
+    l = [0] * (dim + 1)
+    l[im_e1 + 1] = 1
+    l[im_e2m1 + 1] = 1
+    l[re_e2p1 + 1] = -1
 
     return l
+
 
 def right_left_delaunay_condition(dim, p1, e1, p2, e2):
     r"""
     Delaunay condition for right-left pairs of triangles
     """
     # im(e2p1) <= re(e2) + re(e1m1)
-    e1m1 = (e1+2)%3
-    e2p1 = (e2+1)%3
+    e1m1 = (e1 + 2) % 3
+    e2p1 = (e2 + 1) % 3
 
-    im_e2p1 = 3*(p2 + e2p1) + 1
-    re_e2 = 3*(p2 + e2)
-    re_e1m1 = 3*(p1 + e1m1)
+    im_e2p1 = 3 * (p2 + e2p1) + 1
+    re_e2 = 3 * (p2 + e2)
+    re_e1m1 = 3 * (p1 + e1m1)
 
-    l = [0]*(dim+1)
-    l[re_e2+1] = 1
-    l[re_e1m1+1] = 1
-    l[im_e2p1+1] = -1
+    l = [0] * (dim + 1)
+    l[re_e2 + 1] = 1
+    l[re_e1m1 + 1] = 1
+    l[im_e2p1 + 1] = -1
 
     return l
+
 
 class LInfinityMarkedTriangulation:
     r"""
@@ -128,8 +132,10 @@ class LInfinityMarkedTriangulation:
         sage: types = [(V_BOT, V_NONE, V_RIGHT), (V_NONE, V_LEFT, V_TOP)]
         sage: T = LInfinityMarkedTriangulation(2, gluings, types)
     """
+
     def __init__(self, num_faces, edge_identifications, edge_types, check=True):
         from sage.rings.integer_ring import ZZ
+
         self._n = ZZ(num_faces)
         self._edge_identifications = edge_identifications
         self._edge_types = edge_types
@@ -140,28 +146,46 @@ class LInfinityMarkedTriangulation:
         if self._n % 2:
             raise ValueError("the number of faces must be even")
 
-        if sorted(self._edge_identifications.keys()) != [(i,j) for i in range(self._n) for j in range(3)]:
+        if sorted(self._edge_identifications.keys()) != [
+            (i, j) for i in range(self._n) for j in range(3)
+        ]:
             raise ValueError("should be a triangulation")
 
-        if not isinstance(self._edge_types, list) or len(self._edge_types) != self.num_faces():
+        if (
+            not isinstance(self._edge_types, list)
+            or len(self._edge_types) != self.num_faces()
+        ):
             raise ValueError("edge_types invalid")
-            
+
         for i in range(self.num_faces()):
             if len(self._edge_types[i]) != 3:
                 raise ValueError("edge_types invalid")
             for j in range(3):
-                if self._edge_types[i][j] not in [V_NONE, V_LEFT, V_RIGHT, V_BOT, V_TOP]:
+                if self._edge_types[i][j] not in [
+                    V_NONE,
+                    V_LEFT,
+                    V_RIGHT,
+                    V_BOT,
+                    V_TOP,
+                ]:
                     raise ValueError("types[{}] = {} invalid", i, self._edge_types[i])
 
         seen = [False] * self._n
         for p in range(self._n):
             if seen[p]:
                 continue
-            sh = sum(self._edge_types[p][r] == V_LEFT or self._edge_types[p][r] == V_RIGHT for r in (0,1,2))
-            sv = sum(self._edge_types[p][r] == V_BOT or self._edge_types[p][r] == V_TOP for r in (0,1,2))
+            sh = sum(
+                self._edge_types[p][r] == V_LEFT or self._edge_types[p][r] == V_RIGHT
+                for r in (0, 1, 2)
+            )
+            sv = sum(
+                self._edge_types[p][r] == V_BOT or self._edge_types[p][r] == V_TOP
+                for r in (0, 1, 2)
+            )
             if sh != 1 or sv != 1:
-                raise ValueError("triangle {} has invalid types {}".format(
-                     p, self._edge_types[p]))
+                raise ValueError(
+                    "triangle {} has invalid types {}".format(p, self._edge_types[p])
+                )
 
     def num_faces(self):
         return self._n
@@ -195,11 +219,11 @@ class LInfinityMarkedTriangulation:
         for p1 in range(self._n):
             for e1 in range(3):
                 if self._edge_types[p1][e1] == V_BOT:
-                    e1p1 = (e1+1)%3
-                    p2,e2 = self.opposite_edge(p1,e1p1)
-                    e2m1 = (e2-1)%3
+                    e1p1 = (e1 + 1) % 3
+                    p2, e2 = self.opposite_edge(p1, e1p1)
+                    e2m1 = (e2 - 1) % 3
                     if self._edge_types[p2][e2m1] == V_TOP:
-                        pairs.append((p1,e1,p2,e2m1))
+                        pairs.append((p1, e1, p2, e2m1))
         return pairs
 
     def right_left_pairs(self):
@@ -222,11 +246,11 @@ class LInfinityMarkedTriangulation:
         for p1 in range(self._n):
             for e1 in range(3):
                 if self._edge_types[p1][e1] == V_RIGHT:
-                    e1p1 = (e1+1)%3
-                    p2,e2 = self.opposite_edge(p1,e1p1)
-                    e2m1 = (e2-1)%3
+                    e1p1 = (e1 + 1) % 3
+                    p2, e2 = self.opposite_edge(p1, e1p1)
+                    e2m1 = (e2 - 1) % 3
                     if self._edge_types[p2][e2m1] == V_LEFT:
-                        pairs.append((p1,e1,p2,e2m1))
+                        pairs.append((p1, e1, p2, e2m1))
         return pairs
 
     @cached_method
@@ -235,13 +259,13 @@ class LInfinityMarkedTriangulation:
         Each edge correspond to a vector in RR^2 (identified to CC)
 
         We assign the following coordinates
-        
+
         (p,e) -> real part at 2*(3*p + e) and imag part at 2*(3*p + e) + 1
 
         The return polyhedron is compact as we fix each side to be of L-infinity
         length less than 1.
         """
-        dim = 4*self.num_edges()
+        dim = 4 * self.num_edges()
         eqns = []
         ieqs = []
 
@@ -249,38 +273,38 @@ class LInfinityMarkedTriangulation:
 
         # edges should sum up to zero
         for p in range(self._n):
-            l = [0]*(dim+1)
-            l[6*p+1] = 1
-            l[6*p+3] = 1
-            l[6*p+5] = 1
+            l = [0] * (dim + 1)
+            l[6 * p + 1] = 1
+            l[6 * p + 3] = 1
+            l[6 * p + 5] = 1
             eqns.append(l)
-            
-            l = [0]*(dim+1)
-            l[6*p+2] = 1
-            l[6*p+4] = 1
-            l[6*p+6] = 1
+
+            l = [0] * (dim + 1)
+            l[6 * p + 2] = 1
+            l[6 * p + 4] = 1
+            l[6 * p + 6] = 1
             eqns.append(l)
 
         # opposite edges are opposite vectors
         for p1 in range(self._n):
             for e1 in range(3):
-                p2,e2 = self.opposite_edge(p1, e1)
-                re1 = 2*(3*p1+e1)
-                im1 = 2*(3*p1+e1)+1
-                re2 = 2*(3*p2+e2)
-                im2 = 2*(3*p2+e2)+1
+                p2, e2 = self.opposite_edge(p1, e1)
+                re1 = 2 * (3 * p1 + e1)
+                im1 = 2 * (3 * p1 + e1) + 1
+                re2 = 2 * (3 * p2 + e2)
+                im2 = 2 * (3 * p2 + e2) + 1
                 if re1 < re2:
                     eqns.append(opposite_condition(dim, re1, re2))
                     eqns.append(opposite_condition(dim, im1, im2))
 
         # Compute the signs depending on edge types
         for p in range(self._n):
-            for e1,e2 in ((2,0),(0,1),(1,2)):
+            for e1, e2 in ((2, 0), (0, 1), (1, 2)):
                 t = self._edge_types[p][e2]
-                re1 = 2*(3*p+e1)
-                im1 = 2*(3*p+e1) + 1
-                re2 = 2*(3*p+e2)
-                im2 = 2*(3*p+e2) + 1
+                re1 = 2 * (3 * p + e1)
+                im1 = 2 * (3 * p + e1) + 1
+                re2 = 2 * (3 * p + e2)
+                im2 = 2 * (3 * p + e2) + 1
                 if t == V_BOT:
                     signs[re1] = signs[re2] = +1
                     signs[im1] = -1
@@ -303,15 +327,16 @@ class LInfinityMarkedTriangulation:
             ieqs.extend(sign_and_norm_conditions(dim, i, signs[i]))
 
         # Delaunay conditions
-        for p1,e1,p2,e2 in self.bottom_top_pairs():
+        for p1, e1, p2, e2 in self.bottom_top_pairs():
             ieqs.append(bottom_top_delaunay_condition(dim, p1, e1, p2, e2))
-        for p1,e1,p2,e2 in self.right_left_pairs():
+        for p1, e1, p2, e2 in self.right_left_pairs():
             ieqs.append(right_left_delaunay_condition(dim, p1, e1, p2, e2))
 
-#        return eqns, ieqs
+        #        return eqns, ieqs
 
         from sage.geometry.polyhedron.constructor import Polyhedron
         from sage.rings.rational_field import QQ
+
         return Polyhedron(ieqs=ieqs, eqns=eqns, base_ring=QQ)
 
     def barycenter(self):
@@ -338,17 +363,19 @@ class LInfinityMarkedTriangulation:
 
         from .polygon import ConvexPolygons
         from sage.rings.rational_field import QQ
+
         C = ConvexPolygons(QQ)
 
         from flatsurf import Surface_dict, TranslationSurface
+
         S = Surface_dict(QQ)
 
         triangles = []
         for p in range(self._n):
-            e1 = (b[6*p], b[6*p+1])
-            e2 = (b[6*p+2], b[6*p+3])
-            e3 = (b[6*p+4], b[6*p+5])
-            S.add_polygon(C([e1,e2,e3]), label=S.num_polygons())
+            e1 = (b[6 * p], b[6 * p + 1])
+            e2 = (b[6 * p + 2], b[6 * p + 3])
+            e3 = (b[6 * p + 4], b[6 * p + 5])
+            S.add_polygon(C([e1, e2, e3]), label=S.num_polygons())
 
         for (p, e), (pp, ee) in self._edge_identifications.items():
             S.set_edge_pairing(p, e, pp, ee)

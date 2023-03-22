@@ -20,7 +20,8 @@ from sage.categories.homset import Hom
 from sage.categories.fields import Fields
 from sage.rings.qqbar import do_polred
 
-def number_field_elements_from_algebraics(elts, name='a'):
+
+def number_field_elements_from_algebraics(elts, name="a"):
     r"""
     The native Sage function ``number_field_elements_from_algebraics`` currently
     returns number field *without* embedding. This function return field with
@@ -44,13 +45,15 @@ def number_field_elements_from_algebraics(elts, name='a'):
 
     # general case
     from sage.rings.qqbar import number_field_elements_from_algebraics
-    field,elts,phi = number_field_elements_from_algebraics(elts, minimal=True)
+
+    field, elts, phi = number_field_elements_from_algebraics(elts, minimal=True)
 
     polys = [x.polynomial() for x in elts]
     K = NumberField(field.polynomial(), name, embedding=AA(phi(field.gen())))
     gen = K.gen()
 
     return K, [x.polynomial()(gen) for x in elts]
+
 
 def subfield_from_elements(self, alpha, name=None, polred=True, threshold=None):
     r"""
@@ -163,7 +166,9 @@ def subfield_from_elements(self, alpha, name=None, polred=True, threshold=None):
         if d == self.degree():
             return (self, alpha, Hom(self, self, Fields()).identity())
         B = U.basis()
-        new_vecs = [(self(B[i]) * self(B[j])).vector() for i in range(d) for j in range(i, d)]
+        new_vecs = [
+            (self(B[i]) * self(B[j])).vector() for i in range(d) for j in range(i, d)
+        ]
         if any(vv not in U for vv in new_vecs):
             U = V.subspace(list(B) + new_vecs)
             modified = True
@@ -203,6 +208,7 @@ def subfield_from_elements(self, alpha, name=None, polred=True, threshold=None):
     new_alpha = [K(M.solve_left(elt.vector())) for elt in alpha]
 
     return (K, new_alpha, hom)
+
 
 def is_embedded_subfield(K, L, certificate=False):
     r"""
@@ -253,6 +259,7 @@ def is_embedded_subfield(K, L, certificate=False):
             return (True, K.hom(L, [r])) if certificate else True
     return (False, None) if certificate else False
 
+
 def chebyshev_T(n, c):
     r"""
     Return the Chebyshev polynomial T_n so that
@@ -289,9 +296,10 @@ def chebyshev_T(n, c):
         return parent(c)(2)
     T0 = 2
     T1 = c
-    for i in range(n-1):
+    for i in range(n - 1):
         T0, T1 = T1, c * T1 - T0
     return T1
+
 
 def cos_minpoly_odd_prime(p, var):
     r"""
@@ -314,16 +322,17 @@ def cos_minpoly_odd_prime(p, var):
     """
     T0 = 2
     T1 = var
-    k = (p-1)//2
-    s = (-1)**k
+    k = (p - 1) // 2
+    s = (-1) ** k
     minpoly = s * (1 - T1)
-    for i in range(k-1):
+    for i in range(k - 1):
         T0, T1 = T1, var * T1 - T0
         minpoly += s * T1
         s *= -1
     return minpoly
 
-def cos_minpoly(n, var='x'):
+
+def cos_minpoly(n, var="x"):
     r"""
     Return the minimal polynomial of 2 cos pi/n
 
@@ -374,7 +383,7 @@ def cos_minpoly(n, var='x'):
     if not facs:
         # 0. n = 2^k
         # ([KoRoTr2015] Lemma 12)
-        return chebyshev_T(2**(k-1), var)
+        return chebyshev_T(2 ** (k - 1), var)
 
     # 1. Compute M_{n0} = M_{p1 ... ps}
     # ([KoRoTr2015] Lemma 14 and Lemma 15)
@@ -386,7 +395,7 @@ def cos_minpoly(n, var='x'):
 
     # 2. Compute M_{2^k p1^{a1} ... ps^{as}}
     # ([KoRoTr2015] Lemma 12)
-    nn = 2**k * prod(p**(a-1) for p,a in facs)
+    nn = 2**k * prod(p ** (a - 1) for p, a in facs)
     if nn != 1:
         M = M(chebyshev_T(nn, var))
 
