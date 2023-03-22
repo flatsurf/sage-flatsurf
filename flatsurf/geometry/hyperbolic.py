@@ -493,7 +493,11 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         from sage.structure.parent import Parent
         from sage.all import SR
 
+        # pylint does not see the Cython parent() so we disable the import check.
+        # pylint: disable=no-member
         parent = sage.structure.element.parent(x)
+        # pylint: enable=no-member
+
         # Note that in old versions of SageMath (9.1 e.g.), I is not a number field element but a symbolic ring element.
         # The "parent is SR" part can probably removed at some point.
         if isinstance(parent, Parent) and parent in NumberFields() or parent is SR:
@@ -2945,10 +2949,10 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
                 return None
 
             if preimage.start() in existings:
-                return self._isometry_untrivialize((preimage.end(), image.end()))
+                return self._isometry_untrivialize(preimage.end(), image.end(), defining)
 
             if preimage.end() in existings:
-                return self._isometry_untrivialize((preimage.start(), image.start()))
+                return self._isometry_untrivialize(preimage.start(), image.start(), defining)
 
             return (preimage, image)
 
@@ -3629,7 +3633,7 @@ class HyperbolicGeometry:
             return None
         return det
 
-    def change_ring(ring):
+    def change_ring(self, ring):
         r"""
         Return this geometry with the :meth:`base_ring` changed to ``ring``.
 
@@ -10437,7 +10441,13 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
                 if maybe_point is True:
                     maybe_point = segment
                 elif maybe_point != segment:
+                    # Unsurprisingly, pylint gets confused by maybe_point being
+                    # both a boolean and a point at times. The code should
+                    # probably be cleaned up. But here, it must be a point so
+                    # the call is save.
+                    # pylint: disable=no-member
                     assert not maybe_point.is_finite()
+                    # pylint: enable=no-member
                     assert not segment.is_finite()
 
                     maybe_point = False

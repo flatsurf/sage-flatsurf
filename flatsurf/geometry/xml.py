@@ -1,6 +1,6 @@
 r"""
-This module contains functions to output surfaces to a string or a file in a human and computer 
-readable format using XML. 
+This module contains functions to output surfaces to a string or a file in a human and computer
+readable format using XML.
 
 We also have a function to recreate the surface from the string/file.
 
@@ -103,13 +103,13 @@ def surface_to_xml_string(s, complain=True):
     output.append("</polygons>")
 
     output.append("<gluings>")
-    for l, e in s.edge_iterator():
-        ll, ee = s.opposite_edge(l, e)
-        if ll < l or (ll == l and ee < e):
+    for label, e in s.edge_iterator():
+        ll, ee = s.opposite_edge(label, e)
+        if ll < label or (ll == label and ee < e):
             continue
         output.append("<glue>")
         output.append("<l>")
-        output.append(escape(repr(l)))
+        output.append(escape(repr(label)))
         output.append("</l>")
         output.append("<e>")
         output.append(escape(repr(e)))
@@ -207,26 +207,26 @@ def _surface_from_ElementTree(tree):
         node = polygon.find("label")
         if node is None:
             raise ValueError("Failed to find tag <label> in <polygon>")
-        label = int(node.text)
+        label0 = int(node.text)
         edges = []
         for edge in polygon.findall("edge"):
             node = edge.find("x")
             if node is None:
                 raise ValueError(
                     "Failed to find tag <x> in <edge> in <polygon> with label="
-                    + str(label)
+                    + str(label0)
                 )
             x = base_ring(node.text)
             node = edge.find("y")
             if node is None:
                 raise ValueError(
                     "Failed to find tag <y> in <edge> in <polygon> with label="
-                    + str(label)
+                    + str(label0)
                 )
             y = base_ring(node.text)
             edges.append((x, y))
         p = P(edges=edges)
-        s.add_polygon(p, label=label)
+        s.add_polygon(p, label=label0)
     if s.num_polygons() == 0:
         raise ValueError("Failed to add any polygons.")
 
@@ -238,7 +238,7 @@ def _surface_from_ElementTree(tree):
         node = glue.find("l")
         if node is None:
             raise ValueError("Failed to find tag <l> in <glue>.")
-        l = int(node.text)
+        label0 = int(node.text)
         node = glue.find("e")
         if node is None:
             raise ValueError("Failed to find tag <e> in <glue>.")
@@ -246,12 +246,12 @@ def _surface_from_ElementTree(tree):
         node = glue.find("ll")
         if node is None:
             raise ValueError("Failed to find tag <ll> in <glue>.")
-        ll = int(node.text)
+        label1 = int(node.text)
         node = glue.find("ee")
         if node is None:
             raise ValueError("Failed to find tag <ee> in <glue>.")
         ee = int(node.text)
-        s.change_edge_gluing(l, e, ll, ee)
+        s.change_edge_gluing(label0, e, label1, ee)
 
     node = tree.find("base_label")
     if node is None:

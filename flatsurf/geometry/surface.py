@@ -78,6 +78,8 @@ from collections import deque
 
 from sage.structure.sage_object import SageObject
 
+from sage.misc.cachefunc import cached_method
+
 
 class Surface(SageObject):
     r"""
@@ -194,10 +196,10 @@ class Surface(SageObject):
         """
         raise NotImplementedError
 
-    def opposite_edge(self, l, e):
+    def opposite_edge(self, label, e):
         r"""
-        Given the label ``l`` of a polygon and an edge ``e`` in that polygon
-        returns the pair (``ll``, ``ee``) to which this edge is glued.
+        Given the label ``label`` of a polygon and an edge ``e`` in that
+        polygon returns the pair (``ll``, ``ee``) to which this edge is glued.
 
         This method must be overridden in subclasses.
         """
@@ -283,7 +285,7 @@ class Surface(SageObject):
             try:
                 return self._cache["num_edges"]
             except KeyError:
-                num_edges = sum(p.num_edges() for l, p in self.label_polygon_iterator())
+                num_edges = sum(p.num_edges() for label, p in self.label_polygon_iterator())
                 self._cache["num_edges"] = num_edges
                 return num_edges
         else:
@@ -299,7 +301,7 @@ class Surface(SageObject):
             try:
                 return self._cache["area"]
             except KeyError:
-                area = sum(p.area() for l, p in self.label_polygon_iterator())
+                area = sum(p.area() for label, p in self.label_polygon_iterator())
                 self._cache["area"] = area
                 return area
         raise NotImplementedError(
@@ -549,7 +551,7 @@ class Surface(SageObject):
 
         """
         labels = list(self.label_iterator())
-        polygons = [self.polygon(l) for l in labels]
+        polygons = [self.polygon(label) for label in labels]
 
         subdivisions = [p.subdivide() for p in polygons]
 
@@ -634,7 +636,7 @@ class Surface(SageObject):
 
         """
         labels = list(self.label_iterator())
-        polygons = [self.polygon(l) for l in labels]
+        polygons = [self.polygon(label) for label in labels]
 
         subdivideds = [p.subdivide_edges(parts=parts) for p in polygons]
 
@@ -663,23 +665,17 @@ class Surface(SageObject):
 
         return surface
 
+    @cached_method
     def __hash__(self):
         r"""
         Hash compatible with equals.
         """
-        if hasattr(self, "_hash"):
-            return self._hash
         if self.is_mutable():
             raise ValueError("Attempting to hash mutable surface.")
         if not self.is_finite():
             raise ValueError("Attempting to hash infinite surface.")
-        h = 73 + 17 * hash(self.base_ring()) + 23 * hash(self.base_label())
-        for pair in self.label_polygon_iterator():
-            h = h + 7 * hash(pair)
-        for edgepair in self.edge_gluing_iterator():
-            h = h + 3 * hash(edgepair)
-        self._hash = h
-        return h
+
+        return hash((self.base_ring(), self.base_label(), tuple(self.label_polygon_iterator()), tuple(self.edge_gluing_iterator())))
 
     def __eq__(self, other):
         r"""
@@ -1930,8 +1926,8 @@ class LabelWalker:
             if label in self._label_dict:
                 return self._label_dict[label]
             for i in range(limit):
-                l = self.find_a_new_label()
-                if label == l:
+                new_label = self.find_a_new_label()
+                if label == new_label:
                     return self._label_dict[label]
             raise ValueError(
                 "Failed to find label even after searching. limit=" + str(limit)
