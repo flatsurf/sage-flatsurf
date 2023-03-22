@@ -35,12 +35,7 @@ from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ
 from sage.modules.free_module_element import FreeModuleElement
 
-from sage.env import SAGE_VERSION
-
-if SAGE_VERSION >= "8.2":
-    from sage.structure.element import is_Matrix
-else:
-    from sage.matrix.matrix import is_Matrix
+from sage.structure.element import is_Matrix
 
 from flatsurf.geometry.polygon import ConvexPolygon, ConvexPolygons
 
