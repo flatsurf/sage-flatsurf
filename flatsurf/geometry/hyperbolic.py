@@ -3100,7 +3100,10 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         from sage.all import MatrixSpace
 
+        # pylint misunderstands the metaclass machinery that SageMath uses here.
+        # pylint: disable=no-value-for-parameter
         MS = MatrixSpace(self.base_ring(), 2, 2)
+        # pylint: enable=no-value-for-parameter
 
         isometry = MS(1)
 
