@@ -168,7 +168,10 @@ class SimilaritySurface(SageObject):
     def _matrix_space(self):
         from sage.matrix.matrix_space import MatrixSpace
 
+        # pylint misunderstands the metaclass machinery that SageMath uses here, so we disable it.
+        # pylint: disable=no-value-for-parameter
         return MatrixSpace(self.base_ring(), 2)
+        # pylint: enable=no-value-for-parameter
 
     def underlying_surface(self):
         r"""

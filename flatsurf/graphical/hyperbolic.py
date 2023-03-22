@@ -1032,7 +1032,10 @@ class HyperbolicPathPlotCommand:
                 # vertical to avoid numeric issus.
                 return [CartesianPathPlotCommand("LINETO", (end_x, end_y))]
 
+            # pylint misunderstands the metaclass machinery that SageMath uses here.
+            # pylint: disable=no-value-for-parameter
             real_hyperbolic_plane = HyperbolicPlane(RR)
+            # pylint: enable=no-value-for-parameter
             geodesic = real_hyperbolic_plane.geodesic(
                 real_hyperbolic_plane.point(start_x, start_y, model="half_plane"),
                 real_hyperbolic_plane.point(end_x, end_y, model="half_plane"),
