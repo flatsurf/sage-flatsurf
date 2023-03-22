@@ -433,9 +433,9 @@ class SimilaritySurface(SageObject):
             True
         """
         if e is None:
-            import warning
+            import warnings
 
-            warning.warn("edge_matrix will now only take two arguments")
+            warnings.warn("edge_matrix will now only take two arguments")
             p, e = p
         u = self.polygon(p).edge(e)
         pp, ee = self.opposite_edge(p, e)
