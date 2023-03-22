@@ -138,12 +138,16 @@ class Surface(SageObject):
             raise ValueError("finite must be either True or False")
 
         from sage.all import Rings
+
         if base_ring not in Rings():
             raise ValueError("base_ring must be a ring")
 
         if not base_ring.is_exact():
             from warnings import warn
-            warn("surface defined over an inexact ring; many operations in sage-flatsurf are not going to work correctly over this ring")
+
+            warn(
+                "surface defined over an inexact ring; many operations in sage-flatsurf are not going to work correctly over this ring"
+            )
 
         if mutable not in [False, True]:
             raise ValueError("mutable must be either True or False")
@@ -170,9 +174,12 @@ class Surface(SageObject):
         it = self.label_iterator()
         if not self.is_finite():
             if limit is None:
-                raise ValueError("for infinite polygon, 'limit' must be set to a positive integer")
+                raise ValueError(
+                    "for infinite polygon, 'limit' must be set to a positive integer"
+                )
             else:
                 from itertools import islice
+
                 it = islice(it, limit)
         for p in it:
             if self.polygon(p).num_edges() != 3:
@@ -241,11 +248,12 @@ class Surface(SageObject):
         performance.
         """
         if self.is_finite():
-            lw=self.walker()
+            lw = self.walker()
             lw.find_all_labels()
             return len(lw)
         else:
             from sage.rings.infinity import Infinity
+
             return Infinity
 
     def label_iterator(self):
@@ -275,11 +283,12 @@ class Surface(SageObject):
             try:
                 return self._cache["num_edges"]
             except KeyError:
-                num_edges = sum(p.num_edges() for l,p in self.label_polygon_iterator())
+                num_edges = sum(p.num_edges() for l, p in self.label_polygon_iterator())
                 self._cache["num_edges"] = num_edges
                 return num_edges
         else:
             from sage.rings.infinity import Infinity
+
             return Infinity
 
     def area(self):
@@ -290,16 +299,18 @@ class Surface(SageObject):
             try:
                 return self._cache["area"]
             except KeyError:
-                area = sum(p.area() for l,p in self.label_polygon_iterator())
+                area = sum(p.area() for l, p in self.label_polygon_iterator())
                 self._cache["area"] = area
                 return area
-        raise NotImplementedError("area is not implemented for surfaces built from an infinite number of polygons")
+        raise NotImplementedError(
+            "area is not implemented for surfaces built from an infinite number of polygons"
+        )
 
     def edge_iterator(self):
         r"""
         Iterate over the edges of polygons, which are pairs (l,e) where l is a polygon label, 0 <= e < N and N is the number of edges of the polygon with label l.
         """
-        for label,polygon in self.label_polygon_iterator():
+        for label, polygon in self.label_polygon_iterator():
             for edge in range(polygon.num_edges()):
                 yield label, edge
 
@@ -308,8 +319,10 @@ class Surface(SageObject):
         Iterate over the ordered pairs of edges being glued.
         """
         for label_edge_pair in self.edge_iterator():
-            yield (label_edge_pair, \
-                self.opposite_edge(label_edge_pair[0], label_edge_pair[1]))
+            yield (
+                label_edge_pair,
+                self.opposite_edge(label_edge_pair[0], label_edge_pair[1]),
+            )
 
     def base_ring(self):
         r"""
@@ -374,7 +387,7 @@ class Surface(SageObject):
         r"""
         Called before a mutation occurs. Do not call directly.
         """
-        assert(self.is_mutable())
+        assert self.is_mutable()
         # Remove the cache which will likely be invalidated.
         self._cache = {}
 
@@ -410,12 +423,16 @@ class Surface(SageObject):
         and updates the edges listed in the glue_list.
         """
         self.__mutate()
-        p=self.polygon(label)
+        p = self.polygon(label)
         if p.num_edges() != len(glue_list):
-            raise ValueError("len(glue_list)="+str(len(glue_list))+\
-                " and number of sides of polygon="+str(p.num_edges())+\
-                " should be the same.")
-        for e,(pp,ee) in enumerate(glue_list):
+            raise ValueError(
+                "len(glue_list)="
+                + str(len(glue_list))
+                + " and number of sides of polygon="
+                + str(p.num_edges())
+                + " should be the same."
+            )
+        for e, (pp, ee) in enumerate(glue_list):
             self._set_edge_pairing(label, e, pp, ee)
 
     def add_polygons(self, polygons):
@@ -444,7 +461,7 @@ class Surface(SageObject):
         Remove the polygon with the provided label. Causes a ValueError
         if the base_label is removed.
         """
-        if label==self._base_label:
+        if label == self._base_label:
             raise ValueError("Can not remove the base_label.")
         self.__mutate()
         return self._remove_polygon(label)
@@ -454,7 +471,7 @@ class Surface(SageObject):
         Change the base_label to the provided label.
         """
         self.__mutate()
-        self._base_label=new_base_label
+        self._base_label = new_base_label
 
     def subdivide(self):
         r"""
@@ -537,6 +554,7 @@ class Surface(SageObject):
         subdivisions = [p.subdivide() for p in polygons]
 
         from flatsurf.geometry.surface import Surface_dict
+
         surface = Surface_dict(base_ring=self._base_ring)
 
         # Add subdivided polygons
@@ -551,7 +569,9 @@ class Surface(SageObject):
         for s, subdivision in enumerate(subdivisions):
             label = labels[s]
             for p in range(len(subdivision)):
-                surface.change_edge_gluing((label, p), 1, (label, (p + 1)%len(subdivision)), 2)
+                surface.change_edge_gluing(
+                    (label, p), 1, (label, (p + 1) % len(subdivision)), 2
+                )
 
                 # Add gluing from original surface
                 opposite = self.opposite_edge(label, p)
@@ -619,6 +639,7 @@ class Surface(SageObject):
         subdivideds = [p.subdivide_edges(parts=parts) for p in polygons]
 
         from flatsurf.geometry.surface import Surface_dict
+
         surface = Surface_dict(base_ring=self._base_ring)
 
         # Add subdivided polygons
@@ -633,28 +654,31 @@ class Surface(SageObject):
                 opposite = self.opposite_edge(label, e)
                 if opposite is not None:
                     for p in range(parts):
-                        surface.change_edge_gluing(label, e * parts + p, opposite[0], opposite[1] * parts + (parts - p - 1))
+                        surface.change_edge_gluing(
+                            label,
+                            e * parts + p,
+                            opposite[0],
+                            opposite[1] * parts + (parts - p - 1),
+                        )
 
         return surface
-
-
 
     def __hash__(self):
         r"""
         Hash compatible with equals.
         """
-        if hasattr(self,"_hash"):
+        if hasattr(self, "_hash"):
             return self._hash
         if self.is_mutable():
             raise ValueError("Attempting to hash mutable surface.")
         if not self.is_finite():
             raise ValueError("Attempting to hash infinite surface.")
-        h = 73+17*hash(self.base_ring())+23*hash(self.base_label())
+        h = 73 + 17 * hash(self.base_ring()) + 23 * hash(self.base_label())
         for pair in self.label_polygon_iterator():
-            h = h + 7*hash(pair)
+            h = h + 7 * hash(pair)
         for edgepair in self.edge_gluing_iterator():
-            h = h + 3*hash(edgepair)
-        self._hash=h
+            h = h + 3 * hash(edgepair)
+        self._hash = h
         return h
 
     def __eq__(self, other):
@@ -686,7 +710,7 @@ class Surface(SageObject):
             return False
         if self.num_polygons() != other.num_polygons():
             return False
-        for label,polygon in self.label_polygon_iterator():
+        for label, polygon in self.label_polygon_iterator():
             try:
                 polygon2 = other.polygon(label)
             except ValueError:
@@ -694,7 +718,7 @@ class Surface(SageObject):
             if polygon != polygon2:
                 return False
             for edge in range(polygon.num_edges()):
-                if self.opposite_edge(label,edge) != other.opposite_edge(label,edge):
+                if self.opposite_edge(label, edge) != other.opposite_edge(label, edge):
                     return False
         return True
 
@@ -705,15 +729,20 @@ class Surface(SageObject):
         # Test that the base_label is associated to a polygon
         tester = self._tester(**options)
         from sage.all import Rings
+
         tester.assertTrue(self.base_ring() in Rings())
 
     def _test_base_label(self, **options):
         # Test that the base_label is associated to a polygon
         tester = self._tester(**options)
         from .polygon import ConvexPolygon
-        tester.assertTrue(isinstance(self.polygon(self.base_label()), ConvexPolygon), \
-            "polygon(base_label) does not return a ConvexPolygon. "+\
-            "Here base_label="+str(self.base_label()))
+
+        tester.assertTrue(
+            isinstance(self.polygon(self.base_label()), ConvexPolygon),
+            "polygon(base_label) does not return a ConvexPolygon. "
+            + "Here base_label="
+            + str(self.base_label()),
+        )
 
     def _test_gluings(self, **options):
         # iterate over pairs with pair1 glued to pair2
@@ -723,6 +752,7 @@ class Surface(SageObject):
             it = self.label_iterator()
         else:
             from itertools import islice
+
             it = islice(self.label_iterator(), 30)
 
         for lab in it:
@@ -730,56 +760,96 @@ class Surface(SageObject):
             for k in range(p.num_edges()):
                 e = (lab, k)
                 f = self.opposite_edge(lab, k)
-                tester.assertFalse(f is None,
-                        "edge ({}, {}) is not glued".format(lab, k))
+                tester.assertFalse(
+                    f is None, "edge ({}, {}) is not glued".format(lab, k)
+                )
                 g = self.opposite_edge(f[0], f[1])
-                tester.assertEqual(e, g,
-                        "edge gluing is not a pairing:\n{} -> {} -> {}".format(e, f, g))
+                tester.assertEqual(
+                    e,
+                    g,
+                    "edge gluing is not a pairing:\n{} -> {} -> {}".format(e, f, g),
+                )
 
     def _test_override(self, **options):
         # Test that the required methods have been overridden and that some other methods have not been overridden.
 
         # Of course, we don't care if the methods are overridden or not we just want to warn the programmer.
-        if 'tester' in options:
-            tester = options['tester']
+        if "tester" in options:
+            tester = options["tester"]
         else:
             tester = self._tester(**options)
 
         # Check for override:
-        tester.assertNotEqual(self.polygon.__func__,
-                              Surface.polygon,
-            "Method polygon of Surface must be overridden. The Surface is of type "+str(type(self))+".")
-        tester.assertNotEqual(self.opposite_edge.__func__, Surface.opposite_edge,
-            "Method opposite_edge of Surface must be overridden. The Surface is of type "+str(type(self))+".")
+        tester.assertNotEqual(
+            self.polygon.__func__,
+            Surface.polygon,
+            "Method polygon of Surface must be overridden. The Surface is of type "
+            + str(type(self))
+            + ".",
+        )
+        tester.assertNotEqual(
+            self.opposite_edge.__func__,
+            Surface.opposite_edge,
+            "Method opposite_edge of Surface must be overridden. The Surface is of type "
+            + str(type(self))
+            + ".",
+        )
 
         if self.is_mutable():
             # Check for override:
-            tester.assertNotEqual(self._change_polygon.__func__, Surface._change_polygon,\
-                "Method _change_polygon of Surface must be overridden in a mutable surface. "+\
-                "The Surface is of type "+str(type(self))+".")
-            tester.assertNotEqual(self._set_edge_pairing.__func__, Surface._set_edge_pairing,\
-                "Method _set_edge_pairing of Surface must be overridden in a mutable surface. "+\
-                "The Surface is of type "+str(type(self))+".")
-            tester.assertNotEqual(self._add_polygon.__func__, Surface._add_polygon, "Method _add_polygon of Surface must be overridden in a mutable surface. "+\
-                "The Surface is of type "+str(type(self))+".")
-            tester.assertNotEqual(self._remove_polygon.__func__, Surface._remove_polygon, "Method _remove_polygon of Surface must be overridden in a mutable surface. "+\
-                "The Surface is of type "+str(type(self))+".")
+            tester.assertNotEqual(
+                self._change_polygon.__func__,
+                Surface._change_polygon,
+                "Method _change_polygon of Surface must be overridden in a mutable surface. "
+                + "The Surface is of type "
+                + str(type(self))
+                + ".",
+            )
+            tester.assertNotEqual(
+                self._set_edge_pairing.__func__,
+                Surface._set_edge_pairing,
+                "Method _set_edge_pairing of Surface must be overridden in a mutable surface. "
+                + "The Surface is of type "
+                + str(type(self))
+                + ".",
+            )
+            tester.assertNotEqual(
+                self._add_polygon.__func__,
+                Surface._add_polygon,
+                "Method _add_polygon of Surface must be overridden in a mutable surface. "
+                + "The Surface is of type "
+                + str(type(self))
+                + ".",
+            )
+            tester.assertNotEqual(
+                self._remove_polygon.__func__,
+                Surface._remove_polygon,
+                "Method _remove_polygon of Surface must be overridden in a mutable surface. "
+                + "The Surface is of type "
+                + str(type(self))
+                + ".",
+            )
 
     def _test_polygons(self, **options):
         # Test that the base_label is associated to a polygon
-        if 'tester' in options:
-            tester = options['tester']
+        if "tester" in options:
+            tester = options["tester"]
         else:
             tester = self._tester(**options)
         from .polygon import ConvexPolygon
+
         if self.is_finite():
             it = self.label_iterator()
         else:
             from itertools import islice
+
             it = islice(self.label_iterator(), 30)
         for label in it:
-            tester.assertTrue(isinstance(self.polygon(label), ConvexPolygon), \
-                "polygon(label) does not return a ConvexPolygon when label="+str(label))
+            tester.assertTrue(
+                isinstance(self.polygon(label), ConvexPolygon),
+                "polygon(label) does not return a ConvexPolygon when label="
+                + str(label),
+            )
 
 
 class Surface_list(Surface):
@@ -894,7 +964,19 @@ class Surface_list(Surface):
         self._num_polygons = 0
 
         # Validate input parameters and fill in defaults
-        base_ring, surface, copy, mutable, finite = Surface_list._validate_init_parameters(base_ring=base_ring, surface=surface, copy=copy, mutable=mutable, finite=None)
+        (
+            base_ring,
+            surface,
+            copy,
+            mutable,
+            finite,
+        ) = Surface_list._validate_init_parameters(
+            base_ring=base_ring,
+            surface=surface,
+            copy=copy,
+            mutable=mutable,
+            finite=None,
+        )
 
         Surface.__init__(self, base_ring, base_label=0, finite=finite, mutable=True)
 
@@ -906,8 +988,16 @@ class Surface_list(Surface):
                     for label, polygon in surface.label_polygon_iterator()
                 }
 
-                for ((label, edge), (glued_label, glued_edge)) in surface.edge_gluing_iterator():
-                    self.set_edge_pairing(reference_label_to_label[label], edge, reference_label_to_label[glued_label], glued_edge)
+                for (
+                    (label, edge),
+                    (glued_label, glued_edge),
+                ) in surface.edge_gluing_iterator():
+                    self.set_edge_pairing(
+                        reference_label_to_label[label],
+                        edge,
+                        reference_label_to_label[glued_label],
+                        glued_edge,
+                    )
 
                 self.change_base_label(reference_label_to_label[surface.base_label()])
             else:
@@ -943,6 +1033,7 @@ class Surface_list(Surface):
             finite = True
         else:
             from .similarity_surface import SimilaritySurface
+
             if isinstance(surface, SimilaritySurface):
                 surface = surface.underlying_surface()
 
@@ -950,13 +1041,17 @@ class Surface_list(Surface):
                 raise TypeError("surface must be a Surface or a SimilaritySurface")
 
             if not surface.is_finite() and surface.is_mutable():
-                raise NotImplementedError("Cannot create surface from infinite mutable surface yet.")
+                raise NotImplementedError(
+                    "Cannot create surface from infinite mutable surface yet."
+                )
 
             if base_ring is None:
                 base_ring = surface.base_ring()
 
             if base_ring != surface.base_ring():
-                raise NotImplementedError("Cannot provide both a surface and a base_ring yet.")
+                raise NotImplementedError(
+                    "Cannot provide both a surface and a base_ring yet."
+                )
 
             if mutable is None:
                 mutable = True
@@ -991,7 +1086,12 @@ class Surface_list(Surface):
             else:
                 i = len(self._p)
                 if i != len(self._int_to_ref):
-                    raise RuntimeError("length of self._int_to_ref is " + str(len(self._int_to_ref))+" should be the same as i=" + str(i))
+                    raise RuntimeError(
+                        "length of self._int_to_ref is "
+                        + str(len(self._int_to_ref))
+                        + " should be the same as i="
+                        + str(i)
+                    )
                 self._p.append(data)
                 self._ref_to_int[ref_label] = i
                 self._int_to_ref.append(ref_label)
@@ -1044,7 +1144,7 @@ class Surface_list(Surface):
             else:
                 ref_p = self._int_to_ref[p]
                 ref_pp, ref_ee = self._reference_surface.opposite_edge(ref_p, e)
-                pp= self.__get_label(ref_pp)
+                pp = self.__get_label(ref_pp)
                 return_value = (pp, ref_ee)
                 glue[e] = return_value
                 return return_value
@@ -1064,11 +1164,11 @@ class Surface_list(Surface):
             raise ValueError("No known polygon with provided label")
         if data is None:
             raise ValueError("Provided label was removed from the surface.")
-        data[0]=new_polygon
+        data[0] = new_polygon
         if data[1] is None or new_polygon.num_edges() != len(data[1]):
-            data[1]=[None for e in range(new_polygon.num_edges())]
+            data[1] = [None for e in range(new_polygon.num_edges())]
         if gluing_list is not None:
-            self.change_polygon_gluings(label,gluing_list)
+            self.change_polygon_gluings(label, gluing_list)
 
     def _set_edge_pairing(self, label1, edge1, label2, edge2):
         r"""
@@ -1077,17 +1177,21 @@ class Surface_list(Surface):
         try:
             data = self._p[label1]
         except KeyError:
-            raise ValueError("No known polygon with provided label1="+str(label1))
+            raise ValueError("No known polygon with provided label1=" + str(label1))
         if data is None:
-            raise ValueError("Provided label1="+str(label1)+" was removed from the surface.")
-        data[1][edge1]=(label2,edge2)
+            raise ValueError(
+                "Provided label1=" + str(label1) + " was removed from the surface."
+            )
+        data[1][edge1] = (label2, edge2)
         try:
             data = self._p[label2]
         except KeyError:
-            raise ValueError("No known polygon with provided label2="+str(label2))
+            raise ValueError("No known polygon with provided label2=" + str(label2))
         if data is None:
-            raise ValueError("Provided label2="+str(label2)+" was removed from the surface.")
-        data[1][edge2]=(label1,edge1)
+            raise ValueError(
+                "Provided label2=" + str(label2) + " was removed from the surface."
+            )
+        data[1][edge2] = (label1, edge1)
 
     # TODO: deprecation alias?
     _change_edge_gluing = _set_edge_pairing
@@ -1125,13 +1229,13 @@ class Surface_list(Surface):
             sage: TestSuite(s).run()
         """
         if new_polygon is None:
-            data=[None,None]
+            data = [None, None]
         else:
-            data=[new_polygon, [None for i in range(new_polygon.num_edges())] ]
+            data = [new_polygon, [None for i in range(new_polygon.num_edges())]]
         if label is None:
-            if len(self._removed_labels)>0:
+            if len(self._removed_labels) > 0:
                 new_label = self._removed_labels.pop()
-                self._p[new_label]=data
+                self._p[new_label] = data
             else:
                 new_label = len(self._p)
                 self._p.append(data)
@@ -1139,15 +1243,23 @@ class Surface_list(Surface):
                     # Need a blank in this list for algorithmic reasons
                     self._int_to_ref.append(None)
         else:
-            new_label=int(label)
-            if new_label<len(self._p):
+            new_label = int(label)
+            if new_label < len(self._p):
                 if self._p[new_label] is not None:
-                    raise ValueError("Trying to add a polygon with label="+str(label)+" which already indexes a polygon.")
-                self._p[new_label]=data
+                    raise ValueError(
+                        "Trying to add a polygon with label="
+                        + str(label)
+                        + " which already indexes a polygon."
+                    )
+                self._p[new_label] = data
             else:
-                if new_label-len(self._p)>100:
-                    raise ValueError("Adding a polygon with label="+str(label)+" would add more than 100 entries in our list.")
-                for i in range(len(self._p),new_label):
+                if new_label - len(self._p) > 100:
+                    raise ValueError(
+                        "Adding a polygon with label="
+                        + str(label)
+                        + " would add more than 100 entries in our list."
+                    )
+                for i in range(len(self._p), new_label):
                     self._p.append(None)
                     self._removed_labels.append(i)
                     if self._reference_surface is not None:
@@ -1160,7 +1272,7 @@ class Surface_list(Surface):
                     self._int_to_ref.append(None)
 
         if gluing_list is not None:
-            self.change_polygon_gluings(new_label,gluing_list)
+            self.change_polygon_gluings(new_label, gluing_list)
         self._num_polygons += 1
         return new_label
 
@@ -1182,8 +1294,8 @@ class Surface_list(Surface):
                 yield i
         else:
             # We've removed some labels
-            found=0
-            i=0
+            found = 0
+            i = 0
             while found < self._num_polygons:
                 if self._p[i] is not None:
                     found += 1
@@ -1194,20 +1306,20 @@ class Surface_list(Surface):
         r"""
         Internal method used by remove_polygon(). Should not be called directly.
         """
-        if label == len(self._p)-1:
+        if label == len(self._p) - 1:
             self._p.pop()
             if self._reference_surface is not None:
                 ref_label = self._int_to_ref.pop()
-                assert(len(self._int_to_ref)==label)
+                assert len(self._int_to_ref) == label
                 if ref_label is not None:
                     del self._ref_to_int[ref_label]
         else:
-            self._p[label]=None
+            self._p[label] = None
             self._removed_labels.append(label)
             if self._reference_surface is not None:
                 ref_label = self._int_to_ref[label]
                 if ref_label is not None:
-                    self._int_to_ref[label]=None
+                    self._int_to_ref[label] = None
                     del self._ref_to_int[ref_label]
         self._num_polygons -= 1
 
@@ -1223,6 +1335,7 @@ class Surface_list(Surface):
           of {1,...,d}
         """
         from sage.groups.perm_gps.permgroup_named import SymmetricGroup
+
         G = SymmetricGroup(d)
         for k in data:
             data[k] = G(data[k])
@@ -1230,7 +1343,7 @@ class Surface_list(Surface):
         labels = list(self.label_iterator())
         edges = set(self.edge_iterator())
         cover_labels = {}
-        for i in range(1,d+1):
+        for i in range(1, d + 1):
             for lab in self.label_iterator():
                 cover_labels[(lab, i)] = cover.add_polygon(self.polygon(lab))
         while edges:
@@ -1247,7 +1360,7 @@ class Surface_list(Surface):
             else:
                 s = G.one()
 
-            for i in range(1, d+1):
+            for i in range(1, d + 1):
                 p0 = cover_labels[(lab, i)]
                 p1 = cover_labels[(lab, s(i))]
                 cover.set_edge_pairing(p0, e, p1, ee)
@@ -1260,10 +1373,10 @@ def surface_list_from_polygons_and_gluings(polygons, gluings, mutable=False):
     and produce a Surface_list from it. The mutable parameter determines the mutability of the resulting
     surface.
     """
-    if not (isinstance(polygons,list) or isinstance(polygons,tuple)):
+    if not (isinstance(polygons, list) or isinstance(polygons, tuple)):
         raise ValueError("polygons must be a list or tuple.")
     field = polygons[0].parent().field()
-    s=Surface_list(base_ring=field)
+    s = Surface_list(base_ring=field)
     for p in polygons:
         s.add_polygon(p)
     try:
@@ -1272,8 +1385,8 @@ def surface_list_from_polygons_and_gluings(polygons, gluings, mutable=False):
     except AttributeError:
         # list case:
         it = gluings
-    for (l1,e1),(l2,e2) in it:
-        s.change_edge_gluing(l1,e1,l2,e2)
+    for (l1, e1), (l2, e2) in it:
+        s.change_edge_gluing(l1, e1, l2, e2)
     if not mutable:
         s.set_immutable()
     return s
@@ -1334,7 +1447,19 @@ class Surface_dict(Surface):
         self._reference_surface = None
 
         # Validate input parameters and fill in defaults
-        base_ring, surface, copy, mutable, finite = Surface_list._validate_init_parameters(base_ring=base_ring, surface=surface, copy=copy, mutable=mutable, finite=None)
+        (
+            base_ring,
+            surface,
+            copy,
+            mutable,
+            finite,
+        ) = Surface_list._validate_init_parameters(
+            base_ring=base_ring,
+            surface=surface,
+            copy=copy,
+            mutable=mutable,
+            finite=None,
+        )
 
         Surface.__init__(self, base_ring, base_label=None, finite=finite, mutable=True)
 
@@ -1346,8 +1471,16 @@ class Surface_dict(Surface):
                     for label, polygon in surface.label_polygon_iterator()
                 }
 
-                for ((label, edge), (glued_label, glued_edge)) in surface.edge_gluing_iterator():
-                    self.set_edge_pairing(reference_label_to_label[label], edge, reference_label_to_label[glued_label], glued_edge)
+                for (
+                    (label, edge),
+                    (glued_label, glued_edge),
+                ) in surface.edge_gluing_iterator():
+                    self.set_edge_pairing(
+                        reference_label_to_label[label],
+                        edge,
+                        reference_label_to_label[glued_label],
+                        glued_edge,
+                    )
 
                 self.change_base_label(reference_label_to_label[surface.base_label()])
             else:
@@ -1369,12 +1502,17 @@ class Surface_dict(Surface):
                 raise ValueError(f"No polygon with label {lab}.")
 
             polygon = self._reference_surface.polygon(lab)
-            data = [self._reference_surface.polygon(lab),
-                    [self._reference_surface.opposite_edge(lab, e) for e in range(polygon.num_edges())]]
+            data = [
+                self._reference_surface.polygon(lab),
+                [
+                    self._reference_surface.opposite_edge(lab, e)
+                    for e in range(polygon.num_edges())
+                ],
+            ]
             self._p[lab] = data
 
         if data is None:
-            raise ValueError("Label "+str(lab)+" was removed from the surface.")
+            raise ValueError("Label " + str(lab) + " was removed from the surface.")
         return data[0]
 
     def opposite_edge(self, p, e):
@@ -1388,12 +1526,14 @@ class Surface_dict(Surface):
             self.polygon(p)
             data = self._p[p]
         if data is None:
-            raise ValueError("Label "+str(p)+" was removed from the surface.")
+            raise ValueError("Label " + str(p) + " was removed from the surface.")
         gluing_data = data[1]
         try:
             return gluing_data[e]
         except IndexError:
-            raise ValueError("Edge e="+str(e)+" is out of range in polygon with label "+str(p))
+            raise ValueError(
+                "Edge e=" + str(e) + " is out of range in polygon with label " + str(p)
+            )
 
     # Methods for changing the surface
 
@@ -1404,8 +1544,10 @@ class Surface_dict(Surface):
         try:
             data = self._p[label]
             if data is None:
-                raise ValueError("Label "+str(label)+" was removed from the surface.")
-            data[0]=new_polygon
+                raise ValueError(
+                    "Label " + str(label) + " was removed from the surface."
+                )
+            data[0] = new_polygon
         except KeyError:
             # Polygon probably lies in reference surface
             if self._reference_surface is None:
@@ -1414,16 +1556,21 @@ class Surface_dict(Surface):
                 # Ensure the reference surface had a polygon with the provided label:
                 old_polygon = self._reference_surface.polygon(label)
                 if old_polygon.num_edges() == new_polygon.num_edges():
-                    data=[new_polygon, \
-                        [self._reference_surface.opposite_edge(label,e) for e in range(new_polygon.num_edges())] ]
-                    self._p[label]=data
+                    data = [
+                        new_polygon,
+                        [
+                            self._reference_surface.opposite_edge(label, e)
+                            for e in range(new_polygon.num_edges())
+                        ],
+                    ]
+                    self._p[label] = data
                 else:
-                    data=[new_polygon, [None for e in range(new_polygon.num_edges())] ]
-                    self._p[label]=data
+                    data = [new_polygon, [None for e in range(new_polygon.num_edges())]]
+                    self._p[label] = data
         if len(data[1]) != new_polygon.num_edges():
             data[1] = [None for e in range(new_polygon.num_edges())]
         if gluing_list is not None:
-            self.change_polygon_gluings(label,gluing_list)
+            self.change_polygon_gluings(label, gluing_list)
 
     def _set_edge_pairing(self, label1, edge1, label2, edge2):
         r"""
@@ -1433,15 +1580,23 @@ class Surface_dict(Surface):
             data = self._p[label1]
         except KeyError:
             if self._reference_surface is None:
-                raise ValueError("No known polygon with provided label1 = {}".format(label1))
+                raise ValueError(
+                    "No known polygon with provided label1 = {}".format(label1)
+                )
             else:
                 # Failure likely because reference_surface contains the polygon.
                 # import the data into this surface.
                 polygon = self._reference_surface.polygon(label1)
-                data = [polygon, [self._reference_surface.opposite_edge(label1, e) for e in range(polygon.num_edges())]]
+                data = [
+                    polygon,
+                    [
+                        self._reference_surface.opposite_edge(label1, e)
+                        for e in range(polygon.num_edges())
+                    ],
+                ]
                 self._p[label1] = data
         try:
-            data[1][edge1] = (label2,edge2)
+            data[1][edge1] = (label2, edge2)
         except IndexError:
             # break down error
             if data is None:
@@ -1450,7 +1605,11 @@ class Surface_dict(Surface):
             try:
                 data1[edge1] = (label2, edge2)
             except IndexError:
-                raise ValueError("edge1={} is out of range in polygon with label1={}".format(edge1, label1))
+                raise ValueError(
+                    "edge1={} is out of range in polygon with label1={}".format(
+                        edge1, label1
+                    )
+                )
         try:
             data = self._p[label2]
         except KeyError:
@@ -1460,10 +1619,16 @@ class Surface_dict(Surface):
                 # Failure likely because reference_surface contains the polygon.
                 # import the data into this surface.
                 polygon = self._reference_surface.polygon(label2)
-                data = [polygon, [self._reference_surface.opposite_edge(label2,e) for e in range(polygon.num_edges())]]
-                self._p[label2]=data
+                data = [
+                    polygon,
+                    [
+                        self._reference_surface.opposite_edge(label2, e)
+                        for e in range(polygon.num_edges())
+                    ],
+                ]
+                self._p[label2] = data
         try:
-            data[1][edge2] = (label1,edge1)
+            data[1][edge2] = (label1, edge1)
         except IndexError:
             # break down error
             if data is None:
@@ -1472,7 +1637,11 @@ class Surface_dict(Surface):
             try:
                 data1[edge2] = (label1, edge1)
             except IndexError:
-                raise ValueError("edge {} is out of range in polygon with label2={}".format(edge2, label2))
+                raise ValueError(
+                    "edge {} is out of range in polygon with label2={}".format(
+                        edge2, label2
+                    )
+                )
 
     _change_edge_gluing = _set_edge_pairing
 
@@ -1480,7 +1649,7 @@ class Surface_dict(Surface):
         r"""
         Internal method used by add_polygon(). Should not be called directly.
         """
-        data=[new_polygon, [None for i in range(new_polygon.num_edges())] ]
+        data = [new_polygon, [None for i in range(new_polygon.num_edges())]]
         if label is None:
             new_label = ExtraLabel()
         else:
@@ -1488,20 +1657,22 @@ class Surface_dict(Surface):
                 old_data = self._p[label]
                 if old_data is None:
                     # already removed this polygon. That's good, we can add.
-                    new_label=label
+                    new_label = label
                 else:
-                    raise ValueError("label={} already used by another polygon".format(label))
+                    raise ValueError(
+                        "label={} already used by another polygon".format(label)
+                    )
             except KeyError:
                 # This seems inconvenient to enforce:
                 #
-                #if not self._reference_surface is None:
+                # if not self._reference_surface is None:
                 #    # Can not be sure we are not overwriting a polygon in the reference surface.
                 #    raise ValueError("Can not assign this label to a Surface_dict containing a reference surface,"+\
                 #        "which may already contain this label.")
                 new_label = label
-        self._p[new_label]=data
+        self._p[new_label] = data
         if gluing_list is not None:
-            self.change_polygon_gluings(new_label,gluing_list)
+            self.change_polygon_gluings(new_label, gluing_list)
         return new_label
 
     def num_polygons(self):
@@ -1516,6 +1687,7 @@ class Surface_dict(Surface):
                 return Surface.num_polygons(self)
         else:
             from sage.rings.infinity import Infinity
+
             return Infinity
 
     def label_iterator(self):
@@ -1537,14 +1709,16 @@ class Surface_dict(Surface):
             try:
                 data = self._p[label]
             except KeyError:
-                raise ValueError("Label "+str(label)+" is not in the surface.")
+                raise ValueError("Label " + str(label) + " is not in the surface.")
             del self._p[label]
         else:
             try:
                 data = self._p[label]
                 # Success.
                 if data is None:
-                    raise ValueError("Label "+str(label)+" was already removed from the surface.")
+                    raise ValueError(
+                        "Label " + str(label) + " was already removed from the surface."
+                    )
                 self._p[label] = None
             except KeyError:
                 # Assume on faith we are removing a polygon in the base_surface.
@@ -1555,18 +1729,22 @@ class BaseRingChangedSurface(Surface):
     r"""
     A surface with a different base_ring.
     """
+
     def __init__(self, surface, ring):
-        self._s=surface
-        self._base_ring=ring
+        self._s = surface
+        self._base_ring = ring
         from flatsurf.geometry.polygon import ConvexPolygons
-        self._P=ConvexPolygons(self._base_ring)
-        Surface.__init__(self, ring, self._s.base_label(), mutable=False, finite=self._s.is_finite())
+
+        self._P = ConvexPolygons(self._base_ring)
+        Surface.__init__(
+            self, ring, self._s.base_label(), mutable=False, finite=self._s.is_finite()
+        )
 
     def polygon(self, lab):
-        return self._P( self._s.polygon(lab) )
+        return self._P(self._s.polygon(lab))
 
     def opposite_edge(self, p, e):
-        return self._s.opposite_edge(p,e)
+        return self._s.opposite_edge(p, e)
 
 
 class LabelWalker:
@@ -1588,31 +1766,31 @@ class LabelWalker:
         def __next__(self):
             if self._i < len(self._lw):
                 label = self._lw.number_to_label(self._i)
-                self._i = self._i +1
+                self._i = self._i + 1
                 return label
             if self._i == len(self._lw):
                 label = self._lw.find_a_new_label()
                 if label is None:
                     raise StopIteration()
-                self._i = self._i+1
+                self._i = self._i + 1
                 return label
             raise StopIteration()
 
-        next = __next__ # for Python 2
+        next = __next__  # for Python 2
 
         def __iter__(self):
             return self
 
     def __init__(self, surface):
-        self._s=surface
-        self._labels=[self._s.base_label()]
-        self._label_dict={self._s.base_label():0}
+        self._s = surface
+        self._labels = [self._s.base_label()]
+        self._label_dict = {self._s.base_label(): 0}
 
         # This will stores an edge to move through to get to a polygon closer to the base_polygon
-        self._label_edge_back = {self._s.base_label():None}
+        self._label_edge_back = {self._s.base_label(): None}
 
-        self._walk=deque()
-        self._walk.append((self._s.base_label(),0))
+        self._walk = deque()
+        self._walk.append((self._s.base_label(), 0))
 
     def label_dictionary(self):
         r"""
@@ -1632,15 +1810,17 @@ class LabelWalker:
         except KeyError:
             if limit is None:
                 if not self._s.is_finite():
-                    limit=1000
+                    limit = 1000
                 else:
-                    limit=self._s.num_polygons()
+                    limit = self._s.num_polygons()
             for i in range(limit):
-                new_label=self.find_a_new_label()
+                new_label = self.find_a_new_label()
                 if label == new_label:
                     return self._label_edge_back[label]
         # Maybe the surface is not connected?
-        raise KeyError("Unable to find label %s. Are you sure the surface is connected?"%(label))
+        raise KeyError(
+            "Unable to find label %s. Are you sure the surface is connected?" % (label)
+        )
 
     def __iter__(self):
         return LabelWalker.LabelWalkerIterator(self)
@@ -1654,9 +1834,9 @@ class LabelWalker:
             yield label, self._s.polygon(label)
 
     def edge_iterator(self):
-        for label,polygon in self.label_polygon_iterator():
+        for label, polygon in self.label_polygon_iterator():
             for e in range(polygon.num_edges()):
-                yield label,e
+                yield label, e
 
     def __len__(self):
         r"""
@@ -1697,7 +1877,7 @@ class LabelWalker:
         return new_labels
 
     def find_all_labels(self):
-        assert(self._s.is_finite())
+        assert self._s.is_finite()
         label = self.find_a_new_label()
         while label is not None:
             label = self.find_a_new_label()
@@ -1726,7 +1906,9 @@ class LabelWalker:
                 l = self.find_a_new_label()
                 if label == l:
                     return self._label_dict[label]
-            raise ValueError("Failed to find label even after searching. limit="+str(limit))
+            raise ValueError(
+                "Failed to find label even after searching. limit=" + str(limit)
+            )
 
     def surface(self):
         return self._s
@@ -1736,7 +1918,7 @@ class ExtraLabel(SageObject):
     r"""
     Used to spit out new labels.
     """
-    _next=int(0)
+    _next = int(0)
 
     def __init__(self, value=None):
         r"""
@@ -1749,20 +1931,19 @@ class ExtraLabel(SageObject):
             self._label = value
 
     def __eq__(self, other):
-        return (isinstance(other, self.__class__)
-            and self._label == other._label)
+        return isinstance(other, self.__class__) and self._label == other._label
 
     def __ne__(self, other):
         return not self.__eq__(other)
 
     def __hash__(self):
-        return hash(23*self._label)
+        return hash(23 * self._label)
 
     def __str__(self):
-        return "E"+str(self._label)
+        return "E" + str(self._label)
 
     def __repr__(self):
-        return "ExtraLabel("+str(self._label)+")"
+        return "ExtraLabel(" + str(self._label) + ")"
 
 
 class LabelComparator(object):
@@ -1773,6 +1954,7 @@ class LabelComparator(object):
 
     For objects with the same hash, we store an arbitrary ordering.
     """
+
     def __init__(self):
         r"""
         Initialize a label comparator.
@@ -1790,7 +1972,7 @@ class LabelComparator(object):
                 return i
         # At this point we know label is not in lst
         lst.append(label)
-        return len(lst)-1
+        return len(lst) - 1
 
     def lt(self, l1, l2):
         r"""

@@ -49,13 +49,33 @@ from six.moves import range, map, filter, zip
 
 import operator
 
-from sage.all import cached_method, Parent, UniqueRepresentation, Sets, Rings,\
-                     Fields, ZZ, QQ, AA, RR, RIF, QQbar, matrix, polygen, vector,\
-                     free_module_element, NumberField, FreeModule, lcm, gcd
+from sage.all import (
+    cached_method,
+    Parent,
+    UniqueRepresentation,
+    Sets,
+    Rings,
+    Fields,
+    ZZ,
+    QQ,
+    AA,
+    RR,
+    RIF,
+    QQbar,
+    matrix,
+    polygen,
+    vector,
+    free_module_element,
+    NumberField,
+    FreeModule,
+    lcm,
+    gcd,
+)
 from sage.misc.cachefunc import cached_function
 from sage.misc.functional import numerical_approx
 from sage.structure.element import get_coercion_model, Vector
 from sage.structure.coerce import py_scalar_parent
+
 cm = get_coercion_model()
 from sage.structure.element import Element
 from sage.categories.action import Action
@@ -64,18 +84,26 @@ from sage.modules.free_module import VectorSpace
 from sage.structure.sequence import Sequence
 
 from .matrix_2x2 import angle
-from .subfield import number_field_elements_from_algebraics, cos_minpoly, chebyshev_T, subfield_from_elements
+from .subfield import (
+    number_field_elements_from_algebraics,
+    cos_minpoly,
+    chebyshev_T,
+    subfield_from_elements,
+)
 
 # we implement action of GL(2,K) on polygons
 
 ZZ_0 = ZZ.zero()
 ZZ_2 = ZZ(2)
 
-def dot_product(v,w):
-    return v[0]*w[0]+v[1]*w[1]
 
-def wedge_product(v,w):
-    return v[0]*w[1]-v[1]*w[0]
+def dot_product(v, w):
+    return v[0] * w[0] + v[1] * w[1]
+
+
+def wedge_product(v, w):
+    return v[0] * w[1] - v[1] * w[0]
+
 
 def wedge(u, v):
     r"""
@@ -84,7 +112,12 @@ def wedge(u, v):
     d = len(u)
     R = u.base_ring()
     assert len(u) == len(v) and v.base_ring() == R
-    return free_module_element(R, d*(d-1)//2, [(u[i]*v[j] - u[j]*v[i]) for i in range(d-1) for j in range(i+1,d)])
+    return free_module_element(
+        R,
+        d * (d - 1) // 2,
+        [(u[i] * v[j] - u[j] * v[i]) for i in range(d - 1) for j in range(i + 1, d)],
+    )
+
 
 def tensor(u, v):
     r"""
@@ -93,21 +126,23 @@ def tensor(u, v):
     d = len(u)
     R = u.base_ring()
     assert len(u) == len(v) and v.base_ring() == R
-    return matrix(R, d, [u[i]*v[j] for j in range(d) for i in range(d)])
+    return matrix(R, d, [u[i] * v[j] for j in range(d) for i in range(d)])
 
-def line_intersection(p1,p2,q1,q2):
+
+def line_intersection(p1, p2, q1, q2):
     r"""
     Return the point of intersection between the line joining p1 to p2
     and the line joining q1 to q2. If the lines are parallel we return
     None. Here p1, p2, q1 and q2 should be vectors in the plane.
     """
-    if wedge_product(p2-p1,q2-q1) == 0:
+    if wedge_product(p2 - p1, q2 - q1) == 0:
         return None
     # Since the wedge product is non-zero, the following is invertible:
-    m=matrix([[p2[0]-p1[0], q1[0]-q2[0]],[p2[1]-p1[1], q1[1]-q2[1]]])
-    return p1+(m.inverse()*(q1-p1))[0] * (p2-p1)
+    m = matrix([[p2[0] - p1[0], q1[0] - q2[0]], [p2[1] - p1[1], q1[1] - q2[1]]])
+    return p1 + (m.inverse() * (q1 - p1))[0] * (p2 - p1)
 
-def is_same_direction(v,w,zero=None):
+
+def is_same_direction(v, w, zero=None):
     r"""
     EXAMPLES::
 
@@ -144,9 +179,10 @@ def is_same_direction(v,w,zero=None):
     """
     if not v or not w:
         raise TypeError("zero vector has no direction")
-    return not wedge_product(v,w) and (v[0]*w[0] > 0 or v[1]*w[1] > 0)
+    return not wedge_product(v, w) and (v[0] * w[0] > 0 or v[1] * w[1] > 0)
 
-def is_opposite_direction(v,w):
+
+def is_opposite_direction(v, w):
     r"""
     EXAMPLES::
 
@@ -183,9 +219,10 @@ def is_opposite_direction(v,w):
     """
     if not v or not w:
         raise TypeError("zero vector has no direction")
-    return not wedge_product(v,w) and (v[0]*w[0] < 0 or v[1]*w[1] < 0)
+    return not wedge_product(v, w) and (v[0] * w[0] < 0 or v[1] * w[1] < 0)
 
-def solve(x,u,y,v):
+
+def solve(x, u, y, v):
     r"""
     Return (a,b) so that: x + au = y + bv
 
@@ -217,9 +254,10 @@ def solve(x,u,y,v):
     d = -u[0] * v[1] + u[1] * v[0]
     if d.is_zero():
         raise ValueError("parallel vectors")
-    a = v[1] * (x[0]-y[0]) + v[0] * (y[1] - x[1])
-    b = u[1] * (x[0]-y[0]) + u[0] * (y[1] - x[1])
-    return (a/d, b/d)
+    a = v[1] * (x[0] - y[0]) + v[0] * (y[1] - x[1])
+    b = u[1] * (x[0] - y[0]) + u[0] * (y[1] - x[1])
+    return (a / d, b / d)
+
 
 def segment_intersect(e1, e2, base_ring=None):
     r"""
@@ -250,7 +288,7 @@ def segment_intersect(e1, e2, base_ring=None):
         raise ValueError("degenerate segments")
 
     if base_ring is None:
-        elts = [e[i][j] for e in (e1,e2) for i in (0,1) for j in (0,1)]
+        elts = [e[i][j] for e in (e1, e2) for i in (0, 1) for j in (0, 1)]
         base_ring = cm.common_parent(*elts)
         if isinstance(base_ring, type):
             base_ring = py_scalar_parent(base_ring)
@@ -283,11 +321,11 @@ def segment_intersect(e1, e2, base_ring=None):
     if s0 == 0 and s1 == 0:
         assert s2 == 0 and s3 == 0
         if xt1 < xs1 or (xt1 == xs1 and yt1 < ys1):
-            xs1,xt1 = xt1,xs1
-            ys1,yt1 = yt1,ys1
+            xs1, xt1 = xt1, xs1
+            ys1, yt1 = yt1, ys1
         if xt2 < xs2 or (xt2 == xs2 and yt2 < ys2):
-            xs2,xt2 = xt2,xs2
-            ys2,yt2 = yt2,ys2
+            xs2, xt2 = xt2, xs2
+            ys2, yt2 = yt2, ys2
 
         if xs1 == xt1 == xs2 == xt2:
             xs1, xt1, xs2, xt2 = ys1, yt1, ys2, yt2
@@ -295,23 +333,27 @@ def segment_intersect(e1, e2, base_ring=None):
         assert xs1 < xt1 and xs2 < xt2, (xs1, xt1, xs2, xt2)
 
         if (xs2 > xt1) or (xt2 < xs1):
-            return 0 # no intersection
+            return 0  # no intersection
         elif (xs2 == xt1) or (xt2 == xs1):
-            return 1 # one endpoint in common
+            return 1  # one endpoint in common
         else:
-            assert xs1 <= xs2 < xt1 or xs1 < xt2 <= xt1 or \
-                   (xs2 < xs1 and xt2 > xt1) or \
-                   (xs2 > xs1 and xt2 < xt1), (xs1, xt1, xs2, xt2)
-            return 2 # one dimensional
+            assert (
+                xs1 <= xs2 < xt1
+                or xs1 < xt2 <= xt1
+                or (xs2 < xs1 and xt2 > xt1)
+                or (xs2 > xs1 and xt2 < xt1)
+            ), (xs1, xt1, xs2, xt2)
+            return 2  # one dimensional
 
     elif s0 == 0 or s1 == 0:
         # treat alignment here
         if s2 == 0 or s3 == 0:
-            return 1 # one endpoint in common
+            return 1  # one endpoint in common
         else:
-            return 2 # intersection in the middle
+            return 2  # intersection in the middle
 
-    return 2 # middle intersection
+    return 2  # middle intersection
+
 
 def is_between(e0, e1, f):
     r"""
@@ -344,6 +386,7 @@ def is_between(e0, e1, f):
         # - f[0] * e1[1] + e1[0] * f[1] > 0
         return e0[1] * f[0] <= e0[0] * f[1] or e1[0] * f[1] <= e1[1] * f[0]
 
+
 def projectivization(x, y, signed=True, denominator=None):
     r"""
     TESTS::
@@ -370,7 +413,7 @@ def projectivization(x, y, signed=True, denominator=None):
     """
     if y:
         z = x / y
-        if denominator is True or (denominator is None and hasattr(z, 'denominator')):
+        if denominator is True or (denominator is None and hasattr(z, "denominator")):
             d = z.denominator()
         else:
             d = 1
@@ -381,6 +424,7 @@ def projectivization(x, y, signed=True, denominator=None):
         return (-1, 0)
     else:
         return (1, 0)
+
 
 def triangulate(vertices):
     r"""
@@ -478,23 +522,25 @@ def triangulate(vertices):
     # then we cut the polygon along this edge and call recursively
     # triangulate on the two pieces.
     for i in range(n - 1):
-        eiright = vertices[(i+1)%n] - vertices[i]
-        eileft = vertices[(i-1)%n] - vertices[i]
-        for j in range(i + 2, (n if i else n-1)):
-            ejright = vertices[(j+1)%n] - vertices[j]
-            ejleft = vertices[(j-1)%n] - vertices[j]
+        eiright = vertices[(i + 1) % n] - vertices[i]
+        eileft = vertices[(i - 1) % n] - vertices[i]
+        for j in range(i + 2, (n if i else n - 1)):
+            ejright = vertices[(j + 1) % n] - vertices[j]
+            ejleft = vertices[(j - 1) % n] - vertices[j]
             chord = vertices[j] - vertices[i]
 
             # check angles with neighbouring edges
-            if not (is_between(eiright, eileft, chord) and \
-                    is_between(ejright, ejleft, -chord)):
+            if not (
+                is_between(eiright, eileft, chord)
+                and is_between(ejright, ejleft, -chord)
+            ):
                 continue
 
             # check intersection with other edges
             e = (vertices[i], vertices[j])
             good = True
             for k in range(n):
-                f = (vertices[k], vertices[(k+1)%n])
+                f = (vertices[k], vertices[(k + 1) % n])
                 res = segment_intersect(e, f)
                 if res == 2:
                     good = False
@@ -503,20 +549,21 @@ def triangulate(vertices):
                     assert k == (i - 1) % n or k == i or k == (j - 1) % n or k == j
 
             if good:
-                part0 = [(s+i, t+i) for s,t in triangulate(vertices[i:j+1])]
+                part0 = [(s + i, t + i) for s, t in triangulate(vertices[i : j + 1])]
                 part1 = []
-                for (s,t) in triangulate(vertices[j:] + vertices[:i+1]):
-                    if s < n-j:
+                for (s, t) in triangulate(vertices[j:] + vertices[: i + 1]):
+                    if s < n - j:
                         s += j
                     else:
                         s -= n - j
-                    if t < n-j:
+                    if t < n - j:
                         t += j
                     else:
                         t -= n - j
                     part1.append((s, t))
                 return [(i, j)] + part0 + part1
     raise RuntimeError("input {} must be wrong".format(vertices))
+
 
 def build_faces(n, edges):
     r"""
@@ -541,9 +588,9 @@ def build_faces(n, edges):
         [[1, 2, 3], [3, 4, 0], [0, 1, 3]]
     """
     polygons = [list(range(n))]
-    for u,v in edges:
+    for u, v in edges:
         j = None
-        for i,p in enumerate(polygons):
+        for i, p in enumerate(polygons):
             if u in p and v in p:
                 if j is not None:
                     raise RuntimeError
@@ -555,15 +602,17 @@ def build_faces(n, edges):
         i1 = p.index(v)
         if i0 > i1:
             i0, i1 = i1, i0
-        polygons[j] = p[i0:i1+1]
-        polygons.append(p[i1:] + p[:i0+1])
+        polygons[j] = p[i0 : i1 + 1]
+        polygons.append(p[i1:] + p[: i0 + 1])
     return polygons
+
 
 class MatrixActionOnPolygons(Action):
     def __init__(self, polygons):
         from sage.matrix.matrix_space import MatrixSpace
+
         R = polygons.base_ring()
-        Action.__init__(self, MatrixSpace(R,2), polygons, True, operator.mul)
+        Action.__init__(self, MatrixSpace(R, 2), polygons, True, operator.mul)
 
     def _act_(self, g, x):
         r"""
@@ -585,14 +634,15 @@ class MatrixActionOnPolygons(Action):
         """
         det = g.det()
         if det > 0:
-            return x.parent()(vertices=[g*v for v in x.vertices()], check=False)
+            return x.parent()(vertices=[g * v for v in x.vertices()], check=False)
         if det < 0:
             # Note that in this case we reverse the order
-            vertices = [g*x.vertex(0)]
+            vertices = [g * x.vertex(0)]
             for i in range(x.num_edges() - 1, 0, -1):
                 vertices.append(g * x.vertex(i))
             return x.parent()(vertices=vertices, check=False)
         raise ValueError("Can not act on a polygon with matrix with zero determinant")
+
 
 class PolygonPosition:
     r"""
@@ -604,16 +654,18 @@ class PolygonPosition:
     EDGE_INTERIOR = 2
     VERTEX = 3
 
-    def __init__(self, position_type, edge = None, vertex = None):
-        self._position_type=position_type
+    def __init__(self, position_type, edge=None, vertex=None):
+        self._position_type = position_type
         if self.is_vertex():
             if vertex is None:
-                raise ValueError("Constructed vertex position with no specified vertex.")
-            self._vertex=vertex
+                raise ValueError(
+                    "Constructed vertex position with no specified vertex."
+                )
+            self._vertex = vertex
         if self.is_in_edge_interior():
             if edge is None:
                 raise ValueError("Constructed edge position with no specified edge.")
-            self._edge=edge
+            self._edge = edge
 
     def __repr__(self):
         if self.is_outside():
@@ -621,8 +673,12 @@ class PolygonPosition:
         if self.is_in_interior():
             return "point positioned in interior of polygon"
         if self.is_in_edge_interior():
-            return "point positioned on interior of edge "+str(self._edge)+" of polygon"
-        return "point positioned on vertex "+str(self._vertex)+" of polygon"
+            return (
+                "point positioned on interior of edge "
+                + str(self._edge)
+                + " of polygon"
+            )
+        return "point positioned on vertex " + str(self._vertex) + " of polygon"
 
     def is_outside(self):
         return self._position_type == PolygonPosition.OUTSIDE
@@ -641,8 +697,10 @@ class PolygonPosition:
         Return true if the position is in the boundary of the polygon
         (either the interior of an edge or a vertex).
         """
-        return self._position_type == PolygonPosition.EDGE_INTERIOR or \
-            self._position_type == PolygonPosition.VERTEX
+        return (
+            self._position_type == PolygonPosition.EDGE_INTERIOR
+            or self._position_type == PolygonPosition.VERTEX
+        )
 
     def is_in_edge_interior(self):
         return self._position_type == PolygonPosition.EDGE_INTERIOR
@@ -702,16 +760,21 @@ class Polygon(Element):
             ValueError: edge 0 (= ((0, 0), (2, 0))) and edge 2 (= ((1, 1), (1, -1))) intersect
         """
         n = len(self._v)
-        for i in range(n-1):
-            ei = (self._v[i], self._v[i+1])
+        for i in range(n - 1):
+            ei = (self._v[i], self._v[i + 1])
             for j in range(i + 1, n):
-                ej = (self._v[j], self._v[(j+1)%n])
+                ej = (self._v[j], self._v[(j + 1) % n])
                 res = segment_intersect(ei, ej)
-                if j == i+1 or (i == 0 and j == n-1):
+                if j == i + 1 or (i == 0 and j == n - 1):
                     if res > 1:
-                        raise ValueError("edge %d (= %s) and edge %d (= %s) backtrack" % (i, ei, j, ej))
+                        raise ValueError(
+                            "edge %d (= %s) and edge %d (= %s) backtrack"
+                            % (i, ei, j, ej)
+                        )
                 elif res > 0:
-                    raise ValueError("edge %d (= %s) and edge %d (= %s) intersect" % (i, ei, j, ej))
+                    raise ValueError(
+                        "edge %d (= %s) and edge %d (= %s) intersect" % (i, ei, j, ej)
+                    )
 
     def __hash__(self):
         # Apparently tuples do not cache their hash!
@@ -773,7 +836,9 @@ class Polygon(Element):
         if not isinstance(other, Polygon):
             raise TypeError("__cmp__ only implemented for ConvexPolygons")
         if not self.parent().base_ring() == other.parent().base_ring():
-            raise ValueError("__cmp__ only implemented for ConvexPolygons defined over the same base_ring")
+            raise ValueError(
+                "__cmp__ only implemented for ConvexPolygons defined over the same base_ring"
+            )
         sign = self.num_edges() - other.num_edges()
         if sign > 0:
             return 1
@@ -784,15 +849,15 @@ class Polygon(Element):
             return 1
         if sign < self.base_ring().zero():
             return -1
-        for v in range(1,self.num_edges()):
+        for v in range(1, self.num_edges()):
             p = self.vertex(v)
             q = other.vertex(v)
-            sign = p[0]-q[0]
+            sign = p[0] - q[0]
             if sign > self.base_ring().zero():
                 return 1
             if sign < self.base_ring().zero():
                 return -1
-            sign = p[1]-q[1]
+            sign = p[1] - q[1]
             if sign > self.base_ring().zero():
                 return 1
             if sign < self.base_ring().zero():
@@ -826,7 +891,7 @@ class Polygon(Element):
         """
         P = self.parent()
         u = P.module()(u)
-        return P.element_class(P, [u+v for v in self._v], check=False)
+        return P.element_class(P, [u + v for v in self._v], check=False)
 
     def change_ring(self, R):
         r"""
@@ -848,7 +913,7 @@ class Polygon(Element):
 
     def is_convex(self):
         for i in range(self.num_edges()):
-            if wedge_product(self.edge(i), self.edge(i+1)) < 0:
+            if wedge_product(self.edge(i), self.edge(i + 1)) < 0:
                 return False
         return True
 
@@ -865,14 +930,14 @@ class Polygon(Element):
             False
         """
         for i in range(self.num_edges()):
-            if wedge_product(self.edge(i), self.edge(i+1)).is_zero():
+            if wedge_product(self.edge(i), self.edge(i + 1)).is_zero():
                 return False
         return True
 
     def base_ring(self):
         return self.parent().base_ring()
 
-    field=base_ring
+    field = base_ring
 
     def num_edges(self):
         return len(self._v)
@@ -881,7 +946,7 @@ class Polygon(Element):
         r"""
         String representation.
         """
-        return "Polygon: " + ", ".join(map(str,self.vertices()))
+        return "Polygon: " + ", ".join(map(str, self.vertices()))
 
     @cached_method
     def module(self):
@@ -921,7 +986,7 @@ class Polygon(Element):
             return self._v
 
         translation = self.parent().vector_space()(translation)
-        return [t+v for v in self.vertices()]
+        return [t + v for v in self.vertices()]
 
     def vertex(self, i):
         r"""
@@ -942,9 +1007,11 @@ class Polygon(Element):
         r"""
         Return a vector representing the ``i``-th edge of the polygon.
         """
-        return self.vertex(i+1) - self.vertex(i)
+        return self.vertex(i + 1) - self.vertex(i)
 
-    def plot(self, translation=None, polygon_options={}, edge_options={}, vertex_options={}):
+    def plot(
+        self, translation=None, polygon_options={}, edge_options={}, vertex_options={}
+    ):
         r"""
         Plot the polygon with the origin at ``translation``.
 
@@ -971,13 +1038,18 @@ class Polygon(Element):
         from sage.plot.point import point2d
         from sage.plot.line import line2d
         from sage.plot.polygon import polygon2d
+
         P = self.vertices(translation)
 
-        polygon_options = {'alpha': 0.3, 'zorder': 1, **polygon_options}
-        edge_options = {'color': 'orange', 'zorder': 2, **edge_options}
-        vertex_options = {'color': 'red', 'zorder': 2, **vertex_options}
+        polygon_options = {"alpha": 0.3, "zorder": 1, **polygon_options}
+        edge_options = {"color": "orange", "zorder": 2, **edge_options}
+        vertex_options = {"color": "red", "zorder": 2, **vertex_options}
 
-        return polygon2d(P, **polygon_options) + line2d(P + (P[0],), **edge_options) + point2d(P, **vertex_options)
+        return (
+            polygon2d(P, **polygon_options)
+            + line2d(P + (P[0],), **edge_options)
+            + point2d(P, **vertex_options)
+        )
 
     def angle(self, e, numerical=False, assume_rational=False):
         r"""
@@ -997,7 +1069,12 @@ class Polygon(Element):
             sage: sum(T.angle(i, numerical=True) for i in range(3))   # abs tol 1e-13
             0.5
         """
-        return angle(self.edge(e), - self.edge((e-1)%self.num_edges()), numerical=numerical, assume_rational=assume_rational)
+        return angle(
+            self.edge(e),
+            -self.edge((e - 1) % self.num_edges()),
+            numerical=numerical,
+            assume_rational=assume_rational,
+        )
 
     def angles(self, numerical=False, assume_rational=False):
         r"""
@@ -1039,8 +1116,8 @@ class Polygon(Element):
         # http://math.blogoverflow.com/2014/06/04/greens-theorem-and-area-of-polygons/
         total = self.field().zero()
         for i in range(self.num_edges()):
-            total += (self.vertex(i)[0]+self.vertex(i+1)[0])*self.edge(i)[1]
-        return total/ZZ_2
+            total += (self.vertex(i)[0] + self.vertex(i + 1)[0]) * self.edge(i)[1]
+        return total / ZZ_2
 
     def centroid(self):
         r"""
@@ -1071,15 +1148,30 @@ class Polygon(Element):
             (0, 0)
 
         """
-        x,y = list(zip(*self.vertices()))
+        x, y = list(zip(*self.vertices()))
         nvertices = len(x)
         A = self.area()
 
         from sage.all import vector
-        return vector((
-            ~(6*A) * sum([(x[i-1] + x[i]) * (x[i-1]*y[i] - x[i]*y[i-1]) for i in range(nvertices)]),
-            ~(6*A) * sum([(y[i-1] + y[i]) * (x[i-1]*y[i] - x[i]*y[i-1]) for i in range(nvertices)])
-        ))
+
+        return vector(
+            (
+                ~(6 * A)
+                * sum(
+                    [
+                        (x[i - 1] + x[i]) * (x[i - 1] * y[i] - x[i] * y[i - 1])
+                        for i in range(nvertices)
+                    ]
+                ),
+                ~(6 * A)
+                * sum(
+                    [
+                        (y[i - 1] + y[i]) * (x[i - 1] * y[i] - x[i] * y[i - 1])
+                        for i in range(nvertices)
+                    ]
+                ),
+            )
+        )
 
     def j_invariant(self):
         r"""
@@ -1139,15 +1231,15 @@ class Polygon(Element):
             raise ValueError("the surface needs to be define over a number field")
 
         dim = K.degree()
-        Jxx = Jyy = free_module_element(K, dim*(dim-1)//2)
+        Jxx = Jyy = free_module_element(K, dim * (dim - 1) // 2)
         Jxy = matrix(K, dim)
         vertices = list(self.vertices())
         vertices.append(vertices[0])
         for i in range(len(vertices) - 1):
             a = to_V(vertices[i][0])
             b = to_V(vertices[i][1])
-            c = to_V(vertices[i+1][0])
-            d = to_V(vertices[i+1][1])
+            c = to_V(vertices[i + 1][0])
+            d = to_V(vertices[i + 1][1])
             Jxx += wedge(a, c)
             Jyy += wedge(b, d)
             Jxy += tensor(a, d)
@@ -1217,20 +1309,22 @@ class Polygon(Element):
         sedges = self.edges()
         oedges = other.edges()
 
-        slengths = [x**2 + y**2 for x,y in sedges]
-        olengths = [x**2 + y**2 for x,y in oedges]
+        slengths = [x**2 + y**2 for x, y in sedges]
+        olengths = [x**2 + y**2 for x, y in oedges]
         for i in range(n):
             if slengths == olengths:
                 # we have a match of lengths after a shift by i
-                xs,ys = sedges[0]
-                xo,yo = oedges[0]
+                xs, ys = sedges[0]
+                xo, yo = oedges[0]
                 ms = matrix(2, [xs, -ys, ys, xs])
                 mo = matrix(2, [xo, -yo, yo, xo])
                 rot = mo * ~ms
                 assert rot.det() == 1 and (rot * rot.transpose()).is_one()
                 assert oedges[0] == rot * sedges[0]
-                if all(oedges[i] == rot * sedges[i] for i in range(1,n)):
-                    return (True, (0 if i == 0 else n-i, rot)) if certificate else True
+                if all(oedges[i] == rot * sedges[i] for i in range(1, n)):
+                    return (
+                        (True, (0 if i == 0 else n - i, rot)) if certificate else True
+                    )
             olengths.append(olengths.pop(0))
             oedges.append(oedges.pop(0))
         return (False, None) if certificate else False
@@ -1322,15 +1416,17 @@ class Polygon(Element):
         oedges = [-e for e in oedges]
         for i in range(n):
             if sedges == oedges:
-                return (True, (0 if i == 0 else n-i, -1)) if certificate else True
+                return (True, (0 if i == 0 else n - i, -1)) if certificate else True
             oedges.append(oedges.pop(0))
 
         return (False, None) if certificate else False
+
 
 class ConvexPolygon(Polygon):
     r"""
     A convex polygon in the plane RR^2
     """
+
     def __init__(self, parent, vertices, check=True):
         r"""
         To construct the polygon you should either use a list of edge vectors
@@ -1377,9 +1473,9 @@ class ConvexPolygon(Polygon):
         for i in range(self.num_edges()):
             if self.edge(i).is_zero():
                 raise ValueError("zero edge")
-            if wedge_product(self.edge(i), self.edge(i+1)) < 0:
+            if wedge_product(self.edge(i), self.edge(i + 1)) < 0:
                 raise ValueError("not convex")
-            if is_opposite_direction(self.edge(i), self.edge(i+1)):
+            if is_opposite_direction(self.edge(i), self.edge(i + 1)):
                 raise ValueError("degenerate polygon")
 
     def find_separatrix(self, direction=None, start_vertex=0):
@@ -1415,24 +1511,28 @@ class ConvexPolygon(Polygon):
             direction = self.module()((self.base_ring().zero(), self.base_ring().one()))
         else:
             assert not direction.is_zero()
-        v=start_vertex
-        n=self.num_edges()
-        zero=self.base_ring().zero()
+        v = start_vertex
+        n = self.num_edges()
+        zero = self.base_ring().zero()
         for i in range(self.num_edges()):
-            if wedge_product(self.edge(v),direction) >= zero and \
-                wedge_product(self.edge(v+n-1),direction) > zero:
-                return v,True
-            if wedge_product(self.edge(v),direction) <= zero and \
-                wedge_product(self.edge(v+n-1),direction) < zero:
-                return v,False
-            v=v+1%n
+            if (
+                wedge_product(self.edge(v), direction) >= zero
+                and wedge_product(self.edge(v + n - 1), direction) > zero
+            ):
+                return v, True
+            if (
+                wedge_product(self.edge(v), direction) <= zero
+                and wedge_product(self.edge(v + n - 1), direction) < zero
+            ):
+                return v, False
+            v = v + 1 % n
         raise RuntimeError("Failed to find a separatrix")
 
     def contains_point(self, point, translation=None):
         r"""
         Return true if the point is within the polygon (after the polygon is possibly translated)
         """
-        return self.get_point_position(point,translation=translation).is_inside()
+        return self.get_point_position(point, translation=translation).is_inside()
 
     def get_point_position(self, point, translation=None):
         r"""
@@ -1480,30 +1580,30 @@ class ConvexPolygon(Polygon):
         V = self.vector_space()
         if translation is None:
             # Since we allow the initial vertex to be non-zero, this changed:
-            v1=self.vertex(0)
+            v1 = self.vertex(0)
         else:
             # Since we allow the initial vertex to be non-zero, this changed:
-            v1=translation+self.vertex(0)
+            v1 = translation + self.vertex(0)
         # Below, we only make use of edge vectors:
         for i in range(self.num_edges()):
-            v0=v1
-            e=self.edge(i)
-            v1=v0+e
-            w=wedge_product(e,point-v0)
+            v0 = v1
+            e = self.edge(i)
+            v1 = v0 + e
+            w = wedge_product(e, point - v0)
             if w < 0:
                 return PolygonPosition(PolygonPosition.OUTSIDE)
             if w == 0:
                 # Lies on the line through edge i!
-                dp1 = dot_product(e,point-v0)
+                dp1 = dot_product(e, point - v0)
                 if dp1 == 0:
                     return PolygonPosition(PolygonPosition.VERTEX, vertex=i)
-                dp2 = dot_product(e,e)
+                dp2 = dot_product(e, e)
                 if 0 < dp1 and dp1 < dp2:
                     return PolygonPosition(PolygonPosition.EDGE_INTERIOR, edge=i)
         # Loop terminated (on inside of each edge)
         return PolygonPosition(PolygonPosition.INTERIOR)
 
-    def flow_to_exit(self,point,direction):
+    def flow_to_exit(self, point, direction):
         r"""
         Flow a point in the direction of holonomy until the point leaves the
         polygon.  Note that ValueErrors may be thrown if the point is not in the
@@ -1525,52 +1625,60 @@ class ConvexPolygon(Polygon):
         V = self.parent().vector_space()
         if direction == V.zero():
             raise ValueError("Zero vector provided as direction.")
-        v0=self.vertex(0)
-        w=direction
+        v0 = self.vertex(0)
+        w = direction
         for i in range(self.num_edges()):
-            e=self.edge(i)
-            m=matrix([[e[0], -direction[0]],[e[1], -direction[1]]])
+            e = self.edge(i)
+            m = matrix([[e[0], -direction[0]], [e[1], -direction[1]]])
             try:
-                ret=m.inverse()*(point-v0)
-                s=ret[0]
-                t=ret[1]
+                ret = m.inverse() * (point - v0)
+                s = ret[0]
+                t = ret[1]
                 # What if the matrix is non-invertible?
 
                 # Answer: You'll get a ZeroDivisionError which means that the edge is parallel
                 # to the direction.
 
                 # s is location it intersects on edge, t is the portion of the direction to reach this intersection
-                if t>0 and 0<=s and s<=1:
+                if t > 0 and 0 <= s and s <= 1:
                     # The ray passes through edge i.
-                    if s==1:
+                    if s == 1:
                         # exits through vertex i+1
-                        v0=v0+e
-                        return v0, PolygonPosition(PolygonPosition.VERTEX, vertex= (i+1)%self.num_edges())
-                    if s==0:
+                        v0 = v0 + e
+                        return v0, PolygonPosition(
+                            PolygonPosition.VERTEX, vertex=(i + 1) % self.num_edges()
+                        )
+                    if s == 0:
                         # exits through vertex i
-                        return v0, PolygonPosition(PolygonPosition.VERTEX, vertex= i)
+                        return v0, PolygonPosition(PolygonPosition.VERTEX, vertex=i)
                         # exits through vertex i
                     # exits through interior of edge i
-                    prod=t*direction
-                    return point+prod, PolygonPosition(PolygonPosition.EDGE_INTERIOR, edge=i)
+                    prod = t * direction
+                    return point + prod, PolygonPosition(
+                        PolygonPosition.EDGE_INTERIOR, edge=i
+                    )
             except ZeroDivisionError:
                 # Here we know the edge and the direction are parallel
-                if wedge_product(e,point-v0)==0:
+                if wedge_product(e, point - v0) == 0:
                     # In this case point lies on the edge.
                     # We need to work out which direction to move in.
-                    if (point-v0).is_zero() or is_same_direction(e,point-v0):
+                    if (point - v0).is_zero() or is_same_direction(e, point - v0):
                         # exits through vertex i+1
-                        return self.vertex(i+1), PolygonPosition(PolygonPosition.VERTEX, vertex= (i+1)%self.num_edges())
+                        return self.vertex(i + 1), PolygonPosition(
+                            PolygonPosition.VERTEX, vertex=(i + 1) % self.num_edges()
+                        )
                     else:
                         # exits through vertex i
-                        return v0, PolygonPosition(PolygonPosition.VERTEX, vertex= i)
+                        return v0, PolygonPosition(PolygonPosition.VERTEX, vertex=i)
                 pass
-            v0=v0+e
+            v0 = v0 + e
         # Our loop has terminated. This can mean one of several errors...
         pos = self.get_point_position(point)
         if pos.is_outside():
             raise ValueError("Started with point outside polygon")
-        raise ValueError("Point on boundary of polygon and direction not pointed into the polygon.")
+        raise ValueError(
+            "Point on boundary of polygon and direction not pointed into the polygon."
+        )
 
     def flow_map(self, direction):
         r"""
@@ -1612,7 +1720,7 @@ class ConvexPolygon(Polygon):
         DP = direction.parent()
         P = self.vector_space()
         if DP != P:
-            P = cm.common_parent(DP,P)
+            P = cm.common_parent(DP, P)
             ring = P.base_ring()
             direction = direction.change_ring(ring)
         else:
@@ -1626,34 +1734,34 @@ class ConvexPolygon(Polygon):
             j = (i + 1) % len(lengths)
             l0 = lengths[i]
             l1 = lengths[j]
-            if l0 >= 0 and l1 <  0:
+            if l0 >= 0 and l1 < 0:
                 rt = j
-            if l0 >  0 and l1 <= 0:
+            if l0 > 0 and l1 <= 0:
                 rb = j
-            if l0 <= 0 and l1 >  0:
+            if l0 <= 0 and l1 > 0:
                 lb = j
-            if l0 <  0 and l1 >= 0:
+            if l0 < 0 and l1 >= 0:
                 lt = j
 
         if rt < lt:
             top_lengths = lengths[rt:lt]
-            top_labels = list(range(rt,lt))
+            top_labels = list(range(rt, lt))
         else:
             top_lengths = lengths[rt:] + lengths[:lt]
-            top_labels = list(range(rt,n)) + list(range(lt))
+            top_labels = list(range(rt, n)) + list(range(lt))
         top_lengths = [-x for x in reversed(top_lengths)]
         top_labels.reverse()
 
         if lb < rb:
             bot_lengths = lengths[lb:rb]
-            bot_labels = list(range(lb,rb))
+            bot_labels = list(range(lb, rb))
         else:
             bot_lengths = lengths[lb:] + lengths[:rb]
-            bot_labels = list(range(lb,n)) + list(range(rb))
+            bot_labels = list(range(lb, n)) + list(range(rb))
 
         from .interval_exchange_transformation import FlowPolygonMap
-        return FlowPolygonMap(ring, bot_labels, bot_lengths,
-                                                    top_labels, top_lengths)
+
+        return FlowPolygonMap(ring, bot_labels, bot_lengths, top_labels, top_lengths)
 
     def flow(self, point, holonomy, translation=None):
         r"""
@@ -1691,47 +1799,72 @@ class ConvexPolygon(Polygon):
         V = self.parent().vector_space()
         if holonomy == V.zero():
             # not flowing at all!
-            return point, V.zero(), self.get_point_position(point,translation=translation)
+            return (
+                point,
+                V.zero(),
+                self.get_point_position(point, translation=translation),
+            )
         if translation is None:
-            v0=self.vertex(0)
+            v0 = self.vertex(0)
         else:
-            v0=self.vertex(0)+translation
-        w=holonomy
+            v0 = self.vertex(0) + translation
+        w = holonomy
         for i in range(self.num_edges()):
-            e=self.edge(i)
-            m=matrix([[e[0], -holonomy[0]],[e[1], -holonomy[1]]])
+            e = self.edge(i)
+            m = matrix([[e[0], -holonomy[0]], [e[1], -holonomy[1]]])
             try:
-                ret=m.inverse()*(point-v0)
-                s=ret[0]
-                t=ret[1]
+                ret = m.inverse() * (point - v0)
+                s = ret[0]
+                t = ret[1]
                 # What if the matrix is non-invertible?
 
                 # s is location it intersects on edge, t is the portion of the holonomy to reach this intersection
-                if t>0 and 0<=s and s<=1:
+                if t > 0 and 0 <= s and s <= 1:
                     # The ray passes through edge i.
-                    if t>1:
+                    if t > 1:
                         # the segment from point with the given holonomy stays within the polygon
-                        return point+holonomy, V.zero(), PolygonPosition(PolygonPosition.INTERIOR)
-                    if s==1:
+                        return (
+                            point + holonomy,
+                            V.zero(),
+                            PolygonPosition(PolygonPosition.INTERIOR),
+                        )
+                    if s == 1:
                         # exits through vertex i+1
-                        v0=v0+e
-                        return v0, point+holonomy-v0, PolygonPosition(PolygonPosition.VERTEX, vertex= (i+1)%self.num_edges())
-                    if s==0:
+                        v0 = v0 + e
+                        return (
+                            v0,
+                            point + holonomy - v0,
+                            PolygonPosition(
+                                PolygonPosition.VERTEX,
+                                vertex=(i + 1) % self.num_edges(),
+                            ),
+                        )
+                    if s == 0:
                         # exits through vertex i
-                        return v0, point+holonomy-v0, PolygonPosition(PolygonPosition.VERTEX, vertex= i)
+                        return (
+                            v0,
+                            point + holonomy - v0,
+                            PolygonPosition(PolygonPosition.VERTEX, vertex=i),
+                        )
                         # exits through vertex i
                     # exits through interior of edge i
-                    prod=t*holonomy
-                    return point+prod, holonomy-prod, PolygonPosition(PolygonPosition.EDGE_INTERIOR, edge=i)
+                    prod = t * holonomy
+                    return (
+                        point + prod,
+                        holonomy - prod,
+                        PolygonPosition(PolygonPosition.EDGE_INTERIOR, edge=i),
+                    )
             except ZeroDivisionError:
                 # can safely ignore this error. It means that the edge and the holonomy are parallel.
                 pass
-            v0=v0+e
+            v0 = v0 + e
         # Our loop has terminated. This can mean one of several errors...
-        pos = self.get_point_position(point,translation=translation)
+        pos = self.get_point_position(point, translation=translation)
         if pos.is_outside():
             raise ValueError("Started with point outside polygon")
-        raise ValueError("Point on boundary of polygon and holonomy not pointed into the polygon.")
+        raise ValueError(
+            "Point on boundary of polygon and holonomy not pointed into the polygon."
+        )
 
     def circumscribing_circle(self):
         r"""
@@ -1746,10 +1879,13 @@ class ConvexPolygon(Polygon):
             Circle((1/2, 3/2), 5/2)
         """
         from .circle import circle_from_three_points
-        circle = circle_from_three_points(self.vertex(0), self.vertex(1), self.vertex(2), self.base_ring())
-        for i in range(3,self.num_edges()):
-            if not circle.point_position(self.vertex(i))==0:
-                raise ValueError("Vertex "+str(i)+" is not on the circle.")
+
+        circle = circle_from_three_points(
+            self.vertex(0), self.vertex(1), self.vertex(2), self.base_ring()
+        )
+        for i in range(3, self.num_edges()):
+            if not circle.point_position(self.vertex(i)) == 0:
+                raise ValueError("Vertex " + str(i) + " is not on the circle.")
         return circle
 
     def subdivide(self):
@@ -1795,7 +1931,12 @@ class ConvexPolygon(Polygon):
         """
         vertices = self.vertices()
         center = self.centroid()
-        return [self.parent()(vertices=(vertices[i], vertices[(i+1) % len(vertices)], center)) for i in range(len(vertices))]
+        return [
+            self.parent()(
+                vertices=(vertices[i], vertices[(i + 1) % len(vertices)], center)
+            )
+            for i in range(len(vertices))
+        ]
 
     def subdivide_edges(self, parts=2):
         r"""
@@ -1884,7 +2025,7 @@ class Polygons(UniqueRepresentation, Parent):
         return VectorSpace(self.base_ring().fraction_field(), 2)
 
     def _repr_(self):
-        return "Polygons(%s)"%self.base_ring()
+        return "Polygons(%s)" % self.base_ring()
 
     def _element_constructor_(self, *args, **kwds):
         r"""
@@ -1911,16 +2052,16 @@ class Polygons(UniqueRepresentation, Parent):
             sage: D(edges=p.edges())
             Polygon: (0, 0), (1, 0), (2, 0), (1, 1)
         """
-        check = kwds.pop('check', True)
+        check = kwds.pop("check", True)
 
         if len(args) == 1 and isinstance(args[0], Polygon):
             vertices = map(self.vector_space(), args[0].vertices())
             args = ()
 
         else:
-            vertices = kwds.pop('vertices', None)
-            edges = kwds.pop('edges', None)
-            base_point = kwds.pop('base_point', (0,0))
+            vertices = kwds.pop("vertices", None)
+            edges = kwds.pop("edges", None)
+            base_point = kwds.pop("base_point", (0, 0))
 
             if (vertices is None) and (edges is None):
                 if len(args) == 1:
@@ -1928,7 +2069,9 @@ class Polygons(UniqueRepresentation, Parent):
                 elif args:
                     edges = args
                 else:
-                    raise ValueError("exactly one of 'vertices' or 'edges' must be provided")
+                    raise ValueError(
+                        "exactly one of 'vertices' or 'edges' must be provided"
+                    )
             if kwds:
                 raise ValueError("invalid keyword {!r}".format(next(iter(kwds))))
 
@@ -1942,6 +2085,7 @@ class Polygons(UniqueRepresentation, Parent):
                     raise ValueError("the polygon does not close up")
 
         return self.element_class(self, vertices, check)
+
 
 class ConvexPolygons(Polygons):
     r"""
@@ -1983,13 +2127,15 @@ class ConvexPolygons(Polygons):
             sage: C1.has_coerce_map_from(C2)
             False
         """
-        return isinstance(other, ConvexPolygons) and self.field().has_coerce_map_from(other.field())
+        return isinstance(other, ConvexPolygons) and self.field().has_coerce_map_from(
+            other.field()
+        )
 
     def _an_element_(self):
-        return self([(1,0),(0,1),(-1,0),(0,-1)])
+        return self([(1, 0), (0, 1), (-1, 0), (0, -1)])
 
     def _repr_(self):
-        return "ConvexPolygons(%s)"%self.base_ring()
+        return "ConvexPolygons(%s)" % self.base_ring()
 
     def _element_constructor_(self, *args, **kwds):
         r"""
@@ -2017,16 +2163,16 @@ class ConvexPolygons(Polygons):
             Polygon: (0, 0), (1, 0), (2, 0), (1, 1)
 
         """
-        check = kwds.pop('check', True)
+        check = kwds.pop("check", True)
 
         if len(args) == 1 and isinstance(args[0], Polygon):
             vertices = map(self.vector_space(), args[0].vertices())
             args = ()
 
         else:
-            vertices = kwds.pop('vertices', None)
-            edges = kwds.pop('edges', None)
-            base_point = kwds.pop('base_point', (0,0))
+            vertices = kwds.pop("vertices", None)
+            edges = kwds.pop("edges", None)
+            base_point = kwds.pop("base_point", (0, 0))
 
             if (vertices is None) and (edges is None):
                 if len(args) == 1:
@@ -2034,7 +2180,9 @@ class ConvexPolygons(Polygons):
                 elif args:
                     edges = args
                 else:
-                    raise ValueError("exactly one of 'vertices' or 'edges' must be provided")
+                    raise ValueError(
+                        "exactly one of 'vertices' or 'edges' must be provided"
+                    )
             if kwds:
                 raise ValueError("invalid keyword {!r}".format(next(iter(kwds))))
 
@@ -2048,6 +2196,7 @@ class ConvexPolygons(Polygons):
                     raise ValueError("the polygon does not close up")
 
         return self.element_class(self, vertices, check)
+
 
 class EquiangularPolygons:
     r"""
@@ -2146,11 +2295,15 @@ class EquiangularPolygons:
         sage: E(1, 1, 1, 1, 1, normalized=True)
         Polygon: (0, 0), (1, 0), (1/2*c^2 - 1/2, 1/2*c), (1/2, 1/2*c^3 - c), (-1/2*c^2 + 3/2, 1/2*c)
     """
+
     def __init__(self, *angles, **kwds):
-        if 'number_field' in kwds:
+        if "number_field" in kwds:
             from warnings import warn
-            warn("The number_field parameter has been removed in this release of sage-flatsurf. To create an equiangular polygon over a number field, do not pass this parameter; to create an equiangular polygon over the algebraic numbers, do not pass this parameter but call the returned object with algebraic lengths.")
-            kwds.pop('number_field')
+
+            warn(
+                "The number_field parameter has been removed in this release of sage-flatsurf. To create an equiangular polygon over a number field, do not pass this parameter; to create an equiangular polygon over the algebraic numbers, do not pass this parameter but call the returned object with algebraic lengths."
+            )
+            kwds.pop("number_field")
 
         if kwds:
             raise ValueError("invalid keyword {!r}".format(next(iter(kwds))))
@@ -2194,8 +2347,8 @@ class EquiangularPolygons:
         else:
             # Construct the minimal polynomial f(x) of c = 2 cos(2π / N)
             f = cos_minpoly(N // 2)
-            emb = AA.polynomial_root(f, 2 * (2*RIF.pi() / N).cos())
-            self._base_ring = NumberField(f, 'c', embedding=emb)
+            emb = AA.polynomial_root(f, 2 * (2 * RIF.pi() / N).cos())
+            self._base_ring = NumberField(f, "c", embedding=emb)
             c = self._base_ring.gen()
 
         # Construct the cosine and sine of each angle as an element of our number field.
@@ -2204,7 +2357,8 @@ class EquiangularPolygons:
 
         def sine(a):
             # Use sin(x) = cos(π/2 - x)
-            return cosine(N//4 - a)
+            return cosine(N // 4 - a)
+
         slopes = [(cosine(a), sine(a)) for a in angles]
         assert all((x**2 + y**2).is_one() for x, y in slopes)
 
@@ -2218,7 +2372,10 @@ class EquiangularPolygons:
             old_slopes.extend(v)
         L, new_slopes, _ = subfield_from_elements(self._base_ring, old_slopes)
         if L != self._base_ring:
-            self._slopes = [projectivization(*new_slopes[i:i+2]) for i in range(0, len(old_slopes), 2)]
+            self._slopes = [
+                projectivization(*new_slopes[i : i + 2])
+                for i in range(0, len(old_slopes), 2)
+            ]
             self._base_ring = L
 
     def convexity(self):
@@ -2283,7 +2440,9 @@ class EquiangularPolygons:
         """
         angles = self._angles
         if integral:
-            C = lcm([a.denominator() for a in self._angles]) / gcd([a.numerator() for a in self._angles])
+            C = lcm([a.denominator() for a in self._angles]) / gcd(
+                [a.numerator() for a in self._angles]
+            )
             angles = [ZZ(C * a) for a in angles]
         return angles
 
@@ -2295,7 +2454,7 @@ class EquiangularPolygons:
             sage: EquiangularPolygons(1, 2, 3)
             EquiangularPolygons(1, 2, 3)
         """
-        return "EquiangularPolygons({})".format(", ".join(map(str,self.angles(True))))
+        return "EquiangularPolygons({})".format(", ".join(map(str, self.angles(True))))
 
     @cached_method
     def module(self):
@@ -2327,7 +2486,7 @@ class EquiangularPolygons:
         """
         return VectorSpace(self._base_ring.fraction_field(), 2)
 
-    def slopes(self, e0=(1,0)):
+    def slopes(self, e0=(1, 0)):
         r"""
         List of slopes of the edges as a list of vectors.
 
@@ -2345,8 +2504,11 @@ class EquiangularPolygons:
         v = V.zero()
         e = V(e0)
         edges = [e]
-        for i in range(n-1):
-            e = (-cosines[i+1] * e[0] - sines[i+1] * e[1], sines[i+1] * e[0] - cosines[i+1] * e[1])
+        for i in range(n - 1):
+            e = (
+                -cosines[i + 1] * e[0] - sines[i + 1] * e[1],
+                sines[i + 1] * e[0] - cosines[i + 1] * e[1],
+            )
             e = projectivization(*e)
             edges.append(V(e))
         return edges
@@ -2378,10 +2540,11 @@ class EquiangularPolygons:
         ieqs = []
         for i in range(n):
             ieq = [0] * (n + 1)
-            ieq[i+1] = 1
+            ieq[i + 1] = 1
             ieqs.append(ieq)
 
         from sage.geometry.polyhedron.constructor import Polyhedron
+
         return Polyhedron(eqns=eqns, ieqs=ieqs, base_ring=self._base_ring)
 
     def an_element(self):
@@ -2426,7 +2589,7 @@ class EquiangularPolygons:
                         x = ring.random_element(**kwds)
                     coeffs.append(x)
 
-                sol = sum(c*r for c,r in zip(coeffs, rays))
+                sol = sum(c * r for c, r in zip(coeffs, rays))
                 if all(x > 0 for x in sol):
                     return coeffs, sol
 
@@ -2435,8 +2598,16 @@ class EquiangularPolygons:
                 coeffs, r = random_element()
                 return self(*r)
             except ValueError as e:
-                if not e.args[0].startswith('edge ') or not e.args[0].endswith('intersect') or e.args[0].count(' and edge ') != 1:
-                    raise RuntimeError("unexpected error with coeffs {!r} ~ {!r}: {!r}".format(coeffs, [numerical_approx(x) for x in coeffs], e))
+                if (
+                    not e.args[0].startswith("edge ")
+                    or not e.args[0].endswith("intersect")
+                    or e.args[0].count(" and edge ") != 1
+                ):
+                    raise RuntimeError(
+                        "unexpected error with coeffs {!r} ~ {!r}: {!r}".format(
+                            coeffs, [numerical_approx(x) for x in coeffs], e
+                        )
+                    )
 
     def __call__(self, *lengths, normalized=False, base_ring=None):
         r"""
@@ -2460,7 +2631,10 @@ class EquiangularPolygons:
 
         n = len(self._angles)
         if len(lengths) != n - 2 and len(lengths) != n:
-            raise ValueError("must provide %d or %d lengths but provided %d"%(n - 2, n, len(lengths)))
+            raise ValueError(
+                "must provide %d or %d lengths but provided %d"
+                % (n - 2, n, len(lengths))
+            )
 
         V = self.module()
         slopes = self.slopes()
@@ -2469,26 +2643,31 @@ class EquiangularPolygons:
             for i, s in enumerate(slopes):
                 x, y = map(self._cosines_ring, s)
                 norm2 = (x**2 + y**2).sqrt()
-                slopes[i] = V((x/norm2, y/norm2))
+                slopes[i] = V((x / norm2, y / norm2))
 
         if base_ring is None:
             from sage.all import Sequence
+
             base_ring = Sequence(lengths).universe()
 
             from sage.categories.pushout import pushout
+
             if normalized:
                 base_ring = pushout(base_ring, self._cosines_ring)
             else:
                 base_ring = pushout(base_ring, self._base_ring)
 
-        v = V((0,0))
+        v = V((0, 0))
         vertices = [v]
 
         if len(lengths) == n - 2:
             for i in range(n - 2):
                 v += lengths[i] * slopes[i]
                 vertices.append(v)
-            s, t = vector(vertices[0] - vertices[n - 2]) * matrix([slopes[-1], slopes[n - 2]]).inverse()
+            s, t = (
+                vector(vertices[0] - vertices[n - 2])
+                * matrix([slopes[-1], slopes[n - 2]]).inverse()
+            )
             assert vertices[0] - s * slopes[-1] == vertices[n - 2] + t * slopes[n - 2]
             if s <= 0 or t <= 0:
                 raise ValueError("the provided lengths do not give rise to a polygon")
@@ -2562,10 +2741,10 @@ class EquiangularPolygons:
         """
         rat_angles = {}
         for a in self.angles():
-            if 2*a in rat_angles:
-                rat_angles[2*a] += 1
+            if 2 * a in rat_angles:
+                rat_angles[2 * a] += 1
             else:
-                rat_angles[2*a] = 1
+                rat_angles[2 * a] = 1
         if cover_type == "rational":
             return rat_angles
 
@@ -2577,23 +2756,25 @@ class EquiangularPolygons:
         for x, mult in rat_angles.items():
             y = x.numerator()
             d = x.denominator()
-            if d%2:
+            if d % 2:
                 d *= 2
             else:
-                y = y/2
+                y = y / 2
             assert N % d == 0
             if y in cov_angles:
-                cov_angles[y] += mult * N//d
+                cov_angles[y] += mult * N // d
             else:
-                cov_angles[y] = mult * N//d
+                cov_angles[y] = mult * N // d
 
-        if cover_type == "translation" and any(y.denominator() == 2 for y in cov_angles):
+        if cover_type == "translation" and any(
+            y.denominator() == 2 for y in cov_angles
+        ):
             covcov_angles = {}
-            for y,mult in cov_angles.items():
+            for y, mult in cov_angles.items():
                 yy = y.numerator()
                 if yy not in covcov_angles:
                     covcov_angles[yy] = 0
-                covcov_angles[yy] += 2//y.denominator() * mult
+                covcov_angles[yy] += 2 // y.denominator() * mult
             return covcov_angles
         elif cover_type == "half-translation" or cover_type == "translation":
             return cov_angles
@@ -2683,15 +2864,31 @@ class EquiangularPolygons:
         angles = self.billiard_unfolding_angles(cover_type)
         if all(a.is_integer() for a in angles):
             from surface_dynamics import AbelianStratum
+
             if not marked_points and len(angles) == 1 and 1 in angles:
                 return AbelianStratum([0])
             else:
-                return AbelianStratum({ZZ(a-1): mult for a,mult in angles.items() if marked_points or a != 1})
+                return AbelianStratum(
+                    {
+                        ZZ(a - 1): mult
+                        for a, mult in angles.items()
+                        if marked_points or a != 1
+                    }
+                )
         else:
             from surface_dynamics import QuadraticStratum
-            return QuadraticStratum({ZZ(2*(a-1)): mult for a,mult in angles.items() if marked_points or a != 1})
 
-    def billiard_unfolding_stratum_dimension(self, cover_type="translation", marked_points=False):
+            return QuadraticStratum(
+                {
+                    ZZ(2 * (a - 1)): mult
+                    for a, mult in angles.items()
+                    if marked_points or a != 1
+                }
+            )
+
+    def billiard_unfolding_stratum_dimension(
+        self, cover_type="translation", marked_points=False
+    ):
         r"""
         Return the dimension of the stratum of quadratic or Abelian differential
         obtained by unfolding a billiard in a polygon of this equiangular family.
@@ -2777,9 +2974,10 @@ class EquiangularPolygons:
         chi = sum(mult * (a - 1) for a, mult in angles.items())
         assert chi.denominator() == 1
         chi = ZZ(chi)
-        assert chi%2 == 0
-        g = chi//2 + 1
-        return (2*g + s - 1 if abelian else 2*g + s - 2)
+        assert chi % 2 == 0
+        g = chi // 2 + 1
+        return 2 * g + s - 1 if abelian else 2 * g + s - 2
+
 
 class PolygonsConstructor:
     def square(self, side=1, **kwds):
@@ -2793,7 +2991,7 @@ class PolygonsConstructor:
             sage: polygons.square(field=QQbar).parent()
             ConvexPolygons(Algebraic Field)
         """
-        return self.rectangle(side,side,**kwds)
+        return self.rectangle(side, side, **kwds)
 
     def rectangle(self, width, height, **kwds):
         r"""
@@ -2810,7 +3008,7 @@ class PolygonsConstructor:
             sage: _.parent()
             ConvexPolygons(Number Field in sqrt2 with defining polynomial x^2 - 2 with sqrt2 = 1.414213562373095?)
         """
-        return self((width,0),(0,height),(-width,0),(0,-height), **kwds)
+        return self((width, 0), (0, height), (-width, 0), (0, -height), **kwds)
 
     def triangle(self, a, b, c):
         """
@@ -2863,7 +3061,7 @@ class PolygonsConstructor:
             Polygon: (0, 0), (1, 0), (1/2, 0.866025403784439?)
         """
         # The code below crashes for n=4!
-        if n==4:
+        if n == 4:
             return polygons.square(QQ(1), field=field)
 
         from sage.rings.qqbar import QQbar
@@ -2872,13 +3070,13 @@ class PolygonsConstructor:
         s = QQbar.zeta(n).imag()
 
         if field is None:
-            field, (c,s) = number_field_elements_from_algebraics((c,s))
+            field, (c, s) = number_field_elements_from_algebraics((c, s))
         cn = field.one()
         sn = field.zero()
-        edges = [(cn,sn)]
-        for _ in range(n-1):
-            cn,sn = c*cn - s*sn, c*sn + s*cn
-            edges.append((cn,sn))
+        edges = [(cn, sn)]
+        for _ in range(n - 1):
+            cn, sn = c * cn - s * sn, c * sn + s * cn
+            edges.append((cn, sn))
 
         return ConvexPolygons(field)(edges=edges)
 
@@ -2908,10 +3106,10 @@ class PolygonsConstructor:
         from sage.rings.qqbar import QQbar
 
         angle = QQ(angle)
-        if angle <= 0 or angle > QQ((1,2)):
-            raise ValueError('angle must be in ]0,1/2]')
+        if angle <= 0 or angle > QQ((1, 2)):
+            raise ValueError("angle must be in ]0,1/2]")
 
-        z = QQbar.zeta(2*angle.denom())**angle.numerator()
+        z = QQbar.zeta(2 * angle.denom()) ** angle.numerator()
         c = z.real()
         s = z.imag()
 
@@ -2920,17 +3118,19 @@ class PolygonsConstructor:
         if nargs == 0:
             leg0 = 1
         elif nargs > 1:
-            raise ValueError('only one length can be specified')
+            raise ValueError("only one length can be specified")
 
         if leg0 is not None:
-            c,s = leg0*c/c, leg0*s/c
+            c, s = leg0 * c / c, leg0 * s / c
         elif leg1 is not None:
-            c,s = leg1*c/s, leg1*s/s
+            c, s = leg1 * c / s, leg1 * s / s
         elif hypotenuse is not None:
-            c,s = hypotenuse*c, hypotenuse*s
+            c, s = hypotenuse * c, hypotenuse * s
 
-        field, (c,s) = number_field_elements_from_algebraics((c,s))
-        return ConvexPolygons(field)(edges=[(c,field.zero()),(field.zero(),s),(-c,-s)])
+        field, (c, s) = number_field_elements_from_algebraics((c, s))
+        return ConvexPolygons(field)(
+            edges=[(c, field.zero()), (field.zero(), s), (-c, -s)]
+        )
 
     def __call__(self, *args, **kwds):
         r"""
@@ -3000,34 +3200,36 @@ class PolygonsConstructor:
             ....:     assert T.edge(0) == T.vector_space()((1,0))
         """
         base_ring = None
-        if 'ring' in kwds:
-            base_ring = kwds.pop('ring')
-        elif 'base_ring' in kwds:
-            base_ring = kwds.pop('base_ring')
-        elif 'field' in kwds:
-            base_ring = kwds.pop('field')
+        if "ring" in kwds:
+            base_ring = kwds.pop("ring")
+        elif "base_ring" in kwds:
+            base_ring = kwds.pop("base_ring")
+        elif "field" in kwds:
+            base_ring = kwds.pop("field")
 
-        convex = kwds.pop('convex', True)
+        convex = kwds.pop("convex", True)
 
         vertices = edges = angles = base_point = None
-        if 'edges' in kwds:
-            edges = kwds.pop('edges')
-            base_point = kwds.pop('base_point', (0,0))
-        elif 'vertices' in kwds:
-            vertices = kwds.pop('vertices')
-        elif 'angles' in kwds:
-            angles = kwds.pop('angles')
-            lengths = kwds.pop('lengths', None)
-            length = kwds.pop('length', None)
-            base_point = kwds.pop('base_point', (0,0))
-            number_field = kwds.pop('number_field', True)
+        if "edges" in kwds:
+            edges = kwds.pop("edges")
+            base_point = kwds.pop("base_point", (0, 0))
+        elif "vertices" in kwds:
+            vertices = kwds.pop("vertices")
+        elif "angles" in kwds:
+            angles = kwds.pop("angles")
+            lengths = kwds.pop("lengths", None)
+            length = kwds.pop("length", None)
+            base_point = kwds.pop("base_point", (0, 0))
+            number_field = kwds.pop("number_field", True)
         elif args:
             edges = args
             args = ()
-            base_point = kwds.pop('base_point', (0,0))
+            base_point = kwds.pop("base_point", (0, 0))
 
         if (vertices is not None) + (edges is not None) + (angles is not None) != 1:
-            raise ValueError("exactly one of 'vertices', 'edges' or 'angles' should be provided")
+            raise ValueError(
+                "exactly one of 'vertices', 'edges' or 'angles' should be provided"
+            )
 
         if vertices is None and edges is None and angles is None and lengths is None:
             raise ValueError("either vertices, edges or angles should be provided")
@@ -3039,31 +3241,43 @@ class PolygonsConstructor:
         if vertices is not None:
             vertices = list(map(vector, vertices))
             if base_ring is None:
-                base_ring = Sequence([x for x,_ in vertices] + [y for _,y in vertices]).universe()
+                base_ring = Sequence(
+                    [x for x, _ in vertices] + [y for _, y in vertices]
+                ).universe()
                 if isinstance(base_ring, type):
                     base_ring = py_scalar_parent(base_ring)
 
         elif edges is not None:
             edges = list(map(vector, edges))
             if base_ring is None:
-                base_ring = Sequence([x for x,_ in edges] + [y for _,y in edges] + list(base_point)).universe()
+                base_ring = Sequence(
+                    [x for x, _ in edges] + [y for _, y in edges] + list(base_point)
+                ).universe()
                 if isinstance(base_ring, type):
                     base_ring = py_scalar_parent(base_ring)
 
         elif angles is not None:
             E = EquiangularPolygons(*angles)
             if convex and not E.convexity():
-                raise ValueError("'angles' do not determine convex polygon; you might want to set the option 'convex=False'")
+                raise ValueError(
+                    "'angles' do not determine convex polygon; you might want to set the option 'convex=False'"
+                )
             n = len(angles)
             if length is not None and lengths is not None:
-                raise ValueError("only one of 'length' or 'lengths' can be set together with 'angles'")
+                raise ValueError(
+                    "only one of 'length' or 'lengths' can be set together with 'angles'"
+                )
             if lengths is None:
                 if not E.convexity():
-                    raise ValueError("non-convex equiangular polygon; lengths must be provided")
-                lengths = [length or 1] * (n-2)
+                    raise ValueError(
+                        "non-convex equiangular polygon; lengths must be provided"
+                    )
+                lengths = [length or 1] * (n - 2)
 
-            if len(lengths) != n-2:
-                raise ValueError("'lengths' must be a list of n-2 numbers (one less than 'angles')")
+            if len(lengths) != n - 2:
+                raise ValueError(
+                    "'lengths' must be a list of n-2 numbers (one less than 'angles')"
+                )
 
             return E(lengths, normalized=True)
 
@@ -3076,18 +3290,23 @@ class PolygonsConstructor:
             base_ring = QQ
 
         if convex:
-            return ConvexPolygons(base_ring)(vertices=vertices, edges=edges, base_point=base_point)
+            return ConvexPolygons(base_ring)(
+                vertices=vertices, edges=edges, base_point=base_point
+            )
         else:
-            return Polygons(base_ring)(vertices=vertices, edges=edges, base_point=base_point)
+            return Polygons(base_ring)(
+                vertices=vertices, edges=edges, base_point=base_point
+            )
 
 
 polygons = PolygonsConstructor()
 
 
-class PolygonCreator():
+class PolygonCreator:
     r"""
     Class for iteratively constructing a polygon over the field.
     """
+
     def __init__(self, field=QQ):
         r"""Create a polygon in the provided field."""
         self._v = []
@@ -3108,31 +3327,31 @@ class PolygonCreator():
         Returns 1 if successful and 0 if not, in which case the resulting
         polygon would not have been convex.
         """
-        V=self.vector_space()
-        newv=V(new_vertex)
-        if (len(self._v)==0):
+        V = self.vector_space()
+        newv = V(new_vertex)
+        if len(self._v) == 0:
             self._v.append(newv)
             self._w.append(V.zero())
             return 1
-        if (len(self._v)==1):
-            if (self._v[0]==newv):
+        if len(self._v) == 1:
+            if self._v[0] == newv:
                 return 0
             else:
-                self._w[-1]=newv-self._v[-1]
-                self._w.append(self._v[0]-newv)
+                self._w[-1] = newv - self._v[-1]
+                self._w.append(self._v[0] - newv)
                 self._v.append(newv)
                 return 1
-        if (len(self._v)>=2):
-            neww1=newv-self._v[-1]
-            if wedge_product(self._w[-2],neww1) <= 0:
+        if len(self._v) >= 2:
+            neww1 = newv - self._v[-1]
+            if wedge_product(self._w[-2], neww1) <= 0:
                 return 0
-            neww2=self._v[0]-newv
-            if wedge_product(neww1,neww2)<= 0:
+            neww2 = self._v[0] - newv
+            if wedge_product(neww1, neww2) <= 0:
                 return 0
-            if wedge_product(neww2,self._w[0])<= 0:
+            if wedge_product(neww2, self._w[0]) <= 0:
                 return 0
-            self._w[-1]=newv-self._v[-1]
-            self._w.append(self._v[0]-newv)
+            self._w[-1] = newv - self._v[-1]
+            self._w.append(self._v[0] - newv)
             self._v.append(newv)
             return 1
 
@@ -3141,6 +3360,6 @@ class PolygonCreator():
         Return the polygon.
         Raises a ValueError if less than three vertices have been accepted.
         """
-        if len(self._v)<2:
+        if len(self._v) < 2:
             raise ValueError("Not enough vertices!")
         return ConvexPolygons(self._field)(self._w)
