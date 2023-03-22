@@ -10441,7 +10441,13 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
                 if maybe_point is True:
                     maybe_point = segment
                 elif maybe_point != segment:
+                    # Unsurprisingly, pylint gets confused by maybe_point being
+                    # both a boolean and a point at times. The code should
+                    # probably be cleaned up. But here, it must be a point so
+                    # the call is save.
+                    # pylint: disable=no-member
                     assert not maybe_point.is_finite()
+                    # pylint: enable=no-member
                     assert not segment.is_finite()
 
                     maybe_point = False
