@@ -11,6 +11,26 @@ References
     Pages 259--266.
     DOI: http://dx.doi.org/10.1145/2755996.2756664
 """
+######################################################################
+#  This file is part of sage-flatsurf.
+#
+#        Copyright (C) 2020 Samuel Lelièvre
+#                      2020 Vincent Delecroix
+#                      2023 Julian Rüth
+#
+#  sage-flatsurf is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  sage-flatsurf is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
+######################################################################
 from sage.misc.misc_c import prod
 from sage.rings.all import ZZ, QQ, AA, QQbar, NumberField, polygen
 from sage.structure.element import parent
@@ -154,7 +174,10 @@ def subfield_from_elements(self, alpha, name=None, polred=True, threshold=None):
 
     # Trivial maximal case (an element generating the field)
     if any(a.minpoly().degree() == self.degree() for a in alpha):
+        # pylint misunderstands the metaclass machinery that SageMath uses here.
+        # pylint: disable=no-value-for-parameter
         return (self, alpha, Hom(self, self, Fields()).identity())
+        # pylint: enable=no-value-for-parameter
 
     # Saturate with multiplication
     vecs = [(a * a.denominator()).vector() for a in alpha]
@@ -164,7 +187,10 @@ def subfield_from_elements(self, alpha, name=None, polred=True, threshold=None):
         modified = False
         d = U.dimension()
         if d == self.degree():
+            # pylint misunderstands the metaclass machinery that SageMath uses here.
+            # pylint: disable=no-value-for-parameter
             return (self, alpha, Hom(self, self, Fields()).identity())
+            # pylint: enable=no-value-for-parameter
         B = U.basis()
         new_vecs = [
             (self(B[i]) * self(B[j])).vector() for i in range(d) for j in range(i, d)
