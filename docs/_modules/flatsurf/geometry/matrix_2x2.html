@@ -287,6 +287,7 @@
 <span class="kn">from</span> <span class="nn">sage.matrix.constructor</span> <span class="kn">import</span> <span class="n">matrix</span><span class="p">,</span> <span class="n">identity_matrix</span>
 <span class="kn">from</span> <span class="nn">sage.modules.free_module_element</span> <span class="kn">import</span> <span class="n">vector</span>
 
+
 <div class="viewcode-block" id="similarity_from_vectors"><a class="viewcode-back" href="../../../geometry/matrix_2x2.html#flatsurf.geometry.matrix_2x2.similarity_from_vectors">[docs]</a><span class="k">def</span> <span class="nf">similarity_from_vectors</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">matrix_space</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the unique similarity matrix that maps ``u`` to ``v``.</span>
@@ -344,14 +345,15 @@
 
     <span class="k">if</span> <span class="n">matrix_space</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="kn">from</span> <span class="nn">sage.matrix.matrix_space</span> <span class="kn">import</span> <span class="n">MatrixSpace</span>
+
         <span class="n">matrix_space</span> <span class="o">=</span> <span class="n">MatrixSpace</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span> <span class="mi">2</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">u</span> <span class="o">==</span> <span class="n">v</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">matrix_space</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
 
-    <span class="n">sqnorm_u</span> <span class="o">=</span> <span class="n">u</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">u</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">u</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">u</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-    <span class="n">cos_uv</span> <span class="o">=</span> <span class="p">(</span><span class="n">u</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">u</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="n">sqnorm_u</span>
-    <span class="n">sin_uv</span> <span class="o">=</span> <span class="p">(</span><span class="n">u</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">u</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="n">sqnorm_u</span>
+    <span class="n">sqnorm_u</span> <span class="o">=</span> <span class="n">u</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">u</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">u</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">u</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">cos_uv</span> <span class="o">=</span> <span class="p">(</span><span class="n">u</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">u</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="n">sqnorm_u</span>
+    <span class="n">sin_uv</span> <span class="o">=</span> <span class="p">(</span><span class="n">u</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">u</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="n">sqnorm_u</span>
 
     <span class="n">m</span> <span class="o">=</span> <span class="n">matrix_space</span><span class="p">([</span><span class="n">cos_uv</span><span class="p">,</span> <span class="o">-</span><span class="n">sin_uv</span><span class="p">,</span> <span class="n">sin_uv</span><span class="p">,</span> <span class="n">cos_uv</span><span class="p">])</span>
     <span class="n">m</span><span class="o">.</span><span class="n">set_immutable</span><span class="p">()</span>
@@ -466,8 +468,8 @@
             <span class="n">uu</span> <span class="o">=</span> <span class="n">u</span>
             <span class="n">vv</span> <span class="o">=</span> <span class="n">v</span>
 
-        <span class="n">cos_uv</span> <span class="o">=</span> <span class="p">(</span><span class="n">uu</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">vv</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">uu</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">vv</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="n">sqnorm_u</span>
-        <span class="n">sin_uv</span> <span class="o">=</span> <span class="p">(</span><span class="n">uu</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">vv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">uu</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">vv</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="n">sqnorm_u</span>
+        <span class="n">cos_uv</span> <span class="o">=</span> <span class="p">(</span><span class="n">uu</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">vv</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">uu</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">vv</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="n">sqnorm_u</span>
+        <span class="n">sin_uv</span> <span class="o">=</span> <span class="p">(</span><span class="n">uu</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">vv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">uu</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">vv</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="n">sqnorm_u</span>
 
         <span class="n">is_rational</span> <span class="o">=</span> <span class="n">is_cosine_sine_of_rational</span><span class="p">(</span><span class="n">cos_uv</span><span class="p">,</span> <span class="n">sin_uv</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">assume_rational</span><span class="p">:</span>
@@ -480,31 +482,31 @@
     <span class="n">v0</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
     <span class="n">v1</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 
-    <span class="n">cos_uv</span> <span class="o">=</span> <span class="p">(</span><span class="n">u0</span><span class="o">*</span><span class="n">v0</span> <span class="o">+</span> <span class="n">u1</span><span class="o">*</span><span class="n">v1</span><span class="p">)</span> <span class="o">/</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">u0</span><span class="o">*</span><span class="n">u0</span> <span class="o">+</span> <span class="n">u1</span><span class="o">*</span><span class="n">u1</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">v0</span><span class="o">*</span><span class="n">v0</span> <span class="o">+</span> <span class="n">v1</span><span class="o">*</span><span class="n">v1</span><span class="p">))</span>
+    <span class="n">cos_uv</span> <span class="o">=</span> <span class="p">(</span><span class="n">u0</span> <span class="o">*</span> <span class="n">v0</span> <span class="o">+</span> <span class="n">u1</span> <span class="o">*</span> <span class="n">v1</span><span class="p">)</span> <span class="o">/</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">u0</span> <span class="o">*</span> <span class="n">u0</span> <span class="o">+</span> <span class="n">u1</span> <span class="o">*</span> <span class="n">u1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">v0</span> <span class="o">*</span> <span class="n">v0</span> <span class="o">+</span> <span class="n">v1</span> <span class="o">*</span> <span class="n">v1</span><span class="p">))</span>
     <span class="k">if</span> <span class="n">cos_uv</span> <span class="o">&lt;</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">:</span>
         <span class="k">assert</span> <span class="n">cos_uv</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mf">1.0000001</span>
         <span class="n">cos_uv</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span>
     <span class="k">elif</span> <span class="n">cos_uv</span> <span class="o">&gt;</span> <span class="mf">1.0</span><span class="p">:</span>
         <span class="k">assert</span> <span class="n">cos_uv</span> <span class="o">&lt;</span> <span class="mf">1.0000001</span>
         <span class="n">cos_uv</span> <span class="o">=</span> <span class="mf">1.0</span>
-    <span class="n">angle</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">acos</span><span class="p">(</span><span class="n">cos_uv</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>   <span class="c1"># rat number between 0 and 1/2</span>
+    <span class="n">angle</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">acos</span><span class="p">(</span><span class="n">cos_uv</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>  <span class="c1"># rat number between 0 and 1/2</span>
 
     <span class="k">if</span> <span class="n">numerical</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">is_rational</span><span class="p">:</span>
-        <span class="k">return</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="n">angle</span> <span class="k">if</span> <span class="n">u0</span> <span class="o">*</span> <span class="n">v1</span> <span class="o">-</span> <span class="n">u1</span><span class="o">*</span><span class="n">v0</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">angle</span>
+        <span class="k">return</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="n">angle</span> <span class="k">if</span> <span class="n">u0</span> <span class="o">*</span> <span class="n">v1</span> <span class="o">-</span> <span class="n">u1</span> <span class="o">*</span> <span class="n">v0</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">angle</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># fast and dirty way using floating point approximation</span>
         <span class="c1"># (see below for a slow but exact method)</span>
         <span class="n">angle_rat</span> <span class="o">=</span> <span class="n">RR</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span><span class="o">.</span><span class="n">nearby_rational</span><span class="p">(</span><span class="mf">0.00000001</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">angle_rat</span><span class="o">.</span><span class="n">denominator</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">100</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;the numerical method used is not smart enough!&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">angle_rat</span> <span class="k">if</span> <span class="n">u0</span><span class="o">*</span><span class="n">v1</span> <span class="o">-</span> <span class="n">u1</span><span class="o">*</span><span class="n">v0</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">angle_rat</span></div>
+        <span class="k">return</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">angle_rat</span> <span class="k">if</span> <span class="n">u0</span> <span class="o">*</span> <span class="n">v1</span> <span class="o">-</span> <span class="n">u1</span> <span class="o">*</span> <span class="n">v0</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">angle_rat</span></div>
 
         <span class="c1"># a neater way is provided below by working only with number fields</span>
         <span class="c1"># but this method is slower...</span>
-        <span class="c1">#sqnorm_u = u[0]*u[0] + u[1]*u[1]</span>
-        <span class="c1">#sqnorm_v = v[0]*v[0] + v[1]*v[1]</span>
+        <span class="c1"># sqnorm_u = u[0]*u[0] + u[1]*u[1]</span>
+        <span class="c1"># sqnorm_v = v[0]*v[0] + v[1]*v[1]</span>
         <span class="c1">#</span>
-        <span class="c1">#if sqnorm_u != sqnorm_v:</span>
+        <span class="c1"># if sqnorm_u != sqnorm_v:</span>
         <span class="c1">#    # we need to take a square root in order that u and v have the</span>
         <span class="c1">#    # same norm</span>
         <span class="c1">#    u = (1 / AA(sqnorm_u)).sqrt() * u.change_ring(AA)</span>
@@ -512,8 +514,8 @@
         <span class="c1">#    sqnorm_u = AA.one()</span>
         <span class="c1">#    sqnorm_v = AA.one()</span>
         <span class="c1">#</span>
-        <span class="c1">#cos_uv = (u[0]*v[0] + u[1]*v[1]) / sqnorm_u</span>
-        <span class="c1">#sin_uv = (u[0]*v[1] - u[1]*v[0]) / sqnorm_u</span>
+        <span class="c1"># cos_uv = (u[0]*v[0] + u[1]*v[1]) / sqnorm_u</span>
+        <span class="c1"># sin_uv = (u[0]*v[1] - u[1]*v[0]) / sqnorm_u</span>
 </pre></div>
         </article>
       </div>

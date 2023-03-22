@@ -5271,6 +5271,7 @@
             <span class="c1"># Check that the matrix defines an isometry in the hyperboloid</span>
             <span class="c1"># model, see CFJK &quot;Hyperbolic Geometry&quot; Theorem 10.1</span>
             <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">diagonal_matrix</span>
+
             <span class="n">D</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">isometry</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
                 <span class="o">*</span> <span class="n">diagonal_matrix</span><span class="p">(</span><span class="n">isometry</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">])</span>
@@ -9342,7 +9343,9 @@
         <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">PowerSeriesRing</span>
 
         <span class="c1"># We represent x + y*I in R[[I]] so we do not have to reimplement printing ourselves.</span>
-        <span class="k">return</span> <span class="nb">repr</span><span class="p">(</span><span class="n">PowerSeriesRing</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span> <span class="n">names</span><span class="o">=</span><span class="s2">&quot;I&quot;</span><span class="p">)(</span><span class="nb">list</span><span class="p">(</span><span class="n">coordinates</span><span class="p">)))</span></div>
+        <span class="k">return</span> <span class="nb">repr</span><span class="p">(</span>
+            <span class="n">PowerSeriesRing</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span> <span class="n">names</span><span class="o">=</span><span class="s2">&quot;I&quot;</span><span class="p">)(</span><span class="nb">list</span><span class="p">(</span><span class="n">coordinates</span><span class="p">))</span>
+        <span class="p">)</span></div>
 
 <div class="viewcode-block" id="HyperbolicPointFromCoordinates.change"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicPointFromCoordinates.change">[docs]</a>    <span class="k">def</span> <span class="nf">change</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ring</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">geometry</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">oriented</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -10426,7 +10429,7 @@
         <span class="n">half_spaces</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_half_spaces</span><span class="p">)</span>
 
         <span class="n">half_spaces</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">half_spaces</span><span class="p">[</span><span class="n">half_spaces</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">boundary</span><span class="p">):]</span>
+            <span class="n">half_spaces</span><span class="p">[</span><span class="n">half_spaces</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">boundary</span><span class="p">)</span> <span class="p">:]</span>
             <span class="o">+</span> <span class="n">half_spaces</span><span class="p">[:</span> <span class="n">half_spaces</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">boundary</span><span class="p">)]</span>
         <span class="p">)</span>
         <span class="n">half_spaces</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
@@ -13368,7 +13371,7 @@
 
         <span class="c1"># Divide &amp; Conquer recursively.</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_merge</span><span class="p">(</span>
-            <span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_merge</span><span class="p">(</span><span class="o">*</span><span class="n">sets</span><span class="p">[:</span> <span class="n">count</span> <span class="o">//</span> <span class="mi">2</span><span class="p">]),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_merge</span><span class="p">(</span><span class="o">*</span><span class="n">sets</span><span class="p">[</span><span class="n">count</span> <span class="o">//</span> <span class="mi">2</span><span class="p">:]))</span>
+            <span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_merge</span><span class="p">(</span><span class="o">*</span><span class="n">sets</span><span class="p">[:</span> <span class="n">count</span> <span class="o">//</span> <span class="mi">2</span><span class="p">]),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_merge</span><span class="p">(</span><span class="o">*</span><span class="n">sets</span><span class="p">[</span><span class="n">count</span> <span class="o">//</span> <span class="mi">2</span> <span class="p">:]))</span>
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="OrderedSet.__eq__"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.OrderedSet.__eq__">[docs]</a>    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
@@ -14027,7 +14030,9 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">vertices</span><span class="p">:</span>
             <span class="c1"># We cannot return empty_set() because we do not know the HyperbolicPlane this lives in.</span>
-            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;cannot compute convex hull of empty set of vertices&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+                <span class="s2">&quot;cannot compute convex hull of empty set of vertices&quot;</span>
+            <span class="p">)</span>
 
         <span class="n">H</span> <span class="o">=</span> <span class="n">vertices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span>
 
@@ -14058,7 +14063,7 @@
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dy</span> <span class="o">*</span> <span class="n">other</span><span class="o">.</span><span class="n">dx</span> <span class="o">&gt;</span> <span class="n">other</span><span class="o">.</span><span class="n">dy</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dx</span><span class="p">:</span>
                     <span class="k">return</span> <span class="kc">False</span>
                 <span class="c1"># if slopes are the same, sort by distance</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dx</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">dy</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">&lt;</span> <span class="n">other</span><span class="o">.</span><span class="n">dx</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">other</span><span class="o">.</span><span class="n">dy</span> <span class="o">**</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dx</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">dy</span><span class="o">**</span><span class="mi">2</span> <span class="o">&lt;</span> <span class="n">other</span><span class="o">.</span><span class="n">dx</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">other</span><span class="o">.</span><span class="n">dy</span><span class="o">**</span><span class="mi">2</span><span class="p">:</span>
                     <span class="k">return</span> <span class="kc">True</span>
                 <span class="k">return</span> <span class="kc">False</span>
 
@@ -14101,7 +14106,7 @@
 
         <span class="n">half_spaces</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">hull</span><span class="p">)):</span>
-            <span class="n">half_spaces</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">H</span><span class="o">.</span><span class="n">geodesic</span><span class="p">(</span><span class="n">hull</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">hull</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">.</span><span class="n">left_half_space</span><span class="p">())</span>
+            <span class="n">half_spaces</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">H</span><span class="o">.</span><span class="n">geodesic</span><span class="p">(</span><span class="n">hull</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">],</span> <span class="n">hull</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">.</span><span class="n">left_half_space</span><span class="p">())</span>
 
         <span class="k">return</span> <span class="n">HyperbolicHalfSpaces</span><span class="p">(</span><span class="n">half_spaces</span><span class="p">)</span></div></div>
 

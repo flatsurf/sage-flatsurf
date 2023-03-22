@@ -271,13 +271,13 @@
 <span class="kn">from</span> <span class="nn">sage.misc.cachefunc</span> <span class="kn">import</span> <span class="n">cached_method</span>
 
 <span class="c1"># the types of edges</span>
-<span class="n">V_NONE</span> <span class="o">=</span> <span class="mi">0</span>   <span class="c1"># start vertex has no horizontal/vertical separatrix</span>
-<span class="n">V_LEFT</span> <span class="o">=</span> <span class="mi">1</span>   <span class="c1"># horizontal separatrix going right</span>
+<span class="n">V_NONE</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># start vertex has no horizontal/vertical separatrix</span>
+<span class="n">V_LEFT</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># horizontal separatrix going right</span>
 <span class="n">V_RIGHT</span> <span class="o">=</span> <span class="mi">2</span>  <span class="c1"># horizontal separatrix going left</span>
-<span class="n">V_BOT</span> <span class="o">=</span> <span class="mi">3</span>    <span class="c1"># vertical separatrix going up</span>
-<span class="n">V_TOP</span> <span class="o">=</span> <span class="mi">4</span>    <span class="c1"># vertical separatrix going down</span>
+<span class="n">V_BOT</span> <span class="o">=</span> <span class="mi">3</span>  <span class="c1"># vertical separatrix going up</span>
+<span class="n">V_TOP</span> <span class="o">=</span> <span class="mi">4</span>  <span class="c1"># vertical separatrix going down</span>
 
-<span class="c1"># helpers to build polytope inequalities</span>
+
 <div class="viewcode-block" id="sign_and_norm_conditions"><a class="viewcode-back" href="../../../geometry/l_infinity_delaunay_cells.html#flatsurf.geometry.l_infinity_delaunay_cells.sign_and_norm_conditions">[docs]</a><span class="k">def</span> <span class="nf">sign_and_norm_conditions</span><span class="p">(</span><span class="n">dim</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">s</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Inequalities:</span>
@@ -301,13 +301,14 @@
 <span class="sd">        [[0, -1], [0, 0], [1, -1], [1, 0]]</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">l_sign</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">dim</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
-    <span class="n">l_sign</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">s</span>
+    <span class="n">l_sign</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">s</span>
 
     <span class="n">l_norm</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">dim</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
-    <span class="n">l_norm</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">s</span>
+    <span class="n">l_norm</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">s</span>
     <span class="n">l_norm</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
 
     <span class="k">return</span> <span class="p">(</span><span class="n">l_sign</span><span class="p">,</span> <span class="n">l_norm</span><span class="p">)</span></div>
+
 
 <div class="viewcode-block" id="opposite_condition"><a class="viewcode-back" href="../../../geometry/l_infinity_delaunay_cells.html#flatsurf.geometry.l_infinity_delaunay_cells.opposite_condition">[docs]</a><span class="k">def</span> <span class="nf">opposite_condition</span><span class="p">(</span><span class="n">dim</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -331,49 +332,52 @@
 <span class="sd">        sage: sorted(Polyhedron(eqns=[eq1,eq2], ieqs=ieqs1+ieqs2).vertices_list())</span>
 <span class="sd">        [[0, 0], [1, -1]]</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">l</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">dim</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
-    <span class="n">l</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="n">l</span><span class="p">[</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">linear</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">dim</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">linear</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">linear</span><span class="p">[</span><span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
 
-    <span class="k">return</span> <span class="n">l</span></div>
+    <span class="k">return</span> <span class="n">linear</span></div>
+
 
 <div class="viewcode-block" id="bottom_top_delaunay_condition"><a class="viewcode-back" href="../../../geometry/l_infinity_delaunay_cells.html#flatsurf.geometry.l_infinity_delaunay_cells.bottom_top_delaunay_condition">[docs]</a><span class="k">def</span> <span class="nf">bottom_top_delaunay_condition</span><span class="p">(</span><span class="n">dim</span><span class="p">,</span> <span class="n">p1</span><span class="p">,</span> <span class="n">e1</span><span class="p">,</span> <span class="n">p2</span><span class="p">,</span> <span class="n">e2</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Delaunay condition for bottom-top pairs of triangles</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># re(e2p1) &lt;= im(e1) + im(e2m1)</span>
-    <span class="n">e2m1</span> <span class="o">=</span> <span class="p">(</span><span class="n">e2</span><span class="o">+</span><span class="mi">2</span><span class="p">)</span><span class="o">%</span><span class="mi">3</span>
-    <span class="n">e2p1</span> <span class="o">=</span> <span class="p">(</span><span class="n">e2</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">%</span><span class="mi">3</span>
+    <span class="n">e2m1</span> <span class="o">=</span> <span class="p">(</span><span class="n">e2</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span> <span class="o">%</span> <span class="mi">3</span>
+    <span class="n">e2p1</span> <span class="o">=</span> <span class="p">(</span><span class="n">e2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">3</span>
 
-    <span class="n">im_e2m1</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="n">p2</span> <span class="o">+</span> <span class="n">e2m1</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
-    <span class="n">re_e2p1</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="n">p2</span> <span class="o">+</span> <span class="n">e2p1</span><span class="p">)</span>
-    <span class="n">im_e1</span>   <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="n">p1</span> <span class="o">+</span> <span class="n">e1</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="n">im_e2m1</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="n">p2</span> <span class="o">+</span> <span class="n">e2m1</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="n">re_e2p1</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="n">p2</span> <span class="o">+</span> <span class="n">e2p1</span><span class="p">)</span>
+    <span class="n">im_e1</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="n">p1</span> <span class="o">+</span> <span class="n">e1</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
 
-    <span class="n">l</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="n">dim</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">l</span><span class="p">[</span><span class="n">im_e1</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="n">l</span><span class="p">[</span><span class="n">im_e2m1</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="n">l</span><span class="p">[</span><span class="n">re_e2p1</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="n">linear</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">dim</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">linear</span><span class="p">[</span><span class="n">im_e1</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">linear</span><span class="p">[</span><span class="n">im_e2m1</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">linear</span><span class="p">[</span><span class="n">re_e2p1</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
 
-    <span class="k">return</span> <span class="n">l</span></div>
+    <span class="k">return</span> <span class="n">linear</span></div>
+
 
 <div class="viewcode-block" id="right_left_delaunay_condition"><a class="viewcode-back" href="../../../geometry/l_infinity_delaunay_cells.html#flatsurf.geometry.l_infinity_delaunay_cells.right_left_delaunay_condition">[docs]</a><span class="k">def</span> <span class="nf">right_left_delaunay_condition</span><span class="p">(</span><span class="n">dim</span><span class="p">,</span> <span class="n">p1</span><span class="p">,</span> <span class="n">e1</span><span class="p">,</span> <span class="n">p2</span><span class="p">,</span> <span class="n">e2</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Delaunay condition for right-left pairs of triangles</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># im(e2p1) &lt;= re(e2) + re(e1m1)</span>
-    <span class="n">e1m1</span> <span class="o">=</span> <span class="p">(</span><span class="n">e1</span><span class="o">+</span><span class="mi">2</span><span class="p">)</span><span class="o">%</span><span class="mi">3</span>
-    <span class="n">e2p1</span> <span class="o">=</span> <span class="p">(</span><span class="n">e2</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">%</span><span class="mi">3</span>
+    <span class="n">e1m1</span> <span class="o">=</span> <span class="p">(</span><span class="n">e1</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span> <span class="o">%</span> <span class="mi">3</span>
+    <span class="n">e2p1</span> <span class="o">=</span> <span class="p">(</span><span class="n">e2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">3</span>
 
-    <span class="n">im_e2p1</span> <span class="o">=</span> <span class="mi">3</span><span class="o">*</span><span class="p">(</span><span class="n">p2</span> <span class="o">+</span> <span class="n">e2p1</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
-    <span class="n">re_e2</span> <span class="o">=</span> <span class="mi">3</span><span class="o">*</span><span class="p">(</span><span class="n">p2</span> <span class="o">+</span> <span class="n">e2</span><span class="p">)</span>
-    <span class="n">re_e1m1</span> <span class="o">=</span> <span class="mi">3</span><span class="o">*</span><span class="p">(</span><span class="n">p1</span> <span class="o">+</span> <span class="n">e1m1</span><span class="p">)</span>
+    <span class="n">im_e2p1</span> <span class="o">=</span> <span class="mi">3</span> <span class="o">*</span> <span class="p">(</span><span class="n">p2</span> <span class="o">+</span> <span class="n">e2p1</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="n">re_e2</span> <span class="o">=</span> <span class="mi">3</span> <span class="o">*</span> <span class="p">(</span><span class="n">p2</span> <span class="o">+</span> <span class="n">e2</span><span class="p">)</span>
+    <span class="n">re_e1m1</span> <span class="o">=</span> <span class="mi">3</span> <span class="o">*</span> <span class="p">(</span><span class="n">p1</span> <span class="o">+</span> <span class="n">e1m1</span><span class="p">)</span>
 
-    <span class="n">l</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="n">dim</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">l</span><span class="p">[</span><span class="n">re_e2</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="n">l</span><span class="p">[</span><span class="n">re_e1m1</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="n">l</span><span class="p">[</span><span class="n">im_e2p1</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="n">linear</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">dim</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">linear</span><span class="p">[</span><span class="n">re_e2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">linear</span><span class="p">[</span><span class="n">re_e1m1</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">linear</span><span class="p">[</span><span class="n">im_e2p1</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
 
-    <span class="k">return</span> <span class="n">l</span></div>
+    <span class="k">return</span> <span class="n">linear</span></div>
+
 
 <div class="viewcode-block" id="LInfinityMarkedTriangulation"><a class="viewcode-back" href="../../../geometry/l_infinity_delaunay_cells.html#flatsurf.geometry.l_infinity_delaunay_cells.LInfinityMarkedTriangulation">[docs]</a><span class="k">class</span> <span class="nc">LInfinityMarkedTriangulation</span><span class="p">:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -387,8 +391,10 @@
 <span class="sd">        sage: types = [(V_BOT, V_NONE, V_RIGHT), (V_NONE, V_LEFT, V_TOP)]</span>
 <span class="sd">        sage: T = LInfinityMarkedTriangulation(2, gluings, types)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_faces</span><span class="p">,</span> <span class="n">edge_identifications</span><span class="p">,</span> <span class="n">edge_types</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="kn">from</span> <span class="nn">sage.rings.integer_ring</span> <span class="kn">import</span> <span class="n">ZZ</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_n</span> <span class="o">=</span> <span class="n">ZZ</span><span class="p">(</span><span class="n">num_faces</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_edge_identifications</span> <span class="o">=</span> <span class="n">edge_identifications</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_edge_types</span> <span class="o">=</span> <span class="n">edge_types</span>
@@ -399,28 +405,46 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n</span> <span class="o">%</span> <span class="mi">2</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;the number of faces must be even&quot;</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_edge_identifications</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">!=</span> <span class="p">[(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n</span><span class="p">)</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)]:</span>
+        <span class="k">if</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_edge_identifications</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">!=</span> <span class="p">[</span>
+            <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n</span><span class="p">)</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+        <span class="p">]:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;should be a triangulation&quot;</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_edge_types</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_edge_types</span><span class="p">)</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_faces</span><span class="p">():</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_edge_types</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span>
+            <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_edge_types</span><span class="p">)</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_faces</span><span class="p">()</span>
+        <span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;edge_types invalid&quot;</span><span class="p">)</span>
-            
+
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_faces</span><span class="p">()):</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_edge_types</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;edge_types invalid&quot;</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_types</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="n">V_NONE</span><span class="p">,</span> <span class="n">V_LEFT</span><span class="p">,</span> <span class="n">V_RIGHT</span><span class="p">,</span> <span class="n">V_BOT</span><span class="p">,</span> <span class="n">V_TOP</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_types</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span>
+                    <span class="n">V_NONE</span><span class="p">,</span>
+                    <span class="n">V_LEFT</span><span class="p">,</span>
+                    <span class="n">V_RIGHT</span><span class="p">,</span>
+                    <span class="n">V_BOT</span><span class="p">,</span>
+                    <span class="n">V_TOP</span><span class="p">,</span>
+                <span class="p">]:</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;types[</span><span class="si">{}</span><span class="s2">] = </span><span class="si">{}</span><span class="s2"> invalid&quot;</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_types</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
 
         <span class="n">seen</span> <span class="o">=</span> <span class="p">[</span><span class="kc">False</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n</span>
         <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">seen</span><span class="p">[</span><span class="n">p</span><span class="p">]:</span>
                 <span class="k">continue</span>
-            <span class="n">sh</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_edge_types</span><span class="p">[</span><span class="n">p</span><span class="p">][</span><span class="n">r</span><span class="p">]</span> <span class="o">==</span> <span class="n">V_LEFT</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_types</span><span class="p">[</span><span class="n">p</span><span class="p">][</span><span class="n">r</span><span class="p">]</span> <span class="o">==</span> <span class="n">V_RIGHT</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
-            <span class="n">sv</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_edge_types</span><span class="p">[</span><span class="n">p</span><span class="p">][</span><span class="n">r</span><span class="p">]</span> <span class="o">==</span> <span class="n">V_BOT</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_types</span><span class="p">[</span><span class="n">p</span><span class="p">][</span><span class="n">r</span><span class="p">]</span> <span class="o">==</span> <span class="n">V_TOP</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
+            <span class="n">sh</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_edge_types</span><span class="p">[</span><span class="n">p</span><span class="p">][</span><span class="n">r</span><span class="p">]</span> <span class="o">==</span> <span class="n">V_LEFT</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_types</span><span class="p">[</span><span class="n">p</span><span class="p">][</span><span class="n">r</span><span class="p">]</span> <span class="o">==</span> <span class="n">V_RIGHT</span>
+                <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">sv</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_edge_types</span><span class="p">[</span><span class="n">p</span><span class="p">][</span><span class="n">r</span><span class="p">]</span> <span class="o">==</span> <span class="n">V_BOT</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_types</span><span class="p">[</span><span class="n">p</span><span class="p">][</span><span class="n">r</span><span class="p">]</span> <span class="o">==</span> <span class="n">V_TOP</span>
+                <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="p">)</span>
             <span class="k">if</span> <span class="n">sh</span> <span class="o">!=</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">sv</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;triangle </span><span class="si">{}</span><span class="s2"> has invalid types </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                     <span class="n">p</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_types</span><span class="p">[</span><span class="n">p</span><span class="p">]))</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;triangle </span><span class="si">{}</span><span class="s2"> has invalid types </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_types</span><span class="p">[</span><span class="n">p</span><span class="p">])</span>
+                <span class="p">)</span>
 
 <div class="viewcode-block" id="LInfinityMarkedTriangulation.num_faces"><a class="viewcode-back" href="../../../geometry/l_infinity_delaunay_cells.html#flatsurf.geometry.l_infinity_delaunay_cells.LInfinityMarkedTriangulation.num_faces">[docs]</a>    <span class="k">def</span> <span class="nf">num_faces</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n</span></div>
@@ -454,11 +478,11 @@
         <span class="k">for</span> <span class="n">p1</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">e1</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_types</span><span class="p">[</span><span class="n">p1</span><span class="p">][</span><span class="n">e1</span><span class="p">]</span> <span class="o">==</span> <span class="n">V_BOT</span><span class="p">:</span>
-                    <span class="n">e1p1</span> <span class="o">=</span> <span class="p">(</span><span class="n">e1</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">%</span><span class="mi">3</span>
-                    <span class="n">p2</span><span class="p">,</span><span class="n">e2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span><span class="n">e1p1</span><span class="p">)</span>
-                    <span class="n">e2m1</span> <span class="o">=</span> <span class="p">(</span><span class="n">e2</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">%</span><span class="mi">3</span>
+                    <span class="n">e1p1</span> <span class="o">=</span> <span class="p">(</span><span class="n">e1</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">3</span>
+                    <span class="n">p2</span><span class="p">,</span> <span class="n">e2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">e1p1</span><span class="p">)</span>
+                    <span class="n">e2m1</span> <span class="o">=</span> <span class="p">(</span><span class="n">e2</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">3</span>
                     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_types</span><span class="p">[</span><span class="n">p2</span><span class="p">][</span><span class="n">e2m1</span><span class="p">]</span> <span class="o">==</span> <span class="n">V_TOP</span><span class="p">:</span>
-                        <span class="n">pairs</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">p1</span><span class="p">,</span><span class="n">e1</span><span class="p">,</span><span class="n">p2</span><span class="p">,</span><span class="n">e2m1</span><span class="p">))</span>
+                        <span class="n">pairs</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">p1</span><span class="p">,</span> <span class="n">e1</span><span class="p">,</span> <span class="n">p2</span><span class="p">,</span> <span class="n">e2m1</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">pairs</span></div>
 
 <div class="viewcode-block" id="LInfinityMarkedTriangulation.right_left_pairs"><a class="viewcode-back" href="../../../geometry/l_infinity_delaunay_cells.html#flatsurf.geometry.l_infinity_delaunay_cells.LInfinityMarkedTriangulation.right_left_pairs">[docs]</a>    <span class="k">def</span> <span class="nf">right_left_pairs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -481,11 +505,11 @@
         <span class="k">for</span> <span class="n">p1</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">e1</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_types</span><span class="p">[</span><span class="n">p1</span><span class="p">][</span><span class="n">e1</span><span class="p">]</span> <span class="o">==</span> <span class="n">V_RIGHT</span><span class="p">:</span>
-                    <span class="n">e1p1</span> <span class="o">=</span> <span class="p">(</span><span class="n">e1</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">%</span><span class="mi">3</span>
-                    <span class="n">p2</span><span class="p">,</span><span class="n">e2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span><span class="n">e1p1</span><span class="p">)</span>
-                    <span class="n">e2m1</span> <span class="o">=</span> <span class="p">(</span><span class="n">e2</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">%</span><span class="mi">3</span>
+                    <span class="n">e1p1</span> <span class="o">=</span> <span class="p">(</span><span class="n">e1</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">3</span>
+                    <span class="n">p2</span><span class="p">,</span> <span class="n">e2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">e1p1</span><span class="p">)</span>
+                    <span class="n">e2m1</span> <span class="o">=</span> <span class="p">(</span><span class="n">e2</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">3</span>
                     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_types</span><span class="p">[</span><span class="n">p2</span><span class="p">][</span><span class="n">e2m1</span><span class="p">]</span> <span class="o">==</span> <span class="n">V_LEFT</span><span class="p">:</span>
-                        <span class="n">pairs</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">p1</span><span class="p">,</span><span class="n">e1</span><span class="p">,</span><span class="n">p2</span><span class="p">,</span><span class="n">e2m1</span><span class="p">))</span>
+                        <span class="n">pairs</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">p1</span><span class="p">,</span> <span class="n">e1</span><span class="p">,</span> <span class="n">p2</span><span class="p">,</span> <span class="n">e2m1</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">pairs</span></div>
 
 <div class="viewcode-block" id="LInfinityMarkedTriangulation.polytope"><a class="viewcode-back" href="../../../geometry/l_infinity_delaunay_cells.html#flatsurf.geometry.l_infinity_delaunay_cells.LInfinityMarkedTriangulation.polytope">[docs]</a>    <span class="nd">@cached_method</span>
@@ -494,13 +518,13 @@
 <span class="sd">        Each edge correspond to a vector in RR^2 (identified to CC)</span>
 
 <span class="sd">        We assign the following coordinates</span>
-<span class="sd">        </span>
+
 <span class="sd">        (p,e) -&gt; real part at 2*(3*p + e) and imag part at 2*(3*p + e) + 1</span>
 
 <span class="sd">        The return polyhedron is compact as we fix each side to be of L-infinity</span>
 <span class="sd">        length less than 1.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">dim</span> <span class="o">=</span> <span class="mi">4</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()</span>
+        <span class="n">dim</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()</span>
         <span class="n">eqns</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">ieqs</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -508,38 +532,38 @@
 
         <span class="c1"># edges should sum up to zero</span>
         <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n</span><span class="p">):</span>
-            <span class="n">l</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="n">dim</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
-            <span class="n">l</span><span class="p">[</span><span class="mi">6</span><span class="o">*</span><span class="n">p</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-            <span class="n">l</span><span class="p">[</span><span class="mi">6</span><span class="o">*</span><span class="n">p</span><span class="o">+</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-            <span class="n">l</span><span class="p">[</span><span class="mi">6</span><span class="o">*</span><span class="n">p</span><span class="o">+</span><span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-            <span class="n">eqns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
-            
-            <span class="n">l</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="n">dim</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
-            <span class="n">l</span><span class="p">[</span><span class="mi">6</span><span class="o">*</span><span class="n">p</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-            <span class="n">l</span><span class="p">[</span><span class="mi">6</span><span class="o">*</span><span class="n">p</span><span class="o">+</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-            <span class="n">l</span><span class="p">[</span><span class="mi">6</span><span class="o">*</span><span class="n">p</span><span class="o">+</span><span class="mi">6</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-            <span class="n">eqns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+            <span class="n">linear</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">dim</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">linear</span><span class="p">[</span><span class="mi">6</span> <span class="o">*</span> <span class="n">p</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">linear</span><span class="p">[</span><span class="mi">6</span> <span class="o">*</span> <span class="n">p</span> <span class="o">+</span> <span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">linear</span><span class="p">[</span><span class="mi">6</span> <span class="o">*</span> <span class="n">p</span> <span class="o">+</span> <span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">eqns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">linear</span><span class="p">)</span>
+
+            <span class="n">linear</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">dim</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">linear</span><span class="p">[</span><span class="mi">6</span> <span class="o">*</span> <span class="n">p</span> <span class="o">+</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">linear</span><span class="p">[</span><span class="mi">6</span> <span class="o">*</span> <span class="n">p</span> <span class="o">+</span> <span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">linear</span><span class="p">[</span><span class="mi">6</span> <span class="o">*</span> <span class="n">p</span> <span class="o">+</span> <span class="mi">6</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">eqns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">linear</span><span class="p">)</span>
 
         <span class="c1"># opposite edges are opposite vectors</span>
         <span class="k">for</span> <span class="n">p1</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">e1</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
-                <span class="n">p2</span><span class="p">,</span><span class="n">e2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">e1</span><span class="p">)</span>
-                <span class="n">re1</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="n">p1</span><span class="o">+</span><span class="n">e1</span><span class="p">)</span>
-                <span class="n">im1</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="n">p1</span><span class="o">+</span><span class="n">e1</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span>
-                <span class="n">re2</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="n">p2</span><span class="o">+</span><span class="n">e2</span><span class="p">)</span>
-                <span class="n">im2</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="n">p2</span><span class="o">+</span><span class="n">e2</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span>
+                <span class="n">p2</span><span class="p">,</span> <span class="n">e2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">e1</span><span class="p">)</span>
+                <span class="n">re1</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="n">p1</span> <span class="o">+</span> <span class="n">e1</span><span class="p">)</span>
+                <span class="n">im1</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="n">p1</span> <span class="o">+</span> <span class="n">e1</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+                <span class="n">re2</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="n">p2</span> <span class="o">+</span> <span class="n">e2</span><span class="p">)</span>
+                <span class="n">im2</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="n">p2</span> <span class="o">+</span> <span class="n">e2</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
                 <span class="k">if</span> <span class="n">re1</span> <span class="o">&lt;</span> <span class="n">re2</span><span class="p">:</span>
                     <span class="n">eqns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">opposite_condition</span><span class="p">(</span><span class="n">dim</span><span class="p">,</span> <span class="n">re1</span><span class="p">,</span> <span class="n">re2</span><span class="p">))</span>
                     <span class="n">eqns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">opposite_condition</span><span class="p">(</span><span class="n">dim</span><span class="p">,</span> <span class="n">im1</span><span class="p">,</span> <span class="n">im2</span><span class="p">))</span>
 
         <span class="c1"># Compute the signs depending on edge types</span>
         <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n</span><span class="p">):</span>
-            <span class="k">for</span> <span class="n">e1</span><span class="p">,</span><span class="n">e2</span> <span class="ow">in</span> <span class="p">((</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">),(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)):</span>
+            <span class="k">for</span> <span class="n">e1</span><span class="p">,</span> <span class="n">e2</span> <span class="ow">in</span> <span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)):</span>
                 <span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_types</span><span class="p">[</span><span class="n">p</span><span class="p">][</span><span class="n">e2</span><span class="p">]</span>
-                <span class="n">re1</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="n">p</span><span class="o">+</span><span class="n">e1</span><span class="p">)</span>
-                <span class="n">im1</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="n">p</span><span class="o">+</span><span class="n">e1</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
-                <span class="n">re2</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="n">p</span><span class="o">+</span><span class="n">e2</span><span class="p">)</span>
-                <span class="n">im2</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="n">p</span><span class="o">+</span><span class="n">e2</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+                <span class="n">re1</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="n">p</span> <span class="o">+</span> <span class="n">e1</span><span class="p">)</span>
+                <span class="n">im1</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="n">p</span> <span class="o">+</span> <span class="n">e1</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+                <span class="n">re2</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="n">p</span> <span class="o">+</span> <span class="n">e2</span><span class="p">)</span>
+                <span class="n">im2</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="n">p</span> <span class="o">+</span> <span class="n">e2</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
                 <span class="k">if</span> <span class="n">t</span> <span class="o">==</span> <span class="n">V_BOT</span><span class="p">:</span>
                     <span class="n">signs</span><span class="p">[</span><span class="n">re1</span><span class="p">]</span> <span class="o">=</span> <span class="n">signs</span><span class="p">[</span><span class="n">re2</span><span class="p">]</span> <span class="o">=</span> <span class="o">+</span><span class="mi">1</span>
                     <span class="n">signs</span><span class="p">[</span><span class="n">im1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
@@ -562,15 +586,16 @@
             <span class="n">ieqs</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">sign_and_norm_conditions</span><span class="p">(</span><span class="n">dim</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">signs</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
 
         <span class="c1"># Delaunay conditions</span>
-        <span class="k">for</span> <span class="n">p1</span><span class="p">,</span><span class="n">e1</span><span class="p">,</span><span class="n">p2</span><span class="p">,</span><span class="n">e2</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bottom_top_pairs</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">p1</span><span class="p">,</span> <span class="n">e1</span><span class="p">,</span> <span class="n">p2</span><span class="p">,</span> <span class="n">e2</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bottom_top_pairs</span><span class="p">():</span>
             <span class="n">ieqs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bottom_top_delaunay_condition</span><span class="p">(</span><span class="n">dim</span><span class="p">,</span> <span class="n">p1</span><span class="p">,</span> <span class="n">e1</span><span class="p">,</span> <span class="n">p2</span><span class="p">,</span> <span class="n">e2</span><span class="p">))</span>
-        <span class="k">for</span> <span class="n">p1</span><span class="p">,</span><span class="n">e1</span><span class="p">,</span><span class="n">p2</span><span class="p">,</span><span class="n">e2</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">right_left_pairs</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">p1</span><span class="p">,</span> <span class="n">e1</span><span class="p">,</span> <span class="n">p2</span><span class="p">,</span> <span class="n">e2</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">right_left_pairs</span><span class="p">():</span>
             <span class="n">ieqs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">right_left_delaunay_condition</span><span class="p">(</span><span class="n">dim</span><span class="p">,</span> <span class="n">p1</span><span class="p">,</span> <span class="n">e1</span><span class="p">,</span> <span class="n">p2</span><span class="p">,</span> <span class="n">e2</span><span class="p">))</span>
 
-<span class="c1">#        return eqns, ieqs</span>
+        <span class="c1">#        return eqns, ieqs</span>
 
         <span class="kn">from</span> <span class="nn">sage.geometry.polyhedron.constructor</span> <span class="kn">import</span> <span class="n">Polyhedron</span>
         <span class="kn">from</span> <span class="nn">sage.rings.rational_field</span> <span class="kn">import</span> <span class="n">QQ</span>
+
         <span class="k">return</span> <span class="n">Polyhedron</span><span class="p">(</span><span class="n">ieqs</span><span class="o">=</span><span class="n">ieqs</span><span class="p">,</span> <span class="n">eqns</span><span class="o">=</span><span class="n">eqns</span><span class="p">,</span> <span class="n">base_ring</span><span class="o">=</span><span class="n">QQ</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="LInfinityMarkedTriangulation.barycenter"><a class="viewcode-back" href="../../../geometry/l_infinity_delaunay_cells.html#flatsurf.geometry.l_infinity_delaunay_cells.LInfinityMarkedTriangulation.barycenter">[docs]</a>    <span class="k">def</span> <span class="nf">barycenter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -597,18 +622,24 @@
 
         <span class="kn">from</span> <span class="nn">.polygon</span> <span class="kn">import</span> <span class="n">ConvexPolygons</span>
         <span class="kn">from</span> <span class="nn">sage.rings.rational_field</span> <span class="kn">import</span> <span class="n">QQ</span>
+
         <span class="n">C</span> <span class="o">=</span> <span class="n">ConvexPolygons</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span>
 
         <span class="n">triangles</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n</span><span class="p">):</span>
-            <span class="n">e1</span> <span class="o">=</span> <span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">6</span><span class="o">*</span><span class="n">p</span><span class="p">],</span> <span class="n">b</span><span class="p">[</span><span class="mi">6</span><span class="o">*</span><span class="n">p</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span>
-            <span class="n">e2</span> <span class="o">=</span> <span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">6</span><span class="o">*</span><span class="n">p</span><span class="o">+</span><span class="mi">2</span><span class="p">],</span> <span class="n">b</span><span class="p">[</span><span class="mi">6</span><span class="o">*</span><span class="n">p</span><span class="o">+</span><span class="mi">3</span><span class="p">])</span>
-            <span class="n">e3</span> <span class="o">=</span> <span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">6</span><span class="o">*</span><span class="n">p</span><span class="o">+</span><span class="mi">4</span><span class="p">],</span> <span class="n">b</span><span class="p">[</span><span class="mi">6</span><span class="o">*</span><span class="n">p</span><span class="o">+</span><span class="mi">5</span><span class="p">])</span>
-            <span class="n">triangles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">C</span><span class="p">([</span><span class="n">e1</span><span class="p">,</span><span class="n">e2</span><span class="p">,</span><span class="n">e3</span><span class="p">]))</span>
-        
+            <span class="n">e1</span> <span class="o">=</span> <span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">6</span> <span class="o">*</span> <span class="n">p</span><span class="p">],</span> <span class="n">b</span><span class="p">[</span><span class="mi">6</span> <span class="o">*</span> <span class="n">p</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
+            <span class="n">e2</span> <span class="o">=</span> <span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">6</span> <span class="o">*</span> <span class="n">p</span> <span class="o">+</span> <span class="mi">2</span><span class="p">],</span> <span class="n">b</span><span class="p">[</span><span class="mi">6</span> <span class="o">*</span> <span class="n">p</span> <span class="o">+</span> <span class="mi">3</span><span class="p">])</span>
+            <span class="n">e3</span> <span class="o">=</span> <span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">6</span> <span class="o">*</span> <span class="n">p</span> <span class="o">+</span> <span class="mi">4</span><span class="p">],</span> <span class="n">b</span><span class="p">[</span><span class="mi">6</span> <span class="o">*</span> <span class="n">p</span> <span class="o">+</span> <span class="mi">5</span><span class="p">])</span>
+            <span class="n">triangles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">C</span><span class="p">([</span><span class="n">e1</span><span class="p">,</span> <span class="n">e2</span><span class="p">,</span> <span class="n">e3</span><span class="p">]))</span>
+
         <span class="kn">from</span> <span class="nn">.surface</span> <span class="kn">import</span> <span class="n">surface_list_from_polygons_and_gluings</span>
         <span class="kn">from</span> <span class="nn">.translation_surface</span> <span class="kn">import</span> <span class="n">TranslationSurface</span>
-        <span class="k">return</span> <span class="n">TranslationSurface</span><span class="p">(</span><span class="n">surface_list_from_polygons_and_gluings</span><span class="p">(</span><span class="n">triangles</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_identifications</span><span class="p">))</span></div></div>
+
+        <span class="k">return</span> <span class="n">TranslationSurface</span><span class="p">(</span>
+            <span class="n">surface_list_from_polygons_and_gluings</span><span class="p">(</span>
+                <span class="n">triangles</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_identifications</span>
+            <span class="p">)</span>
+        <span class="p">)</span></div></div>
 </pre></div>
         </article>
       </div>

@@ -263,6 +263,7 @@
 <span class="kn">from</span> <span class="nn">.similarity_surface</span> <span class="kn">import</span> <span class="n">SimilaritySurface</span>
 <span class="kn">from</span> <span class="nn">.matrix_2x2</span> <span class="kn">import</span> <span class="n">is_cosine_sine_of_rational</span>
 
+
 <div class="viewcode-block" id="RationalSimilaritySurface"><a class="viewcode-back" href="../../../geometry/rational_similarity_surface.html#flatsurf.geometry.rational_similarity_surface.RationalSimilaritySurface">[docs]</a><span class="k">class</span> <span class="nc">RationalSimilaritySurface</span><span class="p">(</span><span class="n">SimilaritySurface</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A similarity surface such that the monodromy around any loop is similarity</span>
@@ -306,6 +307,7 @@
 <span class="sd">        ...</span>
 <span class="sd">        The following tests failed: _test_edge_matrix</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="nf">_test_edge_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check the compatibility condition</span>
@@ -319,6 +321,7 @@
             <span class="n">it</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_iterator</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">islice</span>
+
             <span class="n">it</span> <span class="o">=</span> <span class="n">islice</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">label_iterator</span><span class="p">(),</span> <span class="mi">30</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">lab</span> <span class="ow">in</span> <span class="n">it</span><span class="p">:</span>
@@ -326,9 +329,9 @@
             <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()):</span>
                 <span class="c1"># Warning: check the matrices computed from the edges,</span>
                 <span class="c1"># rather the ones overridden by TranslationSurface.</span>
-                <span class="n">m</span> <span class="o">=</span> <span class="n">SimilaritySurface</span><span class="o">.</span><span class="n">edge_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">lab</span><span class="p">,</span><span class="n">e</span><span class="p">)</span>
-                <span class="n">a</span> <span class="o">=</span> <span class="n">AA</span><span class="p">(</span><span class="n">m</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
-                <span class="n">b</span> <span class="o">=</span> <span class="n">AA</span><span class="p">(</span><span class="n">m</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
+                <span class="n">m</span> <span class="o">=</span> <span class="n">SimilaritySurface</span><span class="o">.</span><span class="n">edge_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lab</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+                <span class="n">a</span> <span class="o">=</span> <span class="n">AA</span><span class="p">(</span><span class="n">m</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+                <span class="n">b</span> <span class="o">=</span> <span class="n">AA</span><span class="p">(</span><span class="n">m</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
                 <span class="n">q</span> <span class="o">=</span> <span class="p">(</span><span class="n">a</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">b</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sqrt</span><span class="p">()</span>
                 <span class="n">a</span> <span class="o">/=</span> <span class="n">q</span>
                 <span class="n">b</span> <span class="o">/=</span> <span class="n">q</span>

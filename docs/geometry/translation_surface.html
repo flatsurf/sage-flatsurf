@@ -285,8 +285,8 @@ Realization needs just to define a _domain and four cardinal directions.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.translation_surface.AbstractOrigami.opposite_edge">
 <span class="sig-name descname"><span class="pre">opposite_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/translation_surface.html#AbstractOrigami.opposite_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.translation_surface.AbstractOrigami.opposite_edge" title="Permalink to this definition">#</a></dt>
-<dd><p>Given the label <code class="docutils literal notranslate"><span class="pre">l</span></code> of a polygon and an edge <code class="docutils literal notranslate"><span class="pre">e</span></code> in that polygon
-returns the pair (<code class="docutils literal notranslate"><span class="pre">ll</span></code>, <code class="docutils literal notranslate"><span class="pre">ee</span></code>) to which this edge is glued.</p>
+<dd><p>Given the label <code class="docutils literal notranslate"><span class="pre">label</span></code> of a polygon and an edge <code class="docutils literal notranslate"><span class="pre">e</span></code> in that
+polygon returns the pair (<code class="docutils literal notranslate"><span class="pre">ll</span></code>, <code class="docutils literal notranslate"><span class="pre">ee</span></code>) to which this edge is glued.</p>
 <p>This method must be overridden in subclasses.</p>
 </dd></dl>
 
@@ -323,10 +323,9 @@ See the TranslationSurface.standardize_polygons method.</p>
 Instead use TranslationSurface.standardize_polygons.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.translation_surface.LazyStandardizedPolygonSurface.opposite_edge">
-<span class="sig-name descname"><span class="pre">opposite_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">l</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/translation_surface.html#LazyStandardizedPolygonSurface.opposite_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.translation_surface.LazyStandardizedPolygonSurface.opposite_edge" title="Permalink to this definition">#</a></dt>
-<dd><p>Given the label <code class="docutils literal notranslate"><span class="pre">l</span></code> of a polygon and an edge <code class="docutils literal notranslate"><span class="pre">e</span></code> in that polygon
-returns the pair (<code class="docutils literal notranslate"><span class="pre">ll</span></code>, <code class="docutils literal notranslate"><span class="pre">ee</span></code>) to which this edge is glued.</p>
-<p>This method must be overridden in subclasses.</p>
+<span class="sig-name descname"><span class="pre">opposite_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/translation_surface.html#LazyStandardizedPolygonSurface.opposite_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.translation_surface.LazyStandardizedPolygonSurface.opposite_edge" title="Permalink to this definition">#</a></dt>
+<dd><p>Given the label <code class="docutils literal notranslate"><span class="pre">label</span></code> of a polygon and an edge <code class="docutils literal notranslate"><span class="pre">e</span></code> in that
+polygon returns the pair (<code class="docutils literal notranslate"><span class="pre">ll</span></code>, <code class="docutils literal notranslate"><span class="pre">ee</span></code>) to which this edge is glued.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -346,14 +345,14 @@ returns the pair (<code class="docutils literal notranslate"><span class="pre">l
 <dl class="py class">
 <dt class="sig sig-object py" id="flatsurf.geometry.translation_surface.MinimalTranslationCover">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.translation_surface.</span></span><span class="sig-name descname"><span class="pre">MinimalTranslationCover</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">similarity_surface</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/translation_surface.html#MinimalTranslationCover"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.translation_surface.MinimalTranslationCover" title="Permalink to this definition">#</a></dt>
-<dd><p>Do not use translation_surface.MinimalTranslationCover. Use 
+<dd><p>Do not use translation_surface.MinimalTranslationCover. Use
 minimal_cover.MinimalTranslationCover instead. This class is being
 deprecated.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.translation_surface.MinimalTranslationCover.opposite_edge">
 <span class="sig-name descname"><span class="pre">opposite_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/translation_surface.html#MinimalTranslationCover.opposite_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.translation_surface.MinimalTranslationCover.opposite_edge" title="Permalink to this definition">#</a></dt>
-<dd><p>Given the label <code class="docutils literal notranslate"><span class="pre">l</span></code> of a polygon and an edge <code class="docutils literal notranslate"><span class="pre">e</span></code> in that polygon
-returns the pair (<code class="docutils literal notranslate"><span class="pre">ll</span></code>, <code class="docutils literal notranslate"><span class="pre">ee</span></code>) to which this edge is glued.</p>
+<dd><p>Given the label <code class="docutils literal notranslate"><span class="pre">label</span></code> of a polygon and an edge <code class="docutils literal notranslate"><span class="pre">e</span></code> in that
+polygon returns the pair (<code class="docutils literal notranslate"><span class="pre">ll</span></code>, <code class="docutils literal notranslate"><span class="pre">ee</span></code>) to which this edge is glued.</p>
 <p>This method must be overridden in subclasses.</p>
 </dd></dl>
 
@@ -389,8 +388,8 @@ returns the pair (<code class="docutils literal notranslate"><span class="pre">l
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.translation_surface.Origami.opposite_edge">
 <span class="sig-name descname"><span class="pre">opposite_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/translation_surface.html#Origami.opposite_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.translation_surface.Origami.opposite_edge" title="Permalink to this definition">#</a></dt>
-<dd><p>Given the label <code class="docutils literal notranslate"><span class="pre">l</span></code> of a polygon and an edge <code class="docutils literal notranslate"><span class="pre">e</span></code> in that polygon
-returns the pair (<code class="docutils literal notranslate"><span class="pre">ll</span></code>, <code class="docutils literal notranslate"><span class="pre">ee</span></code>) to which this edge is glued.</p>
+<dd><p>Given the label <code class="docutils literal notranslate"><span class="pre">label</span></code> of a polygon and an edge <code class="docutils literal notranslate"><span class="pre">e</span></code> in that
+polygon returns the pair (<code class="docutils literal notranslate"><span class="pre">ll</span></code>, <code class="docutils literal notranslate"><span class="pre">ee</span></code>) to which this edge is glued.</p>
 <p>This method must be overridden in subclasses.</p>
 </dd></dl>
 
@@ -461,7 +460,7 @@ respecting the polygons and the base_labels.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.translation_surface.TranslationSurface.edge_matrix">
 <span class="sig-name descname"><span class="pre">edge_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/translation_surface.html#TranslationSurface.edge_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.translation_surface.TranslationSurface.edge_matrix" title="Permalink to this definition">#</a></dt>
-<dd><p>File: /usr/share/miniconda3/envs/test/lib/python3.10/site-packages/flatsurf/geometry/similarity_surface.py (starting at line 395)</p>
+<dd><p>File: /usr/share/miniconda3/envs/test/lib/python3.10/site-packages/flatsurf/geometry/similarity_surface.py (starting at line 407)</p>
 <p>Returns the 2x2 matrix representing a similarity which when applied to the polygon with label <cite>p</cite>
 makes it so the edge <cite>e</cite> can be glued to its opposite edge by translation.</p>
 <p>If <cite>e</cite> is not provided, then <cite>p</cite> should be a pair consisting of a polygon label and an edge.</p>

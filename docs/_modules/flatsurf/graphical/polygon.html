@@ -282,6 +282,7 @@
 
 <span class="n">V</span> <span class="o">=</span> <span class="n">VectorSpace</span><span class="p">(</span><span class="n">RDF</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
 
+
 <div class="viewcode-block" id="GraphicalPolygon"><a class="viewcode-back" href="../../../graphical/polygon.html#flatsurf.graphical.polygon.GraphicalPolygon">[docs]</a><span class="k">class</span> <span class="nc">GraphicalPolygon</span><span class="p">:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Stores data necessary to draw one of the polygons from a surface.</span>
@@ -390,7 +391,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">xmin</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">ymin</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">xmax</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">ymax</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="GraphicalPolygon.transform"><a class="viewcode-back" href="../../../graphical/polygon.html#flatsurf.graphical.polygon.GraphicalPolygon.transform">[docs]</a>    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">point</span><span class="p">,</span> <span class="n">double_precision</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="GraphicalPolygon.transform"><a class="viewcode-back" href="../../../graphical/polygon.html#flatsurf.graphical.polygon.GraphicalPolygon.transform">[docs]</a>    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">point</span><span class="p">,</span> <span class="n">double_precision</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the transformation of point into graphical coordinates.</span>
 
@@ -432,7 +433,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transformation</span></div>
 
-<div class="viewcode-block" id="GraphicalPolygon.set_transformation"><a class="viewcode-back" href="../../../graphical/polygon.html#flatsurf.graphical.polygon.GraphicalPolygon.set_transformation">[docs]</a>    <span class="k">def</span> <span class="nf">set_transformation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">transformation</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="GraphicalPolygon.set_transformation"><a class="viewcode-back" href="../../../graphical/polygon.html#flatsurf.graphical.polygon.GraphicalPolygon.set_transformation">[docs]</a>    <span class="k">def</span> <span class="nf">set_transformation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">transformation</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Set the transformation to be applied to the polygon.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">transformation</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_transformation</span> <span class="o">=</span> <span class="n">SimilarityGroup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="o">.</span><span class="n">base_ring</span><span class="p">())</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
@@ -475,8 +476,9 @@
 
 <span class="sd">        Options are processed as in sage.plot.line.line2d.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">line2d</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_v</span><span class="p">[</span><span class="n">e</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_v</span><span class="p">[(</span><span class="n">e</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">%</span><span class="bp">self</span><span class="o">.</span><span class="n">base_polygon</span><span class="p">()</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()]],</span> \
-            <span class="o">**</span><span class="n">options</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">line2d</span><span class="p">(</span>
+            <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_v</span><span class="p">[</span><span class="n">e</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_v</span><span class="p">[(</span><span class="n">e</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_polygon</span><span class="p">()</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()]],</span> <span class="o">**</span><span class="n">options</span>
+        <span class="p">)</span></div>
 
 <div class="viewcode-block" id="GraphicalPolygon.plot_edge_label"><a class="viewcode-back" href="../../../graphical/polygon.html#flatsurf.graphical.polygon.GraphicalPolygon.plot_edge_label">[docs]</a>    <span class="k">def</span> <span class="nf">plot_edge_label</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -495,11 +497,13 @@
 
 <span class="sd">        Other options are processed as in sage.plot.text.text.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">e</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_v</span><span class="p">[(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">%</span><span class="bp">self</span><span class="o">.</span><span class="n">base_polygon</span><span class="p">()</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_v</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">e</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_v</span><span class="p">[(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_polygon</span><span class="p">()</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_v</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="s2">&quot;position&quot;</span> <span class="ow">in</span> <span class="n">options</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">options</span><span class="p">[</span><span class="s2">&quot;position&quot;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;inside&quot;</span><span class="p">,</span> <span class="s2">&quot;outside&quot;</span><span class="p">,</span> <span class="s2">&quot;edge&quot;</span><span class="p">]:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The &#39;position&#39; parameter must take the value &#39;inside&#39;, &#39;outside&#39;, or &#39;edge&#39;.&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;The &#39;position&#39; parameter must take the value &#39;inside&#39;, &#39;outside&#39;, or &#39;edge&#39;.&quot;</span>
+                <span class="p">)</span>
             <span class="n">pos</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;position&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">pos</span> <span class="o">=</span> <span class="s2">&quot;inside&quot;</span>
@@ -509,51 +513,51 @@
             <span class="k">if</span> <span class="s2">&quot;horizontal_alignment&quot;</span> <span class="ow">in</span> <span class="n">options</span><span class="p">:</span>
                 <span class="k">pass</span>
             <span class="k">elif</span> <span class="n">e</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">options</span><span class="p">[</span><span class="s2">&quot;horizontal_alignment&quot;</span><span class="p">]</span><span class="o">=</span><span class="s2">&quot;left&quot;</span>
+                <span class="n">options</span><span class="p">[</span><span class="s2">&quot;horizontal_alignment&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;left&quot;</span>
             <span class="k">elif</span> <span class="n">e</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">options</span><span class="p">[</span><span class="s2">&quot;horizontal_alignment&quot;</span><span class="p">]</span><span class="o">=</span><span class="s2">&quot;right&quot;</span>
+                <span class="n">options</span><span class="p">[</span><span class="s2">&quot;horizontal_alignment&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;right&quot;</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">options</span><span class="p">[</span><span class="s2">&quot;horizontal_alignment&quot;</span><span class="p">]</span><span class="o">=</span><span class="s2">&quot;center&quot;</span>
+                <span class="n">options</span><span class="p">[</span><span class="s2">&quot;horizontal_alignment&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;center&quot;</span>
 
             <span class="k">if</span> <span class="s2">&quot;vertical_alignment&quot;</span> <span class="ow">in</span> <span class="n">options</span><span class="p">:</span>
                 <span class="k">pass</span>
             <span class="k">elif</span> <span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">options</span><span class="p">[</span><span class="s2">&quot;vertical_alignment&quot;</span><span class="p">]</span><span class="o">=</span><span class="s2">&quot;top&quot;</span>
+                <span class="n">options</span><span class="p">[</span><span class="s2">&quot;vertical_alignment&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;top&quot;</span>
             <span class="k">elif</span> <span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">options</span><span class="p">[</span><span class="s2">&quot;vertical_alignment&quot;</span><span class="p">]</span><span class="o">=</span><span class="s2">&quot;bottom&quot;</span>
+                <span class="n">options</span><span class="p">[</span><span class="s2">&quot;vertical_alignment&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;bottom&quot;</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">options</span><span class="p">[</span><span class="s2">&quot;vertical_alignment&quot;</span><span class="p">]</span><span class="o">=</span><span class="s2">&quot;center&quot;</span>
+                <span class="n">options</span><span class="p">[</span><span class="s2">&quot;vertical_alignment&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;center&quot;</span>
 
         <span class="k">elif</span> <span class="n">pos</span> <span class="o">==</span> <span class="s2">&quot;inside&quot;</span><span class="p">:</span>
             <span class="c1"># position inside polygon.</span>
             <span class="k">if</span> <span class="s2">&quot;horizontal_alignment&quot;</span> <span class="ow">in</span> <span class="n">options</span><span class="p">:</span>
                 <span class="k">pass</span>
             <span class="k">elif</span> <span class="n">e</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">options</span><span class="p">[</span><span class="s2">&quot;horizontal_alignment&quot;</span><span class="p">]</span><span class="o">=</span><span class="s2">&quot;left&quot;</span>
+                <span class="n">options</span><span class="p">[</span><span class="s2">&quot;horizontal_alignment&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;left&quot;</span>
             <span class="k">elif</span> <span class="n">e</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">options</span><span class="p">[</span><span class="s2">&quot;horizontal_alignment&quot;</span><span class="p">]</span><span class="o">=</span><span class="s2">&quot;right&quot;</span>
+                <span class="n">options</span><span class="p">[</span><span class="s2">&quot;horizontal_alignment&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;right&quot;</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">options</span><span class="p">[</span><span class="s2">&quot;horizontal_alignment&quot;</span><span class="p">]</span><span class="o">=</span><span class="s2">&quot;center&quot;</span>
+                <span class="n">options</span><span class="p">[</span><span class="s2">&quot;horizontal_alignment&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;center&quot;</span>
 
             <span class="k">if</span> <span class="s2">&quot;vertical_alignment&quot;</span> <span class="ow">in</span> <span class="n">options</span><span class="p">:</span>
                 <span class="k">pass</span>
             <span class="k">elif</span> <span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">options</span><span class="p">[</span><span class="s2">&quot;vertical_alignment&quot;</span><span class="p">]</span><span class="o">=</span><span class="s2">&quot;top&quot;</span>
+                <span class="n">options</span><span class="p">[</span><span class="s2">&quot;vertical_alignment&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;top&quot;</span>
             <span class="k">elif</span> <span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">options</span><span class="p">[</span><span class="s2">&quot;vertical_alignment&quot;</span><span class="p">]</span><span class="o">=</span><span class="s2">&quot;bottom&quot;</span>
+                <span class="n">options</span><span class="p">[</span><span class="s2">&quot;vertical_alignment&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;bottom&quot;</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">options</span><span class="p">[</span><span class="s2">&quot;vertical_alignment&quot;</span><span class="p">]</span><span class="o">=</span><span class="s2">&quot;center&quot;</span>
+                <span class="n">options</span><span class="p">[</span><span class="s2">&quot;vertical_alignment&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;center&quot;</span>
 
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># centered on edge.</span>
             <span class="k">if</span> <span class="s2">&quot;horizontal_alignment&quot;</span> <span class="ow">in</span> <span class="n">options</span><span class="p">:</span>
                 <span class="k">pass</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">options</span><span class="p">[</span><span class="s2">&quot;horizontal_alignment&quot;</span><span class="p">]</span><span class="o">=</span><span class="s2">&quot;center&quot;</span>
+                <span class="n">options</span><span class="p">[</span><span class="s2">&quot;horizontal_alignment&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;center&quot;</span>
             <span class="k">if</span> <span class="s2">&quot;vertical_alignment&quot;</span> <span class="ow">in</span> <span class="n">options</span><span class="p">:</span>
                 <span class="k">pass</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">options</span><span class="p">[</span><span class="s2">&quot;vertical_alignment&quot;</span><span class="p">]</span><span class="o">=</span><span class="s2">&quot;center&quot;</span>
+                <span class="n">options</span><span class="p">[</span><span class="s2">&quot;vertical_alignment&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;center&quot;</span>
 
         <span class="k">if</span> <span class="s2">&quot;t&quot;</span> <span class="ow">in</span> <span class="n">options</span><span class="p">:</span>
             <span class="n">t</span> <span class="o">=</span> <span class="n">RDF</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;t&quot;</span><span class="p">))</span>
@@ -586,8 +590,10 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">t</span> <span class="o">=</span> <span class="mf">0.5</span>
 
-        <span class="k">return</span> <span class="n">line2d</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_v</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">t</span><span class="o">*</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_v</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_v</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_v</span><span class="p">[</span><span class="mi">0</span><span class="p">])],</span>
-            <span class="o">**</span><span class="n">options</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">line2d</span><span class="p">(</span>
+            <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_v</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">t</span> <span class="o">*</span> <span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_v</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_v</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_v</span><span class="p">[</span><span class="mi">0</span><span class="p">])],</span>
+            <span class="o">**</span><span class="n">options</span>
+        <span class="p">)</span></div>
 
 <div class="viewcode-block" id="GraphicalPolygon.plot_points"><a class="viewcode-back" href="../../../graphical/polygon.html#flatsurf.graphical.polygon.GraphicalPolygon.plot_points">[docs]</a>    <span class="k">def</span> <span class="nf">plot_points</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>

@@ -271,10 +271,15 @@
 <span class="kn">from</span> <span class="nn">six.moves</span> <span class="kn">import</span> <span class="nb">range</span><span class="p">,</span> <span class="nb">map</span><span class="p">,</span> <span class="nb">filter</span><span class="p">,</span> <span class="nb">zip</span>
 
 <span class="kn">from</span> <span class="nn">flatsurf.graphical.surface</span> <span class="kn">import</span> <span class="n">GraphicalSurface</span>
+
 <span class="c1"># The real vector space:</span>
 <span class="kn">from</span> <span class="nn">flatsurf.graphical.polygon</span> <span class="kn">import</span> <span class="n">V</span>
 
-<span class="kn">from</span> <span class="nn">flatsurf.geometry.straight_line_trajectory</span> <span class="kn">import</span> <span class="n">SegmentInPolygon</span><span class="p">,</span> <span class="n">StraightLineTrajectory</span>
+<span class="kn">from</span> <span class="nn">flatsurf.geometry.straight_line_trajectory</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">SegmentInPolygon</span><span class="p">,</span>
+    <span class="n">StraightLineTrajectory</span><span class="p">,</span>
+<span class="p">)</span>
+
 
 <div class="viewcode-block" id="GraphicalSegmentInPolygon"><a class="viewcode-back" href="../../../graphical/straight_line_trajectory.html#flatsurf.graphical.straight_line_trajectory.GraphicalSegmentInPolygon">[docs]</a><span class="k">class</span> <span class="nc">GraphicalSegmentInPolygon</span><span class="p">:</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">segment</span><span class="p">,</span> <span class="n">graphical_surface</span><span class="p">):</span>
@@ -283,12 +288,18 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_gs</span> <span class="o">=</span> <span class="n">graphical_surface</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_seg</span> <span class="o">=</span> <span class="n">segment</span>
-        <span class="n">label</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">polygon_label</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_start</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_gs</span><span class="o">.</span><span class="n">graphical_polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">segment</span><span class="o">.</span><span class="n">start</span><span class="p">()</span><span class="o">.</span><span class="n">point</span><span class="p">())</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">polygon_label</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_start</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gs</span><span class="o">.</span><span class="n">graphical_polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span>
+            <span class="n">segment</span><span class="o">.</span><span class="n">start</span><span class="p">()</span><span class="o">.</span><span class="n">point</span><span class="p">()</span>
+        <span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_seg</span><span class="o">.</span><span class="n">is_edge</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_end</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_gs</span><span class="o">.</span><span class="n">graphical_polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_seg</span><span class="o">.</span><span class="n">start</span><span class="p">()</span><span class="o">.</span><span class="n">polygon</span><span class="p">()</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_seg</span><span class="o">.</span><span class="n">edge</span><span class="p">()</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_end</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gs</span><span class="o">.</span><span class="n">graphical_polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_seg</span><span class="o">.</span><span class="n">start</span><span class="p">()</span><span class="o">.</span><span class="n">polygon</span><span class="p">()</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_seg</span><span class="o">.</span><span class="n">edge</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_end</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_gs</span><span class="o">.</span><span class="n">graphical_polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">segment</span><span class="o">.</span><span class="n">end</span><span class="p">()</span><span class="o">.</span><span class="n">point</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_end</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gs</span><span class="o">.</span><span class="n">graphical_polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span>
+                <span class="n">segment</span><span class="o">.</span><span class="n">end</span><span class="p">()</span><span class="o">.</span><span class="n">point</span><span class="p">()</span>
+            <span class="p">)</span>
 
 <div class="viewcode-block" id="GraphicalSegmentInPolygon.polygon_label"><a class="viewcode-back" href="../../../graphical/straight_line_trajectory.html#flatsurf.graphical.straight_line_trajectory.GraphicalSegmentInPolygon.polygon_label">[docs]</a>    <span class="k">def</span> <span class="nf">polygon_label</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_seg</span><span class="o">.</span><span class="n">polygon_label</span><span class="p">()</span></div>
@@ -319,23 +330,29 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gs</span><span class="o">.</span><span class="n">is_visible</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">polygon_label</span><span class="p">()):</span>
             <span class="kn">from</span> <span class="nn">sage.plot.line</span> <span class="kn">import</span> <span class="n">line2d</span>
-            <span class="k">return</span> <span class="n">line2d</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">end</span><span class="p">()],</span><span class="o">**</span><span class="n">options</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">line2d</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">end</span><span class="p">()],</span> <span class="o">**</span><span class="n">options</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="kn">from</span> <span class="nn">sage.plot.graphics</span> <span class="kn">import</span> <span class="n">Graphics</span>
+
             <span class="k">return</span> <span class="n">Graphics</span><span class="p">()</span></div></div>
+
 
 <div class="viewcode-block" id="GraphicalStraightLineTrajectory"><a class="viewcode-back" href="../../../graphical/straight_line_trajectory.html#flatsurf.graphical.straight_line_trajectory.GraphicalStraightLineTrajectory">[docs]</a><span class="k">class</span> <span class="nc">GraphicalStraightLineTrajectory</span><span class="p">:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Allows for the rendering of a straight-line trajectory through a graphical surface.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trajectory</span><span class="p">,</span> <span class="n">graphical_surface</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trajectory</span><span class="p">,</span> <span class="n">graphical_surface</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">graphical_surface</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_gs</span> <span class="o">=</span> <span class="n">trajectory</span><span class="o">.</span><span class="n">surface</span><span class="p">()</span><span class="o">.</span><span class="n">graphical_surface</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">assert</span> <span class="n">trajectory</span><span class="o">.</span><span class="n">surface</span><span class="p">()</span> <span class="o">==</span> <span class="n">graphical_surface</span><span class="o">.</span><span class="n">get_surface</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_gs</span> <span class="o">=</span> <span class="n">graphical_surface</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_traj</span> <span class="o">=</span> <span class="n">trajectory</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_segments</span> <span class="o">=</span> <span class="p">[</span><span class="n">GraphicalSegmentInPolygon</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gs</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_traj</span><span class="o">.</span><span class="n">segments</span><span class="p">()]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_segments</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">GraphicalSegmentInPolygon</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gs</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_traj</span><span class="o">.</span><span class="n">segments</span><span class="p">()</span>
+        <span class="p">]</span>
 
 <div class="viewcode-block" id="GraphicalStraightLineTrajectory.plot"><a class="viewcode-back" href="../../../graphical/straight_line_trajectory.html#flatsurf.graphical.straight_line_trajectory.GraphicalStraightLineTrajectory.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -354,6 +371,7 @@
 <span class="sd">            ...Graphics object consisting of 119 graphics primitives</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span> <span class="nn">sage.plot.graphics</span> <span class="kn">import</span> <span class="n">Graphics</span>
+
         <span class="n">p</span> <span class="o">=</span> <span class="n">Graphics</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">seg</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_segments</span><span class="p">:</span>
             <span class="n">p</span> <span class="o">+=</span> <span class="n">seg</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="o">**</span><span class="n">options</span><span class="p">)</span>

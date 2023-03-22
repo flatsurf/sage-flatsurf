@@ -319,10 +319,11 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">(</span><span class="n">j0</span> <span class="o">&lt;</span> <span class="n">j1</span> <span class="o">&lt;</span> <span class="n">i0</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">j0</span> <span class="o">&lt;</span> <span class="n">i1</span> <span class="o">&lt;</span> <span class="n">i0</span><span class="p">)</span></div>
 
+
 <div class="viewcode-block" id="Path"><a class="viewcode-back" href="../../../geometry/fundamental_group.html#flatsurf.geometry.fundamental_group.Path">[docs]</a><span class="k">class</span> <span class="nc">Path</span><span class="p">(</span><span class="n">MultiplicativeGroupElement</span><span class="p">):</span>
-<span class="c1"># activating the following somehow break the discovery of the Python _mul_</span>
-<span class="c1"># method below...</span>
-<span class="c1">#    __slots__ = [&#39;_polys&#39;, &#39;_edges&#39;, &#39;_edges_rev&#39;]</span>
+    <span class="c1"># activating the following somehow break the discovery of the Python _mul_</span>
+    <span class="c1"># method below...</span>
+    <span class="c1">#    __slots__ = [&#39;_polys&#39;, &#39;_edges&#39;, &#39;_edges_rev&#39;]</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">polys</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">edge_rev</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">reduced</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_polys</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">polys</span><span class="p">)</span>
@@ -344,11 +345,11 @@
     <span class="k">def</span> <span class="nf">_poly_cross_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="n">p</span><span class="p">:</span> <span class="p">[]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">label_iterator</span><span class="p">()}</span>
         <span class="n">d</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_polys</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_edges_rev</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edges</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_polys</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_polys</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
             <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_polys</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-            <span class="n">e0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edges_rev</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">e0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edges_rev</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
             <span class="n">e1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edges</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-            <span class="n">d</span><span class="p">[</span><span class="n">p</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">e0</span><span class="p">,</span><span class="n">e1</span><span class="p">))</span>
+            <span class="n">d</span><span class="p">[</span><span class="n">p</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">e0</span><span class="p">,</span> <span class="n">e1</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">d</span>
 
     <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -369,9 +370,11 @@
 <span class="sd">            sage: a*b == a*b</span>
 <span class="sd">            True</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">parent</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="ow">is</span> <span class="n">parent</span><span class="p">(</span><span class="n">other</span><span class="p">)</span> <span class="ow">and</span> \
-               <span class="bp">self</span><span class="o">.</span><span class="n">_polys</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_polys</span> <span class="ow">and</span>  \
-               <span class="bp">self</span><span class="o">.</span><span class="n">_edges</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_edges</span> 
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="n">parent</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="ow">is</span> <span class="n">parent</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_polys</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_polys</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edges</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_edges</span>
+        <span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -388,23 +391,28 @@
 <span class="sd">            sage: a*b != a*b</span>
 <span class="sd">            False</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">parent</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">parent</span><span class="p">(</span><span class="n">other</span><span class="p">)</span> <span class="ow">or</span> \
-               <span class="bp">self</span><span class="o">.</span><span class="n">_polys</span> <span class="o">!=</span> <span class="n">other</span><span class="o">.</span><span class="n">_polys</span> <span class="ow">or</span> \
-               <span class="bp">self</span><span class="o">.</span><span class="n">_edges</span> <span class="o">!=</span> <span class="n">other</span><span class="o">.</span><span class="n">_edges</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="n">parent</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">parent</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+            <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_polys</span> <span class="o">!=</span> <span class="n">other</span><span class="o">.</span><span class="n">_polys</span>
+            <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edges</span> <span class="o">!=</span> <span class="n">other</span><span class="o">.</span><span class="n">_edges</span>
+        <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_check</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="ow">not</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_polys</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_edges</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_edges_rev</span><span class="p">)):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;polys = </span><span class="si">{}</span><span class="se">\n</span><span class="s2">edges = </span><span class="si">{}</span><span class="se">\n</span><span class="s2">edges_rev=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_polys</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edges</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edges_rev</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_polys</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_edges</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_edges_rev</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;polys = </span><span class="si">{}</span><span class="se">\n</span><span class="s2">edges = </span><span class="si">{}</span><span class="se">\n</span><span class="s2">edges_rev=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_polys</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edges</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edges_rev</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">_polys</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">_b</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_polys</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
 <div class="viewcode-block" id="Path.is_one"><a class="viewcode-back" href="../../../geometry/fundamental_group.html#flatsurf.geometry.fundamental_group.Path.is_one">[docs]</a>    <span class="k">def</span> <span class="nf">is_one</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edges</span></div>
 
     <span class="k">def</span> <span class="nf">_repr_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> --</span><span class="si">{}</span><span class="s2">-- &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">p</span><span class="p">,</span><span class="n">e</span><span class="p">)</span>
-              <span class="k">for</span> <span class="n">p</span><span class="p">,</span><span class="n">e</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_polys</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edges</span><span class="p">))</span> <span class="o">+</span> \
-               <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_polys</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> 
+        <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> --</span><span class="si">{}</span><span class="s2">-- &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span><span class="p">,</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_polys</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edges</span><span class="p">)</span>
+        <span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_polys</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
 
     <span class="k">def</span> <span class="nf">_mul_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -428,15 +436,16 @@
             <span class="k">return</span> <span class="kc">None</span>
 
         <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">while</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">se</span><span class="p">)</span> <span class="ow">and</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">oe</span><span class="p">)</span> <span class="ow">and</span> <span class="n">se</span><span class="p">[</span><span class="o">-</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">oe_r</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+        <span class="k">while</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">se</span><span class="p">)</span> <span class="ow">and</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">oe</span><span class="p">)</span> <span class="ow">and</span> <span class="n">se</span><span class="p">[</span><span class="o">-</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">oe_r</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
             <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
 
         <span class="n">P</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">P</span><span class="o">.</span><span class="n">element_class</span><span class="p">(</span>
-                <span class="n">P</span><span class="p">,</span>
-                <span class="n">sp</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">sp</span><span class="p">)</span><span class="o">-</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">op</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">:],</span>
-                <span class="n">se</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">se</span><span class="p">)</span><span class="o">-</span><span class="n">i</span><span class="p">]</span><span class="o">+</span> <span class="n">oe</span><span class="p">[</span><span class="n">i</span><span class="p">:],</span>
-                <span class="n">se_r</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">se_r</span><span class="p">)</span><span class="o">-</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">oe_r</span><span class="p">[</span><span class="n">i</span><span class="p">:])</span>
+            <span class="n">P</span><span class="p">,</span>
+            <span class="n">sp</span><span class="p">[:</span> <span class="nb">len</span><span class="p">(</span><span class="n">sp</span><span class="p">)</span> <span class="o">-</span> <span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">op</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:],</span>
+            <span class="n">se</span><span class="p">[:</span> <span class="nb">len</span><span class="p">(</span><span class="n">se</span><span class="p">)</span> <span class="o">-</span> <span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">oe</span><span class="p">[</span><span class="n">i</span><span class="p">:],</span>
+            <span class="n">se_r</span><span class="p">[:</span> <span class="nb">len</span><span class="p">(</span><span class="n">se_r</span><span class="p">)</span> <span class="o">-</span> <span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">oe_r</span><span class="p">[</span><span class="n">i</span><span class="p">:],</span>
+        <span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__invert__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -453,10 +462,8 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">P</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">P</span><span class="o">.</span><span class="n">element_class</span><span class="p">(</span>
-                <span class="n">P</span><span class="p">,</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_polys</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_edges_rev</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_edges</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">P</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_polys</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edges_rev</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edges</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="p">)</span>
 
 <div class="viewcode-block" id="Path.intersection"><a class="viewcode-back" href="../../../geometry/fundamental_group.html#flatsurf.geometry.fundamental_group.Path.intersection">[docs]</a>    <span class="k">def</span> <span class="nf">intersection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -525,9 +532,9 @@
         <span class="n">oi</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">_poly_cross_dict</span><span class="p">()</span>
         <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">label_iterator</span><span class="p">():</span>
-            <span class="k">for</span> <span class="n">e0</span><span class="p">,</span><span class="n">e1</span> <span class="ow">in</span> <span class="n">si</span><span class="p">[</span><span class="n">p</span><span class="p">]:</span>
-                <span class="k">for</span> <span class="n">f0</span><span class="p">,</span><span class="n">f1</span> <span class="ow">in</span> <span class="n">oi</span><span class="p">[</span><span class="n">p</span><span class="p">]:</span>
-                    <span class="n">n</span> <span class="o">+=</span> <span class="n">intersection</span><span class="p">(</span><span class="n">e0</span><span class="p">,</span><span class="n">e1</span><span class="p">,</span><span class="n">f0</span><span class="p">,</span><span class="n">f1</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">e0</span><span class="p">,</span> <span class="n">e1</span> <span class="ow">in</span> <span class="n">si</span><span class="p">[</span><span class="n">p</span><span class="p">]:</span>
+                <span class="k">for</span> <span class="n">f0</span><span class="p">,</span> <span class="n">f1</span> <span class="ow">in</span> <span class="n">oi</span><span class="p">[</span><span class="n">p</span><span class="p">]:</span>
+                    <span class="n">n</span> <span class="o">+=</span> <span class="n">intersection</span><span class="p">(</span><span class="n">e0</span><span class="p">,</span> <span class="n">e1</span><span class="p">,</span> <span class="n">f0</span><span class="p">,</span> <span class="n">f1</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">n</span></div></div>
 
 
@@ -571,7 +578,7 @@
 <span class="sd">            ...</span>
 <span class="sd">            AssertionError</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span><span class="nb">list</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
             <span class="n">args</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span>
         <span class="n">p</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_b</span><span class="p">]</span>
@@ -579,16 +586,14 @@
         <span class="n">er</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
             <span class="n">i</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">%</span> <span class="n">s</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()</span>
-            <span class="n">q</span><span class="p">,</span><span class="n">j</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span><span class="n">i</span><span class="p">)</span>
+            <span class="n">q</span><span class="p">,</span> <span class="n">j</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">i</span><span class="p">)</span>
             <span class="n">p</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">q</span><span class="p">)</span>
             <span class="n">e</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
             <span class="n">er</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">j</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">element_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">er</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_repr_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s2">&quot;Fundamental group of </span><span class="si">{}</span><span class="s2"> based at polygon </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="p">,</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_b</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s2">&quot;Fundamental group of </span><span class="si">{}</span><span class="s2"> based at polygon </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_b</span><span class="p">)</span>
 
 <div class="viewcode-block" id="FundamentalGroup.one"><a class="viewcode-back" href="../../../geometry/fundamental_group.html#flatsurf.geometry.fundamental_group.FundamentalGroup.one">[docs]</a>    <span class="nd">@cached_method</span>
     <span class="k">def</span> <span class="nf">one</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -611,31 +616,31 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_b</span>
         <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span>
-        <span class="n">tree</span> <span class="o">=</span> <span class="p">{}</span>   <span class="c1"># a tree whose root is base_label</span>
+        <span class="n">tree</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># a tree whose root is base_label</span>
         <span class="n">basis</span> <span class="o">=</span> <span class="p">[]</span>
 
-        <span class="n">tree</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span><span class="kc">None</span><span class="p">,</span><span class="kc">None</span><span class="p">)</span>
+        <span class="n">tree</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
-        <span class="n">wait</span> <span class="o">=</span> <span class="p">[]</span> <span class="c1"># list of edges of the dual graph, ie p1 -- (e1,e2) --&gt; p2</span>
+        <span class="n">wait</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># list of edges of the dual graph, ie p1 -- (e1,e2) --&gt; p2</span>
         <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()):</span>
-            <span class="n">pp</span><span class="p">,</span><span class="n">ee</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">p</span><span class="p">,</span><span class="n">e</span><span class="p">)</span>
-            <span class="n">wait</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">pp</span><span class="p">,</span><span class="n">ee</span><span class="p">,</span><span class="n">p</span><span class="p">,</span><span class="n">e</span><span class="p">))</span>
+            <span class="n">pp</span><span class="p">,</span> <span class="n">ee</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+            <span class="n">wait</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">pp</span><span class="p">,</span> <span class="n">ee</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
         <span class="k">while</span> <span class="n">wait</span><span class="p">:</span>
-            <span class="n">p1</span><span class="p">,</span><span class="n">e1</span><span class="p">,</span><span class="n">p2</span><span class="p">,</span><span class="n">e2</span> <span class="o">=</span> <span class="n">wait</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+            <span class="n">p1</span><span class="p">,</span> <span class="n">e1</span><span class="p">,</span> <span class="n">p2</span><span class="p">,</span> <span class="n">e2</span> <span class="o">=</span> <span class="n">wait</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
             <span class="k">assert</span> <span class="n">p2</span> <span class="ow">in</span> <span class="n">tree</span>
-            <span class="k">if</span> <span class="n">p1</span> <span class="ow">in</span> <span class="n">tree</span><span class="p">:</span> <span class="c1"># new cycle?</span>
-                <span class="k">if</span> <span class="p">(</span><span class="n">p1</span><span class="p">,</span><span class="n">e1</span><span class="p">)</span> <span class="o">&gt;</span> <span class="p">(</span><span class="n">p2</span><span class="p">,</span><span class="n">e2</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">p1</span> <span class="ow">in</span> <span class="n">tree</span><span class="p">:</span>  <span class="c1"># new cycle?</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">e1</span><span class="p">)</span> <span class="o">&gt;</span> <span class="p">(</span><span class="n">p2</span><span class="p">,</span> <span class="n">e2</span><span class="p">):</span>
                     <span class="k">continue</span>
                 <span class="n">polys</span> <span class="o">=</span> <span class="p">[</span><span class="n">p1</span><span class="p">]</span>
                 <span class="n">edges</span> <span class="o">=</span> <span class="p">[]</span>
                 <span class="n">edges_rev</span> <span class="o">=</span> <span class="p">[]</span>
 
-                <span class="n">p1</span><span class="p">,</span><span class="n">e</span><span class="p">,</span><span class="n">e_back</span> <span class="o">=</span> <span class="n">tree</span><span class="p">[</span><span class="n">p1</span><span class="p">]</span>
+                <span class="n">p1</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">e_back</span> <span class="o">=</span> <span class="n">tree</span><span class="p">[</span><span class="n">p1</span><span class="p">]</span>
                 <span class="k">while</span> <span class="n">p1</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="n">edges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">e_back</span><span class="p">)</span>
                     <span class="n">edges_rev</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
                     <span class="n">polys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p1</span><span class="p">)</span>
-                    <span class="n">p1</span><span class="p">,</span><span class="n">e</span><span class="p">,</span><span class="n">e_back</span> <span class="o">=</span> <span class="n">tree</span><span class="p">[</span><span class="n">p1</span><span class="p">]</span>
+                    <span class="n">p1</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">e_back</span> <span class="o">=</span> <span class="n">tree</span><span class="p">[</span><span class="n">p1</span><span class="p">]</span>
                 <span class="n">polys</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
                 <span class="n">edges</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
                 <span class="n">edges_rev</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
@@ -644,12 +649,12 @@
                 <span class="n">edges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">e1</span><span class="p">)</span>
                 <span class="n">edges_rev</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">e2</span><span class="p">)</span>
 
-                <span class="n">p2</span><span class="p">,</span><span class="n">e</span><span class="p">,</span><span class="n">e_back</span> <span class="o">=</span> <span class="n">tree</span><span class="p">[</span><span class="n">p2</span><span class="p">]</span>
+                <span class="n">p2</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">e_back</span> <span class="o">=</span> <span class="n">tree</span><span class="p">[</span><span class="n">p2</span><span class="p">]</span>
                 <span class="k">while</span> <span class="n">p2</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="n">edges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
                     <span class="n">edges_rev</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">e_back</span><span class="p">)</span>
                     <span class="n">polys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p2</span><span class="p">)</span>
-                    <span class="n">p2</span><span class="p">,</span><span class="n">e</span><span class="p">,</span><span class="n">e_back</span> <span class="o">=</span> <span class="n">tree</span><span class="p">[</span><span class="n">p2</span><span class="p">]</span>
+                    <span class="n">p2</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">e_back</span> <span class="o">=</span> <span class="n">tree</span><span class="p">[</span><span class="n">p2</span><span class="p">]</span>
 
                 <span class="n">basis</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">polys</span><span class="p">,</span> <span class="n">edges</span><span class="p">,</span> <span class="n">edges_rev</span><span class="p">))</span>
 

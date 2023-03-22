@@ -397,12 +397,16 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;finite must be either True or False&quot;</span><span class="p">)</span>
 
         <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">Rings</span>
+
         <span class="k">if</span> <span class="n">base_ring</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">Rings</span><span class="p">():</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;base_ring must be a ring&quot;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">base_ring</span><span class="o">.</span><span class="n">is_exact</span><span class="p">():</span>
             <span class="kn">from</span> <span class="nn">warnings</span> <span class="kn">import</span> <span class="n">warn</span>
-            <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;surface defined over an inexact ring; many operations in sage-flatsurf are not going to work correctly over this ring&quot;</span><span class="p">)</span>
+
+            <span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;surface defined over an inexact ring; many operations in sage-flatsurf are not going to work correctly over this ring&quot;</span>
+            <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">mutable</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">]:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;mutable must be either True or False&quot;</span><span class="p">)</span>
@@ -429,9 +433,12 @@
         <span class="n">it</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_iterator</span><span class="p">()</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_finite</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">limit</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;for infinite polygon, &#39;limit&#39; must be set to a positive integer&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;for infinite polygon, &#39;limit&#39; must be set to a positive integer&quot;</span>
+                <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">islice</span>
+
                 <span class="n">it</span> <span class="o">=</span> <span class="n">islice</span><span class="p">(</span><span class="n">it</span><span class="p">,</span> <span class="n">limit</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">it</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
@@ -446,10 +453,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="Surface.opposite_edge"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Surface.opposite_edge">[docs]</a>    <span class="k">def</span> <span class="nf">opposite_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+<div class="viewcode-block" id="Surface.opposite_edge"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Surface.opposite_edge">[docs]</a>    <span class="k">def</span> <span class="nf">opposite_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Given the label ``l`` of a polygon and an edge ``e`` in that polygon</span>
-<span class="sd">        returns the pair (``ll``, ``ee``) to which this edge is glued.</span>
+<span class="sd">        Given the label ``label`` of a polygon and an edge ``e`` in that</span>
+<span class="sd">        polygon returns the pair (``ll``, ``ee``) to which this edge is glued.</span>
 
 <span class="sd">        This method must be overridden in subclasses.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -500,11 +507,12 @@
 <span class="sd">        performance.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_finite</span><span class="p">():</span>
-            <span class="n">lw</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">walker</span><span class="p">()</span>
+            <span class="n">lw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">walker</span><span class="p">()</span>
             <span class="n">lw</span><span class="o">.</span><span class="n">find_all_labels</span><span class="p">()</span>
             <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">lw</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="kn">from</span> <span class="nn">sage.rings.infinity</span> <span class="kn">import</span> <span class="n">Infinity</span>
+
             <span class="k">return</span> <span class="n">Infinity</span></div>
 
 <div class="viewcode-block" id="Surface.label_iterator"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Surface.label_iterator">[docs]</a>    <span class="k">def</span> <span class="nf">label_iterator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -534,11 +542,12 @@
             <span class="k">try</span><span class="p">:</span>
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="s2">&quot;num_edges&quot;</span><span class="p">]</span>
             <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-                <span class="n">num_edges</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()</span> <span class="k">for</span> <span class="n">l</span><span class="p">,</span><span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_polygon_iterator</span><span class="p">())</span>
+                <span class="n">num_edges</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()</span> <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_polygon_iterator</span><span class="p">())</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="s2">&quot;num_edges&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">num_edges</span>
                 <span class="k">return</span> <span class="n">num_edges</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="kn">from</span> <span class="nn">sage.rings.infinity</span> <span class="kn">import</span> <span class="n">Infinity</span>
+
             <span class="k">return</span> <span class="n">Infinity</span></div>
 
 <div class="viewcode-block" id="Surface.area"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Surface.area">[docs]</a>    <span class="k">def</span> <span class="nf">area</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -549,16 +558,18 @@
             <span class="k">try</span><span class="p">:</span>
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="s2">&quot;area&quot;</span><span class="p">]</span>
             <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-                <span class="n">area</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">area</span><span class="p">()</span> <span class="k">for</span> <span class="n">l</span><span class="p">,</span><span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_polygon_iterator</span><span class="p">())</span>
+                <span class="n">area</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">area</span><span class="p">()</span> <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_polygon_iterator</span><span class="p">())</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="s2">&quot;area&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">area</span>
                 <span class="k">return</span> <span class="n">area</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;area is not implemented for surfaces built from an infinite number of polygons&quot;</span><span class="p">)</span></div>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;area is not implemented for surfaces built from an infinite number of polygons&quot;</span>
+        <span class="p">)</span></div>
 
 <div class="viewcode-block" id="Surface.edge_iterator"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Surface.edge_iterator">[docs]</a>    <span class="k">def</span> <span class="nf">edge_iterator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Iterate over the edges of polygons, which are pairs (l,e) where l is a polygon label, 0 &lt;= e &lt; N and N is the number of edges of the polygon with label l.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">for</span> <span class="n">label</span><span class="p">,</span><span class="n">polygon</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_polygon_iterator</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">polygon</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_polygon_iterator</span><span class="p">():</span>
             <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">polygon</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()):</span>
                 <span class="k">yield</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span></div>
 
@@ -567,8 +578,10 @@
 <span class="sd">        Iterate over the ordered pairs of edges being glued.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">label_edge_pair</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_iterator</span><span class="p">():</span>
-            <span class="k">yield</span> <span class="p">(</span><span class="n">label_edge_pair</span><span class="p">,</span> \
-                <span class="bp">self</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">label_edge_pair</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">label_edge_pair</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span></div>
+            <span class="k">yield</span> <span class="p">(</span>
+                <span class="n">label_edge_pair</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">label_edge_pair</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">label_edge_pair</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+            <span class="p">)</span></div>
 
 <div class="viewcode-block" id="Surface.base_ring"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Surface.base_ring">[docs]</a>    <span class="k">def</span> <span class="nf">base_ring</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -633,7 +646,7 @@
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called before a mutation occurs. Do not call directly.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">assert</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_mutable</span><span class="p">())</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_mutable</span><span class="p">()</span>
         <span class="c1"># Remove the cache which will likely be invalidated.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span> <span class="o">=</span> <span class="p">{}</span>
 
@@ -669,12 +682,16 @@
 <span class="sd">        and updates the edges listed in the glue_list.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__mutate</span><span class="p">()</span>
-        <span class="n">p</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">glue_list</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;len(glue_list)=&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">glue_list</span><span class="p">))</span><span class="o">+</span>\
-                <span class="s2">&quot; and number of sides of polygon=&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">num_edges</span><span class="p">())</span><span class="o">+</span>\
-                <span class="s2">&quot; should be the same.&quot;</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">e</span><span class="p">,(</span><span class="n">pp</span><span class="p">,</span><span class="n">ee</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">glue_list</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;len(glue_list)=&quot;</span>
+                <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">glue_list</span><span class="p">))</span>
+                <span class="o">+</span> <span class="s2">&quot; and number of sides of polygon=&quot;</span>
+                <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">num_edges</span><span class="p">())</span>
+                <span class="o">+</span> <span class="s2">&quot; should be the same.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">for</span> <span class="n">e</span><span class="p">,</span> <span class="p">(</span><span class="n">pp</span><span class="p">,</span> <span class="n">ee</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">glue_list</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_set_edge_pairing</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">pp</span><span class="p">,</span> <span class="n">ee</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Surface.add_polygons"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Surface.add_polygons">[docs]</a>    <span class="k">def</span> <span class="nf">add_polygons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">polygons</span><span class="p">):</span>
@@ -703,7 +720,7 @@
 <span class="sd">        Remove the polygon with the provided label. Causes a ValueError</span>
 <span class="sd">        if the base_label is removed.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">label</span><span class="o">==</span><span class="bp">self</span><span class="o">.</span><span class="n">_base_label</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">label</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_base_label</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Can not remove the base_label.&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__mutate</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_remove_polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span></div>
@@ -713,7 +730,7 @@
 <span class="sd">        Change the base_label to the provided label.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__mutate</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_base_label</span><span class="o">=</span><span class="n">new_base_label</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_base_label</span> <span class="o">=</span> <span class="n">new_base_label</span></div>
 
 <div class="viewcode-block" id="Surface.subdivide"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Surface.subdivide">[docs]</a>    <span class="k">def</span> <span class="nf">subdivide</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -791,11 +808,12 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">labels</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">label_iterator</span><span class="p">())</span>
-        <span class="n">polygons</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">l</span><span class="p">)</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">]</span>
+        <span class="n">polygons</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span> <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">]</span>
 
         <span class="n">subdivisions</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">subdivide</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">polygons</span><span class="p">]</span>
 
         <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface</span> <span class="kn">import</span> <span class="n">Surface_dict</span>
+
         <span class="n">surface</span> <span class="o">=</span> <span class="n">Surface_dict</span><span class="p">(</span><span class="n">base_ring</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_base_ring</span><span class="p">)</span>
 
         <span class="c1"># Add subdivided polygons</span>
@@ -810,7 +828,9 @@
         <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">subdivision</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">subdivisions</span><span class="p">):</span>
             <span class="n">label</span> <span class="o">=</span> <span class="n">labels</span><span class="p">[</span><span class="n">s</span><span class="p">]</span>
             <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">subdivision</span><span class="p">)):</span>
-                <span class="n">surface</span><span class="o">.</span><span class="n">change_edge_gluing</span><span class="p">((</span><span class="n">label</span><span class="p">,</span> <span class="n">p</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="p">(</span><span class="n">p</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">%</span><span class="nb">len</span><span class="p">(</span><span class="n">subdivision</span><span class="p">)),</span> <span class="mi">2</span><span class="p">)</span>
+                <span class="n">surface</span><span class="o">.</span><span class="n">change_edge_gluing</span><span class="p">(</span>
+                    <span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">p</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="p">(</span><span class="n">p</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">subdivision</span><span class="p">)),</span> <span class="mi">2</span>
+                <span class="p">)</span>
 
                 <span class="c1"># Add gluing from original surface</span>
                 <span class="n">opposite</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
@@ -873,11 +893,12 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">labels</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">label_iterator</span><span class="p">())</span>
-        <span class="n">polygons</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">l</span><span class="p">)</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">]</span>
+        <span class="n">polygons</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span> <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">]</span>
 
         <span class="n">subdivideds</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">subdivide_edges</span><span class="p">(</span><span class="n">parts</span><span class="o">=</span><span class="n">parts</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">polygons</span><span class="p">]</span>
 
         <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface</span> <span class="kn">import</span> <span class="n">Surface_dict</span>
+
         <span class="n">surface</span> <span class="o">=</span> <span class="n">Surface_dict</span><span class="p">(</span><span class="n">base_ring</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_base_ring</span><span class="p">)</span>
 
         <span class="c1"># Add subdivided polygons</span>
@@ -892,28 +913,31 @@
                 <span class="n">opposite</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">opposite</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">parts</span><span class="p">):</span>
-                        <span class="n">surface</span><span class="o">.</span><span class="n">change_edge_gluing</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">e</span> <span class="o">*</span> <span class="n">parts</span> <span class="o">+</span> <span class="n">p</span><span class="p">,</span> <span class="n">opposite</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">opposite</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">parts</span> <span class="o">+</span> <span class="p">(</span><span class="n">parts</span> <span class="o">-</span> <span class="n">p</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+                        <span class="n">surface</span><span class="o">.</span><span class="n">change_edge_gluing</span><span class="p">(</span>
+                            <span class="n">label</span><span class="p">,</span>
+                            <span class="n">e</span> <span class="o">*</span> <span class="n">parts</span> <span class="o">+</span> <span class="n">p</span><span class="p">,</span>
+                            <span class="n">opposite</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                            <span class="n">opposite</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">parts</span> <span class="o">+</span> <span class="p">(</span><span class="n">parts</span> <span class="o">-</span> <span class="n">p</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span>
+                        <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">surface</span></div>
-
-
 
     <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Hash compatible with equals.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="s2">&quot;_hash&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_hash&quot;</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hash</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_mutable</span><span class="p">():</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Attempting to hash mutable surface.&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_finite</span><span class="p">():</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Attempting to hash infinite surface.&quot;</span><span class="p">)</span>
-        <span class="n">h</span> <span class="o">=</span> <span class="mi">73</span><span class="o">+</span><span class="mi">17</span><span class="o">*</span><span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">())</span><span class="o">+</span><span class="mi">23</span><span class="o">*</span><span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_label</span><span class="p">())</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="mi">73</span> <span class="o">+</span> <span class="mi">17</span> <span class="o">*</span> <span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">())</span> <span class="o">+</span> <span class="mi">23</span> <span class="o">*</span> <span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_label</span><span class="p">())</span>
         <span class="k">for</span> <span class="n">pair</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_polygon_iterator</span><span class="p">():</span>
-            <span class="n">h</span> <span class="o">=</span> <span class="n">h</span> <span class="o">+</span> <span class="mi">7</span><span class="o">*</span><span class="nb">hash</span><span class="p">(</span><span class="n">pair</span><span class="p">)</span>
+            <span class="n">h</span> <span class="o">=</span> <span class="n">h</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">*</span> <span class="nb">hash</span><span class="p">(</span><span class="n">pair</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">edgepair</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_gluing_iterator</span><span class="p">():</span>
-            <span class="n">h</span> <span class="o">=</span> <span class="n">h</span> <span class="o">+</span> <span class="mi">3</span><span class="o">*</span><span class="nb">hash</span><span class="p">(</span><span class="n">edgepair</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_hash</span><span class="o">=</span><span class="n">h</span>
+            <span class="n">h</span> <span class="o">=</span> <span class="n">h</span> <span class="o">+</span> <span class="mi">3</span> <span class="o">*</span> <span class="nb">hash</span><span class="p">(</span><span class="n">edgepair</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_hash</span> <span class="o">=</span> <span class="n">h</span>
         <span class="k">return</span> <span class="n">h</span>
 
     <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
@@ -945,7 +969,7 @@
             <span class="k">return</span> <span class="kc">False</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_polygons</span><span class="p">()</span> <span class="o">!=</span> <span class="n">other</span><span class="o">.</span><span class="n">num_polygons</span><span class="p">():</span>
             <span class="k">return</span> <span class="kc">False</span>
-        <span class="k">for</span> <span class="n">label</span><span class="p">,</span><span class="n">polygon</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_polygon_iterator</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">polygon</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_polygon_iterator</span><span class="p">():</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">polygon2</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
@@ -953,7 +977,7 @@
             <span class="k">if</span> <span class="n">polygon</span> <span class="o">!=</span> <span class="n">polygon2</span><span class="p">:</span>
                 <span class="k">return</span> <span class="kc">False</span>
             <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">polygon</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()):</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">label</span><span class="p">,</span><span class="n">edge</span><span class="p">)</span> <span class="o">!=</span> <span class="n">other</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">label</span><span class="p">,</span><span class="n">edge</span><span class="p">):</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">)</span> <span class="o">!=</span> <span class="n">other</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">):</span>
                     <span class="k">return</span> <span class="kc">False</span>
         <span class="k">return</span> <span class="kc">True</span>
 
@@ -964,15 +988,20 @@
         <span class="c1"># Test that the base_label is associated to a polygon</span>
         <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tester</span><span class="p">(</span><span class="o">**</span><span class="n">options</span><span class="p">)</span>
         <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">Rings</span>
+
         <span class="n">tester</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span> <span class="ow">in</span> <span class="n">Rings</span><span class="p">())</span></div>
 
 <div class="viewcode-block" id="Surface._test_base_label"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Surface._test_base_label">[docs]</a>    <span class="k">def</span> <span class="nf">_test_base_label</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
         <span class="c1"># Test that the base_label is associated to a polygon</span>
         <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tester</span><span class="p">(</span><span class="o">**</span><span class="n">options</span><span class="p">)</span>
         <span class="kn">from</span> <span class="nn">.polygon</span> <span class="kn">import</span> <span class="n">ConvexPolygon</span>
-        <span class="n">tester</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_label</span><span class="p">()),</span> <span class="n">ConvexPolygon</span><span class="p">),</span> \
-            <span class="s2">&quot;polygon(base_label) does not return a ConvexPolygon. &quot;</span><span class="o">+</span>\
-            <span class="s2">&quot;Here base_label=&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_label</span><span class="p">()))</span></div>
+
+        <span class="n">tester</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_label</span><span class="p">()),</span> <span class="n">ConvexPolygon</span><span class="p">),</span>
+            <span class="s2">&quot;polygon(base_label) does not return a ConvexPolygon. &quot;</span>
+            <span class="o">+</span> <span class="s2">&quot;Here base_label=&quot;</span>
+            <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_label</span><span class="p">()),</span>
+        <span class="p">)</span></div>
 
 <div class="viewcode-block" id="Surface._test_gluings"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Surface._test_gluings">[docs]</a>    <span class="k">def</span> <span class="nf">_test_gluings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
         <span class="c1"># iterate over pairs with pair1 glued to pair2</span>
@@ -982,6 +1011,7 @@
             <span class="n">it</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_iterator</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">islice</span>
+
             <span class="n">it</span> <span class="o">=</span> <span class="n">islice</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">label_iterator</span><span class="p">(),</span> <span class="mi">30</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">lab</span> <span class="ow">in</span> <span class="n">it</span><span class="p">:</span>
@@ -989,56 +1019,96 @@
             <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()):</span>
                 <span class="n">e</span> <span class="o">=</span> <span class="p">(</span><span class="n">lab</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
                 <span class="n">f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">lab</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
-                <span class="n">tester</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">f</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">,</span>
-                        <span class="s2">&quot;edge (</span><span class="si">{}</span><span class="s2">, </span><span class="si">{}</span><span class="s2">) is not glued&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lab</span><span class="p">,</span> <span class="n">k</span><span class="p">))</span>
+                <span class="n">tester</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span>
+                    <span class="n">f</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;edge (</span><span class="si">{}</span><span class="s2">, </span><span class="si">{}</span><span class="s2">) is not glued&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lab</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
+                <span class="p">)</span>
                 <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">f</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-                <span class="n">tester</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span>
-                        <span class="s2">&quot;edge gluing is not a pairing:</span><span class="se">\n</span><span class="si">{}</span><span class="s2"> -&gt; </span><span class="si">{}</span><span class="s2"> -&gt; </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">g</span><span class="p">))</span></div>
+                <span class="n">tester</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+                    <span class="n">e</span><span class="p">,</span>
+                    <span class="n">g</span><span class="p">,</span>
+                    <span class="s2">&quot;edge gluing is not a pairing:</span><span class="se">\n</span><span class="si">{}</span><span class="s2"> -&gt; </span><span class="si">{}</span><span class="s2"> -&gt; </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">g</span><span class="p">),</span>
+                <span class="p">)</span></div>
 
 <div class="viewcode-block" id="Surface._test_override"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Surface._test_override">[docs]</a>    <span class="k">def</span> <span class="nf">_test_override</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
         <span class="c1"># Test that the required methods have been overridden and that some other methods have not been overridden.</span>
 
         <span class="c1"># Of course, we don&#39;t care if the methods are overridden or not we just want to warn the programmer.</span>
-        <span class="k">if</span> <span class="s1">&#39;tester&#39;</span> <span class="ow">in</span> <span class="n">options</span><span class="p">:</span>
-            <span class="n">tester</span> <span class="o">=</span> <span class="n">options</span><span class="p">[</span><span class="s1">&#39;tester&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s2">&quot;tester&quot;</span> <span class="ow">in</span> <span class="n">options</span><span class="p">:</span>
+            <span class="n">tester</span> <span class="o">=</span> <span class="n">options</span><span class="p">[</span><span class="s2">&quot;tester&quot;</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tester</span><span class="p">(</span><span class="o">**</span><span class="n">options</span><span class="p">)</span>
 
         <span class="c1"># Check for override:</span>
-        <span class="n">tester</span><span class="o">.</span><span class="n">assertNotEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="o">.</span><span class="vm">__func__</span><span class="p">,</span>
-                              <span class="n">Surface</span><span class="o">.</span><span class="n">polygon</span><span class="p">,</span>
-            <span class="s2">&quot;Method polygon of Surface must be overridden. The Surface is of type &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span><span class="o">+</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
-        <span class="n">tester</span><span class="o">.</span><span class="n">assertNotEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">opposite_edge</span><span class="o">.</span><span class="vm">__func__</span><span class="p">,</span> <span class="n">Surface</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">,</span>
-            <span class="s2">&quot;Method opposite_edge of Surface must be overridden. The Surface is of type &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span><span class="o">+</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assertNotEqual</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="o">.</span><span class="vm">__func__</span><span class="p">,</span>
+            <span class="n">Surface</span><span class="o">.</span><span class="n">polygon</span><span class="p">,</span>
+            <span class="s2">&quot;Method polygon of Surface must be overridden. The Surface is of type &quot;</span>
+            <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+            <span class="o">+</span> <span class="s2">&quot;.&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assertNotEqual</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">opposite_edge</span><span class="o">.</span><span class="vm">__func__</span><span class="p">,</span>
+            <span class="n">Surface</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">,</span>
+            <span class="s2">&quot;Method opposite_edge of Surface must be overridden. The Surface is of type &quot;</span>
+            <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+            <span class="o">+</span> <span class="s2">&quot;.&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_mutable</span><span class="p">():</span>
             <span class="c1"># Check for override:</span>
-            <span class="n">tester</span><span class="o">.</span><span class="n">assertNotEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_change_polygon</span><span class="o">.</span><span class="vm">__func__</span><span class="p">,</span> <span class="n">Surface</span><span class="o">.</span><span class="n">_change_polygon</span><span class="p">,</span>\
-                <span class="s2">&quot;Method _change_polygon of Surface must be overridden in a mutable surface. &quot;</span><span class="o">+</span>\
-                <span class="s2">&quot;The Surface is of type &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span><span class="o">+</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
-            <span class="n">tester</span><span class="o">.</span><span class="n">assertNotEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_set_edge_pairing</span><span class="o">.</span><span class="vm">__func__</span><span class="p">,</span> <span class="n">Surface</span><span class="o">.</span><span class="n">_set_edge_pairing</span><span class="p">,</span>\
-                <span class="s2">&quot;Method _set_edge_pairing of Surface must be overridden in a mutable surface. &quot;</span><span class="o">+</span>\
-                <span class="s2">&quot;The Surface is of type &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span><span class="o">+</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
-            <span class="n">tester</span><span class="o">.</span><span class="n">assertNotEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_add_polygon</span><span class="o">.</span><span class="vm">__func__</span><span class="p">,</span> <span class="n">Surface</span><span class="o">.</span><span class="n">_add_polygon</span><span class="p">,</span> <span class="s2">&quot;Method _add_polygon of Surface must be overridden in a mutable surface. &quot;</span><span class="o">+</span>\
-                <span class="s2">&quot;The Surface is of type &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span><span class="o">+</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
-            <span class="n">tester</span><span class="o">.</span><span class="n">assertNotEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_remove_polygon</span><span class="o">.</span><span class="vm">__func__</span><span class="p">,</span> <span class="n">Surface</span><span class="o">.</span><span class="n">_remove_polygon</span><span class="p">,</span> <span class="s2">&quot;Method _remove_polygon of Surface must be overridden in a mutable surface. &quot;</span><span class="o">+</span>\
-                <span class="s2">&quot;The Surface is of type &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span><span class="o">+</span><span class="s2">&quot;.&quot;</span><span class="p">)</span></div>
+            <span class="n">tester</span><span class="o">.</span><span class="n">assertNotEqual</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_change_polygon</span><span class="o">.</span><span class="vm">__func__</span><span class="p">,</span>
+                <span class="n">Surface</span><span class="o">.</span><span class="n">_change_polygon</span><span class="p">,</span>
+                <span class="s2">&quot;Method _change_polygon of Surface must be overridden in a mutable surface. &quot;</span>
+                <span class="o">+</span> <span class="s2">&quot;The Surface is of type &quot;</span>
+                <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+                <span class="o">+</span> <span class="s2">&quot;.&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">tester</span><span class="o">.</span><span class="n">assertNotEqual</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_set_edge_pairing</span><span class="o">.</span><span class="vm">__func__</span><span class="p">,</span>
+                <span class="n">Surface</span><span class="o">.</span><span class="n">_set_edge_pairing</span><span class="p">,</span>
+                <span class="s2">&quot;Method _set_edge_pairing of Surface must be overridden in a mutable surface. &quot;</span>
+                <span class="o">+</span> <span class="s2">&quot;The Surface is of type &quot;</span>
+                <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+                <span class="o">+</span> <span class="s2">&quot;.&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">tester</span><span class="o">.</span><span class="n">assertNotEqual</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_add_polygon</span><span class="o">.</span><span class="vm">__func__</span><span class="p">,</span>
+                <span class="n">Surface</span><span class="o">.</span><span class="n">_add_polygon</span><span class="p">,</span>
+                <span class="s2">&quot;Method _add_polygon of Surface must be overridden in a mutable surface. &quot;</span>
+                <span class="o">+</span> <span class="s2">&quot;The Surface is of type &quot;</span>
+                <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+                <span class="o">+</span> <span class="s2">&quot;.&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">tester</span><span class="o">.</span><span class="n">assertNotEqual</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_remove_polygon</span><span class="o">.</span><span class="vm">__func__</span><span class="p">,</span>
+                <span class="n">Surface</span><span class="o">.</span><span class="n">_remove_polygon</span><span class="p">,</span>
+                <span class="s2">&quot;Method _remove_polygon of Surface must be overridden in a mutable surface. &quot;</span>
+                <span class="o">+</span> <span class="s2">&quot;The Surface is of type &quot;</span>
+                <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+                <span class="o">+</span> <span class="s2">&quot;.&quot;</span><span class="p">,</span>
+            <span class="p">)</span></div>
 
 <div class="viewcode-block" id="Surface._test_polygons"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Surface._test_polygons">[docs]</a>    <span class="k">def</span> <span class="nf">_test_polygons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
         <span class="c1"># Test that the base_label is associated to a polygon</span>
-        <span class="k">if</span> <span class="s1">&#39;tester&#39;</span> <span class="ow">in</span> <span class="n">options</span><span class="p">:</span>
-            <span class="n">tester</span> <span class="o">=</span> <span class="n">options</span><span class="p">[</span><span class="s1">&#39;tester&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s2">&quot;tester&quot;</span> <span class="ow">in</span> <span class="n">options</span><span class="p">:</span>
+            <span class="n">tester</span> <span class="o">=</span> <span class="n">options</span><span class="p">[</span><span class="s2">&quot;tester&quot;</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tester</span><span class="p">(</span><span class="o">**</span><span class="n">options</span><span class="p">)</span>
         <span class="kn">from</span> <span class="nn">.polygon</span> <span class="kn">import</span> <span class="n">ConvexPolygon</span>
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_finite</span><span class="p">():</span>
             <span class="n">it</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_iterator</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">islice</span>
+
             <span class="n">it</span> <span class="o">=</span> <span class="n">islice</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">label_iterator</span><span class="p">(),</span> <span class="mi">30</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">it</span><span class="p">:</span>
-            <span class="n">tester</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">),</span> <span class="n">ConvexPolygon</span><span class="p">),</span> \
-                <span class="s2">&quot;polygon(label) does not return a ConvexPolygon when label=&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">label</span><span class="p">))</span></div></div>
+            <span class="n">tester</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span>
+                <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">),</span> <span class="n">ConvexPolygon</span><span class="p">),</span>
+                <span class="s2">&quot;polygon(label) does not return a ConvexPolygon when label=&quot;</span>
+                <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">label</span><span class="p">),</span>
+            <span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="Surface_list"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Surface_list">[docs]</a><span class="k">class</span> <span class="nc">Surface_list</span><span class="p">(</span><span class="n">Surface</span><span class="p">):</span>
@@ -1153,7 +1223,19 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_num_polygons</span> <span class="o">=</span> <span class="mi">0</span>
 
         <span class="c1"># Validate input parameters and fill in defaults</span>
-        <span class="n">base_ring</span><span class="p">,</span> <span class="n">surface</span><span class="p">,</span> <span class="n">copy</span><span class="p">,</span> <span class="n">mutable</span><span class="p">,</span> <span class="n">finite</span> <span class="o">=</span> <span class="n">Surface_list</span><span class="o">.</span><span class="n">_validate_init_parameters</span><span class="p">(</span><span class="n">base_ring</span><span class="o">=</span><span class="n">base_ring</span><span class="p">,</span> <span class="n">surface</span><span class="o">=</span><span class="n">surface</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="n">copy</span><span class="p">,</span> <span class="n">mutable</span><span class="o">=</span><span class="n">mutable</span><span class="p">,</span> <span class="n">finite</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="p">(</span>
+            <span class="n">base_ring</span><span class="p">,</span>
+            <span class="n">surface</span><span class="p">,</span>
+            <span class="n">copy</span><span class="p">,</span>
+            <span class="n">mutable</span><span class="p">,</span>
+            <span class="n">finite</span><span class="p">,</span>
+        <span class="p">)</span> <span class="o">=</span> <span class="n">Surface_list</span><span class="o">.</span><span class="n">_validate_init_parameters</span><span class="p">(</span>
+            <span class="n">base_ring</span><span class="o">=</span><span class="n">base_ring</span><span class="p">,</span>
+            <span class="n">surface</span><span class="o">=</span><span class="n">surface</span><span class="p">,</span>
+            <span class="n">copy</span><span class="o">=</span><span class="n">copy</span><span class="p">,</span>
+            <span class="n">mutable</span><span class="o">=</span><span class="n">mutable</span><span class="p">,</span>
+            <span class="n">finite</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="p">)</span>
 
         <span class="n">Surface</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_ring</span><span class="p">,</span> <span class="n">base_label</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">finite</span><span class="o">=</span><span class="n">finite</span><span class="p">,</span> <span class="n">mutable</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
@@ -1165,8 +1247,16 @@
                     <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">polygon</span> <span class="ow">in</span> <span class="n">surface</span><span class="o">.</span><span class="n">label_polygon_iterator</span><span class="p">()</span>
                 <span class="p">}</span>
 
-                <span class="k">for</span> <span class="p">((</span><span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">),</span> <span class="p">(</span><span class="n">glued_label</span><span class="p">,</span> <span class="n">glued_edge</span><span class="p">))</span> <span class="ow">in</span> <span class="n">surface</span><span class="o">.</span><span class="n">edge_gluing_iterator</span><span class="p">():</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">set_edge_pairing</span><span class="p">(</span><span class="n">reference_label_to_label</span><span class="p">[</span><span class="n">label</span><span class="p">],</span> <span class="n">edge</span><span class="p">,</span> <span class="n">reference_label_to_label</span><span class="p">[</span><span class="n">glued_label</span><span class="p">],</span> <span class="n">glued_edge</span><span class="p">)</span>
+                <span class="k">for</span> <span class="p">(</span>
+                    <span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">),</span>
+                    <span class="p">(</span><span class="n">glued_label</span><span class="p">,</span> <span class="n">glued_edge</span><span class="p">),</span>
+                <span class="p">)</span> <span class="ow">in</span> <span class="n">surface</span><span class="o">.</span><span class="n">edge_gluing_iterator</span><span class="p">():</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">set_edge_pairing</span><span class="p">(</span>
+                        <span class="n">reference_label_to_label</span><span class="p">[</span><span class="n">label</span><span class="p">],</span>
+                        <span class="n">edge</span><span class="p">,</span>
+                        <span class="n">reference_label_to_label</span><span class="p">[</span><span class="n">glued_label</span><span class="p">],</span>
+                        <span class="n">glued_edge</span><span class="p">,</span>
+                    <span class="p">)</span>
 
                 <span class="bp">self</span><span class="o">.</span><span class="n">change_base_label</span><span class="p">(</span><span class="n">reference_label_to_label</span><span class="p">[</span><span class="n">surface</span><span class="o">.</span><span class="n">base_label</span><span class="p">()])</span>
             <span class="k">else</span><span class="p">:</span>
@@ -1202,6 +1292,7 @@
             <span class="n">finite</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="kn">from</span> <span class="nn">.similarity_surface</span> <span class="kn">import</span> <span class="n">SimilaritySurface</span>
+
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">surface</span><span class="p">,</span> <span class="n">SimilaritySurface</span><span class="p">):</span>
                 <span class="n">surface</span> <span class="o">=</span> <span class="n">surface</span><span class="o">.</span><span class="n">underlying_surface</span><span class="p">()</span>
 
@@ -1209,13 +1300,17 @@
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;surface must be a Surface or a SimilaritySurface&quot;</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="n">surface</span><span class="o">.</span><span class="n">is_finite</span><span class="p">()</span> <span class="ow">and</span> <span class="n">surface</span><span class="o">.</span><span class="n">is_mutable</span><span class="p">():</span>
-                <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Cannot create surface from infinite mutable surface yet.&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+                    <span class="s2">&quot;Cannot create surface from infinite mutable surface yet.&quot;</span>
+                <span class="p">)</span>
 
             <span class="k">if</span> <span class="n">base_ring</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">base_ring</span> <span class="o">=</span> <span class="n">surface</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span>
 
             <span class="k">if</span> <span class="n">base_ring</span> <span class="o">!=</span> <span class="n">surface</span><span class="o">.</span><span class="n">base_ring</span><span class="p">():</span>
-                <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Cannot provide both a surface and a base_ring yet.&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+                    <span class="s2">&quot;Cannot provide both a surface and a base_ring yet.&quot;</span>
+                <span class="p">)</span>
 
             <span class="k">if</span> <span class="n">mutable</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">mutable</span> <span class="o">=</span> <span class="kc">True</span>
@@ -1250,7 +1345,12 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">i</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_int_to_ref</span><span class="p">):</span>
-                    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;length of self._int_to_ref is &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_int_to_ref</span><span class="p">))</span><span class="o">+</span><span class="s2">&quot; should be the same as i=&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+                    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                        <span class="s2">&quot;length of self._int_to_ref is &quot;</span>
+                        <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_int_to_ref</span><span class="p">))</span>
+                        <span class="o">+</span> <span class="s2">&quot; should be the same as i=&quot;</span>
+                        <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+                    <span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_ref_to_int</span><span class="p">[</span><span class="n">ref_label</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_int_to_ref</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ref_label</span><span class="p">)</span>
@@ -1303,7 +1403,7 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">ref_p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_int_to_ref</span><span class="p">[</span><span class="n">p</span><span class="p">]</span>
                 <span class="n">ref_pp</span><span class="p">,</span> <span class="n">ref_ee</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reference_surface</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">ref_p</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
-                <span class="n">pp</span><span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_label</span><span class="p">(</span><span class="n">ref_pp</span><span class="p">)</span>
+                <span class="n">pp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_label</span><span class="p">(</span><span class="n">ref_pp</span><span class="p">)</span>
                 <span class="n">return_value</span> <span class="o">=</span> <span class="p">(</span><span class="n">pp</span><span class="p">,</span> <span class="n">ref_ee</span><span class="p">)</span>
                 <span class="n">glue</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="o">=</span> <span class="n">return_value</span>
                 <span class="k">return</span> <span class="n">return_value</span>
@@ -1323,11 +1423,11 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No known polygon with provided label&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Provided label was removed from the surface.&quot;</span><span class="p">)</span>
-        <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">=</span><span class="n">new_polygon</span>
+        <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_polygon</span>
         <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">new_polygon</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
-            <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span><span class="p">[</span><span class="kc">None</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">new_polygon</span><span class="o">.</span><span class="n">num_edges</span><span class="p">())]</span>
+            <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">new_polygon</span><span class="o">.</span><span class="n">num_edges</span><span class="p">())]</span>
         <span class="k">if</span> <span class="n">gluing_list</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">change_polygon_gluings</span><span class="p">(</span><span class="n">label</span><span class="p">,</span><span class="n">gluing_list</span><span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">change_polygon_gluings</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">gluing_list</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Surface_list._set_edge_pairing"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Surface_list._set_edge_pairing">[docs]</a>    <span class="k">def</span> <span class="nf">_set_edge_pairing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label1</span><span class="p">,</span> <span class="n">edge1</span><span class="p">,</span> <span class="n">label2</span><span class="p">,</span> <span class="n">edge2</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -1336,17 +1436,21 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="p">[</span><span class="n">label1</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No known polygon with provided label1=&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">label1</span><span class="p">))</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No known polygon with provided label1=&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">label1</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Provided label1=&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">label1</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot; was removed from the surface.&quot;</span><span class="p">)</span>
-        <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">edge1</span><span class="p">]</span><span class="o">=</span><span class="p">(</span><span class="n">label2</span><span class="p">,</span><span class="n">edge2</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Provided label1=&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">label1</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; was removed from the surface.&quot;</span>
+            <span class="p">)</span>
+        <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">edge1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">label2</span><span class="p">,</span> <span class="n">edge2</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="p">[</span><span class="n">label2</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No known polygon with provided label2=&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">label2</span><span class="p">))</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No known polygon with provided label2=&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">label2</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Provided label2=&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">label2</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot; was removed from the surface.&quot;</span><span class="p">)</span>
-        <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">edge2</span><span class="p">]</span><span class="o">=</span><span class="p">(</span><span class="n">label1</span><span class="p">,</span><span class="n">edge1</span><span class="p">)</span></div>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Provided label2=&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">label2</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; was removed from the surface.&quot;</span>
+            <span class="p">)</span>
+        <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">edge2</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">label1</span><span class="p">,</span> <span class="n">edge1</span><span class="p">)</span></div>
 
     <span class="c1"># TODO: deprecation alias?</span>
     <span class="n">_change_edge_gluing</span> <span class="o">=</span> <span class="n">_set_edge_pairing</span>
@@ -1384,13 +1488,13 @@
 <span class="sd">            sage: TestSuite(s).run()</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">new_polygon</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span><span class="kc">None</span><span class="p">]</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="n">new_polygon</span><span class="p">,</span> <span class="p">[</span><span class="kc">None</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">new_polygon</span><span class="o">.</span><span class="n">num_edges</span><span class="p">())]</span> <span class="p">]</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="n">new_polygon</span><span class="p">,</span> <span class="p">[</span><span class="kc">None</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">new_polygon</span><span class="o">.</span><span class="n">num_edges</span><span class="p">())]]</span>
         <span class="k">if</span> <span class="n">label</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_removed_labels</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_removed_labels</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="n">new_label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_removed_labels</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="p">[</span><span class="n">new_label</span><span class="p">]</span><span class="o">=</span><span class="n">data</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="p">[</span><span class="n">new_label</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">new_label</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
@@ -1398,15 +1502,23 @@
                     <span class="c1"># Need a blank in this list for algorithmic reasons</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_int_to_ref</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">new_label</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">new_label</span><span class="o">&lt;</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="p">):</span>
+            <span class="n">new_label</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">new_label</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="p">):</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="p">[</span><span class="n">new_label</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Trying to add a polygon with label=&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot; which already indexes a polygon.&quot;</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="p">[</span><span class="n">new_label</span><span class="p">]</span><span class="o">=</span><span class="n">data</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="s2">&quot;Trying to add a polygon with label=&quot;</span>
+                        <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+                        <span class="o">+</span> <span class="s2">&quot; which already indexes a polygon.&quot;</span>
+                    <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="p">[</span><span class="n">new_label</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">new_label</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">100</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Adding a polygon with label=&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot; would add more than 100 entries in our list.&quot;</span><span class="p">)</span>
-                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="p">),</span><span class="n">new_label</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">new_label</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">100</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="s2">&quot;Adding a polygon with label=&quot;</span>
+                        <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+                        <span class="o">+</span> <span class="s2">&quot; would add more than 100 entries in our list.&quot;</span>
+                    <span class="p">)</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="p">),</span> <span class="n">new_label</span><span class="p">):</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_removed_labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
                     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reference_surface</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -1419,7 +1531,7 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">_int_to_ref</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">gluing_list</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">change_polygon_gluings</span><span class="p">(</span><span class="n">new_label</span><span class="p">,</span><span class="n">gluing_list</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">change_polygon_gluings</span><span class="p">(</span><span class="n">new_label</span><span class="p">,</span> <span class="n">gluing_list</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_num_polygons</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="k">return</span> <span class="n">new_label</span></div>
 
@@ -1441,8 +1553,8 @@
                 <span class="k">yield</span> <span class="n">i</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># We&#39;ve removed some labels</span>
-            <span class="n">found</span><span class="o">=</span><span class="mi">0</span>
-            <span class="n">i</span><span class="o">=</span><span class="mi">0</span>
+            <span class="n">found</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="k">while</span> <span class="n">found</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_num_polygons</span><span class="p">:</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="n">found</span> <span class="o">+=</span> <span class="mi">1</span>
@@ -1453,20 +1565,20 @@
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Internal method used by remove_polygon(). Should not be called directly.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">label</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">label</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reference_surface</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">ref_label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_int_to_ref</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
-                <span class="k">assert</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_int_to_ref</span><span class="p">)</span><span class="o">==</span><span class="n">label</span><span class="p">)</span>
+                <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_int_to_ref</span><span class="p">)</span> <span class="o">==</span> <span class="n">label</span>
                 <span class="k">if</span> <span class="n">ref_label</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ref_to_int</span><span class="p">[</span><span class="n">ref_label</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="p">[</span><span class="n">label</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_removed_labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reference_surface</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">ref_label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_int_to_ref</span><span class="p">[</span><span class="n">label</span><span class="p">]</span>
                 <span class="k">if</span> <span class="n">ref_label</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_int_to_ref</span><span class="p">[</span><span class="n">label</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_int_to_ref</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
                     <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ref_to_int</span><span class="p">[</span><span class="n">ref_label</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_num_polygons</span> <span class="o">-=</span> <span class="mi">1</span></div>
 
@@ -1482,6 +1594,7 @@
 <span class="sd">          of {1,...,d}</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span> <span class="nn">sage.groups.perm_gps.permgroup_named</span> <span class="kn">import</span> <span class="n">SymmetricGroup</span>
+
         <span class="n">G</span> <span class="o">=</span> <span class="n">SymmetricGroup</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
             <span class="n">data</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">G</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
@@ -1489,7 +1602,7 @@
         <span class="n">labels</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">label_iterator</span><span class="p">())</span>
         <span class="n">edges</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">edge_iterator</span><span class="p">())</span>
         <span class="n">cover_labels</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">d</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">d</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">lab</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_iterator</span><span class="p">():</span>
                 <span class="n">cover_labels</span><span class="p">[(</span><span class="n">lab</span><span class="p">,</span> <span class="n">i</span><span class="p">)]</span> <span class="o">=</span> <span class="n">cover</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">lab</span><span class="p">))</span>
         <span class="k">while</span> <span class="n">edges</span><span class="p">:</span>
@@ -1506,7 +1619,7 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">s</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
 
-            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">d</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">d</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
                 <span class="n">p0</span> <span class="o">=</span> <span class="n">cover_labels</span><span class="p">[(</span><span class="n">lab</span><span class="p">,</span> <span class="n">i</span><span class="p">)]</span>
                 <span class="n">p1</span> <span class="o">=</span> <span class="n">cover_labels</span><span class="p">[(</span><span class="n">lab</span><span class="p">,</span> <span class="n">s</span><span class="p">(</span><span class="n">i</span><span class="p">))]</span>
                 <span class="n">cover</span><span class="o">.</span><span class="n">set_edge_pairing</span><span class="p">(</span><span class="n">p0</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">p1</span><span class="p">,</span> <span class="n">ee</span><span class="p">)</span>
@@ -1519,10 +1632,10 @@
 <span class="sd">    and produce a Surface_list from it. The mutable parameter determines the mutability of the resulting</span>
 <span class="sd">    surface.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">polygons</span><span class="p">,</span><span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">polygons</span><span class="p">,</span><span class="nb">tuple</span><span class="p">)):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">polygons</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">polygons</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;polygons must be a list or tuple.&quot;</span><span class="p">)</span>
     <span class="n">field</span> <span class="o">=</span> <span class="n">polygons</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">field</span><span class="p">()</span>
-    <span class="n">s</span><span class="o">=</span><span class="n">Surface_list</span><span class="p">(</span><span class="n">base_ring</span><span class="o">=</span><span class="n">field</span><span class="p">)</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">Surface_list</span><span class="p">(</span><span class="n">base_ring</span><span class="o">=</span><span class="n">field</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">polygons</span><span class="p">:</span>
         <span class="n">s</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
@@ -1531,8 +1644,8 @@
     <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
         <span class="c1"># list case:</span>
         <span class="n">it</span> <span class="o">=</span> <span class="n">gluings</span>
-    <span class="k">for</span> <span class="p">(</span><span class="n">l1</span><span class="p">,</span><span class="n">e1</span><span class="p">),(</span><span class="n">l2</span><span class="p">,</span><span class="n">e2</span><span class="p">)</span> <span class="ow">in</span> <span class="n">it</span><span class="p">:</span>
-        <span class="n">s</span><span class="o">.</span><span class="n">change_edge_gluing</span><span class="p">(</span><span class="n">l1</span><span class="p">,</span><span class="n">e1</span><span class="p">,</span><span class="n">l2</span><span class="p">,</span><span class="n">e2</span><span class="p">)</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">l1</span><span class="p">,</span> <span class="n">e1</span><span class="p">),</span> <span class="p">(</span><span class="n">l2</span><span class="p">,</span> <span class="n">e2</span><span class="p">)</span> <span class="ow">in</span> <span class="n">it</span><span class="p">:</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">change_edge_gluing</span><span class="p">(</span><span class="n">l1</span><span class="p">,</span> <span class="n">e1</span><span class="p">,</span> <span class="n">l2</span><span class="p">,</span> <span class="n">e2</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">mutable</span><span class="p">:</span>
         <span class="n">s</span><span class="o">.</span><span class="n">set_immutable</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">s</span></div>
@@ -1593,7 +1706,19 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_reference_surface</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="c1"># Validate input parameters and fill in defaults</span>
-        <span class="n">base_ring</span><span class="p">,</span> <span class="n">surface</span><span class="p">,</span> <span class="n">copy</span><span class="p">,</span> <span class="n">mutable</span><span class="p">,</span> <span class="n">finite</span> <span class="o">=</span> <span class="n">Surface_list</span><span class="o">.</span><span class="n">_validate_init_parameters</span><span class="p">(</span><span class="n">base_ring</span><span class="o">=</span><span class="n">base_ring</span><span class="p">,</span> <span class="n">surface</span><span class="o">=</span><span class="n">surface</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="n">copy</span><span class="p">,</span> <span class="n">mutable</span><span class="o">=</span><span class="n">mutable</span><span class="p">,</span> <span class="n">finite</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="p">(</span>
+            <span class="n">base_ring</span><span class="p">,</span>
+            <span class="n">surface</span><span class="p">,</span>
+            <span class="n">copy</span><span class="p">,</span>
+            <span class="n">mutable</span><span class="p">,</span>
+            <span class="n">finite</span><span class="p">,</span>
+        <span class="p">)</span> <span class="o">=</span> <span class="n">Surface_list</span><span class="o">.</span><span class="n">_validate_init_parameters</span><span class="p">(</span>
+            <span class="n">base_ring</span><span class="o">=</span><span class="n">base_ring</span><span class="p">,</span>
+            <span class="n">surface</span><span class="o">=</span><span class="n">surface</span><span class="p">,</span>
+            <span class="n">copy</span><span class="o">=</span><span class="n">copy</span><span class="p">,</span>
+            <span class="n">mutable</span><span class="o">=</span><span class="n">mutable</span><span class="p">,</span>
+            <span class="n">finite</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="p">)</span>
 
         <span class="n">Surface</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_ring</span><span class="p">,</span> <span class="n">base_label</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">finite</span><span class="o">=</span><span class="n">finite</span><span class="p">,</span> <span class="n">mutable</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
@@ -1605,8 +1730,16 @@
                     <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">polygon</span> <span class="ow">in</span> <span class="n">surface</span><span class="o">.</span><span class="n">label_polygon_iterator</span><span class="p">()</span>
                 <span class="p">}</span>
 
-                <span class="k">for</span> <span class="p">((</span><span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">),</span> <span class="p">(</span><span class="n">glued_label</span><span class="p">,</span> <span class="n">glued_edge</span><span class="p">))</span> <span class="ow">in</span> <span class="n">surface</span><span class="o">.</span><span class="n">edge_gluing_iterator</span><span class="p">():</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">set_edge_pairing</span><span class="p">(</span><span class="n">reference_label_to_label</span><span class="p">[</span><span class="n">label</span><span class="p">],</span> <span class="n">edge</span><span class="p">,</span> <span class="n">reference_label_to_label</span><span class="p">[</span><span class="n">glued_label</span><span class="p">],</span> <span class="n">glued_edge</span><span class="p">)</span>
+                <span class="k">for</span> <span class="p">(</span>
+                    <span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">),</span>
+                    <span class="p">(</span><span class="n">glued_label</span><span class="p">,</span> <span class="n">glued_edge</span><span class="p">),</span>
+                <span class="p">)</span> <span class="ow">in</span> <span class="n">surface</span><span class="o">.</span><span class="n">edge_gluing_iterator</span><span class="p">():</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">set_edge_pairing</span><span class="p">(</span>
+                        <span class="n">reference_label_to_label</span><span class="p">[</span><span class="n">label</span><span class="p">],</span>
+                        <span class="n">edge</span><span class="p">,</span>
+                        <span class="n">reference_label_to_label</span><span class="p">[</span><span class="n">glued_label</span><span class="p">],</span>
+                        <span class="n">glued_edge</span><span class="p">,</span>
+                    <span class="p">)</span>
 
                 <span class="bp">self</span><span class="o">.</span><span class="n">change_base_label</span><span class="p">(</span><span class="n">reference_label_to_label</span><span class="p">[</span><span class="n">surface</span><span class="o">.</span><span class="n">base_label</span><span class="p">()])</span>
             <span class="k">else</span><span class="p">:</span>
@@ -1628,12 +1761,17 @@
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No polygon with label </span><span class="si">{</span><span class="n">lab</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
 
             <span class="n">polygon</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reference_surface</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">lab</span><span class="p">)</span>
-            <span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_reference_surface</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">lab</span><span class="p">),</span>
-                    <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_reference_surface</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">lab</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">polygon</span><span class="o">.</span><span class="n">num_edges</span><span class="p">())]]</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_reference_surface</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">lab</span><span class="p">),</span>
+                <span class="p">[</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_reference_surface</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">lab</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">polygon</span><span class="o">.</span><span class="n">num_edges</span><span class="p">())</span>
+                <span class="p">],</span>
+            <span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="p">[</span><span class="n">lab</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span>
 
         <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Label &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">lab</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot; was removed from the surface.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Label &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">lab</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; was removed from the surface.&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="Surface_dict.opposite_edge"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Surface_dict.opposite_edge">[docs]</a>    <span class="k">def</span> <span class="nf">opposite_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
@@ -1647,12 +1785,14 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
             <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="p">[</span><span class="n">p</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Label &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot; was removed from the surface.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Label &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; was removed from the surface.&quot;</span><span class="p">)</span>
         <span class="n">gluing_data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">gluing_data</span><span class="p">[</span><span class="n">e</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Edge e=&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot; is out of range in polygon with label &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="p">))</span></div>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Edge e=&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; is out of range in polygon with label &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+            <span class="p">)</span></div>
 
     <span class="c1"># Methods for changing the surface</span>
 
@@ -1663,8 +1803,10 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="p">[</span><span class="n">label</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Label &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot; was removed from the surface.&quot;</span><span class="p">)</span>
-            <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">=</span><span class="n">new_polygon</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;Label &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">label</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; was removed from the surface.&quot;</span>
+                <span class="p">)</span>
+            <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_polygon</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
             <span class="c1"># Polygon probably lies in reference surface</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reference_surface</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -1673,16 +1815,21 @@
                 <span class="c1"># Ensure the reference surface had a polygon with the provided label:</span>
                 <span class="n">old_polygon</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reference_surface</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">old_polygon</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()</span> <span class="o">==</span> <span class="n">new_polygon</span><span class="o">.</span><span class="n">num_edges</span><span class="p">():</span>
-                    <span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="n">new_polygon</span><span class="p">,</span> \
-                        <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_reference_surface</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">label</span><span class="p">,</span><span class="n">e</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">new_polygon</span><span class="o">.</span><span class="n">num_edges</span><span class="p">())]</span> <span class="p">]</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="p">[</span><span class="n">label</span><span class="p">]</span><span class="o">=</span><span class="n">data</span>
+                    <span class="n">data</span> <span class="o">=</span> <span class="p">[</span>
+                        <span class="n">new_polygon</span><span class="p">,</span>
+                        <span class="p">[</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">_reference_surface</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+                            <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">new_polygon</span><span class="o">.</span><span class="n">num_edges</span><span class="p">())</span>
+                        <span class="p">],</span>
+                    <span class="p">]</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="n">new_polygon</span><span class="p">,</span> <span class="p">[</span><span class="kc">None</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">new_polygon</span><span class="o">.</span><span class="n">num_edges</span><span class="p">())]</span> <span class="p">]</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="p">[</span><span class="n">label</span><span class="p">]</span><span class="o">=</span><span class="n">data</span>
+                    <span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="n">new_polygon</span><span class="p">,</span> <span class="p">[</span><span class="kc">None</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">new_polygon</span><span class="o">.</span><span class="n">num_edges</span><span class="p">())]]</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">!=</span> <span class="n">new_polygon</span><span class="o">.</span><span class="n">num_edges</span><span class="p">():</span>
             <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">new_polygon</span><span class="o">.</span><span class="n">num_edges</span><span class="p">())]</span>
         <span class="k">if</span> <span class="n">gluing_list</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">change_polygon_gluings</span><span class="p">(</span><span class="n">label</span><span class="p">,</span><span class="n">gluing_list</span><span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">change_polygon_gluings</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">gluing_list</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Surface_dict._set_edge_pairing"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Surface_dict._set_edge_pairing">[docs]</a>    <span class="k">def</span> <span class="nf">_set_edge_pairing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label1</span><span class="p">,</span> <span class="n">edge1</span><span class="p">,</span> <span class="n">label2</span><span class="p">,</span> <span class="n">edge2</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -1692,15 +1839,23 @@
             <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="p">[</span><span class="n">label1</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reference_surface</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No known polygon with provided label1 = </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">label1</span><span class="p">))</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;No known polygon with provided label1 = </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">label1</span><span class="p">)</span>
+                <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># Failure likely because reference_surface contains the polygon.</span>
                 <span class="c1"># import the data into this surface.</span>
                 <span class="n">polygon</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reference_surface</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label1</span><span class="p">)</span>
-                <span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="n">polygon</span><span class="p">,</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_reference_surface</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">label1</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">polygon</span><span class="o">.</span><span class="n">num_edges</span><span class="p">())]]</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">polygon</span><span class="p">,</span>
+                    <span class="p">[</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_reference_surface</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">label1</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+                        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">polygon</span><span class="o">.</span><span class="n">num_edges</span><span class="p">())</span>
+                    <span class="p">],</span>
+                <span class="p">]</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="p">[</span><span class="n">label1</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">edge1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">label2</span><span class="p">,</span><span class="n">edge2</span><span class="p">)</span>
+            <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">edge1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">label2</span><span class="p">,</span> <span class="n">edge2</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
             <span class="c1"># break down error</span>
             <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -1709,7 +1864,11 @@
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">data1</span><span class="p">[</span><span class="n">edge1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">label2</span><span class="p">,</span> <span class="n">edge2</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;edge1=</span><span class="si">{}</span><span class="s2"> is out of range in polygon with label1=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">edge1</span><span class="p">,</span> <span class="n">label1</span><span class="p">))</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;edge1=</span><span class="si">{}</span><span class="s2"> is out of range in polygon with label1=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">edge1</span><span class="p">,</span> <span class="n">label1</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="p">[</span><span class="n">label2</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
@@ -1719,10 +1878,16 @@
                 <span class="c1"># Failure likely because reference_surface contains the polygon.</span>
                 <span class="c1"># import the data into this surface.</span>
                 <span class="n">polygon</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reference_surface</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label2</span><span class="p">)</span>
-                <span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="n">polygon</span><span class="p">,</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_reference_surface</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">label2</span><span class="p">,</span><span class="n">e</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">polygon</span><span class="o">.</span><span class="n">num_edges</span><span class="p">())]]</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="p">[</span><span class="n">label2</span><span class="p">]</span><span class="o">=</span><span class="n">data</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">polygon</span><span class="p">,</span>
+                    <span class="p">[</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_reference_surface</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">label2</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+                        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">polygon</span><span class="o">.</span><span class="n">num_edges</span><span class="p">())</span>
+                    <span class="p">],</span>
+                <span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="p">[</span><span class="n">label2</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">edge2</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">label1</span><span class="p">,</span><span class="n">edge1</span><span class="p">)</span>
+            <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">edge2</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">label1</span><span class="p">,</span> <span class="n">edge1</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
             <span class="c1"># break down error</span>
             <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -1731,7 +1896,11 @@
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">data1</span><span class="p">[</span><span class="n">edge2</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">label1</span><span class="p">,</span> <span class="n">edge1</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;edge </span><span class="si">{}</span><span class="s2"> is out of range in polygon with label2=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">edge2</span><span class="p">,</span> <span class="n">label2</span><span class="p">))</span></div>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;edge </span><span class="si">{}</span><span class="s2"> is out of range in polygon with label2=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">edge2</span><span class="p">,</span> <span class="n">label2</span>
+                    <span class="p">)</span>
+                <span class="p">)</span></div>
 
     <span class="n">_change_edge_gluing</span> <span class="o">=</span> <span class="n">_set_edge_pairing</span>
 
@@ -1739,7 +1908,7 @@
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Internal method used by add_polygon(). Should not be called directly.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="n">new_polygon</span><span class="p">,</span> <span class="p">[</span><span class="kc">None</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">new_polygon</span><span class="o">.</span><span class="n">num_edges</span><span class="p">())]</span> <span class="p">]</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="n">new_polygon</span><span class="p">,</span> <span class="p">[</span><span class="kc">None</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">new_polygon</span><span class="o">.</span><span class="n">num_edges</span><span class="p">())]]</span>
         <span class="k">if</span> <span class="n">label</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">new_label</span> <span class="o">=</span> <span class="n">ExtraLabel</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
@@ -1747,20 +1916,22 @@
                 <span class="n">old_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="p">[</span><span class="n">label</span><span class="p">]</span>
                 <span class="k">if</span> <span class="n">old_data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="c1"># already removed this polygon. That&#39;s good, we can add.</span>
-                    <span class="n">new_label</span><span class="o">=</span><span class="n">label</span>
+                    <span class="n">new_label</span> <span class="o">=</span> <span class="n">label</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;label=</span><span class="si">{}</span><span class="s2"> already used by another polygon&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">label</span><span class="p">))</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="s2">&quot;label=</span><span class="si">{}</span><span class="s2"> already used by another polygon&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+                    <span class="p">)</span>
             <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
                 <span class="c1"># This seems inconvenient to enforce:</span>
                 <span class="c1">#</span>
-                <span class="c1">#if not self._reference_surface is None:</span>
+                <span class="c1"># if not self._reference_surface is None:</span>
                 <span class="c1">#    # Can not be sure we are not overwriting a polygon in the reference surface.</span>
                 <span class="c1">#    raise ValueError(&quot;Can not assign this label to a Surface_dict containing a reference surface,&quot;+\</span>
                 <span class="c1">#        &quot;which may already contain this label.&quot;)</span>
                 <span class="n">new_label</span> <span class="o">=</span> <span class="n">label</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="p">[</span><span class="n">new_label</span><span class="p">]</span><span class="o">=</span><span class="n">data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="p">[</span><span class="n">new_label</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span>
         <span class="k">if</span> <span class="n">gluing_list</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">change_polygon_gluings</span><span class="p">(</span><span class="n">new_label</span><span class="p">,</span><span class="n">gluing_list</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">change_polygon_gluings</span><span class="p">(</span><span class="n">new_label</span><span class="p">,</span> <span class="n">gluing_list</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">new_label</span></div>
 
 <div class="viewcode-block" id="Surface_dict.num_polygons"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Surface_dict.num_polygons">[docs]</a>    <span class="k">def</span> <span class="nf">num_polygons</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1775,6 +1946,7 @@
                 <span class="k">return</span> <span class="n">Surface</span><span class="o">.</span><span class="n">num_polygons</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="kn">from</span> <span class="nn">sage.rings.infinity</span> <span class="kn">import</span> <span class="n">Infinity</span>
+
             <span class="k">return</span> <span class="n">Infinity</span></div>
 
 <div class="viewcode-block" id="Surface_dict.label_iterator"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Surface_dict.label_iterator">[docs]</a>    <span class="k">def</span> <span class="nf">label_iterator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1796,14 +1968,16 @@
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="p">[</span><span class="n">label</span><span class="p">]</span>
             <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Label &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot; is not in the surface.&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Label &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">label</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; is not in the surface.&quot;</span><span class="p">)</span>
             <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="p">[</span><span class="n">label</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="p">[</span><span class="n">label</span><span class="p">]</span>
                 <span class="c1"># Success.</span>
                 <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Label &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot; was already removed from the surface.&quot;</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="s2">&quot;Label &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">label</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; was already removed from the surface.&quot;</span>
+                    <span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
                 <span class="c1"># Assume on faith we are removing a polygon in the base_surface.</span>
@@ -1814,18 +1988,22 @@
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A surface with a different base_ring.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">surface</span><span class="p">,</span> <span class="n">ring</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">=</span><span class="n">surface</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_base_ring</span><span class="o">=</span><span class="n">ring</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_s</span> <span class="o">=</span> <span class="n">surface</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_base_ring</span> <span class="o">=</span> <span class="n">ring</span>
         <span class="kn">from</span> <span class="nn">flatsurf.geometry.polygon</span> <span class="kn">import</span> <span class="n">ConvexPolygons</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_P</span><span class="o">=</span><span class="n">ConvexPolygons</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_base_ring</span><span class="p">)</span>
-        <span class="n">Surface</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ring</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">base_label</span><span class="p">(),</span> <span class="n">mutable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">finite</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">is_finite</span><span class="p">())</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_P</span> <span class="o">=</span> <span class="n">ConvexPolygons</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_base_ring</span><span class="p">)</span>
+        <span class="n">Surface</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">ring</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">base_label</span><span class="p">(),</span> <span class="n">mutable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">finite</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">is_finite</span><span class="p">()</span>
+        <span class="p">)</span>
 
 <div class="viewcode-block" id="BaseRingChangedSurface.polygon"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.BaseRingChangedSurface.polygon">[docs]</a>    <span class="k">def</span> <span class="nf">polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lab</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_P</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">lab</span><span class="p">)</span> <span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_P</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">lab</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="BaseRingChangedSurface.opposite_edge"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.BaseRingChangedSurface.opposite_edge">[docs]</a>    <span class="k">def</span> <span class="nf">opposite_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">p</span><span class="p">,</span><span class="n">e</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="LabelWalker"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.LabelWalker">[docs]</a><span class="k">class</span> <span class="nc">LabelWalker</span><span class="p">:</span>
@@ -1847,31 +2025,31 @@
         <span class="k">def</span> <span class="fm">__next__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_lw</span><span class="p">):</span>
                 <span class="n">label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lw</span><span class="o">.</span><span class="n">number_to_label</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_i</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_i</span> <span class="o">+</span><span class="mi">1</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_i</span> <span class="o">+</span> <span class="mi">1</span>
                 <span class="k">return</span> <span class="n">label</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_i</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_lw</span><span class="p">):</span>
                 <span class="n">label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lw</span><span class="o">.</span><span class="n">find_a_new_label</span><span class="p">()</span>
                 <span class="k">if</span> <span class="n">label</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">StopIteration</span><span class="p">()</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_i</span><span class="o">+</span><span class="mi">1</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_i</span> <span class="o">+</span> <span class="mi">1</span>
                 <span class="k">return</span> <span class="n">label</span>
             <span class="k">raise</span> <span class="ne">StopIteration</span><span class="p">()</span>
 
-        <span class="nb">next</span> <span class="o">=</span> <span class="fm">__next__</span> <span class="c1"># for Python 2</span>
+        <span class="nb">next</span> <span class="o">=</span> <span class="fm">__next__</span>  <span class="c1"># for Python 2</span>
 
         <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span></div>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">surface</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">=</span><span class="n">surface</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_labels</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">base_label</span><span class="p">()]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_label_dict</span><span class="o">=</span><span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">base_label</span><span class="p">():</span><span class="mi">0</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_s</span> <span class="o">=</span> <span class="n">surface</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_labels</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">base_label</span><span class="p">()]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_label_dict</span> <span class="o">=</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">base_label</span><span class="p">():</span> <span class="mi">0</span><span class="p">}</span>
 
         <span class="c1"># This will stores an edge to move through to get to a polygon closer to the base_polygon</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_label_edge_back</span> <span class="o">=</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">base_label</span><span class="p">():</span><span class="kc">None</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_label_edge_back</span> <span class="o">=</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">base_label</span><span class="p">():</span> <span class="kc">None</span><span class="p">}</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_walk</span><span class="o">=</span><span class="n">deque</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_walk</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">base_label</span><span class="p">(),</span><span class="mi">0</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_walk</span> <span class="o">=</span> <span class="n">deque</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_walk</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">base_label</span><span class="p">(),</span> <span class="mi">0</span><span class="p">))</span>
 
 <div class="viewcode-block" id="LabelWalker.label_dictionary"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.LabelWalker.label_dictionary">[docs]</a>    <span class="k">def</span> <span class="nf">label_dictionary</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -1891,15 +2069,17 @@
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">limit</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">is_finite</span><span class="p">():</span>
-                    <span class="n">limit</span><span class="o">=</span><span class="mi">1000</span>
+                    <span class="n">limit</span> <span class="o">=</span> <span class="mi">1000</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">limit</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">num_polygons</span><span class="p">()</span>
+                    <span class="n">limit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">num_polygons</span><span class="p">()</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">limit</span><span class="p">):</span>
-                <span class="n">new_label</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">find_a_new_label</span><span class="p">()</span>
+                <span class="n">new_label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_a_new_label</span><span class="p">()</span>
                 <span class="k">if</span> <span class="n">label</span> <span class="o">==</span> <span class="n">new_label</span><span class="p">:</span>
                     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_label_edge_back</span><span class="p">[</span><span class="n">label</span><span class="p">]</span>
         <span class="c1"># Maybe the surface is not connected?</span>
-        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;Unable to find label </span><span class="si">%s</span><span class="s2">. Are you sure the surface is connected?&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">label</span><span class="p">))</span></div>
+        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span>
+            <span class="s2">&quot;Unable to find label </span><span class="si">%s</span><span class="s2">. Are you sure the surface is connected?&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">label</span><span class="p">)</span>
+        <span class="p">)</span></div>
 
     <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">LabelWalker</span><span class="o">.</span><span class="n">LabelWalkerIterator</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
@@ -1913,9 +2093,9 @@
             <span class="k">yield</span> <span class="n">label</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="LabelWalker.edge_iterator"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.LabelWalker.edge_iterator">[docs]</a>    <span class="k">def</span> <span class="nf">edge_iterator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">label</span><span class="p">,</span><span class="n">polygon</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_polygon_iterator</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">polygon</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_polygon_iterator</span><span class="p">():</span>
             <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">polygon</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()):</span>
-                <span class="k">yield</span> <span class="n">label</span><span class="p">,</span><span class="n">e</span></div>
+                <span class="k">yield</span> <span class="n">label</span><span class="p">,</span> <span class="n">e</span></div>
 
     <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -1956,7 +2136,7 @@
         <span class="k">return</span> <span class="n">new_labels</span></div>
 
 <div class="viewcode-block" id="LabelWalker.find_all_labels"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.LabelWalker.find_all_labels">[docs]</a>    <span class="k">def</span> <span class="nf">find_all_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">assert</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">is_finite</span><span class="p">())</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">is_finite</span><span class="p">()</span>
         <span class="n">label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_a_new_label</span><span class="p">()</span>
         <span class="k">while</span> <span class="n">label</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_a_new_label</span><span class="p">()</span></div>
@@ -1982,10 +2162,12 @@
             <span class="k">if</span> <span class="n">label</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_label_dict</span><span class="p">:</span>
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_label_dict</span><span class="p">[</span><span class="n">label</span><span class="p">]</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">limit</span><span class="p">):</span>
-                <span class="n">l</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_a_new_label</span><span class="p">()</span>
-                <span class="k">if</span> <span class="n">label</span> <span class="o">==</span> <span class="n">l</span><span class="p">:</span>
+                <span class="n">new_label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_a_new_label</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">label</span> <span class="o">==</span> <span class="n">new_label</span><span class="p">:</span>
                     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_label_dict</span><span class="p">[</span><span class="n">label</span><span class="p">]</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Failed to find label even after searching. limit=&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">limit</span><span class="p">))</span></div>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Failed to find label even after searching. limit=&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">limit</span><span class="p">)</span>
+            <span class="p">)</span></div>
 
 <div class="viewcode-block" id="LabelWalker.surface"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.LabelWalker.surface">[docs]</a>    <span class="k">def</span> <span class="nf">surface</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span></div></div>
@@ -1995,7 +2177,7 @@
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Used to spit out new labels.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">_next</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">_next</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -2008,20 +2190,19 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_label</span> <span class="o">=</span> <span class="n">value</span>
 
     <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span>
-            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_label</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_label</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_label</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_label</span>
 
     <span class="k">def</span> <span class="fm">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__eq__</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span><span class="mi">23</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_label</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span><span class="mi">23</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_label</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s2">&quot;E&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_label</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s2">&quot;E&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_label</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s2">&quot;ExtraLabel(&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_label</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;)&quot;</span></div>
+        <span class="k">return</span> <span class="s2">&quot;ExtraLabel(&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_label</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;)&quot;</span></div>
 
 
 <div class="viewcode-block" id="LabelComparator"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.LabelComparator">[docs]</a><span class="k">class</span> <span class="nc">LabelComparator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -2032,6 +2213,7 @@
 
 <span class="sd">    For objects with the same hash, we store an arbitrary ordering.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize a label comparator.</span>
@@ -2049,7 +2231,7 @@
                 <span class="k">return</span> <span class="n">i</span>
         <span class="c1"># At this point we know label is not in lst</span>
         <span class="n">lst</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
-        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">lst</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span></div>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">lst</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span></div>
 
 <div class="viewcode-block" id="LabelComparator.lt"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.LabelComparator.lt">[docs]</a>    <span class="k">def</span> <span class="nf">lt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">l1</span><span class="p">,</span> <span class="n">l2</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>

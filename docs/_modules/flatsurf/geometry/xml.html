@@ -258,8 +258,8 @@
         <article role="main">
           <h1>Source code for flatsurf.geometry.xml</h1><div class="highlight"><pre>
 <span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">This module contains functions to output surfaces to a string or a file in a human and computer </span>
-<span class="sd">readable format using XML. </span>
+<span class="sd">This module contains functions to output surfaces to a string or a file in a human and computer</span>
+<span class="sd">readable format using XML.</span>
 
 <span class="sd">We also have a function to recreate the surface from the string/file.</span>
 
@@ -276,186 +276,216 @@
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span><span class="p">,</span> <span class="n">print_function</span><span class="p">,</span> <span class="n">division</span>
 <span class="kn">from</span> <span class="nn">six.moves</span> <span class="kn">import</span> <span class="nb">range</span><span class="p">,</span> <span class="nb">map</span><span class="p">,</span> <span class="nb">filter</span><span class="p">,</span> <span class="nb">zip</span>
 
+
 <div class="viewcode-block" id="surface_to_xml_string"><a class="viewcode-back" href="../../../geometry/xml.html#flatsurf.geometry.xml.surface_to_xml_string">[docs]</a><span class="k">def</span> <span class="nf">surface_to_xml_string</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">complain</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot; </span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert the surface s into a XML string.</span>
-<span class="sd">    </span>
-<span class="sd">    Note that this only encodes the Surface part of the object and not the SimilaritySurface </span>
+
+<span class="sd">    Note that this only encodes the Surface part of the object and not the SimilaritySurface</span>
 <span class="sd">    wrapper.</span>
-<span class="sd">    </span>
-<span class="sd">    By default complain=True, and it will print warning messages and raise errors if it doesn&#39;t </span>
+
+<span class="sd">    By default complain=True, and it will print warning messages and raise errors if it doesn&#39;t</span>
 <span class="sd">    think you will be able to reconstruct the surface using surface_from_xml_string.</span>
 
 <span class="sd">    Currently s should be Surface_list (or a wrapped Surface_list). If not and complain=True,</span>
-<span class="sd">    an error message will be printed and the surface will be converted to Surface_list. If </span>
+<span class="sd">    an error message will be printed and the surface will be converted to Surface_list. If</span>
 <span class="sd">    complain=False, the surface will be encoded but you may not be able to recover it.</span>
-<span class="sd">    </span>
+
 <span class="sd">    Also the surface should be defined over the rationals. Otherwise a ValueError is raised, which</span>
 <span class="sd">    can be disabled by setting complain=False.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">s</span><span class="o">.</span><span class="n">is_finite</span><span class="p">():</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Can only xml encode a finite surface.&quot;</span><span class="p">)</span>
     <span class="kn">from</span> <span class="nn">flatsurf.geometry.similarity_surface</span> <span class="kn">import</span> <span class="n">SimilaritySurface</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="n">SimilaritySurface</span><span class="p">):</span>
-        <span class="n">s</span><span class="o">=</span><span class="n">s</span><span class="o">.</span><span class="n">underlying_surface</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">SimilaritySurface</span><span class="p">):</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">underlying_surface</span><span class="p">()</span>
     <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface</span> <span class="kn">import</span> <span class="n">Surface_list</span>
+
     <span class="k">if</span> <span class="n">complain</span><span class="p">:</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="n">Surface_list</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">Surface_list</span><span class="p">):</span>
             <span class="c1"># Convert to surface list</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Warning:surface_to_xml_string is converting to Surface_list before encoding, &quot;</span><span class="o">+</span>\
-                  <span class="s2">&quot; labels will likely be changed. &quot;</span><span class="o">+</span>\
-                  <span class="s2">&quot;If this is not desired, &quot;</span><span class="o">+</span>
-                  <span class="s2">&quot;call surface_to_xml_string with complain=False.&quot;</span><span class="p">)</span>
-            <span class="n">s</span><span class="o">=</span><span class="n">Surface_list</span><span class="p">(</span><span class="n">surface</span><span class="o">=</span><span class="n">s</span><span class="p">)</span>
-    
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="s2">&quot;Warning:surface_to_xml_string is converting to Surface_list before encoding, &quot;</span>
+                <span class="o">+</span> <span class="s2">&quot; labels will likely be changed. &quot;</span>
+                <span class="o">+</span> <span class="s2">&quot;If this is not desired, &quot;</span>
+                <span class="o">+</span> <span class="s2">&quot;call surface_to_xml_string with complain=False.&quot;</span>
+            <span class="p">)</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="n">Surface_list</span><span class="p">(</span><span class="n">surface</span><span class="o">=</span><span class="n">s</span><span class="p">)</span>
+
     <span class="kn">from</span> <span class="nn">xml.sax.saxutils</span> <span class="kn">import</span> <span class="n">escape</span>
-    <span class="n">output</span><span class="o">=</span><span class="p">[]</span>
-    <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;&lt;surface&gt;&#39;</span><span class="p">)</span>
-    
+
+    <span class="n">output</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&lt;surface&gt;&quot;</span><span class="p">)</span>
+
     <span class="c1"># Include the type of surface (in case we care about it in the future)</span>
-    <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;&lt;type&gt;&#39;</span><span class="p">)</span>
+    <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&lt;type&gt;&quot;</span><span class="p">)</span>
     <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">escape</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">s</span><span class="p">))))</span>
-    <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;&lt;/type&gt;&#39;</span><span class="p">)</span>
+    <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&lt;/type&gt;&quot;</span><span class="p">)</span>
 
     <span class="kn">from</span> <span class="nn">sage.rings.rational_field</span> <span class="kn">import</span> <span class="n">QQ</span>
-    <span class="k">if</span> <span class="n">complain</span> <span class="ow">and</span> <span class="n">s</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span><span class="o">!=</span><span class="n">QQ</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Refusing to encode surface with base_ring!=QQ, &quot;</span><span class="o">+</span>\
-                         <span class="s2">&quot;because we can not guarantee we bring the surface back. &quot;</span><span class="o">+</span>
-                         <span class="s2">&quot;If you would like to encode it anyway, &quot;</span><span class="o">+</span>
-                         <span class="s2">&quot;call surface_to_xml_string with complain=False.&quot;</span><span class="p">)</span>
 
-    <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;&lt;base_ring&gt;&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">complain</span> <span class="ow">and</span> <span class="n">s</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span> <span class="o">!=</span> <span class="n">QQ</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;Refusing to encode surface with base_ring!=QQ, &quot;</span>
+            <span class="o">+</span> <span class="s2">&quot;because we can not guarantee we bring the surface back. &quot;</span>
+            <span class="o">+</span> <span class="s2">&quot;If you would like to encode it anyway, &quot;</span>
+            <span class="o">+</span> <span class="s2">&quot;call surface_to_xml_string with complain=False.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&lt;base_ring&gt;&quot;</span><span class="p">)</span>
     <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">escape</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">base_ring</span><span class="p">())))</span>
-    <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;&lt;/base_ring&gt;&#39;</span><span class="p">)</span>
-    
-    <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;&lt;base_label&gt;&#39;</span><span class="p">)</span>
+    <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&lt;/base_ring&gt;&quot;</span><span class="p">)</span>
+
+    <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&lt;base_label&gt;&quot;</span><span class="p">)</span>
     <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">escape</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">base_label</span><span class="p">())))</span>
-    <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;&lt;/base_label&gt;&#39;</span><span class="p">)</span>
-    
-    <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;&lt;polygons&gt;&#39;</span><span class="p">)</span>
+    <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&lt;/base_label&gt;&quot;</span><span class="p">)</span>
+
+    <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&lt;polygons&gt;&quot;</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">label_iterator</span><span class="p">():</span>
-        <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;&lt;polygon&gt;&#39;</span><span class="p">)</span>
-        <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;&lt;label&gt;&#39;</span><span class="p">)</span>
+        <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&lt;polygon&gt;&quot;</span><span class="p">)</span>
+        <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&lt;label&gt;&quot;</span><span class="p">)</span>
         <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">escape</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">label</span><span class="p">)))</span>
-        <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;&lt;/label&gt;&#39;</span><span class="p">)</span>
-        <span class="n">p</span><span class="o">=</span><span class="n">s</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+        <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&lt;/label&gt;&quot;</span><span class="p">)</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()):</span>
-            <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;&lt;edge&gt;&#39;</span><span class="p">)</span>
-            <span class="n">v</span><span class="o">=</span><span class="n">p</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
-            <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;&lt;x&gt;&#39;</span><span class="p">)</span>
+            <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&lt;edge&gt;&quot;</span><span class="p">)</span>
+            <span class="n">v</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&lt;x&gt;&quot;</span><span class="p">)</span>
             <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">escape</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">])))</span>
-            <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;&lt;/x&gt;&#39;</span><span class="p">)</span>
-            <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;&lt;y&gt;&#39;</span><span class="p">)</span>
+            <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&lt;/x&gt;&quot;</span><span class="p">)</span>
+            <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&lt;y&gt;&quot;</span><span class="p">)</span>
             <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">escape</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">])))</span>
-            <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;&lt;/y&gt;&#39;</span><span class="p">)</span>
-            <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;&lt;/edge&gt;&#39;</span><span class="p">)</span>
-        <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;&lt;/polygon&gt;&#39;</span><span class="p">)</span>
-    <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;&lt;/polygons&gt;&#39;</span><span class="p">)</span>
+            <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&lt;/y&gt;&quot;</span><span class="p">)</span>
+            <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&lt;/edge&gt;&quot;</span><span class="p">)</span>
+        <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&lt;/polygon&gt;&quot;</span><span class="p">)</span>
+    <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&lt;/polygons&gt;&quot;</span><span class="p">)</span>
 
-    <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;&lt;gluings&gt;&#39;</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">l</span><span class="p">,</span><span class="n">e</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">edge_iterator</span><span class="p">():</span>
-        <span class="n">ll</span><span class="p">,</span><span class="n">ee</span><span class="o">=</span><span class="n">s</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="n">e</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">ll</span><span class="o">&lt;</span><span class="n">l</span> <span class="ow">or</span> <span class="p">(</span><span class="n">ll</span><span class="o">==</span><span class="n">l</span> <span class="ow">and</span> <span class="n">ee</span><span class="o">&lt;</span><span class="n">e</span><span class="p">):</span>
+    <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&lt;gluings&gt;&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">edge_iterator</span><span class="p">():</span>
+        <span class="n">ll</span><span class="p">,</span> <span class="n">ee</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ll</span> <span class="o">&lt;</span> <span class="n">label</span> <span class="ow">or</span> <span class="p">(</span><span class="n">ll</span> <span class="o">==</span> <span class="n">label</span> <span class="ow">and</span> <span class="n">ee</span> <span class="o">&lt;</span> <span class="n">e</span><span class="p">):</span>
             <span class="k">continue</span>
-        <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;&lt;glue&gt;&#39;</span><span class="p">)</span>
-        <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;&lt;l&gt;&#39;</span><span class="p">)</span>
-        <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">escape</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">l</span><span class="p">)))</span>
-        <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;&lt;/l&gt;&#39;</span><span class="p">)</span>
-        <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;&lt;e&gt;&#39;</span><span class="p">)</span>
+        <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&lt;glue&gt;&quot;</span><span class="p">)</span>
+        <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&lt;l&gt;&quot;</span><span class="p">)</span>
+        <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">escape</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">label</span><span class="p">)))</span>
+        <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&lt;/l&gt;&quot;</span><span class="p">)</span>
+        <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&lt;e&gt;&quot;</span><span class="p">)</span>
         <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">escape</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">e</span><span class="p">)))</span>
-        <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;&lt;/e&gt;&#39;</span><span class="p">)</span>
-        <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;&lt;ll&gt;&#39;</span><span class="p">)</span>
+        <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&lt;/e&gt;&quot;</span><span class="p">)</span>
+        <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&lt;ll&gt;&quot;</span><span class="p">)</span>
         <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">escape</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">ll</span><span class="p">)))</span>
-        <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;&lt;/ll&gt;&#39;</span><span class="p">)</span>
-        <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;&lt;ee&gt;&#39;</span><span class="p">)</span>
+        <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&lt;/ll&gt;&quot;</span><span class="p">)</span>
+        <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&lt;ee&gt;&quot;</span><span class="p">)</span>
         <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">escape</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">ee</span><span class="p">)))</span>
-        <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;&lt;/ee&gt;&#39;</span><span class="p">)</span>
-        <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;&lt;/glue&gt;&#39;</span><span class="p">)</span>
-    <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;&lt;/gluings&gt;&#39;</span><span class="p">)</span>
-    
-    <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;&lt;/surface&gt;&#39;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output</span><span class="p">)</span></div>
+        <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&lt;/ee&gt;&quot;</span><span class="p">)</span>
+        <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&lt;/glue&gt;&quot;</span><span class="p">)</span>
+    <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&lt;/gluings&gt;&quot;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="surface_to_xml_file"><a class="viewcode-back" href="../../../geometry/xml.html#flatsurf.geometry.xml.surface_to_xml_file">[docs]</a><span class="k">def</span> <span class="nf">surface_to_xml_file</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="n">filename</span><span class="p">,</span><span class="n">complain</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&lt;/surface&gt;&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="surface_to_xml_file"><a class="viewcode-back" href="../../../geometry/xml.html#flatsurf.geometry.xml.surface_to_xml_file">[docs]</a><span class="k">def</span> <span class="nf">surface_to_xml_file</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">complain</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert the surface s to a string using surface_to_xml_string,</span>
 <span class="sd">    then write an XML header and this string to the file with filename provided.</span>
-<span class="sd">    </span>
+
 <span class="sd">    The complain flag is passed to surface_to_xml_string.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">string</span> <span class="o">=</span> <span class="n">surface_to_xml_string</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="n">complain</span><span class="o">=</span><span class="n">complain</span><span class="p">)</span>
-    <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+    <span class="n">string</span> <span class="o">=</span> <span class="n">surface_to_xml_string</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">complain</span><span class="o">=</span><span class="n">complain</span><span class="p">)</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
     <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;&lt;?xml version=&quot;1.0&quot;?&gt;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
     <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
     <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
+
 <div class="viewcode-block" id="surface_from_xml_string"><a class="viewcode-back" href="../../../geometry/xml.html#flatsurf.geometry.xml.surface_from_xml_string">[docs]</a><span class="k">def</span> <span class="nf">surface_from_xml_string</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Attempts to reconstruct a Surface from a string storing an XML representation of the surface.</span>
-<span class="sd">    </span>
+
 <span class="sd">    Currently, this works only if the surface stored was a Surface_list and the surface was defined</span>
 <span class="sd">    over QQ.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">import</span> <span class="nn">xml.etree.ElementTree</span> <span class="k">as</span> <span class="nn">ET</span>
+
     <span class="n">tree</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">_surface_from_ElementTree</span><span class="p">(</span><span class="n">tree</span><span class="p">)</span></div>
+
 
 <div class="viewcode-block" id="surface_from_xml_file"><a class="viewcode-back" href="../../../geometry/xml.html#flatsurf.geometry.xml.surface_from_xml_file">[docs]</a><span class="k">def</span> <span class="nf">surface_from_xml_file</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Attempts to reconstruct a Surface from a string storing an XML representation of the surface.</span>
-<span class="sd">    </span>
+
 <span class="sd">    Currently, this works only if the surface stored was a Surface_list and the surface was defined</span>
 <span class="sd">    over QQ.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">import</span> <span class="nn">xml.etree.ElementTree</span> <span class="k">as</span> <span class="nn">ET</span>
+
     <span class="n">tree</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">_surface_from_ElementTree</span><span class="p">(</span><span class="n">tree</span><span class="p">)</span></div>
 
+
 <span class="k">def</span> <span class="nf">_surface_from_ElementTree</span><span class="p">(</span><span class="n">tree</span><span class="p">):</span>
     <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface</span> <span class="kn">import</span> <span class="n">Surface_list</span>
-    <span class="n">node</span><span class="o">=</span><span class="n">tree</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">)</span>
+
+    <span class="n">node</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">node</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Failed to find tag named &quot;node&quot;&#39;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">text</span> <span class="o">!=</span> <span class="nb">repr</span><span class="p">(</span><span class="n">Surface_list</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Currently can only reconstruct from Surface_list. &quot;</span><span class="o">+</span>\
-                        <span class="s2">&quot;Found type &quot;</span><span class="o">+</span><span class="n">node</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;Currently can only reconstruct from Surface_list. &quot;</span>
+            <span class="o">+</span> <span class="s2">&quot;Found type &quot;</span>
+            <span class="o">+</span> <span class="n">node</span><span class="o">.</span><span class="n">text</span>
+        <span class="p">)</span>
 
-    <span class="n">node</span><span class="o">=</span><span class="n">tree</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;base_ring&quot;</span><span class="p">)</span>
+    <span class="n">node</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;base_ring&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">node</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Failed to find tag named &quot;base_ring&quot;&#39;</span><span class="p">)</span>
     <span class="kn">from</span> <span class="nn">sage.rings.rational_field</span> <span class="kn">import</span> <span class="n">QQ</span>
-    <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">text</span> <span class="o">==</span> <span class="nb">repr</span><span class="p">(</span><span class="n">QQ</span><span class="p">):</span>
-        <span class="n">base_ring</span><span class="o">=</span><span class="n">QQ</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Can only reconstruct when base_ring=QQ. &quot;</span><span class="o">+</span>\
-                                  <span class="s2">&quot;Found &quot;</span><span class="o">+</span><span class="n">tree</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;base_ring&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
 
-    <span class="n">s</span><span class="o">=</span><span class="n">Surface_list</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span>
-    
+    <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">text</span> <span class="o">==</span> <span class="nb">repr</span><span class="p">(</span><span class="n">QQ</span><span class="p">):</span>
+        <span class="n">base_ring</span> <span class="o">=</span> <span class="n">QQ</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;Can only reconstruct when base_ring=QQ. &quot;</span>
+            <span class="o">+</span> <span class="s2">&quot;Found &quot;</span>
+            <span class="o">+</span> <span class="n">tree</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;base_ring&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
+        <span class="p">)</span>
+
+    <span class="n">s</span> <span class="o">=</span> <span class="n">Surface_list</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span>
+
     <span class="c1"># Import the polygons</span>
-    <span class="n">polygons</span><span class="o">=</span><span class="n">tree</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;polygons&quot;</span><span class="p">)</span>
+    <span class="n">polygons</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;polygons&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">polygons</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Failed to find tag named &quot;polygons&quot;&#39;</span><span class="p">)</span>
     <span class="kn">from</span> <span class="nn">flatsurf.geometry.polygon</span> <span class="kn">import</span> <span class="n">ConvexPolygons</span>
+
     <span class="n">P</span> <span class="o">=</span> <span class="n">ConvexPolygons</span><span class="p">(</span><span class="n">base_ring</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">polygon</span> <span class="ow">in</span> <span class="n">polygons</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s2">&quot;polygon&quot;</span><span class="p">):</span>
-        <span class="n">node</span><span class="o">=</span><span class="n">polygon</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;label&quot;</span><span class="p">)</span>
+        <span class="n">node</span> <span class="o">=</span> <span class="n">polygon</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;label&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">node</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Failed to find tag &lt;label&gt; in &lt;polygon&gt;&#39;</span><span class="p">)</span>
-        <span class="n">label</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
-        <span class="n">edges</span><span class="o">=</span><span class="p">[]</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Failed to find tag &lt;label&gt; in &lt;polygon&gt;&quot;</span><span class="p">)</span>
+        <span class="n">label0</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+        <span class="n">edges</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">polygon</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s2">&quot;edge&quot;</span><span class="p">):</span>
-            <span class="n">node</span><span class="o">=</span><span class="n">edge</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">)</span>
+            <span class="n">node</span> <span class="o">=</span> <span class="n">edge</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">node</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Failed to find tag &lt;x&gt; in &lt;edge&gt; in &lt;polygon&gt; with label=&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">label</span><span class="p">))</span>
-            <span class="n">x</span><span class="o">=</span><span class="n">base_ring</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
-            <span class="n">node</span><span class="o">=</span><span class="n">edge</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;Failed to find tag &lt;x&gt; in &lt;edge&gt; in &lt;polygon&gt; with label=&quot;</span>
+                    <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">label0</span><span class="p">)</span>
+                <span class="p">)</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">base_ring</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+            <span class="n">node</span> <span class="o">=</span> <span class="n">edge</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">node</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Failed to find tag &lt;y&gt; in &lt;edge&gt; in &lt;polygon&gt; with label=&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">label</span><span class="p">))</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;Failed to find tag &lt;y&gt; in &lt;edge&gt; in &lt;polygon&gt; with label=&quot;</span>
+                    <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">label0</span><span class="p">)</span>
+                <span class="p">)</span>
             <span class="n">y</span> <span class="o">=</span> <span class="n">base_ring</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
             <span class="n">edges</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span>
         <span class="n">p</span> <span class="o">=</span> <span class="n">P</span><span class="p">(</span><span class="n">edges</span><span class="o">=</span><span class="n">edges</span><span class="p">)</span>
-        <span class="n">s</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">)</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label0</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">num_polygons</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Failed to add any polygons.&quot;</span><span class="p">)</span>
 
@@ -466,21 +496,21 @@
     <span class="k">for</span> <span class="n">glue</span> <span class="ow">in</span> <span class="n">gluings</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s2">&quot;glue&quot;</span><span class="p">):</span>
         <span class="n">node</span> <span class="o">=</span> <span class="n">glue</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;l&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">node</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Failed to find tag &lt;l&gt; in &lt;glue&gt;.&#39;</span><span class="p">)</span>
-        <span class="n">l</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Failed to find tag &lt;l&gt; in &lt;glue&gt;.&quot;</span><span class="p">)</span>
+        <span class="n">label0</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
         <span class="n">node</span> <span class="o">=</span> <span class="n">glue</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;e&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">node</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Failed to find tag &lt;e&gt; in &lt;glue&gt;.&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Failed to find tag &lt;e&gt; in &lt;glue&gt;.&quot;</span><span class="p">)</span>
         <span class="n">e</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
         <span class="n">node</span> <span class="o">=</span> <span class="n">glue</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;ll&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">node</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Failed to find tag &lt;ll&gt; in &lt;glue&gt;.&#39;</span><span class="p">)</span>
-        <span class="n">ll</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Failed to find tag &lt;ll&gt; in &lt;glue&gt;.&quot;</span><span class="p">)</span>
+        <span class="n">label1</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
         <span class="n">node</span> <span class="o">=</span> <span class="n">glue</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;ee&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">node</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Failed to find tag &lt;ee&gt; in &lt;glue&gt;.&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Failed to find tag &lt;ee&gt; in &lt;glue&gt;.&quot;</span><span class="p">)</span>
         <span class="n">ee</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
-        <span class="n">s</span><span class="o">.</span><span class="n">change_edge_gluing</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">ll</span><span class="p">,</span> <span class="n">ee</span><span class="p">)</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">change_edge_gluing</span><span class="p">(</span><span class="n">label0</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">label1</span><span class="p">,</span> <span class="n">ee</span><span class="p">)</span>
 
     <span class="n">node</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;base_label&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">node</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>

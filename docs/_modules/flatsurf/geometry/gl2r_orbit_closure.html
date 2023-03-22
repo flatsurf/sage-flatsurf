@@ -410,18 +410,22 @@
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">surface</span><span class="p">):</span>
         <span class="kn">from</span> <span class="nn">flatsurf.geometry.translation_surface</span> <span class="kn">import</span> <span class="n">TranslationSurface</span>
+
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">surface</span><span class="p">,</span> <span class="n">TranslationSurface</span><span class="p">):</span>
             <span class="n">base_ring</span> <span class="o">=</span> <span class="n">surface</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span>
             <span class="kn">from</span> <span class="nn">flatsurf.geometry.pyflatsurf_conversion</span> <span class="kn">import</span> <span class="n">to_pyflatsurf</span>
+
             <span class="bp">self</span><span class="o">.</span><span class="n">_surface</span> <span class="o">=</span> <span class="n">to_pyflatsurf</span><span class="p">(</span><span class="n">surface</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="kn">from</span> <span class="nn">flatsurf.geometry.pyflatsurf_conversion</span> <span class="kn">import</span> <span class="n">sage_ring</span>
+
             <span class="n">base_ring</span> <span class="o">=</span> <span class="n">sage_ring</span><span class="p">(</span><span class="n">surface</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_surface</span> <span class="o">=</span> <span class="n">surface</span>
 
         <span class="c1"># A model of the vector space R² in libflatsurf, e.g., to represent the</span>
         <span class="c1"># vector associated to a saddle connection.</span>
         <span class="kn">from</span> <span class="nn">flatsurf.features</span> <span class="kn">import</span> <span class="n">pyflatsurf_feature</span>
+
         <span class="n">pyflatsurf_feature</span><span class="o">.</span><span class="n">require</span><span class="p">()</span>
         <span class="kn">import</span> <span class="nn">pyflatsurf.vector</span>
 
@@ -438,7 +442,7 @@
             <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">positive</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">v</span> <span class="ow">and</span> <span class="n">e</span><span class="o">.</span><span class="n">negative</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">v</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">spanning_set</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">d</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spanning_set</span><span class="p">)</span>
-        <span class="k">assert</span> <span class="mi">3</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">d</span> <span class="o">-</span> <span class="mi">3</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_surface</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="mi">3</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">d</span> <span class="o">-</span> <span class="mi">3</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_surface</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
         <span class="k">assert</span> <span class="n">m</span><span class="o">.</span><span class="n">rank</span><span class="p">()</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">d</span>
         <span class="n">m</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
         <span class="c1"># projection matrix from Z^E to H_1(S, Sigma; Z) in the basis</span>
@@ -521,9 +525,10 @@
 <span class="sd">            H_3(4, 0^4)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span> <span class="nn">surface_dynamics</span> <span class="kn">import</span> <span class="n">AbelianStratum</span>
+
         <span class="n">surface</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_surface</span>
         <span class="n">angles</span> <span class="o">=</span> <span class="p">[</span><span class="n">surface</span><span class="o">.</span><span class="n">angle</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">surface</span><span class="o">.</span><span class="n">vertices</span><span class="p">()]</span>
-        <span class="k">return</span> <span class="n">AbelianStratum</span><span class="p">([</span><span class="n">a</span><span class="o">-</span><span class="mi">1</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">angles</span><span class="p">])</span></div>
+        <span class="k">return</span> <span class="n">AbelianStratum</span><span class="p">([</span><span class="n">a</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">angles</span><span class="p">])</span></div>
 
 <div class="viewcode-block" id="GL2ROrbitClosure.base_ring"><a class="viewcode-back" href="../../../geometry/gl2r_orbit_closure.html#flatsurf.geometry.gl2r_orbit_closure.GL2ROrbitClosure.base_ring">[docs]</a>    <span class="k">def</span> <span class="nf">base_ring</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -579,7 +584,8 @@
         <span class="n">M</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_U</span><span class="o">.</span><span class="n">echelon_form</span><span class="p">()</span>
 
         <span class="kn">from</span> <span class="nn">flatsurf.geometry.subfield</span> <span class="kn">import</span> <span class="n">subfield_from_elements</span>
-        <span class="n">L</span><span class="p">,</span> <span class="n">elts</span><span class="p">,</span> <span class="n">phi</span> <span class="o">=</span> <span class="n">subfield_from_elements</span><span class="p">(</span><span class="n">M</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span> <span class="n">M</span><span class="p">[:</span><span class="bp">self</span><span class="o">.</span><span class="n">_U_rank</span><span class="p">]</span><span class="o">.</span><span class="n">list</span><span class="p">())</span>
+
+        <span class="n">L</span><span class="p">,</span> <span class="n">elts</span><span class="p">,</span> <span class="n">phi</span> <span class="o">=</span> <span class="n">subfield_from_elements</span><span class="p">(</span><span class="n">M</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span> <span class="n">M</span><span class="p">[:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_U_rank</span><span class="p">]</span><span class="o">.</span><span class="n">list</span><span class="p">())</span>
 
         <span class="k">return</span> <span class="n">L</span></div>
 
@@ -594,7 +600,10 @@
         <span class="k">return</span> <span class="nb">min</span><span class="p">([</span><span class="n">h1</span><span class="p">,</span> <span class="n">h2</span><span class="p">,</span> <span class="n">h3</span><span class="p">],</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">index</span><span class="p">())</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s2">&quot;GL(2,R)-orbit closure of dimension at least </span><span class="si">%d</span><span class="s2"> in </span><span class="si">%s</span><span class="s2"> (ambient dimension </span><span class="si">%d</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_U_rank</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ambient_stratum</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">d</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="s2">&quot;GL(2,R)-orbit closure of dimension at least </span><span class="si">%d</span><span class="s2"> in </span><span class="si">%s</span><span class="s2"> (ambient dimension </span><span class="si">%d</span><span class="s2">)&quot;</span>
+            <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_U_rank</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ambient_stratum</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">d</span><span class="p">)</span>
+        <span class="p">)</span>
 
 <div class="viewcode-block" id="GL2ROrbitClosure.holonomy"><a class="viewcode-back" href="../../../geometry/gl2r_orbit_closure.html#flatsurf.geometry.gl2r_orbit_closure.GL2ROrbitClosure.holonomy">[docs]</a>    <span class="k">def</span> <span class="nf">holonomy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -622,7 +631,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">V</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">Hdual</span></div>
 
 <div class="viewcode-block" id="GL2ROrbitClosure.tangent_space_basis"><a class="viewcode-back" href="../../../geometry/gl2r_orbit_closure.html#flatsurf.geometry.gl2r_orbit_closure.GL2ROrbitClosure.tangent_space_basis">[docs]</a>    <span class="k">def</span> <span class="nf">tangent_space_basis</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_U</span><span class="p">[:</span><span class="bp">self</span><span class="o">.</span><span class="n">_U_rank</span><span class="p">]</span><span class="o">.</span><span class="n">rows</span><span class="p">()</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_U</span><span class="p">[:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_U_rank</span><span class="p">]</span><span class="o">.</span><span class="n">rows</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="GL2ROrbitClosure.lift"><a class="viewcode-back" href="../../../geometry/gl2r_orbit_closure.html#flatsurf.geometry.gl2r_orbit_closure.GL2ROrbitClosure.lift">[docs]</a>    <span class="k">def</span> <span class="nf">lift</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -672,17 +681,20 @@
         <span class="n">n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_surface</span><span class="o">.</span><span class="n">edges</span><span class="p">()</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
         <span class="n">k</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spanning_set</span><span class="p">)</span>
         <span class="k">assert</span> <span class="n">k</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">bdry</span><span class="p">)</span> <span class="o">==</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span>
-        <span class="n">A</span> <span class="o">=</span> <span class="n">matrix</span><span class="p">(</span><span class="n">QQ</span><span class="p">,</span> <span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+        <span class="n">A</span> <span class="o">=</span> <span class="n">matrix</span><span class="p">(</span><span class="n">QQ</span><span class="p">,</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spanning_set</span><span class="p">):</span>
             <span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">index</span><span class="p">()]</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">bdry</span><span class="p">):</span>
-            <span class="n">A</span><span class="p">[</span><span class="n">k</span><span class="o">+</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">b</span>
+            <span class="n">A</span><span class="p">[</span><span class="n">k</span> <span class="o">+</span> <span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">b</span>
         <span class="n">u</span> <span class="o">=</span> <span class="n">vector</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">V2</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
         <span class="n">u</span><span class="p">[:</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
         <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">Fields</span>
+
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">V2</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span> <span class="ow">in</span> <span class="n">Fields</span><span class="p">():</span>
             <span class="k">assert</span> <span class="nb">all</span><span class="p">(</span><span class="n">uu</span><span class="o">.</span><span class="n">_backend</span><span class="o">.</span><span class="n">coefficients</span><span class="p">()</span><span class="o">.</span><span class="n">size</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">uu</span> <span class="ow">in</span> <span class="n">u</span><span class="p">)</span>
-            <span class="n">u</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">change_ring</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">V2</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span><span class="o">.</span><span class="n">base_ring</span><span class="p">())([</span><span class="n">uu</span><span class="o">.</span><span class="n">_backend</span><span class="o">.</span><span class="n">coefficients</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">uu</span> <span class="ow">in</span> <span class="n">u</span><span class="p">])</span>
+            <span class="n">u</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">change_ring</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">V2</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span><span class="o">.</span><span class="n">base_ring</span><span class="p">())(</span>
+                <span class="p">[</span><span class="n">uu</span><span class="o">.</span><span class="n">_backend</span><span class="o">.</span><span class="n">coefficients</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">uu</span> <span class="ow">in</span> <span class="n">u</span><span class="p">]</span>
+            <span class="p">)</span>
         <span class="k">return</span> <span class="n">A</span><span class="o">.</span><span class="n">solve_right</span><span class="p">(</span><span class="n">u</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="GL2ROrbitClosure.absolute_homology"><a class="viewcode-back" href="../../../geometry/gl2r_orbit_closure.html#flatsurf.geometry.gl2r_orbit_closure.GL2ROrbitClosure.absolute_homology">[docs]</a>    <span class="k">def</span> <span class="nf">absolute_homology</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -693,13 +705,22 @@
         <span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="kn">from</span> <span class="nn">flatsurf.features</span> <span class="kn">import</span> <span class="n">pyflatsurf_feature</span>
+
         <span class="n">pyflatsurf_feature</span><span class="o">.</span><span class="n">require</span><span class="p">()</span>
         <span class="kn">import</span> <span class="nn">pyflatsurf</span>
 
         <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">spanning_set</span><span class="p">:</span>
             <span class="n">r</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">m</span>
-            <span class="n">i</span> <span class="o">=</span> <span class="n">vert_index</span><span class="p">[</span><span class="n">pyflatsurf</span><span class="o">.</span><span class="n">flatsurf</span><span class="o">.</span><span class="n">Vertex</span><span class="o">.</span><span class="n">target</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">positive</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_surface</span><span class="o">.</span><span class="n">combinatorial</span><span class="p">())]</span>
-            <span class="n">j</span> <span class="o">=</span> <span class="n">vert_index</span><span class="p">[</span><span class="n">pyflatsurf</span><span class="o">.</span><span class="n">flatsurf</span><span class="o">.</span><span class="n">Vertex</span><span class="o">.</span><span class="n">source</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">positive</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_surface</span><span class="o">.</span><span class="n">combinatorial</span><span class="p">())]</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="n">vert_index</span><span class="p">[</span>
+                <span class="n">pyflatsurf</span><span class="o">.</span><span class="n">flatsurf</span><span class="o">.</span><span class="n">Vertex</span><span class="o">.</span><span class="n">target</span><span class="p">(</span>
+                    <span class="n">e</span><span class="o">.</span><span class="n">positive</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_surface</span><span class="o">.</span><span class="n">combinatorial</span><span class="p">()</span>
+                <span class="p">)</span>
+            <span class="p">]</span>
+            <span class="n">j</span> <span class="o">=</span> <span class="n">vert_index</span><span class="p">[</span>
+                <span class="n">pyflatsurf</span><span class="o">.</span><span class="n">flatsurf</span><span class="o">.</span><span class="n">Vertex</span><span class="o">.</span><span class="n">source</span><span class="p">(</span>
+                    <span class="n">e</span><span class="o">.</span><span class="n">positive</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_surface</span><span class="o">.</span><span class="n">combinatorial</span><span class="p">()</span>
+                <span class="p">)</span>
+            <span class="p">]</span>
             <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="n">j</span><span class="p">:</span>
                 <span class="n">r</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
                 <span class="n">r</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
@@ -734,7 +755,9 @@
 <span class="sd">            sage: O.absolute_dimension()  # long time (above), optional: pyflatsurf</span>
 <span class="sd">            6</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">absolute_homology</span><span class="p">()</span><span class="o">.</span><span class="n">matrix</span><span class="p">()</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_U</span><span class="p">[:</span><span class="bp">self</span><span class="o">.</span><span class="n">_U_rank</span><span class="p">]</span><span class="o">.</span><span class="n">transpose</span><span class="p">())</span><span class="o">.</span><span class="n">rank</span><span class="p">()</span></div>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">absolute_homology</span><span class="p">()</span><span class="o">.</span><span class="n">matrix</span><span class="p">()</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_U</span><span class="p">[:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_U_rank</span><span class="p">]</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">rank</span><span class="p">()</span></div>
 
     <span class="k">def</span> <span class="nf">_spanning_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -818,7 +841,7 @@
             <span class="n">i1</span> <span class="o">=</span> <span class="n">f1</span><span class="o">.</span><span class="n">edge</span><span class="p">()</span><span class="o">.</span><span class="n">index</span><span class="p">()</span>
             <span class="n">i2</span> <span class="o">=</span> <span class="n">f2</span><span class="o">.</span><span class="n">edge</span><span class="p">()</span><span class="o">.</span><span class="n">index</span><span class="p">()</span>
             <span class="n">i3</span> <span class="o">=</span> <span class="n">f3</span><span class="o">.</span><span class="n">edge</span><span class="p">()</span><span class="o">.</span><span class="n">index</span><span class="p">()</span>
-            <span class="n">proj</span><span class="p">[</span><span class="n">i1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">s1</span><span class="o">*</span><span class="p">(</span><span class="n">s2</span><span class="o">*</span><span class="n">proj</span><span class="p">[</span><span class="n">i2</span><span class="p">]</span> <span class="o">+</span> <span class="n">s3</span><span class="o">*</span><span class="n">proj</span><span class="p">[</span><span class="n">i3</span><span class="p">])</span>
+            <span class="n">proj</span><span class="p">[</span><span class="n">i1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">s1</span> <span class="o">*</span> <span class="p">(</span><span class="n">s2</span> <span class="o">*</span> <span class="n">proj</span><span class="p">[</span><span class="n">i2</span><span class="p">]</span> <span class="o">+</span> <span class="n">s3</span> <span class="o">*</span> <span class="n">proj</span><span class="p">[</span><span class="n">i3</span><span class="p">])</span>
             <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
                 <span class="k">assert</span> <span class="n">proj</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span>
 
@@ -835,7 +858,7 @@
         <span class="n">all_edges</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">e</span><span class="o">.</span><span class="n">positive</span><span class="p">()</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">spanning_set</span><span class="p">])</span>
         <span class="n">all_edges</span><span class="o">.</span><span class="n">update</span><span class="p">([</span><span class="n">e</span><span class="o">.</span><span class="n">negative</span><span class="p">()</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">spanning_set</span><span class="p">])</span>
         <span class="n">contour</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">contour_inv</span> <span class="o">=</span> <span class="p">{}</span>   <span class="c1"># half edge -&gt; position in contour</span>
+        <span class="n">contour_inv</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># half edge -&gt; position in contour</span>
         <span class="k">while</span> <span class="n">h</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">contour_inv</span><span class="p">:</span>
             <span class="n">contour_inv</span><span class="p">[</span><span class="n">h</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">contour</span><span class="p">)</span>
             <span class="n">contour</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
@@ -857,7 +880,7 @@
                 <span class="n">pi1</span><span class="p">,</span> <span class="n">pi2</span> <span class="o">=</span> <span class="n">pi2</span><span class="p">,</span> <span class="n">pi1</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">si</span> <span class="o">=</span> <span class="mi">1</span>
-            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">spanning_set</span><span class="p">)):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">spanning_set</span><span class="p">)):</span>
                 <span class="n">ej</span> <span class="o">=</span> <span class="n">spanning_set</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
                 <span class="n">pj1</span> <span class="o">=</span> <span class="n">contour_inv</span><span class="p">[</span><span class="n">ej</span><span class="o">.</span><span class="n">positive</span><span class="p">()]</span>
                 <span class="n">pj2</span> <span class="o">=</span> <span class="n">contour_inv</span><span class="p">[</span><span class="n">ej</span><span class="o">.</span><span class="n">negative</span><span class="p">()]</span>
@@ -871,9 +894,12 @@
                 <span class="c1"># pi1 pi2 pj1 pj2: pi2 &lt; pj1</span>
                 <span class="c1"># pi1 pj1 pj2 pi2: pi1 &lt; pj1 and pj2 &lt; pi2</span>
                 <span class="c1"># pj1 pi1 pi2 pj2: pj1 &lt; pi1 and pi2 &lt; pj2</span>
-                <span class="k">if</span> <span class="p">(</span><span class="n">pj2</span> <span class="o">&lt;</span> <span class="n">pi1</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">pi2</span> <span class="o">&lt;</span> <span class="n">pj1</span><span class="p">)</span> <span class="ow">or</span> \
-                   <span class="p">(</span><span class="n">pj1</span> <span class="o">&gt;</span> <span class="n">pi1</span> <span class="ow">and</span> <span class="n">pj2</span> <span class="o">&lt;</span> <span class="n">pi2</span><span class="p">)</span> <span class="ow">or</span> \
-                   <span class="p">(</span><span class="n">pj1</span> <span class="o">&lt;</span> <span class="n">pi1</span> <span class="ow">and</span> <span class="n">pj2</span> <span class="o">&gt;</span> <span class="n">pi2</span><span class="p">):</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="p">(</span><span class="n">pj2</span> <span class="o">&lt;</span> <span class="n">pi1</span><span class="p">)</span>
+                    <span class="ow">or</span> <span class="p">(</span><span class="n">pi2</span> <span class="o">&lt;</span> <span class="n">pj1</span><span class="p">)</span>
+                    <span class="ow">or</span> <span class="p">(</span><span class="n">pj1</span> <span class="o">&gt;</span> <span class="n">pi1</span> <span class="ow">and</span> <span class="n">pj2</span> <span class="o">&lt;</span> <span class="n">pi2</span><span class="p">)</span>
+                    <span class="ow">or</span> <span class="p">(</span><span class="n">pj1</span> <span class="o">&lt;</span> <span class="n">pi1</span> <span class="ow">and</span> <span class="n">pj2</span> <span class="o">&gt;</span> <span class="n">pi2</span><span class="p">)</span>
+                <span class="p">):</span>
                     <span class="c1"># no intersection</span>
                     <span class="k">continue</span>
 
@@ -883,8 +909,8 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="c1"># other sign</span>
                     <span class="k">assert</span> <span class="n">pi1</span> <span class="o">&lt;</span> <span class="n">pj2</span> <span class="o">&lt;</span> <span class="n">pi2</span><span class="p">,</span> <span class="p">(</span><span class="n">pi1</span><span class="p">,</span> <span class="n">pi2</span><span class="p">,</span> <span class="n">pj1</span><span class="p">,</span> <span class="n">pj2</span><span class="p">)</span>
-                    <span class="n">Omega</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">si</span><span class="o">*</span><span class="n">sj</span>
-                <span class="n">Omega</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span> <span class="n">Omega</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+                    <span class="n">Omega</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">si</span> <span class="o">*</span> <span class="n">sj</span>
+                <span class="n">Omega</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">Omega</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">Omega</span>
 
 <div class="viewcode-block" id="GL2ROrbitClosure.boundaries"><a class="viewcode-back" href="../../../geometry/gl2r_orbit_closure.html#flatsurf.geometry.gl2r_orbit_closure.GL2ROrbitClosure.boundaries">[docs]</a>    <span class="k">def</span> <span class="nf">boundaries</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -937,10 +963,13 @@
         <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">V2</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
 
         <span class="kn">from</span> <span class="nn">flatsurf.features</span> <span class="kn">import</span> <span class="n">pyflatsurf_feature</span>
+
         <span class="n">pyflatsurf_feature</span><span class="o">.</span><span class="n">require</span><span class="p">()</span>
         <span class="kn">import</span> <span class="nn">pyflatsurf</span>
 
-        <span class="n">decomposition</span> <span class="o">=</span> <span class="n">pyflatsurf</span><span class="o">.</span><span class="n">flatsurf</span><span class="o">.</span><span class="n">makeFlowDecomposition</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_surface</span><span class="p">,</span> <span class="n">v</span><span class="o">.</span><span class="n">vector</span><span class="p">)</span>
+        <span class="n">decomposition</span> <span class="o">=</span> <span class="n">pyflatsurf</span><span class="o">.</span><span class="n">flatsurf</span><span class="o">.</span><span class="n">makeFlowDecomposition</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_surface</span><span class="p">,</span> <span class="n">v</span><span class="o">.</span><span class="n">vector</span>
+        <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">limit</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">decomposition</span><span class="o">.</span><span class="n">decompose</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">limit</span><span class="p">))</span>
@@ -956,13 +985,16 @@
         <span class="n">slopes</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="kn">from</span> <span class="nn">flatsurf.features</span> <span class="kn">import</span> <span class="n">cppyy_feature</span>
+
         <span class="n">cppyy_feature</span><span class="o">.</span><span class="n">require</span><span class="p">()</span>
         <span class="kn">import</span> <span class="nn">cppyy</span>
 
         <span class="k">for</span> <span class="n">connection</span> <span class="ow">in</span> <span class="n">connections</span><span class="p">:</span>
             <span class="n">direction</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">vector</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">slopes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">slopes</span> <span class="o">=</span> <span class="n">cppyy</span><span class="o">.</span><span class="n">gbl</span><span class="o">.</span><span class="n">std</span><span class="o">.</span><span class="n">set</span><span class="p">[</span><span class="nb">type</span><span class="p">(</span><span class="n">direction</span><span class="p">),</span> <span class="nb">type</span><span class="p">(</span><span class="n">direction</span><span class="p">)</span><span class="o">.</span><span class="n">CompareSlope</span><span class="p">]()</span>
+                <span class="n">slopes</span> <span class="o">=</span> <span class="n">cppyy</span><span class="o">.</span><span class="n">gbl</span><span class="o">.</span><span class="n">std</span><span class="o">.</span><span class="n">set</span><span class="p">[</span>
+                    <span class="nb">type</span><span class="p">(</span><span class="n">direction</span><span class="p">),</span> <span class="nb">type</span><span class="p">(</span><span class="n">direction</span><span class="p">)</span><span class="o">.</span><span class="n">CompareSlope</span>
+                <span class="p">]()</span>
             <span class="k">if</span> <span class="n">slopes</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">direction</span><span class="p">)</span> <span class="o">!=</span> <span class="n">slopes</span><span class="o">.</span><span class="n">end</span><span class="p">():</span>
                 <span class="k">continue</span>
             <span class="n">slopes</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">direction</span><span class="p">)</span>
@@ -1023,7 +1055,9 @@
             <span class="k">return</span> <span class="kc">False</span>
 
         <span class="k">for</span> <span class="n">decomposition</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">decompositions_depth_first</span><span class="p">(</span><span class="n">bound</span><span class="p">,</span> <span class="n">limit</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">decomposition</span><span class="o">.</span><span class="n">parabolic</span><span class="p">()</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>  <span class="c1"># noqa, we are comparing to a boost tribool so this cannot be replaced by &quot;is False&quot;</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="n">decomposition</span><span class="o">.</span><span class="n">parabolic</span><span class="p">()</span> <span class="o">==</span> <span class="kc">False</span>
+            <span class="p">):</span>  <span class="c1"># noqa, we are comparing to a boost tribool so this cannot be replaced by &quot;is False&quot;</span>
                 <span class="k">return</span> <span class="kc">False</span>
 
         <span class="k">return</span> <span class="n">Unknown</span></div>
@@ -1056,7 +1090,9 @@
 <span class="sd">            sage: O.cylinder_circumference(c1, *kz) # optional: pyflatsurf</span>
 <span class="sd">            (0, 0, -1, 0)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">component</span><span class="o">.</span><span class="n">cylinder</span><span class="p">()</span> <span class="o">!=</span> <span class="kc">True</span><span class="p">:</span>  <span class="c1"># noqa, we are comparing to a boost tribool so this cannot be replaced by &quot;is not True&quot;</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">component</span><span class="o">.</span><span class="n">cylinder</span><span class="p">()</span> <span class="o">!=</span> <span class="kc">True</span>
+        <span class="p">):</span>  <span class="c1"># noqa, we are comparing to a boost tribool so this cannot be replaced by &quot;is not True&quot;</span>
             <span class="k">raise</span> <span class="ne">ValueError</span>
 
         <span class="n">perimeters</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">component</span><span class="o">.</span><span class="n">perimeter</span><span class="p">()]</span>
@@ -1066,7 +1102,7 @@
         <span class="n">i</span> <span class="o">=</span> <span class="n">sc_index</span><span class="p">[</span><span class="n">sc</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">s</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
-            <span class="n">i</span> <span class="o">=</span> <span class="o">-</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="o">-</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">s</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="n">v</span> <span class="o">=</span> <span class="n">s</span> <span class="o">*</span> <span class="n">proj</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
@@ -1087,6 +1123,7 @@
 
 <span class="sd">        From A. Wright cylinder deformation Theorem.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="k">def</span> <span class="nf">eliminate_denominators</span><span class="p">(</span><span class="n">fractions</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Given a list of ``fractions``, pairs of numerators `n_i` and</span>
@@ -1098,22 +1135,35 @@
             <span class="k">try</span><span class="p">:</span>
                 <span class="k">return</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">parent</span><span class="p">()(</span><span class="n">x</span> <span class="o">/</span> <span class="n">y</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">fractions</span><span class="p">]</span>
             <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">ArithmeticError</span><span class="p">,</span> <span class="ne">NotImplementedError</span><span class="p">):</span>
-                <span class="n">denominators</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">denominator</span> <span class="k">for</span> <span class="n">numerator</span><span class="p">,</span> <span class="n">denominator</span> <span class="ow">in</span> <span class="n">fractions</span><span class="p">])</span>
-                <span class="k">return</span> <span class="p">[</span><span class="n">numerator</span> <span class="o">*</span> <span class="n">prod</span><span class="p">(</span>
-                    <span class="p">[</span><span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">denominators</span> <span class="k">if</span> <span class="n">denominator</span> <span class="o">!=</span> <span class="n">d</span><span class="p">]</span>
-                <span class="p">)</span> <span class="k">for</span> <span class="p">(</span><span class="n">numerator</span><span class="p">,</span> <span class="n">denominator</span><span class="p">)</span> <span class="ow">in</span> <span class="n">fractions</span><span class="p">]</span>
+                <span class="n">denominators</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span>
+                    <span class="p">[</span><span class="n">denominator</span> <span class="k">for</span> <span class="n">numerator</span><span class="p">,</span> <span class="n">denominator</span> <span class="ow">in</span> <span class="n">fractions</span><span class="p">]</span>
+                <span class="p">)</span>
+                <span class="k">return</span> <span class="p">[</span>
+                    <span class="n">numerator</span> <span class="o">*</span> <span class="n">prod</span><span class="p">([</span><span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">denominators</span> <span class="k">if</span> <span class="n">denominator</span> <span class="o">!=</span> <span class="n">d</span><span class="p">])</span>
+                    <span class="k">for</span> <span class="p">(</span><span class="n">numerator</span><span class="p">,</span> <span class="n">denominator</span><span class="p">)</span> <span class="ow">in</span> <span class="n">fractions</span>
+                <span class="p">]</span>
 
         <span class="n">module_fractions</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">vcyls</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">kz</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">flow_decomposition_kontsevich_zorich_cocycle</span><span class="p">(</span><span class="n">decomposition</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">component</span> <span class="ow">in</span> <span class="n">decomposition</span><span class="o">.</span><span class="n">components</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">component</span><span class="o">.</span><span class="n">cylinder</span><span class="p">()</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>  <span class="c1"># noqa, we are comparing to a boost tribool so this cannot be replaced by &quot;is False&quot;</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="n">component</span><span class="o">.</span><span class="n">cylinder</span><span class="p">()</span> <span class="o">==</span> <span class="kc">False</span>
+            <span class="p">):</span>  <span class="c1"># noqa, we are comparing to a boost tribool so this cannot be replaced by &quot;is False&quot;</span>
                 <span class="k">continue</span>
-            <span class="k">elif</span> <span class="n">component</span><span class="o">.</span><span class="n">cylinder</span><span class="p">()</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>  <span class="c1"># noqa, we are comparing to a boost tribool so this cannot be replaced with &quot;is True&quot;</span>
+            <span class="k">elif</span> <span class="p">(</span>
+                <span class="n">component</span><span class="o">.</span><span class="n">cylinder</span><span class="p">()</span> <span class="o">==</span> <span class="kc">True</span>
+            <span class="p">):</span>  <span class="c1"># noqa, we are comparing to a boost tribool so this cannot be replaced with &quot;is True&quot;</span>
                 <span class="n">vcyls</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cylinder_circumference</span><span class="p">(</span><span class="n">component</span><span class="p">,</span> <span class="o">*</span><span class="n">kz</span><span class="p">))</span>
 
-                <span class="n">width</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">V2</span><span class="o">.</span><span class="n">_isomorphic_vector_space</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()(</span><span class="bp">self</span><span class="o">.</span><span class="n">V2</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()(</span><span class="n">component</span><span class="o">.</span><span class="n">width</span><span class="p">()))</span>
-                <span class="n">height</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">V2</span><span class="o">.</span><span class="n">_isomorphic_vector_space</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()(</span><span class="bp">self</span><span class="o">.</span><span class="n">V2</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()(</span><span class="n">component</span><span class="o">.</span><span class="n">vertical</span><span class="p">()</span><span class="o">.</span><span class="n">project</span><span class="p">(</span><span class="n">component</span><span class="o">.</span><span class="n">circumferenceHolonomy</span><span class="p">())))</span>
+                <span class="n">width</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">V2</span><span class="o">.</span><span class="n">_isomorphic_vector_space</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">V2</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()(</span><span class="n">component</span><span class="o">.</span><span class="n">width</span><span class="p">())</span>
+                <span class="p">)</span>
+                <span class="n">height</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">V2</span><span class="o">.</span><span class="n">_isomorphic_vector_space</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">V2</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()(</span>
+                        <span class="n">component</span><span class="o">.</span><span class="n">vertical</span><span class="p">()</span><span class="o">.</span><span class="n">project</span><span class="p">(</span><span class="n">component</span><span class="o">.</span><span class="n">circumferenceHolonomy</span><span class="p">())</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
                 <span class="n">module_fractions</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">return</span> <span class="p">[]</span>
@@ -1123,11 +1173,18 @@
 
         <span class="n">modules</span> <span class="o">=</span> <span class="n">eliminate_denominators</span><span class="p">(</span><span class="n">module_fractions</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">modules</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;_backend&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">modules</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;_backend&quot;</span><span class="p">):</span>
             <span class="c1"># Make sure all modules live in the same K-Module so that .coefficients() below produces coefficient lists of the same length.</span>
             <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">reduce</span>
-            <span class="n">parent</span> <span class="o">=</span> <span class="n">reduce</span><span class="p">(</span><span class="k">lambda</span> <span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="n">m</span><span class="o">.</span><span class="n">span</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">),</span> <span class="p">[</span><span class="n">module</span><span class="o">.</span><span class="n">_backend</span><span class="o">.</span><span class="n">module</span><span class="p">()</span> <span class="k">for</span> <span class="n">module</span> <span class="ow">in</span> <span class="n">modules</span><span class="p">],</span> <span class="n">modules</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">_backend</span><span class="o">.</span><span class="n">module</span><span class="p">())</span>
-            <span class="n">modules</span> <span class="o">=</span> <span class="p">[</span><span class="n">module</span><span class="o">.</span><span class="n">parent</span><span class="p">()(</span><span class="n">module</span><span class="o">.</span><span class="n">_backend</span><span class="o">.</span><span class="n">promote</span><span class="p">(</span><span class="n">parent</span><span class="p">))</span> <span class="k">for</span> <span class="n">module</span> <span class="ow">in</span> <span class="n">modules</span><span class="p">]</span>
+
+            <span class="n">parent</span> <span class="o">=</span> <span class="n">reduce</span><span class="p">(</span>
+                <span class="k">lambda</span> <span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="n">m</span><span class="o">.</span><span class="n">span</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">),</span>
+                <span class="p">[</span><span class="n">module</span><span class="o">.</span><span class="n">_backend</span><span class="o">.</span><span class="n">module</span><span class="p">()</span> <span class="k">for</span> <span class="n">module</span> <span class="ow">in</span> <span class="n">modules</span><span class="p">],</span>
+                <span class="n">modules</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">_backend</span><span class="o">.</span><span class="n">module</span><span class="p">(),</span>
+            <span class="p">)</span>
+            <span class="n">modules</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">module</span><span class="o">.</span><span class="n">parent</span><span class="p">()(</span><span class="n">module</span><span class="o">.</span><span class="n">_backend</span><span class="o">.</span><span class="n">promote</span><span class="p">(</span><span class="n">parent</span><span class="p">))</span> <span class="k">for</span> <span class="n">module</span> <span class="ow">in</span> <span class="n">modules</span>
+            <span class="p">]</span>
 
         <span class="k">def</span> <span class="nf">to_rational_vector</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -1137,15 +1194,30 @@
 <span class="sd">            &quot;&quot;&quot;</span>
             <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="n">ZZ</span><span class="p">,</span> <span class="n">QQ</span><span class="p">]:</span>
                 <span class="n">ret</span> <span class="o">=</span> <span class="p">[</span><span class="n">QQ</span><span class="p">(</span><span class="n">x</span><span class="p">)]</span>
-            <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s1">&#39;vector&#39;</span><span class="p">):</span>
+            <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s2">&quot;vector&quot;</span><span class="p">):</span>
                 <span class="n">ret</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">vector</span><span class="p">()</span>
-            <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s1">&#39;renf_elem&#39;</span><span class="p">):</span>
+            <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s2">&quot;renf_elem&quot;</span><span class="p">):</span>
                 <span class="n">ret</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">number_field</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">vector</span><span class="p">()</span>
-            <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s1">&#39;_backend&#39;</span><span class="p">):</span>
+            <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s2">&quot;_backend&quot;</span><span class="p">):</span>
                 <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">chain</span>
-                <span class="n">ret</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">chain</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">to_rational_vector</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">V2</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()(</span><span class="bp">self</span><span class="o">.</span><span class="n">V2</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()(</span><span class="n">c</span><span class="p">)))</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">x</span><span class="o">.</span><span class="n">_backend</span><span class="o">.</span><span class="n">coefficients</span><span class="p">()]))</span>
+
+                <span class="n">ret</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
+                    <span class="n">chain</span><span class="p">(</span>
+                        <span class="o">*</span><span class="p">[</span>
+                            <span class="n">to_rational_vector</span><span class="p">(</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">V2</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()(</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">V2</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()(</span><span class="n">c</span><span class="p">)</span>
+                                <span class="p">)</span>
+                            <span class="p">)</span>
+                            <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">x</span><span class="o">.</span><span class="n">_backend</span><span class="o">.</span><span class="n">coefficients</span><span class="p">()</span>
+                        <span class="p">]</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;cannot turn </span><span class="si">%s</span><span class="s2">, i.e., a </span><span class="si">%s</span><span class="s2">, into a rational vector yet&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)))</span>
+                <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+                    <span class="s2">&quot;cannot turn </span><span class="si">%s</span><span class="s2">, i.e., a </span><span class="si">%s</span><span class="s2">, into a rational vector yet&quot;</span>
+                    <span class="o">%</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+                <span class="p">)</span>
 
             <span class="k">assert</span> <span class="nb">all</span><span class="p">(</span><span class="n">y</span> <span class="ow">in</span> <span class="n">QQ</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">ret</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">ret</span>
@@ -1156,9 +1228,18 @@
         <span class="n">relations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_left_kernel_matrix</span><span class="p">(</span><span class="n">M</span><span class="p">)</span>
         <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">vcyls</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">module_fractions</span><span class="p">)</span> <span class="o">==</span> <span class="n">relations</span><span class="o">.</span><span class="n">ncols</span><span class="p">()</span>
 
-        <span class="n">vectors</span> <span class="o">=</span> <span class="p">[</span><span class="nb">sum</span><span class="p">(</span><span class="n">t</span> <span class="o">*</span> <span class="n">vcyl</span> <span class="o">*</span> <span class="n">module</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">vcyl</span><span class="p">,</span> <span class="n">module</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">relation</span><span class="p">,</span> <span class="n">vcyls</span><span class="p">,</span> <span class="n">module_fractions</span><span class="p">))</span> <span class="k">for</span> <span class="n">relation</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_right_kernel_matrix</span><span class="p">(</span><span class="n">relations</span><span class="p">)</span><span class="o">.</span><span class="n">rows</span><span class="p">()]</span>
+        <span class="n">vectors</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="nb">sum</span><span class="p">(</span>
+                <span class="n">t</span> <span class="o">*</span> <span class="n">vcyl</span> <span class="o">*</span> <span class="n">module</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="k">for</span> <span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">vcyl</span><span class="p">,</span> <span class="n">module</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">relation</span><span class="p">,</span> <span class="n">vcyls</span><span class="p">,</span> <span class="n">module_fractions</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">relation</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_right_kernel_matrix</span><span class="p">(</span><span class="n">relations</span><span class="p">)</span><span class="o">.</span><span class="n">rows</span><span class="p">()</span>
+        <span class="p">]</span>
 
-        <span class="k">assert</span> <span class="nb">all</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span> <span class="ow">is</span> <span class="bp">self</span><span class="o">.</span><span class="n">V2</span><span class="o">.</span><span class="n">_isomorphic_vector_space</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">vectors</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">all</span><span class="p">(</span>
+            <span class="n">v</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span> <span class="ow">is</span> <span class="bp">self</span><span class="o">.</span><span class="n">V2</span><span class="o">.</span><span class="n">_isomorphic_vector_space</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">vectors</span>
+        <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">vectors</span></div>
 
@@ -1214,7 +1295,7 @@
             <span class="n">i1</span> <span class="o">=</span> <span class="n">sc_index</span><span class="p">[</span><span class="n">sc1</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">i1</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="n">s1</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
-                <span class="n">i1</span> <span class="o">=</span> <span class="o">-</span><span class="n">i1</span><span class="o">-</span><span class="mi">1</span>
+                <span class="n">i1</span> <span class="o">=</span> <span class="o">-</span><span class="n">i1</span> <span class="o">-</span> <span class="mi">1</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">s1</span> <span class="o">=</span> <span class="mi">1</span>
             <span class="n">comp</span> <span class="o">=</span> <span class="n">components</span><span class="p">[</span><span class="n">sc_comp</span><span class="p">[</span><span class="n">sc1</span><span class="p">]]</span>
@@ -1226,10 +1307,10 @@
                 <span class="n">j</span> <span class="o">=</span> <span class="n">sc_index</span><span class="p">[</span><span class="n">sc</span><span class="p">]</span>
                 <span class="k">if</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="n">s</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
-                    <span class="n">j</span> <span class="o">=</span> <span class="o">-</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span>
+                    <span class="n">j</span> <span class="o">=</span> <span class="o">-</span><span class="n">j</span> <span class="o">-</span> <span class="mi">1</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">s</span> <span class="o">=</span> <span class="mi">1</span>
-                <span class="n">proj</span><span class="p">[</span><span class="n">i1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span> <span class="n">s1</span> <span class="o">*</span> <span class="n">s</span> <span class="o">*</span> <span class="n">proj</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+                <span class="n">proj</span><span class="p">[</span><span class="n">i1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">s1</span> <span class="o">*</span> <span class="n">s</span> <span class="o">*</span> <span class="n">proj</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
 
             <span class="n">spanning_set</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">i1</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
@@ -1281,8 +1362,12 @@
 <span class="sd">            [ 1  0]</span>
 <span class="sd">            [-2  1]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">sc_pos</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># list of positive boundary saddle connections (store only one orientation for each)</span>
-        <span class="n">sc_index</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># inverse of sc_pos (and also reverse orientation with negative index)</span>
+        <span class="n">sc_pos</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">[]</span>
+        <span class="p">)</span>  <span class="c1"># list of positive boundary saddle connections (store only one orientation for each)</span>
+        <span class="n">sc_index</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">{}</span>
+        <span class="p">)</span>  <span class="c1"># inverse of sc_pos (and also reverse orientation with negative index)</span>
         <span class="n">sc_comp</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">n_saddles</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">components</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">decomposition</span><span class="o">.</span><span class="n">components</span><span class="p">())</span>
@@ -1294,10 +1379,12 @@
                 <span class="k">if</span> <span class="n">sc</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sc_index</span><span class="p">:</span>
                     <span class="n">sc_index</span><span class="p">[</span><span class="n">sc</span><span class="p">]</span> <span class="o">=</span> <span class="n">n_saddles</span>
                     <span class="n">sc_pos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sc</span><span class="p">)</span>
-                    <span class="n">sc_index</span><span class="p">[</span><span class="o">-</span><span class="n">sc</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">n_saddles</span><span class="o">-</span><span class="mi">1</span>
+                    <span class="n">sc_index</span><span class="p">[</span><span class="o">-</span><span class="n">sc</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">n_saddles</span> <span class="o">-</span> <span class="mi">1</span>
                     <span class="n">n_saddles</span> <span class="o">+=</span> <span class="mi">1</span>
 
-        <span class="n">t</span><span class="p">,</span> <span class="n">spanning_set</span><span class="p">,</span> <span class="n">proj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_flow_decomposition_spanning_tree</span><span class="p">(</span><span class="n">decomposition</span><span class="p">,</span> <span class="n">sc_index</span><span class="p">,</span> <span class="n">sc_comp</span><span class="p">)</span>
+        <span class="n">t</span><span class="p">,</span> <span class="n">spanning_set</span><span class="p">,</span> <span class="n">proj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_flow_decomposition_spanning_tree</span><span class="p">(</span>
+            <span class="n">decomposition</span><span class="p">,</span> <span class="n">sc_index</span><span class="p">,</span> <span class="n">sc_comp</span>
+        <span class="p">)</span>
         <span class="k">assert</span> <span class="n">proj</span><span class="o">.</span><span class="n">rank</span><span class="p">()</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">spanning_set</span><span class="p">)</span> <span class="o">==</span> <span class="n">n_saddles</span> <span class="o">-</span> <span class="n">n_components</span> <span class="o">+</span> <span class="mi">1</span>
         <span class="n">proj</span> <span class="o">=</span> <span class="n">proj</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
         <span class="n">proj</span> <span class="o">=</span> <span class="n">matrix</span><span class="p">(</span><span class="n">ZZ</span><span class="p">,</span> <span class="p">[</span><span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">proj</span><span class="o">.</span><span class="n">rows</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">r</span><span class="o">.</span><span class="n">is_zero</span><span class="p">()])</span>
@@ -1372,7 +1459,9 @@
         <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_p</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">try</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_Ubar</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_U</span><span class="o">.</span><span class="n">apply_map</span><span class="p">(</span><span class="n">phi</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="o">.</span><span class="n">reduce</span><span class="p">,</span> <span class="n">R</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="o">.</span><span class="n">residue_field</span><span class="p">())</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_Ubar</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_U</span><span class="o">.</span><span class="n">apply_map</span><span class="p">(</span>
+                        <span class="n">phi</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="o">.</span><span class="n">reduce</span><span class="p">,</span> <span class="n">R</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="o">.</span><span class="n">residue_field</span><span class="p">()</span>
+                    <span class="p">)</span>
                     <span class="k">break</span>
                 <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
                     <span class="c1"># The matrix _U cannot be reduced mod p because some entries have negative valuation.</span>
@@ -1381,6 +1470,7 @@
             <span class="n">p</span> <span class="o">=</span> <span class="mi">2</span><span class="o">**</span><span class="mi">30</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_p</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="o">.</span><span class="n">p</span><span class="p">()</span>
 
             <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">next_prime</span>
+
             <span class="bp">self</span><span class="o">.</span><span class="n">_p</span> <span class="o">=</span> <span class="n">ZZ</span><span class="o">.</span><span class="n">valuation</span><span class="p">(</span><span class="n">next_prime</span><span class="p">(</span><span class="n">p</span><span class="p">))</span><span class="o">.</span><span class="n">extensions</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_U</span><span class="o">.</span><span class="n">base_ring</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_Ubar</span><span class="o">.</span><span class="n">rank</span><span class="p">()</span>
@@ -1477,7 +1567,12 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span> <span class="nn">flatsurf.geometry.pyflatsurf_conversion</span> <span class="kn">import</span> <span class="n">from_pyflatsurf</span>
-        <span class="k">return</span> <span class="p">(</span><span class="n">GL2ROrbitClosure</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_surface</span><span class="p">,),</span> <span class="p">{</span><span class="s1">&#39;_U&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_U</span><span class="p">,</span> <span class="s1">&#39;_U_rank&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_U_rank</span><span class="p">})</span>
+
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="n">GL2ROrbitClosure</span><span class="p">,</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_surface</span><span class="p">,),</span>
+            <span class="p">{</span><span class="s2">&quot;_U&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_U</span><span class="p">,</span> <span class="s2">&quot;_U_rank&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_U_rank</span><span class="p">},</span>
+        <span class="p">)</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_right_kernel_matrix</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">M</span><span class="p">):</span>
@@ -1500,17 +1595,17 @@
         <span class="n">height</span> <span class="o">=</span> <span class="n">M</span><span class="o">.</span><span class="n">height</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="n">height</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="o">**</span><span class="mi">256</span><span class="p">:</span>
-            <span class="n">algorithm</span> <span class="o">=</span> <span class="s1">&#39;flint&#39;</span>
+            <span class="n">algorithm</span> <span class="o">=</span> <span class="s2">&quot;flint&quot;</span>
         <span class="k">elif</span> <span class="n">columns</span> <span class="o">&gt;=</span> <span class="mi">64</span> <span class="ow">and</span> <span class="n">rows</span> <span class="o">&gt;=</span> <span class="mi">64</span><span class="p">:</span>
-            <span class="n">algorithm</span> <span class="o">=</span> <span class="s1">&#39;padic&#39;</span>
+            <span class="n">algorithm</span> <span class="o">=</span> <span class="s2">&quot;padic&quot;</span>
         <span class="k">elif</span> <span class="n">rows</span> <span class="o">*</span> <span class="n">columns</span> <span class="o">&lt;=</span> <span class="mi">32</span><span class="p">:</span>
-            <span class="n">algorithm</span> <span class="o">=</span> <span class="s1">&#39;flint&#39;</span>
+            <span class="n">algorithm</span> <span class="o">=</span> <span class="s2">&quot;flint&quot;</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">algorithm</span> <span class="o">=</span> <span class="s1">&#39;pari&#39;</span>
+            <span class="n">algorithm</span> <span class="o">=</span> <span class="s2">&quot;pari&quot;</span>
 
-        <span class="k">if</span> <span class="n">algorithm</span> <span class="o">==</span> <span class="s1">&#39;pari&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">algorithm</span> <span class="o">==</span> <span class="s2">&quot;pari&quot;</span><span class="p">:</span>
             <span class="n">ker</span> <span class="o">=</span> <span class="n">M</span><span class="o">.</span><span class="n">__pari__</span><span class="p">()</span><span class="o">.</span><span class="n">matker</span><span class="p">()</span><span class="o">.</span><span class="n">mattranspose</span><span class="p">()</span><span class="o">.</span><span class="n">sage</span><span class="p">()</span>
-        <span class="k">elif</span> <span class="n">algorithm</span> <span class="o">==</span> <span class="s1">&#39;flint&#39;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">algorithm</span> <span class="o">==</span> <span class="s2">&quot;flint&quot;</span><span class="p">:</span>
             <span class="n">ker</span> <span class="o">=</span> <span class="n">M</span><span class="o">.</span><span class="n">_rational_kernel_flint</span><span class="p">()</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">ker</span> <span class="o">=</span> <span class="n">M</span><span class="o">.</span><span class="n">_rational_kernel_iml</span><span class="p">()</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>

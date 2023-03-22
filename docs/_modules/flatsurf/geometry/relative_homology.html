@@ -258,9 +258,9 @@
         <article role="main">
           <h1>Source code for flatsurf.geometry.relative_homology</h1><div class="highlight"><pre>
 <span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">This module contains a lazy implementation of a relative homology, </span>
+<span class="sd">This module contains a lazy implementation of a relative homology,</span>
 <span class="sd">$H_1(S,\Sigma; R)$, where $S$ is a similarity surface, $\Sigma$ is the singularities</span>
-<span class="sd">or vertices, and $R$ is a ring. </span>
+<span class="sd">or vertices, and $R$ is a ring.</span>
 
 <span class="sd">This implementation works for finite or infinite surfaces. For infinite surfaces,</span>
 <span class="sd">we define relative homology formally. It is simply $R^E$ where $E$ is the edge set</span>
@@ -287,50 +287,52 @@
     <span class="c1"># By convention a pair will be in the dictionary only if its image is non-zero.</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Do not call directly!&quot;&quot;&quot;</span>
-        <span class="c1"># This should be a dict </span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="nb">dict</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;RelativeHomologyClass.__init__ must be passed a dictionary.&quot;</span><span class="p">)</span>
+        <span class="c1"># This should be a dict</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;RelativeHomologyClass.__init__ must be passed a dictionary.&quot;</span>
+            <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_d</span> <span class="o">=</span> <span class="n">d</span>
         <span class="n">ModuleElement</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_rmul_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">c</span><span class="o">==</span><span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span><span class="o">.</span><span class="n">zero</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">c</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span><span class="o">.</span><span class="n">zero</span><span class="p">():</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">zero</span><span class="p">()</span>
-        <span class="n">d</span><span class="o">=</span><span class="nb">dict</span><span class="p">()</span>
-        <span class="n">r</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_d</span><span class="p">):</span>
-            <span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">=</span><span class="n">r</span><span class="p">(</span><span class="n">c</span><span class="o">*</span><span class="n">v</span><span class="p">)</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_d</span><span class="p">):</span>
+            <span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span><span class="p">(</span><span class="n">c</span> <span class="o">*</span> <span class="n">v</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">_element_from_dict</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_add_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-        <span class="n">d</span><span class="o">=</span><span class="nb">dict</span><span class="p">()</span>
-        <span class="n">r</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_d</span><span class="p">):</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_d</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">other</span><span class="o">.</span><span class="n">_d</span><span class="p">:</span>
                 <span class="n">total</span> <span class="o">=</span> <span class="n">v</span> <span class="o">+</span> <span class="n">other</span><span class="o">.</span><span class="n">_d</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
                 <span class="k">if</span> <span class="n">total</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span><span class="o">.</span><span class="n">zero</span><span class="p">():</span>
                     <span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span><span class="p">(</span><span class="n">total</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">=</span><span class="n">r</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">_d</span><span class="p">):</span>
+                <span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">_d</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_d</span><span class="p">:</span>
-                <span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">=</span><span class="n">r</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+                <span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">_element_from_dict</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
-    
+
     <span class="k">def</span> <span class="nf">_neg_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rmul_</span><span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span><span class="o">.</span><span class="n">one</span><span class="p">())</span>
-        
+
     <span class="k">def</span> <span class="nf">__cmp__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="c1"># Construct a set of keys</span>
-        <span class="n">s</span><span class="o">=</span><span class="nb">set</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_d</span><span class="p">):</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_d</span><span class="p">):</span>
             <span class="n">s</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">_d</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">_d</span><span class="p">):</span>
             <span class="n">s</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
         <span class="n">zero</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span><span class="o">.</span><span class="n">zero</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">s</span><span class="p">:</span>
-            <span class="n">c</span><span class="o">=</span><span class="n">cmp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="n">zero</span><span class="p">),</span> <span class="n">other</span><span class="o">.</span><span class="n">_d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="n">zero</span><span class="p">))</span>
-            <span class="k">if</span> <span class="n">c</span><span class="o">!=</span><span class="mi">0</span><span class="p">:</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="n">cmp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">zero</span><span class="p">),</span> <span class="n">other</span><span class="o">.</span><span class="n">_d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">zero</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">c</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">c</span>
         <span class="k">return</span> <span class="mi">0</span>
 
@@ -342,93 +344,97 @@
 
 <div class="viewcode-block" id="RelativeHomologyClass.weight"><a class="viewcode-back" href="../../../geometry/relative_homology.html#flatsurf.geometry.relative_homology.RelativeHomologyClass.weight">[docs]</a>    <span class="k">def</span> <span class="nf">weight</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the weight of the indexed edge.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span> <span class="p">(</span><span class="n">label</span><span class="p">,</span><span class="n">e</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span><span class="o">.</span><span class="n">zero</span><span class="p">()</span> <span class="p">)</span></div>
-        
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_d</span><span class="o">.</span><span class="n">get</span><span class="p">((</span><span class="n">label</span><span class="p">,</span> <span class="n">e</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span><span class="o">.</span><span class="n">zero</span><span class="p">())</span></div>
+
 <div class="viewcode-block" id="RelativeHomologyClass.weighted_edges"><a class="viewcode-back" href="../../../geometry/relative_homology.html#flatsurf.geometry.relative_homology.RelativeHomologyClass.weighted_edges">[docs]</a>    <span class="k">def</span> <span class="nf">weighted_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the set of pairs (label,e) representing edges with non-zero weights.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_d</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span></div>
-    
+
 <div class="viewcode-block" id="RelativeHomologyClass.edges_with_weights"><a class="viewcode-back" href="../../../geometry/relative_homology.html#flatsurf.geometry.relative_homology.RelativeHomologyClass.edges_with_weights">[docs]</a>    <span class="k">def</span> <span class="nf">edges_with_weights</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns a list of items of the form ((label,e),w) where (label,e) </span>
+<span class="sd">        Returns a list of items of the form ((label,e),w) where (label,e)</span>
 <span class="sd">        represents and edge and w represents the non-zero weight assigned.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_d</span><span class="o">.</span><span class="n">items</span><span class="p">()</span></div></div>
 
+
 <div class="viewcode-block" id="RelativeHomology"><a class="viewcode-back" href="../../../geometry/relative_homology.html#flatsurf.geometry.relative_homology.RelativeHomology">[docs]</a><span class="k">class</span> <span class="nc">RelativeHomology</span><span class="p">(</span><span class="n">Module</span><span class="p">):</span>
     <span class="n">Element</span> <span class="o">=</span> <span class="n">RelativeHomologyClass</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">surface</span><span class="p">,</span> <span class="n">base_ring</span><span class="o">=</span><span class="n">ZZ</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_base_ring</span><span class="o">=</span><span class="n">base_ring</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">surface</span><span class="p">,</span><span class="n">SimilaritySurface</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;RelativeHomology only defined for SimilaritySurfaces (and better).&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">=</span><span class="n">surface</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_cached_edges</span><span class="o">=</span><span class="nb">dict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_base_ring</span> <span class="o">=</span> <span class="n">base_ring</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">surface</span><span class="p">,</span> <span class="n">SimilaritySurface</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;RelativeHomology only defined for SimilaritySurfaces (and better).&quot;</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_s</span> <span class="o">=</span> <span class="n">surface</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cached_edges</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
         <span class="n">Module</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_ring</span><span class="p">)</span>
-        
+
 <div class="viewcode-block" id="RelativeHomology.base_ring"><a class="viewcode-back" href="../../../geometry/relative_homology.html#flatsurf.geometry.relative_homology.RelativeHomology.base_ring">[docs]</a>    <span class="k">def</span> <span class="nf">base_ring</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_base_ring</span></div>
 
-    <span class="k">def</span> <span class="nf">_element_from_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">d</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_element_from_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">element_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_element_constructor_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">instanceof</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">RelativeHomologyClass</span><span class="p">):</span>
-            <span class="n">d</span><span class="o">=</span><span class="nb">dict</span><span class="p">()</span>
-            <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">_d</span><span class="p">):</span>
-                <span class="n">v2</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_base_ring</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">v2</span><span class="o">!=</span><span class="bp">self</span><span class="o">.</span><span class="n">_base_ring</span><span class="o">.</span><span class="n">zero</span><span class="p">():</span>
-                    <span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">=</span><span class="n">v2</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">_d</span><span class="p">):</span>
+                <span class="n">v2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_base_ring</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">v2</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_base_ring</span><span class="o">.</span><span class="n">zero</span><span class="p">():</span>
+                    <span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v2</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">element_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
 
 <div class="viewcode-block" id="RelativeHomology.zero"><a class="viewcode-back" href="../../../geometry/relative_homology.html#flatsurf.geometry.relative_homology.RelativeHomology.zero">[docs]</a>    <span class="k">def</span> <span class="nf">zero</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">element_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">dict</span><span class="p">())</span></div>
 
     <span class="k">def</span> <span class="nf">__cmp__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">RelativeHomology</span><span class="p">):</span> 
-            <span class="k">return</span> <span class="n">cmp</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">other</span><span class="p">),</span><span class="n">RelativeHomology</span><span class="p">)</span>
-        <span class="n">c</span> <span class="o">=</span> <span class="n">cmp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span><span class="n">other</span><span class="o">.</span><span class="n">base_ring</span><span class="p">())</span>
-        <span class="k">if</span> <span class="n">c</span><span class="o">!=</span><span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">RelativeHomology</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">cmp</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">other</span><span class="p">),</span> <span class="n">RelativeHomology</span><span class="p">)</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">cmp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span> <span class="n">other</span><span class="o">.</span><span class="n">base_ring</span><span class="p">())</span>
+        <span class="k">if</span> <span class="n">c</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">c</span>
         <span class="k">return</span> <span class="n">cmp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">_s</span><span class="p">)</span>
 
-<div class="viewcode-block" id="RelativeHomology.edge"><a class="viewcode-back" href="../../../geometry/relative_homology.html#flatsurf.geometry.relative_homology.RelativeHomology.edge">[docs]</a>    <span class="k">def</span> <span class="nf">edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">label</span><span class="p">,</span><span class="n">e</span><span class="p">):</span>
+<div class="viewcode-block" id="RelativeHomology.edge"><a class="viewcode-back" href="../../../geometry/relative_homology.html#flatsurf.geometry.relative_homology.RelativeHomology.edge">[docs]</a>    <span class="k">def</span> <span class="nf">edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the homology class of the edge with the provided polygon label</span>
 <span class="sd">        and edge index oriented counter-clockwise around the polygon.&quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="c1"># If already cached, return the cached copy.</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cached_edges</span><span class="p">[(</span><span class="n">label</span><span class="p">,</span><span class="n">e</span><span class="p">)]</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cached_edges</span><span class="p">[(</span><span class="n">label</span><span class="p">,</span> <span class="n">e</span><span class="p">)]</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
             <span class="c1"># not cached!</span>
             <span class="n">num_edges</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()</span>
             <span class="c1"># Check to see if all other edges of the polygon are cached.</span>
             <span class="n">has_all_others</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">num_edges</span><span class="p">):</span>
-                <span class="n">e2</span><span class="o">=</span><span class="p">(</span><span class="n">e</span><span class="o">+</span><span class="n">i</span><span class="p">)</span><span class="o">%</span><span class="n">num_edges</span>
-                <span class="k">if</span> <span class="p">(</span><span class="n">label</span><span class="p">,</span><span class="n">e2</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cached_edges</span><span class="p">:</span>
-                    <span class="n">has_all_others</span><span class="o">=</span><span class="kc">False</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">num_edges</span><span class="p">):</span>
+                <span class="n">e2</span> <span class="o">=</span> <span class="p">(</span><span class="n">e</span> <span class="o">+</span> <span class="n">i</span><span class="p">)</span> <span class="o">%</span> <span class="n">num_edges</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">e2</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cached_edges</span><span class="p">:</span>
+                    <span class="n">has_all_others</span> <span class="o">=</span> <span class="kc">False</span>
                     <span class="k">break</span>
             <span class="k">if</span> <span class="n">has_all_others</span><span class="p">:</span>
                 <span class="c1"># If all the other edges in the polygon are cached then we</span>
                 <span class="c1"># know this edge&#39;s homology class is the negation of their sum.</span>
-                <span class="n">e2</span><span class="o">=</span><span class="p">(</span><span class="n">e</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">%</span><span class="n">num_edges</span>
-                <span class="n">total</span> <span class="o">=</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">_cached_edges</span><span class="p">[(</span><span class="n">label</span><span class="p">,</span><span class="n">e2</span><span class="p">)]</span>
-                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="n">num_edges</span><span class="p">):</span>
-                    <span class="n">e2</span><span class="o">=</span><span class="p">(</span><span class="n">e</span><span class="o">+</span><span class="n">i</span><span class="p">)</span><span class="o">%</span><span class="n">num_edges</span>
-                    <span class="n">total</span> <span class="o">-=</span>  <span class="bp">self</span><span class="o">.</span><span class="n">_cached_edges</span><span class="p">[(</span><span class="n">label</span><span class="p">,</span><span class="n">e2</span><span class="p">)]</span>
+                <span class="n">e2</span> <span class="o">=</span> <span class="p">(</span><span class="n">e</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="n">num_edges</span>
+                <span class="n">total</span> <span class="o">=</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">_cached_edges</span><span class="p">[(</span><span class="n">label</span><span class="p">,</span> <span class="n">e2</span><span class="p">)]</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">num_edges</span><span class="p">):</span>
+                    <span class="n">e2</span> <span class="o">=</span> <span class="p">(</span><span class="n">e</span> <span class="o">+</span> <span class="n">i</span><span class="p">)</span> <span class="o">%</span> <span class="n">num_edges</span>
+                    <span class="n">total</span> <span class="o">-=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cached_edges</span><span class="p">[(</span><span class="n">label</span><span class="p">,</span> <span class="n">e2</span><span class="p">)]</span>
                 <span class="c1"># Cache this edge&#39;s value and the opposite edge&#39;s value.</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_cached_edges</span><span class="p">[(</span><span class="n">label</span><span class="p">,</span><span class="n">e</span><span class="p">)]</span> <span class="o">=</span> <span class="n">total</span>
-                <span class="n">label2</span><span class="p">,</span><span class="n">e2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">label</span><span class="p">,</span><span class="n">e</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_cached_edges</span><span class="p">[(</span><span class="n">label2</span><span class="p">,</span><span class="n">e2</span><span class="p">)]</span> <span class="o">=</span> <span class="o">-</span><span class="n">total</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_cached_edges</span><span class="p">[(</span><span class="n">label</span><span class="p">,</span> <span class="n">e</span><span class="p">)]</span> <span class="o">=</span> <span class="n">total</span>
+                <span class="n">label2</span><span class="p">,</span> <span class="n">e2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_cached_edges</span><span class="p">[(</span><span class="n">label2</span><span class="p">,</span> <span class="n">e2</span><span class="p">)]</span> <span class="o">=</span> <span class="o">-</span><span class="n">total</span>
                 <span class="k">return</span> <span class="n">total</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># At least one other edge is not cached, so we can think of</span>
                 <span class="c1"># the current edge as a generator.</span>
                 <span class="n">d</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
-                <span class="n">d</span><span class="p">[(</span><span class="n">label</span><span class="p">,</span><span class="n">e</span><span class="p">)]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_base_ring</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
+                <span class="n">d</span><span class="p">[(</span><span class="n">label</span><span class="p">,</span> <span class="n">e</span><span class="p">)]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_base_ring</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
                 <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_element_from_dict</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
                 <span class="c1"># Cache this edge&#39;s value and the opposite edge&#39;s value.</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_cached_edges</span><span class="p">[(</span><span class="n">label</span><span class="p">,</span><span class="n">e</span><span class="p">)]</span> <span class="o">=</span> <span class="n">v</span>
-                <span class="n">label2</span><span class="p">,</span><span class="n">e2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">label</span><span class="p">,</span><span class="n">e</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_cached_edges</span><span class="p">[(</span><span class="n">label2</span><span class="p">,</span><span class="n">e2</span><span class="p">)]</span> <span class="o">=</span> <span class="o">-</span><span class="n">v</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_cached_edges</span><span class="p">[(</span><span class="n">label</span><span class="p">,</span> <span class="n">e</span><span class="p">)]</span> <span class="o">=</span> <span class="n">v</span>
+                <span class="n">label2</span><span class="p">,</span> <span class="n">e2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_cached_edges</span><span class="p">[(</span><span class="n">label2</span><span class="p">,</span> <span class="n">e2</span><span class="p">)]</span> <span class="o">=</span> <span class="o">-</span><span class="n">v</span>
                 <span class="k">return</span> <span class="n">v</span></div></div>
 </pre></div>
         </article>

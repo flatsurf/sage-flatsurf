@@ -299,13 +299,13 @@
     <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">vp</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
 
     <span class="k">assert</span> <span class="n">n</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="n">n</span>
-    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">fp</span><span class="p">)</span> <span class="o">==</span> <span class="n">n</span><span class="o">+</span><span class="mi">1</span>
-    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">vec</span><span class="p">)</span> <span class="o">==</span> <span class="n">n</span><span class="o">//</span><span class="mi">2</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">fp</span><span class="p">)</span> <span class="o">==</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">vec</span><span class="p">)</span> <span class="o">==</span> <span class="n">n</span> <span class="o">//</span> <span class="mi">2</span>
 
     <span class="k">assert</span> <span class="n">vp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span>
     <span class="k">assert</span> <span class="n">fp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span>
 
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="o">//</span><span class="mi">2</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span> <span class="o">//</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
         <span class="c1"># check fp/vp consistency</span>
         <span class="k">assert</span> <span class="n">fp</span><span class="p">[</span><span class="o">-</span><span class="n">vp</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">==</span> <span class="n">i</span><span class="p">,</span> <span class="n">i</span>
 
@@ -313,9 +313,9 @@
         <span class="n">j</span> <span class="o">=</span> <span class="n">fp</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
         <span class="n">k</span> <span class="o">=</span> <span class="n">fp</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
         <span class="k">assert</span> <span class="n">i</span> <span class="o">!=</span> <span class="n">j</span> <span class="ow">and</span> <span class="n">i</span> <span class="o">!=</span> <span class="n">k</span> <span class="ow">and</span> <span class="n">fp</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">==</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
-        <span class="n">vi</span> <span class="o">=</span> <span class="n">vec</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="mi">1</span> <span class="k">else</span> <span class="o">-</span><span class="n">vec</span><span class="p">[</span><span class="o">-</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-        <span class="n">vj</span> <span class="o">=</span> <span class="n">vec</span><span class="p">[</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">j</span> <span class="o">&gt;=</span> <span class="mi">1</span> <span class="k">else</span> <span class="o">-</span><span class="n">vec</span><span class="p">[</span><span class="o">-</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-        <span class="n">vk</span> <span class="o">=</span> <span class="n">vec</span><span class="p">[</span><span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">k</span> <span class="o">&gt;=</span> <span class="mi">1</span> <span class="k">else</span> <span class="o">-</span><span class="n">vec</span><span class="p">[</span><span class="o">-</span><span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">vi</span> <span class="o">=</span> <span class="n">vec</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="mi">1</span> <span class="k">else</span> <span class="o">-</span><span class="n">vec</span><span class="p">[</span><span class="o">-</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="n">vj</span> <span class="o">=</span> <span class="n">vec</span><span class="p">[</span><span class="n">j</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">j</span> <span class="o">&gt;=</span> <span class="mi">1</span> <span class="k">else</span> <span class="o">-</span><span class="n">vec</span><span class="p">[</span><span class="o">-</span><span class="n">j</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="n">vk</span> <span class="o">=</span> <span class="n">vec</span><span class="p">[</span><span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">k</span> <span class="o">&gt;=</span> <span class="mi">1</span> <span class="k">else</span> <span class="o">-</span><span class="n">vec</span><span class="p">[</span><span class="o">-</span><span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
         <span class="n">v</span> <span class="o">=</span> <span class="n">vi</span> <span class="o">+</span> <span class="n">vj</span> <span class="o">+</span> <span class="n">vk</span>
         <span class="k">assert</span> <span class="n">v</span><span class="o">.</span><span class="n">x</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="n">v</span><span class="o">.</span><span class="n">x</span><span class="p">()</span>
         <span class="k">assert</span> <span class="n">v</span><span class="o">.</span><span class="n">y</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="n">v</span><span class="o">.</span><span class="n">y</span><span class="p">()</span>
@@ -325,8 +325,8 @@
     <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
     <span class="k">assert</span> <span class="n">n</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span>
     <span class="n">cycles</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">unseen</span> <span class="o">=</span> <span class="p">[</span><span class="kc">True</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="o">-</span><span class="n">n</span><span class="o">//</span><span class="mi">2</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="o">//</span><span class="mi">2</span><span class="p">)):</span>
+    <span class="n">unseen</span> <span class="o">=</span> <span class="p">[</span><span class="kc">True</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="o">-</span><span class="n">n</span> <span class="o">//</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)):</span>
         <span class="k">if</span> <span class="n">unseen</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
             <span class="n">j</span> <span class="o">=</span> <span class="n">i</span>
             <span class="n">cycle</span> <span class="o">=</span> <span class="p">[]</span>
@@ -344,6 +344,7 @@
 <span class="sd">    flatsurf::FlatTriangulation from libflatsurf/pyflatsurf.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span> <span class="nn">flatsurf.geometry.translation_surface</span> <span class="kn">import</span> <span class="n">TranslationSurface</span>
+
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">TranslationSurface</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;S must be a translation surface&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">S</span><span class="o">.</span><span class="n">is_finite</span><span class="p">():</span>
@@ -353,9 +354,9 @@
 
     <span class="c1"># populate half edges and vectors</span>
     <span class="n">n</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">S</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">lab</span><span class="p">)</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()</span> <span class="k">for</span> <span class="n">lab</span> <span class="ow">in</span> <span class="n">S</span><span class="o">.</span><span class="n">label_iterator</span><span class="p">())</span>
-    <span class="n">half_edge_labels</span> <span class="o">=</span> <span class="p">{}</span>   <span class="c1"># map: (face lab, edge num) in faltsurf -&gt; integer</span>
-    <span class="n">vec</span> <span class="o">=</span> <span class="p">[]</span>                <span class="c1"># vectors</span>
-    <span class="n">k</span> <span class="o">=</span> <span class="mi">1</span>                   <span class="c1"># half edge label in {1, ..., n}</span>
+    <span class="n">half_edge_labels</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># map: (face lab, edge num) in faltsurf -&gt; integer</span>
+    <span class="n">vec</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># vectors</span>
+    <span class="n">k</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># half edge label in {1, ..., n}</span>
     <span class="k">for</span> <span class="n">t0</span><span class="p">,</span> <span class="n">t1</span> <span class="ow">in</span> <span class="n">S</span><span class="o">.</span><span class="n">edge_iterator</span><span class="p">(</span><span class="n">gluings</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">t0</span> <span class="ow">in</span> <span class="n">half_edge_labels</span><span class="p">:</span>
             <span class="k">continue</span>
@@ -370,8 +371,8 @@
         <span class="n">k</span> <span class="o">+=</span> <span class="mi">1</span>
 
     <span class="c1"># compute vertex and face permutations</span>
-    <span class="n">vp</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># vertex permutation</span>
-    <span class="n">fp</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># face permutation</span>
+    <span class="n">vp</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># vertex permutation</span>
+    <span class="n">fp</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># face permutation</span>
     <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">S</span><span class="o">.</span><span class="n">edge_iterator</span><span class="p">(</span><span class="n">gluings</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="n">e</span> <span class="o">=</span> <span class="n">half_edge_labels</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
         <span class="n">j</span> <span class="o">=</span> <span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="n">S</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()</span>
@@ -386,9 +387,13 @@
     <span class="k">if</span> <span class="n">base_ring</span> <span class="ow">is</span> <span class="n">AA</span><span class="p">:</span>
         <span class="kn">from</span> <span class="nn">sage.rings.qqbar</span> <span class="kn">import</span> <span class="n">number_field_elements_from_algebraics</span>
         <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">chain</span>
-        <span class="n">base_ring</span> <span class="o">=</span> <span class="n">number_field_elements_from_algebraics</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">chain</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">vec</span><span class="p">])),</span> <span class="n">embedded</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">base_ring</span> <span class="o">=</span> <span class="n">number_field_elements_from_algebraics</span><span class="p">(</span>
+            <span class="nb">list</span><span class="p">(</span><span class="n">chain</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">vec</span><span class="p">])),</span> <span class="n">embedded</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 
     <span class="kn">from</span> <span class="nn">flatsurf.features</span> <span class="kn">import</span> <span class="n">pyflatsurf_feature</span>
+
     <span class="n">pyflatsurf_feature</span><span class="o">.</span><span class="n">require</span><span class="p">()</span>
     <span class="kn">from</span> <span class="nn">pyflatsurf.vector</span> <span class="kn">import</span> <span class="n">Vectors</span>
 
@@ -398,6 +403,7 @@
     <span class="n">_check_data</span><span class="p">(</span><span class="n">vp</span><span class="p">,</span> <span class="n">fp</span><span class="p">,</span> <span class="n">vec</span><span class="p">)</span>
 
     <span class="kn">from</span> <span class="nn">pyflatsurf.factory</span> <span class="kn">import</span> <span class="n">make_surface</span>
+
     <span class="k">return</span> <span class="n">make_surface</span><span class="p">(</span><span class="n">verts</span><span class="p">,</span> <span class="n">vec</span><span class="p">)</span></div>
 
 
@@ -416,8 +422,11 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">Sequence</span>
+
     <span class="n">vectors</span> <span class="o">=</span> <span class="p">[</span><span class="n">surface</span><span class="o">.</span><span class="n">fromHalfEdge</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">positive</span><span class="p">())</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">surface</span><span class="o">.</span><span class="n">edges</span><span class="p">()]</span>
-    <span class="k">return</span> <span class="n">Sequence</span><span class="p">([</span><span class="n">to_sage_ring</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">x</span><span class="p">())</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">vectors</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">to_sage_ring</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">y</span><span class="p">())</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">vectors</span><span class="p">])</span><span class="o">.</span><span class="n">universe</span><span class="p">()</span></div>
+    <span class="k">return</span> <span class="n">Sequence</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">to_sage_ring</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">x</span><span class="p">())</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">vectors</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">to_sage_ring</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">y</span><span class="p">())</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">vectors</span><span class="p">]</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">universe</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="to_sage_ring"><a class="viewcode-back" href="../../../geometry/pyflatsurf_conversion.html#flatsurf.geometry.pyflatsurf_conversion.to_sage_ring">[docs]</a><span class="k">def</span> <span class="nf">to_sage_ring</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
@@ -456,6 +465,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span> <span class="nn">flatsurf.features</span> <span class="kn">import</span> <span class="n">cppyy_feature</span>
+
     <span class="n">cppyy_feature</span><span class="o">.</span><span class="n">require</span><span class="p">()</span>
     <span class="kn">import</span> <span class="nn">cppyy</span>
 
@@ -474,19 +484,31 @@
         <span class="k">return</span> <span class="n">QQ</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
     <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="ow">is</span> <span class="n">maybe_type</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">cppyy</span><span class="o">.</span><span class="n">gbl</span><span class="o">.</span><span class="n">eantic</span><span class="o">.</span><span class="n">renf_elem_class</span><span class="p">):</span>
         <span class="kn">from</span> <span class="nn">pyeantic</span> <span class="kn">import</span> <span class="n">RealEmbeddedNumberField</span>
+
         <span class="n">real_embedded_number_field</span> <span class="o">=</span> <span class="n">RealEmbeddedNumberField</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">parent</span><span class="p">())</span>
         <span class="k">return</span> <span class="n">real_embedded_number_field</span><span class="o">.</span><span class="n">number_field</span><span class="p">(</span><span class="n">real_embedded_number_field</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
-    <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="ow">is</span> <span class="n">maybe_type</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">cppyy</span><span class="o">.</span><span class="n">gbl</span><span class="o">.</span><span class="n">exactreal</span><span class="o">.</span><span class="n">Element</span><span class="p">[</span><span class="n">cppyy</span><span class="o">.</span><span class="n">gbl</span><span class="o">.</span><span class="n">exactreal</span><span class="o">.</span><span class="n">IntegerRing</span><span class="p">]):</span>
+    <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="ow">is</span> <span class="n">maybe_type</span><span class="p">(</span>
+        <span class="k">lambda</span><span class="p">:</span> <span class="n">cppyy</span><span class="o">.</span><span class="n">gbl</span><span class="o">.</span><span class="n">exactreal</span><span class="o">.</span><span class="n">Element</span><span class="p">[</span><span class="n">cppyy</span><span class="o">.</span><span class="n">gbl</span><span class="o">.</span><span class="n">exactreal</span><span class="o">.</span><span class="n">IntegerRing</span><span class="p">]</span>
+    <span class="p">):</span>
         <span class="kn">from</span> <span class="nn">pyexactreal</span> <span class="kn">import</span> <span class="n">ExactReals</span>
+
         <span class="k">return</span> <span class="n">ExactReals</span><span class="p">(</span><span class="n">ZZ</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="ow">is</span> <span class="n">maybe_type</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">cppyy</span><span class="o">.</span><span class="n">gbl</span><span class="o">.</span><span class="n">exactreal</span><span class="o">.</span><span class="n">Element</span><span class="p">[</span><span class="n">cppyy</span><span class="o">.</span><span class="n">gbl</span><span class="o">.</span><span class="n">exactreal</span><span class="o">.</span><span class="n">RationalField</span><span class="p">]):</span>
+    <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="ow">is</span> <span class="n">maybe_type</span><span class="p">(</span>
+        <span class="k">lambda</span><span class="p">:</span> <span class="n">cppyy</span><span class="o">.</span><span class="n">gbl</span><span class="o">.</span><span class="n">exactreal</span><span class="o">.</span><span class="n">Element</span><span class="p">[</span><span class="n">cppyy</span><span class="o">.</span><span class="n">gbl</span><span class="o">.</span><span class="n">exactreal</span><span class="o">.</span><span class="n">RationalField</span><span class="p">]</span>
+    <span class="p">):</span>
         <span class="kn">from</span> <span class="nn">pyexactreal</span> <span class="kn">import</span> <span class="n">ExactReals</span>
+
         <span class="k">return</span> <span class="n">ExactReals</span><span class="p">(</span><span class="n">QQ</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="ow">is</span> <span class="n">maybe_type</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">cppyy</span><span class="o">.</span><span class="n">gbl</span><span class="o">.</span><span class="n">exactreal</span><span class="o">.</span><span class="n">Element</span><span class="p">[</span><span class="n">cppyy</span><span class="o">.</span><span class="n">gbl</span><span class="o">.</span><span class="n">exactreal</span><span class="o">.</span><span class="n">NumberField</span><span class="p">]):</span>
+    <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="ow">is</span> <span class="n">maybe_type</span><span class="p">(</span>
+        <span class="k">lambda</span><span class="p">:</span> <span class="n">cppyy</span><span class="o">.</span><span class="n">gbl</span><span class="o">.</span><span class="n">exactreal</span><span class="o">.</span><span class="n">Element</span><span class="p">[</span><span class="n">cppyy</span><span class="o">.</span><span class="n">gbl</span><span class="o">.</span><span class="n">exactreal</span><span class="o">.</span><span class="n">NumberField</span><span class="p">]</span>
+    <span class="p">):</span>
         <span class="kn">from</span> <span class="nn">pyexactreal</span> <span class="kn">import</span> <span class="n">ExactReals</span>
+
         <span class="k">return</span> <span class="n">ExactReals</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">module</span><span class="p">()</span><span class="o">.</span><span class="n">ring</span><span class="p">()</span><span class="o">.</span><span class="n">parameters</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;unknown coordinate ring for element </span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2"> which is a </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;unknown coordinate ring for element </span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2"> which is a </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="from_pyflatsurf"><a class="viewcode-back" href="../../../geometry/pyflatsurf_conversion.html#flatsurf.geometry.pyflatsurf_conversion.from_pyflatsurf">[docs]</a><span class="k">def</span> <span class="nf">from_pyflatsurf</span><span class="p">(</span><span class="n">T</span><span class="p">):</span>
@@ -525,15 +547,18 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span> <span class="nn">flatsurf.features</span> <span class="kn">import</span> <span class="n">pyflatsurf_feature</span>
+
     <span class="n">pyflatsurf_feature</span><span class="o">.</span><span class="n">require</span><span class="p">()</span>
     <span class="kn">import</span> <span class="nn">pyflatsurf</span>
 
     <span class="n">ring</span> <span class="o">=</span> <span class="n">sage_ring</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
 
     <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface</span> <span class="kn">import</span> <span class="n">Surface_list</span>
+
     <span class="n">S</span> <span class="o">=</span> <span class="n">Surface_list</span><span class="p">(</span><span class="n">ring</span><span class="p">)</span>
 
     <span class="kn">from</span> <span class="nn">flatsurf.geometry.polygon</span> <span class="kn">import</span> <span class="n">ConvexPolygons</span>
+
     <span class="n">P</span> <span class="o">=</span> <span class="n">ConvexPolygons</span><span class="p">(</span><span class="n">ring</span><span class="p">)</span>
 
     <span class="n">V</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">module</span><span class="p">()</span>
@@ -544,15 +569,17 @@
         <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="n">pyflatsurf</span><span class="o">.</span><span class="n">flatsurf</span><span class="o">.</span><span class="n">HalfEdge</span><span class="p">,</span> <span class="n">face</span><span class="p">)</span>
 
         <span class="n">vectors</span> <span class="o">=</span> <span class="p">[</span><span class="n">T</span><span class="o">.</span><span class="n">fromHalfEdge</span><span class="p">(</span><span class="n">he</span><span class="p">)</span> <span class="k">for</span> <span class="n">he</span> <span class="ow">in</span> <span class="n">face</span><span class="p">]</span>
-        <span class="n">vectors</span> <span class="o">=</span> <span class="p">[</span><span class="n">V</span><span class="p">([</span><span class="n">ring</span><span class="p">(</span><span class="n">to_sage_ring</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">x</span><span class="p">())),</span> <span class="n">ring</span><span class="p">(</span><span class="n">to_sage_ring</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">y</span><span class="p">()))])</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">vectors</span><span class="p">]</span>
+        <span class="n">vectors</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">V</span><span class="p">([</span><span class="n">ring</span><span class="p">(</span><span class="n">to_sage_ring</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">x</span><span class="p">())),</span> <span class="n">ring</span><span class="p">(</span><span class="n">to_sage_ring</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">y</span><span class="p">()))])</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">vectors</span>
+        <span class="p">]</span>
         <span class="n">triangle</span> <span class="o">=</span> <span class="n">P</span><span class="p">(</span><span class="n">vectors</span><span class="p">)</span>
         <span class="n">face_id</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span><span class="n">triangle</span><span class="p">)</span>
 
-        <span class="k">assert</span><span class="p">(</span><span class="n">a</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">half_edges</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">a</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">half_edges</span>
         <span class="n">half_edges</span><span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">face_id</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-        <span class="k">assert</span><span class="p">(</span><span class="n">b</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">half_edges</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">b</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">half_edges</span>
         <span class="n">half_edges</span><span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">face_id</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="k">assert</span><span class="p">(</span><span class="n">c</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">half_edges</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">c</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">half_edges</span>
         <span class="n">half_edges</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">face_id</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">half_edge</span><span class="p">,</span> <span class="p">(</span><span class="n">face</span><span class="p">,</span> <span class="nb">id</span><span class="p">)</span> <span class="ow">in</span> <span class="n">half_edges</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -562,6 +589,7 @@
     <span class="n">S</span><span class="o">.</span><span class="n">set_immutable</span><span class="p">()</span>
 
     <span class="kn">from</span> <span class="nn">flatsurf.geometry.translation_surface</span> <span class="kn">import</span> <span class="n">TranslationSurface</span>
+
     <span class="k">return</span> <span class="n">TranslationSurface</span><span class="p">(</span><span class="n">S</span><span class="p">)</span></div>
 </pre></div>
         </article>

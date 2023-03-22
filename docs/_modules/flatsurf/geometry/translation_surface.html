@@ -271,6 +271,7 @@
 <span class="kn">from</span> <span class="nn">.half_translation_surface</span> <span class="kn">import</span> <span class="n">HalfTranslationSurface</span>
 <span class="kn">from</span> <span class="nn">.dilation_surface</span> <span class="kn">import</span> <span class="n">DilationSurface</span>
 
+
 <div class="viewcode-block" id="TranslationSurface"><a class="viewcode-back" href="../../../geometry/translation_surface.html#flatsurf.geometry.translation_surface.TranslationSurface">[docs]</a><span class="k">class</span> <span class="nc">TranslationSurface</span><span class="p">(</span><span class="n">HalfTranslationSurface</span><span class="p">,</span> <span class="n">DilationSurface</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A surface with a flat metric and conical singularities whose cone angles are a multiple of pi.</span>
@@ -286,10 +287,12 @@
         <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tester</span><span class="p">(</span><span class="o">**</span><span class="n">options</span><span class="p">)</span>
 
         <span class="kn">from</span> <span class="nn">flatsurf.geometry.similarity_surface</span> <span class="kn">import</span> <span class="n">SimilaritySurface</span>
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_finite</span><span class="p">():</span>
             <span class="n">it</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_iterator</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">islice</span>
+
             <span class="n">it</span> <span class="o">=</span> <span class="n">islice</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">label_iterator</span><span class="p">(),</span> <span class="mi">30</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">lab</span> <span class="ow">in</span> <span class="n">it</span><span class="p">:</span>
@@ -297,16 +300,18 @@
             <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()):</span>
                 <span class="c1"># Warning: check the matrices computed from the edges,</span>
                 <span class="c1"># rather the ones overridden by TranslationSurface.</span>
-                <span class="n">m</span><span class="o">=</span><span class="n">SimilaritySurface</span><span class="o">.</span><span class="n">edge_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">lab</span><span class="p">,</span><span class="n">e</span><span class="p">)</span>
-                <span class="n">tester</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">is_one</span><span class="p">(),</span> \
-                    <span class="s2">&quot;edge_matrix of edge &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">((</span><span class="n">lab</span><span class="p">,</span><span class="n">e</span><span class="p">))</span><span class="o">+</span><span class="s2">&quot; is not a translation.&quot;</span><span class="p">)</span>
+                <span class="n">m</span> <span class="o">=</span> <span class="n">SimilaritySurface</span><span class="o">.</span><span class="n">edge_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lab</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+                <span class="n">tester</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span>
+                    <span class="n">m</span><span class="o">.</span><span class="n">is_one</span><span class="p">(),</span>
+                    <span class="s2">&quot;edge_matrix of edge &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">((</span><span class="n">lab</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot; is not a translation.&quot;</span><span class="p">,</span>
+                <span class="p">)</span>
 
 <div class="viewcode-block" id="TranslationSurface.edge_matrix"><a class="viewcode-back" href="../../../geometry/translation_surface.html#flatsurf.geometry.translation_surface.TranslationSurface.edge_matrix">[docs]</a>    <span class="k">def</span> <span class="nf">edge_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">e</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">e</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">p</span><span class="p">,</span><span class="n">e</span> <span class="o">=</span> <span class="n">p</span>
+            <span class="n">p</span><span class="p">,</span> <span class="n">e</span> <span class="o">=</span> <span class="n">p</span>
         <span class="k">if</span> <span class="n">e</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">e</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="o">.</span><span class="n">num_edges</span><span class="p">():</span>
             <span class="k">raise</span> <span class="ne">ValueError</span>
-        <span class="k">return</span> <span class="n">identity_matrix</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span><span class="mi">2</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">identity_matrix</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span> <span class="mi">2</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TranslationSurface.stratum"><a class="viewcode-back" href="../../../geometry/translation_surface.html#flatsurf.geometry.translation_surface.TranslationSurface.stratum">[docs]</a>    <span class="k">def</span> <span class="nf">stratum</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -323,22 +328,23 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span> <span class="nn">surface_dynamics</span> <span class="kn">import</span> <span class="n">AbelianStratum</span>
         <span class="kn">from</span> <span class="nn">sage.rings.integer_ring</span> <span class="kn">import</span> <span class="n">ZZ</span>
-        <span class="k">return</span> <span class="n">AbelianStratum</span><span class="p">([</span><span class="n">ZZ</span><span class="p">(</span><span class="n">a</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">angles</span><span class="p">()])</span></div>
+
+        <span class="k">return</span> <span class="n">AbelianStratum</span><span class="p">([</span><span class="n">ZZ</span><span class="p">(</span><span class="n">a</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">angles</span><span class="p">()])</span></div>
 
     <span class="k">def</span> <span class="nf">_canonical_first_vertex</span><span class="p">(</span><span class="n">polygon</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the index of the vertex with smallest y-coordinate.</span>
 <span class="sd">        If two vertices have the same y-coordinate, then the one with least x-coordinate is returned.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">best</span><span class="o">=</span><span class="mi">0</span>
-        <span class="n">best_pt</span><span class="o">=</span><span class="n">polygon</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="n">best</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">polygon</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()):</span>
-            <span class="n">pt</span><span class="o">=</span><span class="n">polygon</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">&lt;</span><span class="n">best_pt</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
-                <span class="n">best</span><span class="o">=</span><span class="n">v</span>
-                <span class="n">best_pt</span><span class="o">=</span><span class="n">pt</span>
-        <span class="k">if</span> <span class="n">best</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">==</span><span class="n">best_pt</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="n">best</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">best_pt</span> <span class="o">=</span> <span class="n">polygon</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="n">best</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">polygon</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()):</span>
+            <span class="n">pt</span> <span class="o">=</span> <span class="n">polygon</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">best_pt</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="n">best</span> <span class="o">=</span> <span class="n">v</span>
+                <span class="n">best_pt</span> <span class="o">=</span> <span class="n">pt</span>
+        <span class="k">if</span> <span class="n">best</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">best_pt</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
                 <span class="k">return</span> <span class="n">v</span>
         <span class="k">return</span> <span class="n">best</span>
 
@@ -383,29 +389,37 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_finite</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">in_place</span><span class="p">:</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_mutable</span><span class="p">():</span>
-                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;An in_place call for standardize_polygons can only be done for a mutable surface.&quot;</span><span class="p">)</span>
-                <span class="n">s</span><span class="o">=</span><span class="bp">self</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="s2">&quot;An in_place call for standardize_polygons can only be done for a mutable surface.&quot;</span>
+                    <span class="p">)</span>
+                <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">s</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">mutable</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            <span class="n">cv</span> <span class="o">=</span> <span class="p">{}</span> <span class="c1"># dictionary for non-zero canonical vertices</span>
-            <span class="n">translations</span><span class="o">=</span><span class="p">{}</span> <span class="c1"># translations bringing the canonical vertex to the origin.</span>
-            <span class="k">for</span> <span class="n">l</span><span class="p">,</span><span class="n">polygon</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">label_iterator</span><span class="p">(</span><span class="n">polygons</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-                <span class="n">best</span><span class="o">=</span><span class="mi">0</span>
-                <span class="n">best_pt</span><span class="o">=</span><span class="n">polygon</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="n">best</span><span class="p">)</span>
-                <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">polygon</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()):</span>
-                    <span class="n">pt</span><span class="o">=</span><span class="n">polygon</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="p">(</span><span class="n">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">&lt;</span><span class="n">best_pt</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="ow">or</span> <span class="p">(</span><span class="n">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">==</span><span class="n">best_pt</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">and</span> <span class="n">pt</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">&lt;</span><span class="n">best_pt</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
-                        <span class="n">best</span><span class="o">=</span><span class="n">v</span>
-                        <span class="n">best_pt</span><span class="o">=</span><span class="n">pt</span>
+                <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">mutable</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">cv</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># dictionary for non-zero canonical vertices</span>
+            <span class="n">translations</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="p">{}</span>
+            <span class="p">)</span>  <span class="c1"># translations bringing the canonical vertex to the origin.</span>
+            <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">polygon</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">label_iterator</span><span class="p">(</span><span class="n">polygons</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+                <span class="n">best</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">best_pt</span> <span class="o">=</span> <span class="n">polygon</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="n">best</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">polygon</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()):</span>
+                    <span class="n">pt</span> <span class="o">=</span> <span class="n">polygon</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">best_pt</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="ow">or</span> <span class="p">(</span>
+                        <span class="n">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">best_pt</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">and</span> <span class="n">pt</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">best_pt</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="p">):</span>
+                        <span class="n">best</span> <span class="o">=</span> <span class="n">v</span>
+                        <span class="n">best_pt</span> <span class="o">=</span> <span class="n">pt</span>
                 <span class="c1"># We replace the polygon if the best vertex is not the zero vertex, or</span>
                 <span class="c1"># if the coordinates of the best vertex differs from the origin.</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">best</span><span class="o">==</span><span class="mi">0</span> <span class="ow">and</span> <span class="n">best_pt</span><span class="o">.</span><span class="n">is_zero</span><span class="p">()):</span>
-                    <span class="n">cv</span><span class="p">[</span><span class="n">l</span><span class="p">]</span><span class="o">=</span><span class="n">best</span>
-            <span class="k">for</span> <span class="n">l</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">cv</span><span class="p">):</span>
-                <span class="n">s</span><span class="o">.</span><span class="n">set_vertex_zero</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="n">v</span><span class="p">,</span><span class="n">in_place</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">best</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">best_pt</span><span class="o">.</span><span class="n">is_zero</span><span class="p">()):</span>
+                    <span class="n">cv</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="n">best</span>
+            <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">cv</span><span class="p">):</span>
+                <span class="n">s</span><span class="o">.</span><span class="n">set_vertex_zero</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">s</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">assert</span> <span class="n">in_place</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;In place standardization only available for finite surfaces.&quot;</span>
+            <span class="k">assert</span> <span class="p">(</span>
+                <span class="n">in_place</span> <span class="ow">is</span> <span class="kc">False</span>
+            <span class="p">),</span> <span class="s2">&quot;In place standardization only available for finite surfaces.&quot;</span>
             <span class="k">return</span> <span class="n">TranslationSurface</span><span class="p">(</span><span class="n">LazyStandardizedPolygonSurface</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="TranslationSurface.cmp"><a class="viewcode-back" href="../../../geometry/translation_surface.html#flatsurf.geometry.translation_surface.TranslationSurface.cmp">[docs]</a>    <span class="k">def</span> <span class="nf">cmp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s2</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -421,25 +435,25 @@
             <span class="k">if</span> <span class="n">s2</span><span class="o">.</span><span class="n">is_finite</span><span class="p">():</span>
                 <span class="k">assert</span> <span class="n">limit</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Limit only enabled for finite surfaces.&quot;</span>
 
-                <span class="c1">#print(&quot;comparing number of polygons&quot;)</span>
-                <span class="n">sign</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_polygons</span><span class="p">()</span><span class="o">-</span><span class="n">s2</span><span class="o">.</span><span class="n">num_polygons</span><span class="p">()</span>
-                <span class="k">if</span> <span class="n">sign</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+                <span class="c1"># print(&quot;comparing number of polygons&quot;)</span>
+                <span class="n">sign</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_polygons</span><span class="p">()</span> <span class="o">-</span> <span class="n">s2</span><span class="o">.</span><span class="n">num_polygons</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">sign</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="k">return</span> <span class="mi">1</span>
-                <span class="k">if</span> <span class="n">sign</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">sign</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
-                <span class="c1">#print(&quot;comparing polygons&quot;)</span>
-                <span class="n">lw1</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">walker</span><span class="p">()</span>
-                <span class="n">lw2</span><span class="o">=</span><span class="n">s2</span><span class="o">.</span><span class="n">walker</span><span class="p">()</span>
-                <span class="k">for</span> <span class="n">p1</span><span class="p">,</span><span class="n">p2</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">lw1</span><span class="o">.</span><span class="n">polygon_iterator</span><span class="p">(),</span> <span class="n">lw2</span><span class="o">.</span><span class="n">polygon_iterator</span><span class="p">()):</span>
+                <span class="c1"># print(&quot;comparing polygons&quot;)</span>
+                <span class="n">lw1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">walker</span><span class="p">()</span>
+                <span class="n">lw2</span> <span class="o">=</span> <span class="n">s2</span><span class="o">.</span><span class="n">walker</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">p1</span><span class="p">,</span> <span class="n">p2</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">lw1</span><span class="o">.</span><span class="n">polygon_iterator</span><span class="p">(),</span> <span class="n">lw2</span><span class="o">.</span><span class="n">polygon_iterator</span><span class="p">()):</span>
                     <span class="c1"># Uses Polygon.cmp:</span>
                     <span class="n">ret</span> <span class="o">=</span> <span class="n">p1</span><span class="o">.</span><span class="n">cmp</span><span class="p">(</span><span class="n">p2</span><span class="p">)</span>
                     <span class="k">if</span> <span class="n">ret</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
                         <span class="k">return</span> <span class="n">ret</span>
                 <span class="c1"># Polygons are identical. Compare edge gluings.</span>
-                <span class="c1">#print(&quot;comparing edge gluings&quot;)</span>
-                <span class="k">for</span> <span class="n">pair1</span><span class="p">,</span><span class="n">pair2</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">lw1</span><span class="o">.</span><span class="n">edge_iterator</span><span class="p">(),</span> <span class="n">lw2</span><span class="o">.</span><span class="n">edge_iterator</span><span class="p">()):</span>
-                    <span class="n">l1</span><span class="p">,</span><span class="n">e1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">pair1</span><span class="p">)</span>
-                    <span class="n">l2</span><span class="p">,</span><span class="n">e2</span> <span class="o">=</span> <span class="n">s2</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">pair2</span><span class="p">)</span>
+                <span class="c1"># print(&quot;comparing edge gluings&quot;)</span>
+                <span class="k">for</span> <span class="n">pair1</span><span class="p">,</span> <span class="n">pair2</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">lw1</span><span class="o">.</span><span class="n">edge_iterator</span><span class="p">(),</span> <span class="n">lw2</span><span class="o">.</span><span class="n">edge_iterator</span><span class="p">()):</span>
+                    <span class="n">l1</span><span class="p">,</span> <span class="n">e1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">pair1</span><span class="p">)</span>
+                    <span class="n">l2</span><span class="p">,</span> <span class="n">e2</span> <span class="o">=</span> <span class="n">s2</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">pair2</span><span class="p">)</span>
                     <span class="n">num1</span> <span class="o">=</span> <span class="n">lw1</span><span class="o">.</span><span class="n">label_to_number</span><span class="p">(</span><span class="n">l1</span><span class="p">)</span>
                     <span class="n">num2</span> <span class="o">=</span> <span class="n">lw2</span><span class="o">.</span><span class="n">label_to_number</span><span class="p">(</span><span class="n">l2</span><span class="p">)</span>
                     <span class="n">ret</span> <span class="o">=</span> <span class="p">(</span><span class="n">num1</span> <span class="o">&gt;</span> <span class="n">num2</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">num1</span> <span class="o">&lt;</span> <span class="n">num2</span><span class="p">)</span>
@@ -458,10 +472,12 @@
                 <span class="k">return</span> <span class="mi">1</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># both surfaces are infinite.</span>
-                <span class="n">lw1</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">walker</span><span class="p">()</span>
-                <span class="n">lw2</span><span class="o">=</span><span class="n">s2</span><span class="o">.</span><span class="n">walker</span><span class="p">()</span>
+                <span class="n">lw1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">walker</span><span class="p">()</span>
+                <span class="n">lw2</span> <span class="o">=</span> <span class="n">s2</span><span class="o">.</span><span class="n">walker</span><span class="p">()</span>
                 <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
-                <span class="k">for</span> <span class="p">(</span><span class="n">l1</span><span class="p">,</span><span class="n">p1</span><span class="p">),(</span><span class="n">l2</span><span class="p">,</span><span class="n">p2</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">lw1</span><span class="o">.</span><span class="n">label_polygon_iterator</span><span class="p">(),</span> <span class="n">lw2</span><span class="o">.</span><span class="n">label_polygon_iterator</span><span class="p">()):</span>
+                <span class="k">for</span> <span class="p">(</span><span class="n">l1</span><span class="p">,</span> <span class="n">p1</span><span class="p">),</span> <span class="p">(</span><span class="n">l2</span><span class="p">,</span> <span class="n">p2</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
+                    <span class="n">lw1</span><span class="o">.</span><span class="n">label_polygon_iterator</span><span class="p">(),</span> <span class="n">lw2</span><span class="o">.</span><span class="n">label_polygon_iterator</span><span class="p">()</span>
+                <span class="p">):</span>
                     <span class="c1"># Uses Polygon.cmp:</span>
                     <span class="n">ret</span> <span class="o">=</span> <span class="n">p1</span><span class="o">.</span><span class="n">cmp</span><span class="p">(</span><span class="n">p2</span><span class="p">)</span>
                     <span class="k">if</span> <span class="n">ret</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
@@ -469,8 +485,8 @@
                         <span class="k">return</span> <span class="n">ret</span>
                     <span class="c1"># If here the number of edges should be equal.</span>
                     <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">p1</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()):</span>
-                        <span class="n">ll1</span><span class="p">,</span><span class="n">ee1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">l1</span><span class="p">,</span><span class="n">e</span><span class="p">)</span>
-                        <span class="n">ll2</span><span class="p">,</span><span class="n">ee2</span> <span class="o">=</span> <span class="n">s2</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">l2</span><span class="p">,</span><span class="n">e</span><span class="p">)</span>
+                        <span class="n">ll1</span><span class="p">,</span> <span class="n">ee1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">l1</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+                        <span class="n">ll2</span><span class="p">,</span> <span class="n">ee2</span> <span class="o">=</span> <span class="n">s2</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">l2</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
                         <span class="n">num1</span> <span class="o">=</span> <span class="n">lw1</span><span class="o">.</span><span class="n">label_to_number</span><span class="p">(</span><span class="n">ll1</span><span class="p">,</span> <span class="n">search</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">)</span>
                         <span class="n">num2</span> <span class="o">=</span> <span class="n">lw2</span><span class="o">.</span><span class="n">label_to_number</span><span class="p">(</span><span class="n">ll2</span><span class="p">,</span> <span class="n">search</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">)</span>
                         <span class="n">ret</span> <span class="o">=</span> <span class="p">(</span><span class="n">num1</span> <span class="o">&gt;</span> <span class="n">num2</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">num1</span> <span class="o">&lt;</span> <span class="n">num2</span><span class="p">)</span>
@@ -491,7 +507,11 @@
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a SurfaceMapping canonicalizing this translation surface.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">flatsurf.geometry.mappings</span> <span class="kn">import</span> <span class="n">canonicalize_translation_surface_mapping</span><span class="p">,</span> <span class="n">IdentityMapping</span>
+        <span class="kn">from</span> <span class="nn">flatsurf.geometry.mappings</span> <span class="kn">import</span> <span class="p">(</span>
+            <span class="n">canonicalize_translation_surface_mapping</span><span class="p">,</span>
+            <span class="n">IdentityMapping</span><span class="p">,</span>
+        <span class="p">)</span>
+
         <span class="k">return</span> <span class="n">canonicalize_translation_surface_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TranslationSurface.canonicalize"><a class="viewcode-back" href="../../../geometry/translation_surface.html#flatsurf.geometry.translation_surface.TranslationSurface.canonicalize">[docs]</a>    <span class="k">def</span> <span class="nf">canonicalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -518,27 +538,31 @@
 <span class="sd">            True</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Old version</span>
-        <span class="c1">#return self.canonicalize_mapping().codomain()</span>
+        <span class="c1"># return self.canonicalize_mapping().codomain()</span>
         <span class="k">if</span> <span class="n">in_place</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_mutable</span><span class="p">():</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;canonicalize with in_place=True is only defined for mutable translation surfaces.&quot;</span><span class="p">)</span>
-            <span class="n">s</span><span class="o">=</span><span class="bp">self</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;canonicalize with in_place=True is only defined for mutable translation surfaces.&quot;</span>
+                <span class="p">)</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">s</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">mutable</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">mutable</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">s</span><span class="o">.</span><span class="n">is_finite</span><span class="p">():</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;canonicalize is only defined for finite translation surfaces.&quot;</span><span class="p">)</span>
-        <span class="n">ret</span><span class="o">=</span><span class="n">s</span><span class="o">.</span><span class="n">delaunay_decomposition</span><span class="p">(</span><span class="n">in_place</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;canonicalize is only defined for finite translation surfaces.&quot;</span>
+            <span class="p">)</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">delaunay_decomposition</span><span class="p">(</span><span class="n">in_place</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">s</span><span class="o">.</span><span class="n">standardize_polygons</span><span class="p">(</span><span class="n">in_place</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">ss</span><span class="o">=</span><span class="n">s</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">mutable</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">labels</span><span class="o">=</span><span class="p">{</span><span class="n">label</span> <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">label_iterator</span><span class="p">()}</span>
+        <span class="n">ss</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">mutable</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="p">{</span><span class="n">label</span> <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">label_iterator</span><span class="p">()}</span>
         <span class="n">labels</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">base_label</span><span class="p">())</span>
         <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">:</span>
             <span class="n">ss</span><span class="o">.</span><span class="n">underlying_surface</span><span class="p">()</span><span class="o">.</span><span class="n">change_base_label</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">ss</span><span class="o">.</span><span class="n">cmp</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">ss</span><span class="o">.</span><span class="n">cmp</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="n">s</span><span class="o">.</span><span class="n">underlying_surface</span><span class="p">()</span><span class="o">.</span><span class="n">change_base_label</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
         <span class="c1"># We now have the base_label correct.</span>
         <span class="c1"># We will use the label walker to generate the canonical labeling of polygons.</span>
-        <span class="n">w</span><span class="o">=</span><span class="n">s</span><span class="o">.</span><span class="n">walker</span><span class="p">()</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">walker</span><span class="p">()</span>
         <span class="n">w</span><span class="o">.</span><span class="n">find_all_labels</span><span class="p">()</span>
         <span class="n">s</span><span class="o">.</span><span class="n">relabel</span><span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">label_dictionary</span><span class="p">(),</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="c1"># Set immutable</span>
@@ -593,117 +617,142 @@
 <span class="sd">            sage: s2.cmp((m*s1).canonicalize())</span>
 <span class="sd">            0</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">s</span><span class="o">=</span><span class="bp">self</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span>
         <span class="c1"># Find a common field</span>
-        <span class="n">field</span><span class="o">=</span><span class="n">s</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span>
+        <span class="n">field</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">singularity</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">deformation</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">base_field</span><span class="p">()</span> <span class="o">!=</span> <span class="n">field</span><span class="p">:</span>
                 <span class="kn">from</span> <span class="nn">sage.structure.element</span> <span class="kn">import</span> <span class="n">get_coercion_model</span>
+
                 <span class="n">cm</span> <span class="o">=</span> <span class="n">get_coercion_model</span><span class="p">()</span>
                 <span class="n">field</span> <span class="o">=</span> <span class="n">cm</span><span class="o">.</span><span class="n">common_parent</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">v</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">base_field</span><span class="p">())</span>
         <span class="kn">from</span> <span class="nn">sage.modules.free_module</span> <span class="kn">import</span> <span class="n">VectorSpace</span>
-        <span class="n">vector_space</span> <span class="o">=</span> <span class="n">VectorSpace</span><span class="p">(</span><span class="n">field</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+
+        <span class="n">vector_space</span> <span class="o">=</span> <span class="n">VectorSpace</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
 
         <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
-        <span class="n">vertex_deformation</span><span class="o">=</span><span class="n">defaultdict</span><span class="p">(</span><span class="n">vector_space</span><span class="o">.</span><span class="n">zero</span><span class="p">)</span> <span class="c1"># dictionary associating the vertices.</span>
-        <span class="n">deformed_labels</span><span class="o">=</span><span class="nb">set</span><span class="p">()</span> <span class="c1"># list of polygon labels being deformed.</span>
+
+        <span class="n">vertex_deformation</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span>
+            <span class="n">vector_space</span><span class="o">.</span><span class="n">zero</span>
+        <span class="p">)</span>  <span class="c1"># dictionary associating the vertices.</span>
+        <span class="n">deformed_labels</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>  <span class="c1"># list of polygon labels being deformed.</span>
 
         <span class="k">for</span> <span class="n">singularity</span><span class="p">,</span> <span class="n">vect</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">deformation</span><span class="p">):</span>
             <span class="c1"># assert s==singularity.surface()</span>
-            <span class="k">for</span> <span class="n">label</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">singularity</span><span class="o">.</span><span class="n">vertex_set</span><span class="p">():</span>
-                <span class="n">vertex_deformation</span><span class="p">[(</span><span class="n">label</span><span class="p">,</span><span class="n">v</span><span class="p">)]</span><span class="o">=</span><span class="n">vect</span>
+            <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">singularity</span><span class="o">.</span><span class="n">vertex_set</span><span class="p">():</span>
+                <span class="n">vertex_deformation</span><span class="p">[(</span><span class="n">label</span><span class="p">,</span> <span class="n">v</span><span class="p">)]</span> <span class="o">=</span> <span class="n">vect</span>
                 <span class="n">deformed_labels</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
-                <span class="k">assert</span> <span class="n">s</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()</span><span class="o">==</span><span class="mi">3</span>
+                <span class="k">assert</span> <span class="n">s</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()</span> <span class="o">==</span> <span class="mi">3</span>
 
         <span class="kn">from</span> <span class="nn">flatsurf.geometry.polygon</span> <span class="kn">import</span> <span class="n">wedge_product</span><span class="p">,</span> <span class="n">ConvexPolygons</span>
 
         <span class="k">if</span> <span class="n">local</span><span class="p">:</span>
 
-            <span class="n">ss</span><span class="o">=</span><span class="n">s</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">mutable</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">new_field</span><span class="o">=</span><span class="n">field</span><span class="p">)</span>
-            <span class="n">us</span><span class="o">=</span><span class="n">ss</span><span class="o">.</span><span class="n">underlying_surface</span><span class="p">()</span>
+            <span class="n">ss</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">mutable</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">new_field</span><span class="o">=</span><span class="n">field</span><span class="p">)</span>
+            <span class="n">us</span> <span class="o">=</span> <span class="n">ss</span><span class="o">.</span><span class="n">underlying_surface</span><span class="p">()</span>
 
             <span class="n">P</span> <span class="o">=</span> <span class="n">ConvexPolygons</span><span class="p">(</span><span class="n">field</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">deformed_labels</span><span class="p">:</span>
-                <span class="n">polygon</span><span class="o">=</span><span class="n">s</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
-                <span class="n">a0</span><span class="o">=</span><span class="n">vector_space</span><span class="p">(</span><span class="n">polygon</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
-                <span class="n">b0</span><span class="o">=</span><span class="n">vector_space</span><span class="p">(</span><span class="n">polygon</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
-                <span class="n">v0</span><span class="o">=</span><span class="n">vector_space</span><span class="p">(</span><span class="n">vertex_deformation</span><span class="p">[(</span><span class="n">label</span><span class="p">,</span><span class="mi">0</span><span class="p">)])</span>
-                <span class="n">v1</span><span class="o">=</span><span class="n">vector_space</span><span class="p">(</span><span class="n">vertex_deformation</span><span class="p">[(</span><span class="n">label</span><span class="p">,</span><span class="mi">1</span><span class="p">)])</span>
-                <span class="n">v2</span><span class="o">=</span><span class="n">vector_space</span><span class="p">(</span><span class="n">vertex_deformation</span><span class="p">[(</span><span class="n">label</span><span class="p">,</span><span class="mi">2</span><span class="p">)])</span>
-                <span class="n">a1</span><span class="o">=</span><span class="n">v1</span><span class="o">-</span><span class="n">v0</span>
-                <span class="n">b1</span><span class="o">=</span><span class="n">v2</span><span class="o">-</span><span class="n">v0</span>
+                <span class="n">polygon</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+                <span class="n">a0</span> <span class="o">=</span> <span class="n">vector_space</span><span class="p">(</span><span class="n">polygon</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+                <span class="n">b0</span> <span class="o">=</span> <span class="n">vector_space</span><span class="p">(</span><span class="n">polygon</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+                <span class="n">v0</span> <span class="o">=</span> <span class="n">vector_space</span><span class="p">(</span><span class="n">vertex_deformation</span><span class="p">[(</span><span class="n">label</span><span class="p">,</span> <span class="mi">0</span><span class="p">)])</span>
+                <span class="n">v1</span> <span class="o">=</span> <span class="n">vector_space</span><span class="p">(</span><span class="n">vertex_deformation</span><span class="p">[(</span><span class="n">label</span><span class="p">,</span> <span class="mi">1</span><span class="p">)])</span>
+                <span class="n">v2</span> <span class="o">=</span> <span class="n">vector_space</span><span class="p">(</span><span class="n">vertex_deformation</span><span class="p">[(</span><span class="n">label</span><span class="p">,</span> <span class="mi">2</span><span class="p">)])</span>
+                <span class="n">a1</span> <span class="o">=</span> <span class="n">v1</span> <span class="o">-</span> <span class="n">v0</span>
+                <span class="n">b1</span> <span class="o">=</span> <span class="n">v2</span> <span class="o">-</span> <span class="n">v0</span>
                 <span class="c1"># We deform by changing the triangle so that its vertices 1 and 2 have the form</span>
                 <span class="c1"># a0+t*a1 and b0+t*b1</span>
                 <span class="c1"># respectively. We are deforming from t=0 to t=1.</span>
                 <span class="c1"># We worry that the triangle degenerates along the way.</span>
                 <span class="c1"># The area of the deforming triangle has the form</span>
                 <span class="c1"># A0 + A1*t + A2*t^2.</span>
-                <span class="n">A0</span> <span class="o">=</span> <span class="n">wedge_product</span><span class="p">(</span><span class="n">a0</span><span class="p">,</span><span class="n">b0</span><span class="p">)</span>
-                <span class="n">A1</span> <span class="o">=</span> <span class="n">wedge_product</span><span class="p">(</span><span class="n">a0</span><span class="p">,</span><span class="n">b1</span><span class="p">)</span><span class="o">+</span><span class="n">wedge_product</span><span class="p">(</span><span class="n">a1</span><span class="p">,</span><span class="n">b0</span><span class="p">)</span>
-                <span class="n">A2</span> <span class="o">=</span> <span class="n">wedge_product</span><span class="p">(</span><span class="n">a1</span><span class="p">,</span><span class="n">b1</span><span class="p">)</span>
+                <span class="n">A0</span> <span class="o">=</span> <span class="n">wedge_product</span><span class="p">(</span><span class="n">a0</span><span class="p">,</span> <span class="n">b0</span><span class="p">)</span>
+                <span class="n">A1</span> <span class="o">=</span> <span class="n">wedge_product</span><span class="p">(</span><span class="n">a0</span><span class="p">,</span> <span class="n">b1</span><span class="p">)</span> <span class="o">+</span> <span class="n">wedge_product</span><span class="p">(</span><span class="n">a1</span><span class="p">,</span> <span class="n">b0</span><span class="p">)</span>
+                <span class="n">A2</span> <span class="o">=</span> <span class="n">wedge_product</span><span class="p">(</span><span class="n">a1</span><span class="p">,</span> <span class="n">b1</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">A2</span> <span class="o">!=</span> <span class="n">field</span><span class="o">.</span><span class="n">zero</span><span class="p">():</span>
                     <span class="c1"># Critical point of area function</span>
-                    <span class="n">c</span> <span class="o">=</span> <span class="n">A1</span><span class="o">/</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="n">A2</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="n">field</span><span class="o">.</span><span class="n">zero</span><span class="p">()</span><span class="o">&lt;</span><span class="n">c</span> <span class="ow">and</span> <span class="n">c</span><span class="o">&lt;</span><span class="n">field</span><span class="o">.</span><span class="n">one</span><span class="p">():</span>
-                        <span class="k">assert</span> <span class="n">A0</span><span class="o">+</span><span class="n">A1</span><span class="o">*</span><span class="n">c</span><span class="o">+</span><span class="n">A2</span><span class="o">*</span><span class="n">c</span><span class="o">**</span><span class="mi">2</span> <span class="o">&gt;</span> <span class="n">field</span><span class="o">.</span><span class="n">zero</span><span class="p">(),</span> <span class="s2">&quot;Triangle with label </span><span class="si">%r</span><span class="s2"> degenerates at critical point before endpoint&quot;</span> <span class="o">%</span> <span class="n">label</span>
-                <span class="k">assert</span> <span class="n">A0</span><span class="o">+</span><span class="n">A1</span><span class="o">+</span><span class="n">A2</span> <span class="o">&gt;</span> <span class="n">field</span><span class="o">.</span><span class="n">zero</span><span class="p">(),</span> <span class="s2">&quot;Triangle with label </span><span class="si">%r</span><span class="s2"> degenerates at or before endpoint&quot;</span> <span class="o">%</span> <span class="n">label</span>
+                    <span class="n">c</span> <span class="o">=</span> <span class="n">A1</span> <span class="o">/</span> <span class="p">(</span><span class="o">-</span><span class="mi">2</span> <span class="o">*</span> <span class="n">A2</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">field</span><span class="o">.</span><span class="n">zero</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">c</span> <span class="ow">and</span> <span class="n">c</span> <span class="o">&lt;</span> <span class="n">field</span><span class="o">.</span><span class="n">one</span><span class="p">():</span>
+                        <span class="k">assert</span> <span class="n">A0</span> <span class="o">+</span> <span class="n">A1</span> <span class="o">*</span> <span class="n">c</span> <span class="o">+</span> <span class="n">A2</span> <span class="o">*</span> <span class="n">c</span><span class="o">**</span><span class="mi">2</span> <span class="o">&gt;</span> <span class="n">field</span><span class="o">.</span><span class="n">zero</span><span class="p">(),</span> <span class="p">(</span>
+                            <span class="s2">&quot;Triangle with label </span><span class="si">%r</span><span class="s2"> degenerates at critical point before endpoint&quot;</span>
+                            <span class="o">%</span> <span class="n">label</span>
+                        <span class="p">)</span>
+                <span class="k">assert</span> <span class="n">A0</span> <span class="o">+</span> <span class="n">A1</span> <span class="o">+</span> <span class="n">A2</span> <span class="o">&gt;</span> <span class="n">field</span><span class="o">.</span><span class="n">zero</span><span class="p">(),</span> <span class="p">(</span>
+                    <span class="s2">&quot;Triangle with label </span><span class="si">%r</span><span class="s2"> degenerates at or before endpoint&quot;</span> <span class="o">%</span> <span class="n">label</span>
+                <span class="p">)</span>
                 <span class="c1"># Triangle does not degenerate.</span>
-                <span class="n">us</span><span class="o">.</span><span class="n">change_polygon</span><span class="p">(</span><span class="n">label</span><span class="p">,</span><span class="n">P</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[</span><span class="n">vector_space</span><span class="o">.</span><span class="n">zero</span><span class="p">(),</span><span class="n">a0</span><span class="o">+</span><span class="n">a1</span><span class="p">,</span><span class="n">b0</span><span class="o">+</span><span class="n">b1</span><span class="p">]))</span>
+                <span class="n">us</span><span class="o">.</span><span class="n">change_polygon</span><span class="p">(</span>
+                    <span class="n">label</span><span class="p">,</span> <span class="n">P</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[</span><span class="n">vector_space</span><span class="o">.</span><span class="n">zero</span><span class="p">(),</span> <span class="n">a0</span> <span class="o">+</span> <span class="n">a1</span><span class="p">,</span> <span class="n">b0</span> <span class="o">+</span> <span class="n">b1</span><span class="p">])</span>
+                <span class="p">)</span>
             <span class="k">return</span> <span class="n">ss</span>
 
-        <span class="k">else</span><span class="p">:</span> <span class="c1"># Non local deformation</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># Non local deformation</span>
             <span class="c1"># We can only do this deformation if all the rel vector are parallel.</span>
             <span class="c1"># Check for this.</span>
-            <span class="n">nonzero</span><span class="o">=</span><span class="kc">None</span>
+            <span class="n">nonzero</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">for</span> <span class="n">singularity</span><span class="p">,</span> <span class="n">vect</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">deformation</span><span class="p">):</span>
-                <span class="n">vvect</span><span class="o">=</span><span class="n">vector_space</span><span class="p">(</span><span class="n">vect</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">vvect</span><span class="o">!=</span><span class="n">vector_space</span><span class="o">.</span><span class="n">zero</span><span class="p">():</span>
+                <span class="n">vvect</span> <span class="o">=</span> <span class="n">vector_space</span><span class="p">(</span><span class="n">vect</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">vvect</span> <span class="o">!=</span> <span class="n">vector_space</span><span class="o">.</span><span class="n">zero</span><span class="p">():</span>
                     <span class="k">if</span> <span class="n">nonzero</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                        <span class="n">nonzero</span><span class="o">=</span><span class="n">vvect</span>
+                        <span class="n">nonzero</span> <span class="o">=</span> <span class="n">vvect</span>
                     <span class="k">else</span><span class="p">:</span>
-                        <span class="k">assert</span> <span class="n">wedge_product</span><span class="p">(</span><span class="n">nonzero</span><span class="p">,</span><span class="n">vvect</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">,</span> \
-                            <span class="s2">&quot;In non-local deformation all deformation vectos must be parallel&quot;</span>
+                        <span class="k">assert</span> <span class="p">(</span>
+                            <span class="n">wedge_product</span><span class="p">(</span><span class="n">nonzero</span><span class="p">,</span> <span class="n">vvect</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
+                        <span class="p">),</span> <span class="s2">&quot;In non-local deformation all deformation vectos must be parallel&quot;</span>
             <span class="k">assert</span> <span class="n">nonzero</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Deformation appears to be trivial.&quot;</span>
             <span class="kn">from</span> <span class="nn">sage.matrix.constructor</span> <span class="kn">import</span> <span class="n">Matrix</span>
-            <span class="n">m</span><span class="o">=</span><span class="n">Matrix</span><span class="p">([[</span><span class="n">nonzero</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="o">-</span><span class="n">nonzero</span><span class="p">[</span><span class="mi">1</span><span class="p">]],[</span><span class="n">nonzero</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">nonzero</span><span class="p">[</span><span class="mi">0</span><span class="p">]]])</span>
-            <span class="n">mi</span><span class="o">=~</span><span class="n">m</span>
-            <span class="n">g</span><span class="o">=</span><span class="n">Matrix</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">]],</span><span class="n">ring</span><span class="o">=</span><span class="n">field</span><span class="p">)</span>
-            <span class="n">prod</span><span class="o">=</span><span class="n">m</span><span class="o">*</span><span class="n">g</span><span class="o">*</span><span class="n">mi</span>
-            <span class="n">ss</span><span class="o">=</span><span class="kc">None</span>
-            <span class="n">k</span><span class="o">=</span><span class="mi">0</span>
+
+            <span class="n">m</span> <span class="o">=</span> <span class="n">Matrix</span><span class="p">([[</span><span class="n">nonzero</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="o">-</span><span class="n">nonzero</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span> <span class="p">[</span><span class="n">nonzero</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">nonzero</span><span class="p">[</span><span class="mi">0</span><span class="p">]]])</span>
+            <span class="n">mi</span> <span class="o">=</span> <span class="o">~</span><span class="n">m</span>
+            <span class="n">g</span> <span class="o">=</span> <span class="n">Matrix</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]],</span> <span class="n">ring</span><span class="o">=</span><span class="n">field</span><span class="p">)</span>
+            <span class="n">prod</span> <span class="o">=</span> <span class="n">m</span> <span class="o">*</span> <span class="n">g</span> <span class="o">*</span> <span class="n">mi</span>
+            <span class="n">ss</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">k</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">ss</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">ss</span><span class="o">=</span><span class="n">s</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">mutable</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">new_field</span><span class="o">=</span><span class="n">field</span><span class="p">)</span>
+                    <span class="n">ss</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">mutable</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">new_field</span><span class="o">=</span><span class="n">field</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="c1"># In place matrix deformation</span>
                     <span class="n">ss</span><span class="o">.</span><span class="n">apply_matrix</span><span class="p">(</span><span class="n">prod</span><span class="p">)</span>
-                <span class="n">ss</span><span class="o">.</span><span class="n">delaunay_triangulation</span><span class="p">(</span><span class="n">direction</span><span class="o">=</span><span class="n">nonzero</span><span class="p">,</span><span class="n">in_place</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-                <span class="n">deformation2</span><span class="o">=</span><span class="p">{}</span>
+                <span class="n">ss</span><span class="o">.</span><span class="n">delaunay_triangulation</span><span class="p">(</span><span class="n">direction</span><span class="o">=</span><span class="n">nonzero</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">deformation2</span> <span class="o">=</span> <span class="p">{}</span>
                 <span class="k">for</span> <span class="n">singularity</span><span class="p">,</span> <span class="n">vect</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">deformation</span><span class="p">):</span>
-                    <span class="n">found_start</span><span class="o">=</span><span class="kc">None</span>
-                    <span class="k">for</span> <span class="n">label</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">singularity</span><span class="o">.</span><span class="n">vertex_set</span><span class="p">():</span>
-                        <span class="k">if</span> <span class="n">wedge_product</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="n">v</span><span class="p">),</span><span class="n">nonzero</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="ow">and</span> \
-                        <span class="n">wedge_product</span><span class="p">(</span><span class="n">nonzero</span><span class="p">,</span><span class="o">-</span><span class="n">s</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">.</span><span class="n">edge</span><span class="p">((</span><span class="n">v</span><span class="o">+</span><span class="mi">2</span><span class="p">)</span><span class="o">%</span><span class="mi">3</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                            <span class="n">found_start</span><span class="o">=</span><span class="p">(</span><span class="n">label</span><span class="p">,</span><span class="n">v</span><span class="p">)</span>
-                            <span class="n">found</span><span class="o">=</span><span class="kc">None</span>
+                    <span class="n">found_start</span> <span class="o">=</span> <span class="kc">None</span>
+                    <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">singularity</span><span class="o">.</span><span class="n">vertex_set</span><span class="p">():</span>
+                        <span class="k">if</span> <span class="p">(</span>
+                            <span class="n">wedge_product</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="n">v</span><span class="p">),</span> <span class="n">nonzero</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span>
+                            <span class="ow">and</span> <span class="n">wedge_product</span><span class="p">(</span>
+                                <span class="n">nonzero</span><span class="p">,</span> <span class="o">-</span><span class="n">s</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">.</span><span class="n">edge</span><span class="p">((</span><span class="n">v</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span> <span class="o">%</span> <span class="mi">3</span><span class="p">)</span>
+                            <span class="p">)</span>
+                            <span class="o">&gt;</span> <span class="mi">0</span>
+                        <span class="p">):</span>
+                            <span class="n">found_start</span> <span class="o">=</span> <span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+                            <span class="n">found</span> <span class="o">=</span> <span class="kc">None</span>
                             <span class="k">for</span> <span class="n">vv</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
-                                <span class="k">if</span> <span class="n">wedge_product</span><span class="p">(</span><span class="n">ss</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="n">vv</span><span class="p">),</span><span class="n">nonzero</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="ow">and</span> \
-                                <span class="n">wedge_product</span><span class="p">(</span><span class="n">nonzero</span><span class="p">,</span><span class="o">-</span><span class="n">ss</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">.</span><span class="n">edge</span><span class="p">((</span><span class="n">vv</span><span class="o">+</span><span class="mi">2</span><span class="p">)</span><span class="o">%</span><span class="mi">3</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                                    <span class="n">found</span><span class="o">=</span><span class="n">vv</span>
-                                    <span class="n">deformation2</span><span class="p">[</span><span class="n">ss</span><span class="o">.</span><span class="n">singularity</span><span class="p">(</span><span class="n">label</span><span class="p">,</span><span class="n">vv</span><span class="p">)]</span><span class="o">=</span><span class="n">vect</span>
+                                <span class="k">if</span> <span class="p">(</span>
+                                    <span class="n">wedge_product</span><span class="p">(</span><span class="n">ss</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="n">vv</span><span class="p">),</span> <span class="n">nonzero</span><span class="p">)</span>
+                                    <span class="o">&gt;=</span> <span class="mi">0</span>
+                                    <span class="ow">and</span> <span class="n">wedge_product</span><span class="p">(</span>
+                                        <span class="n">nonzero</span><span class="p">,</span> <span class="o">-</span><span class="n">ss</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">.</span><span class="n">edge</span><span class="p">((</span><span class="n">vv</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span> <span class="o">%</span> <span class="mi">3</span><span class="p">)</span>
+                                    <span class="p">)</span>
+                                    <span class="o">&gt;</span> <span class="mi">0</span>
+                                <span class="p">):</span>
+                                    <span class="n">found</span> <span class="o">=</span> <span class="n">vv</span>
+                                    <span class="n">deformation2</span><span class="p">[</span><span class="n">ss</span><span class="o">.</span><span class="n">singularity</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">vv</span><span class="p">)]</span> <span class="o">=</span> <span class="n">vect</span>
                                     <span class="k">break</span>
                             <span class="k">assert</span> <span class="n">found</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
                             <span class="k">break</span>
                     <span class="k">assert</span> <span class="n">found_start</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
                 <span class="k">try</span><span class="p">:</span>
-                    <span class="n">sss</span><span class="o">=</span><span class="n">ss</span><span class="o">.</span><span class="n">rel_deformation</span><span class="p">(</span><span class="n">deformation2</span><span class="p">,</span><span class="n">local</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-                    <span class="n">sss</span><span class="o">.</span><span class="n">apply_matrix</span><span class="p">(</span><span class="n">mi</span><span class="o">*</span><span class="n">g</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="n">k</span><span class="p">)</span><span class="o">*</span><span class="n">m</span><span class="p">)</span>
-                    <span class="n">sss</span><span class="o">.</span><span class="n">delaunay_triangulation</span><span class="p">(</span><span class="n">direction</span><span class="o">=</span><span class="n">nonzero</span><span class="p">,</span><span class="n">in_place</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                    <span class="n">sss</span> <span class="o">=</span> <span class="n">ss</span><span class="o">.</span><span class="n">rel_deformation</span><span class="p">(</span><span class="n">deformation2</span><span class="p">,</span> <span class="n">local</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                    <span class="n">sss</span><span class="o">.</span><span class="n">apply_matrix</span><span class="p">(</span><span class="n">mi</span> <span class="o">*</span> <span class="n">g</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="n">k</span><span class="p">)</span> <span class="o">*</span> <span class="n">m</span><span class="p">)</span>
+                    <span class="n">sss</span><span class="o">.</span><span class="n">delaunay_triangulation</span><span class="p">(</span><span class="n">direction</span><span class="o">=</span><span class="n">nonzero</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
                     <span class="k">return</span> <span class="n">sss</span>
                 <span class="k">except</span> <span class="ne">AssertionError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                     <span class="k">pass</span>
-                <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span>
-                <span class="k">if</span> <span class="n">limit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">k</span><span class="o">&gt;=</span><span class="n">limit</span><span class="p">:</span>
+                <span class="n">k</span> <span class="o">=</span> <span class="n">k</span> <span class="o">+</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="n">limit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">k</span> <span class="o">&gt;=</span> <span class="n">limit</span><span class="p">:</span>
                     <span class="k">assert</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;Exeeded limit iterations&quot;</span></div>
 
 <div class="viewcode-block" id="TranslationSurface.j_invariant"><a class="viewcode-back" href="../../../geometry/translation_surface.html#flatsurf.geometry.translation_surface.TranslationSurface.j_invariant">[docs]</a>    <span class="k">def</span> <span class="nf">j_invariant</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -727,7 +776,7 @@
         <span class="n">P</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">lab</span><span class="p">)</span>
         <span class="n">Jxx</span><span class="p">,</span> <span class="n">Jyy</span><span class="p">,</span> <span class="n">Jxy</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">j_invariant</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">lab</span> <span class="ow">in</span> <span class="n">it</span><span class="p">:</span>
-            <span class="n">xx</span><span class="p">,</span><span class="n">yy</span><span class="p">,</span><span class="n">xy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">lab</span><span class="p">)</span><span class="o">.</span><span class="n">j_invariant</span><span class="p">()</span>
+            <span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">,</span> <span class="n">xy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">lab</span><span class="p">)</span><span class="o">.</span><span class="n">j_invariant</span><span class="p">()</span>
             <span class="n">Jxx</span> <span class="o">+=</span> <span class="n">xx</span>
             <span class="n">Jyy</span> <span class="o">+=</span> <span class="n">yy</span>
             <span class="n">Jxy</span> <span class="o">+=</span> <span class="n">xy</span>
@@ -790,6 +839,7 @@
             <span class="c1"># no 2π angle</span>
             <span class="k">return</span> <span class="bp">self</span>
         <span class="kn">from</span> <span class="nn">.pyflatsurf_conversion</span> <span class="kn">import</span> <span class="n">from_pyflatsurf</span><span class="p">,</span> <span class="n">to_pyflatsurf</span>
+
         <span class="n">S</span> <span class="o">=</span> <span class="n">to_pyflatsurf</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="n">S</span><span class="o">.</span><span class="n">delaunay</span><span class="p">()</span>
         <span class="n">S</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">eliminateMarkedPoints</span><span class="p">()</span><span class="o">.</span><span class="n">surface</span><span class="p">()</span>
@@ -799,16 +849,19 @@
 
 <div class="viewcode-block" id="MinimalTranslationCover"><a class="viewcode-back" href="../../../geometry/translation_surface.html#flatsurf.geometry.translation_surface.MinimalTranslationCover">[docs]</a><span class="k">class</span> <span class="nc">MinimalTranslationCover</span><span class="p">(</span><span class="n">Surface</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Do not use translation_surface.MinimalTranslationCover. Use </span>
+<span class="sd">    Do not use translation_surface.MinimalTranslationCover. Use</span>
 <span class="sd">    minimal_cover.MinimalTranslationCover instead. This class is being</span>
 <span class="sd">    deprecated.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">similarity_surface</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">similarity_surface</span><span class="o">.</span><span class="n">underlying_surface</span><span class="p">()</span><span class="o">.</span><span class="n">is_mutable</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">similarity_surface</span><span class="o">.</span><span class="n">is_finite</span><span class="p">():</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">=</span><span class="n">similarity_surface</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_ss</span> <span class="o">=</span> <span class="n">similarity_surface</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Can not construct MinimalTranslationCover of a surface that is mutable and infinite.&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;Can not construct MinimalTranslationCover of a surface that is mutable and infinite.&quot;</span>
+                <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_ss</span> <span class="o">=</span> <span class="n">similarity_surface</span>
 
@@ -818,19 +871,22 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="kn">from</span> <span class="nn">flatsurf.geometry.rational_cone_surface</span> <span class="kn">import</span> <span class="n">RationalConeSurface</span>
+
                 <span class="n">ss_copy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">reposition_polygons</span><span class="p">(</span><span class="n">relabel</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
                 <span class="n">rcs</span> <span class="o">=</span> <span class="n">RationalConeSurface</span><span class="p">(</span><span class="n">ss_copy</span><span class="p">)</span>
                 <span class="n">rcs</span><span class="o">.</span><span class="n">_test_edge_matrix</span><span class="p">()</span>
-                <span class="n">finite</span><span class="o">=</span><span class="kc">True</span>
+                <span class="n">finite</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="k">except</span> <span class="ne">AssertionError</span><span class="p">:</span>
                 <span class="c1"># print(&quot;Warning: Could be indicating infinite surface falsely.&quot;)</span>
-                <span class="n">finite</span><span class="o">=</span><span class="kc">False</span>
+                <span class="n">finite</span> <span class="o">=</span> <span class="kc">False</span>
 
-        <span class="n">I</span> <span class="o">=</span> <span class="n">identity_matrix</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span><span class="mi">2</span><span class="p">)</span>
-        <span class="n">I</span><span class="o">.</span><span class="n">set_immutable</span><span class="p">()</span>
-        <span class="n">base_label</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">base_label</span><span class="p">(),</span> <span class="n">I</span><span class="p">)</span>
+        <span class="n">identity</span> <span class="o">=</span> <span class="n">identity_matrix</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">identity</span><span class="o">.</span><span class="n">set_immutable</span><span class="p">()</span>
+        <span class="n">base_label</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">base_label</span><span class="p">(),</span> <span class="n">identity</span><span class="p">)</span>
 
-        <span class="n">Surface</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span> <span class="n">base_label</span><span class="p">,</span> <span class="n">finite</span><span class="o">=</span><span class="n">finite</span><span class="p">,</span> <span class="n">mutable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">Surface</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span> <span class="n">base_label</span><span class="p">,</span> <span class="n">finite</span><span class="o">=</span><span class="n">finite</span><span class="p">,</span> <span class="n">mutable</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
 
 <div class="viewcode-block" id="MinimalTranslationCover.polygon"><a class="viewcode-back" href="../../../geometry/translation_surface.html#flatsurf.geometry.translation_surface.MinimalTranslationCover.polygon">[docs]</a>    <span class="k">def</span> <span class="nf">polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lab</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -849,23 +905,26 @@
         <span class="k">return</span> <span class="n">lab</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">lab</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></div>
 
 <div class="viewcode-block" id="MinimalTranslationCover.opposite_edge"><a class="viewcode-back" href="../../../geometry/translation_surface.html#flatsurf.geometry.translation_surface.MinimalTranslationCover.opposite_edge">[docs]</a>    <span class="k">def</span> <span class="nf">opposite_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
-        <span class="n">pp</span><span class="p">,</span><span class="n">m</span> <span class="o">=</span> <span class="n">p</span>  <span class="c1"># this is the polygon m * ss.polygon(p)</span>
-        <span class="n">p2</span><span class="p">,</span><span class="n">e2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">pp</span><span class="p">,</span><span class="n">e</span><span class="p">)</span>
-        <span class="n">me</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">edge_matrix</span><span class="p">(</span><span class="n">pp</span><span class="p">,</span><span class="n">e</span><span class="p">)</span>
+        <span class="n">pp</span><span class="p">,</span> <span class="n">m</span> <span class="o">=</span> <span class="n">p</span>  <span class="c1"># this is the polygon m * ss.polygon(p)</span>
+        <span class="n">p2</span><span class="p">,</span> <span class="n">e2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">pp</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+        <span class="n">me</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">edge_matrix</span><span class="p">(</span><span class="n">pp</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
         <span class="n">mm</span> <span class="o">=</span> <span class="o">~</span><span class="n">me</span> <span class="o">*</span> <span class="n">m</span>
         <span class="n">mm</span><span class="o">.</span><span class="n">set_immutable</span><span class="p">()</span>
-        <span class="k">return</span> <span class="p">((</span><span class="n">p2</span><span class="p">,</span><span class="n">mm</span><span class="p">),</span><span class="n">e2</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="p">((</span><span class="n">p2</span><span class="p">,</span> <span class="n">mm</span><span class="p">),</span> <span class="n">e2</span><span class="p">)</span></div></div>
+
 
 <div class="viewcode-block" id="AbstractOrigami"><a class="viewcode-back" href="../../../geometry/translation_surface.html#flatsurf.geometry.translation_surface.AbstractOrigami">[docs]</a><span class="k">class</span> <span class="nc">AbstractOrigami</span><span class="p">(</span><span class="n">Surface</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&#39;&#39;&#39;Abstract base class for origamis.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Abstract base class for origamis.</span>
 <span class="sd">    Realization needs just to define a _domain and four cardinal directions.</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">base_label</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_domain</span><span class="o">=</span><span class="n">domain</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_domain</span> <span class="o">=</span> <span class="n">domain</span>
         <span class="k">if</span> <span class="n">base_label</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">base_label</span> <span class="o">=</span> <span class="n">domain</span><span class="o">.</span><span class="n">an_element</span><span class="p">()</span>
         <span class="kn">from</span> <span class="nn">sage.rings.rational_field</span> <span class="kn">import</span> <span class="n">QQ</span>
-        <span class="n">Surface</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">QQ</span><span class="p">,</span><span class="n">base_label</span><span class="p">,</span><span class="n">finite</span><span class="o">=</span><span class="n">domain</span><span class="o">.</span><span class="n">is_finite</span><span class="p">(),</span><span class="n">mutable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="n">Surface</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">QQ</span><span class="p">,</span> <span class="n">base_label</span><span class="p">,</span> <span class="n">finite</span><span class="o">=</span><span class="n">domain</span><span class="o">.</span><span class="n">is_finite</span><span class="p">(),</span> <span class="n">mutable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
 <div class="viewcode-block" id="AbstractOrigami.up"><a class="viewcode-back" href="../../../geometry/translation_surface.html#flatsurf.geometry.translation_surface.AbstractOrigami.up">[docs]</a>    <span class="k">def</span> <span class="nf">up</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
@@ -893,22 +952,23 @@
 
 <div class="viewcode-block" id="AbstractOrigami.polygon"><a class="viewcode-back" href="../../../geometry/translation_surface.html#flatsurf.geometry.translation_surface.AbstractOrigami.polygon">[docs]</a>    <span class="k">def</span> <span class="nf">polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lab</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">lab</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_domain</span><span class="p">:</span>
-            <span class="c1">#Updated to print a possibly useful error message</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Label &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">lab</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot; is not in the domain&quot;</span><span class="p">)</span>
+            <span class="c1"># Updated to print a possibly useful error message</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Label &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">lab</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; is not in the domain&quot;</span><span class="p">)</span>
         <span class="kn">from</span> <span class="nn">flatsurf.geometry.polygon</span> <span class="kn">import</span> <span class="n">polygons</span>
+
         <span class="k">return</span> <span class="n">polygons</span><span class="o">.</span><span class="n">square</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="AbstractOrigami.opposite_edge"><a class="viewcode-back" href="../../../geometry/translation_surface.html#flatsurf.geometry.translation_surface.AbstractOrigami.opposite_edge">[docs]</a>    <span class="k">def</span> <span class="nf">opposite_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">p</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_domain</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span>
-        <span class="k">if</span> <span class="n">e</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">down</span><span class="p">(</span><span class="n">p</span><span class="p">),</span><span class="mi">2</span>
-        <span class="k">if</span> <span class="n">e</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">right</span><span class="p">(</span><span class="n">p</span><span class="p">),</span><span class="mi">3</span>
-        <span class="k">if</span> <span class="n">e</span><span class="o">==</span><span class="mi">2</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">up</span><span class="p">(</span><span class="n">p</span><span class="p">),</span><span class="mi">0</span>
-        <span class="k">if</span> <span class="n">e</span><span class="o">==</span><span class="mi">3</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="p">(</span><span class="n">p</span><span class="p">),</span><span class="mi">1</span>
+        <span class="k">if</span> <span class="n">e</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">down</span><span class="p">(</span><span class="n">p</span><span class="p">),</span> <span class="mi">2</span>
+        <span class="k">if</span> <span class="n">e</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">right</span><span class="p">(</span><span class="n">p</span><span class="p">),</span> <span class="mi">3</span>
+        <span class="k">if</span> <span class="n">e</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">up</span><span class="p">(</span><span class="n">p</span><span class="p">),</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">e</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="p">(</span><span class="n">p</span><span class="p">),</span> <span class="mi">1</span>
         <span class="k">raise</span> <span class="ne">ValueError</span></div></div>
 
 
@@ -924,42 +984,44 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">domain</span><span class="o">.</span><span class="n">some_elements</span><span class="p">():</span>
                 <span class="k">if</span> <span class="n">r</span><span class="p">(</span><span class="n">rr</span><span class="p">(</span><span class="n">a</span><span class="p">))</span> <span class="o">!=</span> <span class="n">a</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;r o rr is not identity on </span><span class="si">%s</span><span class="s2">&quot;</span><span class="o">%</span><span class="n">a</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;r o rr is not identity on </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">a</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">rr</span><span class="p">(</span><span class="n">r</span><span class="p">(</span><span class="n">a</span><span class="p">))</span> <span class="o">!=</span> <span class="n">a</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;rr o r is not identity on </span><span class="si">%s</span><span class="s2">&quot;</span><span class="o">%</span><span class="n">a</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;rr o r is not identity on </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">a</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">uu</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">uu</span> <span class="o">=</span> <span class="o">~</span><span class="n">u</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">domain</span><span class="o">.</span><span class="n">some_elements</span><span class="p">():</span>
                 <span class="k">if</span> <span class="n">u</span><span class="p">(</span><span class="n">uu</span><span class="p">(</span><span class="n">a</span><span class="p">))</span> <span class="o">!=</span> <span class="n">a</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;u o uu is not identity on </span><span class="si">%s</span><span class="s2">&quot;</span><span class="o">%</span><span class="n">a</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;u o uu is not identity on </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">a</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">uu</span><span class="p">(</span><span class="n">u</span><span class="p">(</span><span class="n">a</span><span class="p">))</span> <span class="o">!=</span> <span class="n">a</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;uu o u is not identity on </span><span class="si">%s</span><span class="s2">&quot;</span><span class="o">%</span><span class="n">a</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;uu o u is not identity on </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">a</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_perms</span> <span class="o">=</span> <span class="p">[</span><span class="n">uu</span><span class="p">,</span><span class="n">r</span><span class="p">,</span><span class="n">u</span><span class="p">,</span><span class="n">rr</span><span class="p">]</span> <span class="c1"># down,right,up,left</span>
-        <span class="n">AbstractOrigami</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">domain</span><span class="p">,</span><span class="n">base_label</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_perms</span> <span class="o">=</span> <span class="p">[</span><span class="n">uu</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">rr</span><span class="p">]</span>  <span class="c1"># down,right,up,left</span>
+        <span class="n">AbstractOrigami</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">base_label</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Origami.opposite_edge"><a class="viewcode-back" href="../../../geometry/translation_surface.html#flatsurf.geometry.translation_surface.Origami.opposite_edge">[docs]</a>    <span class="k">def</span> <span class="nf">opposite_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">p</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_domain</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Polygon label p=&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot; is not in domain=&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_domain</span><span class="p">))</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Polygon label p=&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; is not in domain=&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_domain</span><span class="p">)</span>
+            <span class="p">)</span>
         <span class="k">if</span> <span class="n">e</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">e</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Edge value e=&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot; does not satisfy 0&lt;=e&lt;4.&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_perms</span><span class="p">[</span><span class="n">e</span><span class="p">](</span><span class="n">p</span><span class="p">),</span> <span class="p">(</span><span class="n">e</span><span class="o">+</span><span class="mi">2</span><span class="p">)</span><span class="o">%</span><span class="mi">4</span></div>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Edge value e=&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; does not satisfy 0&lt;=e&lt;4.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_perms</span><span class="p">[</span><span class="n">e</span><span class="p">](</span><span class="n">p</span><span class="p">),</span> <span class="p">(</span><span class="n">e</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span> <span class="o">%</span> <span class="mi">4</span></div>
 
 <div class="viewcode-block" id="Origami.up"><a class="viewcode-back" href="../../../geometry/translation_surface.html#flatsurf.geometry.translation_surface.Origami.up">[docs]</a>    <span class="k">def</span> <span class="nf">up</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">label</span><span class="p">,</span><span class="mi">2</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="mi">2</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="Origami.down"><a class="viewcode-back" href="../../../geometry/translation_surface.html#flatsurf.geometry.translation_surface.Origami.down">[docs]</a>    <span class="k">def</span> <span class="nf">down</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">label</span><span class="p">,</span><span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="Origami.right"><a class="viewcode-back" href="../../../geometry/translation_surface.html#flatsurf.geometry.translation_surface.Origami.right">[docs]</a>    <span class="k">def</span> <span class="nf">right</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">label</span><span class="p">,</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="Origami.left"><a class="viewcode-back" href="../../../geometry/translation_surface.html#flatsurf.geometry.translation_surface.Origami.left">[docs]</a>    <span class="k">def</span> <span class="nf">left</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">label</span><span class="p">,</span><span class="mi">3</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="mi">3</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span></div>
 
     <span class="k">def</span> <span class="nf">_repr_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s2">&quot;Origami defined by r=</span><span class="si">%s</span><span class="s2"> and u=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_r</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">_u</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="s2">&quot;Origami defined by r=</span><span class="si">%s</span><span class="s2"> and u=</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_r</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_u</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="LazyStandardizedPolygonSurface"><a class="viewcode-back" href="../../../geometry/translation_surface.html#flatsurf.geometry.translation_surface.LazyStandardizedPolygonSurface">[docs]</a><span class="k">class</span> <span class="nc">LazyStandardizedPolygonSurface</span><span class="p">(</span><span class="n">Surface</span><span class="p">):</span>
@@ -974,19 +1036,25 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">surface</span><span class="p">,</span> <span class="n">relabel</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_s</span> <span class="o">=</span> <span class="n">surface</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">mutable</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">relabel</span><span class="o">=</span><span class="n">relabel</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_labels</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
-        <span class="n">Surface</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">base_label</span><span class="p">(),</span> <span class="n">finite</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">is_finite</span><span class="p">(),</span> <span class="n">mutable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">Surface</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">base_label</span><span class="p">(),</span>
+            <span class="n">finite</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">is_finite</span><span class="p">(),</span>
+            <span class="n">mutable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
 
 <div class="viewcode-block" id="LazyStandardizedPolygonSurface.standardize"><a class="viewcode-back" href="../../../geometry/translation_surface.html#flatsurf.geometry.translation_surface.LazyStandardizedPolygonSurface.standardize">[docs]</a>    <span class="k">def</span> <span class="nf">standardize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
-        <span class="n">best</span><span class="o">=</span><span class="mi">0</span>
+        <span class="n">best</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">polygon</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
-        <span class="n">best_pt</span><span class="o">=</span><span class="n">polygon</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="n">best</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">polygon</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()):</span>
-            <span class="n">pt</span><span class="o">=</span><span class="n">polygon</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
-            <span class="k">if</span> <span class="p">(</span><span class="n">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">&lt;</span><span class="n">best_pt</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="ow">or</span> <span class="p">(</span><span class="n">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">==</span><span class="n">best_pt</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">and</span> <span class="n">pt</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">&lt;</span><span class="n">best_pt</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
-                <span class="n">best</span><span class="o">=</span><span class="n">v</span>
-                <span class="n">best_pt</span><span class="o">=</span><span class="n">pt</span>
-        <span class="k">if</span> <span class="n">best</span><span class="o">!=</span><span class="mi">0</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">set_vertex_zero</span><span class="p">(</span><span class="n">label</span><span class="p">,</span><span class="n">best</span><span class="p">,</span><span class="n">in_place</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">best_pt</span> <span class="o">=</span> <span class="n">polygon</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="n">best</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">polygon</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()):</span>
+            <span class="n">pt</span> <span class="o">=</span> <span class="n">polygon</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">best_pt</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="ow">or</span> <span class="p">(</span><span class="n">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">best_pt</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">and</span> <span class="n">pt</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">best_pt</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                <span class="n">best</span> <span class="o">=</span> <span class="n">v</span>
+                <span class="n">best_pt</span> <span class="o">=</span> <span class="n">pt</span>
+        <span class="k">if</span> <span class="n">best</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">set_vertex_zero</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">best</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_labels</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">label</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="LazyStandardizedPolygonSurface.polygon"><a class="viewcode-back" href="../../../geometry/translation_surface.html#flatsurf.geometry.translation_surface.LazyStandardizedPolygonSurface.polygon">[docs]</a>    <span class="k">def</span> <span class="nf">polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
@@ -1001,20 +1069,18 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">standardize</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="LazyStandardizedPolygonSurface.opposite_edge"><a class="viewcode-back" href="../../../geometry/translation_surface.html#flatsurf.geometry.translation_surface.LazyStandardizedPolygonSurface.opposite_edge">[docs]</a>    <span class="k">def</span> <span class="nf">opposite_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+<div class="viewcode-block" id="LazyStandardizedPolygonSurface.opposite_edge"><a class="viewcode-back" href="../../../geometry/translation_surface.html#flatsurf.geometry.translation_surface.LazyStandardizedPolygonSurface.opposite_edge">[docs]</a>    <span class="k">def</span> <span class="nf">opposite_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Given the label ``l`` of a polygon and an edge ``e`` in that polygon</span>
-<span class="sd">        returns the pair (``ll``, ``ee``) to which this edge is glued.</span>
-
-<span class="sd">        This method must be overridden in subclasses.</span>
+<span class="sd">        Given the label ``label`` of a polygon and an edge ``e`` in that</span>
+<span class="sd">        polygon returns the pair (``ll``, ``ee``) to which this edge is glued.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">l</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_labels</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">standardize</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
-        <span class="n">ll</span><span class="p">,</span><span class="n">ee</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="n">e</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">label</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_labels</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">standardize</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+        <span class="n">ll</span><span class="p">,</span> <span class="n">ee</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">ll</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_labels</span><span class="p">:</span>
-            <span class="k">return</span> <span class="p">(</span><span class="n">ll</span><span class="p">,</span><span class="n">ee</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">ll</span><span class="p">,</span> <span class="n">ee</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">standardize</span><span class="p">(</span><span class="n">ll</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="n">e</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span></div></div>
 </pre></div>
         </article>
       </div>

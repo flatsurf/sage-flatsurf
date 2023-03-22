@@ -277,8 +277,8 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.half_dilation_surface.GL2RImageSurface.opposite_edge">
 <span class="sig-name descname"><span class="pre">opposite_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/half_dilation_surface.html#GL2RImageSurface.opposite_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.half_dilation_surface.GL2RImageSurface.opposite_edge" title="Permalink to this definition">#</a></dt>
-<dd><p>Given the label <code class="docutils literal notranslate"><span class="pre">l</span></code> of a polygon and an edge <code class="docutils literal notranslate"><span class="pre">e</span></code> in that polygon
-returns the pair (<code class="docutils literal notranslate"><span class="pre">ll</span></code>, <code class="docutils literal notranslate"><span class="pre">ee</span></code>) to which this edge is glued.</p>
+<dd><p>Given the label <code class="docutils literal notranslate"><span class="pre">label</span></code> of a polygon and an edge <code class="docutils literal notranslate"><span class="pre">e</span></code> in that
+polygon returns the pair (<code class="docutils literal notranslate"><span class="pre">ll</span></code>, <code class="docutils literal notranslate"><span class="pre">ee</span></code>) to which this edge is glued.</p>
 <p>This method must be overridden in subclasses.</p>
 </dd></dl>
 
@@ -333,9 +333,9 @@ the oriented case, have a look at
 <dt class="sig sig-object py" id="flatsurf.geometry.half_dilation_surface.HalfDilationSurface.apply_matrix">
 <span class="sig-name descname"><span class="pre">apply_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_place</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mapping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/half_dilation_surface.html#HalfDilationSurface.apply_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.half_dilation_surface.HalfDilationSurface.apply_matrix" title="Permalink to this definition">#</a></dt>
 <dd><p>Carry out the GL(2,R) action of m on this surface and return the result.</p>
-<p>If in_place=True, then this is done in place and changes the surface. 
+<p>If in_place=True, then this is done in place and changes the surface.
 This can only be carried out if the surface is finite and mutable.</p>
-<p>If mapping=True, then we return a GL2RMapping between this surface and its image. 
+<p>If mapping=True, then we return a GL2RMapping between this surface and its image.
 In this case in_place must be False.</p>
 <p>If in_place=False, then a copy is made before the deformation.</p>
 </dd></dl>

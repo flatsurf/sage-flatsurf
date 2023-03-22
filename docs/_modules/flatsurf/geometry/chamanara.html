@@ -290,15 +290,19 @@
 
 <div class="viewcode-block" id="ChamanaraPolygon"><a class="viewcode-back" href="../../../geometry/chamanara.html#flatsurf.geometry.chamanara.ChamanaraPolygon">[docs]</a><span class="k">def</span> <span class="nf">ChamanaraPolygon</span><span class="p">(</span><span class="n">alpha</span><span class="p">):</span>
     <span class="kn">from</span> <span class="nn">sage.categories.fields</span> <span class="kn">import</span> <span class="n">Fields</span>
+
     <span class="n">field</span> <span class="o">=</span> <span class="n">alpha</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">field</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">Fields</span><span class="p">():</span>
         <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The value of alpha must lie in a field.&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">alpha</span><span class="o">&lt;=</span><span class="mi">0</span> <span class="ow">or</span> <span class="n">alpha</span><span class="o">&gt;=</span><span class="mi">1</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">alpha</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">alpha</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
         <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The value of alpha must be between zero and one.&quot;</span><span class="p">)</span>
     <span class="c1"># The value of x is $\sum_{n=0}^\infty \alpha^n$.</span>
-    <span class="n">x</span><span class="o">=</span><span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">alpha</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">alpha</span><span class="p">)</span>
     <span class="kn">from</span> <span class="nn">.polygon</span> <span class="kn">import</span> <span class="n">polygons</span>
-    <span class="k">return</span> <span class="n">polygons</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="n">x</span><span class="p">,</span><span class="n">x</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="n">x</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="o">-</span><span class="n">x</span><span class="p">))</span></div>
+
+    <span class="k">return</span> <span class="n">polygons</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">x</span><span class="p">))</span></div>
+
+
 <span class="c1">#    pc=PolygonCreator(field=field)</span>
 <span class="c1">#    pc.add_vertex((0,0))</span>
 <span class="c1">#    pc.add_vertex((1,0))</span>
@@ -306,27 +310,29 @@
 <span class="c1">#    pc.add_vertex((1-x,x-1))</span>
 <span class="c1">#    return pc.get_polygon()</span>
 
+
 <div class="viewcode-block" id="ChamanaraSurface"><a class="viewcode-back" href="../../../geometry/chamanara.html#flatsurf.geometry.chamanara.ChamanaraSurface">[docs]</a><span class="k">class</span> <span class="nc">ChamanaraSurface</span><span class="p">(</span><span class="n">Surface</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The ChamanaraSurface $X_{\alpha}$.</span>
-<span class="sd">    </span>
+
 <span class="sd">    EXAMPLES::</span>
 
 <span class="sd">        sage: from flatsurf.geometry.chamanara import ChamanaraSurface</span>
 <span class="sd">        sage: ChamanaraSurface(1/2)</span>
 <span class="sd">        Chamanara surface with parameter 1/2</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_p</span> <span class="o">=</span> <span class="n">ChamanaraPolygon</span><span class="p">(</span><span class="n">alpha</span><span class="p">)</span>
-        
+
         <span class="n">field</span> <span class="o">=</span> <span class="n">alpha</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">field</span><span class="o">.</span><span class="n">is_field</span><span class="p">():</span>
             <span class="n">field</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">fraction_field</span><span class="p">()</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="s1">&#39;Chamanara surface with parameter </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">alpha</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="s2">&quot;Chamanara surface with parameter </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">alpha</span><span class="p">))</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">ZZ</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">finite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">mutable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    
+
 <div class="viewcode-block" id="ChamanaraSurface.polygon"><a class="viewcode-back" href="../../../geometry/chamanara.html#flatsurf.geometry.chamanara.ChamanaraSurface.polygon">[docs]</a>    <span class="k">def</span> <span class="nf">polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lab</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        EXAMPLES::</span>
@@ -343,63 +349,65 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_p</span></div>
 
 <div class="viewcode-block" id="ChamanaraSurface.opposite_edge"><a class="viewcode-back" href="../../../geometry/chamanara.html#flatsurf.geometry.chamanara.ChamanaraSurface.opposite_edge">[docs]</a>    <span class="k">def</span> <span class="nf">opposite_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">e</span><span class="o">==</span><span class="mi">0</span> <span class="ow">or</span> <span class="n">e</span><span class="o">==</span><span class="mi">2</span><span class="p">:</span>
-            <span class="k">return</span> <span class="mi">1</span><span class="o">-</span><span class="n">p</span><span class="p">,</span><span class="n">e</span>
-        <span class="k">elif</span> <span class="n">e</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">p</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">p</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span>
-            <span class="k">elif</span> <span class="n">p</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">p</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span>
+        <span class="k">if</span> <span class="n">e</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">e</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">p</span><span class="p">,</span> <span class="n">e</span>
+        <span class="k">elif</span> <span class="n">e</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">p</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">p</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span>
+            <span class="k">elif</span> <span class="n">p</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">p</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># p==0 or p==1</span>
-                <span class="k">return</span> <span class="mi">1</span><span class="o">-</span><span class="n">p</span><span class="p">,</span><span class="mi">1</span>
+                <span class="k">return</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">p</span><span class="p">,</span> <span class="mi">1</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># e==3</span>
-            <span class="k">if</span> <span class="n">p</span><span class="o">&lt;=</span><span class="mi">0</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">p</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span>
+            <span class="k">if</span> <span class="n">p</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">p</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># p&gt;=1</span>
-                <span class="k">return</span> <span class="n">p</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span></div></div>
+                <span class="k">return</span> <span class="n">p</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span></div></div>
+
 
 <div class="viewcode-block" id="chamanara_half_dilation_surface"><a class="viewcode-back" href="../../../geometry/chamanara.html#flatsurf.geometry.chamanara.chamanara_half_dilation_surface">[docs]</a><span class="k">def</span> <span class="nf">chamanara_half_dilation_surface</span><span class="p">(</span><span class="n">alpha</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">8</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return Chamanara&#39;s surface thought of as a Half Dilation surface.</span>
-<span class="sd">    </span>
+
 <span class="sd">    EXAMPLES::</span>
-<span class="sd">    </span>
+
 <span class="sd">        sage: from flatsurf.geometry.chamanara import chamanara_half_dilation_surface</span>
 <span class="sd">        sage: s = chamanara_half_dilation_surface(1/2)</span>
 <span class="sd">        sage: TestSuite(s).run(skip=&#39;_test_pickling&#39;)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">s</span><span class="o">=</span><span class="n">HalfDilationSurface</span><span class="p">(</span><span class="n">ChamanaraSurface</span><span class="p">(</span><span class="n">alpha</span><span class="p">))</span>
-    <span class="n">adjacencies</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">HalfDilationSurface</span><span class="p">(</span><span class="n">ChamanaraSurface</span><span class="p">(</span><span class="n">alpha</span><span class="p">))</span>
+    <span class="n">adjacencies</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
-        <span class="n">adjacencies</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="o">-</span><span class="n">i</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
-        <span class="n">adjacencies</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
+        <span class="n">adjacencies</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="o">-</span><span class="n">i</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+        <span class="n">adjacencies</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
     <span class="n">s</span><span class="o">.</span><span class="n">graphical_surface</span><span class="p">(</span><span class="n">adjacencies</span><span class="o">=</span><span class="n">adjacencies</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">s</span></div>
-    
-<div class="viewcode-block" id="chamanara_surface"><a class="viewcode-back" href="../../../geometry/chamanara.html#flatsurf.geometry.chamanara.chamanara_surface">[docs]</a><span class="k">def</span> <span class="nf">chamanara_surface</span><span class="p">(</span><span class="n">alpha</span><span class="p">,</span><span class="n">n</span><span class="o">=</span><span class="mi">8</span><span class="p">):</span>
+
+
+<div class="viewcode-block" id="chamanara_surface"><a class="viewcode-back" href="../../../geometry/chamanara.html#flatsurf.geometry.chamanara.chamanara_surface">[docs]</a><span class="k">def</span> <span class="nf">chamanara_surface</span><span class="p">(</span><span class="n">alpha</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">8</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return Chamanara&#39;s surface thought of as a translation surface.</span>
 
 <span class="sd">    EXAMPLES::</span>
-<span class="sd">    </span>
+
 <span class="sd">        sage: from flatsurf.geometry.chamanara import chamanara_surface</span>
 <span class="sd">        sage: s = chamanara_surface(1/2)</span>
 <span class="sd">        sage: TestSuite(s).run(skip=&#39;_test_pickling&#39;)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">s</span> <span class="o">=</span> <span class="n">chamanara_half_dilation_surface</span><span class="p">(</span><span class="n">alpha</span><span class="p">)</span><span class="o">.</span><span class="n">minimal_cover</span><span class="p">(</span><span class="n">cover_type</span><span class="o">=</span><span class="s2">&quot;translation&quot;</span><span class="p">)</span>
-    <span class="n">l</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">base_label</span><span class="p">()</span>
-    <span class="n">adjacencies</span> <span class="o">=</span> <span class="p">[(</span><span class="n">l</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span>
+    <span class="n">label</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">base_label</span><span class="p">()</span>
+    <span class="n">adjacencies</span> <span class="o">=</span> <span class="p">[(</span><span class="n">label</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
-        <span class="n">adjacencies</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">l</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
-        <span class="n">l</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mi">3</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">l</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">base_label</span><span class="p">()</span>
-    <span class="n">l</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">adjacencies</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">label</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="mi">3</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">label</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">base_label</span><span class="p">()</span>
+    <span class="n">label</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
-        <span class="n">adjacencies</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">l</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
-        <span class="n">l</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mi">3</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">adjacencies</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">label</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="mi">3</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
     <span class="n">s</span><span class="o">.</span><span class="n">graphical_surface</span><span class="p">(</span><span class="n">adjacencies</span><span class="o">=</span><span class="n">adjacencies</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">s</span></div>
 </pre></div>

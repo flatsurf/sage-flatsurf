@@ -377,14 +377,28 @@
     <span class="n">s</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">det</span><span class="p">()</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">s</span><span class="o">.</span><span class="n">is_unit</span><span class="p">():</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;determinant must be +1 or -1&quot;</span><span class="p">)</span>
-    <span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="n">d</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">list</span><span class="p">()</span>
-    <span class="n">V</span> <span class="o">=</span> <span class="n">matrix</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span>
-              <span class="p">[</span><span class="n">a</span><span class="o">-</span><span class="n">s</span><span class="o">*</span><span class="n">d</span><span class="p">,</span>     <span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">s</span><span class="p">)</span><span class="o">*</span><span class="n">c</span><span class="p">,</span>
-                 <span class="n">s</span><span class="o">*</span><span class="n">b</span><span class="p">,</span>     <span class="n">c</span><span class="p">,</span>  <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">s</span><span class="p">)</span><span class="o">*</span><span class="n">a</span><span class="p">,</span>
-                   <span class="n">b</span><span class="p">,</span>   <span class="n">s</span><span class="o">*</span><span class="n">c</span><span class="p">,</span>  <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">s</span><span class="p">)</span><span class="o">*</span><span class="n">d</span><span class="p">,</span>
-                   <span class="mi">0</span><span class="p">,</span>   <span class="n">d</span><span class="o">-</span><span class="n">s</span><span class="o">*</span><span class="n">a</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">s</span><span class="p">)</span><span class="o">*</span><span class="n">b</span><span class="p">]</span>
-              <span class="p">)</span><span class="o">.</span><span class="n">right_kernel</span><span class="p">()</span>
+    <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">list</span><span class="p">()</span>
+    <span class="n">V</span> <span class="o">=</span> <span class="n">matrix</span><span class="p">(</span>
+        <span class="n">m</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span>
+        <span class="mi">4</span><span class="p">,</span>
+        <span class="mi">3</span><span class="p">,</span>
+        <span class="p">[</span>
+            <span class="n">a</span> <span class="o">-</span> <span class="n">s</span> <span class="o">*</span> <span class="n">d</span><span class="p">,</span>
+            <span class="mi">0</span><span class="p">,</span>
+            <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">s</span><span class="p">)</span> <span class="o">*</span> <span class="n">c</span><span class="p">,</span>
+            <span class="n">s</span> <span class="o">*</span> <span class="n">b</span><span class="p">,</span>
+            <span class="n">c</span><span class="p">,</span>
+            <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">s</span><span class="p">)</span> <span class="o">*</span> <span class="n">a</span><span class="p">,</span>
+            <span class="n">b</span><span class="p">,</span>
+            <span class="n">s</span> <span class="o">*</span> <span class="n">c</span><span class="p">,</span>
+            <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">s</span><span class="p">)</span> <span class="o">*</span> <span class="n">d</span><span class="p">,</span>
+            <span class="mi">0</span><span class="p">,</span>
+            <span class="n">d</span> <span class="o">-</span> <span class="n">s</span> <span class="o">*</span> <span class="n">a</span><span class="p">,</span>
+            <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">s</span><span class="p">)</span> <span class="o">*</span> <span class="n">b</span><span class="p">,</span>
+        <span class="p">],</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">right_kernel</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">V</span></div>
+
 
 <div class="viewcode-block" id="contains_definite_form"><a class="viewcode-back" href="../../../geometry/finitely_generated_matrix_group.html#flatsurf.geometry.finitely_generated_matrix_group.contains_definite_form">[docs]</a><span class="k">def</span> <span class="nf">contains_definite_form</span><span class="p">(</span><span class="n">V</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -413,18 +427,21 @@
     <span class="k">if</span> <span class="n">dim</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">False</span>
     <span class="k">elif</span> <span class="n">dim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="n">a</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="n">b</span> <span class="o">=</span> <span class="n">V</span><span class="o">.</span><span class="n">gen</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">b</span><span class="o">**</span><span class="mi">2</span> <span class="o">&lt;</span> <span class="n">a</span><span class="o">*</span><span class="n">c</span>
+        <span class="n">a</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">V</span><span class="o">.</span><span class="n">gen</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">b</span><span class="o">**</span><span class="mi">2</span> <span class="o">&lt;</span> <span class="n">a</span> <span class="o">*</span> <span class="n">c</span>
     <span class="k">elif</span> <span class="n">dim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-        <span class="n">a1</span><span class="p">,</span><span class="n">c1</span><span class="p">,</span><span class="n">b1</span> <span class="o">=</span> <span class="n">V</span><span class="o">.</span><span class="n">gen</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-        <span class="n">a2</span><span class="p">,</span><span class="n">c2</span><span class="p">,</span><span class="n">b2</span> <span class="o">=</span> <span class="n">V</span><span class="o">.</span><span class="n">gen</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">b1</span><span class="o">**</span><span class="mi">2</span> <span class="o">&lt;</span> <span class="n">a1</span><span class="o">*</span><span class="n">c1</span> <span class="ow">or</span> <span class="n">b2</span><span class="o">**</span><span class="mi">2</span> <span class="o">&lt;</span> <span class="n">a2</span><span class="o">*</span><span class="n">c2</span><span class="p">:</span>
+        <span class="n">a1</span><span class="p">,</span> <span class="n">c1</span><span class="p">,</span> <span class="n">b1</span> <span class="o">=</span> <span class="n">V</span><span class="o">.</span><span class="n">gen</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">a2</span><span class="p">,</span> <span class="n">c2</span><span class="p">,</span> <span class="n">b2</span> <span class="o">=</span> <span class="n">V</span><span class="o">.</span><span class="n">gen</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">b1</span><span class="o">**</span><span class="mi">2</span> <span class="o">&lt;</span> <span class="n">a1</span> <span class="o">*</span> <span class="n">c1</span> <span class="ow">or</span> <span class="n">b2</span><span class="o">**</span><span class="mi">2</span> <span class="o">&lt;</span> <span class="n">a2</span> <span class="o">*</span> <span class="n">c2</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">True</span>
-        <span class="k">return</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">b1</span><span class="o">*</span><span class="n">b2</span> <span class="o">-</span> <span class="n">a2</span><span class="o">*</span><span class="n">c1</span> <span class="o">-</span> <span class="n">a1</span><span class="o">*</span><span class="n">c2</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">4</span> <span class="o">*</span> <span class="p">(</span><span class="n">b1</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="n">a1</span><span class="o">*</span><span class="n">c1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">b2</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="n">a2</span><span class="o">*</span><span class="n">c2</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">b1</span> <span class="o">*</span> <span class="n">b2</span> <span class="o">-</span> <span class="n">a2</span> <span class="o">*</span> <span class="n">c1</span> <span class="o">-</span> <span class="n">a1</span> <span class="o">*</span> <span class="n">c2</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">-</span> <span class="mi">4</span> <span class="o">*</span> <span class="p">(</span><span class="n">b1</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="n">a1</span> <span class="o">*</span> <span class="n">c1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span>
+            <span class="n">b2</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="n">a2</span> <span class="o">*</span> <span class="n">c2</span>
+        <span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
     <span class="k">elif</span> <span class="n">dim</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">True</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span></div>
+
 
 <div class="viewcode-block" id="matrix_multiplicative_order"><a class="viewcode-back" href="../../../geometry/finitely_generated_matrix_group.html#flatsurf.geometry.finitely_generated_matrix_group.matrix_multiplicative_order">[docs]</a><span class="k">def</span> <span class="nf">matrix_multiplicative_order</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -437,27 +454,32 @@
 
     <span class="c1"># now we compute the potentially preserved quadratic form</span>
     <span class="c1"># i.e. looking for A such that m^t A m = A</span>
-    <span class="n">m00</span> <span class="o">=</span> <span class="n">m</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">m01</span> <span class="o">=</span> <span class="n">m</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
-    <span class="n">m10</span> <span class="o">=</span> <span class="n">m</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">m11</span> <span class="o">=</span> <span class="n">m</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
-    <span class="n">M</span> <span class="o">=</span> <span class="n">matrix</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span>
-        <span class="p">[[</span><span class="n">m00</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">m00</span><span class="o">*</span><span class="n">m10</span><span class="p">,</span> <span class="n">m10</span><span class="o">**</span><span class="mi">2</span><span class="p">],</span>
-         <span class="p">[</span><span class="n">m00</span><span class="o">*</span><span class="n">m01</span><span class="p">,</span> <span class="n">m00</span><span class="o">*</span><span class="n">m11</span><span class="p">,</span> <span class="n">m10</span><span class="o">*</span><span class="n">m11</span><span class="p">],</span>
-         <span class="p">[</span><span class="n">m01</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">m01</span><span class="o">*</span><span class="n">m11</span><span class="p">,</span> <span class="n">m11</span><span class="o">**</span><span class="mi">2</span><span class="p">]])</span>
+    <span class="n">m00</span> <span class="o">=</span> <span class="n">m</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">m01</span> <span class="o">=</span> <span class="n">m</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="n">m10</span> <span class="o">=</span> <span class="n">m</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">m11</span> <span class="o">=</span> <span class="n">m</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="n">M</span> <span class="o">=</span> <span class="n">matrix</span><span class="p">(</span>
+        <span class="n">m</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span>
+        <span class="p">[</span>
+            <span class="p">[</span><span class="n">m00</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">m00</span> <span class="o">*</span> <span class="n">m10</span><span class="p">,</span> <span class="n">m10</span><span class="o">**</span><span class="mi">2</span><span class="p">],</span>
+            <span class="p">[</span><span class="n">m00</span> <span class="o">*</span> <span class="n">m01</span><span class="p">,</span> <span class="n">m00</span> <span class="o">*</span> <span class="n">m11</span><span class="p">,</span> <span class="n">m10</span> <span class="o">*</span> <span class="n">m11</span><span class="p">],</span>
+            <span class="p">[</span><span class="n">m01</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">m01</span> <span class="o">*</span> <span class="n">m11</span><span class="p">,</span> <span class="n">m11</span><span class="o">**</span><span class="mi">2</span><span class="p">],</span>
+        <span class="p">],</span>
+    <span class="p">)</span>
 
     <span class="c1"># might there be several solutions ? (other than scaling)... should not</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">v</span> <span class="o">=</span> <span class="p">(</span><span class="n">M</span><span class="o">-</span><span class="n">identity_matrix</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span><span class="o">.</span><span class="n">solve_right</span><span class="p">()</span>
-    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span> <span class="c1"># no solution</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="p">(</span><span class="n">M</span> <span class="o">-</span> <span class="n">identity_matrix</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span><span class="o">.</span><span class="n">solve_right</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>  <span class="c1"># no solution</span>
         <span class="k">return</span> <span class="kc">False</span>
 
-    <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;your matrix is conjugate to an orthogonal matrix but the angle might not be rational.. to be terminated.&quot;</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+        <span class="s2">&quot;your matrix is conjugate to an orthogonal matrix but the angle might not be rational.. to be terminated.&quot;</span>
+    <span class="p">)</span>
 
     <span class="c1"># then we conjugate and check if the angles are rational</span>
     <span class="c1"># we need to take a square root of a symmetric matrix... this is not implemented!</span>
-    <span class="n">A</span> <span class="o">=</span> <span class="n">matrix</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span> <span class="p">[[</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">]],[</span><span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">v</span><span class="p">[</span><span class="mi">2</span><span class="p">]]])</span></div>
-
+    <span class="n">A</span> <span class="o">=</span> <span class="n">matrix</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span> <span class="p">[[</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span> <span class="p">[</span><span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">v</span><span class="p">[</span><span class="mi">2</span><span class="p">]]])</span></div>
 
 
 <div class="viewcode-block" id="FinitelyGenerated2x2MatrixGroup"><a class="viewcode-back" href="../../../geometry/finitely_generated_matrix_group.html#flatsurf.geometry.finitely_generated_matrix_group.FinitelyGenerated2x2MatrixGroup">[docs]</a><span class="k">class</span> <span class="nc">FinitelyGenerated2x2MatrixGroup</span><span class="p">(</span><span class="n">Group</span><span class="p">):</span>
@@ -470,19 +492,22 @@
 <span class="sd">        like this in SageMath</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">matrices</span><span class="p">,</span> <span class="n">matrix_space</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">matrix_space</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="kn">from</span> <span class="nn">sage.matrix.matrix_space</span> <span class="kn">import</span> <span class="n">MatrixSpace</span>
-            <span class="n">ring</span> <span class="o">=</span> <span class="n">Sequence</span><span class="p">(</span><span class="n">matrices</span><span class="p">)</span><span class="o">.</span><span class="n">universe</span><span class="p">()</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span>
-            <span class="n">matrix_space</span> <span class="o">=</span> <span class="n">MatrixSpace</span><span class="p">(</span><span class="n">ring</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_generators</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">matrix_space</span><span class="p">,</span><span class="n">matrices</span><span class="p">))</span>
+            <span class="n">ring</span> <span class="o">=</span> <span class="n">Sequence</span><span class="p">(</span><span class="n">matrices</span><span class="p">)</span><span class="o">.</span><span class="n">universe</span><span class="p">()</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span>
+            <span class="n">matrix_space</span> <span class="o">=</span> <span class="n">MatrixSpace</span><span class="p">(</span><span class="n">ring</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_generators</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">matrix_space</span><span class="p">,</span> <span class="n">matrices</span><span class="p">))</span>
         <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generators</span><span class="p">:</span>
             <span class="n">m</span><span class="o">.</span><span class="n">set_immutable</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_matrix_space</span> <span class="o">=</span> <span class="n">matrix_space</span>
 
         <span class="k">if</span> <span class="n">category</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="kn">from</span> <span class="nn">sage.categories.groups</span> <span class="kn">import</span> <span class="n">Groups</span>
+
             <span class="n">category</span> <span class="o">=</span> <span class="n">Groups</span><span class="p">()</span>
 
         <span class="n">Parent</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">,</span> <span class="n">facade</span><span class="o">=</span><span class="n">matrix_space</span><span class="p">)</span>
@@ -511,15 +536,18 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generators</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generators</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">a</span><span class="o">*</span><span class="n">b</span> <span class="o">!=</span> <span class="n">b</span><span class="o">*</span><span class="n">a</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">a</span> <span class="o">*</span> <span class="n">b</span> <span class="o">!=</span> <span class="n">b</span> <span class="o">*</span> <span class="n">a</span><span class="p">:</span>
                     <span class="k">return</span> <span class="kc">False</span>
         <span class="k">return</span> <span class="kc">True</span></div>
 
     <span class="k">def</span> <span class="nf">_repr_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">mat_string</span> <span class="o">=</span> <span class="p">[</span><span class="n">g</span><span class="o">.</span><span class="n">str</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generators</span><span class="p">]</span>
-        <span class="k">return</span> <span class="p">(</span><span class="s2">&quot;Matrix group generated by:</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span>
-                <span class="s2">&quot;  &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">mat_string</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span>
-                <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">mat_string</span><span class="p">))</span>
+        <span class="n">mat_string</span> <span class="o">=</span> <span class="p">[</span><span class="n">g</span><span class="o">.</span><span class="n">str</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generators</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="s2">&quot;Matrix group generated by:</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="o">+</span> <span class="s2">&quot;  &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">mat_string</span><span class="p">)</span>
+            <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="o">+</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">mat_string</span><span class="p">)</span>
+        <span class="p">)</span>
 
 <div class="viewcode-block" id="FinitelyGenerated2x2MatrixGroup.is_finite"><a class="viewcode-back" href="../../../geometry/finitely_generated_matrix_group.html#flatsurf.geometry.finitely_generated_matrix_group.FinitelyGenerated2x2MatrixGroup.is_finite">[docs]</a>    <span class="k">def</span> <span class="nf">is_finite</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -567,9 +595,11 @@
         <span class="c1"># determinant and trace tests</span>
         <span class="c1"># (the code actually check that each generator is of finite order)</span>
         <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generators</span><span class="p">:</span>
-            <span class="k">if</span> <span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">det</span><span class="p">()</span> <span class="o">!=</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">m</span><span class="o">.</span><span class="n">det</span><span class="p">()</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="ow">or</span> \
-               <span class="n">m</span><span class="o">.</span><span class="n">trace</span><span class="p">()</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">2</span> <span class="ow">or</span> \
-               <span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">trace</span><span class="p">()</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="p">(</span><span class="n">m</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="ow">or</span> <span class="n">m</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">])):</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">det</span><span class="p">()</span> <span class="o">!=</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">m</span><span class="o">.</span><span class="n">det</span><span class="p">()</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+                <span class="ow">or</span> <span class="n">m</span><span class="o">.</span><span class="n">trace</span><span class="p">()</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">2</span>
+                <span class="ow">or</span> <span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">trace</span><span class="p">()</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="p">(</span><span class="n">m</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="ow">or</span> <span class="n">m</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]))</span>
+            <span class="p">):</span>
                 <span class="k">return</span> <span class="kc">False</span>
 
         <span class="n">gens</span> <span class="o">=</span> <span class="p">[</span><span class="n">g</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generators</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">g</span><span class="o">.</span><span class="n">is_scalar</span><span class="p">()]</span>
@@ -579,6 +609,7 @@
 
         <span class="c1"># now we try to find a non-trivial invariant quadratic form</span>
         <span class="kn">from</span> <span class="nn">sage.modules.free_module</span> <span class="kn">import</span> <span class="n">FreeModule</span>
+
         <span class="n">V</span> <span class="o">=</span> <span class="n">FreeModule</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_matrix_space</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span> <span class="mi">3</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">gens</span><span class="p">:</span>
             <span class="n">V</span> <span class="o">=</span> <span class="n">V</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">invariant_quadratic_forms</span><span class="p">(</span><span class="n">g</span><span class="p">))</span>
@@ -604,7 +635,7 @@
                 <span class="k">yield</span> <span class="n">p</span>
                 <span class="n">s</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generators</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="p">[</span><span class="n">p</span><span class="o">*</span><span class="n">g</span><span class="p">,</span> <span class="n">p</span><span class="o">*</span><span class="n">g</span><span class="o">.</span><span class="n">inverse</span><span class="p">(),</span> <span class="n">g</span><span class="o">*</span><span class="n">p</span><span class="p">,</span> <span class="n">g</span><span class="o">.</span><span class="n">inverse</span><span class="p">()</span><span class="o">*</span><span class="n">p</span><span class="p">]:</span>
+                <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="p">[</span><span class="n">p</span> <span class="o">*</span> <span class="n">g</span><span class="p">,</span> <span class="n">p</span> <span class="o">*</span> <span class="n">g</span><span class="o">.</span><span class="n">inverse</span><span class="p">(),</span> <span class="n">g</span> <span class="o">*</span> <span class="n">p</span><span class="p">,</span> <span class="n">g</span><span class="o">.</span><span class="n">inverse</span><span class="p">()</span> <span class="o">*</span> <span class="n">p</span><span class="p">]:</span>
                     <span class="n">m</span><span class="o">.</span><span class="n">set_immutable</span><span class="p">()</span>
                     <span class="k">if</span> <span class="n">m</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">s</span><span class="p">:</span>
                         <span class="k">yield</span> <span class="n">m</span>
@@ -612,11 +643,14 @@
                         <span class="n">wait</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">FinitelyGenerated2x2MatrixGroup</span><span class="p">)</span> <span class="ow">and</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_generators</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_generators</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">FinitelyGenerated2x2MatrixGroup</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generators</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_generators</span>
+        <span class="p">)</span>
 
 <div class="viewcode-block" id="FinitelyGenerated2x2MatrixGroup.some_elements"><a class="viewcode-back" href="../../../geometry/finitely_generated_matrix_group.html#flatsurf.geometry.finitely_generated_matrix_group.FinitelyGenerated2x2MatrixGroup.some_elements">[docs]</a>    <span class="k">def</span> <span class="nf">some_elements</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">islice</span>
+
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">islice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span></div>
 
     <span class="k">def</span> <span class="fm">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>

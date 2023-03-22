@@ -337,8 +337,8 @@ object which should be stateless (but is not.)</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.mappings.MatrixListDeformedSurface.opposite_edge">
 <span class="sig-name descname"><span class="pre">opposite_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/mappings.html#MatrixListDeformedSurface.opposite_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.mappings.MatrixListDeformedSurface.opposite_edge" title="Permalink to this definition">#</a></dt>
-<dd><p>Given the label <code class="docutils literal notranslate"><span class="pre">l</span></code> of a polygon and an edge <code class="docutils literal notranslate"><span class="pre">e</span></code> in that polygon
-returns the pair (<code class="docutils literal notranslate"><span class="pre">ll</span></code>, <code class="docutils literal notranslate"><span class="pre">ee</span></code>) to which this edge is glued.</p>
+<dd><p>Given the label <code class="docutils literal notranslate"><span class="pre">label</span></code> of a polygon and an edge <code class="docutils literal notranslate"><span class="pre">e</span></code> in that
+polygon returns the pair (<code class="docutils literal notranslate"><span class="pre">ll</span></code>, <code class="docutils literal notranslate"><span class="pre">ee</span></code>) to which this edge is glued.</p>
 <p>This method must be overridden in subclasses.</p>
 </dd></dl>
 
@@ -624,7 +624,7 @@ then by lexigraphical ordering on edge vectors.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="flatsurf.geometry.mappings.translation_surface_cmp">
 <span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.mappings.</span></span><span class="sig-name descname"><span class="pre">translation_surface_cmp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/mappings.html#translation_surface_cmp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.mappings.translation_surface_cmp" title="Permalink to this definition">#</a></dt>
-<dd><p>Compare two finite surfaces. 
+<dd><p>Compare two finite surfaces.
 The surfaces will be considered equal if and only if there is a translation automorphism
 respecting the polygons and the base_labels.</p>
 </dd></dl>

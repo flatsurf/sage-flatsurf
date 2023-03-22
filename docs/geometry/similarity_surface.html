@@ -552,7 +552,7 @@ pairs of edges ((l,e),(ll,ee)) where edge (l,e) is glued to (ll,ee).</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="flatsurf.geometry.similarity_surface.SimilaritySurface.edge_matrix">
 <span class="sig-name descname"><span class="pre">edge_matrix</span></span><a class="reference internal" href="../_modules/flatsurf/geometry/similarity_surface.html#SimilaritySurface.edge_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.edge_matrix" title="Permalink to this definition">#</a></dt>
-<dd><p>File: /usr/share/miniconda3/envs/test/lib/python3.10/site-packages/flatsurf/geometry/similarity_surface.py (starting at line 395)</p>
+<dd><p>File: /usr/share/miniconda3/envs/test/lib/python3.10/site-packages/flatsurf/geometry/similarity_surface.py (starting at line 407)</p>
 <p>Returns the 2x2 matrix representing a similarity which when applied to the polygon with label <cite>p</cite>
 makes it so the edge <cite>e</cite> can be glued to its opposite edge by translation.</p>
 <p>If <cite>e</cite> is not provided, then <cite>p</cite> should be a pair consisting of a polygon label and an edge.</p>
@@ -776,11 +776,11 @@ surface that is naturally a branched cover of the plane.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.similarity_surface.SimilaritySurface.opposite_edge">
-<span class="sig-name descname"><span class="pre">opposite_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">l</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/similarity_surface.html#SimilaritySurface.opposite_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.opposite_edge" title="Permalink to this definition">#</a></dt>
-<dd><p>Given the label <code class="docutils literal notranslate"><span class="pre">l</span></code> of a polygon and an edge <code class="docutils literal notranslate"><span class="pre">e</span></code> in that polygon
+<span class="sig-name descname"><span class="pre">opposite_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/similarity_surface.html#SimilaritySurface.opposite_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.opposite_edge" title="Permalink to this definition">#</a></dt>
+<dd><p>Given the label <code class="docutils literal notranslate"><span class="pre">label</span></code> of a polygon and an edge <code class="docutils literal notranslate"><span class="pre">e</span></code> in that polygon
 returns the pair (<code class="docutils literal notranslate"><span class="pre">ll</span></code>, <code class="docutils literal notranslate"><span class="pre">ee</span></code>) to which this edge is glued.
 If e is not provided, then it expects the only parameter to be
-the pair (<code class="docutils literal notranslate"><span class="pre">l</span></code>,``e``) and will again return a the pair (<code class="docutils literal notranslate"><span class="pre">ll</span></code>,``ee``).</p>
+the pair (<code class="docutils literal notranslate"><span class="pre">label</span></code>,``e``) and will again return a the pair (<code class="docutils literal notranslate"><span class="pre">ll</span></code>,``ee``).</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1052,9 +1052,9 @@ n is the number of sides of the polygon.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.similarity_surface.SimilaritySurface.singularity">
-<span class="sig-name descname"><span class="pre">singularity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">l</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/similarity_surface.html#SimilaritySurface.singularity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.singularity" title="Permalink to this definition">#</a></dt>
-<dd><p>Represents the Singularity associated to the v-th vertex of the polygon with
-label l.</p>
+<span class="sig-name descname"><span class="pre">singularity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/similarity_surface.html#SimilaritySurface.singularity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity_surface.SimilaritySurface.singularity" title="Permalink to this definition">#</a></dt>
+<dd><p>Represents the Singularity associated to the v-th vertex of the polygon
+with label <code class="docutils literal notranslate"><span class="pre">label</span></code>.</p>
 <p>If the surface is infinite, the limit needs to be set. In this case the construction
 of the singularity is successful if the sequence of vertices hit by passing through
 edges closes up in limit or less steps.</p>

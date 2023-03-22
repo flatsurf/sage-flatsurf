@@ -279,7 +279,8 @@
 <span class="kn">from</span> <span class="nn">sage.categories.fields</span> <span class="kn">import</span> <span class="n">Fields</span>
 <span class="kn">from</span> <span class="nn">sage.rings.qqbar</span> <span class="kn">import</span> <span class="n">do_polred</span>
 
-<div class="viewcode-block" id="number_field_elements_from_algebraics"><a class="viewcode-back" href="../../../geometry/subfield.html#flatsurf.geometry.subfield.number_field_elements_from_algebraics">[docs]</a><span class="k">def</span> <span class="nf">number_field_elements_from_algebraics</span><span class="p">(</span><span class="n">elts</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">):</span>
+
+<div class="viewcode-block" id="number_field_elements_from_algebraics"><a class="viewcode-back" href="../../../geometry/subfield.html#flatsurf.geometry.subfield.number_field_elements_from_algebraics">[docs]</a><span class="k">def</span> <span class="nf">number_field_elements_from_algebraics</span><span class="p">(</span><span class="n">elts</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;a&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The native Sage function ``number_field_elements_from_algebraics`` currently</span>
 <span class="sd">    returns number field *without* embedding. This function return field with</span>
@@ -303,13 +304,15 @@
 
     <span class="c1"># general case</span>
     <span class="kn">from</span> <span class="nn">sage.rings.qqbar</span> <span class="kn">import</span> <span class="n">number_field_elements_from_algebraics</span>
-    <span class="n">field</span><span class="p">,</span><span class="n">elts</span><span class="p">,</span><span class="n">phi</span> <span class="o">=</span> <span class="n">number_field_elements_from_algebraics</span><span class="p">(</span><span class="n">elts</span><span class="p">,</span> <span class="n">minimal</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">field</span><span class="p">,</span> <span class="n">elts</span><span class="p">,</span> <span class="n">phi</span> <span class="o">=</span> <span class="n">number_field_elements_from_algebraics</span><span class="p">(</span><span class="n">elts</span><span class="p">,</span> <span class="n">minimal</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="n">polys</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">polynomial</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">elts</span><span class="p">]</span>
     <span class="n">K</span> <span class="o">=</span> <span class="n">NumberField</span><span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">polynomial</span><span class="p">(),</span> <span class="n">name</span><span class="p">,</span> <span class="n">embedding</span><span class="o">=</span><span class="n">AA</span><span class="p">(</span><span class="n">phi</span><span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">gen</span><span class="p">())))</span>
     <span class="n">gen</span> <span class="o">=</span> <span class="n">K</span><span class="o">.</span><span class="n">gen</span><span class="p">()</span>
 
     <span class="k">return</span> <span class="n">K</span><span class="p">,</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">polynomial</span><span class="p">()(</span><span class="n">gen</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">elts</span><span class="p">]</span></div>
+
 
 <div class="viewcode-block" id="subfield_from_elements"><a class="viewcode-back" href="../../../geometry/subfield.html#flatsurf.geometry.subfield.subfield_from_elements">[docs]</a><span class="k">def</span> <span class="nf">subfield_from_elements</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">polred</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -422,7 +425,9 @@
         <span class="k">if</span> <span class="n">d</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">degree</span><span class="p">():</span>
             <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">Hom</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">Fields</span><span class="p">())</span><span class="o">.</span><span class="n">identity</span><span class="p">())</span>
         <span class="n">B</span> <span class="o">=</span> <span class="n">U</span><span class="o">.</span><span class="n">basis</span><span class="p">()</span>
-        <span class="n">new_vecs</span> <span class="o">=</span> <span class="p">[(</span><span class="bp">self</span><span class="p">(</span><span class="n">B</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">*</span> <span class="bp">self</span><span class="p">(</span><span class="n">B</span><span class="p">[</span><span class="n">j</span><span class="p">]))</span><span class="o">.</span><span class="n">vector</span><span class="p">()</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">d</span><span class="p">)]</span>
+        <span class="n">new_vecs</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span><span class="bp">self</span><span class="p">(</span><span class="n">B</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">*</span> <span class="bp">self</span><span class="p">(</span><span class="n">B</span><span class="p">[</span><span class="n">j</span><span class="p">]))</span><span class="o">.</span><span class="n">vector</span><span class="p">()</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
+        <span class="p">]</span>
         <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">vv</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">U</span> <span class="k">for</span> <span class="n">vv</span> <span class="ow">in</span> <span class="n">new_vecs</span><span class="p">):</span>
             <span class="n">U</span> <span class="o">=</span> <span class="n">V</span><span class="o">.</span><span class="n">subspace</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">B</span><span class="p">)</span> <span class="o">+</span> <span class="n">new_vecs</span><span class="p">)</span>
             <span class="n">modified</span> <span class="o">=</span> <span class="kc">True</span>
@@ -462,6 +467,7 @@
     <span class="n">new_alpha</span> <span class="o">=</span> <span class="p">[</span><span class="n">K</span><span class="p">(</span><span class="n">M</span><span class="o">.</span><span class="n">solve_left</span><span class="p">(</span><span class="n">elt</span><span class="o">.</span><span class="n">vector</span><span class="p">()))</span> <span class="k">for</span> <span class="n">elt</span> <span class="ow">in</span> <span class="n">alpha</span><span class="p">]</span>
 
     <span class="k">return</span> <span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">new_alpha</span><span class="p">,</span> <span class="n">hom</span><span class="p">)</span></div>
+
 
 <div class="viewcode-block" id="is_embedded_subfield"><a class="viewcode-back" href="../../../geometry/subfield.html#flatsurf.geometry.subfield.is_embedded_subfield">[docs]</a><span class="k">def</span> <span class="nf">is_embedded_subfield</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">certificate</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -512,6 +518,7 @@
             <span class="k">return</span> <span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">K</span><span class="o">.</span><span class="n">hom</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="p">[</span><span class="n">r</span><span class="p">]))</span> <span class="k">if</span> <span class="n">certificate</span> <span class="k">else</span> <span class="kc">True</span>
     <span class="k">return</span> <span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="k">if</span> <span class="n">certificate</span> <span class="k">else</span> <span class="kc">False</span></div>
 
+
 <div class="viewcode-block" id="chebyshev_T"><a class="viewcode-back" href="../../../geometry/subfield.html#flatsurf.geometry.subfield.chebyshev_T">[docs]</a><span class="k">def</span> <span class="nf">chebyshev_T</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the Chebyshev polynomial T_n so that</span>
@@ -548,9 +555,10 @@
         <span class="k">return</span> <span class="n">parent</span><span class="p">(</span><span class="n">c</span><span class="p">)(</span><span class="mi">2</span><span class="p">)</span>
     <span class="n">T0</span> <span class="o">=</span> <span class="mi">2</span>
     <span class="n">T1</span> <span class="o">=</span> <span class="n">c</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
         <span class="n">T0</span><span class="p">,</span> <span class="n">T1</span> <span class="o">=</span> <span class="n">T1</span><span class="p">,</span> <span class="n">c</span> <span class="o">*</span> <span class="n">T1</span> <span class="o">-</span> <span class="n">T0</span>
     <span class="k">return</span> <span class="n">T1</span></div>
+
 
 <div class="viewcode-block" id="cos_minpoly_odd_prime"><a class="viewcode-back" href="../../../geometry/subfield.html#flatsurf.geometry.subfield.cos_minpoly_odd_prime">[docs]</a><span class="k">def</span> <span class="nf">cos_minpoly_odd_prime</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">var</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -573,16 +581,17 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">T0</span> <span class="o">=</span> <span class="mi">2</span>
     <span class="n">T1</span> <span class="o">=</span> <span class="n">var</span>
-    <span class="n">k</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">//</span><span class="mi">2</span>
-    <span class="n">s</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="n">k</span>
+    <span class="n">k</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">**</span> <span class="n">k</span>
     <span class="n">minpoly</span> <span class="o">=</span> <span class="n">s</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">T1</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
         <span class="n">T0</span><span class="p">,</span> <span class="n">T1</span> <span class="o">=</span> <span class="n">T1</span><span class="p">,</span> <span class="n">var</span> <span class="o">*</span> <span class="n">T1</span> <span class="o">-</span> <span class="n">T0</span>
         <span class="n">minpoly</span> <span class="o">+=</span> <span class="n">s</span> <span class="o">*</span> <span class="n">T1</span>
         <span class="n">s</span> <span class="o">*=</span> <span class="o">-</span><span class="mi">1</span>
     <span class="k">return</span> <span class="n">minpoly</span></div>
 
-<div class="viewcode-block" id="cos_minpoly"><a class="viewcode-back" href="../../../geometry/subfield.html#flatsurf.geometry.subfield.cos_minpoly">[docs]</a><span class="k">def</span> <span class="nf">cos_minpoly</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">):</span>
+
+<div class="viewcode-block" id="cos_minpoly"><a class="viewcode-back" href="../../../geometry/subfield.html#flatsurf.geometry.subfield.cos_minpoly">[docs]</a><span class="k">def</span> <span class="nf">cos_minpoly</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="s2">&quot;x&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the minimal polynomial of 2 cos pi/n</span>
 
@@ -633,7 +642,7 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="n">facs</span><span class="p">:</span>
         <span class="c1"># 0. n = 2^k</span>
         <span class="c1"># ([KoRoTr2015] Lemma 12)</span>
-        <span class="k">return</span> <span class="n">chebyshev_T</span><span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="p">(</span><span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">var</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">chebyshev_T</span><span class="p">(</span><span class="mi">2</span> <span class="o">**</span> <span class="p">(</span><span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span> <span class="n">var</span><span class="p">)</span>
 
     <span class="c1"># 1. Compute M_{n0} = M_{p1 ... ps}</span>
     <span class="c1"># ([KoRoTr2015] Lemma 14 and Lemma 15)</span>
@@ -645,7 +654,7 @@
 
     <span class="c1"># 2. Compute M_{2^k p1^{a1} ... ps^{as}}</span>
     <span class="c1"># ([KoRoTr2015] Lemma 12)</span>
-    <span class="n">nn</span> <span class="o">=</span> <span class="mi">2</span><span class="o">**</span><span class="n">k</span> <span class="o">*</span> <span class="n">prod</span><span class="p">(</span><span class="n">p</span><span class="o">**</span><span class="p">(</span><span class="n">a</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span><span class="p">,</span><span class="n">a</span> <span class="ow">in</span> <span class="n">facs</span><span class="p">)</span>
+    <span class="n">nn</span> <span class="o">=</span> <span class="mi">2</span><span class="o">**</span><span class="n">k</span> <span class="o">*</span> <span class="n">prod</span><span class="p">(</span><span class="n">p</span> <span class="o">**</span> <span class="p">(</span><span class="n">a</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span><span class="p">,</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">facs</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">nn</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
         <span class="n">M</span> <span class="o">=</span> <span class="n">M</span><span class="p">(</span><span class="n">chebyshev_T</span><span class="p">(</span><span class="n">nn</span><span class="p">,</span> <span class="n">var</span><span class="p">))</span>
 
