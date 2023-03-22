@@ -3642,7 +3642,7 @@ class HyperbolicGeometry:
             return None
         return det
 
-    def change_ring(ring):
+    def change_ring(self, ring):
         r"""
         Return this geometry with the :meth:`base_ring` changed to ``ring``.
 
