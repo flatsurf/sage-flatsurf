@@ -1,4 +1,4 @@
-#*********************************************************************
+# *********************************************************************
 #  This file is part of sage-flatsurf.
 #
 #        Copyright (C) 2016-2020 Vincent Delecroix
@@ -16,7 +16,7 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
-#*********************************************************************
+# *********************************************************************
 from __future__ import absolute_import, print_function, division
 from six.moves import range, map, filter, zip
 
@@ -36,7 +36,8 @@ from sage.rings.integer_ring import ZZ
 from sage.modules.free_module_element import FreeModuleElement
 
 from sage.env import SAGE_VERSION
-if SAGE_VERSION >= '8.2':
+
+if SAGE_VERSION >= "8.2":
     from sage.structure.element import is_Matrix
 else:
     from sage.matrix.matrix import is_Matrix
@@ -47,6 +48,7 @@ ZZ_0 = Integer(0)
 ZZ_1 = Integer(1)
 ZZ_m1 = -ZZ_1
 
+
 class Similarity(MultiplicativeGroupElement):
     r"""
     Class for a similarity of the plane with possible reflection.
@@ -54,6 +56,7 @@ class Similarity(MultiplicativeGroupElement):
     Construct the similarity (x,y) mapsto (ax-by+s,bx+ay+t) if sign=1,
     and (ax+by+s,bx-ay+t) if sign=-1
     """
+
     def __init__(self, p, a, b, s, t, sign):
         r"""
         Construct the similarity (x,y) mapsto (ax-by+s,bx+ay+t) if sign=1,
@@ -116,7 +119,11 @@ class Similarity(MultiplicativeGroupElement):
             sage: S((0,1,0,0)).is_half_translation()
             False
         """
-        return self._sign.is_one() and (self._a.is_one() or ((-self._a).is_one())) and self._b.is_zero()
+        return (
+            self._sign.is_one()
+            and (self._a.is_one() or ((-self._a).is_one()))
+            and self._b.is_zero()
+        )
 
     def is_orientable(self):
         return self._sign.is_one()
@@ -164,7 +171,7 @@ class Similarity(MultiplicativeGroupElement):
         r"""
         Return the determinant of this element
         """
-        return self._sign * (self._a*self._a + self._b*self._b)
+        return self._sign * (self._a * self._a + self._b * self._b)
 
     def _mul_(left, right):
         r"""
@@ -211,12 +218,16 @@ class Similarity(MultiplicativeGroupElement):
         P = self.parent()
         sign = self._sign
         det = self.det()
-        a = sign*self._a/det
-        b = -self._b/det
-        return P.element_class(P,a,b,
-            -a*self._s + sign*b*self._t,
-            -b*self._s - sign*a*self._t,
-            sign)
+        a = sign * self._a / det
+        b = -self._b / det
+        return P.element_class(
+            P,
+            a,
+            b,
+            -a * self._s + sign * b * self._t,
+            -b * self._s - sign * a * self._t,
+            sign,
+        )
 
     def _div_(left, right):
         det = right.det()
@@ -231,17 +242,25 @@ class Similarity(MultiplicativeGroupElement):
         s = (left._a * inv_s - left._sign * left._b * inv_t) / det + left._s
         t = (left._b * inv_s + left._sign * left._a * inv_t) / det + left._t
 
-        return left.parent().element_class(left.parent(),
+        return left.parent().element_class(
+            left.parent(),
             left.base_ring()(a),
             left.base_ring()(b),
             left.base_ring()(s),
             left.base_ring()(t),
-            left._sign * right._sign)
+            left._sign * right._sign,
+        )
 
     def __hash__(self):
-        return 73*hash(self._a)-19*hash(self._b)+13*hash(self._s)+53*hash(self._t)+67*hash(self._sign)
+        return (
+            73 * hash(self._a)
+            - 19 * hash(self._b)
+            + 13 * hash(self._s)
+            + 53 * hash(self._t)
+            + 67 * hash(self._sign)
+        )
 
-    def __call__(self, w, ring = None):
+    def __call__(self, w, ring=None):
         r"""
         Return the image of ``w`` under the similarity. Here ``w`` may be a ConvexPolygon or a vector
         (or something that can be indexed in the same way as a vector). If a ring is provided,
@@ -291,22 +310,36 @@ class Similarity(MultiplicativeGroupElement):
 
         if ring is None:
             if self._sign.is_one():
-                return vector([
-                    self._a * w[0] - self._b*w[1] + self._s,
-                    self._b * w[0] + self._a * w[1] + self._t])
+                return vector(
+                    [
+                        self._a * w[0] - self._b * w[1] + self._s,
+                        self._b * w[0] + self._a * w[1] + self._t,
+                    ]
+                )
             else:
-                return vector([
-                    self._a * w[0] + self._b * w[1] + self._s,
-                    self._b * w[0] - self._a * w[1] + self._t])
+                return vector(
+                    [
+                        self._a * w[0] + self._b * w[1] + self._s,
+                        self._b * w[0] - self._a * w[1] + self._t,
+                    ]
+                )
         else:
             if self._sign.is_one():
-                return vector(ring, [
-                    self._a * w[0] - self._b * w[1] + self._s,
-                    self._b * w[0] + self._a * w[1] + self._t])
+                return vector(
+                    ring,
+                    [
+                        self._a * w[0] - self._b * w[1] + self._s,
+                        self._b * w[0] + self._a * w[1] + self._t,
+                    ],
+                )
             else:
-                return vector(ring, [
-                    self._a * w[0] + self._b * w[1] + self._s,
-                    self._b * w[0] - self._a * w[1] + self._t])
+                return vector(
+                    ring,
+                    [
+                        self._a * w[0] + self._b * w[1] + self._s,
+                        self._b * w[0] - self._a * w[1] + self._t,
+                    ],
+                )
 
     def _repr_(self):
         r"""
@@ -323,11 +356,12 @@ class Similarity(MultiplicativeGroupElement):
             sage: S((-1,0,2/3,3,-1))
             (x, y) |-> (-x + 2/3, y + 3)
         """
-        R = self.parent().base_ring()['x','y']
-        x,y = R.gens()
+        R = self.parent().base_ring()["x", "y"]
+        x, y = R.gens()
         return "(x, y) |-> ({}, {})".format(
-                    self._a*x - self._sign*self._b*y + self._s,
-                    self._b*x + self._sign*self._a*y + self._t)
+            self._a * x - self._sign * self._b * y + self._s,
+            self._b * x + self._sign * self._a * y + self._t,
+        )
 
     def __eq__(self, other):
         r"""
@@ -346,15 +380,17 @@ class Similarity(MultiplicativeGroupElement):
         """
         if other is None:
             return False
-        if type(other)==int:
+        if type(other) == int:
             return False
         if self.parent() != other.parent():
             return False
-        return self._a == other._a and \
-               self._b == other._b and \
-               self._s == other._s and \
-               self._t == other._t and \
-               self._sign == other._sign
+        return (
+            self._a == other._a
+            and self._b == other._b
+            and self._s == other._s
+            and self._t == other._t
+            and self._sign == other._sign
+        )
 
     def __ne__(self, other):
         return not (self == other)
@@ -378,9 +414,18 @@ class Similarity(MultiplicativeGroupElement):
         z = P._ring.zero()
         o = P._ring.one()
         return M(
-            [self._a, -self._sign*self._b, self._s,
-             self._b, +self._sign*self._a, self._t,
-            z, z, o])
+            [
+                self._a,
+                -self._sign * self._b,
+                self._s,
+                self._b,
+                +self._sign * self._a,
+                self._t,
+                z,
+                z,
+                o,
+            ]
+        )
 
     def derivative(self):
         r"""
@@ -396,7 +441,7 @@ class Similarity(MultiplicativeGroupElement):
             [-2/3   -1]
         """
         M = self.parent()._matrix_space_2x2()
-        return M([self._a, -self._sign*self._b, self._b,  self._sign*self._a])
+        return M([self._a, -self._sign * self._b, self._b, self._sign * self._a])
 
 
 class SimilarityGroup(UniqueRepresentation, Group):
@@ -421,16 +466,19 @@ class SimilarityGroup(UniqueRepresentation, Group):
     @cached_method
     def _matrix_space_2x2(self):
         from sage.matrix.matrix_space import MatrixSpace
+
         return MatrixSpace(self._ring, 2)
 
     @cached_method
     def _matrix_space_3x3(self):
         from sage.matrix.matrix_space import MatrixSpace
+
         return MatrixSpace(self._ring, 3)
 
     @cached_method
     def _vector_space(self):
         from sage.modules.free_module import VectorSpace
+
         return VectorSpace(self._ring, 2)
 
     def _element_constructor_(self, *args, **kwds):
@@ -460,21 +508,25 @@ class SimilarityGroup(UniqueRepresentation, Group):
 
         # TODO: 2x2 and 3x3 matrix input
 
-        if isinstance(x, (tuple,list)):
+        if isinstance(x, (tuple, list)):
             if len(x) == 2:
-                s,t = map(self._ring, x)
+                s, t = map(self._ring, x)
             elif len(x) == 4:
-                a,b,s,t = map(self._ring, x)
+                a, b, s, t = map(self._ring, x)
             elif len(x) == 5:
-                a,b,s,t = map(self._ring, x[:4])
+                a, b, s, t = map(self._ring, x[:4])
                 sign = ZZ(x[4])
             else:
-                raise ValueError("can not construct a similarity from a list of length {}".format(len(x)))
+                raise ValueError(
+                    "can not construct a similarity from a list of length {}".format(
+                        len(x)
+                    )
+                )
         elif is_Matrix(x):
             #   a -sb
             #   b sa
             if x.nrows() == x.ncols() == 2:
-                a,c,b,d = x.list()
+                a, c, b, d = x.list()
                 if a == d and b == -c:
                     sign = ZZ_1
                 elif a == -d and b == c:
@@ -488,9 +540,9 @@ class SimilarityGroup(UniqueRepresentation, Group):
         elif isinstance(x, FreeModuleElement):
             if len(x) == 2:
                 if x.base_ring() is self._ring:
-                    s,t = x
+                    s, t = x
                 else:
-                    s,t = map(self._ring, x)
+                    s, t = map(self._ring, x)
             else:
                 raise ValueError("invalid dimension for vector input")
         else:
@@ -498,9 +550,11 @@ class SimilarityGroup(UniqueRepresentation, Group):
             if self._ring.has_coerce_map_from(p):
                 a = self._ring(x)
             else:
-                raise ValueError("element in %s cannot be used to create element in %s"%(p, self))
+                raise ValueError(
+                    "element in %s cannot be used to create element in %s" % (p, self)
+                )
 
-        if (a*a + b*b).is_zero():
+        if (a * a + b * b).is_zero():
             raise ValueError("not invertible")
 
         return self.element_class(self, a, b, s, t, sign)
@@ -531,12 +585,14 @@ class SimilarityGroup(UniqueRepresentation, Group):
             sage: SimilarityGroup(QQ).one().is_one()
             True
         """
-        return self.element_class(self,
-                self._ring.one(),  # a
-                self._ring.zero(), # b
-                self._ring.zero(), # s
-                self._ring.zero(), # t
-                ZZ_1)              # sign
+        return self.element_class(
+            self,
+            self._ring.one(),  # a
+            self._ring.zero(),  # b
+            self._ring.zero(),  # s
+            self._ring.zero(),  # t
+            ZZ_1,
+        )  # sign
 
     def _an_element_(self):
         r"""
