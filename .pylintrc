@@ -1,0 +1,6 @@
+[FORMAT]
+max-line-length=256
+max-module-lines=65536
+
+[MESSAGES CONTROL]
+disable=import-outside-toplevel,no-name-in-module,invalid-name,invalid-unary-operand-type,no-value-for-parameter

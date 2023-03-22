@@ -566,10 +566,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         if geometry is None:
             geometry = self.geometry.change_ring(ring)
 
-        # pylint misunderstands the metaclass machinery that SageMath uses here.
-        # pylint: disable=no-value-for-parameter
         return HyperbolicPlane(ring, geometry)
-        # pylint: enable=no-value-for-parameter
 
     def _an_element_(self):
         r"""
@@ -839,13 +836,10 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         from sage.categories.all import Rings
 
-        # pylint misunderstands the metaclass machinery that SageMath uses here.
-        # pylint: disable=no-value-for-parameter
         if parent in Rings():
             raise ValueError(
                 f"cannot convert this element in {parent} to the hyperbolic plane over {self.base_ring()}"
             )
-        # pylint: enable=no-value-for-parameter
 
         raise NotImplementedError(
             "cannot create a subset of the hyperbolic plane from this element yet."
@@ -3100,10 +3094,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         from sage.all import MatrixSpace
 
-        # pylint misunderstands the metaclass machinery that SageMath uses here.
-        # pylint: disable=no-value-for-parameter
         MS = MatrixSpace(self.base_ring(), 2, 2)
-        # pylint: enable=no-value-for-parameter
 
         isometry = MS(1)
 
@@ -8987,13 +8978,10 @@ class HyperbolicPointFromCoordinates(HyperbolicPoint):
 
         if ring is None or ring == "maybe":
             pass
-        # pylint misunderstands the metaclass machinery that SageMath uses here.
-        # pylint: disable=no-value-for-parameter
         elif ring in Rings():
             x, y = ring(x), ring(y)
         else:
             raise NotImplementedError("cannot produce coordinates for this ring yet")
-        # pylint: enable=no-value-for-parameter
 
         return x, y
 
@@ -9658,10 +9646,7 @@ class HyperbolicPointFromGeodesic(HyperbolicPoint):
 
         from sage.categories.all import Fields
 
-        # pylint misunderstands the metaclass machinery that SageMath uses here.
-        # pylint: disable=no-value-for-parameter
         if self.parent().base_ring() not in Fields():
-        # pylint: enable=no-value-for-parameter
             raise NotImplementedError(
                 "cannot hash point defined by a geodesic over a non-field yet"
             )
