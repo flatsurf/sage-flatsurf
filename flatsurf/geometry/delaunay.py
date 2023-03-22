@@ -405,6 +405,7 @@ class LazyDelaunaySurface(LazyDelaunayTriangulatedSurface):
     def __init__(self, similarity_surface, direction=None, relabel=True):
         r"""
         Construct a lazy Delaunay triangulation of the provided similarity_surface.
+
         """
         if relabel:
             import warnings

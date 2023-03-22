@@ -365,9 +365,6 @@ class GL2RImageSurface(Surface):
             polygon2 = self._s.polygon(pp)
             return pp, polygon2.num_edges() - 1 - ee
 
-    def unused_label(self, ignore=()):
-        return self._s.unused_label(ignore=ignore)
-
 
 class GL2RMapping(SurfaceMapping):
     r"""
