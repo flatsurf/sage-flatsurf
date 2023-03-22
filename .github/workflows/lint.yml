@@ -56,8 +56,8 @@ jobs:
       - name: Run pylint
         shell: bash -l {0}
         run: |
-          # We only report errors and do not report lint yet (there's just way too much.)
-          pylint -E flatsurf
+          # A lot of linters are disabled, see .pylintrc. We should enable most of them eventually.
+          pylint flatsurf
   black:
     runs-on: ubuntu-20.04
     steps:
