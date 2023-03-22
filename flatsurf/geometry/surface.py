@@ -867,7 +867,7 @@ class Surface(SageObject):
             sage: S.set_edge_pairing(0, 1, 1, 2)
             sage: S.set_edge_pairing(0, 2, 1, 0)
 
-            sage: S._pyflatsurf()
+            sage: S._to_pyflatsurf()  # optional: pyflatsurf
 
         """
         from flatsurf.geometry.pyflatsurf.surface import Surface_pyflatsurf

@@ -18,7 +18,7 @@ class Surface_pyflatsurf(Surface):
         sage: S.set_edge_pairing(0, 1, 1, 2)
         sage: S.set_edge_pairing(0, 2, 1, 0)
 
-        sage: T, _ = S._pyflatsurf()
+        sage: T, _ = S._pyflatsurf()  # random output due to deprecation warnings
 
     TESTS::
 
