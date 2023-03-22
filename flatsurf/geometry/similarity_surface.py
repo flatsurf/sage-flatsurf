@@ -2597,20 +2597,17 @@ class SimilaritySurface(SageObject):
     def __ne__(self, other):
         return not self == other
 
+    @cached_method
     def __hash__(self):
         r"""
         Hash compatible with equals.
         """
         if self._s.is_mutable():
             raise ValueError("Attempting to hash with mutable underlying surface.")
-        if hasattr(self, "_hash"):
-            # Return the cached hash.
-            return self._hash
         # Compute the hash
         h = 17 * hash(self.base_ring()) + 23 * hash(self.base_label())
         for pair in self.label_iterator(polygons=True):
             h = h + 7 * hash(pair)
         for edgepair in self.edge_iterator(gluings=True):
             h = h + 3 * hash(edgepair)
-        self._hash = h
         return h
