@@ -39,10 +39,10 @@ class Singularity(SageObject):
         sage: TestSuite(sing).run()
     """
 
-    def __init__(self, similarity_surface, l, v, limit=None):
+    def __init__(self, similarity_surface, label, v, limit=None):
         r"""
         Represents the singularity associated to the v-th vertex of the polygon with
-        label l.
+        label ``label``.
 
         If the surface is infinite, the limit needs to be set. In this case the construction
         of the singularity is successful if the sequence of vertices hit by passing through
@@ -54,9 +54,9 @@ class Singularity(SageObject):
         self._s = set()
         if not self._ss.is_finite() and limit is None:
             raise ValueError("need a limit when working with an infinite surface")
-        start = (l, v)
+        start = (label, v)
         self._s.add(start)
-        edge = self._ss.opposite_edge(l, v)
+        edge = self._ss.opposite_edge(label, v)
         next = (edge[0], (edge[1] + 1) % self._ss.polygon(edge[0]).num_edges())
         while start != next:
             self._s.add(next)
@@ -84,16 +84,17 @@ class Singularity(SageObject):
         """
         return self._s
 
-    def contains_vertex(self, l, v=None):
+    def contains_vertex(self, label, v=None):
         r"""
-        Checks if the pair (l,v) is in the equivalence class returning true or false.
+        Checks if the pair ``(label, v)`` is in the equivalence class returning
+        true or false.
 
-        If v is None, then check if the pair l is in the equivalence class.
+        If v is None, then check if the pair ``label`` is in the equivalence class.
         """
         if v is None:
-            return l in self._s
+            return label in self._s
         else:
-            return (l, v) in self._s
+            return (label, v) in self._s
 
     def _repr_(self):
         return "singularity with vertex equivalence class " + repr(self._s)
@@ -168,13 +169,13 @@ class SurfacePoint(SageObject):
         if pos.is_vertex():
             self._coordinate_dict = {}
             sing = surface.singularity(label, pos.get_vertex(), limit=limit)
-            for l, v in sing.vertex_set():
-                new_point = surface.polygon(l).vertex(v)
+            for label, v in sing.vertex_set():
+                new_point = surface.polygon(label).vertex(v)
                 new_point.set_immutable()
-                if l in self._coordinate_dict:
-                    self._coordinate_dict[l].add(new_point)
+                if label in self._coordinate_dict:
+                    self._coordinate_dict[label].add(new_point)
                 else:
-                    self._coordinate_dict[l] = {new_point}
+                    self._coordinate_dict[label] = {new_point}
         # Freeze the sets.
         for label, point_set in iteritems(self._coordinate_dict):
             self._coordinate_dict[label] = frozenset(point_set)
@@ -811,8 +812,8 @@ class Cylinder(SageObject):
         sc_set_right = set()
         vertices = []
         for i in min_list:
-            l = labels[i]
-            p = ss.polygon(l)
+            label = labels[i]
+            p = ss.polygon(label)
             vertices.append((i, p.vertex(edges[i])))
         i, vert_i = vertices[-1]
         vert_i = vert_i - v
@@ -850,8 +851,8 @@ class Cylinder(SageObject):
         sc_set_left = set()
         vertices = []
         for i in max_list:
-            l = labels[i]
-            p = ss.polygon(l)
+            label = labels[i]
+            p = ss.polygon(label)
             vertices.append((i, p.vertex((edges[i] + 1) % p.num_edges())))
         i, vert_i = vertices[-1]
         vert_i = vert_i - v
@@ -888,25 +889,25 @@ class Cylinder(SageObject):
 
         edge_intersections = []
         i = min_list[0]
-        l = labels[i]
-        p = ss.polygon(l)
+        label = labels[i]
+        p = ss.polygon(label)
         right_point = p.vertex(edges[i])  # point on the right boundary
         i = max_list[0]
-        l = labels[i]
-        p = ss.polygon(l)
+        label = labels[i]
+        p = ss.polygon(label)
         left_point = p.vertex((edges[i] + 1) % p.num_edges())
         from flatsurf.geometry.polygon import solve
 
         for i in range(len(edges)):
-            l = labels[i]
-            p = ss.polygon(l)
+            label = labels[i]
+            p = ss.polygon(label)
             e = edges[i]
             v1 = p.vertex(e)
             v2 = p.vertex((e + 1) % p.num_edges())
             a, b = solve(left_point, v, v1, v2 - v1)
-            w1 = (~(l[1]))(v1 + b * (v2 - v1))
+            w1 = (~(label[1]))(v1 + b * (v2 - v1))
             a, b = solve(right_point, v, v1, v2 - v1)
-            w2 = (~(l[1]))(v1 + b * (v2 - v1))
+            w2 = (~(label[1]))(v1 + b * (v2 - v1))
             edge_intersections.append((w1, w2))
 
         polygons = []
@@ -975,7 +976,7 @@ class Cylinder(SageObject):
             self._s, ConeSurface
         ), "Area only makes sense for cone surfaces."
         area = 0
-        for l, p in self.polygons():
+        for label, p in self.polygons():
             area += p.area()
         return area
 
@@ -1003,9 +1004,9 @@ class Cylinder(SageObject):
         else:
             gs = self._s.graphical_surface()
         plt = Graphics()
-        for l, p in self.polygons():
-            if gs.is_visible(l):
-                gp = gs.graphical_polygon(l)
+        for label, p in self.polygons():
+            if gs.is_visible(label):
+                gp = gs.graphical_polygon(label)
                 t = gp.transformation()
                 pp = t(p)
                 poly = polygon2d(pp.vertices(), **options)
@@ -1018,7 +1019,7 @@ class Cylinder(SageObject):
         Return the set of labels that this cylinder passes through.
         """
         polygons = self.polygons()
-        return frozenset([l for l, p in polygons])
+        return frozenset([label for label, p in polygons])
 
     def boundary_components(self):
         r"""

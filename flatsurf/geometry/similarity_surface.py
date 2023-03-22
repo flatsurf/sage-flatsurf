@@ -218,16 +218,16 @@ class SimilaritySurface(SageObject):
         """
         return self._s.base_label()
 
-    def opposite_edge(self, l, e=None):
+    def opposite_edge(self, label, e=None):
         r"""
-        Given the label ``l`` of a polygon and an edge ``e`` in that polygon
+        Given the label ``label`` of a polygon and an edge ``e`` in that polygon
         returns the pair (``ll``, ``ee``) to which this edge is glued.
         If e is not provided, then it expects the only parameter to be
-        the pair (``l``,``e``) and will again return a the pair (``ll``,``ee``).
+        the pair (``label``,``e``) and will again return a the pair (``ll``,``ee``).
         """
         if e is None:
-            return self._s.opposite_edge(l[0], l[1])
-        return self._s.opposite_edge(l, e)
+            return self._s.opposite_edge(label[0], label[1])
+        return self._s.opposite_edge(label, e)
 
     def is_finite(self):
         r"""
@@ -740,7 +740,7 @@ class SimilaritySurface(SageObject):
                 not lazy
             ), "Lazy copying is unavailable when optimize_number_field=True."
             coordinates_AA = []
-            for l, p in self.label_iterator(polygons=True):
+            for label, p in self.label_iterator(polygons=True):
                 for e in p.edges():
                     coordinates_AA.append(AA(e[0]))
                     coordinates_AA.append(AA(e[1]))
@@ -765,7 +765,7 @@ class SimilaritySurface(SageObject):
                 ss = Surface_dict(base_ring=field2)
                 index = 0
                 P = ConvexPolygons(field2)
-                for l, p in self.label_iterator(polygons=True):
+                for label, p in self.label_iterator(polygons=True):
                     new_edges = []
                     for i in range(p.num_edges()):
                         new_edges.append(
@@ -776,7 +776,7 @@ class SimilaritySurface(SageObject):
                         )
                         index += 2
                     pp = P(edges=new_edges)
-                    ss.add_polygon(pp, label=l)
+                    ss.add_polygon(pp, label=label)
                 ss.change_base_label(self.base_label())
                 for (l1, e1), (l2, e2) in self.edge_iterator(gluings=True):
                     ss.change_edge_gluing(l1, e1, l2, e2)
@@ -1343,10 +1343,10 @@ class SimilaritySurface(SageObject):
         """
         return self.__class__(self._s.subdivide_edges(parts=parts))
 
-    def singularity(self, l, v, limit=None):
+    def singularity(self, label, v, limit=None):
         r"""
-        Represents the Singularity associated to the v-th vertex of the polygon with
-        label l.
+        Represents the Singularity associated to the v-th vertex of the polygon
+        with label ``label``.
 
         If the surface is infinite, the limit needs to be set. In this case the construction
         of the singularity is successful if the sequence of vertices hit by passing through
@@ -1364,7 +1364,7 @@ class SimilaritySurface(SageObject):
             sage: pc.singularity(pc.base_label(),0,limit=4)
             singularity with vertex equivalence class frozenset(...)
         """
-        return Singularity(self, l, v, limit)
+        return Singularity(self, label, v, limit)
 
     def point(self, label, point, ring=None, limit=None):
         r"""
@@ -1697,8 +1697,8 @@ class SimilaritySurface(SageObject):
                 else:
                     s = self.copy(mutable=True)
                 # Subdivide each polygon in turn.
-                for l in labels:
-                    s = s.triangulate(in_place=True, label=l)
+                for label in labels:
+                    s = s.triangulate(in_place=True, label=label)
                 return s
             else:
                 if in_place:
@@ -2360,7 +2360,8 @@ class SimilaritySurface(SageObject):
             import warnings
 
             warnings.warn(
-                "Passing a GraphicalSurface to plot() is deprecated because it mutates that GraphicalSurface. This functionality will be removed in a future version of sage-flatsurf. Call process_options() and plot() on the GraphicalSurface explicitly instead."
+                "Passing a GraphicalSurface to plot() is deprecated because it mutates that GraphicalSurface. This functionality will be removed in a future version of sage-flatsurf. "
+                "Call process_options() and plot() on the GraphicalSurface explicitly instead."
             )
 
             gs = args[0]
