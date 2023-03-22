@@ -3,6 +3,26 @@ Geometric objects on surfaces.
 
 This includes singularities, saddle connections and cylinders.
 """
+######################################################################
+#  This file is part of sage-flatsurf.
+#
+#        Copyright (C) 2017-2020 W. Patrick Hooper
+#                      2017-2020 Vincent Delecroix
+#                           2023 Julian Rüth
+#
+#  sage-flatsurf is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  sage-flatsurf is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
+######################################################################
 
 from __future__ import absolute_import, print_function, division
 from six.moves import range, map, filter, zip
@@ -768,7 +788,7 @@ class Cylinder(SageObject):
             raise ValueError("Combinatorial path does not close.")
         trans = labels[-1][1]
         if not trans.is_translation():
-            raise NotImplemented(
+            raise NotImplementedError(
                 "Only cylinders with translational monodromy are currently supported"
             )
         m = trans.matrix()
