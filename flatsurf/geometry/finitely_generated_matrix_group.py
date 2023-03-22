@@ -210,6 +210,7 @@ def matrix_multiplicative_order(m):
 
     # might there be several solutions ? (other than scaling)... should not
     try:
+        from sage.all import identity_matrix
         v = (M - identity_matrix(3)).solve_right()
     except ValueError:  # no solution
         return False

@@ -3,7 +3,7 @@
 #
 #        Copyright (C) 2016-2022 W. Patrick Hooper
 #                      2016-2022 Vincent Delecroix
-#                           2022 Julian Rüth
+#                      2022-2023 Julian Rüth
 #
 #  sage-flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -166,7 +166,7 @@ class SimilaritySurfaceTangentVector:
                 and self.point() == other.point()
                 and self.vector() == other.vector()
             )
-        raise NotImplemented
+        return NotImplemented
 
     def __ne__(self, other):
         return not self.__eq__(other)
@@ -431,11 +431,7 @@ class SimilaritySurfaceTangentVector:
                     label, s.polygon(label).vertex(vertex), w
                 )
         else:
-            if code:
-                raise NotImplementedError(
-                    "codes are only implemented when based at a singularity"
-                )
-            return self.surface().tangent_vector(v.polygon_label(), v.point(), w)
+            raise NotImplementedError("Rotating tangent vectors is only implemnted when at a singularity")
 
     def counterclockwise_to(self, w, code=False):
         r"""
@@ -514,11 +510,7 @@ class SimilaritySurfaceTangentVector:
                     label, s.polygon(label).vertex(vertex), w
                 )
         else:
-            if code:
-                raise NotImplementedError(
-                    "codes are only implemented when based at a singularity"
-                )
-            return self.surface().tangent_vector(v.polygon_label(), v.point(), w)
+            raise NotImplementedError("Rotating tangent vectors is only implemnted when at a singularity")
 
     def plot(self, **kwargs):
         r"""

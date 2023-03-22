@@ -3,6 +3,26 @@ Geometric objects on surfaces.
 
 This includes singularities, saddle connections and cylinders.
 """
+######################################################################
+#  This file is part of sage-flatsurf.
+#
+#        Copyright (C) 2017-2020 W. Patrick Hooper
+#                      2017-2020 Vincent Delecroix
+#                           2023 Julian Rüth
+#
+#  sage-flatsurf is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  sage-flatsurf is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
+######################################################################
 
 from __future__ import absolute_import, print_function, division
 from six.moves import range, map, filter, zip
@@ -585,15 +605,16 @@ class SaddleConnection(SageObject):
             self._direction,
         )
 
-    def trajectory(self, limit=1000, cache=True):
+    @cached_method(key=lambda self, limit, cache: None)
+    def trajectory(self, limit=1000, cache=None):
         r"""
         Return a straight line trajectory representing this saddle connection.
         Fails if the trajectory passes through more than limit polygons.
         """
-        try:
-            return self._traj
-        except AttributeError:
-            pass
+        if cache is not None:
+            import warnings
+            warnings.warn("The cache keyword argument of trajectory() is ignored. Trajectories are always cached.")
+
         v = self.start_tangent_vector()
         traj = v.straight_line_trajectory()
         traj.flow(limit)
@@ -602,8 +623,7 @@ class SaddleConnection(SageObject):
                 "Did not obtain saddle connection by flowing forward. Limit="
                 + str(limit)
             )
-        if cache:
-            self._traj = traj
+
         return traj
 
     def plot(self, *args, **options):
@@ -768,7 +788,7 @@ class Cylinder(SageObject):
             raise ValueError("Combinatorial path does not close.")
         trans = labels[-1][1]
         if not trans.is_translation():
-            raise NotImplemented(
+            raise NotImplementedError(
                 "Only cylinders with translational monodromy are currently supported"
             )
         m = trans.matrix()
@@ -1045,7 +1065,7 @@ class Cylinder(SageObject):
                 v.vertex(),
             ) and is_same_direction(sc2.direction(), v.vector()):
                 return sc2
-        raise ValuError("Failed to find next saddle connection in boundary set.")
+        raise ValueError("Failed to find next saddle connection in boundary set.")
 
     def previous(self, sc):
         r"""
@@ -1062,7 +1082,7 @@ class Cylinder(SageObject):
                 sc2.end_direction(), v.vector()
             ):
                 return sc2
-        raise ValuError("Failed to find previous saddle connection in boundary set.")
+        raise ValueError("Failed to find previous saddle connection in boundary set.")
 
     @cached_method
     def holonomy(self):

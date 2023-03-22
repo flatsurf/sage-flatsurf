@@ -216,14 +216,19 @@ class SegmentInPolygon:
 
 
 class AbstractStraightLineTrajectory:
-    r"""
-    You need to implement:
-
-    - ``def segment(self, i)``
-    - ``def segments(self)``
-    """
-
     def surface(self):
+        raise NotImplementedError
+
+    def combinatorial_length(self):
+        raise NotImplementedError
+
+    def segment(self, i):
+        raise NotImplementedError
+
+    def is_closed(self):
+        raise NotImplementedError
+
+    def segments(self):
         raise NotImplementedError
 
     def __repr__(self):
@@ -306,7 +311,7 @@ class AbstractStraightLineTrajectory:
             sage: cyl.edges()
             (2, 3, 3, 2, 4)
         """
-        # Note may not be defined.
+        # Note: may not be defined.
         if not self.is_closed():
             raise ValueError(
                 "Cylinder is only defined for closed straight-line trajectories."
@@ -499,13 +504,13 @@ class AbstractStraightLineTrajectory:
                             seg2.start().point() + seg2.start().vector(),
                         )
                         if x is not None:
-                            pos = self._s.polygon(
+                            pos = self.surface().polygon(
                                 seg1.polygon_label()
                             ).get_point_position(x)
                             if pos.is_inside() and (
                                 count_singularities or not pos.is_vertex()
                             ):
-                                new_point = self._s.surface_point(
+                                new_point = self.surface().surface_point(
                                     seg1.polygon_label(), x
                                 )
                                 if new_point not in intersection_points:

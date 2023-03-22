@@ -13,6 +13,7 @@ dependencies:
   - ipywidgets
   - matplotlib-base
   - pip
+  - pylint >=2.16,<3
   - pytest
   - pytest-xdist
   - pytest-repeat

@@ -72,23 +72,6 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
 
         return AbelianStratum([ZZ(a - 1) for a in self.angles()])
 
-    def _canonical_first_vertex(polygon):
-        r"""
-        Return the index of the vertex with smallest y-coordinate.
-        If two vertices have the same y-coordinate, then the one with least x-coordinate is returned.
-        """
-        best = 0
-        best_pt = polygon.vertex(best)
-        for v in range(1, polygon.num_edges()):
-            pt = polygon.vertex(v)
-            if pt[1] < best_pt[1]:
-                best = v
-                best_pt = pt
-        if best == 0:
-            if pt[1] == best_pt[1]:
-                return v
-        return best
-
     def standardize_polygons(self, in_place=False):
         r"""
         Replaces each polygon with a polygon with a new polygon which differs by translation
