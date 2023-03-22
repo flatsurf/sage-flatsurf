@@ -2955,10 +2955,10 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
                 return None
 
             if preimage.start() in existings:
-                return self._isometry_untrivialize(preimage.end(), image.end())
+                return self._isometry_untrivialize(preimage.end(), image.end(), defining)
 
             if preimage.end() in existings:
-                return self._isometry_untrivialize(preimage.start(), image.start())
+                return self._isometry_untrivialize(preimage.start(), image.start(), defining)
 
             return (preimage, image)
 
