@@ -1,7 +1,7 @@
 r"""
-This module contains a lazy implementation of a relative homology, 
+This module contains a lazy implementation of a relative homology,
 $H_1(S,\Sigma; R)$, where $S$ is a similarity surface, $\Sigma$ is the singularities
-or vertices, and $R$ is a ring. 
+or vertices, and $R$ is a ring.
 
 This implementation works for finite or infinite surfaces. For infinite surfaces,
 we define relative homology formally. It is simply $R^E$ where $E$ is the edge set

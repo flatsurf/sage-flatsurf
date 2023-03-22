@@ -140,7 +140,7 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
             translations = (
                 {}
             )  # translations bringing the canonical vertex to the origin.
-            for l, polygon in s.label_iterator(polygons=True):
+            for label, polygon in s.label_iterator(polygons=True):
                 best = 0
                 best_pt = polygon.vertex(best)
                 for v in range(1, polygon.num_edges()):
@@ -153,9 +153,9 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
                 # We replace the polygon if the best vertex is not the zero vertex, or
                 # if the coordinates of the best vertex differs from the origin.
                 if not (best == 0 and best_pt.is_zero()):
-                    cv[l] = best
-            for l, v in iteritems(cv):
-                s.set_vertex_zero(l, v, in_place=True)
+                    cv[label] = best
+            for label, v in iteritems(cv):
+                s.set_vertex_zero(label, v, in_place=True)
             return s
         else:
             assert (
@@ -621,9 +621,9 @@ class MinimalTranslationCover(Surface):
                 # print("Warning: Could be indicating infinite surface falsely.")
                 finite = False
 
-        I = identity_matrix(self._ss.base_ring(), 2)
-        I.set_immutable()
-        base_label = (self._ss.base_label(), I)
+        identity = identity_matrix(self._ss.base_ring(), 2)
+        identity.set_immutable()
+        base_label = (self._ss.base_label(), identity)
 
         Surface.__init__(
             self, self._ss.base_ring(), base_label, finite=finite, mutable=False
@@ -810,17 +810,15 @@ class LazyStandardizedPolygonSurface(Surface):
             self.standardize(label)
             return self._s.polygon(label)
 
-    def opposite_edge(self, l, e):
+    def opposite_edge(self, label, e):
         r"""
-        Given the label ``l`` of a polygon and an edge ``e`` in that polygon
-        returns the pair (``ll``, ``ee``) to which this edge is glued.
-
-        This method must be overridden in subclasses.
+        Given the label ``label`` of a polygon and an edge ``e`` in that
+        polygon returns the pair (``ll``, ``ee``) to which this edge is glued.
         """
-        if l not in self._labels:
-            self.standardize(l)
-        ll, ee = self._s.opposite_edge(l, e)
+        if label not in self._labels:
+            self.standardize(label)
+        ll, ee = self._s.opposite_edge(label, e)
         if ll in self._labels:
             return (ll, ee)
         self.standardize(ll)
-        return self._s.opposite_edge(l, e)
+        return self._s.opposite_edge(label, e)

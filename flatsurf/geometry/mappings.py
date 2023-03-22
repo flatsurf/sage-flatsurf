@@ -573,16 +573,16 @@ def subdivide_a_polygon(s):
     """
     from flatsurf.geometry.polygon import wedge_product
 
-    for l, poly in s.label_iterator(polygons=True):
+    for label, poly in s.label_iterator(polygons=True):
         n = poly.num_edges()
         if n > 3:
             for i in range(n):
                 e1 = poly.edge(i)
                 e2 = poly.edge((i + 1) % n)
                 if wedge_product(e1, e2) != 0:
-                    return SplitPolygonsMapping(s, l, i, (i + 2) % n)
+                    return SplitPolygonsMapping(s, label, i, (i + 2) % n)
             raise ValueError(
-                "Unable to triangulate polygon with label " + str(l) + ": " + str(poly)
+                "Unable to triangulate polygon with label " + str(label) + ": " + str(poly)
             )
     return None
 
@@ -744,13 +744,13 @@ class CanonicalizePolygonsMapping(SurfaceMapping):
         cv = {}  # dictionary for canonical vertices
         translations = {}  # translations bringing the canonical vertex to the origin.
         s2 = Surface_dict(base_ring=ring)
-        for l, polygon in s.label_iterator(polygons=True):
-            cv[l] = cvcur = canonical_first_vertex(polygon)
+        for label, polygon in s.label_iterator(polygons=True):
+            cv[label] = cvcur = canonical_first_vertex(polygon)
             newedges = []
             for i in range(polygon.num_edges()):
                 newedges.append(polygon.edge((i + cvcur) % polygon.num_edges()))
-            s2.add_polygon(P(newedges), label=l)
-            translations[l] = T(-polygon.vertex(cvcur))
+            s2.add_polygon(P(newedges), label=label)
+            translations[label] = T(-polygon.vertex(cvcur))
         for l1, polygon in s.label_iterator(polygons=True):
             for e1 in range(polygon.num_edges()):
                 l2, e2 = s.opposite_edge(l1, e1)
@@ -771,10 +771,10 @@ class CanonicalizePolygonsMapping(SurfaceMapping):
     def push_vector_forward(self, tangent_vector):
         r"""Applies the mapping to the provided vector."""
         ring = tangent_vector.bundle().base_ring()
-        l = tangent_vector.polygon_label()
+        label = tangent_vector.polygon_label()
         return self.codomain().tangent_vector(
-            l,
-            self._translations[l](tangent_vector.point()),
+            label,
+            self._translations[label](tangent_vector.point()),
             tangent_vector.vector(),
             ring=ring,
         )
@@ -782,10 +782,10 @@ class CanonicalizePolygonsMapping(SurfaceMapping):
     def pull_vector_back(self, tangent_vector):
         r"""Applies the pullback mapping to the provided vector."""
         ring = tangent_vector.bundle().base_ring()
-        l = tangent_vector.polygon_label()
+        label = tangent_vector.polygon_label()
         return self.domain().tangent_vector(
-            l,
-            (~self._translations[l])(tangent_vector.point()),
+            label,
+            (~self._translations[label])(tangent_vector.point()),
             tangent_vector.vector(),
             ring=ring,
         )
@@ -804,23 +804,23 @@ class ReindexMapping(SurfaceMapping):
             raise ValueError("Currently only works with finite surfaces." "")
         f = {}  # map for labels going forward.
         b = {}  # map for labels going backward.
-        for l in s.label_iterator():
-            if l in relabler:
-                l2 = relabler[l]
-                f[l] = l2
+        for label in s.label_iterator():
+            if label in relabler:
+                l2 = relabler[label]
+                f[label] = l2
                 if l2 in b:
                     raise ValueError(
                         "Provided dictionary has two keys mapping to the same value. Or you are mapping to a label you didn't change."
                     )
-                b[l2] = l
+                b[l2] = label
             else:
                 # If no key then don't change the label
-                f[l] = l
-                if l in b:
+                f[label] = label
+                if label in b:
                     raise ValueError(
                         "Provided dictionary has two keys mapping to the same value. Or you are mapping to a label you didn't change."
                     )
-                b[l] = l
+                b[label] = label
 
         self._f = f
         self._b = b
