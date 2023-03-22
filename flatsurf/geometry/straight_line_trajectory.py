@@ -1,4 +1,4 @@
-#*********************************************************************
+# *********************************************************************
 #  This file is part of sage-flatsurf.
 #
 #        Copyright (C) 2016-2022 W. Patrick Hooper
@@ -17,7 +17,7 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
-#*********************************************************************
+# *********************************************************************
 from __future__ import absolute_import, print_function, division
 from six.moves import range, map, filter, zip
 from six import iteritems
@@ -37,6 +37,7 @@ from .surface_objects import SaddleConnection
 # Perhaps it would be better to model this on a deque-like class that is indexed by
 # all integers rather than just the non-negative ones? Do you know of such
 # a class? Alternately, we could store an offset.
+
 
 def get_linearity_coeff(u, v):
     r"""
@@ -67,14 +68,14 @@ def get_linearity_coeff(u, v):
         ValueError: non colinear
     """
     if u[0]:
-        a = v[0]/u[0]
-        if v[1] != a*u[1]:
+        a = v[0] / u[0]
+        if v[1] != a * u[1]:
             raise ValueError("non colinear")
         return a
     elif v[0]:
         raise ValueError("non colinear")
     elif u[1]:
-        return v[1]/u[1]
+        return v[1] / u[1]
     else:
         raise ValueError("zero vector")
 
@@ -92,6 +93,7 @@ class SegmentInPolygon:
         sage: SegmentInPolygon(v)
         Segment in polygon 0 starting at (1/3, -1/3) and ending at (1/3, 0)
     """
+
     def __init__(self, start, end=None):
         if end is not None:
             # WARNING: here we assume that both start and end are on the
@@ -115,14 +117,18 @@ class SegmentInPolygon:
         return hash((self._start, self._end))
 
     def __eq__(self, other):
-        return type(self) is type(other) and \
-               self._start == other._start and \
-               self._end == other._end
+        return (
+            type(self) is type(other)
+            and self._start == other._start
+            and self._end == other._end
+        )
 
     def __ne__(self, other):
-        return type(self) is not type(other) or \
-               self._start != other._start or \
-               self._end != other._end
+        return (
+            type(self) is not type(other)
+            or self._start != other._start
+            or self._end != other._end
+        )
 
     def __repr__(self):
         r"""
@@ -136,7 +142,8 @@ class SegmentInPolygon:
             Segment in polygon 0 starting at (0, 0) and ending at (2, -2/3)
         """
         return "Segment in polygon {} starting at {} and ending at {}".format(
-                self.polygon_label(), self.start().point(), self.end().point())
+            self.polygon_label(), self.start().point(), self.end().point()
+        )
 
     def start(self):
         r"""
@@ -159,11 +166,12 @@ class SegmentInPolygon:
     def is_edge(self):
         if not self.start_is_singular() or not self.end_is_singular():
             return False
-        vv=self.start().vector()
-        vertex=self.start().vertex()
-        ww=self.start().polygon().edge(vertex)
+        vv = self.start().vector()
+        vertex = self.start().vertex()
+        ww = self.start().polygon().edge(vertex)
         from flatsurf.geometry.polygon import is_same_direction
-        return is_same_direction(vv,ww)
+
+        return is_same_direction(vv, ww)
 
     def edge(self):
         if not self.is_edge():
@@ -214,6 +222,7 @@ class AbstractStraightLineTrajectory:
     - ``def segment(self, i)``
     - ``def segments(self)``
     """
+
     def surface(self):
         raise NotImplementedError
 
@@ -221,9 +230,12 @@ class AbstractStraightLineTrajectory:
         start = self.segment(0).start()
         end = self.segment(-1).end()
         return "Straight line trajectory made of {} segments from {} in polygon {} to {} in polygon {}".format(
-                self.combinatorial_length(),
-                start.point(), start.polygon_label(),
-                end.point(), end.polygon_label())
+            self.combinatorial_length(),
+            start.point(),
+            start.polygon_label(),
+            end.point(),
+            end.polygon_label(),
+        )
 
     def plot(self, *args, **options):
         r"""
@@ -246,12 +258,17 @@ class AbstractStraightLineTrajectory:
             ...Graphics object consisting of 1 graphics primitive
         """
         if len(args) > 1:
-            raise ValueError("SimilaritySurface.plot() can take at most one non-keyword argument.")
-        if len(args)==1:
+            raise ValueError(
+                "SimilaritySurface.plot() can take at most one non-keyword argument."
+            )
+        if len(args) == 1:
             from flatsurf.graphical.surface import GraphicalSurface
+
             if not isinstance(args[0], GraphicalSurface):
-                raise ValueError("If an argument is provided, it must be a GraphicalSurface.")
-            return self.graphical_trajectory(graphical_surface = args[0]).plot(**options)
+                raise ValueError(
+                    "If an argument is provided, it must be a GraphicalSurface."
+                )
+            return self.graphical_trajectory(graphical_surface=args[0]).plot(**options)
         return self.graphical_trajectory().plot(**options)
 
     def graphical_trajectory(self, graphical_surface=None, **options):
@@ -259,7 +276,10 @@ class AbstractStraightLineTrajectory:
         Returns a ``GraphicalStraightLineTrajectory`` corresponding to this
         trajectory in the provided  ``GraphicalSurface``.
         """
-        from flatsurf.graphical.straight_line_trajectory import GraphicalStraightLineTrajectory
+        from flatsurf.graphical.straight_line_trajectory import (
+            GraphicalStraightLineTrajectory,
+        )
+
         if graphical_surface is None:
             graphical_surface = self.surface().graphical_surface()
         return GraphicalStraightLineTrajectory(self, graphical_surface, **options)
@@ -288,12 +308,15 @@ class AbstractStraightLineTrajectory:
         """
         # Note may not be defined.
         if not self.is_closed():
-            raise ValueError("Cylinder is only defined for closed straight-line trajectories.")
+            raise ValueError(
+                "Cylinder is only defined for closed straight-line trajectories."
+            )
         from .surface_objects import Cylinder
+
         coding = self.coding()
         label = coding[0][0]
-        edges = [ e for l,e in coding[1:] ]
-        edges.append(self.surface().opposite_edge(coding[0][0],coding[0][1])[1])
+        edges = [e for l, e in coding[1:]]
+        edges.append(self.surface().opposite_edge(coding[0][0], coding[0][1])[1])
         return Cylinder(self.surface(), label, edges)
 
     def coding(self, alphabet=None):
@@ -366,26 +389,28 @@ class AbstractStraightLineTrajectory:
         if start._position._position_type == start._position.EDGE_INTERIOR:
             p = s.polygon_label()
             e = start._position.get_edge()
-            lab = (p,e) if alphabet is None else alphabet.get((p,e))
+            lab = (p, e) if alphabet is None else alphabet.get((p, e))
             if lab is not None:
                 coding.append(lab)
 
-        for i in range(len(segments)-1):
+        for i in range(len(segments) - 1):
             s = segments[i]
             end = s.end()
             p = s.polygon_label()
             e = end._position.get_edge()
-            lab = (p,e) if alphabet is None else alphabet.get((p,e))
+            lab = (p, e) if alphabet is None else alphabet.get((p, e))
             if lab is not None:
                 coding.append(lab)
 
         s = segments[-1]
         end = s.end()
-        if end._position._position_type == end._position.EDGE_INTERIOR and \
-           end.invert() != start:
+        if (
+            end._position._position_type == end._position.EDGE_INTERIOR
+            and end.invert() != start
+        ):
             p = s.polygon_label()
             e = end._position.get_edge()
-            lab = (p,e) if alphabet is None else alphabet.get((p,e))
+            lab = (p, e) if alphabet is None else alphabet.get((p, e))
             if lab is not None:
                 coding.append(lab)
 
@@ -443,7 +468,7 @@ class AbstractStraightLineTrajectory:
             2 2
         """
         # Partition the segments making up the trajectories by label.
-        if isinstance(traj,SaddleConnection):
+        if isinstance(traj, SaddleConnection):
             traj = traj.trajectory()
         lab_to_seg1 = {}
         for seg1 in self.segments():
@@ -461,20 +486,28 @@ class AbstractStraightLineTrajectory:
                 lab_to_seg2[label] = [seg2]
         intersection_points = set()
         if include_segments:
-            segments={}
-        for label,seg_list_1 in iteritems(lab_to_seg1):
+            segments = {}
+        for label, seg_list_1 in iteritems(lab_to_seg1):
             if label in lab_to_seg2:
                 seg_list_2 = lab_to_seg2[label]
                 for seg1 in seg_list_1:
                     for seg2 in seg_list_2:
-                        x = line_intersection(seg1.start().point(),
-                                              seg1.start().point()+seg1.start().vector(),
-                                              seg2.start().point(),
-                                              seg2.start().point()+seg2.start().vector())
+                        x = line_intersection(
+                            seg1.start().point(),
+                            seg1.start().point() + seg1.start().vector(),
+                            seg2.start().point(),
+                            seg2.start().point() + seg2.start().vector(),
+                        )
                         if x is not None:
-                            pos = self._s.polygon(seg1.polygon_label()).get_point_position(x)
-                            if pos.is_inside() and (count_singularities or not pos.is_vertex()):
-                                new_point = self._s.surface_point(seg1.polygon_label(),x)
+                            pos = self._s.polygon(
+                                seg1.polygon_label()
+                            ).get_point_position(x)
+                            if pos.is_inside() and (
+                                count_singularities or not pos.is_vertex()
+                            ):
+                                new_point = self._s.surface_point(
+                                    seg1.polygon_label(), x
+                                )
                                 if new_point not in intersection_points:
                                     intersection_points.add(new_point)
                                     if include_segments:
@@ -486,7 +519,6 @@ class AbstractStraightLineTrajectory:
                                     segments[new_point][1].add(seg2)
         if include_segments:
             yield from segments.items()
-
 
 
 class StraightLineTrajectory(AbstractStraightLineTrajectory):
@@ -511,13 +543,14 @@ class StraightLineTrajectory(AbstractStraightLineTrajectory):
         sage: traj2.is_saddle_connection()
         True
     """
+
     def __init__(self, tangent_vector):
         self._segments = deque()
         seg = SegmentInPolygon(tangent_vector)
         self._segments.append(seg)
         self._setup_forward()
         self._setup_backward()
-        self._s=tangent_vector.surface()
+        self._s = tangent_vector.surface()
 
     def surface(self):
         return self._s
@@ -616,8 +649,9 @@ class StraightLineTrajectory(AbstractStraightLineTrajectory):
             sage: l.is_saddle_connection()
             True
         """
-        return (not self.is_forward_separatrix()) and \
-            self._forward.differs_by_scaling(self.initial_tangent_vector())
+        return (not self.is_forward_separatrix()) and self._forward.differs_by_scaling(
+            self.initial_tangent_vector()
+        )
 
     def flow(self, steps):
         r"""
@@ -642,18 +676,18 @@ class StraightLineTrajectory(AbstractStraightLineTrajectory):
             sage: traj
             Straight line trajectory made of 3 segments from (15/16, 45/16) in polygon 1 to (61/36, 11/12) in polygon 1
         """
-        while steps>0 and \
-            (not self.is_forward_separatrix()) and \
-            (not self.is_closed()):
-                self._segments.append(SegmentInPolygon(self._forward))
-                self._setup_forward()
-                steps -= 1
-        while steps<0 and \
-            (not self.is_backward_separatrix()) and \
-            (not self.is_closed()):
-                self._segments.appendleft(SegmentInPolygon(self._backward).invert())
-                self._setup_backward()
-                steps += 1
+        while (
+            steps > 0 and (not self.is_forward_separatrix()) and (not self.is_closed())
+        ):
+            self._segments.append(SegmentInPolygon(self._forward))
+            self._setup_forward()
+            steps -= 1
+        while (
+            steps < 0 and (not self.is_backward_separatrix()) and (not self.is_closed())
+        ):
+            self._segments.appendleft(SegmentInPolygon(self._backward).invert())
+            self._setup_backward()
+            steps += 1
 
 
 class StraightLineTrajectoryTranslation(AbstractStraightLineTrajectory):
@@ -675,6 +709,7 @@ class StraightLineTrajectoryTranslation(AbstractStraightLineTrajectory):
       of the induced interval in the iet)
 
     """
+
     def __init__(self, tangent_vector):
         t = tangent_vector.polygon_label()
         self._vector = tangent_vector.vector()
@@ -699,11 +734,12 @@ class StraightLineTrajectoryTranslation(AbstractStraightLineTrajectory):
         poly = self._s.polygon(p)
 
         T = self._get_iet(p)
-        x = get_linearity_coeff(poly.vertex(i+1) - poly.vertex(i),
-                                start.point() - poly.vertex(i))
+        x = get_linearity_coeff(
+            poly.vertex(i + 1) - poly.vertex(i), start.point() - poly.vertex(i)
+        )
         x *= T.length_bot(i)
 
-        self._points = deque() # we store triples (lab, edge, rel_pos)
+        self._points = deque()  # we store triples (lab, edge, rel_pos)
         self._points.append((p, i, x))
 
     def _next(self, p, e, x):
@@ -787,11 +823,15 @@ class StraightLineTrajectoryTranslation(AbstractStraightLineTrajectory):
         l0 = iet.length_bot(e0)
         l1 = iet.length_top(e1)
 
-        point0 = poly.vertex(e0) + poly.edge(e0) * x0/l0
-        point1 = poly.vertex(e1) + poly.edge(e1) * (l1-x1)/l1
-        v0 = self._s.tangent_vector(lab, point0, self._vector, ring=self._vector.base_ring())
-        v1 = self._s.tangent_vector(lab, point1, -self._vector, ring=self._vector.base_ring())
-        return SegmentInPolygon(v0,v1)
+        point0 = poly.vertex(e0) + poly.edge(e0) * x0 / l0
+        point1 = poly.vertex(e1) + poly.edge(e1) * (l1 - x1) / l1
+        v0 = self._s.tangent_vector(
+            lab, point0, self._vector, ring=self._vector.base_ring()
+        )
+        v1 = self._s.tangent_vector(
+            lab, point1, -self._vector, ring=self._vector.base_ring()
+        )
+        return SegmentInPolygon(v0, v1)
 
     def segments(self):
         r"""
@@ -819,7 +859,7 @@ class StraightLineTrajectoryTranslation(AbstractStraightLineTrajectory):
     def is_forward_separatrix(self):
         if self._points is None:
             return True
-        p1,e1,x1 = self._next(*self._points[-1])
+        p1, e1, x1 = self._next(*self._points[-1])
         return x1.is_zero()
 
     def is_backward_separatrix(self):
@@ -846,7 +886,9 @@ class StraightLineTrajectoryTranslation(AbstractStraightLineTrajectory):
             sage: S.is_saddle_connection()
             True
         """
-        return self._points is None or (self.is_forward_separatrix() and self.is_backward_separatrix())
+        return self._points is None or (
+            self.is_forward_separatrix() and self.is_backward_separatrix()
+        )
 
     def flow(self, steps):
         if self._points is None:

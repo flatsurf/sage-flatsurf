@@ -26,15 +26,16 @@ From the article McMullen-Mukamel-Wright (2017).
 import sys
 import pytest
 
-pytest.importorskip('pyflatsurf')
+pytest.importorskip("pyflatsurf")
 
 from sage.all import QQ, AA, NumberField, polygen
 from flatsurf import translation_surfaces, GL2ROrbitClosure
 from surface_dynamics import AbelianStratum
 
+
 def test_gothic_generic():
     x = polygen(QQ)
-    K = NumberField(x**3 - 2, 'a', embedding=AA(2)**QQ((1,3)))
+    K = NumberField(x**3 - 2, "a", embedding=AA(2) ** QQ((1, 3)))
     a = K.gen()
     S = translation_surfaces.cathedral(a, a**2)
     O = GL2ROrbitClosure(S)
@@ -44,12 +45,14 @@ def test_gothic_generic():
     assert O.dimension() == O.absolute_dimension() == 4
     assert O.field_of_definition() == QQ
 
+
 def test_gothic_exact_reals():
-    pytest.importorskip('pyexactreal')
+    pytest.importorskip("pyexactreal")
 
     from pyexactreal import ExactReals
+
     x = polygen(QQ)
-    K = NumberField(x**3 - 2, 'a', embedding=AA(2)**QQ((1,3)))
+    K = NumberField(x**3 - 2, "a", embedding=AA(2) ** QQ((1, 3)))
     R = ExactReals(K)
     S = translation_surfaces.cathedral(K.gen(), R.random_element([0.1, 0.2]))
     O = GL2ROrbitClosure(S)
@@ -58,15 +61,16 @@ def test_gothic_exact_reals():
         O.update_tangent_space_from_flow_decomposition(d)
     assert O.dimension() == O.absolute_dimension() == 4
 
+
 def test_gothic_veech():
     x = polygen(QQ)
-    K = NumberField(x**2 - 2, 'sqrt2', embedding=AA(2)**QQ((1,2)))
+    K = NumberField(x**2 - 2, "sqrt2", embedding=AA(2) ** QQ((1, 2)))
     sqrt2 = K.gen()
-    x = QQ((1,2))
+    x = QQ((1, 2))
     y = 1
     a = x + y * sqrt2
-    b = -3*x -QQ((3,2)) + 3*y*sqrt2
-    S = translation_surfaces.cathedral(a,b)
+    b = -3 * x - QQ((3, 2)) + 3 * y * sqrt2
+    S = translation_surfaces.cathedral(a, b)
     O = GL2ROrbitClosure(S)
     assert O.ambient_stratum() == AbelianStratum(2, 2, 2)
     for d in O.decompositions(4, 50):

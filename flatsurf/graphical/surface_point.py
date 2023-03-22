@@ -12,9 +12,11 @@ from __future__ import absolute_import, print_function, division
 from six.moves import range, map, filter, zip
 
 from flatsurf.graphical.surface import GraphicalSurface
+
 # The real vector space:
 from flatsurf.geometry.surface_objects import SurfacePoint
 from sage.plot.point import point2d
+
 
 class GraphicalSurfacePoint:
     def __init__(self, surface_point, graphical_surface=None):
@@ -43,7 +45,9 @@ class GraphicalSurfacePoint:
         for label in self._sp.labels():
             if self._gs.is_visible(label):
                 for coord in self._sp.coordinates(label):
-                    point_list.append( self._gs.graphical_polygon(label).transform(coord) )
+                    point_list.append(
+                        self._gs.graphical_polygon(label).transform(coord)
+                    )
         return point_list
 
     def plot(self, **options):

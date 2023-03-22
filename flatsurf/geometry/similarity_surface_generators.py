@@ -43,7 +43,7 @@ from .cone_surface import ConeSurface
 from .rational_cone_surface import RationalConeSurface
 
 
-def flipper_nf_to_sage(K, name='a'):
+def flipper_nf_to_sage(K, name="a"):
     r"""
     Convert a flipper number field into a Sage number field
 
@@ -64,12 +64,13 @@ def flipper_nf_to_sage(K, name='a'):
         1.122462048309373?
     """
     r = K.lmbda.interval()
-    l = r.lower * ZZ(10)**(-r.precision)
-    u = r.upper * ZZ(10)**(-r.precision)
+    l = r.lower * ZZ(10) ** (-r.precision)
+    u = r.upper * ZZ(10) ** (-r.precision)
 
-    p = QQ['x'](K.coefficients)
-    s = AA.polynomial_root(p, RIF(l,u))
+    p = QQ["x"](K.coefficients)
+    s = AA.polynomial_root(p, RIF(l, u))
     return NumberField(p, name, embedding=s)
+
 
 def flipper_nf_element_to_sage(x, K=None):
     r"""
@@ -109,19 +110,23 @@ class EInfinitySurface(Surface):
     Black nodes represent vertical cylinders and white nodes
     represent horizontal cylinders.
     """
-    def __init__(self,lambda_squared=None, field=None):
+
+    def __init__(self, lambda_squared=None, field=None):
         if lambda_squared is None:
             from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
-            R=PolynomialRing(ZZ,'x')
+
+            R = PolynomialRing(ZZ, "x")
             x = R.gen()
-            field=NumberField(x**3-ZZ(5)*x**2+ZZ(4)*x-ZZ(1), 'r', embedding=AA(ZZ(4)))
-            self._l=field.gen()
+            field = NumberField(
+                x**3 - ZZ(5) * x**2 + ZZ(4) * x - ZZ(1), "r", embedding=AA(ZZ(4))
+            )
+            self._l = field.gen()
         else:
             if field is None:
-                self._l=lambda_squared
-                field=lambda_squared.parent()
+                self._l = lambda_squared
+                field = lambda_squared.parent()
             else:
-                self._l=field(lambda_squared)
+                self._l = field(lambda_squared)
         super().__init__(field, ZZ.zero(), finite=False, mutable=False)
 
     def _repr_(self):
@@ -131,42 +136,42 @@ class EInfinitySurface(Surface):
         return "The E-infinity surface"
 
     @cached_method
-    def get_white(self,n):
+    def get_white(self, n):
         r"""Get the weight of the white endpoint of edge n."""
-        l=self._l
-        if n==0 or n==1:
+        l = self._l
+        if n == 0 or n == 1:
             return l
-        if n==-1:
-            return l-1
-        if n==2:
-            return 1-3*l+l**2
-        if n>2:
-            x=self.get_white(n-1)
-            y=self.get_black(n)
-            return l*y-x
+        if n == -1:
+            return l - 1
+        if n == 2:
+            return 1 - 3 * l + l**2
+        if n > 2:
+            x = self.get_white(n - 1)
+            y = self.get_black(n)
+            return l * y - x
         return self.get_white(-n)
 
     @cached_method
-    def get_black(self,n):
+    def get_black(self, n):
         r"""Get the weight of the black endpoint of edge n."""
-        l=self._l
-        if n==0:
+        l = self._l
+        if n == 0:
             return self.base_ring().one()
-        if n==1 or n==-1 or n==2:
-            return l-1
-        if n>2:
-            x=self.get_black(n-1)
-            y=self.get_white(n-1)
-            return y-x
-        return self.get_black(1-n)
+        if n == 1 or n == -1 or n == 2:
+            return l - 1
+        if n > 2:
+            x = self.get_black(n - 1)
+            y = self.get_white(n - 1)
+            return y - x
+        return self.get_black(1 - n)
 
     def polygon(self, lab):
         r"""
         Return the polygon labeled by ``lab``.
         """
         if lab not in self.polygon_labels():
-            raise ValueError("lab (=%s) not a valid label"%lab)
-        return polygons.rectangle(2*self.get_black(lab),self.get_white(lab))
+            raise ValueError("lab (=%s) not a valid label" % lab)
+        return polygons.rectangle(2 * self.get_black(lab), self.get_white(lab))
 
     def polygon_labels(self):
         r"""
@@ -178,52 +183,52 @@ class EInfinitySurface(Surface):
         r"""
         Return the pair ``(pp,ee)`` to which the edge ``(p,e)`` is glued to.
         """
-        if p==0:
-            if e==0:
-                return (0,2)
-            if e==1:
-                return (1,3)
-            if e==2:
-                return (0,0)
-            if e==3:
-                return (1,1)
-        if p==1:
-            if e==0:
-                return (-1,2)
-            if e==1:
-                return (0,3)
-            if e==2:
-                return (2,0)
-            if e==3:
-                return (0,1)
-        if p==-1:
-            if e==0:
-                return (2,2)
-            if e==1:
-                return (-1,3)
-            if e==2:
-                return (1,0)
-            if e==3:
-                return (-1,1)
-        if p==2:
-            if e==0:
-                return (1,2)
-            if e==1:
-                return (-2,3)
-            if e==2:
-                return (-1,0)
-            if e==3:
-                return (-2,1)
-        if p>2:
-            if e%2:
-                return -p,(e+2)%4
+        if p == 0:
+            if e == 0:
+                return (0, 2)
+            if e == 1:
+                return (1, 3)
+            if e == 2:
+                return (0, 0)
+            if e == 3:
+                return (1, 1)
+        if p == 1:
+            if e == 0:
+                return (-1, 2)
+            if e == 1:
+                return (0, 3)
+            if e == 2:
+                return (2, 0)
+            if e == 3:
+                return (0, 1)
+        if p == -1:
+            if e == 0:
+                return (2, 2)
+            if e == 1:
+                return (-1, 3)
+            if e == 2:
+                return (1, 0)
+            if e == 3:
+                return (-1, 1)
+        if p == 2:
+            if e == 0:
+                return (1, 2)
+            if e == 1:
+                return (-2, 3)
+            if e == 2:
+                return (-1, 0)
+            if e == 3:
+                return (-2, 1)
+        if p > 2:
+            if e % 2:
+                return -p, (e + 2) % 4
             else:
-                return 1-p,(e+2)%4
+                return 1 - p, (e + 2) % 4
         else:
-            if e%2:
-                return -p,(e+2)%4
+            if e % 2:
+                return -p, (e + 2) % 4
             else:
-                return 1-p,(e+2)%4
+                return 1 - p, (e + 2) % 4
 
 
 class TFractalSurface(Surface):
@@ -253,33 +258,41 @@ class TFractalSurface(Surface):
         Warning: we can not play at the same time with tuples and element of a
         cartesian product (see Sage trac ticket #19555)
     """
+
     def __init__(self, w=ZZ_1, r=ZZ_2, h1=ZZ_1, h2=ZZ_1):
         from sage.combinat.words.words import Words
 
-        field = Sequence([w,r,h1,h2]).universe()
+        field = Sequence([w, r, h1, h2]).universe()
         if not field.is_field():
             field = field.fraction_field()
         self._w = field(w)
         self._r = field(r)
         self._h1 = field(h1)
         self._h2 = field(h2)
-        self._words = Words('LR', finite=True, infinite=False)
-        self._wL = self._words('L')
-        self._wR = self._words('R')
+        self._words = Words("LR", finite=True, infinite=False)
+        self._wL = self._words("L")
+        self._wR = self._words("R")
 
-        base_label=self.polygon_labels()._cartesian_product_of_elements((self._words(''), 0))
+        base_label = self.polygon_labels()._cartesian_product_of_elements(
+            (self._words(""), 0)
+        )
 
         super().__init__(field, base_label, finite=False, mutable=False)
 
     def _repr_(self):
-        return "The T-fractal surface with parameters w=%s, r=%s, h1=%s, h2=%s"%(
-                self._w, self._r, self._h1, self._h2)
+        return "The T-fractal surface with parameters w=%s, r=%s, h1=%s, h2=%s" % (
+            self._w,
+            self._r,
+            self._h1,
+            self._h2,
+        )
 
     @cached_method
     def polygon_labels(self):
         from sage.sets.finite_enumerated_set import FiniteEnumeratedSet
         from sage.categories.cartesian_product import cartesian_product
-        return cartesian_product([self._words, FiniteEnumeratedSet([0,1,2,3])])
+
+        return cartesian_product([self._words, FiniteEnumeratedSet([0, 1, 2, 3])])
 
     def opposite_edge(self, p, e):
         r"""
@@ -314,7 +327,7 @@ class TFractalSurface(Surface):
             sage: T.opposite_edge((w,0),3)
             ((word: LLRLRL, 0), 1)
         """
-        w,i = p
+        w, i = p
         w = self._words(w)
         i = int(i)
         e = int(e)
@@ -333,49 +346,49 @@ class TFractalSurface(Surface):
         if i == 0:
             if e == 0:
                 if w.is_empty():
-                    lab=(w,2)
-                elif w[-1] == 'L':
-                    lab=(w[:-1],1)
-                elif w[-1] == 'R':
-                    lab=(w[:-1],3)
+                    lab = (w, 2)
+                elif w[-1] == "L":
+                    lab = (w[:-1], 1)
+                elif w[-1] == "R":
+                    lab = (w[:-1], 3)
             if e == 1:
-                lab=(w,0)
+                lab = (w, 0)
             if e == 2:
-                lab=(w,2)
+                lab = (w, 2)
             if e == 3:
-                lab=(w,0)
+                lab = (w, 0)
         elif i == 1:
             if e == 0:
-                lab=(w + self._wL, 2)
+                lab = (w + self._wL, 2)
             if e == 1:
-                lab=(w,2)
+                lab = (w, 2)
             if e == 2:
-                lab=(w + self._wL, 0)
+                lab = (w + self._wL, 0)
             if e == 3:
-                lab=(w,3)
+                lab = (w, 3)
         elif i == 2:
             if e == 0:
-                lab=(w,0)
+                lab = (w, 0)
             if e == 1:
-                lab=(w,3)
+                lab = (w, 3)
             if e == 2:
                 if w.is_empty():
-                    lab=(w,0)
-                elif w[-1] == 'L':
-                    lab=(w[:-1],1)
-                elif w[-1] == 'R':
-                    lab=(w[:-1],3)
+                    lab = (w, 0)
+                elif w[-1] == "L":
+                    lab = (w[:-1], 1)
+                elif w[-1] == "R":
+                    lab = (w[:-1], 3)
             if e == 3:
-                lab=(w,1)
+                lab = (w, 1)
         elif i == 3:
             if e == 0:
-                lab=(w + self._wR, 2)
+                lab = (w + self._wR, 2)
             if e == 1:
-                lab=(w,1)
+                lab = (w, 1)
             if e == 2:
-                lab=(w + self._wR, 0)
+                lab = (w + self._wR, 0)
             if e == 3:
-                lab=(w,2)
+                lab = (w, 2)
         else:
             raise ValueError("i (={!r}) must be either 0,1,2 or 3".format(i))
 
@@ -419,15 +432,18 @@ class TFractalSurface(Surface):
         if i == 2:
             w = self._w
             h = self._h2
-        return ConvexPolygons(self.base_ring())([(w,0),(0,h),(-w,0),(0,-h)])
+        return ConvexPolygons(self.base_ring())([(w, 0), (0, h), (-w, 0), (0, -h)])
+
 
 def tfractal_surface(w=ZZ_1, r=ZZ_2, h1=ZZ_1, h2=ZZ_1):
-    return TranslationSurface(TFractalSurface(w,r,h1,h2))
+    return TranslationSurface(TFractalSurface(w, r, h1, h2))
+
 
 class SimilaritySurfaceGenerators:
     r"""
     Examples of similarity surfaces.
     """
+
     @staticmethod
     def example():
         r"""
@@ -442,9 +458,13 @@ class SimilaritySurfaceGenerators:
             sage: TestSuite(ex).run()
         """
         s = Surface_list(base_ring=QQ)
-        s.add_polygon(polygons(vertices=[(0,0), (2,-2), (2,0)],ring=QQ)) # gets label 0
-        s.add_polygon(polygons(vertices=[(0,0), (2,0), (1,3)],ring=QQ)) # gets label 1
-        s.change_polygon_gluings(0, [(1,1), (1,2), (1,0)])
+        s.add_polygon(
+            polygons(vertices=[(0, 0), (2, -2), (2, 0)], ring=QQ)
+        )  # gets label 0
+        s.add_polygon(
+            polygons(vertices=[(0, 0), (2, 0), (1, 3)], ring=QQ)
+        )  # gets label 1
+        s.change_polygon_gluings(0, [(1, 1), (1, 2), (1, 0)])
         s.set_immutable()
         return SimilaritySurface(s)
 
@@ -461,7 +481,7 @@ class SimilaritySurfaceGenerators:
             sage: TestSuite(s).run()
         """
         s = Surface_list(base_ring=P.base_ring(), mutable=True)
-        s.add_polygon(P,[(0,i) for i in range(P.num_edges())])
+        s.add_polygon(P, [(0, i) for i in range(P.num_edges())])
         s.set_immutable()
         return HalfTranslationSurface(s)
 
@@ -541,12 +561,12 @@ class SimilaritySurfaceGenerators:
             internal_edges = []  # list (p1, e1, p2, e2)
             external_edges = []  # list (p1, e1)
             edge_to_lab = {}
-            for num,(i,j,k) in enumerate(comb_triangles):
+            for num, (i, j, k) in enumerate(comb_triangles):
                 triangles.append(C(vertices=[vertices[i], vertices[j], vertices[k]]))
-                edge_to_lab[(i,j)] = (num, 0)
-                edge_to_lab[(j,k)] = (num, 1)
-                edge_to_lab[(k,i)] = (num, 2)
-            for num,(i,j,k) in enumerate(comb_triangles):
+                edge_to_lab[(i, j)] = (num, 0)
+                edge_to_lab[(j, k)] = (num, 1)
+                edge_to_lab[(k, i)] = (num, 2)
+            for num, (i, j, k) in enumerate(comb_triangles):
                 if (j, i) in edge_to_lab:
                     num2, e2 = edge_to_lab[j, i]
                     internal_edges.append((num, 0, num2, e2))
@@ -575,15 +595,17 @@ class SimilaritySurfaceGenerators:
         for p in P:
             surface.add_polygon(p)
         for p in P:
-            surface.add_polygon(polygons(edges=[V((-x,y)) for x,y in reversed(p.edges())]))
-        for (p1,e1,p2,e2) in internal_edges:
+            surface.add_polygon(
+                polygons(edges=[V((-x, y)) for x, y in reversed(p.edges())])
+            )
+        for (p1, e1, p2, e2) in internal_edges:
             surface.set_edge_pairing(p1, e1, p2, e2)
             ne1 = surface.polygon(p1).num_edges()
             ne2 = surface.polygon(p2).num_edges()
-            surface.set_edge_pairing(m + p1, ne1-e1-1, m + p2, ne2-e2-1)
+            surface.set_edge_pairing(m + p1, ne1 - e1 - 1, m + p2, ne2 - e2 - 1)
         for p, e in external_edges:
             ne = surface.polygon(p).num_edges()
-            surface.set_edge_pairing(p, e, m+p, ne-e-1)
+            surface.set_edge_pairing(p, e, m + p, ne - e - 1)
 
         surface.set_immutable()
         if rational:
@@ -602,18 +624,18 @@ class SimilaritySurfaceGenerators:
         from sage.matrix.constructor import matrix
 
         n = P.num_edges()
-        r = matrix(2, [-1,0,0,1])
-        Q = polygons(edges=[r*v for v in reversed(P.edges())])
+        r = matrix(2, [-1, 0, 0, 1])
+        Q = polygons(edges=[r * v for v in reversed(P.edges())])
 
-        surface = Surface_list(base_ring = P.base_ring())
-        surface.add_polygon(P) # gets label 0)
-        surface.add_polygon(Q) # gets label 1
-        surface.change_polygon_gluings(0,[(1,n-i-1) for i in range(n)])
+        surface = Surface_list(base_ring=P.base_ring())
+        surface.add_polygon(P)  # gets label 0)
+        surface.add_polygon(Q)  # gets label 1
+        surface.change_polygon_gluings(0, [(1, n - i - 1) for i in range(n)])
         surface.set_immutable()
         return ConeSurface(surface)
 
     @staticmethod
-    def right_angle_triangle(w,h):
+    def right_angle_triangle(w, h):
         r"""
         TESTS::
 
@@ -625,16 +647,16 @@ class SimilaritySurfaceGenerators:
         """
         from sage.modules.free_module_element import vector
 
-        F = Sequence([w,h]).universe()
+        F = Sequence([w, h]).universe()
 
         if not F.is_field():
             F = F.fraction_field()
-        V = VectorSpace(F,2)
+        V = VectorSpace(F, 2)
         P = ConvexPolygons(F)
         s = Surface_list(base_ring=F)
-        s.add_polygon(P([V((w,0)),V((-w,h)),V((0,-h))])) # gets label 0
-        s.add_polygon(P([V((0,h)),V((-w,-h)),V((w,0))])) # gets label 1
-        s.change_polygon_gluings(0,[(1,2),(1,1),(1,0)])
+        s.add_polygon(P([V((w, 0)), V((-w, h)), V((0, -h))]))  # gets label 0
+        s.add_polygon(P([V((0, h)), V((-w, -h)), V((w, 0))]))  # gets label 1
+        s.change_polygon_gluings(0, [(1, 2), (1, 1), (1, 0)])
         s.set_immutable()
         return ConeSurface(s)
 
@@ -670,8 +692,8 @@ class DilationSurfaceGenerators:
         """
         s = Surface_list(base_ring=a.parent().fraction_field())
         CP = ConvexPolygons(s.base_ring())
-        s.add_polygon(CP(edges=[(0,1),(-1,0),(0,-1),(1,0)])) # label 0
-        s.add_polygon(CP(edges=[(0,1),(-a,0),(0,-1),(a,0)])) # label 1
+        s.add_polygon(CP(edges=[(0, 1), (-1, 0), (0, -1), (1, 0)]))  # label 0
+        s.add_polygon(CP(edges=[(0, 1), (-a, 0), (0, -1), (a, 0)]))  # label 1
         s.change_edge_gluing(0, 0, 1, 2)
         s.change_edge_gluing(0, 1, 1, 3)
         s.change_edge_gluing(0, 2, 1, 0)
@@ -718,13 +740,15 @@ class DilationSurfaceGenerators:
         field = Sequence([a, b, c, d]).universe().fraction_field()
         s = Surface_list(base_ring=QQ)
         CP = ConvexPolygons(field)
-        hexagon = CP(edges=[(a,0), (1-a,b), (0,1-b), (-c,0), (c-1,-d), (0,d-1)])
-        s.add_polygon(hexagon) # polygon 0
+        hexagon = CP(
+            edges=[(a, 0), (1 - a, b), (0, 1 - b), (-c, 0), (c - 1, -d), (0, d - 1)]
+        )
+        s.add_polygon(hexagon)  # polygon 0
         s.change_base_label(0)
-        triangle1 = CP(edges=[(1-a,0), (0,b), (a-1,-b)])
-        s.add_polygon(triangle1) # polygon 1
-        triangle2 = CP(edges=[(1-c,d), (c-1,0), (0,-d)])
-        s.add_polygon(triangle2) # polygon 2
+        triangle1 = CP(edges=[(1 - a, 0), (0, b), (a - 1, -b)])
+        s.add_polygon(triangle1)  # polygon 1
+        triangle2 = CP(edges=[(1 - c, d), (c - 1, 0), (0, -d)])
+        s.add_polygon(triangle2)  # polygon 2
         s.change_edge_gluing(0, 0, 0, 3)
         s.change_edge_gluing(0, 2, 0, 5)
         s.change_edge_gluing(0, 1, 1, 2)
@@ -769,48 +793,64 @@ class HalfTranslationSurfaceGenerators:
         x = 0
         y = H
         for i in range(n - 1):
-            P.append(C(vertices=[(x, 0), (x + w[i], 0), (x + w[i], y - h[i]), (x + w[i], y), (x, y)]))
+            P.append(
+                C(
+                    vertices=[
+                        (x, 0),
+                        (x + w[i], 0),
+                        (x + w[i], y - h[i]),
+                        (x + w[i], y),
+                        (x, y),
+                    ]
+                )
+            )
             x += w[i]
             y -= h[i]
         assert x == W - w[-1]
         assert y == h[-1]
         P.append(C(vertices=[(x, 0), (x + w[-1], 0), (x + w[-1], y), (x, y)]))
 
-        Prev = [C(vertices=[(x, -y) for x,y in reversed(p.vertices())]) for p in P]
+        Prev = [C(vertices=[(x, -y) for x, y in reversed(p.vertices())]) for p in P]
 
-        S = Surface_list(base_ring = C.base_ring())
-        S.rename("StepBilliard(w=[%s], h=[%s])" % (', '.join(map(str, w)), ', '.join(map(str, h))))
-        S.add_polygons(P)    # get labels 0, ..., n-1
-        S.add_polygons(Prev) # get labels n, n+1, ..., 2n-1
+        S = Surface_list(base_ring=C.base_ring())
+        S.rename(
+            "StepBilliard(w=[%s], h=[%s])"
+            % (", ".join(map(str, w)), ", ".join(map(str, h)))
+        )
+        S.add_polygons(P)  # get labels 0, ..., n-1
+        S.add_polygons(Prev)  # get labels n, n+1, ..., 2n-1
 
         # reflection gluings
         # (gluings between the polygon and its reflection)
         S.set_edge_pairing(0, 4, n, 4)
-        S.set_edge_pairing(n-1, 0, 2*n-1, 2)
-        S.set_edge_pairing(n-1, 1, 2*n-1, 1)
-        S.set_edge_pairing(n-1, 2, 2*n-1, 0)
-        for i in range(n-1):
+        S.set_edge_pairing(n - 1, 0, 2 * n - 1, 2)
+        S.set_edge_pairing(n - 1, 1, 2 * n - 1, 1)
+        S.set_edge_pairing(n - 1, 2, 2 * n - 1, 0)
+        for i in range(n - 1):
             # set_edge_pairing(polygon1, edge1, polygon2, edge2)
-            S.set_edge_pairing(i, 0, n+i, 3)
-            S.set_edge_pairing(i, 2, n+i, 1)
-            S.set_edge_pairing(i, 3, n+i, 0)
+            S.set_edge_pairing(i, 0, n + i, 3)
+            S.set_edge_pairing(i, 2, n + i, 1)
+            S.set_edge_pairing(i, 3, n + i, 0)
 
         # translation gluings
-        S.set_edge_pairing(n-2, 1, n-1, 3)
-        S.set_edge_pairing(2*n-2, 2, 2*n-1, 3)
-        for i in range(n-2):
-            S.set_edge_pairing(i, 1, i+1, 4)
-            S.set_edge_pairing(n+i, 2, n+i+1, 4)
+        S.set_edge_pairing(n - 2, 1, n - 1, 3)
+        S.set_edge_pairing(2 * n - 2, 2, 2 * n - 1, 3)
+        for i in range(n - 2):
+            S.set_edge_pairing(i, 1, i + 1, 4)
+            S.set_edge_pairing(n + i, 2, n + i + 1, 4)
 
         S.set_immutable()
         return HalfTranslationSurface(S)
 
+
 half_translation_surfaces = HalfTranslationSurfaceGenerators()
+
 
 class TranslationSurfaceGenerators:
     r"""
     Common and less common translation surfaces.
     """
+
     @staticmethod
     def square_torus(a=1):
         r"""
@@ -837,7 +877,7 @@ class TranslationSurfaceGenerators:
 
             sage: TestSuite(T).run()
         """
-        return TranslationSurfaceGenerators.torus((a,0), (0,a))
+        return TranslationSurfaceGenerators.torus((a, 0), (0, a))
 
     @staticmethod
     def torus(u, v):
@@ -856,14 +896,14 @@ class TranslationSurfaceGenerators:
         """
         u = vector(u)
         v = vector(v)
-        field = Sequence([u,v]).universe().base_ring()
+        field = Sequence([u, v]).universe().base_ring()
         if isinstance(field, type):
             field = py_scalar_parent(field)
         if not field.is_field():
             field = field.fraction_field()
         s = Surface_list(base_ring=field)
-        p = polygons(vertices=[(0,0), u, u+v, v], base_ring=field)
-        s.add_polygon(p, [(0,2),(0,3),(0,0),(0,1)])
+        p = polygons(vertices=[(0, 0), u, u + v, v], base_ring=field)
+        s.add_polygon(p, [(0, 2), (0, 3), (0, 0), (0, 1)])
         s.set_immutable()
         return TranslationSurface(s)
 
@@ -880,9 +920,9 @@ class TranslationSurfaceGenerators:
             Polygon: (0, 0), (1, 0), (-1/2*a^2 + 5/2, 1/2*a), (-a^2 + 7/2, -1/2*a^3 + 2*a), (-1/2*a^2 + 5/2, -a^3 + 7/2*a), (1, -a^3 + 4*a), (0, -a^3 + 4*a), (1/2*a^2 - 3/2, -a^3 + 7/2*a), (a^2 - 5/2, -1/2*a^3 + 2*a), (1/2*a^2 - 3/2, 1/2*a)
             sage: TestSuite(s).run()
         """
-        p = polygons.regular_ngon(2*n)
+        p = polygons.regular_ngon(2 * n)
         s = Surface_list(base_ring=p.base_ring())
-        s.add_polygon(p,[ ( 0, (i+n)%(2*n) ) for i in range(2*n)] )
+        s.add_polygon(p, [(0, (i + n) % (2 * n)) for i in range(2 * n)])
         s.set_immutable()
         return TranslationSurface(s)
 
@@ -898,14 +938,14 @@ class TranslationSurfaceGenerators:
             sage: TestSuite(s).run()
         """
         from sage.matrix.constructor import Matrix
+
         p = polygons.regular_ngon(n)
         s = Surface_list(base_ring=p.base_ring())
-        m = Matrix([[-1,0],[0,-1]])
-        s.add_polygon(p) # label=0
-        s.add_polygon(m*p, [(0,i) for i in range(n)])
+        m = Matrix([[-1, 0], [0, -1]])
+        s.add_polygon(p)  # label=0
+        s.add_polygon(m * p, [(0, i) for i in range(n)])
         s.set_immutable()
         return TranslationSurface(s)
-
 
     @staticmethod
     def regular_octagon():
@@ -995,15 +1035,22 @@ class TranslationSurfaceGenerators:
         e = ZZ(e)
         g = w.gcd(h)
         gg = g.gcd(t).gcd(e)
-        if w <= 0 or h <= 0 or t < 0 or t >= g or not g.gcd(t).gcd(e).is_one() or e+h >= w:
+        if (
+            w <= 0
+            or h <= 0
+            or t < 0
+            or t >= g
+            or not g.gcd(t).gcd(e).is_one()
+            or e + h >= w
+        ):
             raise ValueError("invalid parameters")
 
         x = polygen(QQ)
-        poly = x**2 - e * x - w*h
+        poly = x**2 - e * x - w * h
         if poly.is_irreducible():
             if base_ring is None:
-                emb = AA.polynomial_root(poly, RIF(0,w))
-                K = NumberField(poly, 'l', embedding=emb)
+                emb = AA.polynomial_root(poly, RIF(0, w))
+                K = NumberField(poly, "l", embedding=emb)
                 l = K.gen()
             else:
                 K = base_ring
@@ -1018,7 +1065,7 @@ class TranslationSurfaceGenerators:
                 K = QQ
             else:
                 K = base_ring
-            D = e**2 + 4 * w*h
+            D = e**2 + 4 * w * h
             d = D.sqrt()
             l = (e + d) / 2
 
@@ -1035,8 +1082,24 @@ class TranslationSurfaceGenerators:
         if rel:
             if rel < 0 or rel > w - l:
                 raise ValueError("invalid rel argument")
-            s.add_polygon(polygons(vertices=[(0,0),(l,0),(l+rel,l),(rel,l)], ring=K))
-            s.add_polygon(polygons(vertices=[(0,0),(rel,0),(rel+l,0),(w,0),(w+t,h),(l+rel+t,h),(t+l,h),(t,h)], ring=K))
+            s.add_polygon(
+                polygons(vertices=[(0, 0), (l, 0), (l + rel, l), (rel, l)], ring=K)
+            )
+            s.add_polygon(
+                polygons(
+                    vertices=[
+                        (0, 0),
+                        (rel, 0),
+                        (rel + l, 0),
+                        (w, 0),
+                        (w + t, h),
+                        (l + rel + t, h),
+                        (t + l, h),
+                        (t, h),
+                    ],
+                    ring=K,
+                )
+            )
             s.set_edge_pairing(0, 1, 0, 3)
             s.set_edge_pairing(0, 0, 1, 6)
             s.set_edge_pairing(0, 2, 1, 1)
@@ -1044,8 +1107,13 @@ class TranslationSurfaceGenerators:
             s.set_edge_pairing(1, 3, 1, 7)
             s.set_edge_pairing(1, 0, 1, 5)
         else:
-            s.add_polygon(polygons(vertices=[(0,0),(l,0),(l,l),(0,l)], ring=K))
-            s.add_polygon(polygons(vertices=[(0,0),(l,0),(w,0),(w+t,h),(l+t,h),(t,h)], ring=K))
+            s.add_polygon(polygons(vertices=[(0, 0), (l, 0), (l, l), (0, l)], ring=K))
+            s.add_polygon(
+                polygons(
+                    vertices=[(0, 0), (l, 0), (w, 0), (w + t, h), (l + t, h), (t, h)],
+                    ring=K,
+                )
+            )
             s.set_edge_pairing(0, 1, 0, 3)
             s.set_edge_pairing(0, 0, 1, 4)
             s.set_edge_pairing(0, 2, 1, 0)
@@ -1063,23 +1131,30 @@ class TranslationSurfaceGenerators:
 
         The associated discriminant is `D = e^2 + 8 wh`.
         """
-        
+
         if rel != 0:
             raise NotImplementedError("rel is non-zero")
-        
+
         w = ZZ(w)
         h = ZZ(h)
         t = ZZ(t)
         e = ZZ(e)
-        if w <= 0 or h <= 0 or t < 0 or t >= w.gcd(h) or not w.gcd(h).gcd(t).gcd(e).is_one() or e+2*h >= w:
+        if (
+            w <= 0
+            or h <= 0
+            or t < 0
+            or t >= w.gcd(h)
+            or not w.gcd(h).gcd(t).gcd(e).is_one()
+            or e + 2 * h >= w
+        ):
             raise ValueError("invalid parameters")
 
         x = polygen(QQ)
-        poly = x**2 - e * x - 2*w*h
+        poly = x**2 - e * x - 2 * w * h
         if poly.is_irreducible():
             if base_ring is None:
-                emb = AA.polynomial_root(poly, RIF(0,w))
-                K = NumberField(poly, 'l', embedding=emb)
+                emb = AA.polynomial_root(poly, RIF(0, w))
+                K = NumberField(poly, "l", embedding=emb)
                 l = K.gen()
             else:
                 K = base_ring
@@ -1094,17 +1169,33 @@ class TranslationSurfaceGenerators:
                 K = QQ
             else:
                 K = base_ring
-            D = e**2 + 8 * w*h
+            D = e**2 + 8 * w * h
             d = D.sqrt()
             l = (e + d) / 2
-
 
         # (lambda,lambda) square in the middle
         # twisted (w,0), (t,h) on top and bottom
         s = Surface_list(base_ring=K)
-        s.add_polygon(polygons(vertices=[(0,0),(l,0),(w,0),(w+t,h),(l+t,h),(t,h)], ring=K))
-        s.add_polygon(polygons(vertices=[(0,0),(l,0),(l,l),(0,l)], ring=K))
-        s.add_polygon(polygons(vertices=[(0,0),(w-l,0),(w,0),(w+t,h),(w-l+t,h),(t,h)], ring=K))
+        s.add_polygon(
+            polygons(
+                vertices=[(0, 0), (l, 0), (w, 0), (w + t, h), (l + t, h), (t, h)],
+                ring=K,
+            )
+        )
+        s.add_polygon(polygons(vertices=[(0, 0), (l, 0), (l, l), (0, l)], ring=K))
+        s.add_polygon(
+            polygons(
+                vertices=[
+                    (0, 0),
+                    (w - l, 0),
+                    (w, 0),
+                    (w + t, h),
+                    (w - l + t, h),
+                    (t, h),
+                ],
+                ring=K,
+            )
+        )
         s.set_edge_pairing(0, 0, 2, 3)
         s.set_edge_pairing(0, 1, 0, 3)
         s.set_edge_pairing(0, 2, 0, 5)
@@ -1125,24 +1216,31 @@ class TranslationSurfaceGenerators:
 
         The associated discriminant is `D = e^2 + 4 wh`.
         """
-        
+
         if rel != 0:
             raise NotImplementedError("rel is non-zero")
-        
+
         w = ZZ(w)
         h = ZZ(h)
         t = ZZ(t)
         e = ZZ(e)
         D = e**2 + 4 * w * h
-        if w <= 0 or h <= 0 or t < 0 or t >= w.gcd(h) or not w.gcd(h).gcd(t).gcd(e).is_one() or (e + 4 * h)**2 > D:
+        if (
+            w <= 0
+            or h <= 0
+            or t < 0
+            or t >= w.gcd(h)
+            or not w.gcd(h).gcd(t).gcd(e).is_one()
+            or (e + 4 * h) ** 2 > D
+        ):
             raise ValueError("invalid parameters")
 
         x = polygen(QQ)
-        poly = x**2 - e * x - w*h
+        poly = x**2 - e * x - w * h
         if poly.is_irreducible():
             if base_ring is None:
-                emb = AA.polynomial_root(poly, RIF(0,w))
-                K = NumberField(poly, 'l', embedding=emb)
+                emb = AA.polynomial_root(poly, RIF(0, w))
+                K = NumberField(poly, "l", embedding=emb)
                 l = K.gen()
             else:
                 K = base_ring
@@ -1157,18 +1255,47 @@ class TranslationSurfaceGenerators:
                 K = QQ
             else:
                 K = base_ring
-            D = e**2 + 4 * w*h
+            D = e**2 + 4 * w * h
             d = D.sqrt()
             l = (e + d) / 2
-
 
         # (lambda/2,lambda/2) squares on top and bottom
         # twisted (w/2,0), (t/2,h/2) in the middle
         s = Surface_list(base_ring=K)
-        s.add_polygon(polygons(vertices=[(0,0),(l/2,0),(l/2,l/2),(0,l/2)], ring=K))
-        s.add_polygon(polygons(vertices=[(0, 0),(w/2 - l, 0), (w/2 - l/2, 0), (w/2, 0), (w/2 + t/2, h/2), (w/2 - l + t/2, h/2), (t/2, h/2)], ring=K))
-        s.add_polygon(polygons(vertices=[(0, 0), (l, 0), (w/2, 0), (w/2 + t/2, h/2), (l + t/2, h/2), (l/2 + t/2, h/2), (t/2, h/2)], ring=K))
-        s.add_polygon(polygons(vertices=[(0,0),(l/2,0),(l/2,l/2),(0,l/2)], ring=K))
+        s.add_polygon(
+            polygons(vertices=[(0, 0), (l / 2, 0), (l / 2, l / 2), (0, l / 2)], ring=K)
+        )
+        s.add_polygon(
+            polygons(
+                vertices=[
+                    (0, 0),
+                    (w / 2 - l, 0),
+                    (w / 2 - l / 2, 0),
+                    (w / 2, 0),
+                    (w / 2 + t / 2, h / 2),
+                    (w / 2 - l + t / 2, h / 2),
+                    (t / 2, h / 2),
+                ],
+                ring=K,
+            )
+        )
+        s.add_polygon(
+            polygons(
+                vertices=[
+                    (0, 0),
+                    (l, 0),
+                    (w / 2, 0),
+                    (w / 2 + t / 2, h / 2),
+                    (l + t / 2, h / 2),
+                    (l / 2 + t / 2, h / 2),
+                    (t / 2, h / 2),
+                ],
+                ring=K,
+            )
+        )
+        s.add_polygon(
+            polygons(vertices=[(0, 0), (l / 2, 0), (l / 2, l / 2), (0, l / 2)], ring=K)
+        )
         s.set_edge_pairing(0, 0, 2, 4)
         s.set_edge_pairing(0, 1, 0, 3)
         s.set_edge_pairing(0, 2, 1, 2)
@@ -1214,22 +1341,22 @@ class TranslationSurfaceGenerators:
             sage: translation_surfaces.mcmullen_L(1r, 1r, 1r, 1r)
             TranslationSurface built from 3 polygons
         """
-        field = Sequence([l1,l2,l3,l4]).universe()
+        field = Sequence([l1, l2, l3, l4]).universe()
         if isinstance(field, type):
             field = py_scalar_parent(field)
         if not field.is_field():
             field = field.fraction_field()
 
         s = Surface_list(base_ring=field)
-        s.add_polygon(polygons((l3,0),(0,l2),(-l3,0),(0,-l2), ring=field))
-        s.add_polygon(polygons((l3,0),(0,l1),(-l3,0),(0,-l1), ring=field))
-        s.add_polygon(polygons((l4,0),(0,l2),(-l4,0),(0,-l2), ring=field))
-        s.change_edge_gluing(0,0,1,2)
-        s.change_edge_gluing(0,1,2,3)
-        s.change_edge_gluing(0,2,1,0)
-        s.change_edge_gluing(0,3,2,1)
-        s.change_edge_gluing(1,1,1,3)
-        s.change_edge_gluing(2,0,2,2)
+        s.add_polygon(polygons((l3, 0), (0, l2), (-l3, 0), (0, -l2), ring=field))
+        s.add_polygon(polygons((l3, 0), (0, l1), (-l3, 0), (0, -l1), ring=field))
+        s.add_polygon(polygons((l4, 0), (0, l2), (-l4, 0), (0, -l2), ring=field))
+        s.change_edge_gluing(0, 0, 1, 2)
+        s.change_edge_gluing(0, 1, 2, 3)
+        s.change_edge_gluing(0, 2, 1, 0)
+        s.change_edge_gluing(0, 3, 2, 1)
+        s.change_edge_gluing(1, 1, 1, 3)
+        s.change_edge_gluing(2, 0, 2, 2)
         s.set_immutable()
         return TranslationSurface(s)
 
@@ -1247,16 +1374,16 @@ class TranslationSurfaceGenerators:
             sage: s=translation_surfaces.ward(7)
             sage: TestSuite(s).run()
         """
-        assert n>=3
-        o = ZZ_2*polygons.regular_ngon(2*n)
-        p1 = polygons(*[o.edge((2*i+n)%(2*n)) for i in range(n)])
-        p2 = polygons(*[o.edge((2*i+n+1)%(2*n)) for i in range(n)])
+        assert n >= 3
+        o = ZZ_2 * polygons.regular_ngon(2 * n)
+        p1 = polygons(*[o.edge((2 * i + n) % (2 * n)) for i in range(n)])
+        p2 = polygons(*[o.edge((2 * i + n + 1) % (2 * n)) for i in range(n)])
         s = Surface_list(base_ring=o.parent().field())
         s.add_polygon(o)
         s.add_polygon(p1)
         s.add_polygon(p2)
-        s.change_polygon_gluings(1, [(0,2*i) for i in range(n)])
-        s.change_polygon_gluings(2, [(0,2*i+1) for i in range(n)])
+        s.change_polygon_gluings(1, [(0, 2 * i) for i in range(n)])
+        s.change_polygon_gluings(2, [(0, 2 * i + 1) for i in range(n)])
         s.set_immutable()
         return TranslationSurface(s)
 
@@ -1321,7 +1448,7 @@ class TranslationSurfaceGenerators:
             H_4(2^3)
             sage: TestSuite(C).run() # long time (6s), optional: exactreal
         """
-        ring = Sequence([a,b]).universe()
+        ring = Sequence([a, b]).universe()
         if isinstance(ring, type):
             ring = py_scalar_parent(ring)
         if not ring.has_coerce_map_from(QQ):
@@ -1330,11 +1457,35 @@ class TranslationSurfaceGenerators:
         b = ring(b)
         P = ConvexPolygons(ring)
         s = Surface_list(base_ring=ring)
-        half = QQ((1,2))
-        p0 = P(vertices=[(0,0),(a,0),(a,1),(0,1)])
-        p1 = P(vertices=[(a,0),(a,-b),(a+half,-b-half),(a+1,-b),(a+1,0),(a+1,1),(a+1,b+1),(a+half,b+1+half),(a,b+1),(a,1)])
-        p2 = P(vertices=[(a+1,0),(2*a+1,0),(2*a+1,1),(a+1,1)])
-        p3 = P(vertices=[(2*a+1,0), (2*a+1+half,-half),(4*a+1+half,-half),(4*a+2,0),(4*a+2,1),(4*a+1+half,1+half),(2*a+1+half,1+half),(2*a+1,1)])
+        half = QQ((1, 2))
+        p0 = P(vertices=[(0, 0), (a, 0), (a, 1), (0, 1)])
+        p1 = P(
+            vertices=[
+                (a, 0),
+                (a, -b),
+                (a + half, -b - half),
+                (a + 1, -b),
+                (a + 1, 0),
+                (a + 1, 1),
+                (a + 1, b + 1),
+                (a + half, b + 1 + half),
+                (a, b + 1),
+                (a, 1),
+            ]
+        )
+        p2 = P(vertices=[(a + 1, 0), (2 * a + 1, 0), (2 * a + 1, 1), (a + 1, 1)])
+        p3 = P(
+            vertices=[
+                (2 * a + 1, 0),
+                (2 * a + 1 + half, -half),
+                (4 * a + 1 + half, -half),
+                (4 * a + 2, 0),
+                (4 * a + 2, 1),
+                (4 * a + 1 + half, 1 + half),
+                (2 * a + 1 + half, 1 + half),
+                (2 * a + 1, 1),
+            ]
+        )
         s.add_polygon(p0)
         s.add_polygon(p1)
         s.add_polygon(p2)
@@ -1403,62 +1554,72 @@ class TranslationSurfaceGenerators:
             [ 0  0  2  2]
             [ 0  0  2  0]
         """
-        g=ZZ(genus)
-        assert g>=3
+        g = ZZ(genus)
+        assert g >= 3
         x = polygen(AA)
-        p=sum([x**i for i in range(1,g+1)])-1
+        p = sum([x**i for i in range(1, g + 1)]) - 1
         cp = AA.common_polynomial(p)
-        alpha_AA = AA.polynomial_root(cp, RIF(1/2, 1))
-        field=NumberField(alpha_AA.minpoly(),'alpha',embedding=alpha_AA)
-        a=field.gen()
-        V = VectorSpace(field,2)
-        p=[None for i in range(g+1)]
-        q=[None for i in range(g+1)]
-        p[0]=V(( (1-a**g)/2, a**2/(1-a) ))
-        q[0]=V(( -a**g/2, a ))
-        p[1]=V(( -(a**(g-1)+a**g)/2, (a-a**2+a**3)/(1-a) ))
-        p[g]=V(( 1+(a-a**g)/2, (3*a-1-a**2)/(1-a) ))
-        for i in range(2,g):
-            p[i]=V(( (a-a**i)/(1-a) , a/(1-a) ))
-        for i in range(1,g+1):
-            q[i]=V(( (2*a-a**i-a**(i+1))/(2*(1-a)), (a-a**(g-i+2))/(1-a) ))
+        alpha_AA = AA.polynomial_root(cp, RIF(1 / 2, 1))
+        field = NumberField(alpha_AA.minpoly(), "alpha", embedding=alpha_AA)
+        a = field.gen()
+        V = VectorSpace(field, 2)
+        p = [None for i in range(g + 1)]
+        q = [None for i in range(g + 1)]
+        p[0] = V(((1 - a**g) / 2, a**2 / (1 - a)))
+        q[0] = V((-(a**g) / 2, a))
+        p[1] = V((-(a ** (g - 1) + a**g) / 2, (a - a**2 + a**3) / (1 - a)))
+        p[g] = V((1 + (a - a**g) / 2, (3 * a - 1 - a**2) / (1 - a)))
+        for i in range(2, g):
+            p[i] = V(((a - a**i) / (1 - a), a / (1 - a)))
+        for i in range(1, g + 1):
+            q[i] = V(
+                (
+                    (2 * a - a**i - a ** (i + 1)) / (2 * (1 - a)),
+                    (a - a ** (g - i + 2)) / (1 - a),
+                )
+            )
         P = ConvexPolygons(field)
         s = Surface_list(field)
-        T = [None] * (2*g+1)
-        Tp = [None] * (2*g+1)
+        T = [None] * (2 * g + 1)
+        Tp = [None] * (2 * g + 1)
         from sage.matrix.constructor import Matrix
-        m=Matrix([[1,0],[0,-1]])
-        for i in range(1,g+1):
+
+        m = Matrix([[1, 0], [0, -1]])
+        for i in range(1, g + 1):
             # T_i is (P_0,Q_i,Q_{i-1})
-            T[i]=s.add_polygon(P(edges=[ q[i]-p[0], q[i-1]-q[i], p[0]-q[i-1] ]))
+            T[i] = s.add_polygon(
+                P(edges=[q[i] - p[0], q[i - 1] - q[i], p[0] - q[i - 1]])
+            )
             # T_{g+i} is (P_i,Q_{i-1},Q_{i})
-            T[g+i]=s.add_polygon(P(edges=[ q[i-1]-p[i], q[i]-q[i-1], p[i]-q[i] ]))
+            T[g + i] = s.add_polygon(
+                P(edges=[q[i - 1] - p[i], q[i] - q[i - 1], p[i] - q[i]])
+            )
             # T'_i is (P'_0,Q'_{i-1},Q'_i)
-            Tp[i]=s.add_polygon(m*s.polygon(T[i]))
+            Tp[i] = s.add_polygon(m * s.polygon(T[i]))
             # T'_{g+i} is (P'_i,Q'_i, Q'_{i-1})
-            Tp[g+i]=s.add_polygon(m*s.polygon(T[g+i]))
-        for i in range(1,g):
-            s.change_edge_gluing(T[i],0,T[i+1],2)
-            s.change_edge_gluing(Tp[i],2,Tp[i+1],0)
-        for i in range(1,g+1):
-            s.change_edge_gluing(T[i],1,T[g+i],1)
-            s.change_edge_gluing(Tp[i],1,Tp[g+i],1)
-        #P 0 Q 0 is paired with P' 0 Q' 0, ...
-        s.change_edge_gluing(T[1],2,Tp[g],2)
-        s.change_edge_gluing(Tp[1],0,T[g],0)
+            Tp[g + i] = s.add_polygon(m * s.polygon(T[g + i]))
+        for i in range(1, g):
+            s.change_edge_gluing(T[i], 0, T[i + 1], 2)
+            s.change_edge_gluing(Tp[i], 2, Tp[i + 1], 0)
+        for i in range(1, g + 1):
+            s.change_edge_gluing(T[i], 1, T[g + i], 1)
+            s.change_edge_gluing(Tp[i], 1, Tp[g + i], 1)
+        # P 0 Q 0 is paired with P' 0 Q' 0, ...
+        s.change_edge_gluing(T[1], 2, Tp[g], 2)
+        s.change_edge_gluing(Tp[1], 0, T[g], 0)
         # P1Q1 is paired with P'_g Q_{g-1}
-        s.change_edge_gluing(T[g+1],2,Tp[2*g],2)
-        s.change_edge_gluing(Tp[g+1],0,T[2*g],0)
+        s.change_edge_gluing(T[g + 1], 2, Tp[2 * g], 2)
+        s.change_edge_gluing(Tp[g + 1], 0, T[2 * g], 0)
         # P1Q0 is paired with P_{g-1} Q_{g-1}
-        s.change_edge_gluing(T[g+1],0,T[2*g-1],2)
-        s.change_edge_gluing(Tp[g+1],2,Tp[2*g-1],0)
+        s.change_edge_gluing(T[g + 1], 0, T[2 * g - 1], 2)
+        s.change_edge_gluing(Tp[g + 1], 2, Tp[2 * g - 1], 0)
         # PgQg is paired with Q1P2
-        s.change_edge_gluing(T[2*g],2,T[g+2],0)
-        s.change_edge_gluing(Tp[2*g],0,Tp[g+2],2)
-        for i in range(2,g-1):
+        s.change_edge_gluing(T[2 * g], 2, T[g + 2], 0)
+        s.change_edge_gluing(Tp[2 * g], 0, Tp[g + 2], 2)
+        for i in range(2, g - 1):
             # PiQi is paired with Q'_i P'_{i+1}
-            s.change_edge_gluing(T[g+i],2,Tp[g+i+1],2)
-            s.change_edge_gluing(Tp[g+i],0,T[g+i+1],0)
+            s.change_edge_gluing(T[g + i], 2, Tp[g + i + 1], 2)
+            s.change_edge_gluing(Tp[g + i], 0, T[g + i + 1], 0)
         s.set_immutable()
         return TranslationSurface(s)
 
@@ -1508,27 +1669,37 @@ class TranslationSurfaceGenerators:
         x = next(itervalues(f.edge_vectors)).x
         K = flipper_nf_to_sage(x.field)
         V = VectorSpace(K, 2)
-        edge_vectors = {i: V((flipper_nf_element_to_sage(e.x, K),
-                              flipper_nf_element_to_sage(e.y, K)))
-                for i,e in iteritems(f.edge_vectors)}
+        edge_vectors = {
+            i: V(
+                (flipper_nf_element_to_sage(e.x, K), flipper_nf_element_to_sage(e.y, K))
+            )
+            for i, e in iteritems(f.edge_vectors)
+        }
 
-        to_polygon_number = {k:(i,j) for i,t in enumerate(f.triangulation) for j,k in enumerate(t)}
+        to_polygon_number = {
+            k: (i, j) for i, t in enumerate(f.triangulation) for j, k in enumerate(t)
+        }
 
         C = ConvexPolygons(K)
 
         polys = []
         adjacencies = {}
-        for i,t in enumerate(f.triangulation):
-            for j,k in enumerate(t):
-                adjacencies[(i,j)] = to_polygon_number[~k]
+        for i, t in enumerate(f.triangulation):
+            for j, k in enumerate(t):
+                adjacencies[(i, j)] = to_polygon_number[~k]
             try:
                 poly = C([edge_vectors[i] for i in tuple(t)])
             except ValueError:
-                raise ValueError("t = {}, edges = {}".format(
-                    t, [edge_vectors[i].n(digits=6) for i in t]))
+                raise ValueError(
+                    "t = {}, edges = {}".format(
+                        t, [edge_vectors[i].n(digits=6) for i in t]
+                    )
+                )
             polys.append(poly)
 
-        return HalfTranslationSurface(surface_list_from_polygons_and_gluings(polys, adjacencies))
+        return HalfTranslationSurface(
+            surface_list_from_polygons_and_gluings(polys, adjacencies)
+        )
 
     @staticmethod
     def origami(r, u, rr=None, uu=None, domain=None):
@@ -1550,7 +1721,8 @@ class TranslationSurfaceGenerators:
             sage: TestSuite(o).run()
         """
         from .translation_surface import Origami
-        return TranslationSurface(Origami(r,u,rr,uu,domain))
+
+        return TranslationSurface(Origami(r, u, rr, uu, domain))
 
     @staticmethod
     def infinite_staircase():
@@ -1567,25 +1739,29 @@ class TranslationSurfaceGenerators:
             sage: TestSuite(S).run(skip='_test_pickling')
         """
         from .translation_surface import Origami
+
         o = Origami(
-                lambda x: x+1 if x%2 else x-1,  # r  (edge 1)
-                lambda x: x-1 if x%2 else x+1,  # u  (edge 2)
-                lambda x: x+1 if x%2 else x-1,  # rr (edge 3)
-                lambda x: x-1 if x%2 else x+1,  # uu (edge 0)
-                domain = ZZ,
-                base_label=ZZ(0))
+            lambda x: x + 1 if x % 2 else x - 1,  # r  (edge 1)
+            lambda x: x - 1 if x % 2 else x + 1,  # u  (edge 2)
+            lambda x: x + 1 if x % 2 else x - 1,  # rr (edge 3)
+            lambda x: x - 1 if x % 2 else x + 1,  # uu (edge 0)
+            domain=ZZ,
+            base_label=ZZ(0),
+        )
         o.rename("The infinite staircase")
         s = TranslationSurface(o)
         from flatsurf.geometry.similarity import SimilarityGroup
+
         SG = SimilarityGroup(QQ)
 
         def pos(n):
             if n % 2 == 0:
-                return SG((n//2, n//2))
+                return SG((n // 2, n // 2))
             else:
-                return SG((n//2, n//2+1))
-        gs=s.graphical_surface(default_position_function = pos)
-        gs.make_all_visible(limit = 10)
+                return SG((n // 2, n // 2 + 1))
+
+        gs = s.graphical_surface(default_position_function=pos)
+        gs.make_all_visible(limit=10)
         return s
 
     @staticmethod
@@ -1601,7 +1777,7 @@ class TranslationSurfaceGenerators:
             The T-fractal surface with parameters w=1, r=2, h1=1, h2=1
             sage: TestSuite(tf).run(skip='_test_pickling')
         """
-        return tfractal_surface(w,r,h1,h2)
+        return tfractal_surface(w, r, h1, h2)
 
     @staticmethod
     def e_infinity_surface(lambda_squared=None, field=None):
@@ -1628,7 +1804,6 @@ class TranslationSurfaceGenerators:
         """
         return TranslationSurface(EInfinitySurface(lambda_squared, field))
 
-
     @staticmethod
     def chamanara(alpha):
         r"""
@@ -1643,6 +1818,7 @@ class TranslationSurfaceGenerators:
             sage: TestSuite(C).run(skip='_test_pickling')
         """
         from .chamanara import chamanara_surface
+
         return chamanara_surface(alpha)
 
 

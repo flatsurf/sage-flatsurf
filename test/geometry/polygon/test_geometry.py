@@ -77,7 +77,20 @@ def test_segment_intersect():
     ans6 = segment_intersect((vt, vs), (us, ut))
     ans7 = segment_intersect((vs, vt), (ut, us))
     ans8 = segment_intersect((vt, vs), (ut, us))
-    assert (ans1 == ans2 == ans3 == ans4 == ans5 == ans6 == ans7 == ans8), (us, ut, vs, vt, ans1, ans2, ans3, ans4, ans5, ans6, ans7, ans8)
+    assert ans1 == ans2 == ans3 == ans4 == ans5 == ans6 == ans7 == ans8, (
+        us,
+        ut,
+        vs,
+        vt,
+        ans1,
+        ans2,
+        ans3,
+        ans4,
+        ans5,
+        ans6,
+        ans7,
+        ans8,
+    )
 
 
 def test_is_between():
@@ -85,7 +98,24 @@ def test_is_between():
 
     V = QQ**2
 
-    vecs = [V((1, 0)), V((2, 1)), V((1, 1)), V((1, 2)), V((0, 1)), V((-1, 2)), V((-1, 1)), V((-2, 1)), V((-1, 0)), V((-2, -1)), V((-1, -1)), V((-1, -2)), V((0, -1)), V((1, -2)), V((1, -1)), V((2, -1))]
+    vecs = [
+        V((1, 0)),
+        V((2, 1)),
+        V((1, 1)),
+        V((1, 2)),
+        V((0, 1)),
+        V((-1, 2)),
+        V((-1, 1)),
+        V((-2, 1)),
+        V((-1, 0)),
+        V((-2, -1)),
+        V((-1, -1)),
+        V((-1, -2)),
+        V((0, -1)),
+        V((1, -2)),
+        V((1, -1)),
+        V((2, -1)),
+    ]
     for i, a in enumerate(vecs):
         for j, b in enumerate(vecs):
             for k, c in enumerate(vecs):

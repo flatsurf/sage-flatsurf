@@ -1,5 +1,8 @@
-from sage.groups.matrix_gps.finitely_generated import FinitelyGeneratedMatrixGroup_generic
+from sage.groups.matrix_gps.finitely_generated import (
+    FinitelyGeneratedMatrixGroup_generic,
+)
 from sage.all import MatrixGroup
+
 
 class VeechGroup(FinitelyGeneratedMatrixGroup_generic):
     def __init__(self, idt, category=None):

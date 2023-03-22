@@ -13,10 +13,12 @@ from six.moves import range, map, filter, zip
 
 from .similarity_surface import SimilaritySurface
 
+
 class ConeSurface(SimilaritySurface):
     r"""
     A Euclidean cone surface.
     """
+
     def angles(self, numerical=False, return_adjacent_edges=False):
         r"""
         Return the set of angles around the vertices of the surface.
@@ -43,25 +45,29 @@ class ConeSurface(SimilaritySurface):
 
         if return_adjacent_edges:
             while edges:
-                p,e = edges.pop()
-                adjacent_edges = [(p,e)]
+                p, e = edges.pop()
+                adjacent_edges = [(p, e)]
                 angle = self.polygon(p).angle(e, numerical=numerical)
-                pp,ee = self.opposite_edge(p,(e-1)%self.polygon(p).num_edges())
+                pp, ee = self.opposite_edge(p, (e - 1) % self.polygon(p).num_edges())
                 while pp != p or ee != e:
-                    edges.remove((pp,ee))
-                    adjacent_edges.append((pp,ee))
+                    edges.remove((pp, ee))
+                    adjacent_edges.append((pp, ee))
                     angle += self.polygon(pp).angle(ee, numerical=numerical)
-                    pp,ee = self.opposite_edge(pp,(ee-1)%self.polygon(pp).num_edges())
+                    pp, ee = self.opposite_edge(
+                        pp, (ee - 1) % self.polygon(pp).num_edges()
+                    )
                 angles.append((angle, adjacent_edges))
         else:
             while edges:
-                p,e = edges.pop()
+                p, e = edges.pop()
                 angle = self.polygon(p).angle(e, numerical=numerical)
-                pp,ee = self.opposite_edge(p,(e-1)%self.polygon(p).num_edges())
+                pp, ee = self.opposite_edge(p, (e - 1) % self.polygon(p).num_edges())
                 while pp != p or ee != e:
-                    edges.remove((pp,ee))
+                    edges.remove((pp, ee))
                     angle += self.polygon(pp).angle(ee, numerical=numerical)
-                    pp,ee = self.opposite_edge(pp,(ee-1)%self.polygon(pp).num_edges())
+                    pp, ee = self.opposite_edge(
+                        pp, (ee - 1) % self.polygon(pp).num_edges()
+                    )
                 angles.append(angle)
 
         return angles

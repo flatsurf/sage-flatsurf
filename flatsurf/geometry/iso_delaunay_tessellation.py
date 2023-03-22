@@ -103,6 +103,7 @@ class IsoDelaunayTessellation(Parent):
 
         """
         from sage.all import Graph
+
         self._surface_original = surface
 
         self._hyperbolic_plane = HyperbolicPlane(surface.base_ring())
@@ -113,7 +114,9 @@ class IsoDelaunayTessellation(Parent):
         self._dual_graph = Graph(multiedges=True, loops=True)
         self._surface_classes = {}
 
-        self._ensure_dual_graph_vertex(self.root(), self._surface, self.root().edges()[0])
+        self._ensure_dual_graph_vertex(
+            self.root(), self._surface, self.root().edges()[0]
+        )
 
     def _repr_(self):
         return f"IsoDelaunay Tessellation of {self._surface_original}"
@@ -145,11 +148,14 @@ class IsoDelaunayTessellation(Parent):
             tessellation_face = self.root()
 
         if tessellation_face not in self._dual_graph:
-            raise ValueError("tessellation_face must be a polygon of the explored tessellation")
+            raise ValueError(
+                "tessellation_face must be a polygon of the explored tessellation"
+            )
 
         queued_tessellation_faces = set()
 
         from collections import deque
+
         queue = deque([(0, tessellation_face)])
         queued_tessellation_faces.add(tessellation_face)
 
@@ -157,8 +163,13 @@ class IsoDelaunayTessellation(Parent):
             distance, tessellation_face = queue.popleft()
 
             for tessellation_edge in tessellation_face.edges():
-                other_tessellation_face = self._explore(tessellation_face, tessellation_edge)
-                if distance + 1 < limit and other_tessellation_face not in queued_tessellation_faces:
+                other_tessellation_face = self._explore(
+                    tessellation_face, tessellation_edge
+                )
+                if (
+                    distance + 1 < limit
+                    and other_tessellation_face not in queued_tessellation_faces
+                ):
                     queued_tessellation_faces.add(other_tessellation_face)
                     queue.append((distance + 1, other_tessellation_face))
 
@@ -172,12 +183,27 @@ class IsoDelaunayTessellation(Parent):
         if cross_tessellation_face is not None:
             return cross_tessellation_face
 
-        cross_tessellation_face, target_triangulation = self._develop(tessellation_face, tessellation_edge)
+        cross_tessellation_face, target_triangulation = self._develop(
+            tessellation_face, tessellation_edge
+        )
 
         target_triangulation.set_immutable()
-        cross_tessellation_face, cross_tessellation_edge, isometry = self._ensure_dual_graph_vertex(cross_tessellation_face, target_triangulation, -tessellation_edge)
+        (
+            cross_tessellation_face,
+            cross_tessellation_edge,
+            isometry,
+        ) = self._ensure_dual_graph_vertex(
+            cross_tessellation_face, target_triangulation, -tessellation_edge
+        )
 
-        self._dual_graph.add_edge(tessellation_face, cross_tessellation_face, label=({tessellation_edge, cross_tessellation_edge}, (isometry, tessellation_edge)))
+        self._dual_graph.add_edge(
+            tessellation_face,
+            cross_tessellation_face,
+            label=(
+                {tessellation_edge, cross_tessellation_edge},
+                (isometry, tessellation_edge),
+            ),
+        )
 
         return cross_tessellation_face
 
@@ -194,7 +220,8 @@ class IsoDelaunayTessellation(Parent):
                     continue
                 if half_plane.boundary() == tessellation_edge.geodesic():
                     target_triangulation = target_triangulation.triangle_flip(
-                        *triangulation_edge)
+                        *triangulation_edge
+                    )
                     break
 
                 # glue triangles across triangulation_edge that flips to get mock Delaunay cells
@@ -203,9 +230,12 @@ class IsoDelaunayTessellation(Parent):
                 break
 
         cross_tessellation_face = self._hyperbolic_plane.polygon(
-            self._iso_delaunay_region(target_triangulation))
+            self._iso_delaunay_region(target_triangulation)
+        )
 
-        assert -tessellation_edge in cross_tessellation_face.edges(), f"edge {-tessellation_edge} is not in the polygon {cross_tessellation_face} after crossing {tessellation_edge} from {tessellation_face}"
+        assert (
+            -tessellation_edge in cross_tessellation_face.edges()
+        ), f"edge {-tessellation_edge} is not in the polygon {cross_tessellation_face} after crossing {tessellation_edge} from {tessellation_face}"
 
         return cross_tessellation_face, target_triangulation
 
@@ -222,11 +252,13 @@ class IsoDelaunayTessellation(Parent):
 
         if mod is not None:
             edges = list(tessellation_face.edges())
-            edge = set(edges[edges.index(tessellation_edge) % mod::mod])
+            edge = set(edges[edges.index(tessellation_edge) % mod :: mod])
         else:
             edge = {tessellation_edge}
 
-        for v, w, (edges, isometry) in self._dual_graph.edges(tessellation_face, labels=True, sort=False):
+        for v, w, (edges, isometry) in self._dual_graph.edges(
+            tessellation_face, labels=True, sort=False
+        ):
             if any(e in edges for e in edge):
                 if v == tessellation_face:
                     return w
@@ -257,13 +289,21 @@ class IsoDelaunayTessellation(Parent):
         """
         # TODO: Should this mutate the tessellation or create a copy instead?
         for tessellation_face in self._dual_graph.vertices(sort=False):
-            for source_tessellation_face, target_tessellation_face, (tessellation_edges, isometry) in list(self._dual_graph.edges(tessellation_face, labels=True, sort=False)):
+            for (
+                source_tessellation_face,
+                target_tessellation_face,
+                (tessellation_edges, isometry),
+            ) in list(
+                self._dual_graph.edges(tessellation_face, labels=True, sort=False)
+            ):
                 # crossing edge of the polygon cycles back to the very edge in the
                 # polygon, so there is an orbifold point on that edge.
                 # We patch the polygon by inserting a marked point.
                 if len(tessellation_edges) == 1:
                     assert source_tessellation_face == target_tessellation_face
-                    tessellation_face, _ = self._insert_orbifold_point(tessellation_face, next(iter(tessellation_edges)).midpoint())
+                    tessellation_face, _ = self._insert_orbifold_point(
+                        tessellation_face, next(iter(tessellation_edges)).midpoint()
+                    )
 
         # TODO: Insert orbifold points in the interior of a polygon, i.e., the ones detected with isomorphism()
 
@@ -283,21 +323,35 @@ class IsoDelaunayTessellation(Parent):
 
         tessellation_face_with_marked_vertices = tessellation_face.parent().polygon(
             tessellation_face.half_spaces(),
-            marked_vertices=tuple(tessellation_face.vertices()) + (point,))
+            marked_vertices=tuple(tessellation_face.vertices()) + (point,),
+        )
 
         assert tessellation_face_with_marked_vertices != tessellation_face
 
         # TODO: This breaks self._surface_classes currently.
         self._dual_graph.add_vertex(tessellation_face_with_marked_vertices)
-        self._dual_graph.set_vertex(tessellation_face_with_marked_vertices, self._dual_graph.get_vertex(tessellation_face))
-        for source_tessellation_face, target_tessellation_face, (tessellation_edges, isometry) in list(self._dual_graph.edges(tessellation_face, labels=True, sort=False)):
-            self._dual_graph.delete_edge(source_tessellation_face, target_tessellation_face, tessellation_edges)
+        self._dual_graph.set_vertex(
+            tessellation_face_with_marked_vertices,
+            self._dual_graph.get_vertex(tessellation_face),
+        )
+        for (
+            source_tessellation_face,
+            target_tessellation_face,
+            (tessellation_edges, isometry),
+        ) in list(self._dual_graph.edges(tessellation_face, labels=True, sort=False)):
+            self._dual_graph.delete_edge(
+                source_tessellation_face, target_tessellation_face, tessellation_edges
+            )
             if source_tessellation_face == tessellation_face:
                 source_tessellation_face = tessellation_face_with_marked_vertices
             if target_tessellation_face == tessellation_face:
                 target_tessellation_face = tessellation_face_with_marked_vertices
 
-            self._dual_graph.add_edge(source_tessellation_face, target_tessellation_face, label=(tessellation_edges, isometry))
+            self._dual_graph.add_edge(
+                source_tessellation_face,
+                target_tessellation_face,
+                label=(tessellation_edges, isometry),
+            )
 
         self._dual_graph.delete_vertex(tessellation_face)
 
@@ -315,12 +369,16 @@ class IsoDelaunayTessellation(Parent):
         else:
             assert False
 
-        return tessellation_face_with_marked_vertices, (edge_before_marked_point, edge_after_marked_point)
+        return tessellation_face_with_marked_vertices, (
+            edge_before_marked_point,
+            edge_after_marked_point,
+        )
 
     @cached_method
     def _to_pyflatsurf(self, triangulation):
         # TODO: Clear this cache when explore() is finished.
         from flatsurf.geometry.pyflatsurf_conversion import to_pyflatsurf
+
         return to_pyflatsurf(triangulation)
 
     @cached_method
@@ -337,9 +395,13 @@ class IsoDelaunayTessellation(Parent):
 
         S = type(surface)
         unlabeled_equivalence = flatsurf.Equivalence[S].unlabeled()
-        order = flatsurf.EquivalenceClass[S](surface, unlabeled_equivalence).automorphisms()
+        order = flatsurf.EquivalenceClass[S](
+            surface, unlabeled_equivalence
+        ).automorphisms()
 
-        if unlabeled_equivalence.isomorphic(surface, surface.applyMatrix(-1, 0, 0, -1).codomain()):
+        if unlabeled_equivalence.isomorphic(
+            surface, surface.applyMatrix(-1, 0, 0, -1).codomain()
+        ):
             order *= 2
 
         return order
@@ -369,14 +431,16 @@ class IsoDelaunayTessellation(Parent):
             def capture_matrix(a, b, c, d):
                 if a * d - b * c != 1:
                     return False
-                if hasattr(a, 'parent'):
+                if hasattr(a, "parent"):
                     from pyeantic import RealEmbeddedNumberField
+
                     k = RealEmbeddedNumberField(a.parent())
                     a, b, c, d = k(a), k(b), k(c), k(d)
                     k = k.number_field
                     a, b, c, d = k(a), k(b), k(c), k(d)
                 else:
                     from sage.all import QQ
+
                     a, b, c, d = QQ(a), QQ(b), QQ(c), QQ(d)
 
                 nonlocal isomorphism
@@ -386,15 +450,20 @@ class IsoDelaunayTessellation(Parent):
             # TODO: This is not correct after insert_orbifold_points() has been called.
             assert len(tessellation_face_.edges()) == len(tessellation_face.edges())
 
-            surface__ = self._to_pyflatsurf(self._dual_graph.get_vertex(tessellation_face_)[1])
+            surface__ = self._to_pyflatsurf(
+                self._dual_graph.get_vertex(tessellation_face_)[1]
+            )
 
-            assert surface_.isomorphism(surface__, filter_matrix=capture_matrix).has_value()
+            assert surface_.isomorphism(
+                surface__, filter_matrix=capture_matrix
+            ).has_value()
             assert isomorphism is not None
 
             a, b, c, d = isomorphism
             from sage.all import matrix
+
             mob = matrix(self.base_ring(), 2, [a, -b, -c, d])
-            image_edge = tessellation_edge.apply_isometry(mob, model='half_plane')
+            image_edge = tessellation_edge.apply_isometry(mob, model="half_plane")
 
             assert image_edge in tessellation_face_.edges()
             return tessellation_face_, image_edge, mob
@@ -443,6 +512,7 @@ class IsoDelaunayTessellation(Parent):
             {(6*a + 8)*(x^2 + y^2) + (-20*a - 28)*x + 14*a + 20 ≥ 0} ∩ {(2*a + 3)*(x^2 + y^2) + (-4*a - 6)*x - 2*a - 3 ≤ 0} ∩ {(4*a + 6)*(x^2 + y^2) - 4*a - 6 ≥ 0}
         """
         from sage.all import I
+
         return self.face(I)
 
     def point(self, surface):
@@ -464,8 +534,9 @@ class IsoDelaunayTessellation(Parent):
     @classmethod
     def _face(cls, surface, point):
         A = cls._point_to_matrix(point)
-        A_T = surface.apply_matrix(
-            A, in_place=False).delaunay_triangulation(in_place=False)
+        A_T = surface.apply_matrix(A, in_place=False).delaunay_triangulation(
+            in_place=False
+        )
         T = A_T.apply_matrix(~A, in_place=False)
         T.set_immutable()
         half_planes = cls._iso_delaunay_region(T)
@@ -494,7 +565,8 @@ class IsoDelaunayTessellation(Parent):
         x, y = point.coordinates()
 
         from sage.all import QQ
-        shift = QQ(1)/2
+
+        shift = QQ(1) / 2
 
         while True:
             shifted = point.parent().point(x + shift, y, model="half_plane")
@@ -553,8 +625,11 @@ class IsoDelaunayTessellation(Parent):
 
     @classmethod
     def _iso_delaunay_region(cls, triangulation):
-        return [half_plane for edge in triangulation.edge_iterator()
-                if (half_plane := cls._half_plane(triangulation, edge)) is not None]
+        return [
+            half_plane
+            for edge in triangulation.edge_iterator()
+            if (half_plane := cls._half_plane(triangulation, edge)) is not None
+        ]
 
     @classmethod
     def _half_plane(cls, surface, edge):
@@ -567,10 +642,10 @@ class IsoDelaunayTessellation(Parent):
             return None
 
         index_triangle, index_edge = edge
-        index_opposite_triangle, index_opposite_edge = surface.opposite_edge(
-            edge)
+        index_opposite_triangle, index_opposite_edge = surface.opposite_edge(edge)
         v0 = surface.polygon(index_opposite_triangle).edge(
-            (index_opposite_edge + 1) % 3)
+            (index_opposite_edge + 1) % 3
+        )
         v1 = surface.polygon(index_triangle).edge(index_edge)
         v2 = -surface.polygon(index_triangle).edge((index_edge - 1) % 3)
 
@@ -578,12 +653,21 @@ class IsoDelaunayTessellation(Parent):
         x1, y1 = v1
         x2, y2 = v2
 
-        a = x0 * y1 * y2 * (y2 - y1) + x1 * y0 * y2 * \
-            (y0 - y2) + x2 * y0 * y1 * (y1 - y0)
-        b = x0 * y0 * (x1 * y2 - x2 * y1) + x1 * y1 * \
-            (x2 * y0 - x0 * y2) + x2 * y2 * (x0 * y1 - x1 * y0)
-        c = x0 * x1 * y2 * (x0 - x1) + x1 * x2 * y0 * \
-            (x1 - x2) + x0 * x2 * y1 * (x2 - x0)
+        a = (
+            x0 * y1 * y2 * (y2 - y1)
+            + x1 * y0 * y2 * (y0 - y2)
+            + x2 * y0 * y1 * (y1 - y0)
+        )
+        b = (
+            x0 * y0 * (x1 * y2 - x2 * y1)
+            + x1 * y1 * (x2 * y0 - x0 * y2)
+            + x2 * y2 * (x0 * y1 - x1 * y0)
+        )
+        c = (
+            x0 * x1 * y2 * (x0 - x1)
+            + x1 * x2 * y0 * (x1 - x2)
+            + x0 * x2 * y1 * (x2 - x0)
+        )
 
         H = HyperbolicPlane(surface.base_ring())
         return H.geodesic(a, 2 * b, c, model="half_plane").left_half_space()
@@ -611,17 +695,23 @@ class IsoDelaunayTessellation(Parent):
             face, _ = cls._face(surface, shifted)
 
             from sage.all import I
+
             if face is not None and I in face:
                 break
 
             if shift == 0:
                 from sage.all import QQ
+
                 shift = QQ(1)
 
             shift /= 2
 
         perturbation = cls._point_to_matrix(shifted)
-        return surface.apply_matrix(perturbation, in_place=False).delaunay_triangulation(in_place=False).apply_matrix(~perturbation, in_place=False)
+        return (
+            surface.apply_matrix(perturbation, in_place=False)
+            .delaunay_triangulation(in_place=False)
+            .apply_matrix(~perturbation, in_place=False)
+        )
 
     def vertices(self):
         r"""
@@ -640,7 +730,11 @@ class IsoDelaunayTessellation(Parent):
         """
         # TODO: Check that the fundamental domain has been computed.
 
-        half_edges = set((tessellation_face, tessellation_edge) for tessellation_face in self._dual_graph.vertices(sort=False) for tessellation_edge in tessellation_face.edges())
+        half_edges = set(
+            (tessellation_face, tessellation_edge)
+            for tessellation_face in self._dual_graph.vertices(sort=False)
+            for tessellation_edge in tessellation_face.edges()
+        )
 
         vertices = []
 
@@ -652,10 +746,16 @@ class IsoDelaunayTessellation(Parent):
 
                 assert tessellation_edge in tessellation_face.edges()
 
-                previous_tessellation_edge = tessellation_face.edges()[tessellation_face.edges().index(tessellation_edge) - 1]
+                previous_tessellation_edge = tessellation_face.edges()[
+                    tessellation_face.edges().index(tessellation_edge) - 1
+                ]
 
                 # TODO: Merge this with the code in _cross maybe.
-                for source_tessellation_face, target_tessellation_face, (tessellation_edges, isometry) in self._dual_graph.edges(tessellation_face, labels=True, sort=False):
+                for (
+                    source_tessellation_face,
+                    target_tessellation_face,
+                    (tessellation_edges, isometry),
+                ) in self._dual_graph.edges(tessellation_face, labels=True, sort=False):
 
                     if previous_tessellation_edge in tessellation_edges:
                         if len(tessellation_edges) == 1:
@@ -669,13 +769,20 @@ class IsoDelaunayTessellation(Parent):
                     else:
                         continue
 
-                    cross_tessellation_edge = (target_tessellation_face if source_tessellation_face == tessellation_face else source_tessellation_face, cross_tessellation_edge)
+                    cross_tessellation_edge = (
+                        target_tessellation_face
+                        if source_tessellation_face == tessellation_face
+                        else source_tessellation_face,
+                        cross_tessellation_edge,
+                    )
 
                     vertex.append(cross_tessellation_edge)
                     half_edges.remove(cross_tessellation_edge)
                     break
                 else:
-                    assert False, f"{previous_tessellation_edge} of {tessellation_face} not glued to another edge"
+                    assert (
+                        False
+                    ), f"{previous_tessellation_edge} of {tessellation_face} not glued to another edge"
 
                 if vertex[0] == vertex[-1]:
                     vertex.pop()
@@ -740,7 +847,12 @@ class IsoDelaunayTessellation(Parent):
                 previous_edge = next_edge(previous_polygon, previous_edge)
 
                 from sage.all import AA
-                isometry = edge.change_ring(AA).isometry(previous_edge.change_ring(AA)).change_ring(R)
+
+                isometry = (
+                    edge.change_ring(AA)
+                    .isometry(previous_edge.change_ring(AA))
+                    .change_ring(R)
+                )
                 polygon = polygon.apply_isometry(isometry)
                 edge = previous_edge
 
@@ -755,12 +867,16 @@ class IsoDelaunayTessellation(Parent):
             copies = 1
 
             from sage.all import AA
-            rotation = start.change_ring(AA).isometry(end.change_ring(AA)).change_ring(R)
+
+            rotation = (
+                start.change_ring(AA).isometry(end.change_ring(AA)).change_ring(R)
+            )
             while start != end:
                 copies += 1
                 end = end.apply_isometry(rotation)
 
             from sage.all import QQ
+
             return QQ(1) / copies
 
         elif algorithm == "develop":
@@ -774,13 +890,16 @@ class IsoDelaunayTessellation(Parent):
                 if cross_edge == start[1]:
                     break
 
-                cross_polygon, triangulation = self._develop(current[0], -cross_edge, triangulation)
+                cross_polygon, triangulation = self._develop(
+                    current[0], -cross_edge, triangulation
+                )
                 polygons.append(cross_polygon)
                 current = cross_polygon, cross_edge
 
             assert len(polygons) % len(vertex) == 0
 
             from sage.all import QQ
+
             return QQ(1) / (len(polygons) // len(vertex))
         else:
             raise ValueError
@@ -831,8 +950,11 @@ class IsoDelaunayTessellation(Parent):
             sage: idt.cusps()
 
         """
-        return [vertex_equivalence_class for vertex_equivalence_class in self.vertices()
-                if vertex_equivalence_class[0][1].start().is_ideal()]
+        return [
+            vertex_equivalence_class
+            for vertex_equivalence_class in self.vertices()
+            if vertex_equivalence_class[0][1].start().is_ideal()
+        ]
 
     def cusp_matrix(self, cusp):
         r"""
@@ -852,11 +974,18 @@ class IsoDelaunayTessellation(Parent):
             [     1/2*a -1/2*a - 2]
         """
         from sage.all import MatrixSpace
+
         matrix = MatrixSpace(self.base_ring(), 2, 2).one()
 
         for tessellation_face, tessellation_edge in cusp:
-            dual_graph_edges = self._dual_graph.edges(sort=False, vertices=[tessellation_face], labels=True)
-            for _, __, (tessellation_edges, (isometry, source_edge)) in dual_graph_edges:
+            dual_graph_edges = self._dual_graph.edges(
+                sort=False, vertices=[tessellation_face], labels=True
+            )
+            for (
+                _,
+                __,
+                (tessellation_edges, (isometry, source_edge)),
+            ) in dual_graph_edges:
                 if isometry is None:
                     continue
                 if tessellation_edge in tessellation_edges:
@@ -877,27 +1006,28 @@ class IsoDelaunayTessellation(Parent):
     def multitwist(self, cusp):
         v = self.cusp_direction(cusp)
         from flatsurf import GL2ROrbitClosure
+
         O = GL2ROrbitClosure(self._surface)
         decomposition = O.decomposition(v)
         components = decomposition.components()
         assert all(c.cylinder() for c in components)
         holonomies = [c.circumferenceHolonomy() for c in components]
-        areas = [c.area()/2 for c in components]
-        inv_moduli = [(v.x()*v.x() + v.y()*v.y())/area for v, area in zip(holonomies, areas)]
+        areas = [c.area() / 2 for c in components]
+        inv_moduli = [
+            (v.x() * v.x() + v.y() * v.y()) / area for v, area in zip(holonomies, areas)
+        ]
 
         import pyeantic
-        inv_moduli = [
-            pyeantic.RealEmbeddedNumberField(x.parent())(x)
-            for x in inv_moduli
-        ]
 
         inv_moduli = [
-            x.parent().number_field(x)
-            for x in inv_moduli
+            pyeantic.RealEmbeddedNumberField(x.parent())(x) for x in inv_moduli
         ]
+
+        inv_moduli = [x.parent().number_field(x) for x in inv_moduli]
 
         from sage.all import QQ, lcm, matrix
-        multiplicities = [QQ(x//inv_moduli[0]) for x in inv_moduli]
+
+        multiplicities = [QQ(x // inv_moduli[0]) for x in inv_moduli]
         denominator = lcm(rat.denominator() for rat in multiplicities)
         multiplicities = [denominator * rat for rat in multiplicities]
         c = lcm(multiplicities) * inv_moduli[0]
@@ -923,12 +1053,18 @@ class IsoDelaunayTessellation(Parent):
         r"""
         Return the generators of the Veech group that we see while exploring the isoDelaunay tessellation.
         """
+
         def twist(m):
             from sage.all import matrix
+
             ((a, b), (c, d)) = m
             return matrix([[a, -b], [-c, d]])
 
-        for _, _, (source_tessellation_edge, target_tessellation_edge) in self._dual_graph.edges(labels=True, sort=False):
+        for (
+            _,
+            _,
+            (source_tessellation_edge, target_tessellation_edge),
+        ) in self._dual_graph.edges(labels=True, sort=False):
             isometry = target_tessellation_edge[0]
             if isometry is not None:
                 yield twist(isometry)
