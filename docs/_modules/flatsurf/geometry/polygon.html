@@ -1246,7 +1246,7 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_v</span>
 
         <span class="n">translation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">vector_space</span><span class="p">()(</span><span class="n">translation</span><span class="p">)</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">t</span> <span class="o">+</span> <span class="n">v</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="p">()]</span></div>
+        <span class="k">return</span> <span class="p">[</span><span class="n">translation</span> <span class="o">+</span> <span class="n">v</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="p">()]</span></div>
 
 <div class="viewcode-block" id="Polygon.vertex"><a class="viewcode-back" href="../../../geometry/polygon.html#flatsurf.geometry.polygon.Polygon.vertex">[docs]</a>    <span class="k">def</span> <span class="nf">vertex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -2868,8 +2868,8 @@
                     <span class="k">return</span> <span class="n">coeffs</span><span class="p">,</span> <span class="n">sol</span>
 
         <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">coeffs</span><span class="p">,</span> <span class="n">r</span> <span class="o">=</span> <span class="n">random_element</span><span class="p">()</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">coeffs</span><span class="p">,</span> <span class="n">r</span> <span class="o">=</span> <span class="n">random_element</span><span class="p">()</span>
                 <span class="k">return</span> <span class="bp">self</span><span class="p">(</span><span class="o">*</span><span class="n">r</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="k">if</span> <span class="p">(</span>
@@ -3491,7 +3491,13 @@
 
         <span class="n">convex</span> <span class="o">=</span> <span class="n">kwds</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;convex&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
 
-        <span class="n">vertices</span> <span class="o">=</span> <span class="n">edges</span> <span class="o">=</span> <span class="n">angles</span> <span class="o">=</span> <span class="n">base_point</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">vertices</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">edges</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">angles</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">base_point</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">length</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">lengths</span> <span class="o">=</span> <span class="kc">None</span>
+
         <span class="k">if</span> <span class="s2">&quot;edges&quot;</span> <span class="ow">in</span> <span class="n">kwds</span><span class="p">:</span>
             <span class="n">edges</span> <span class="o">=</span> <span class="n">kwds</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;edges&quot;</span><span class="p">)</span>
             <span class="n">base_point</span> <span class="o">=</span> <span class="n">kwds</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;base_point&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
@@ -3593,8 +3599,10 @@
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Create a polygon in the provided field.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_v</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_w</span> <span class="o">=</span> <span class="p">[]</span>
+
         <span class="k">if</span> <span class="n">field</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">Fields</span><span class="p">():</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;field must be a field&quot;</span><span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_field</span> <span class="o">=</span> <span class="n">field</span>
 
 <div class="viewcode-block" id="PolygonCreator.vector_space"><a class="viewcode-back" href="../../../geometry/polygon.html#flatsurf.geometry.polygon.PolygonCreator.vector_space">[docs]</a>    <span class="k">def</span> <span class="nf">vector_space</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

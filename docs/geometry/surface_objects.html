@@ -294,7 +294,7 @@ meeting at 180 degree angles.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="flatsurf.geometry.surface_objects.Cylinder.area">
 <span class="sig-name descname"><span class="pre">area</span></span><a class="reference internal" href="../_modules/flatsurf/geometry/surface_objects.html#Cylinder.area"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface_objects.Cylinder.area" title="Permalink to this definition">#</a></dt>
-<dd><p>File: /usr/share/miniconda3/envs/test/lib/python3.10/site-packages/flatsurf/geometry/surface_objects.py (starting at line 968)</p>
+<dd><p>File: /usr/share/miniconda3/envs/test/lib/python3.10/site-packages/flatsurf/geometry/surface_objects.py (starting at line 988)</p>
 <p>Return the area of this cylinder if it is contained in a ConeSurface.</p>
 </dd></dl>
 
@@ -316,7 +316,7 @@ the surface is on the left.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="flatsurf.geometry.surface_objects.Cylinder.circumference">
 <span class="sig-name descname"><span class="pre">circumference</span></span><a class="reference internal" href="../_modules/flatsurf/geometry/surface_objects.html#Cylinder.circumference"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface_objects.Cylinder.circumference" title="Permalink to this definition">#</a></dt>
-<dd><p>File: /usr/share/miniconda3/envs/test/lib/python3.10/site-packages/flatsurf/geometry/surface_objects.py (starting at line 1093)</p>
+<dd><p>File: /usr/share/miniconda3/envs/test/lib/python3.10/site-packages/flatsurf/geometry/surface_objects.py (starting at line 1113)</p>
 <p>In a cone surface, return the circumference, i.e., the length
 of a geodesic loop running around the cylinder. Since this may
 not lie in the field of definition of the surface, it is returned
@@ -334,7 +334,7 @@ it returns by closing.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="flatsurf.geometry.surface_objects.Cylinder.holonomy">
 <span class="sig-name descname"><span class="pre">holonomy</span></span><a class="reference internal" href="../_modules/flatsurf/geometry/surface_objects.html#Cylinder.holonomy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface_objects.Cylinder.holonomy" title="Permalink to this definition">#</a></dt>
-<dd><p>File: /usr/share/miniconda3/envs/test/lib/python3.10/site-packages/flatsurf/geometry/surface_objects.py (starting at line 1067)</p>
+<dd><p>File: /usr/share/miniconda3/envs/test/lib/python3.10/site-packages/flatsurf/geometry/surface_objects.py (starting at line 1087)</p>
 <p>In a translation surface, return one of the two holonomy vectors of the cylinder,
 which differ by a sign.</p>
 </dd></dl>
@@ -348,7 +348,7 @@ which differ by a sign.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="flatsurf.geometry.surface_objects.Cylinder.labels">
 <span class="sig-name descname"><span class="pre">labels</span></span><a class="reference internal" href="../_modules/flatsurf/geometry/surface_objects.html#Cylinder.labels"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface_objects.Cylinder.labels" title="Permalink to this definition">#</a></dt>
-<dd><p>File: /usr/share/miniconda3/envs/test/lib/python3.10/site-packages/flatsurf/geometry/surface_objects.py (starting at line 1016)</p>
+<dd><p>File: /usr/share/miniconda3/envs/test/lib/python3.10/site-packages/flatsurf/geometry/surface_objects.py (starting at line 1036)</p>
 <p>Return the set of labels that this cylinder passes through.</p>
 </dd></dl>
 
@@ -498,10 +498,11 @@ where the saddle connection originates.</p>
 <span class="sig-name descname"><span class="pre">surface</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface_objects.html#SaddleConnection.surface"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface_objects.SaddleConnection.surface" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
+<dl class="py attribute">
 <dt class="sig sig-object py" id="flatsurf.geometry.surface_objects.SaddleConnection.trajectory">
-<span class="sig-name descname"><span class="pre">trajectory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface_objects.html#SaddleConnection.trajectory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface_objects.SaddleConnection.trajectory" title="Permalink to this definition">#</a></dt>
-<dd><p>Return a straight line trajectory representing this saddle connection.
+<span class="sig-name descname"><span class="pre">trajectory</span></span><a class="reference internal" href="../_modules/flatsurf/geometry/surface_objects.html#SaddleConnection.trajectory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface_objects.SaddleConnection.trajectory" title="Permalink to this definition">#</a></dt>
+<dd><p>File: /usr/share/miniconda3/envs/test/lib/python3.10/site-packages/flatsurf/geometry/surface_objects.py (starting at line 608)</p>
+<p>Return a straight line trajectory representing this saddle connection.
 Fails if the trajectory passes through more than limit polygons.</p>
 </dd></dl>
 
@@ -714,7 +715,7 @@ All options are passed two the plotting method of GraphicalSurfacePoint.</p>
 <li><a class="reference internal" href="#flatsurf.geometry.surface_objects.SaddleConnection.start_data"><code class="docutils literal notranslate"><span class="pre">SaddleConnection.start_data()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.surface_objects.SaddleConnection.start_tangent_vector"><code class="docutils literal notranslate"><span class="pre">SaddleConnection.start_tangent_vector()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.surface_objects.SaddleConnection.surface"><code class="docutils literal notranslate"><span class="pre">SaddleConnection.surface()</span></code></a></li>
-<li><a class="reference internal" href="#flatsurf.geometry.surface_objects.SaddleConnection.trajectory"><code class="docutils literal notranslate"><span class="pre">SaddleConnection.trajectory()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface_objects.SaddleConnection.trajectory"><code class="docutils literal notranslate"><span class="pre">SaddleConnection.trajectory</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#flatsurf.geometry.surface_objects.Singularity"><code class="docutils literal notranslate"><span class="pre">Singularity</span></code></a><ul>

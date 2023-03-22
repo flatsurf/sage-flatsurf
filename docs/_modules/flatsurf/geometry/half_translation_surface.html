@@ -260,6 +260,7 @@
 <span></span><span class="c1"># ****************************************************************************</span>
 <span class="c1">#       Copyright (C) 2013-2019 Vincent Delecroix &lt;20100.delecroix@gmail.com&gt;</span>
 <span class="c1">#                     2013-2019 W. Patrick Hooper &lt;wphooper@gmail.com&gt;</span>
+<span class="c1">#                          2023 Julian Rüth &lt;julian.rueth@fsfe.org&gt;</span>
 <span class="c1">#</span>
 <span class="c1">#  Distributed under the terms of the GNU General Public License (GPL)</span>
 <span class="c1">#  as published by the Free Software Foundation; either version 2 of</span>
@@ -412,6 +413,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_finite</span><span class="p">():</span>
             <span class="n">it</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_iterator</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">islice</span>
             <span class="n">it</span> <span class="o">=</span> <span class="n">islice</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">label_iterator</span><span class="p">(),</span> <span class="mi">30</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">lab</span> <span class="ow">in</span> <span class="n">it</span><span class="p">:</span>

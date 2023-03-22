@@ -337,6 +337,8 @@
 
 <span class="kn">from</span> <span class="nn">sage.structure.sage_object</span> <span class="kn">import</span> <span class="n">SageObject</span>
 
+<span class="kn">from</span> <span class="nn">sage.misc.cachefunc</span> <span class="kn">import</span> <span class="n">cached_method</span>
+
 
 <div class="viewcode-block" id="Surface"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Surface">[docs]</a><span class="k">class</span> <span class="nc">Surface</span><span class="p">(</span><span class="n">SageObject</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -922,23 +924,17 @@
 
         <span class="k">return</span> <span class="n">surface</span></div>
 
+    <span class="nd">@cached_method</span>
     <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Hash compatible with equals.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_hash&quot;</span><span class="p">):</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hash</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_mutable</span><span class="p">():</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Attempting to hash mutable surface.&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_finite</span><span class="p">():</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Attempting to hash infinite surface.&quot;</span><span class="p">)</span>
-        <span class="n">h</span> <span class="o">=</span> <span class="mi">73</span> <span class="o">+</span> <span class="mi">17</span> <span class="o">*</span> <span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">())</span> <span class="o">+</span> <span class="mi">23</span> <span class="o">*</span> <span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_label</span><span class="p">())</span>
-        <span class="k">for</span> <span class="n">pair</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_polygon_iterator</span><span class="p">():</span>
-            <span class="n">h</span> <span class="o">=</span> <span class="n">h</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">*</span> <span class="nb">hash</span><span class="p">(</span><span class="n">pair</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">edgepair</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_gluing_iterator</span><span class="p">():</span>
-            <span class="n">h</span> <span class="o">=</span> <span class="n">h</span> <span class="o">+</span> <span class="mi">3</span> <span class="o">*</span> <span class="nb">hash</span><span class="p">(</span><span class="n">edgepair</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_hash</span> <span class="o">=</span> <span class="n">h</span>
-        <span class="k">return</span> <span class="n">h</span>
+
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_label</span><span class="p">(),</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">label_polygon_iterator</span><span class="p">()),</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">edge_gluing_iterator</span><span class="p">())))</span>
 
     <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>

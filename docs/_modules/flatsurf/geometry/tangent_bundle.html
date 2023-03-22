@@ -262,7 +262,7 @@
 <span class="c1">#</span>
 <span class="c1">#        Copyright (C) 2016-2022 W. Patrick Hooper</span>
 <span class="c1">#                      2016-2022 Vincent Delecroix</span>
-<span class="c1">#                           2022 Julian Rüth</span>
+<span class="c1">#                      2022-2023 Julian Rüth</span>
 <span class="c1">#</span>
 <span class="c1">#  sage-flatsurf is free software: you can redistribute it and/or modify</span>
 <span class="c1">#  it under the terms of the GNU General Public License as published by</span>
@@ -425,7 +425,7 @@
                 <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">point</span><span class="p">()</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">point</span><span class="p">()</span>
                 <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">vector</span><span class="p">()</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">vector</span><span class="p">()</span>
             <span class="p">)</span>
-        <span class="k">raise</span> <span class="bp">NotImplemented</span>
+        <span class="k">return</span> <span class="bp">NotImplemented</span>
 
     <span class="k">def</span> <span class="fm">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__eq__</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
@@ -690,11 +690,7 @@
                     <span class="n">label</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="n">vertex</span><span class="p">),</span> <span class="n">w</span>
                 <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">code</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-                    <span class="s2">&quot;codes are only implemented when based at a singularity&quot;</span>
-                <span class="p">)</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">surface</span><span class="p">()</span><span class="o">.</span><span class="n">tangent_vector</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">polygon_label</span><span class="p">(),</span> <span class="n">v</span><span class="o">.</span><span class="n">point</span><span class="p">(),</span> <span class="n">w</span><span class="p">)</span></div>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Rotating tangent vectors is only implemnted when at a singularity&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SimilaritySurfaceTangentVector.counterclockwise_to"><a class="viewcode-back" href="../../../geometry/tangent_bundle.html#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentVector.counterclockwise_to">[docs]</a>    <span class="k">def</span> <span class="nf">counterclockwise_to</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -773,11 +769,7 @@
                     <span class="n">label</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="n">vertex</span><span class="p">),</span> <span class="n">w</span>
                 <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">code</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-                    <span class="s2">&quot;codes are only implemented when based at a singularity&quot;</span>
-                <span class="p">)</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">surface</span><span class="p">()</span><span class="o">.</span><span class="n">tangent_vector</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">polygon_label</span><span class="p">(),</span> <span class="n">v</span><span class="o">.</span><span class="n">point</span><span class="p">(),</span> <span class="n">w</span><span class="p">)</span></div>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Rotating tangent vectors is only implemnted when at a singularity&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SimilaritySurfaceTangentVector.plot"><a class="viewcode-back" href="../../../geometry/tangent_bundle.html#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentVector.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>

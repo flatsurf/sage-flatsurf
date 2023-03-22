@@ -299,79 +299,6 @@ A canonical labeling is when the canonocal_first_vertex is the zero vertex.</p>
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="flatsurf.geometry.mappings.MatrixListDeformedSurface">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.mappings.</span></span><span class="sig-name descname"><span class="pre">MatrixListDeformedSurface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">surface</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">matrix_function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ring</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/mappings.html#MatrixListDeformedSurface"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.mappings.MatrixListDeformedSurface" title="Permalink to this definition">#</a></dt>
-<dd><p>Apply a different matrix to each polygon in the surface.
-Here matrix_function is a python function mapping labels to 2x2 matrices with positive determinant.</p>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>Note that only some methods are forwarding correctly to the underlying
-surface <code class="docutils literal notranslate"><span class="pre">_s</span></code>. Others are incorrectly mutating/querying this surface
-object which should be stateless (but is not.)</p>
-</div>
-<dl class="py method">
-<dt class="sig sig-object py" id="flatsurf.geometry.mappings.MatrixListDeformedSurface.base_label">
-<span class="sig-name descname"><span class="pre">base_label</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/mappings.html#MatrixListDeformedSurface.base_label"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.mappings.MatrixListDeformedSurface.base_label" title="Permalink to this definition">#</a></dt>
-<dd><p>Return the label of a special chosen polygon in this surface.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="flatsurf.geometry.mappings.MatrixListDeformedSurface.base_ring">
-<span class="sig-name descname"><span class="pre">base_ring</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/mappings.html#MatrixListDeformedSurface.base_ring"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.mappings.MatrixListDeformedSurface.base_ring" title="Permalink to this definition">#</a></dt>
-<dd><p>The field on which the coordinates of <code class="docutils literal notranslate"><span class="pre">self</span></code> live.</p>
-<p>This method must be overridden in subclasses!</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="flatsurf.geometry.mappings.MatrixListDeformedSurface.change_base_label">
-<span class="sig-name descname"><span class="pre">change_base_label</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_base_label</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/mappings.html#MatrixListDeformedSurface.change_base_label"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.mappings.MatrixListDeformedSurface.change_base_label" title="Permalink to this definition">#</a></dt>
-<dd><p>Set the <a class="reference internal" href="#flatsurf.geometry.mappings.MatrixListDeformedSurface.base_label" title="flatsurf.geometry.mappings.MatrixListDeformedSurface.base_label"><code class="xref py py-meth docutils literal notranslate"><span class="pre">base_label()</span></code></a> to <code class="docutils literal notranslate"><span class="pre">new_base_label</span></code>.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="flatsurf.geometry.mappings.MatrixListDeformedSurface.is_finite">
-<span class="sig-name descname"><span class="pre">is_finite</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/mappings.html#MatrixListDeformedSurface.is_finite"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.mappings.MatrixListDeformedSurface.is_finite" title="Permalink to this definition">#</a></dt>
-<dd><p>Return whether or not the surface is finite.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="flatsurf.geometry.mappings.MatrixListDeformedSurface.opposite_edge">
-<span class="sig-name descname"><span class="pre">opposite_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/mappings.html#MatrixListDeformedSurface.opposite_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.mappings.MatrixListDeformedSurface.opposite_edge" title="Permalink to this definition">#</a></dt>
-<dd><p>Given the label <code class="docutils literal notranslate"><span class="pre">label</span></code> of a polygon and an edge <code class="docutils literal notranslate"><span class="pre">e</span></code> in that
-polygon returns the pair (<code class="docutils literal notranslate"><span class="pre">ll</span></code>, <code class="docutils literal notranslate"><span class="pre">ee</span></code>) to which this edge is glued.</p>
-<p>This method must be overridden in subclasses.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="flatsurf.geometry.mappings.MatrixListDeformedSurface.polygon">
-<span class="sig-name descname"><span class="pre">polygon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lab</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/mappings.html#MatrixListDeformedSurface.polygon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.mappings.MatrixListDeformedSurface.polygon" title="Permalink to this definition">#</a></dt>
-<dd><p>Return the polygon with the provided label.</p>
-<p>This method must be overridden in subclasses.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="flatsurf.geometry.mappings.MatrixListDeformedSurfaceMapping">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.mappings.</span></span><span class="sig-name descname"><span class="pre">MatrixListDeformedSurfaceMapping</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">matrix_function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ring</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/mappings.html#MatrixListDeformedSurfaceMapping"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.mappings.MatrixListDeformedSurfaceMapping" title="Permalink to this definition">#</a></dt>
-<dd><p>This mapping applies a possibly different linear matrix to each polygon.
-The matrix is determined by the matrix_function which should be a python
-object.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="flatsurf.geometry.mappings.MatrixListDeformedSurfaceMapping.pull_vector_back">
-<span class="sig-name descname"><span class="pre">pull_vector_back</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tangent_vector</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/mappings.html#MatrixListDeformedSurfaceMapping.pull_vector_back"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.mappings.MatrixListDeformedSurfaceMapping.pull_vector_back" title="Permalink to this definition">#</a></dt>
-<dd><p>Applies the inverse of the mapping to the provided vector.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="flatsurf.geometry.mappings.MatrixListDeformedSurfaceMapping.push_vector_forward">
-<span class="sig-name descname"><span class="pre">push_vector_forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tangent_vector</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/mappings.html#MatrixListDeformedSurfaceMapping.push_vector_forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.mappings.MatrixListDeformedSurfaceMapping.push_vector_forward" title="Permalink to this definition">#</a></dt>
-<dd><p>Applies the mapping to the provided vector.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
 <dt class="sig sig-object py" id="flatsurf.geometry.mappings.ReindexMapping">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.mappings.</span></span><span class="sig-name descname"><span class="pre">ReindexMapping</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relabler</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_base_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/mappings.html#ReindexMapping"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.mappings.ReindexMapping" title="Permalink to this definition">#</a></dt>
 <dd><p>Apply a dictionary to relabel the polygons.</p>
@@ -718,20 +645,6 @@ respecting the polygons and the base_labels.</p>
 <li><a class="reference internal" href="#flatsurf.geometry.mappings.IdentityMapping"><code class="docutils literal notranslate"><span class="pre">IdentityMapping</span></code></a><ul>
 <li><a class="reference internal" href="#flatsurf.geometry.mappings.IdentityMapping.pull_vector_back"><code class="docutils literal notranslate"><span class="pre">IdentityMapping.pull_vector_back()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.mappings.IdentityMapping.push_vector_forward"><code class="docutils literal notranslate"><span class="pre">IdentityMapping.push_vector_forward()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#flatsurf.geometry.mappings.MatrixListDeformedSurface"><code class="docutils literal notranslate"><span class="pre">MatrixListDeformedSurface</span></code></a><ul>
-<li><a class="reference internal" href="#flatsurf.geometry.mappings.MatrixListDeformedSurface.base_label"><code class="docutils literal notranslate"><span class="pre">MatrixListDeformedSurface.base_label()</span></code></a></li>
-<li><a class="reference internal" href="#flatsurf.geometry.mappings.MatrixListDeformedSurface.base_ring"><code class="docutils literal notranslate"><span class="pre">MatrixListDeformedSurface.base_ring()</span></code></a></li>
-<li><a class="reference internal" href="#flatsurf.geometry.mappings.MatrixListDeformedSurface.change_base_label"><code class="docutils literal notranslate"><span class="pre">MatrixListDeformedSurface.change_base_label()</span></code></a></li>
-<li><a class="reference internal" href="#flatsurf.geometry.mappings.MatrixListDeformedSurface.is_finite"><code class="docutils literal notranslate"><span class="pre">MatrixListDeformedSurface.is_finite()</span></code></a></li>
-<li><a class="reference internal" href="#flatsurf.geometry.mappings.MatrixListDeformedSurface.opposite_edge"><code class="docutils literal notranslate"><span class="pre">MatrixListDeformedSurface.opposite_edge()</span></code></a></li>
-<li><a class="reference internal" href="#flatsurf.geometry.mappings.MatrixListDeformedSurface.polygon"><code class="docutils literal notranslate"><span class="pre">MatrixListDeformedSurface.polygon()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#flatsurf.geometry.mappings.MatrixListDeformedSurfaceMapping"><code class="docutils literal notranslate"><span class="pre">MatrixListDeformedSurfaceMapping</span></code></a><ul>
-<li><a class="reference internal" href="#flatsurf.geometry.mappings.MatrixListDeformedSurfaceMapping.pull_vector_back"><code class="docutils literal notranslate"><span class="pre">MatrixListDeformedSurfaceMapping.pull_vector_back()</span></code></a></li>
-<li><a class="reference internal" href="#flatsurf.geometry.mappings.MatrixListDeformedSurfaceMapping.push_vector_forward"><code class="docutils literal notranslate"><span class="pre">MatrixListDeformedSurfaceMapping.push_vector_forward()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#flatsurf.geometry.mappings.ReindexMapping"><code class="docutils literal notranslate"><span class="pre">ReindexMapping</span></code></a><ul>

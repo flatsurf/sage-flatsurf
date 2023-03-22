@@ -268,6 +268,26 @@
 <span class="sd">1) If $e$ is an edge, and $e&#39;$ is its opposite edge oriented counterclockwise from the polygon they bound then $e+e&#39;=0$ in homology.</span>
 <span class="sd">2) The sum of edges around a polygon is zero.</span>
 <span class="sd">&quot;&quot;&quot;</span>
+<span class="c1">######################################################################</span>
+<span class="c1">#  This file is part of sage-flatsurf.</span>
+<span class="c1">#</span>
+<span class="c1">#        Copyright (C) 2016-2019 Vincent Delecroix</span>
+<span class="c1">#                           2023 Julian Rüth</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1">#  sage-flatsurf is free software: you can redistribute it and/or modify</span>
+<span class="c1">#  it under the terms of the GNU General Public License as published by</span>
+<span class="c1">#  the Free Software Foundation, either version 2 of the License, or</span>
+<span class="c1">#  (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1">#  sage-flatsurf is distributed in the hope that it will be useful,</span>
+<span class="c1">#  but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1">#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1">#  GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1">#  You should have received a copy of the GNU General Public License</span>
+<span class="c1">#  along with sage-flatsurf. If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
+<span class="c1">######################################################################</span>
 
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span><span class="p">,</span> <span class="n">print_function</span><span class="p">,</span> <span class="n">division</span>
 <span class="kn">from</span> <span class="nn">six.moves</span> <span class="kn">import</span> <span class="nb">range</span><span class="p">,</span> <span class="nb">map</span><span class="p">,</span> <span class="nb">filter</span><span class="p">,</span> <span class="nb">zip</span>
@@ -278,6 +298,22 @@
 <span class="kn">from</span> <span class="nn">sage.rings.integer_ring</span> <span class="kn">import</span> <span class="n">ZZ</span>
 
 <span class="kn">from</span> <span class="nn">.similarity_surface</span> <span class="kn">import</span> <span class="n">SimilaritySurface</span>
+
+
+<div class="viewcode-block" id="cmp"><a class="viewcode-back" href="../../../geometry/relative_homology.html#flatsurf.geometry.relative_homology.cmp">[docs]</a><span class="k">def</span> <span class="nf">cmp</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    TESTS::</span>
+
+<span class="sd">        sage: from flatsurf.geometry.relative_homology import cmp</span>
+<span class="sd">        sage: cmp(0, 1)</span>
+<span class="sd">        -1</span>
+<span class="sd">        sage: cmp(0, 0)</span>
+<span class="sd">        0</span>
+<span class="sd">        sage: cmp(1, 0)</span>
+<span class="sd">        1</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">x</span> <span class="o">&gt;</span> <span class="n">y</span><span class="p">)</span> <span class="o">-</span> <span class="nb">bool</span><span class="p">(</span><span class="n">x</span> <span class="o">&lt;</span> <span class="n">y</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="RelativeHomologyClass"><a class="viewcode-back" href="../../../geometry/relative_homology.html#flatsurf.geometry.relative_homology.RelativeHomologyClass">[docs]</a><span class="k">class</span> <span class="nc">RelativeHomologyClass</span><span class="p">(</span><span class="n">ModuleElement</span><span class="p">):</span>
@@ -377,7 +413,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">element_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_element_constructor_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">instanceof</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">RelativeHomologyClass</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">RelativeHomologyClass</span><span class="p">):</span>
             <span class="n">d</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
             <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">_d</span><span class="p">):</span>
                 <span class="n">v2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_base_ring</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>

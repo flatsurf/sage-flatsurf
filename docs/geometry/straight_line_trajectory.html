@@ -263,12 +263,7 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="flatsurf.geometry.straight_line_trajectory.AbstractStraightLineTrajectory">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.straight_line_trajectory.</span></span><span class="sig-name descname"><span class="pre">AbstractStraightLineTrajectory</span></span><a class="reference internal" href="../_modules/flatsurf/geometry/straight_line_trajectory.html#AbstractStraightLineTrajectory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.straight_line_trajectory.AbstractStraightLineTrajectory" title="Permalink to this definition">#</a></dt>
-<dd><p>You need to implement:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">def</span> <span class="pre">segment(self,</span> <span class="pre">i)</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">def</span> <span class="pre">segments(self)</span></code></p></li>
-</ul>
-<dl class="py method">
+<dd><dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.straight_line_trajectory.AbstractStraightLineTrajectory.coding">
 <span class="sig-name descname"><span class="pre">coding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alphabet</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/straight_line_trajectory.html#AbstractStraightLineTrajectory.coding"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.straight_line_trajectory.AbstractStraightLineTrajectory.coding" title="Permalink to this definition">#</a></dt>
 <dd><p>Return the coding of this trajectory with respect to the sides of the
@@ -330,6 +325,11 @@ expected coding:</p>
 </pre></div>
 </div>
 </dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.straight_line_trajectory.AbstractStraightLineTrajectory.combinatorial_length">
+<span class="sig-name descname"><span class="pre">combinatorial_length</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/straight_line_trajectory.html#AbstractStraightLineTrajectory.combinatorial_length"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.straight_line_trajectory.AbstractStraightLineTrajectory.combinatorial_length" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.straight_line_trajectory.AbstractStraightLineTrajectory.cylinder">
@@ -409,6 +409,11 @@ and the second set consists of segments of traj that contain the point.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.straight_line_trajectory.AbstractStraightLineTrajectory.is_closed">
+<span class="sig-name descname"><span class="pre">is_closed</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/straight_line_trajectory.html#AbstractStraightLineTrajectory.is_closed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.straight_line_trajectory.AbstractStraightLineTrajectory.is_closed" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.straight_line_trajectory.AbstractStraightLineTrajectory.plot">
 <span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">options</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/straight_line_trajectory.html#AbstractStraightLineTrajectory.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.straight_line_trajectory.AbstractStraightLineTrajectory.plot" title="Permalink to this definition">#</a></dt>
 <dd><p>Plot this trajectory by converting to a graphical trajectory.</p>
@@ -428,6 +433,16 @@ passed on to
 </pre></div>
 </div>
 </dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.straight_line_trajectory.AbstractStraightLineTrajectory.segment">
+<span class="sig-name descname"><span class="pre">segment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/straight_line_trajectory.html#AbstractStraightLineTrajectory.segment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.straight_line_trajectory.AbstractStraightLineTrajectory.segment" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.straight_line_trajectory.AbstractStraightLineTrajectory.segments">
+<span class="sig-name descname"><span class="pre">segments</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/straight_line_trajectory.html#AbstractStraightLineTrajectory.segments"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.straight_line_trajectory.AbstractStraightLineTrajectory.segments" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.straight_line_trajectory.AbstractStraightLineTrajectory.surface">
@@ -870,12 +885,16 @@ sage: L.segments()
 <li><a class="reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">straight_line_trajectory</span></code></a><ul>
 <li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.AbstractStraightLineTrajectory"><code class="docutils literal notranslate"><span class="pre">AbstractStraightLineTrajectory</span></code></a><ul>
 <li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.AbstractStraightLineTrajectory.coding"><code class="docutils literal notranslate"><span class="pre">AbstractStraightLineTrajectory.coding()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.AbstractStraightLineTrajectory.combinatorial_length"><code class="docutils literal notranslate"><span class="pre">AbstractStraightLineTrajectory.combinatorial_length()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.AbstractStraightLineTrajectory.cylinder"><code class="docutils literal notranslate"><span class="pre">AbstractStraightLineTrajectory.cylinder()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.AbstractStraightLineTrajectory.graphical_trajectory"><code class="docutils literal notranslate"><span class="pre">AbstractStraightLineTrajectory.graphical_trajectory()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.AbstractStraightLineTrajectory.initial_tangent_vector"><code class="docutils literal notranslate"><span class="pre">AbstractStraightLineTrajectory.initial_tangent_vector()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.AbstractStraightLineTrajectory.intersections"><code class="docutils literal notranslate"><span class="pre">AbstractStraightLineTrajectory.intersections()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.AbstractStraightLineTrajectory.intersects"><code class="docutils literal notranslate"><span class="pre">AbstractStraightLineTrajectory.intersects()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.AbstractStraightLineTrajectory.is_closed"><code class="docutils literal notranslate"><span class="pre">AbstractStraightLineTrajectory.is_closed()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.AbstractStraightLineTrajectory.plot"><code class="docutils literal notranslate"><span class="pre">AbstractStraightLineTrajectory.plot()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.AbstractStraightLineTrajectory.segment"><code class="docutils literal notranslate"><span class="pre">AbstractStraightLineTrajectory.segment()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.AbstractStraightLineTrajectory.segments"><code class="docutils literal notranslate"><span class="pre">AbstractStraightLineTrajectory.segments()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.AbstractStraightLineTrajectory.surface"><code class="docutils literal notranslate"><span class="pre">AbstractStraightLineTrajectory.surface()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.straight_line_trajectory.AbstractStraightLineTrajectory.terminal_tangent_vector"><code class="docutils literal notranslate"><span class="pre">AbstractStraightLineTrajectory.terminal_tangent_vector()</span></code></a></li>
 </ul>

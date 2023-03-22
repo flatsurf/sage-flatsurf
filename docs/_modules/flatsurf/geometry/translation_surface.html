@@ -331,23 +331,6 @@
 
         <span class="k">return</span> <span class="n">AbelianStratum</span><span class="p">([</span><span class="n">ZZ</span><span class="p">(</span><span class="n">a</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">angles</span><span class="p">()])</span></div>
 
-    <span class="k">def</span> <span class="nf">_canonical_first_vertex</span><span class="p">(</span><span class="n">polygon</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return the index of the vertex with smallest y-coordinate.</span>
-<span class="sd">        If two vertices have the same y-coordinate, then the one with least x-coordinate is returned.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">best</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">best_pt</span> <span class="o">=</span> <span class="n">polygon</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="n">best</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">polygon</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()):</span>
-            <span class="n">pt</span> <span class="o">=</span> <span class="n">polygon</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">best_pt</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
-                <span class="n">best</span> <span class="o">=</span> <span class="n">v</span>
-                <span class="n">best_pt</span> <span class="o">=</span> <span class="n">pt</span>
-        <span class="k">if</span> <span class="n">best</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">best_pt</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
-                <span class="k">return</span> <span class="n">v</span>
-        <span class="k">return</span> <span class="n">best</span>
-
 <div class="viewcode-block" id="TranslationSurface.standardize_polygons"><a class="viewcode-back" href="../../../geometry/translation_surface.html#flatsurf.geometry.translation_surface.TranslationSurface.standardize_polygons">[docs]</a>    <span class="k">def</span> <span class="nf">standardize_polygons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Replaces each polygon with a polygon with a new polygon which differs by translation</span>
