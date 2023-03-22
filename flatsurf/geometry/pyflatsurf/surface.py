@@ -29,16 +29,20 @@ class Surface_pyflatsurf(Surface):
         sage: TestSuite(T).run()
 
     """
+
     def __init__(self, flat_triangulation):
         self._flat_triangulation = flat_triangulation
 
         # TODO: We have to be smarter about the ring bridge here.
         from flatsurf.geometry.pyflatsurf_conversion import sage_ring
+
         base_ring = sage_ring(flat_triangulation)
 
         base_label = map(int, next(iter(flat_triangulation.faces())))
 
-        super().__init__(base_ring=base_ring, base_label=base_label, finite=True, mutable=False)
+        super().__init__(
+            base_ring=base_ring, base_label=base_label, finite=True, mutable=False
+        )
 
     def pyflatsurf(self):
         return self, Deformation_pyflatsurf(self, self)
@@ -53,9 +57,9 @@ class Surface_pyflatsurf(Surface):
 
         # populate half edges and vectors
         n = sum(surface.polygon(lab).num_edges() for lab in surface.label_iterator())
-        half_edge_labels = {}   # map: (face lab, edge num) in flatsurf -> integer
-        vec = []                # vectors
-        k = 1                   # half edge label in {1, ..., n}
+        half_edge_labels = {}  # map: (face lab, edge num) in flatsurf -> integer
+        vec = []  # vectors
+        k = 1  # half edge label in {1, ..., n}
         for t0, t1 in surface.edge_gluing_iterator():
             if t0 in half_edge_labels:
                 continue
@@ -70,8 +74,8 @@ class Surface_pyflatsurf(Surface):
             k += 1
 
         # compute vertex and face permutations
-        vp = [None] * (n+1)  # vertex permutation
-        fp = [None] * (n+1)  # face permutation
+        vp = [None] * (n + 1)  # vertex permutation
+        fp = [None] * (n + 1)  # face permutation
         for t in surface.edge_iterator():
             e = half_edge_labels[t]
             j = (t[1] + 1) % surface.polygon(t[0]).num_edges()
@@ -82,8 +86,8 @@ class Surface_pyflatsurf(Surface):
             n = len(p) - 1
             assert n % 2 == 0
             cycles = []
-            unseen = [True] * (n+1)
-            for i in list(range(-n//2+1, 0)) + list(range(1, n//2)):
+            unseen = [True] * (n + 1)
+            for i in list(range(-n // 2 + 1, 0)) + list(range(1, n // 2)):
                 if unseen[i]:
                     j = i
                     cycle = []
@@ -101,12 +105,17 @@ class Surface_pyflatsurf(Surface):
         base_ring = surface.base_ring()
 
         from sage.all import AA
+
         if base_ring is AA:
             from sage.rings.qqbar import number_field_elements_from_algebraics
             from itertools import chain
-            base_ring = number_field_elements_from_algebraics(list(chain(*[list(v) for v in vec])), embedded=True)[0]
+
+            base_ring = number_field_elements_from_algebraics(
+                list(chain(*[list(v) for v in vec])), embedded=True
+            )[0]
 
         from flatsurf.features import pyflatsurf_feature
+
         pyflatsurf_feature.require()
         from pyflatsurf.vector import Vectors
 
@@ -128,13 +137,13 @@ class Surface_pyflatsurf(Surface):
             n = len(vp) - 1
 
             assert n % 2 == 0, n
-            assert len(fp) == n+1
-            assert len(vec) == n//2
+            assert len(fp) == n + 1
+            assert len(vec) == n // 2
 
             assert vp[0] is None
             assert fp[0] is None
 
-            for i in range(1, n//2+1):
+            for i in range(1, n // 2 + 1):
                 # check fp/vp consistency
                 assert fp[-vp[i]] == i, i
 
@@ -142,9 +151,9 @@ class Surface_pyflatsurf(Surface):
                 j = fp[i]
                 k = fp[j]
                 assert i != j and i != k and fp[k] == i, (i, j, k)
-                vi = vec[i-1] if i >= 1 else -vec[-i-1]
-                vj = vec[j-1] if j >= 1 else -vec[-j-1]
-                vk = vec[k-1] if k >= 1 else -vec[-k-1]
+                vi = vec[i - 1] if i >= 1 else -vec[-i - 1]
+                vj = vec[j - 1] if j >= 1 else -vec[-j - 1]
+                vk = vec[k - 1] if k >= 1 else -vec[-k - 1]
                 v = vi + vj + vk
                 assert v.x() == 0, v.x()
                 assert v.y() == 0, v.y()
@@ -152,4 +161,5 @@ class Surface_pyflatsurf(Surface):
         _check_data(vp, fp, vec)
 
         from pyflatsurf.factory import make_surface
+
         return Surface_pyflatsurf(make_surface(verts, vec)), None

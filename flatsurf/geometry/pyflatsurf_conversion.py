@@ -31,6 +31,7 @@ def to_pyflatsurf(S):
     flatsurf::FlatTriangulation from libflatsurf/pyflatsurf.
     """
     from flatsurf.geometry.translation_surface import TranslationSurface
+
     if not isinstance(S, TranslationSurface):
         raise TypeError("S must be a translation surface")
     if not S.is_finite():
@@ -39,7 +40,10 @@ def to_pyflatsurf(S):
     S = S.triangulate()
 
     from flatsurf.geometry.pyflatsurf.surface import Surface_pyflatsurf
-    return Surface_pyflatsurf._from_flatsurf(S.underlying_surface())[0]._flat_triangulation
+
+    return Surface_pyflatsurf._from_flatsurf(S.underlying_surface())[
+        0
+    ]._flat_triangulation
 
 
 def sage_ring(surface):
@@ -57,8 +61,11 @@ def sage_ring(surface):
 
     """
     from sage.all import Sequence
+
     vectors = [surface.fromHalfEdge(e.positive()) for e in surface.edges()]
-    return Sequence([to_sage_ring(v.x()) for v in vectors] + [to_sage_ring(v.y()) for v in vectors]).universe()
+    return Sequence(
+        [to_sage_ring(v.x()) for v in vectors] + [to_sage_ring(v.y()) for v in vectors]
+    ).universe()
 
 
 def to_sage_ring(x):
@@ -97,6 +104,7 @@ def to_sage_ring(x):
 
     """
     from flatsurf.features import cppyy_feature
+
     cppyy_feature.require()
     import cppyy
 
@@ -115,19 +123,31 @@ def to_sage_ring(x):
         return QQ(str(x))
     elif type(x) is maybe_type(lambda: cppyy.gbl.eantic.renf_elem_class):
         from pyeantic import RealEmbeddedNumberField
+
         real_embedded_number_field = RealEmbeddedNumberField(x.parent())
         return real_embedded_number_field.number_field(real_embedded_number_field(x))
-    elif type(x) is maybe_type(lambda: cppyy.gbl.exactreal.Element[cppyy.gbl.exactreal.IntegerRing]):
+    elif type(x) is maybe_type(
+        lambda: cppyy.gbl.exactreal.Element[cppyy.gbl.exactreal.IntegerRing]
+    ):
         from pyexactreal import ExactReals
+
         return ExactReals(ZZ)(x)
-    elif type(x) is maybe_type(lambda: cppyy.gbl.exactreal.Element[cppyy.gbl.exactreal.RationalField]):
+    elif type(x) is maybe_type(
+        lambda: cppyy.gbl.exactreal.Element[cppyy.gbl.exactreal.RationalField]
+    ):
         from pyexactreal import ExactReals
+
         return ExactReals(QQ)(x)
-    elif type(x) is maybe_type(lambda: cppyy.gbl.exactreal.Element[cppyy.gbl.exactreal.NumberField]):
+    elif type(x) is maybe_type(
+        lambda: cppyy.gbl.exactreal.Element[cppyy.gbl.exactreal.NumberField]
+    ):
         from pyexactreal import ExactReals
+
         return ExactReals(x.module().ring().parameters)(x)
     else:
-        raise NotImplementedError(f"unknown coordinate ring for element {x} which is a {type(x)}")
+        raise NotImplementedError(
+            f"unknown coordinate ring for element {x} which is a {type(x)}"
+        )
 
 
 def from_pyflatsurf(T):
@@ -166,15 +186,18 @@ def from_pyflatsurf(T):
 
     """
     from flatsurf.features import pyflatsurf_feature
+
     pyflatsurf_feature.require()
     import pyflatsurf
 
     ring = sage_ring(T)
 
     from flatsurf.geometry.surface import Surface_list
+
     S = Surface_list(ring)
 
     from flatsurf.geometry.polygon import ConvexPolygons
+
     P = ConvexPolygons(ring)
 
     V = P.module()
@@ -185,15 +208,17 @@ def from_pyflatsurf(T):
         a, b, c = map(pyflatsurf.flatsurf.HalfEdge, face)
 
         vectors = [T.fromHalfEdge(he) for he in face]
-        vectors = [V([ring(to_sage_ring(v.x())), ring(to_sage_ring(v.y()))]) for v in vectors]
+        vectors = [
+            V([ring(to_sage_ring(v.x())), ring(to_sage_ring(v.y()))]) for v in vectors
+        ]
         triangle = P(vectors)
         face_id = S.add_polygon(triangle)
 
-        assert(a not in half_edges)
+        assert a not in half_edges
         half_edges[a] = (face_id, 0)
-        assert(b not in half_edges)
+        assert b not in half_edges
         half_edges[b] = (face_id, 1)
-        assert(c not in half_edges)
+        assert c not in half_edges
         half_edges[c] = (face_id, 2)
 
     for half_edge, (face, id) in half_edges.items():
@@ -203,4 +228,5 @@ def from_pyflatsurf(T):
     S.set_immutable()
 
     from flatsurf.geometry.translation_surface import TranslationSurface
+
     return TranslationSurface(S)
