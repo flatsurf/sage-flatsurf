@@ -29,15 +29,16 @@ EXAMPLES::
 
     sage: G = FinitelyGenerated2x2MatrixGroup([identity_matrix(2)])
 """
-#*****************************************************************************
+# ****************************************************************************
 #       Copyright (C) 2013-2019 Vincent Delecroix <20100.delecroix@gmail.com>
 #                     2013-2019 W. Patrick Hooper <wphooper@gmail.com>
+#                     2023 Julian Rüth <julian.rueth@fsfe.org>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #  as published by the Free Software Foundation; either version 2 of
 #  the License, or (at your option) any later version.
 #                  https://www.gnu.org/licenses/
-#*****************************************************************************
+# ****************************************************************************
 
 from __future__ import absolute_import, print_function, division
 from six.moves import range, map, filter, zip
@@ -203,6 +204,12 @@ def matrix_multiplicative_order(m):
 class FinitelyGenerated2x2MatrixGroup(Group):
     r"""
     Finitely generated group of 2x2 matrices with real coefficients
+
+    .. SEEALSO::
+
+        :py:mod:`sage.groups.group` for the general interface of groups
+        like this in SageMath
+
     """
     def __init__(self, matrices, matrix_space=None, category=None):
         if matrix_space is None:
@@ -303,8 +310,8 @@ class FinitelyGenerated2x2MatrixGroup(Group):
         for m in self._generators:
             if (m.det() != 1 and m.det() != -1) or \
                m.trace().abs() > 2 or \
-               (m.trace().abs() == 2 and (m[0,1] or m[1,0])):
-                   return False
+               (m.trace().abs() == 2 and (m[0, 1] or m[1, 0])):
+                return False
 
         gens = [g for g in self._generators if not g.is_scalar()]
 
@@ -362,7 +369,29 @@ class FinitelyGenerated2x2MatrixGroup(Group):
     def one(self):
         return self._matrix_space.identity_matrix()
 
-    def an_element(self):
+    def _an_element_(self):
+        r"""
+        Return a typical element of this group, namely a generator.
+
+        EXAMPLES:
+
+            sage: from flatsurf.geometry.finitely_generated_matrix_group import FinitelyGenerated2x2MatrixGroup
+            sage: G = FinitelyGenerated2x2MatrixGroup([identity_matrix(2)])
+
+            sage: G._an_element_()
+            [1 0]
+            [0 1]
+
+            sage: G.an_element()
+            [1 0]
+            [0 1]
+
+        .. SEEALSO::
+
+            :meth:`sage.structure.parent.Parent.an_element` which relies on
+            this method and should be called instead
+
+        """
         return self._generators[0]
 
     def gen(self, i):

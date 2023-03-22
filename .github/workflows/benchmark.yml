@@ -16,7 +16,7 @@ jobs:
           submodules: recursive
           fetch-depth: 0
       - uses: conda-incubator/setup-miniconda@v2
-        with: { mamba-version: "*", channels: "conda-forge", channel-priority: true }
+        with: { miniforge-variant: "Mambaforge", miniforge-version: "latest", python-version: "3.9" }
       - name: Install dependencies
         shell: bash -l {0}
         run: |

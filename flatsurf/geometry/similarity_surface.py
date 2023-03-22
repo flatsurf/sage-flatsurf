@@ -6,7 +6,7 @@ Similarity surfaces.
 #  This file is part of sage-flatsurf.
 #
 #        Copyright (C) 2016-2020 Vincent Delecroix
-#                      2020-2021 Julian Rüth
+#                      2020-2023 Julian Rüth
 #
 #  sage-flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -23,10 +23,8 @@ Similarity surfaces.
 #*********************************************************************
 
 from __future__ import absolute_import, print_function, division
-from six.moves import range, map, filter, zip
+from six.moves import range
 from six import iteritems
-
-import itertools
 
 from sage.misc.cachefunc import cached_method
 from sage.misc.sage_unittest import TestSuite
@@ -35,27 +33,17 @@ from sage.structure.sage_object import SageObject
 
 from sage.rings.infinity import Infinity
 
-from sage.rings.all import ZZ, QQ, AA, RIF, RR, NumberField
+from sage.rings.all import ZZ, QQ, AA, NumberField
 
 from sage.modules.free_module_element import vector
 
-from sage.matrix.constructor import matrix, identity_matrix
-from sage.modules.free_module import VectorSpace
-
-from sage.all import FreeModule
-
-from .matrix_2x2 import (is_similarity,
-                    homothety_rotation_decomposition,
-                    similarity_from_vectors,
-                    rotation_matrix_angle,
-                    is_cosine_sine_of_rational)
-
 from .similarity import SimilarityGroup
-from .polygon import ConvexPolygons, wedge_product, triangulate, build_faces
+from .polygon import ConvexPolygons, wedge_product
 
 from .surface import Surface, Surface_dict, Surface_list, LabelComparator
 from .surface_objects import Singularity, SaddleConnection, SurfacePoint
 from .circle import Circle
+from .matrix_2x2 import similarity_from_vectors
 
 ZZ_1 = ZZ.one()
 ZZ_2 = ZZ_1 + ZZ_1
@@ -171,6 +159,11 @@ class SimilaritySurface(SageObject):
         else:
             raise TypeError("invalid argument surface={} to build a similarity surface".format(surface))
 
+    @cached_method
+    def _matrix_space(self):
+        from sage.matrix.matrix_space import MatrixSpace
+        return MatrixSpace(self.base_ring(), 2)
+
     def underlying_surface(self):
         r"""
         Return the surface underlying this SimilaritySurface.
@@ -201,7 +194,7 @@ class SimilaritySurface(SageObject):
         r"""
         The field on which the coordinates of ``self`` live.
 
-        This method must be overriden in subclasses!
+        This method must be overridden in subclasses!
         """
         return self._s.base_ring()
 
@@ -399,6 +392,7 @@ class SimilaritySurface(SageObject):
 
         return "{} built from {} polygon{}".format(self.__class__.__name__, num, end)
 
+    @cached_method
     def edge_matrix(self, p, e=None):
         r"""
         Returns the 2x2 matrix representing a similarity which when applied to the polygon with label `p`
@@ -424,13 +418,15 @@ class SimilaritySurface(SageObject):
             True
         """
         if e is None:
-            p,e = p
+            import warning
+            warning.warn('edge_matrix will now only take two arguments')
+            p, e = p
         u = self.polygon(p).edge(e)
-        pp,ee = self.opposite_edge(p,e)
+        pp, ee = self.opposite_edge(p, e)
         v = self.polygon(pp).edge(ee)
 
         # be careful, because of the orientation, it is -v and not v
-        return similarity_from_vectors(u,-v)
+        return similarity_from_vectors(u, -v, self._matrix_space())
 
     def edge_transformation(self, p, e):
         r"""
@@ -452,23 +448,23 @@ class SimilaritySurface(SageObject):
             sage: g((2,-2))
             (2, 0)
         """
-        G=SimilarityGroup(self.base_ring())
-        q=self.polygon(p)
-        a=q.vertex(e)
-        b=q.vertex(e+1)
+        G = SimilarityGroup(self.base_ring())
+        q = self.polygon(p)
+        a = q.vertex(e)
+        b = q.vertex(e+1)
         # This is the similarity carrying the origin to a and (1,0) to b:
-        g=G(b[0]-a[0],b[1]-a[1],a[0],a[1])
+        g = G(b[0] - a[0], b[1] - a[1], a[0], a[1])
 
-        pp,ee = self.opposite_edge(p,e)
-        qq=self.polygon(pp)
+        pp, ee = self.opposite_edge(p, e)
+        qq = self.polygon(pp)
         # Be careful here: opposite vertices are identified
-        aa=qq.vertex(ee+1)
-        bb=qq.vertex(ee)
+        aa = qq.vertex(ee+1)
+        bb = qq.vertex(ee)
         # This is the similarity carrying the origin to aa and (1,0) to bb:
-        gg=G(bb[0]-aa[0],bb[1]-aa[1],aa[0],aa[1])
+        gg = G(bb[0] - aa[0], bb[1] - aa[1], aa[0], aa[1])
 
         # This is the similarity carrying (a,b) to (aa,bb):
-        return gg/g
+        return gg / g
 
     def set_vertex_zero(self, label, v, in_place=False):
         r"""
@@ -705,7 +701,7 @@ class SimilaritySurface(SageObject):
         s = None  # This will be the surface we copy. (Likely we will set s=self below.)
         if new_field is not None and optimal_number_field:
             raise ValueError("You can not set a new_field and also set optimal_number_field=True.")
-        if optimal_number_field == True:
+        if optimal_number_field is True:
             assert self.is_finite(), "Can only optimize_number_field for a finite surface."
             assert not lazy, "Lazy copying is unavailable when optimize_number_field=True."
             coordinates_AA = []
@@ -756,7 +752,7 @@ class SimilaritySurface(SageObject):
             else:
                 return self.__class__(Surface_dict(surface=s, copy=not lazy, mutable=mutable))
         else:
-            if lazy==False:
+            if lazy is False:
                 raise ValueError("Only lazy copying available for infinite surfaces.")
             if self.underlying_surface().is_mutable():
                 raise ValueError("An infinite surface can only be copied if it is immutable.")
@@ -1131,8 +1127,8 @@ class SimilaritySurface(SageObject):
             else:
                 glue_list.append((p4,e4))
 
-        if s.base_label()==p2:
-             s.change_base_label(p1)
+        if s.base_label() == p2:
+            s.change_base_label(p1)
 
         s.remove_polygon(p2)
 
@@ -1211,6 +1207,49 @@ class SimilaritySurface(SageObject):
             if pair in old_to_new_labels:
                 pair = old_to_new_labels[pair]
             self.underlying_surface().change_edge_gluing(new_label, e, pair[0], pair[1])
+
+    def subdivide(self):
+        r"""
+        Return a copy of this surface whose polygons have been partitioned into
+        smaller triangles with
+        :meth:`.polygon.ConvexPolygon.subdivide`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.veech_double_n_gon(5)
+            sage: S.subdivide()
+            TranslationSurface built from 10 polygons
+            sage: S.subdivide().subdivide()
+            TranslationSurface built from 30 polygons
+
+        Sometimes a more uniform subdivision can be obtained by alternating
+        between :meth:`subdivide_edges` and this method::
+
+            sage: S.subdivide_edges().subdivide()
+            TranslationSurface built from 20 polygons
+
+        """
+        return self.__class__(self._s.subdivide())
+
+    def subdivide_edges(self, parts=2):
+        r"""
+        Return a copy of this surface whose edges have been split into
+        ``parts`` equal pieces each.
+
+        INPUT:
+
+        - ``parts`` -- a positive integer (default: 2)
+
+        EXAMPLES:
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.veech_double_n_gon(5)
+            sage: S.subdivide_edges()
+            TranslationSurface built from 2 polygons
+
+        """
+        return self.__class__(self._s.subdivide_edges(parts=parts))
 
     def singularity(self, l, v, limit=None):
         r"""
@@ -1363,20 +1402,6 @@ class SimilaritySurface(SageObject):
             return TranslationSurface(MinimalPlanarCover(self))
         raise ValueError("Provided cover_type is not supported.")
 
-    def minimal_translation_cover(self):
-        r"""
-        Return the minimal translation cover.
-
-        "Be careful that if the surface is not built from one polygon, this is
-        not the smallest translation cover of the surface." - Vincent
-
-        "I disagree with the prior statement. Can you provide an example?" -Pat
-        """
-        from sage.misc.superseded import deprecation
-        deprecation(13109, "minimal_translation_cover is deprecated. Use minimal_cover(cover_type = \"translation\") instead.")
-        from flatsurf.geometry.translation_surface import MinimalTranslationCover, TranslationSurface
-        return TranslationSurface(MinimalTranslationCover(self))
-
     def vector_space(self):
         r"""
         Return the vector space in which self naturally embeds.
@@ -1480,7 +1505,7 @@ class SimilaritySurface(SageObject):
         an edge in this tree is by translation.
 
         This guarantees that the group generated by the edge identifications is
-        minimal among representions of the surface. In particular, if for instance
+        minimal among representations of the surface. In particular, if for instance
         you have a translation surface which is anot representable as a translation
         surface (because polygons are presented with rotations) then after this
         change it will be representable as a translation surface.
@@ -1516,7 +1541,8 @@ class SimilaritySurface(SageObject):
 
     def triangulation_mapping(self):
         r"""
-        Return a SurfaceMapping triangulating the suface or None if the surface is already triangulated.
+        Return a ``SurfaceMapping`` triangulating the surface
+        or ``None`` if the surface is already triangulated.
         """
         from flatsurf.geometry.mappings import triangulation_mapping
         return triangulation_mapping(self)
@@ -1820,9 +1846,9 @@ class SimilaritySurface(SageObject):
                     if (lc.lt(l1,l2) or (l1==l2 and e1<=e2)) and s._edge_needs_flip(l1,e1):
                         s.triangle_flip(l1, e1, in_place=True, direction=direction)
                         count += 1
-                        if not limit is None and count>=limit:
+                        if limit is not None and count >= limit:
                             return s
-                        loop=True
+                        loop = True
                         break
             return s
 
@@ -2043,33 +2069,12 @@ class SimilaritySurface(SageObject):
 
         By default this returns a cached version of the GraphicalSurface. If
         ``cached=False`` is provided as a keyword option then a new
-        GraphicalSurface is returned. Other keyword options:
+        GraphicalSurface is returned.
 
-        INPUT:
-
-        - ``cached`` -- a boolean (default ``True``). If true return a cached
-          GraphicalSurface. Otherwise we make a new one.
-
-        - ``polygon_labels`` -- a boolean (default ``True``) whether the label
-          of polygons are displayed
-
-        - ``edge_labels`` -- option to control the display of edge labels. It
-          can be one of
-
-            - ``False`` or ``None`` for no labels
-
-            - ``'gluings'`` -- to put on each side of each non-adjacent edge, the
-              name of the polygon to which it is glued
-
-            - ``'number'`` -- to put on each side of each edge the number of the
-              edge
-
-            - ``'gluings and numbers'`` -- full information
-
-            - ``'letter'`` -- add matching letters to glued edges in an arbitrary way
-
-        - ``default_position_function`` -- a function mapping polygon labels to
-          similarities describing the position of the corresponding polygon.
+        All other parameters are passed on to
+        :class:`~flatsurf.graphical.surface.GraphicalSurface` or its
+        :meth:`~flatsurf.graphical.surface.GraphicalSurface.process_options`.
+        Note that this mutates the cached graphical surface for future calls.
 
         EXAMPLES:
 
@@ -2077,10 +2082,11 @@ class SimilaritySurface(SageObject):
 
             sage: from flatsurf import *
             sage: s = translation_surfaces.octagon_and_squares()
-            sage: s.plot()     # not tested (problem with matplotlib font caches on Travis)
-            Graphics object consisting of 32 graphics primitives
-            sage: s.graphical_surface(cached=False,adjacencies=[]).plot()   # not tested (problem with matplotlib font caches on Travis)
-            Graphics object consisting of 18 graphics primitives
+            sage: s.plot()
+            ...Graphics object consisting of 32 graphics primitives
+            sage: s.graphical_surface(cached=False,adjacencies=[]).plot()
+            ...Graphics object consisting of 18 graphics primitives
+
         """
         from flatsurf.graphical.surface import GraphicalSurface
         if "cached" in kwds:
@@ -2097,46 +2103,57 @@ class SimilaritySurface(SageObject):
 
     def plot(self, *args, **kwds):
         r"""
-        Returns a plot of the surface.
+        Return a plot of the surface.
 
-        There may be zero or one argument. If provided the single argument
-        should be a GraphicalSurface whick will be used in the plot.
+        The parameters are passed on to :meth:`graphical_surface` and
+        :meth:`flatsurf.graphical.surface.GraphicalSurface.plot`. Consult their
+        documentation for details.
 
-        INPUT:
+        EXAMPLES::
 
-        - ``polygon_labels`` -- a boolean (default ``True``) whether the label
-          of polygons are displayed
+            sage: import flatsurf
+            sage: S = flatsurf.translation_surfaces.veech_double_n_gon(5)
+            sage: S.plot()
+            Graphics object consisting of 21 graphics primitives
 
-        - ``edge_labels`` -- option to control the display of edge labels. It
-          can be one of
+        Keywords are passed on to the underlying plotting routines, see
+        :meth:`flatsurf.graphical.surface.GraphicalSurface.plot` for details::
 
-            - ``False`` or ``None`` for no labels
+            sage: S.plot(fill=None)
+            ...Graphics object consisting of 21 graphics primitives
 
-            - ``'gluings'`` -- to put on each side of each non-adjacent edge, the
-              name of the polygon to which it is glued
+        Note that some keywords mutate the underlying cached graphical surface,
+        see :meth:`graphical_surface`::
 
-            - ``'number'`` -- to put on each side of each edge the number of the
-              edge
+            sage: S.plot(edge_labels='gluings and number')
+            ...Graphics object consisting of 23 graphics primitives
 
-            - ``'gluings and number'`` -- full information
-
-        - ``adjacencies`` -- a list of pairs ``(p,e)`` to be used to set
-          adjacencies of polygons.
-
-        - ``default_position_function`` -- a function mapping polygon labels to
-          similarities describing the position of the corresponding polygon.
         """
         if len(args) > 1:
-            raise ValueError("SimilaritySurface.plot() can take at most one non-keyword argument.")
-        if len(args)==1:
+            raise ValueError("plot() can take at most one non-keyword argument")
+
+        graphical_surface_keywords = {
+            key: kwds.pop(key) for key in ["cached", "adjacencies", "polygon_labels", "edge_labels", "default_position_function"] if key in kwds
+        }
+
+        if len(args) == 1:
             from flatsurf.graphical.surface import GraphicalSurface
             if not isinstance(args[0], GraphicalSurface):
-                raise ValueError("If an argument is provided, it must be a GraphicalSurface.")
+                raise TypeError("non-keyword argument must be a GraphicalSurface")
+
+            import warnings
+            warnings.warn("Passing a GraphicalSurface to plot() is deprecated because it mutates that GraphicalSurface. This functionality will be removed in a future version of sage-flatsurf. Call process_options() and plot() on the GraphicalSurface explicitly instead.")
+
             gs = args[0]
-            gs.process_options(**kwds)
+            gs.process_options(**graphical_surface_keywords)
         else:
-            gs = self.graphical_surface(**kwds)
-        return gs.plot()
+            # It's very surprising that plot mutates the underlying cached
+            # graphical surface. We should change that and make the graphical
+            # surface not cached. See
+            # https://github.com/flatsurf/sage-flatsurf/issues/97
+            gs = self.graphical_surface(**graphical_surface_keywords)
+
+        return gs.plot(**kwds)
 
     def plot_polygon(self, label, graphical_surface = None,
                      plot_polygon = True, plot_edges = True, plot_edge_labels = True,
@@ -2180,18 +2197,18 @@ class SimilaritySurface(SageObject):
 
             sage: from flatsurf import *
             sage: s = similarity_surfaces.example()
-            sage: s.plot() # not tested (problem with matplotlib font caches on Travis)
-            Graphics object consisting of 13 graphics primitives
-            s.plot_polygon(1) # not tested (problem with matplotlib font caches on Travis)
-            Graphics object consisting of 7 graphics primitives
+            sage: s.plot()
+            ...Graphics object consisting of 13 graphics primitives
+            sage: s.plot_polygon(1)
+            ...Graphics object consisting of 7 graphics primitives
 
             sage: labels = []
             sage: p = s.polygon(1)
             sage: for e in range(p.num_edges()): \
                 labels.append(str(p.edge(e)))
             sage: s.plot_polygon(1, polygon_options=None, plot_edges=False, \
-                edge_labels=labels, edge_label_options={"color":"red"}) # not tested (problem with matplotlib font caches on Travis)
-            Graphics object consisting of 4 graphics primitives
+                edge_labels=labels, edge_label_options={"color":"red"})
+            ...Graphics object consisting of 4 graphics primitives
         """
         if graphical_surface is None:
             graphical_surface = self.graphical_surface()
@@ -2365,55 +2382,3 @@ class SimilaritySurface(SageObject):
             h = h + 3*hash(edgepair)
         self._hash=h
         return h
-
-    def erase_marked_points(self):
-        r"""
-        Return an isometric or similar surface with a minimal number of regular
-        vertices of angle 2π.
-
-        EXAMPLES::
-
-            sage: import flatsurf
-
-            sage: G = SymmetricGroup(4)
-            sage: S = flatsurf.translation_surfaces.origami(G('(1,2,3,4)'), G('(1,4,2,3)'))
-            sage: S.stratum()
-            H_2(2, 0)
-            sage: S.erase_marked_points().stratum() # optional: pyflatsurf  # long time (1s)
-            H_2(2)
-
-            sage: for (a,b,c) in [(1,4,11), (1,4,15), (3,4,13)]: # long time (10s), optional: pyflatsurf
-            ....:     T = flatsurf.polygons.triangle(a,b,c)
-            ....:     S = flatsurf.similarity_surfaces.billiard(T)
-            ....:     S = S.minimal_cover("translation")
-            ....:     print(S.erase_marked_points().stratum())
-            H_6(10)
-            H_6(2^5)
-            H_8(12, 2)
-
-        TESTS:
-
-        Verify that https://github.com/flatsurf/flatsurf/issues/263 has been resolved::
-
-            sage: from flatsurf import EquiangularPolygons, similarity_surfaces
-            sage: E = EquiangularPolygons((10, 8, 3, 1, 1, 1))
-            sage: P = E((1, 1, 2, 4), normalized=True)
-            sage: B = similarity_surfaces.billiard(P, rational=True)
-            sage: S = B.minimal_cover(cover_type="translation")
-            sage: S = S.erase_marked_points() # long time (5s), optional: pyflatsurf
-
-        ::
-
-            sage: from flatsurf import EquiangularPolygons, similarity_surfaces
-            sage: E = EquiangularPolygons((10, 7, 2, 2, 2, 1))
-            sage: P = E((1, 1, 2, 3), normalized=True)
-            sage: B = similarity_surfaces.billiard(P, rational=True)
-            sage: S_mp = B.minimal_cover(cover_type="translation")
-            sage: S = S_mp.erase_marked_points() # long time (3s), optional: pyflatsurf
-
-        """
-        from .pyflatsurf_conversion import from_pyflatsurf, to_pyflatsurf
-        S = to_pyflatsurf(self)
-        S = S.eliminateMarkedPoints().surface()
-        S.delaunay()
-        return from_pyflatsurf(S)

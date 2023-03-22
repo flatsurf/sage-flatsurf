@@ -1,5 +1,24 @@
 r"""Mappings between translation surfaces."""
-
+#*********************************************************************
+#  This file is part of sage-flatsurf.
+#
+#        Copyright (C) 2016-2022 W. Patrick Hooper
+#                      2016-2022 Vincent Delecroix
+#                           2023 Julian Rüth
+#
+#  sage-flatsurf is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  sage-flatsurf is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
+#*********************************************************************
 from __future__ import absolute_import, print_function, division
 from six.moves import range, map, filter, zip
 from six import iteritems
@@ -45,61 +64,6 @@ class SurfaceMapping:
     def __rmul__(self,other):
         return SurfaceMappingComposition(self,other)
 
-
-#class FinitelyPerturbedSurface(Surface):
-#    def __init__(self, surface, polygon_dictionary=None, glue_dictionary=None, base_label=None, ring=None):
-#        r"""
-#        
-#        Warning: No checks are made to make sure the surface is reasonable.
-#        
-#        PARAMETERS::
-#            surface: The surface this is based on.
-#            polygon_dictionary: A dictionary mapping labels to polygons which will override whatever was on the original surface.
-#            glue_dictionary: A dictionary mapping edges to edges, which will override whatever was on the original surface. It will automatically be made symmetric.
-#            base_label: A label representing the base_label on the new surface.
-#            ring: A new ring containing the vertices.
-#        """
-#        self._s=surface
-#        if polygon_dictionary is None:
-#            self._pdict={}
-#        else:
-#            self._pdict=dict(polygon_dictionary)
-#        self._gdict={}
-#        if not glue_dictionary is None:
-#            for edge1,edge2 in iteritems(glue_dictionary):
-#                self._gdict[edge1]=edge2
-#                self._gdict[edge2]=edge1
-#        if base_label is None:
-#            self._base_label = surface.base_label()
-#        else:
-#            self._base_label = base_label
-#        if ring is None:
-#            self._ring = surface.base_ring()
-#        else:
-#            self._ring = ring
-#        self._is_finite = surface.is_finite()
-#        Surface.__init__(self, )
-
-#    def base_ring(self):
-#        return self._ring
-
-#    def base_label(self):
-#        return self._base_label
-
-#    def polygon(self, lab):
-#        p = self._pdict.get(lab)
-#        if p is None:
-#            return self._s.polygon(lab)
-#        return p
-
-#    def opposite_edge(self, p, e):
-#        edge = self._gdict.get((p,e))
-#        if edge is None:
-#            return self._s.opposite_edge(p,e)
-#        return edge
-
-#    def is_finite(self):
-#        return self._is_finite
 
 class SurfaceMappingComposition(SurfaceMapping):
     r"""
@@ -158,8 +122,15 @@ class IdentityMapping(SurfaceMapping):
 
 class MatrixListDeformedSurface(Surface):
     r"""
-    Apply a different matrix to each polygon in the surface. 
+    Apply a different matrix to each polygon in the surface.
     Here matrix_function is a python function mapping labels to 2x2 matrices with positive determinant.
+
+    .. WARNING::
+
+        Note that only some methods are forwarding correctly to the underlying
+        surface ``_s``. Others are incorrectly mutating/querying this surface
+        object which should be stateless (but is not.)
+
     """
     def __init__(self, surface, matrix_function, ring=None):
         self._s=surface
@@ -175,7 +146,16 @@ class MatrixListDeformedSurface(Surface):
         return self._base_ring
 
     def base_label(self):
+        r"""
+        Return the label of a special chosen polygon in this surface.
+        """
         return self._s.base_label()
+
+    def change_base_label(self, new_base_label):
+        r"""
+        Set the :meth:`base_label` to ``new_base_label``.
+        """
+        self._s.change_base_label(new_base_label)
 
     def polygon(self, lab):
         p = self._s.polygon(lab)
@@ -787,7 +767,7 @@ class ReindexMapping(SurfaceMapping):
         self._f=f
         self._b=b
         
-        if new_base_label==None:
+        if new_base_label is None:
             if s.base_label() in f:                
                 new_base_label = f[s.base_label()]
             else:
@@ -828,7 +808,7 @@ def my_sgn(val):
 def polygon_compare(poly1,poly2):
     r"""
     Compare two polygons first by area, then by number of sides,
-    then by lexigraphical ording on edge vectors."""
+    then by lexigraphical ordering on edge vectors."""
     # This should not be used is broken!!
     #from sage.functions.generalized import sgn
     res = my_sgn(-poly1.area()+poly2.area())

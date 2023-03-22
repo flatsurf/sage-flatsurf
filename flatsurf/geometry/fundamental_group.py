@@ -1,4 +1,4 @@
-#*****************************************************************************
+# ****************************************************************************
 #       Copyright (C) 2013-2019 Vincent Delecroix <20100.delecroix@gmail.com>
 #                     2013-2019 W. Patrick Hooper <wphooper@gmail.com>
 #
@@ -6,7 +6,7 @@
 #  as published by the Free Software Foundation; either version 2 of
 #  the License, or (at your option) any later version.
 #                  https://www.gnu.org/licenses/
-#*****************************************************************************
+# ****************************************************************************
 
 from __future__ import absolute_import, print_function, division
 from six.moves import range, map, filter, zip
@@ -19,6 +19,7 @@ from sage.categories.groups import Groups
 from sage.groups.group import Group
 from sage.structure.element import MultiplicativeGroupElement
 from sage.structure.unique_representation import UniqueRepresentation
+
 
 def intersection(i0, j0, i1, j1):
     r"""
@@ -158,17 +159,17 @@ class Path(MultiplicativeGroupElement):
         """
         sp = self._polys[:]
         se = self._edges[:]
-        ser = self._edges_rev[:]
+        se_r = self._edges_rev[:]
 
         op = other._polys[:]
         oe = other._edges[:]
-        oer = other._edges_rev[:]
+        oe_r = other._edges_rev[:]
 
         if sp[-1] != op[0]:
             return None
 
         i = 0
-        while i < len(se) and i < len(oe) and se[-i-1] == oer[i]:
+        while i < len(se) and i < len(oe) and se[-i-1] == oe_r[i]:
             i += 1
 
         P = self.parent()
@@ -176,7 +177,7 @@ class Path(MultiplicativeGroupElement):
                 P,
                 sp[:len(sp)-i] + op[i+1:],
                 se[:len(se)-i]+ oe[i:],
-                ser[:len(ser)-i] + oer[i:])
+                se_r[:len(se_r)-i] + oe_r[i:])
 
     def __invert__(self):
         r"""
@@ -393,13 +394,12 @@ class FundamentalGroup(UniqueRepresentation, Group):
 
                 basis.append((polys, edges, edges_rev))
 
-            else: # new branch
-                tree[p1] = (p2,e1,e2)
+            else:  # new branch
+                tree[p1] = (p2, e1, e2)
                 for e in range(s.polygon(p1).num_edges()):
                     if e != e1:
-                        pp,ee = s.opposite_edge(p1,e)
-                        wait.append((pp,ee,p1,e))
+                        pp, ee = s.opposite_edge(p1, e)
+                        wait.append((pp, ee, p1, e))
 
         basis.sort()
-        return tuple([self.element_class(self,p,e,er) for p,e,er in basis])
-
+        return tuple([self.element_class(self, p, e, er) for p, e, er in basis])
