@@ -431,11 +431,7 @@ class SimilaritySurfaceTangentVector:
                     label, s.polygon(label).vertex(vertex), w
                 )
         else:
-            if code:
-                raise NotImplementedError(
-                    "codes are only implemented when based at a singularity"
-                )
-            return self.surface().tangent_vector(v.polygon_label(), v.point(), w)
+            raise NotImplementedError("Rotating tangent vectors is only implemnted when at a singularity")
 
     def counterclockwise_to(self, w, code=False):
         r"""
@@ -514,11 +510,7 @@ class SimilaritySurfaceTangentVector:
                     label, s.polygon(label).vertex(vertex), w
                 )
         else:
-            if code:
-                raise NotImplementedError(
-                    "codes are only implemented when based at a singularity"
-                )
-            return self.surface().tangent_vector(v.polygon_label(), v.point(), w)
+            raise NotImplementedError("Rotating tangent vectors is only implemnted when at a singularity")
 
     def plot(self, **kwargs):
         r"""
