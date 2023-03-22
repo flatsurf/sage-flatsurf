@@ -605,15 +605,16 @@ class SaddleConnection(SageObject):
             self._direction,
         )
 
-    def trajectory(self, limit=1000, cache=True):
+    @cached_method(key=lambda limit, cache: None)
+    def trajectory(self, limit=1000, cache=None):
         r"""
         Return a straight line trajectory representing this saddle connection.
         Fails if the trajectory passes through more than limit polygons.
         """
-        try:
-            return self._traj
-        except AttributeError:
-            pass
+        if cache is not None:
+            import warnings
+            warnings.warn("The cache keyword argument of trajectory() is ignored. Trajectories are always cached.")
+
         v = self.start_tangent_vector()
         traj = v.straight_line_trajectory()
         traj.flow(limit)
@@ -622,8 +623,7 @@ class SaddleConnection(SageObject):
                 "Did not obtain saddle connection by flowing forward. Limit="
                 + str(limit)
             )
-        if cache:
-            self._traj = traj
+
         return traj
 
     def plot(self, *args, **options):
