@@ -87,7 +87,7 @@ class Surface(SageObject):
     is oriented.
 
     Concrete implementations of a surface must implement at least
-    :meth:`polygon` and :meth:`opposite_edge`.
+
 
     To be able to modify a surface, subclasses should also implement
     :meth:`_change_polygon`, :meth:`_set_edge_pairing`, :meth:`_add_polygon`,
@@ -780,6 +780,33 @@ class Surface(SageObject):
         for label in it:
             tester.assertTrue(isinstance(self.polygon(label), ConvexPolygon), \
                 "polygon(label) does not return a ConvexPolygon when label="+str(label))
+
+    def _pyflatsurf(self):
+        r"""
+        Return a surface backed by libflatsurf that is isomorphic to this
+        surface and an isomorphism to that surface.
+
+        EXAMPLES::
+
+            sage: from flatsurf import polygons
+            sage: from flatsurf.geometry.surface import Surface_dict
+
+            sage: S = Surface_dict(QQ)
+            sage: S.add_polygon(polygons(vertices=[(0, 0), (1, 0), (1, 1)]), label=0)
+            0
+            sage: S.add_polygon(polygons(vertices=[(0, 0), (1, 1), (0, 1)]), label=1)
+            1
+
+            sage: S.set_edge_pairing(0, 0, 1, 1)
+            sage: S.set_edge_pairing(0, 1, 1, 2)
+            sage: S.set_edge_pairing(0, 2, 1, 0)
+
+            sage: S._pyflatsurf()
+
+        """
+        from flatsurf.geometry.pyflatsurf.surface import Surface_pyflatsurf
+
+        return Surface_pyflatsurf._from_flatsurf(self)
 
 
 class Surface_list(Surface):
