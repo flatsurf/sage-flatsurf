@@ -1065,7 +1065,7 @@ class Cylinder(SageObject):
                 v.vertex(),
             ) and is_same_direction(sc2.direction(), v.vector()):
                 return sc2
-        raise ValuError("Failed to find next saddle connection in boundary set.")
+        raise ValueError("Failed to find next saddle connection in boundary set.")
 
     def previous(self, sc):
         r"""
@@ -1082,7 +1082,7 @@ class Cylinder(SageObject):
                 sc2.end_direction(), v.vector()
             ):
                 return sc2
-        raise ValuError("Failed to find previous saddle connection in boundary set.")
+        raise ValueError("Failed to find previous saddle connection in boundary set.")
 
     @cached_method
     def holonomy(self):
