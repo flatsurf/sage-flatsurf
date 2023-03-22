@@ -990,7 +990,7 @@ class Polygon(Element):
             return self._v
 
         translation = self.parent().vector_space()(translation)
-        return [t + v for v in self.vertices()]
+        return [translation + v for v in self.vertices()]
 
     def vertex(self, i):
         r"""
@@ -2615,8 +2615,8 @@ class EquiangularPolygons:
                     return coeffs, sol
 
         while True:
+            coeffs, r = random_element()
             try:
-                coeffs, r = random_element()
                 return self(*r)
             except ValueError as e:
                 if (
@@ -3241,7 +3241,13 @@ class PolygonsConstructor:
 
         convex = kwds.pop("convex", True)
 
-        vertices = edges = angles = base_point = None
+        vertices = None
+        edges = None
+        angles = None
+        base_point = None
+        length = None
+        lengths = None
+
         if "edges" in kwds:
             edges = kwds.pop("edges")
             base_point = kwds.pop("base_point", (0, 0))
