@@ -280,7 +280,7 @@ class RingConverter(Converter):
     @classmethod
     def to_pyflatsurf(cls, domain, codomain=None):
         r"""
-        Return a :class:`Conversion` that converts the SageMath ring ``domain``
+        Return a :class:`RingConversion` that converts the SageMath ring ``domain``
         to something that libflatsurf/pyflatsurf can understand.
 
         INPUT:
@@ -320,8 +320,95 @@ class RingConverter(Converter):
         return RingConversion(domain, codomain)
 
     @classmethod
+    def from_pyflatsurf_from_flat_triangulation(cls, flat_triangulation, domain=None):
+        r"""
+        Return a :class:`RingConversion` that can map ``domain`` to the ring
+        over which ``flat_triangulation`` is defined.
+
+        INPUT:
+
+        - ``flat_triangulation`` -- a libflatsurf ``FlatTriangulation``
+
+        - ``domain`` -- a SageMath ring, or ``None`` (default: ``None``); if
+          ``None``, the ring is determined automatically.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConverter, RingConverter
+            sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().underlying_surface()
+            sage: flat_triangulation = FlatTriangulationConverter.to_pyflatsurf(S).codomain()
+            sage: conversion = RingConverter.from_pyflatsurf_from_flat_triangulation(flat_triangulation)
+            sage: conversion.domain() is S.base_ring()
+            True
+
+        """
+        return cls.from_pyflatsurf_from_element(flat_triangulation.fromHalfEdge(1).x(), domain=domain)
+
+    @classmethod
+    def from_pyflatsurf_from_element(cls, element, domain=None):
+        r"""
+        Return a :class:`RingConversion` that can map ``domain`` to the ring of
+        ``element``.
+
+        INPUT:
+
+        - ``element`` -- an element that libflatsurf/pyflatsurf understands
+
+        - ``domain`` -- a SageMath ring, or ``None`` (default: ``None``); if
+          ``None``, the ring is determined automatically.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: from flatsurf.geometry.pyflatsurf_conversion import RingConverter
+
+            sage: import gmpxxyy
+            sage: conversion = RingConverter.from_pyflatsurf_from_element(gmpxxyy.mpz())
+
+        """
+        from gmpxxyy import mpz, mpq
+        from pyeantic import eantic
+
+        if type(element) is mpz:
+            return cls.from_pyflatsurf(mpz, domain=domain)
+        elif type(element) == mpq:
+            return cls.from_pyflatsurf(mpq, domain=domain)
+        elif type(element) == eantic.renf_elem_class:
+            return cls.from_pyflatsurf(element.parent(), domain=domain)
+        else:
+            raise NotImplementedError(f"cannot determine a SageMath ring for a {type(element)} yet")
+
+    @classmethod
     def from_pyflatsurf(cls, codomain, domain=None):
-        raise NotImplementedError
+        r"""
+        Return a :class:`RingConversion` that maps ``domain`` to ``codomain``.
+
+        INPUT:
+
+        - ``codomain`` -- a libflatsurf/pyflatsurf type or ring
+
+        - ``domain`` -- a SageMath ring, or ``None`` (default: ``None``); if
+          ``None``, the ring is determined automatically.
+
+        """
+        if domain is None:
+            from gmpxxyy import mpz, mpq
+            from pyeantic import eantic
+
+            if codomain is mpz:
+                from sage.all import ZZ
+                domain = ZZ
+            elif codomain is mpq:
+                from sage.all import QQ
+                domain = QQ
+            elif type(codomain) is eantic.renf_class:
+                from pyeantic import RealEmbeddedNumberField
+                domain = RealEmbeddedNumberField(codomain).number_field
+            else:
+                raise NotImplementedError(f"cannot determine a SageMath ring for {codomain} yet")
+
+        return RingConversion(domain, codomain)
 
 
 class FlatTriangulationConverter(Converter):
@@ -562,85 +649,36 @@ class FlatTriangulationConverter(Converter):
         if domain is not None:
             return cls.to_pyflatsurf(domain=domain, codomain=codomain)
 
-        ring = sage_ring(T)
+        ring_conversion = RingConverter.from_pyflatsurf_from_flat_triangulation(codomain)
 
-        from flatsurf.geometry.surface import Surface_list
-
-        S = Surface_list(ring)
+        from flatsurf.geometry.surface import Surface_dict
+        domain = Surface_dict(ring_conversion.domain())
 
         from flatsurf.geometry.polygon import ConvexPolygons
+        polygons = ConvexPolygons(ring_conversion.domain())
 
-        P = ConvexPolygons(ring)
+        half_edge_to_polygon_edge = {}
 
-        V = P.module()
+        for (a, b, c) in codomain.faces():
+            vectors = [codomain.fromHalfEdge(a), codomain.fromHalfEdge(b), codomain.fromHalfEdge(c)]
+            vectors = [ring_conversion.section(vector) for vector in vectors]
+            triangle = polygons(vectors)
 
-        half_edges = {}
+            label = (a.id(), b.id(), c.id())
 
-        for face in T.faces():
-            a, b, c = map(pyflatsurf.flatsurf.HalfEdge, face)
+            domain.add_polygon(triangle, label=label)
 
-            vectors = [T.fromHalfEdge(he) for he in face]
-            vectors = [
-                V([ring(to_sage_ring(v.x())), ring(to_sage_ring(v.y()))]) for v in vectors
-            ]
-            triangle = P(vectors)
-            face_id = S.add_polygon(triangle)
+            half_edge_to_polygon_edge[a] = (label, 0)
+            half_edge_to_polygon_edge[b] = (label, 1)
+            half_edge_to_polygon_edge[c] = (label, 2)
 
-            assert a not in half_edges
-            half_edges[a] = (face_id, 0)
-            assert b not in half_edges
-            half_edges[b] = (face_id, 1)
-            assert c not in half_edges
-            half_edges[c] = (face_id, 2)
+        for half_edge, (polygon, edge) in half_edge_to_polygon_edge.items():
+            opposite = half_edge_to_polygon_edge[-half_edge]
+            domain.change_edge_gluing(polygon, edge, *opposite)
 
-        for half_edge, (face, id) in half_edges.items():
-            _face, _id = half_edges[-half_edge]
-            S.change_edge_gluing(face, id, _face, _id)
+        domain.set_immutable()
 
-        S.set_immutable()
-
-        from flatsurf.geometry.translation_surface import TranslationSurface
-
-        return TranslationSurface(S)
-
-
-def _check_data(vp, fp, vec):
-    r"""
-    Check consistency of data
-
-    vp - vector permutation
-    fp - face permutation
-    vec - vectors of the flat structure
-    """
-    assert isinstance(vp, list)
-    assert isinstance(fp, list)
-    assert isinstance(vec, list)
-
-    n = len(vp) - 1
-
-    assert n % 2 == 0, n
-    assert len(fp) == n + 1
-    assert len(vec) == n // 2
-
-    assert vp[0] is None
-    assert fp[0] is None
-
-    for i in range(1, n // 2 + 1):
-        # check fp/vp consistency
-        assert fp[-vp[i]] == i, i
-
-        # check that each face is a triangle and that vectors sum up to zero
-        j = fp[i]
-        k = fp[j]
-        assert i != j and i != k and fp[k] == i, (i, j, k)
-        vi = vec[i - 1] if i >= 1 else -vec[-i - 1]
-        vj = vec[j - 1] if j >= 1 else -vec[-j - 1]
-        vk = vec[k - 1] if k >= 1 else -vec[-k - 1]
-        v = vi + vj + vk
-        assert v.x() == 0, v.x()
-        assert v.y() == 0, v.y()
-
-
+        return domain
 
 
 def to_pyflatsurf(S):
@@ -805,4 +843,5 @@ def from_pyflatsurf(T):
     import warnings
     warnings.warn("from_pyflatsurf() is deprecated and will be removed in a future version of sage-flatsurf. Use TranslationSurface(FlatTriangulationConverter.from_pyflatsurf(surface).domain()) instead.")
 
+    from flatsurf.geometry.translation_surface import TranslationSurface
     return TranslationSurface(FlatTriangulationConverter.from_pyflatsurf(T).domain())
