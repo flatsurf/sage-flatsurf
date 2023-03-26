@@ -36,6 +36,8 @@ EXAMPLES::
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ********************************************************************
 
+from sage.misc.cachefunc import cached_method
+
 from flatsurf.features import pyflatsurf_feature
 
 
@@ -196,6 +198,7 @@ class Conversion:
 
             sage: p = SurfacePoint(S, 0, (0, 1/2))
             sage: conversion(p)
+            ((-1/4*a^2 + 1/2*a + 1/2 ~ 0.54654802), (1/4*a^2 - 3/4 ~ 0.15450850), (1/4 ~ 0.25000000)) in (1, 2, 3)
 
         """
         raise NotImplementedError(f"{type(self).__name__} does not implement a mapping of elements yet")
@@ -218,6 +221,7 @@ class Conversion:
             sage: p = SurfacePoint(S, 0, (0, 1/2))
             sage: q = conversion(p)
             sage: conversion.section(q)
+            Surface point located at (0, 1/2) in polygon 0
 
         """
         raise NotImplementedError(f"{type(self).__name__} does not implement a section yet")
@@ -713,7 +717,7 @@ class FlatTriangulationConversion(Conversion):
 
     """
 
-    def __init__(self, domain, codomain, label_to_half_edges):
+    def __init__(self, domain, codomain, label_to_half_edge):
         r"""
         EXAMPLES::
 
@@ -728,7 +732,8 @@ class FlatTriangulationConversion(Conversion):
         """
         super().__init__(domain=domain, codomain=codomain)
 
-        self._label_to_half_edges = label_to_half_edges
+        self._label_to_half_edge = label_to_half_edge
+        self._half_edge_to_label = {half_edge: label for (label, half_edge) in label_to_half_edge.items()}
 
     @classmethod
     def to_pyflatsurf(cls, domain, codomain=None):
@@ -857,6 +862,7 @@ class FlatTriangulationConversion(Conversion):
         from pyflatsurf.vector import Vectors
         vector_space = Vectors(ring_conversion.codomain())
 
+        # TODO: Use _image_vector()
         return [vector_space(vector).vector for vector in vectors]
 
     @classmethod
@@ -967,6 +973,7 @@ class FlatTriangulationConversion(Conversion):
         half_edge_to_polygon_edge = {}
 
         for (a, b, c) in codomain.faces():
+            # TODO: Use _preimage_vector()
             vectors = [codomain.fromHalfEdge(a), codomain.fromHalfEdge(b), codomain.fromHalfEdge(c)]
             vectors = [(ring_conversion.section(vector.x()), ring_conversion.section(vector.y())) for vector in vectors]
             triangle = polygons(vectors)
@@ -986,6 +993,260 @@ class FlatTriangulationConversion(Conversion):
         domain.set_immutable()
 
         return domain
+
+    @cached_method
+    def ring_conversion(self):
+        r"""
+        Return the conversion that maps the base ring of the domain of this
+        conversion to the base ring of the codomain of this conversion.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion
+            sage: from flatsurf.geometry.surface_objects import SurfacePoint
+            sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().underlying_surface()
+            sage: conversion = FlatTriangulationConversion.to_pyflatsurf(S)
+            sage: conversion.ring_conversion()
+            Conversion from Number Field in a with defining polynomial y^4 - 5*y^2 + 5 with a = 1.902113032590308? to NumberField(a^4 - 5*a^2 + 5, [1.902113032590307144232878666758764287 +/- 6.87e-37])
+
+        """
+        return RingConversion.to_pyflatsurf(domain=self.domain().base_ring())
+
+    def __call__(self, x):
+        r"""
+        Return the image of ``x`` under this conversion.
+
+        INPUT:
+
+        - ``x`` -- an object defined on the domain, e.g., a
+          :class:`SurfacePoint`
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion
+            sage: from flatsurf.geometry.surface_objects import SurfacePoint
+            sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().underlying_surface()
+            sage: conversion = FlatTriangulationConversion.to_pyflatsurf(S)
+
+        We map a point::
+
+            sage: p = SurfacePoint(S, 0, (0, 1/2))
+            sage: conversion(p)
+            ((-1/4*a^2 + 1/2*a + 1/2 ~ 0.54654802), (1/4*a^2 - 3/4 ~ 0.15450850), (1/4 ~ 0.25000000)) in (1, 2, 3)
+
+        We map a half edge::
+
+            sage: conversion((0, 0))
+            1
+
+        """
+        from flatsurf.geometry.surface_objects import SurfacePoint
+
+        if isinstance(x, SurfacePoint):
+            return self._image_point(x)
+        if isinstance(x, tuple) and len(x) == 2:
+            return self._image_half_edge(*x)
+
+        raise NotImplementedError(f"cannot map {type(x)} from sage-flatsurf to pyflatsurf yet")
+
+    def section(self, y):
+        r"""
+        Return the preimage of ``y`` under this conversion.
+
+        INPUT:
+
+        - ``y`` -- an object defined in the codomain, e.g., a pyflatsurf
+          ``Point``
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion
+            sage: from flatsurf.geometry.surface_objects import SurfacePoint
+            sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().underlying_surface()
+            sage: conversion = FlatTriangulationConversion.to_pyflatsurf(S)
+
+        We roundtrip a point::
+
+            sage: p = SurfacePoint(S, 0, (0, 1/2))
+            sage: q = conversion(p)
+            sage: conversion.section(q) == p
+            True
+
+        We roundtrip a half edge::
+
+            sage: half_edge = conversion((0, 0))
+            sage: conversion.section(half_edge)
+            (0, 0)
+
+        """
+        import pyflatsurf
+
+        if isinstance(y, pyflatsurf.flatsurf.Point[type(self.codomain())]):
+            return self._preimage_point(y)
+        if isinstance(y, pyflatsurf.flatsurf.HalfEdge):
+            return self._preimage_half_edge(y)
+
+        raise NotImplementedError(f"cannot compute the preimage of a {type(y)} in sage-flatsurf yet")
+
+    def _image_vector(self, vector):
+        r"""
+        Return the SageMath ``vector`` over the base ring of ``domain`` as a
+        libflatsurf ``Vector`` over the base ring of ``codomain``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion
+            sage: from flatsurf.geometry.surface_objects import SurfacePoint
+            sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().underlying_surface()
+            sage: conversion = FlatTriangulationConversion.to_pyflatsurf(S)
+
+            sage: v = vector(conversion.domain().base_ring(), (1, 2))
+            sage: conversion._image_vector(v)
+            (1, 2)
+
+        """
+        ring_conversion = self.ring_conversion()
+
+        from pyflatsurf.vector import Vectors
+
+        vector_space = Vectors(ring_conversion.codomain())
+        return vector_space(list(vector)).vector
+
+    def _preimage_vector(self, vector):
+        r"""
+        Return the SageMath vector corresponding to the pyflatsurf ``vector``.
+
+        This is inverse to :meth:`_image_vector`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion
+            sage: from flatsurf.geometry.surface_objects import SurfacePoint
+            sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().underlying_surface()
+            sage: conversion = FlatTriangulationConversion.to_pyflatsurf(S)
+
+            sage: v = vector(conversion.domain().base_ring(), (1, 2))
+            sage: conversion._preimage_vector(conversion._image_vector(v)) == v
+            True
+
+        """
+        ring_conversion = self.ring_conversion()
+
+        import sage.all
+
+        return sage.all.vector(ring_conversion.domain(), (ring_conversion.section(vector.x()), ring_conversion.section(vector.y())))
+
+    def _image_point(self, p):
+        r"""
+        Return the image of the :class:`SurfacePoint` ``p`` under this conversion.
+
+        This is a helper method for :meth:`__call__`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion
+            sage: from flatsurf.geometry.surface_objects import SurfacePoint
+            sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().underlying_surface()
+            sage: conversion = FlatTriangulationConversion.to_pyflatsurf(S)
+
+            sage: p = SurfacePoint(S, 0, (0, 1/2))
+            sage: conversion._image_point(p)
+            ((-1/4*a^2 + 1/2*a + 1/2 ~ 0.54654802), (1/4*a^2 - 3/4 ~ 0.15450850), (1/4 ~ 0.25000000)) in (1, 2, 3)
+
+        """
+        if p.surface() is not self.domain():
+            raise ValueError("point is not a point in the domain of this conversion")
+
+        label = next(iter(p.labels()))
+        coordinates = next(iter(p.coordinates(label)))
+
+        import pyflatsurf
+        return pyflatsurf.flatsurf.Point[type(self.codomain())](self.codomain(), self((label, 0)), self._image_vector(coordinates))
+
+    def _preimage_point(self, q):
+        r"""
+        Return the preimage of the point ``q`` in the domain of this conversion.
+
+        This is a helper method for :meth:`section`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion
+            sage: from flatsurf.geometry.surface_objects import SurfacePoint
+            sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().underlying_surface()
+            sage: conversion = FlatTriangulationConversion.to_pyflatsurf(S)
+
+            sage: p = SurfacePoint(S, 0, (0, 1/2))
+            sage: q = conversion(p)
+            sage: conversion._preimage_point(q)
+            Surface point located at (0, 1/2) in polygon 0
+
+        """
+        face = q.face()
+        label, edge = self.section(face)
+        coordinates = self._preimage_vector(q.vector(face))
+        while edge != 0:
+            coordinates -= self.domain().edge(label, edge - 1)
+            edge -= 1
+
+        from flatsurf.geometry.surface_objects import SurfacePoint
+        return SurfacePoint(self.domain(), label, coordinates)
+
+    def _image_half_edge(self, label, edge):
+        r"""
+        Return the half edge that ``edge`` of polygon ``label`` maps to under this conversion.
+
+        This is a helper method for :meth:`__call__`.
+
+        INPUT:
+
+        - ``label`` -- an arbitrary polygon label in the :meth:`domain`
+
+        - ``edge`` -- an integer, the identifier of an edge in the polygon ``label``
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion
+            sage: from flatsurf.geometry.surface_objects import SurfacePoint
+            sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().underlying_surface()
+            sage: conversion = FlatTriangulationConversion.to_pyflatsurf(S)
+
+            sage: conversion._image_half_edge(0, 0)
+            1
+
+        """
+        import pyflatsurf
+        return pyflatsurf.flatsurf.HalfEdge(self._label_to_half_edge[(label, edge)])
+
+    def _preimage_half_edge(self, half_edge):
+        r"""
+        Return the preimage of the ``half_edge`` in the domain of this
+        conversion as a pair ``(label, edge)``.
+
+        This is a helper method for :meth:`section`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion
+            sage: from flatsurf.geometry.surface_objects import SurfacePoint
+            sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().underlying_surface()
+            sage: conversion = FlatTriangulationConversion.to_pyflatsurf(S)
+
+            sage: import pyflatsurf
+            sage: conversion._preimage_half_edge(pyflatsurf.flatsurf.HalfEdge(1R))
+            (0, 0)
+
+        """
+        return self._half_edge_to_label[half_edge.id()]
 
 
 def to_pyflatsurf(S):
