@@ -85,7 +85,10 @@ from sage.misc.cachefunc import cached_method
 class IsoDelaunayTessellation(Parent):
     def __init__(self, surface):
         r"""
-        TESTS::
+        TESTS:
+
+        TODO: There's something wrong here. The IDT has a single polygon with
+        three edges but only two of them are glued to each other::
 
             sage: from flatsurf import translation_surfaces
             sage: from flatsurf.geometry.iso_delaunay_tessellation import IsoDelaunayTessellation
@@ -923,24 +926,23 @@ class IsoDelaunayTessellation(Parent):
             r"""
             Walk CCW about source vertex of edge, stepping into next face
             """            
-            idx_edge = face.edges().index(edge) 
+            idx_edge = list(face.edges()).index(edge) 
             edge_turn = face.edges()[idx_edge - 1]
-            for (source_tessellation_face, target_tessellation_face, (tessellation_edges, isometry)) in list(
-                self._dual_graph.edges(face, labels=True, sort=False)):
+            for (source_tessellation_face, target_tessellation_face, (tessellation_edges, isometry)) in list(self._dual_graph.edges(face, labels=True, sort=False)):
 
                 if edge_turn in tessellation_edges:
                     face = source_tessellation_face if face == target_tessellation_face else target_tessellation_face
                     if len(tessellation_edges) == 1:
                         return edge_turn, face
-                    
+
                     tessellation_edges = list(tessellation_edges)
-                    return (tesselation_edges[0] if edge_turn != tessellation_edges[0] else tessellation_edges[1]), face
-            assert False
+                    return (tessellation_edges[0] if edge_turn != tessellation_edges[0] else tessellation_edges[1]), face
+            assert False, f"{edge_turn} not found"
 
         nfaces = len(self._dual_graph)
         nedges = self._dual_graph.num_edges()
         nvertices = 0
-        
+
         edges_seen = set()
         for face in self._dual_graph.vertices(sort=False):
             for edge in face.edges():
@@ -948,13 +950,14 @@ class IsoDelaunayTessellation(Parent):
                     continue
                 nvertices += 1
                 edges_seen.add(edge)
-                
+
                 next_edge, next_face = step(edge, face)
                 while next_edge != edge:
                     assert next_edge not in edges_seen
                     edges_seen.add(next_edge)
                     next_edge, next_face = step(next_edge, next_face)
 
+        print(nvertices,nedges,nfaces)
         chi = nvertices - nedges + nfaces
         return (2 - chi)//2
 
