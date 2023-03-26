@@ -904,37 +904,59 @@ class IsoDelaunayTessellation(Parent):
         else:
             raise ValueError
 
-    def topological_euler_characteristic(self):
-        # return V - E + F of the fundamental domain
-        e_self_glued = 0
-        for _, _, (tessellation_edges, isometry) in self._dual_graph.edges(labels=True):
-            if len(list(tessellation_edges)) == 1:
-                e_self_glued += 1
-
-        # when an edge is self glued, the midpoint is an order 2 orbifold point
-        v = len(self.vertices()) + e_self_glued
-        e = len(self._dual_graph.edges())
-        f = len(self._dual_graph.vertices(sort=False))
-
-        return (v - len(self.cusps())) - e + f
-
     def orbifold_euler_characteristic(self):
         r"""
-        chi_top = V - E + F in ZZ
-        chi_orb = chi_top + \sum_{orbifold points} (-1 + 1/n) in QQ
-
-        eg for H^2/SL(2, Z)
-        chi_top = 2 - 2 + 1 = euler char of a punctured sphere
-
-        chi_orb = 1 + (-1 + 1/2) + (-1 + 1/3) = -1 + 5/6 = -1/6
+        Following Farb-Margalit "Primer on Mapping Class Groups",
+        Section 7.2.2.
+        Y is a 2-dimensional hyperbolic orbifold
+        having signature (g; p_1, p_2, ..., p_m)
+        chi_orb = (2 - 2g) - m + sum 1/p_i 
         """
         raise NotImplementedError
 
     def genus(self):
         r"""
-        chi_top = 2 - n - 2g ==> g = (2 - n - chi_top)/2
+        2 - 2g = vertices - edges + faces
         """
-        pass
+
+        def step(edge, face):
+            r"""
+            Walk CCW about source vertex of edge, stepping into next face
+            """            
+            idx_edge = face.edges().index(edge) 
+            edge_turn = face.edges()[idx_edge - 1]
+            for (source_tessellation_face, target_tessellation_face, (tessellation_edges, isometry)) in list(
+                self._dual_graph.edges(face, labels=True, sort=False)):
+
+                if edge_turn in tessellation_edges:
+                    face = source_tessellation_face if face == target_tessellation_face else target_tessellation_face
+                    if len(tessellation_edges) == 1:
+                        return edge_turn, face
+                    
+                    tessellation_edges = list(tessellation_edges)
+                    return (tesselation_edges[0] if edge_turn != tessellation_edges[0] else tessellation_edges[1]), face
+            assert False
+
+        nfaces = len(self._dual_graph)
+        nedges = self._dual_graph.num_edges()
+        nvertices = 0
+        
+        edges_seen = set()
+        for face in self._dual_graph.vertices(sort=False):
+            for edge in face.edges():
+                if edge in edges_seen:
+                    continue
+                nvertices += 1
+                edges_seen.add(edge)
+                
+                next_edge, next_face = step(edge, face)
+                while next_edge != edge:
+                    assert next_edge not in edges_seen
+                    edges_seen.add(next_edge)
+                    next_edge, next_face = step(next_edge, next_face)
+
+        chi = nvertices - nedges + nfaces
+        return (2 - chi)//2
 
     def cusps(self):
         r"""

@@ -3,7 +3,7 @@ import pytest
 from sage.all import ZZ, QQ
 import flatsurf
 
-# See Appendix B of Mukamel ["Orbifold points on Teichmüller curves and Jacobians with complex multiplication", 2013]
+# See Appendix C of McMullen ["Billiard and Teichmüller Curves", 2022]
 @pytest.mark.parametrize(
     "discriminant,chi,genus,ncusps,nu2",
     [
@@ -19,14 +19,8 @@ def test_L_tables(discriminant, chi, genus, ncusps, nu2):
     idt = flatsurf.IsoDelaunayTessellation(L)
     idt.explore()
     idt.plot().show()
-    assert idt.topological_euler_characteristic() == (2 - 2 * genus) - ncusps
-    assert idt.orbifold_euler_characteristic() == chi
     assert idt.genus() == genus
     assert len(idt.cusps()) == ncusps
+    assert idt.orbifold_euler_characteristic() == chi
     assert len(idt.orbifold_points(2)) == nu2
     assert len(idt.orbifold_points(3)) == 0
-
-    # idt.veech_group() TODO: implement?
-    # matching elements + orbifold symmetries = gen. set for Veech group
-    # TODO: How do we iterate over IDRs?
-    # (R, tau) is an IDR w/ R a hyperbolic polygon and tau a triangulation of M_0
