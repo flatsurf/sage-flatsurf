@@ -539,7 +539,6 @@ class RingConversion_eantic(RingConversion):
 
         EXAMPLES::
 
-            sage: from flatsurf import translation_surfaces
             sage: from flatsurf.geometry.pyflatsurf_conversion import RingConversion
             sage: domain = QuadraticField(2)
             sage: conversion = RingConversion.to_pyflatsurf(domain)
@@ -554,11 +553,27 @@ class RingConversion_eantic(RingConversion):
         if parent is not self.domain():
             raise ValueError(f"argument must be in the domain of this conversion but {x} is in {parent} and not in {self.domain()}")
 
+        return self._pyrenf()(list(x)).renf_elem
+
+    @cached_method
+    def _pyrenf(self):
+        r"""
+        Return the pyeantic ``RealEmbeddedNumberField`` that wraps the codomain
+        of this conversion.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: from flatsurf.geometry.pyflatsurf_conversion import RingConversion
+            sage: domain = QuadraticField(2)
+            sage: conversion = RingConversion.to_pyflatsurf(domain)
+            sage: conversion._pyrenf()
+            Real Embedded Number Field in a with defining polynomial x^2 - 2 with a = 1.414213562373095?
+
+        """
         from pyeantic import RealEmbeddedNumberField
 
-        # TODO: Is this very slow? I guess we should cache this one.
-        pyrenf = RealEmbeddedNumberField(self.codomain())
-        return pyrenf(list(x)).renf_elem
+        return RealEmbeddedNumberField(self.codomain())
 
     def section(self, y):
         r"""
@@ -575,11 +590,7 @@ class RingConversion_eantic(RingConversion):
             a
 
         """
-        from pyeantic import RealEmbeddedNumberField
-
-        pyrenf = RealEmbeddedNumberField(self.codomain())
-        x = self.domain()(pyrenf(y))
-        return x
+        return self.domain()(self._pyrenf()(y))
 
     @classmethod
     def _deduce_codomain(cls, element):
@@ -701,6 +712,151 @@ class RingConversion_gmp(RingConversion):
             return cppyy.gbl.mpq_class
 
         return None
+
+    def __call__(self, x):
+        r"""
+        Return the image of ``x`` under this conversion.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.pyflatsurf_conversion import RingConversion
+            sage: domain = QQ
+            sage: conversion = RingConversion.to_pyflatsurf(QQ)
+            sage: conversion(1 / 3)
+            1/3
+
+        """
+        import sage.structure.element
+
+        parent = sage.structure.element.parent(x)
+
+        if parent is not self.domain():
+            raise ValueError(f"argument must be in the domain of this conversion but {x} is in {parent} and not in {self.domain()}")
+
+        return self.codomain()(str(x))
+
+    def section(self, y):
+        r"""
+        Return the preimage of ``y`` under this conversion.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: from flatsurf.geometry.pyflatsurf_conversion import RingConversion
+            sage: domain = QuadraticField(2)
+            sage: conversion = RingConversion.to_pyflatsurf(domain)
+            sage: gen = conversion(domain.gen())
+            sage: conversion.section(gen)
+            a
+
+        """
+        return self.domain()(str(y))
+
+
+class VectorSpaceConversion(Conversion):
+    r"""
+    Converts vectors in a SageMath vector space into libflatsurf ``Vector<T>``s.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.pyflatsurf_conversion import VectorSpaceConversion
+        sage: conversion = VectorSpaceConversion.to_pyflatsurf(QQ^2)
+
+    """
+    @classmethod
+    def to_pyflatsurf(cls, domain, codomain=None):
+        r"""
+        Return a :class:`Conversion` from ``domain`` to ``codomain``.
+
+        INPUT:
+
+        - ``domain`` -- a SageMath ``VectorSpace``
+
+        - ``codomain`` -- a libflatsurf ``Vector<T>`` type or ``None``
+          (default: ``None``); if ``None``, the type is determined
+          automatically.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.pyflatsurf_conversion import VectorSpaceConversion
+            sage: conversion = VectorSpaceConversion.to_pyflatsurf(QQ^2)
+
+        """
+        pyflatsurf_feature.require()
+
+        ring_conversion = RingConversion.to_pyflatsurf(domain.base_ring())
+
+        if codomain is None:
+            import pyflatsurf
+
+            T = ring_conversion.codomain()
+            if not isinstance(T, type):
+                T = type(T)
+
+            codomain = pyflatsurf.flatsurf.Vector[T]
+
+        return VectorSpaceConversion(domain, codomain)
+
+    @cached_method
+    def _vectors(self):
+        r"""
+        Return the pyflatsurf ``Vectors`` helper for the codomain of this conversion.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.pyflatsurf_conversion import VectorSpaceConversion
+            sage: conversion = VectorSpaceConversion.to_pyflatsurf(QQ^2)
+            sage: conversion._vectors()
+            Flatsurf Vectors over Rational Field
+
+        """
+        from pyflatsurf.vector import Vectors
+
+        return Vectors(self._ring_conversion().codomain())
+
+    @cached_method
+    def _ring_conversion(self):
+        r"""
+        Return the :class:`RingConversion` that maps the coordinates of the domain to the coordinates of the codomain.
+
+            sage: from flatsurf.geometry.pyflatsurf_conversion import VectorSpaceConversion
+            sage: conversion = VectorSpaceConversion.to_pyflatsurf(QQ^2)
+            sage: conversion._ring_conversion()
+            Conversion from Rational Field to __gmp_expr<__mpq_struct[1],__mpq_struct[1]>
+
+        """
+        return RingConversion.to_pyflatsurf(self.domain().base_ring())
+
+    def __call__(self, vector):
+        r"""
+        Return a ``Vector<T>`` corresponding to the SageMath ``vector``.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.pyflatsurf_conversion import VectorSpaceConversion
+            sage: conversion = VectorSpaceConversion.to_pyflatsurf(QQ^2)
+            sage: conversion(vector(QQ, [1, 2]))
+            (1, 2)
+
+        """
+        ring_conversion = self._ring_conversion()
+        return self._vectors()([ring_conversion(coordinate) for coordinate in vector]).vector
+
+    def section(self, vector):
+        r"""
+        Return the SageMath vector corresponding to the pyflatsurf ``vector``.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.pyflatsurf_conversion import VectorSpaceConversion
+            sage: conversion = VectorSpaceConversion.to_pyflatsurf(QQ^2)
+            sage: v = vector(QQ, [1, 2])
+            sage: conversion.section(conversion(v)) == v
+            True
+
+        """
+        ring_conversion = self._ring_conversion()
+        return self.domain()([ring_conversion.section(vector.x()), ring_conversion.section(vector.y())])
 
 
 class FlatTriangulationConversion(Conversion):
@@ -857,13 +1013,8 @@ class FlatTriangulationConversion(Conversion):
 
             vectors[half_edge - 1] = domain.polygon(polygon).edge(edge)
 
-        ring_conversion = RingConversion.to_pyflatsurf_from_elements([vector[0] for vector in vectors] + [vector[1] for vector in vectors])
-
-        from pyflatsurf.vector import Vectors
-        vector_space = Vectors(ring_conversion.codomain())
-
-        # TODO: Use _image_vector()
-        return [vector_space(vector).vector for vector in vectors]
+        vector_conversion = VectorSpaceConversion.to_pyflatsurf_from_elements(vectors)
+        return [vector_conversion(vector) for vector in vectors]
 
     @classmethod
     def _pyflatsurf_vertex_permutation(cls, domain):
@@ -972,10 +1123,12 @@ class FlatTriangulationConversion(Conversion):
 
         half_edge_to_polygon_edge = {}
 
+        from sage.all import VectorSpace
+        vector_conversion = VectorSpaceConversion.to_pyflatsurf(VectorSpace(ring_conversion.domain(), 2))
+
         for (a, b, c) in codomain.faces():
-            # TODO: Use _preimage_vector()
             vectors = [codomain.fromHalfEdge(a), codomain.fromHalfEdge(b), codomain.fromHalfEdge(c)]
-            vectors = [(ring_conversion.section(vector.x()), ring_conversion.section(vector.y())) for vector in vectors]
+            vectors = [vector_conversion.section(vector) for vector in vectors]
             triangle = polygons(vectors)
 
             label = (a.id(), b.id(), c.id())
@@ -1012,6 +1165,27 @@ class FlatTriangulationConversion(Conversion):
 
         """
         return RingConversion.to_pyflatsurf(domain=self.domain().base_ring())
+
+    @cached_method
+    def vector_space_conversion(self):
+        r"""
+        Return the conversion maps two-dimensional vectors over the base ring
+        of the domain to ``Vector<T>`` for the codomain.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion
+            sage: from flatsurf.geometry.surface_objects import SurfacePoint
+            sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().underlying_surface()
+            sage: conversion = FlatTriangulationConversion.to_pyflatsurf(S)
+            sage: conversion.vector_space_conversion()
+            Conversion from Vector space of dimension 2 over Number Field in a with defining polynomial y^4 - 5*y^2 + 5 with a = 1.902113032590308? to flatsurf::cppyy::Vector<eantic::renf_class>
+
+        """
+        from sage.all import VectorSpace
+
+        return VectorSpaceConversion.to_pyflatsurf(VectorSpace(self.ring_conversion().domain(), 2))
 
     def __call__(self, x):
         r"""
@@ -1091,56 +1265,6 @@ class FlatTriangulationConversion(Conversion):
 
         raise NotImplementedError(f"cannot compute the preimage of a {type(y)} in sage-flatsurf yet")
 
-    def _image_vector(self, vector):
-        r"""
-        Return the SageMath ``vector`` over the base ring of ``domain`` as a
-        libflatsurf ``Vector`` over the base ring of ``codomain``.
-
-        EXAMPLES::
-
-            sage: from flatsurf import translation_surfaces
-            sage: from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion
-            sage: from flatsurf.geometry.surface_objects import SurfacePoint
-            sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().underlying_surface()
-            sage: conversion = FlatTriangulationConversion.to_pyflatsurf(S)
-
-            sage: v = vector(conversion.domain().base_ring(), (1, 2))
-            sage: conversion._image_vector(v)
-            (1, 2)
-
-        """
-        ring_conversion = self.ring_conversion()
-
-        from pyflatsurf.vector import Vectors
-
-        vector_space = Vectors(ring_conversion.codomain())
-        return vector_space(list(vector)).vector
-
-    def _preimage_vector(self, vector):
-        r"""
-        Return the SageMath vector corresponding to the pyflatsurf ``vector``.
-
-        This is inverse to :meth:`_image_vector`.
-
-        EXAMPLES::
-
-            sage: from flatsurf import translation_surfaces
-            sage: from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion
-            sage: from flatsurf.geometry.surface_objects import SurfacePoint
-            sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().underlying_surface()
-            sage: conversion = FlatTriangulationConversion.to_pyflatsurf(S)
-
-            sage: v = vector(conversion.domain().base_ring(), (1, 2))
-            sage: conversion._preimage_vector(conversion._image_vector(v)) == v
-            True
-
-        """
-        ring_conversion = self.ring_conversion()
-
-        import sage.all
-
-        return sage.all.vector(ring_conversion.domain(), (ring_conversion.section(vector.x()), ring_conversion.section(vector.y())))
-
     def _image_point(self, p):
         r"""
         Return the image of the :class:`SurfacePoint` ``p`` under this conversion.
@@ -1167,7 +1291,7 @@ class FlatTriangulationConversion(Conversion):
         coordinates = next(iter(p.coordinates(label)))
 
         import pyflatsurf
-        return pyflatsurf.flatsurf.Point[type(self.codomain())](self.codomain(), self((label, 0)), self._image_vector(coordinates))
+        return pyflatsurf.flatsurf.Point[type(self.codomain())](self.codomain(), self((label, 0)), self.vector_space_conversion()(coordinates))
 
     def _preimage_point(self, q):
         r"""
@@ -1191,7 +1315,7 @@ class FlatTriangulationConversion(Conversion):
         """
         face = q.face()
         label, edge = self.section(face)
-        coordinates = self._preimage_vector(q.vector(face))
+        coordinates = self.vector_space_conversion().section(q.vector(face))
         while edge != 0:
             coordinates -= self.domain().edge(label, edge - 1)
             edge -= 1
