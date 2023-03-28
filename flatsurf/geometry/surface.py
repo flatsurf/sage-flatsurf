@@ -81,10 +81,10 @@ from sage.structure.sage_object import SageObject
 
 class Surface(SageObject):
     r"""
-    Abstract base class of all surfaces that are built from a set of polygons
-    with edges identified. The identifications are compositions of homothety,
-    rotations and translations, i.e., similarities that ensure that the surface
-    is oriented.
+    Abstract base class of all surfaces that are built from a set of Euclidean
+    polygons with edges identified. The identifications are compositions of
+    homothety, rotations and translations, i.e., similarities that ensure that
+    the surface is oriented.
 
     Concrete implementations of a surface must implement at least
     :meth:`polygon` and :meth:`opposite_edge`.

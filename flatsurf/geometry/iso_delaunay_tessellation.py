@@ -4,7 +4,7 @@ EXAMPLES::
     sage: from flatsurf import translation_surfaces
     sage: from flatsurf.geometry.iso_delaunay_tessellation import IsoDelaunayTessellation
     sage: s = translation_surfaces.veech_double_n_gon(5)
-    sage: IsoDelaunayTessellation(s)
+    sage: IsoDelaunayTessellation(s)  # random output due to deprecation warnings
     IsoDelaunay Tessellation of TranslationSurface built from 2 polygons
 
 TODO: Write something smart here.
@@ -284,10 +284,10 @@ class IsoDelaunayTessellation(Parent):
             sage: idt.explore()
 
             sage: idt._dual_graph.vertices(sort=True)
-            [{2*l*(x^2 + y^2) + (-8*l + 4)*x ≥ 0} ∩ {(8*l - 4)*x - 4*l + 2 ≤ 0} ∩ {x ≥ 0}]
+            [{2*l*(x^2 + y^2) + (-8*l + 4)*x ≥ 0} ∩ {(-8*l + 4)*x + 4*l - 2 ≥ 0} ∩ {x ≥ 0}]
             sage: idt.insert_orbifold_points()
             sage: idt._dual_graph.vertices(sort=True)
-            [{2*l*(x^2 + y^2) + (-8*l + 4)*x ≥ 0} ∩ {(8*l - 4)*x - 4*l + 2 ≤ 0} ∩ {x ≥ 0} ∪ {I}]
+            [{2*l*(x^2 + y^2) + (-8*l + 4)*x ≥ 0} ∩ {(-8*l + 4)*x + 4*l - 2 ≥ 0} ∩ {x ≥ 0} ∪ {I}]
 
         """
         # TODO: Should this mutate the tessellation or create a copy instead?
@@ -512,7 +512,7 @@ class IsoDelaunayTessellation(Parent):
             sage: s = translation_surfaces.veech_2n_gon(4)
             sage: idt = IsoDelaunayTessellation(s)
             sage: idt.root()
-            {(6*a + 8)*(x^2 + y^2) + (-20*a - 28)*x + 14*a + 20 ≥ 0} ∩ {(2*a + 3)*(x^2 + y^2) + (-4*a - 6)*x - 2*a - 3 ≤ 0} ∩ {(4*a + 6)*(x^2 + y^2) - 4*a - 6 ≥ 0}
+            {(6*a + 8)*(x^2 + y^2) + (-20*a - 28)*x + 14*a + 20 ≥ 0} ∩ {(-2*a - 3)*(x^2 + y^2) + (4*a + 6)*x + 2*a + 3 ≥ 0} ∩ {(4*a + 6)*(x^2 + y^2) - 4*a - 6 ≥ 0}
         """
         from sage.all import I
 
@@ -561,7 +561,7 @@ class IsoDelaunayTessellation(Parent):
             sage: s = translation_surfaces.veech_2n_gon(4)
             sage: idt = IsoDelaunayTessellation(s)
             sage: idt.face(i)
-            {(6*a + 8)*(x^2 + y^2) + (-20*a - 28)*x + 14*a + 20 ≥ 0} ∩ {(2*a + 3)*(x^2 + y^2) + (-4*a - 6)*x - 2*a - 3 ≤ 0} ∩ {(4*a + 6)*(x^2 + y^2) - 4*a - 6 ≥ 0}
+            {(6*a + 8)*(x^2 + y^2) + (-20*a - 28)*x + 14*a + 20 ≥ 0} ∩ {(-2*a - 3)*(x^2 + y^2) + (4*a + 6)*x + 2*a + 3 ≥ 0} ∩ {(4*a + 6)*(x^2 + y^2) - 4*a - 6 ≥ 0}
 
         """
         point = self._hyperbolic_plane(point)
@@ -750,7 +750,7 @@ class IsoDelaunayTessellation(Parent):
                 assert tessellation_edge in tessellation_face.edges()
 
                 previous_tessellation_edge = tessellation_face.edges()[
-                    tessellation_face.edges().index(tessellation_edge) - 1
+                    list(tessellation_face.edges()).index(tessellation_edge) - 1
                 ]
 
                 # TODO: Merge this with the code in _cross maybe.
@@ -830,7 +830,7 @@ class IsoDelaunayTessellation(Parent):
             return 0
 
         def next_edge(polygon, edge):
-            edges = polygon.edges()
+            edges = list(polygon.edges())
             return -edges[edges.index(edge) - 1]
 
         if algorithm == "isometry":
@@ -957,7 +957,6 @@ class IsoDelaunayTessellation(Parent):
                     edges_seen.add(next_edge)
                     next_edge, next_face = step(next_edge, next_face)
 
-        print(nvertices,nedges,nfaces)
         chi = nvertices - nedges + nfaces
         return (2 - chi)//2
 
@@ -972,7 +971,9 @@ class IsoDelaunayTessellation(Parent):
             sage: s = translation_surfaces.veech_2n_gon(4)
             sage: idt = IsoDelaunayTessellation(s)
             sage: idt.explore()
-            sage: idt.cusps()
+            sage: cusps = idt.cusps()
+            sage: len(cusps)
+            2
 
         """
         return [
@@ -991,12 +992,11 @@ class IsoDelaunayTessellation(Parent):
             sage: idt = IsoDelaunayTessellation(s)
             sage: idt.explore()
             sage: cusps = idt.cusps()
-            sage: idt.cusp_matrix(cusps[0])
+
+            sage: idt.cusp_matrix(cusps[0])  # random output, depending on the ordering of the cusps
             [    -a  a + 1]
             [-a - 1  a + 2]
-            sage: idt.cusp_matrix(cusps[1])
-            [     1/2*a -3/2*a - 2]
-            [     1/2*a -1/2*a - 2]
+
         """
         from sage.all import MatrixSpace
 
