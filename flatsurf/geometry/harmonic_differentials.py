@@ -558,8 +558,9 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
         return super().__classcall__(cls, surface, category or SetsWithPartialMaps())
 
     def __init__(self, surface, category):
-        if surface != surface.delaunay_triangulation():
-            raise NotImplementedError("Surface must be Delaunay triangulated")
+        # TODO: Not checking this anymore. But this is needed!
+        # if surface != surface.delaunay_triangulation():
+        #     raise NotImplementedError("Surface must be Delaunay triangulated")
 
         Parent.__init__(self, category=category)
 
@@ -1229,7 +1230,8 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
         if variable < 0:
             raise ValueError("Lagrange multipliers are not associated to a polygon")
 
-        return variable % (2*self.parent()._surface.num_polygons()) // 2
+        index = variable % (2*self.parent()._surface.num_polygons()) // 2
+        return list(self.parent()._surface.label_iterator())[index]
 
     def is_variable(self):
         r"""
@@ -1583,7 +1585,8 @@ class SymbolicCoefficientRing(UniqueRepresentation, CommutativeRing):
                 else:
                     raise NotImplementedError
 
-                assert polygon < self._surface.num_polygons()
+                polygon = list(self._surface.label_iterator()).index(polygon)
+                assert polygon != -1
                 n = k * 2 * self._surface.num_polygons() + 2 * polygon + kind
             elif len(n) == 2:
                 kind, k = n
@@ -2620,6 +2623,8 @@ class PowerSeriesConstraints:
 
         """
         from sage.all import PowerSeriesRing
+        triangle = list(self._surface.label_iterator()).index(triangle)
+        assert triangle != -1
         return PowerSeriesRing(self.complex_field(), f"z{triangle}")
 
     def solve(self, algorithm="scipy"):

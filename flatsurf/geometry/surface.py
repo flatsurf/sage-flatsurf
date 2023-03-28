@@ -928,6 +928,279 @@ class Surface(SageObject):
         # This is the similarity carrying (a,b) to (aa,bb):
         return gg / g
 
+    def delaunay_triangulation(self):
+        # TODO: Copied from SimilaritySurface
+        s = Surface_dict(surface=self, copy=True)
+
+        base_ring = self.base_ring()
+
+        from sage.all import VectorSpace
+        direction = VectorSpace(self.base_ring(), 2)((0, 1))
+
+        from collections import deque
+
+        flip_sequence = []
+
+        unchecked_labels = deque(label for label in s.label_iterator())
+        checked_labels = set()
+        while unchecked_labels:
+            label = unchecked_labels.popleft()
+            flipped = False
+            for edge in range(3):
+                if s._edge_needs_flip(label, edge):
+                    # Record the current opposite edge:
+                    label2, edge2 = s.opposite_edge(label, edge)
+                    # Perform the flip.
+                    s.triangle_flip(label, edge, in_place=True, direction=direction)
+                    flip_sequence.append((label, edge))
+                    # Move the opposite polygon to the list of labels we need to check.
+                    if label2 != label:
+                        try:
+                            checked_labels.remove(label2)
+                            unchecked_labels.append(label2)
+                        except KeyError:
+                            # Occurs if label2 is not in checked_labels
+                            pass
+                    flipped = True
+                    break
+            if flipped:
+                unchecked_labels.append(label)
+            else:
+                checked_labels.add(label)
+
+        from flatsurf.geometry.deformation import DelaunayDeformation
+        s.set_immutable()
+        return DelaunayDeformation(self, s, flip_sequence)
+
+    def _edge_needs_flip(self, p1, e1):
+        # TODO: Copied from similarity surface
+        p2, e2 = self.opposite_edge(p1, e1)
+        poly1 = self.polygon(p1)
+        poly2 = self.polygon(p2)
+        if poly1.num_edges() != 3 or poly2.num_edges() != 3:
+            raise ValueError("Edge must be adjacent to two triangles.")
+        from flatsurf.geometry.matrix_2x2 import similarity_from_vectors
+
+        sim1 = similarity_from_vectors(poly1.edge(e1 + 2), -poly1.edge(e1 + 1))
+        sim2 = similarity_from_vectors(poly2.edge(e2 + 2), -poly2.edge(e2 + 1))
+        sim = sim1 * sim2
+        return sim[1][0] < 0
+
+    def triangle_flip(self, l1, e1, in_place=False, test=False, direction=None):
+        # TODO: Copied from similarity surface
+        if test:
+            # Just test if the flip would be successful
+            p1 = self.polygon(l1)
+            if not p1.num_edges() == 3:
+                return False
+            l2, e2 = self.opposite_edge(l1, e1)
+            p2 = self.polygon(l2)
+            if not p2.num_edges() == 3:
+                return False
+            sim = self.edge_transformation(l2, e2)
+            hol = sim(p2.vertex((e2 + 2) % 3) - p1.vertex((e1 + 2) % 3))
+            from flatsurf.geometry.polygon import wedge_product
+
+            return (
+                wedge_product(p1.edge((e1 + 2) % 3), hol) > 0
+                and wedge_product(p1.edge((e1 + 1) % 3), hol) > 0
+            )
+
+        if in_place:
+            s = self
+            assert s.is_mutable(), "Surface must be mutable for in place triangle_flip."
+        else:
+            s = self.copy(mutable=True)
+
+        p1 = s.polygon(l1)
+        if not p1.num_edges() == 3:
+            raise ValueError("The polygon with the provided label is not a triangle.")
+        l2, e2 = s.opposite_edge(l1, e1)
+
+        sim = s.edge_transformation(l2, e2)
+        m = sim.derivative()
+        p2 = s.polygon(l2)
+        if not p2.num_edges() == 3:
+            raise ValueError(
+                "The polygon opposite the provided edge is not a triangle."
+            )
+        P = p1.parent()
+        p2 = P(vertices=[sim(v) for v in p2.vertices()])
+
+        if direction is None:
+            direction = s.vector_space()((0, 1))
+        # Get vertices corresponding to separatices in the provided direction.
+        v1 = p1.find_separatrix(direction=direction)[0]
+        v2 = p2.find_separatrix(direction=direction)[0]
+        # Our quadrilateral has vertices labeled:
+        # * 0=p1.vertex(e1+1)=p2.vertex(e2)
+        # * 1=p1.vertex(e1+2)
+        # * 2=p1.vertex(e1)=p2.vertex(e2+1)
+        # * 3=p2.vertex(e2+2)
+        # Record the corresponding vertices of this quadrilateral.
+        q1 = (3 + v1 - e1 - 1) % 3
+        q2 = (2 + (3 + v2 - e2 - 1) % 3) % 4
+
+        new_diagonal = p2.vertex((e2 + 2) % 3) - p1.vertex((e1 + 2) % 3)
+        # This list will store the new triangles which are being glued in.
+        # (Unfortunately, they may not be cyclically labeled in the correct way.)
+        new_triangle = []
+        try:
+            new_triangle.append(
+                P(edges=[p1.edge((e1 + 2) % 3), p2.edge((e2 + 1) % 3), -new_diagonal])
+            )
+            new_triangle.append(
+                P(edges=[p2.edge((e2 + 2) % 3), p1.edge((e1 + 1) % 3), new_diagonal])
+            )
+            # The above triangles would be glued along edge 2 to form the diagonal of the quadrilateral being removed.
+        except ValueError:
+            raise ValueError(
+                "Gluing triangles along this edge yields a non-convex quadrilateral."
+            )
+
+        # Find the separatrices of the two new triangles, and in particular which way they point.
+        new_sep = []
+        new_sep.append(new_triangle[0].find_separatrix(direction=direction)[0])
+        new_sep.append(new_triangle[1].find_separatrix(direction=direction)[0])
+        # The quadrilateral vertices corresponding to these separatrices are
+        # new_sep[0]+1 and (new_sep[1]+3)%4 respectively.
+
+        # i=0 if the new_triangle[0] should be labeled l1 and new_triangle[1] should be labeled l2.
+        # i=1 indicates the opposite labeling.
+        if new_sep[0] + 1 == q1:
+            # For debugging:
+            assert (new_sep[1] + 3) % 4 == q2, (
+                "Bug: new_sep[1]=" + str(new_sep[1]) + " and q2=" + str(q2)
+            )
+            i = 0
+        else:
+            # For debugging:
+            assert (new_sep[1] + 3) % 4 == q1
+            assert new_sep[0] + 1 == q2
+            i = 1
+
+        # These quantities represent the cyclic relabeling of triangles needed.
+        cycle1 = (new_sep[i] - v1 + 3) % 3
+        cycle2 = (new_sep[1 - i] - v2 + 3) % 3
+
+        # This will be the new triangle with label l1:
+        tri1 = P(
+            edges=[
+                new_triangle[i].edge(cycle1),
+                new_triangle[i].edge((cycle1 + 1) % 3),
+                new_triangle[i].edge((cycle1 + 2) % 3),
+            ]
+        )
+        # This will be the new triangle with label l2:
+        tri2 = P(
+            edges=[
+                new_triangle[1 - i].edge(cycle2),
+                new_triangle[1 - i].edge((cycle2 + 1) % 3),
+                new_triangle[1 - i].edge((cycle2 + 2) % 3),
+            ]
+        )
+        # In the above, edge 2-cycle1 of tri1 would be glued to edge 2-cycle2 of tri2
+        diagonal_glue_e1 = 2 - cycle1
+        diagonal_glue_e2 = 2 - cycle2
+
+        # FOR CATCHING BUGS:
+        assert p1.find_separatrix(direction=direction) == tri1.find_separatrix(
+            direction=direction
+        )
+        assert p2.find_separatrix(direction=direction) == tri2.find_separatrix(
+            direction=direction
+        )
+
+        # Two opposite edges will not change their labels (label,edge) under our regluing operation.
+        # The other two opposite ones will change and in fact they change labels.
+        # The following finds them (there are two cases).
+        # At the end of the if statement, the following will be true:
+        # * new_glue_e1 and new_glue_e2 will be the edges of the new triangle with label l1 and l2 which need regluing.
+        # * old_e1 and old_e2 will be the corresponding edges of the old triangles.
+        # (Note that labels are swapped between the pair. The appending 1 or 2 refers to the label used for the triangle.)
+        if p1.edge(v1) == tri1.edge(v1):
+            # We don't have to worry about changing gluings on edge v1 of the triangles with label l1
+            # We do have to worry about the following edge:
+            new_glue_e1 = (
+                3 - diagonal_glue_e1 - v1
+            )  # returns the edge which is neither diagonal_glue_e1 nor v1.
+            # This corresponded to the following old edge:
+            old_e1 = 3 - e1 - v1  # Again this finds the edge which is neither e1 nor v1
+        else:
+            temp = (v1 + 2) % 3
+            # FOR CATCHING BUGS:
+            assert p1.edge(temp) == tri1.edge(temp)
+            # We don't have to worry about changing gluings on edge (v1+2)%3 of the triangles with label l1
+            # We do have to worry about the following edge:
+            new_glue_e1 = (
+                3 - diagonal_glue_e1 - temp
+            )  # returns the edge which is neither diagonal_glue_e1 nor temp.
+            # This corresponded to the following old edge:
+            old_e1 = (
+                3 - e1 - temp
+            )  # Again this finds the edge which is neither e1 nor temp
+        if p2.edge(v2) == tri2.edge(v2):
+            # We don't have to worry about changing gluings on edge v2 of the triangles with label l2
+            # We do have to worry about the following edge:
+            new_glue_e2 = (
+                3 - diagonal_glue_e2 - v2
+            )  # returns the edge which is neither diagonal_glue_e2 nor v2.
+            # This corresponded to the following old edge:
+            old_e2 = 3 - e2 - v2  # Again this finds the edge which is neither e2 nor v2
+        else:
+            temp = (v2 + 2) % 3
+            # FOR CATCHING BUGS:
+            assert p2.edge(temp) == tri2.edge(temp)
+            # We don't have to worry about changing gluings on edge (v2+2)%3 of the triangles with label l2
+            # We do have to worry about the following edge:
+            new_glue_e2 = (
+                3 - diagonal_glue_e2 - temp
+            )  # returns the edge which is neither diagonal_glue_e2 nor temp.
+            # This corresponded to the following old edge:
+            old_e2 = (
+                3 - e2 - temp
+            )  # Again this finds the edge which is neither e2 nor temp
+
+        # remember the old gluings.
+        old_opposite1 = s.opposite_edge(l1, old_e1)
+        old_opposite2 = s.opposite_edge(l2, old_e2)
+
+        # We make changes to the underlying surface
+        us = self
+
+        # Replace the triangles.
+        us.change_polygon(l1, tri1)
+        us.change_polygon(l2, tri2)
+        # Glue along the new diagonal of the quadrilateral
+        us.change_edge_gluing(l1, diagonal_glue_e1, l2, diagonal_glue_e2)
+        # Now we deal with that pair of opposite edges of the quadrilateral that need regluing.
+        # There are some special cases:
+        if old_opposite1 == (l2, old_e2):
+            # These opposite edges were glued to each other.
+            # Do the same in the new surface:
+            us.change_edge_gluing(l1, new_glue_e1, l2, new_glue_e2)
+        else:
+            if old_opposite1 == (l1, old_e1):
+                # That edge was "self-glued".
+                us.change_edge_gluing(l2, new_glue_e2, l2, new_glue_e2)
+            else:
+                # The edge (l1,old_e1) was glued in a standard way.
+                # That edge now corresponds to (l2,new_glue_e2):
+                us.change_edge_gluing(
+                    l2, new_glue_e2, old_opposite1[0], old_opposite1[1]
+                )
+            if old_opposite2 == (l2, old_e2):
+                # That edge was "self-glued".
+                us.change_edge_gluing(l1, new_glue_e1, l1, new_glue_e1)
+            else:
+                # The edge (l2,old_e2) was glued in a standard way.
+                # That edge now corresponds to (l1,new_glue_e1):
+                us.change_edge_gluing(
+                    l1, new_glue_e1, old_opposite2[0], old_opposite2[1]
+                )
+        return s
+
+
 
 class Surface_list(Surface):
     r"""
@@ -1102,7 +1375,7 @@ class Surface_list(Surface):
 
         if surface is None:
             if copy is not None:
-                raise ValueError("Cannot copy when surface was provided.")
+                raise ValueError("Cannot copy when no surface was provided.")
 
             if mutable is None:
                 mutable = True

@@ -186,4 +186,8 @@ class SubdivideEdgesDeformation(Deformation):
 
 
 class DelaunayDeformation(Deformation):
-    pass
+    # TODO: docstring
+    def __init__(self, domain, codomain, flip_sequence):
+        # TODO: docstring
+        super().__init__(domain, codomain)
+        self._flip_sequence = flip_sequence

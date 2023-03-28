@@ -6,12 +6,17 @@ jupyter:
       extension: .md
       format_name: markdown
       format_version: '1.3'
-      jupytext_version: 1.14.4
+      jupytext_version: 1.14.5
   kernelspec:
     display_name: SageMath 9.7
     language: sage
     name: sagemath
 ---
+
+```sage
+import jurigged
+watcher = jurigged.watch("/")
+```
 
 # Harmonic Differentials
 
@@ -119,13 +124,31 @@ scale = 1.163592571218269375302518142809178538757590879116270587397 / ((1 + N(sq
 T = T.apply_matrix(diagonal_matrix([scale, scale]))
 T = T.delaunay_triangulation()
 T.set_immutable()
+S = T
 
 T.plot()
 ```
 
 ```sage
-T = T.subdivide().subdivide_edges(3).subdivide().delaunay_triangulation()
-T.set_immutable()
+T = S.underlying_surface()
+deformation = T.subdivide()
+T = deformation.codomain()
+deformation = T.subdivide_edges(3) * deformation
+T = deformation.codomain()
+deformation = T.subdivide() * deformation
+T = deformation.codomain()
+deformation = T.delaunay_triangulation() * deformation
+T = deformation.codomain()
+
+from flatsurf import TranslationSurface
+
+T = TranslationSurface(T)
+T.plot(polygon_labels=False, edge_labels=False)
+```
+
+```sage
+TT = T.delaunay_triangulation()
+TT.plot(polygon_labels=False, edge_labels=False)
 ```
 
 ```sage

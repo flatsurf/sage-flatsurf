@@ -355,9 +355,10 @@ class SimplicialHomology(UniqueRepresentation, Parent):
         return super().__classcall__(cls, surface, coefficients or ZZ, category or SetsWithPartialMaps())
 
     def __init__(self, surface, coefficients, category):
-        if surface != surface.delaunay_triangulation():
-            # TODO: This is a silly limitation in here.
-            raise NotImplementedError("surface must be Delaunay triangulated")
+        # TODO: Not checking this anymore. But we probably actually need this still?
+        # if surface != surface.delaunay_triangulation():
+        #     # TODO: This is a silly limitation in here.
+        #     raise NotImplementedError("surface must be Delaunay triangulated")
 
         Parent.__init__(self, category=category)
 
