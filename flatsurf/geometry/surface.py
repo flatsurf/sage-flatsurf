@@ -79,7 +79,121 @@ from collections import deque
 from sage.structure.sage_object import SageObject
 
 
-class Surface(SageObject):
+class Surface_base(SageObject):
+    # TODO: Rename to Surface
+    # TODO: docstring
+    def polygon(self, label):
+        r"""
+        Return the polygon with the provided label.
+
+        This method must be overridden in subclasses.
+        """
+        raise NotImplementedError
+
+    def opposite_edge(self, l, e):
+        r"""
+        Given the label ``l`` of a polygon and an edge ``e`` in that polygon
+        returns the pair (``ll``, ``ee``) to which this edge is glued.
+
+        This method must be overridden in subclasses.
+        """
+        raise NotImplementedError
+
+    def num_polygons(self):
+        r"""
+        Return the number of polygons making up the surface, or
+        sage.rings.infinity.Infinity if the surface is infinite.
+
+        This is a generic method. On a finite surface it will be linear time in
+        the edges the first time it is run, then constant time (assuming no
+        mutation occurs).
+
+        Subclasses should consider overriding this method for increased
+        performance.
+        """
+        if self.is_finite():
+            lw = self.walker()
+            lw.find_all_labels()
+            return len(lw)
+        else:
+            from sage.rings.infinity import Infinity
+
+            return Infinity
+
+    def label_iterator(self):
+        r"""
+        Iterator over all polygon labels.
+
+        Subclasses should consider overriding this method for increased
+        performance.
+        """
+        return iter(self.walker())
+
+    def label_polygon_iterator(self):
+        r"""
+        Iterate over pairs (label, polygon).
+
+        Subclasses should consider overriding this method for increased
+        performance.
+        """
+        for label in self.label_iterator():
+            yield label, self.polygon(label)
+
+    def num_edges(self):
+        r"""
+        Return the total number of edges of all polygons used.
+        """
+        if self.is_finite():
+            try:
+                return self._cache["num_edges"]
+            except KeyError:
+                num_edges = sum(p.num_edges() for l, p in self.label_polygon_iterator())
+                self._cache["num_edges"] = num_edges
+                return num_edges
+        else:
+            from sage.rings.infinity import Infinity
+
+            return Infinity
+
+    def area(self):
+        r"""
+        Return the area of this surface.
+        """
+        if self.is_finite():
+            try:
+                return self._cache["area"]
+            except KeyError:
+                area = sum(p.area() for l, p in self.label_polygon_iterator())
+                self._cache["area"] = area
+                return area
+        raise NotImplementedError(
+            "area is not implemented for surfaces built from an infinite number of polygons"
+        )
+
+    def edge_iterator(self):
+        r"""
+        Iterate over the edges of polygons, which are pairs (l,e) where l is a polygon label, 0 <= e < N and N is the number of edges of the polygon with label l.
+        """
+        for label, polygon in self.label_polygon_iterator():
+            for edge in range(polygon.num_edges()):
+                yield label, edge
+
+    def edge_gluing_iterator(self):
+        r"""
+        Iterate over the ordered pairs of edges being glued.
+        """
+        for label_edge_pair in self.edge_iterator():
+            yield (
+                label_edge_pair,
+                self.opposite_edge(label_edge_pair[0], label_edge_pair[1]),
+            )
+
+    def base_label(self):
+        raise NotImplementedError
+
+
+class Surface(Surface_base):
+    # TODO: Rename to EuclideanSurface
     r"""
     Abstract base class of all surfaces that are built from a set of Euclidean
     polygons with edges identified. The identifications are compositions of
@@ -186,23 +300,6 @@ class Surface(SageObject):
                 return False
         return True
 
-    def polygon(self, label):
-        r"""
-        Return the polygon with the provided label.
-
-        This method must be overridden in subclasses.
-        """
-        raise NotImplementedError
-
-    def opposite_edge(self, l, e):
-        r"""
-        Given the label ``l`` of a polygon and an edge ``e`` in that polygon
-        returns the pair (``ll``, ``ee``) to which this edge is glued.
-
-        This method must be overridden in subclasses.
-        """
-        raise NotImplementedError
-
     def _change_polygon(self, label, new_polygon, gluing_list=None):
         r"""
         Internal method used by change_polygon(). Should not be called directly.
@@ -235,100 +332,9 @@ class Surface(SageObject):
         """
         raise NotImplementedError
 
-    def num_polygons(self):
-        r"""
-        Return the number of polygons making up the surface, or
-        sage.rings.infinity.Infinity if the surface is infinite.
-
-        This is a generic method. On a finite surface it will be linear time in
-        the edges the first time it is run, then constant time (assuming no
-        mutation occurs).
-
-        Subclasses should consider overriding this method for increased
-        performance.
-        """
-        if self.is_finite():
-            lw = self.walker()
-            lw.find_all_labels()
-            return len(lw)
-        else:
-            from sage.rings.infinity import Infinity
-
-            return Infinity
-
-    def label_iterator(self):
-        r"""
-        Iterator over all polygon labels.
-
-        Subclasses should consider overriding this method for increased
-        performance.
-        """
-        return iter(self.walker())
-
-    def label_polygon_iterator(self):
-        r"""
-        Iterate over pairs (label, polygon).
-
-        Subclasses should consider overriding this method for increased
-        performance.
-        """
-        for label in self.label_iterator():
-            yield label, self.polygon(label)
-
-    def num_edges(self):
-        r"""
-        Return the total number of edges of all polygons used.
-        """
-        if self.is_finite():
-            try:
-                return self._cache["num_edges"]
-            except KeyError:
-                num_edges = sum(p.num_edges() for l, p in self.label_polygon_iterator())
-                self._cache["num_edges"] = num_edges
-                return num_edges
-        else:
-            from sage.rings.infinity import Infinity
-
-            return Infinity
-
-    def area(self):
-        r"""
-        Return the area of this surface.
-        """
-        if self.is_finite():
-            try:
-                return self._cache["area"]
-            except KeyError:
-                area = sum(p.area() for l, p in self.label_polygon_iterator())
-                self._cache["area"] = area
-                return area
-        raise NotImplementedError(
-            "area is not implemented for surfaces built from an infinite number of polygons"
-        )
-
-    def edge_iterator(self):
-        r"""
-        Iterate over the edges of polygons, which are pairs (l,e) where l is a polygon label, 0 <= e < N and N is the number of edges of the polygon with label l.
-        """
-        for label, polygon in self.label_polygon_iterator():
-            for edge in range(polygon.num_edges()):
-                yield label, edge
-
-    def edge_gluing_iterator(self):
-        r"""
-        Iterate over the ordered pairs of edges being glued.
-        """
-        for label_edge_pair in self.edge_iterator():
-            yield (
-                label_edge_pair,
-                self.opposite_edge(label_edge_pair[0], label_edge_pair[1]),
-            )
-
     def base_ring(self):
         r"""
         The field on which the coordinates of ``self`` live.
-
-        This method must be overridden in subclasses!
         """
         return self._base_ring
 

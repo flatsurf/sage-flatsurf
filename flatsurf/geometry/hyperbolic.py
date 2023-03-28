@@ -211,6 +211,8 @@ We can also intersect objects that are not half spaces::
 
 import collections.abc
 
+from flatsurf.geometry.surface import Surface_base
+
 from sage.structure.parent import Parent
 from sage.structure.element import Element
 from sage.structure.unique_representation import UniqueRepresentation
@@ -13899,3 +13901,57 @@ class HyperbolicEdges(OrderedSet):
             rhs = rhs.geodesic()
 
         return HyperbolicHalfSpaces._lt_(lhs.left_half_space(), rhs.left_half_space())
+
+
+class HyperbolicTessellation(Surface_base):
+    r"""
+    A tessellation of the hyperbolic plane.
+
+    This is an abstract base class for hyperbolic tesselations. Concrete
+    tessellations must implement some basic functionality, see below.
+
+    EXAMPLES::
+
+        sage: from flatsurf import translation_surfaces
+        sage: from flatsurf.geometry.iso_delaunay_tessellation import IsoDelaunayTessellation
+        sage: torus = translation_surfaces.square_torus()
+        sage: tessellation = IsoDelaunayTessellation(torus)  # random output in some Python versions due to deprecation warnings
+
+    TESTS::
+
+        sage: from flatsurf.geometry.hyperbolic import HyperbolicTessellation
+        sage: isinstance(tessellation, HyperbolicTessellation)
+        True
+
+    """
+
+    def __init__(self, hyperbolic_plane):
+        r"""
+        TESTS::
+
+            sage: from flatsurf import translation_surfaces
+            sage: from flatsurf.geometry.iso_delaunay_tessellation import IsoDelaunayTessellation
+            sage: torus = translation_surfaces.square_torus()
+            sage: tessellation = IsoDelaunayTessellation(torus)
+            sage: TestSuite(tessellation).run()
+
+        """
+        if not isinstance(hyperbolic_plane, HyperbolicPlane):
+            raise TypeError("tessellation must be in a hyperbolic plane")
+
+        self._hyperbolic_plane = hyperbolic_plane
+
+    def hyperbolic_plane(self):
+        r"""
+        Return the hyperbolic plane this tessellation tessellates.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: from flatsurf.geometry.iso_delaunay_tessellation import IsoDelaunayTessellation
+            sage: torus = translation_surfaces.square_torus()
+            sage: tessellation = IsoDelaunayTessellation(torus)
+            sage: tessellation.hyperbolic_plane()
+
+        """
+        return self._hyperbolic_plane

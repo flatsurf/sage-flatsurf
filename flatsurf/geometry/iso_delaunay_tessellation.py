@@ -77,12 +77,11 @@ TODO: Write a text citing some references.
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # *********************************************************************
 
-from sage.structure.parent import Parent
-from flatsurf.geometry.hyperbolic import HyperbolicPlane
+from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicTessellation
 from sage.misc.cachefunc import cached_method
 
 
-class IsoDelaunayTessellation(Parent):
+class IsoDelaunayTessellation(HyperbolicTessellation):
     def __init__(self, surface):
         r"""
         TESTS:
@@ -109,7 +108,7 @@ class IsoDelaunayTessellation(Parent):
 
         self._surface_original = surface
 
-        self._hyperbolic_plane = HyperbolicPlane(surface.base_ring())
+        super().__init__(HyperbolicPlane(surface.base_ring()))
 
         self._surface = self._nondegenerate_delaunay_triangulation(surface)
         self._surface.set_immutable()
@@ -121,7 +120,7 @@ class IsoDelaunayTessellation(Parent):
             self.root(), self._surface, self.root().edges()[0]
         )
 
-    def _repr_(self):
+    def __repr__(self):
         return f"IsoDelaunay Tessellation of {self._surface_original}"
 
     def explore(self, limit=None, tessellation_face=None):
@@ -232,7 +231,7 @@ class IsoDelaunayTessellation(Parent):
             else:
                 break
 
-        cross_tessellation_face = self._hyperbolic_plane.polygon(
+        cross_tessellation_face = self.hyperbolic_plane().polygon(
             self._iso_delaunay_region(target_triangulation)
         )
 
@@ -280,7 +279,7 @@ class IsoDelaunayTessellation(Parent):
             sage: s = translation_surfaces.mcmullen_genus2_prototype(1, 1, 0, -1)
             sage: t = s.delaunay_triangulation(in_place=False)
             sage: idt = IsoDelaunayTessellation(t)
-            sage: z = idt._hyperbolic_plane(i)
+            sage: z = idt.hyperbolic_plane()(i)
             sage: idt.explore()
 
             sage: idt._dual_graph.vertices(sort=True)
@@ -564,7 +563,7 @@ class IsoDelaunayTessellation(Parent):
             {(6*a + 8)*(x^2 + y^2) + (-20*a - 28)*x + 14*a + 20 ≥ 0} ∩ {(-2*a - 3)*(x^2 + y^2) + (4*a + 6)*x + 2*a + 3 ≥ 0} ∩ {(4*a + 6)*(x^2 + y^2) - 4*a - 6 ≥ 0}
 
         """
-        point = self._hyperbolic_plane(point)
+        point = self.hyperbolic_plane()(point)
         x, y = point.coordinates()
 
         from sage.all import QQ
