@@ -82,7 +82,8 @@ class Singularity(SageObject):
             self._s.add(next)
             if limit is not None and len(self._s) > limit:
                 raise ValueError("Number of vertices in singularities exceeds limit.")
-            edge = self._ss.opposite_edge(next)
+            # TODO: Add a test. This allows Singularity on Surface and not only on SimilaritySurface
+            edge = self._ss.opposite_edge(*next)
             next = (edge[0], (edge[1] + 1) % self._ss.polygon(edge[0]).num_edges())
         self._s = frozenset(self._s)
 

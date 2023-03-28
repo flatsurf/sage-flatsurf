@@ -1317,8 +1317,10 @@ class FlatTriangulationConversion(Conversion):
         label, edge = self.section(face)
         coordinates = self.vector_space_conversion().section(q.vector(face))
         while edge != 0:
-            coordinates -= self.domain().edge(label, edge - 1)
+            coordinates += self.domain().polygon(label).edge(edge - 1)
             edge -= 1
+
+        coordinates += self.domain().polygon(label).vertex(0)
 
         from flatsurf.geometry.surface_objects import SurfacePoint
         return SurfacePoint(self.domain(), label, coordinates)
