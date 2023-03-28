@@ -1,10 +1,7 @@
-r"""
-Tests for optional packages used by sage-flatsurf.
-"""
-# ####################################################################
+# ********************************************************************
 #  This file is part of sage-flatsurf.
 #
-#        Copyright (C) 2021-2023 Julian Rüth
+#        Copyright (C) 2023 Julian Rüth
 #
 #  sage-flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -18,17 +15,17 @@ Tests for optional packages used by sage-flatsurf.
 #
 #  You should have received a copy of the GNU General Public License
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
-# ####################################################################
+# ********************************************************************
+from flatsurf.geometry.deformation import Deformation
 
-from sage.features import PythonModule
 
-cppyy_feature = PythonModule(
-    "cppyy", url="https://cppyy.readthedocs.io/en/latest/installation.html"
-)
-pyflatsurf_feature = PythonModule(
-    "pyflatsurf", url="https://github.com/flatsurf/flatsurf/#install-with-conda"
-)
+class Deformation_to_pyflatsurf(Deformation):
+    pass
 
-pyeantic_feature = PythonModule(
-    "pyeantic", url="https://github.com/flatsurf/e-antic/#install-with-conda"
-)
+
+class Deformation_from_pyflatsurf(Deformation):
+    pass
+
+
+class Deformation_pyflatsurf(Deformation):
+    pass

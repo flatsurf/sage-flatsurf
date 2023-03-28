@@ -78,6 +78,8 @@ from collections import deque
 
 from sage.structure.sage_object import SageObject
 
+from sage.misc.cachefunc import cached_method
+
 
 class Surface(SageObject):
     r"""
@@ -87,7 +89,7 @@ class Surface(SageObject):
     is oriented.
 
     Concrete implementations of a surface must implement at least
-    :meth:`polygon` and :meth:`opposite_edge`.
+
 
     To be able to modify a surface, subclasses should also implement
     :meth:`_change_polygon`, :meth:`_set_edge_pairing`, :meth:`_add_polygon`,
@@ -194,10 +196,10 @@ class Surface(SageObject):
         """
         raise NotImplementedError
 
-    def opposite_edge(self, l, e):
+    def opposite_edge(self, label, e):
         r"""
-        Given the label ``l`` of a polygon and an edge ``e`` in that polygon
-        returns the pair (``ll``, ``ee``) to which this edge is glued.
+        Given the label ``label`` of a polygon and an edge ``e`` in that
+        polygon returns the pair (``ll``, ``ee``) to which this edge is glued.
 
         This method must be overridden in subclasses.
         """
@@ -283,7 +285,7 @@ class Surface(SageObject):
             try:
                 return self._cache["num_edges"]
             except KeyError:
-                num_edges = sum(p.num_edges() for l, p in self.label_polygon_iterator())
+                num_edges = sum(p.num_edges() for label, p in self.label_polygon_iterator())
                 self._cache["num_edges"] = num_edges
                 return num_edges
         else:
@@ -299,7 +301,7 @@ class Surface(SageObject):
             try:
                 return self._cache["area"]
             except KeyError:
-                area = sum(p.area() for l, p in self.label_polygon_iterator())
+                area = sum(p.area() for label, p in self.label_polygon_iterator())
                 self._cache["area"] = area
                 return area
         raise NotImplementedError(
@@ -549,7 +551,7 @@ class Surface(SageObject):
 
         """
         labels = list(self.label_iterator())
-        polygons = [self.polygon(l) for l in labels]
+        polygons = [self.polygon(label) for label in labels]
 
         subdivisions = [p.subdivide() for p in polygons]
 
@@ -578,7 +580,11 @@ class Surface(SageObject):
                 if opposite is not None:
                     surface.change_edge_gluing((label, p), 0, opposite, 0)
 
-        return surface
+        surface.set_immutable()
+
+        from flatsurf.geometry.deformation import SubdivideDeformation
+
+        return SubdivideDeformation(self, surface)
 
     def subdivide_edges(self, parts=2):
         r"""
@@ -634,7 +640,7 @@ class Surface(SageObject):
 
         """
         labels = list(self.label_iterator())
-        polygons = [self.polygon(l) for l in labels]
+        polygons = [self.polygon(label) for label in labels]
 
         subdivideds = [p.subdivide_edges(parts=parts) for p in polygons]
 
@@ -661,25 +667,23 @@ class Surface(SageObject):
                             opposite[1] * parts + (parts - p - 1),
                         )
 
-        return surface
+        surface.set_immutable()
 
+        from flatsurf.geometry.deformation import SubdivideEdgesDeformation
+
+        return SubdivideEdgesDeformation(self, surface)
+
+    @cached_method
     def __hash__(self):
         r"""
         Hash compatible with equals.
         """
-        if hasattr(self, "_hash"):
-            return self._hash
         if self.is_mutable():
             raise ValueError("Attempting to hash mutable surface.")
         if not self.is_finite():
             raise ValueError("Attempting to hash infinite surface.")
-        h = 73 + 17 * hash(self.base_ring()) + 23 * hash(self.base_label())
-        for pair in self.label_polygon_iterator():
-            h = h + 7 * hash(pair)
-        for edgepair in self.edge_gluing_iterator():
-            h = h + 3 * hash(edgepair)
-        self._hash = h
-        return h
+
+        return hash((self.base_ring(), self.base_label(), tuple(self.label_polygon_iterator()), tuple(self.edge_gluing_iterator())))
 
     def __eq__(self, other):
         r"""
@@ -850,6 +854,79 @@ class Surface(SageObject):
                 "polygon(label) does not return a ConvexPolygon when label="
                 + str(label),
             )
+
+    def _pyflatsurf(self):
+        r"""
+        Return a surface backed by libflatsurf that is isomorphic to this
+        surface and an isomorphism to that surface.
+
+        EXAMPLES::
+
+            sage: from flatsurf import polygons
+            sage: from flatsurf.geometry.surface import Surface_dict
+
+            sage: S = Surface_dict(QQ)
+            sage: S.add_polygon(polygons(vertices=[(0, 0), (1, 0), (1, 1)]), label=0)
+            0
+            sage: S.add_polygon(polygons(vertices=[(0, 0), (1, 1), (0, 1)]), label=1)
+            1
+
+            sage: S.set_edge_pairing(0, 0, 1, 1)
+            sage: S.set_edge_pairing(0, 1, 1, 2)
+            sage: S.set_edge_pairing(0, 2, 1, 0)
+
+            sage: S._to_pyflatsurf()  # optional: pyflatsurf
+
+        """
+        from flatsurf.geometry.pyflatsurf.surface import Surface_pyflatsurf
+
+        return Surface_pyflatsurf._from_flatsurf(self)
+
+    def singularity(self, label, v, limit=None):
+        # TODO: Document. Have a look at SimilaritySurface.singularity()
+        from flatsurf.geometry.surface_objects import Singularity
+
+        return Singularity(self, label, v, limit)
+
+    def edge_transformation(self, p, e):
+        # TODO: Copied from SimilaritySurface
+        r"""
+        Return the similarity bringing the provided edge to the opposite edge.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.similarity_surface_generators import SimilaritySurfaceGenerators
+            sage: s = SimilaritySurfaceGenerators.example()
+            sage: print(s.polygon(0))
+            Polygon: (0, 0), (2, -2), (2, 0)
+            sage: print(s.polygon(1))
+            Polygon: (0, 0), (2, 0), (1, 3)
+            sage: print(s.opposite_edge(0,0))
+            (1, 1)
+            sage: g = s.edge_transformation(0,0)
+            sage: g((0,0))
+            (1, 3)
+            sage: g((2,-2))
+            (2, 0)
+        """
+        from .similarity import SimilarityGroup
+        G = SimilarityGroup(self.base_ring())
+        q = self.polygon(p)
+        a = q.vertex(e)
+        b = q.vertex(e + 1)
+        # This is the similarity carrying the origin to a and (1,0) to b:
+        g = G(b[0] - a[0], b[1] - a[1], a[0], a[1])
+
+        pp, ee = self.opposite_edge(p, e)
+        qq = self.polygon(pp)
+        # Be careful here: opposite vertices are identified
+        aa = qq.vertex(ee + 1)
+        bb = qq.vertex(ee)
+        # This is the similarity carrying the origin to aa and (1,0) to bb:
+        gg = G(bb[0] - aa[0], bb[1] - aa[1], aa[0], aa[1])
+
+        # This is the similarity carrying (a,b) to (aa,bb):
+        return gg / g
 
 
 class Surface_list(Surface):
@@ -1903,8 +1980,8 @@ class LabelWalker:
             if label in self._label_dict:
                 return self._label_dict[label]
             for i in range(limit):
-                l = self.find_a_new_label()
-                if label == l:
+                new_label = self.find_a_new_label()
+                if label == new_label:
                     return self._label_dict[label]
             raise ValueError(
                 "Failed to find label even after searching. limit=" + str(limit)

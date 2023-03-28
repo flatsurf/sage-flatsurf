@@ -76,17 +76,17 @@ class ConeSurfaceToPolyhedronMap(SageObject):
 def polyhedron_to_cone_surface(polyhedron, use_AA=False, scaling_factor=ZZ(1)):
     r"""Construct the Euclidean Cone Surface associated to the surface of a polyhedron and a map
     from the cone surface to the polyhedron.
-    
+
     INPUT:
 
     - ``polyhedron`` -- A 3-dimensional polyhedron, which should be define over something that coerces into AA
 
     - ``use_AA`` -- If True, the surface returned will be defined over AA. If false, the algorithm will find the smallest NumberField and write the field there.
-    
+
     - ``scaling_factor`` -- The surface returned will have a metric scaled by multiplication by this factor (compared with the original polyhendron). This can be used to produce a surface defined over a smaller NumberField.
-    
+
     OUTPUT:
-    
+
     A pair consisting of a ConeSurface and a ConeSurfaceToPolyhedronMap.
 
     EXAMPLES::

@@ -613,7 +613,6 @@ class CartesianPathPlot(GraphicPrimitive):
 
             bbox = Bbox.null()
 
-            pos = None
             for command in self._commands:
                 if command.code in ["MOVETO", "LINETO"]:
                     pos = command.args

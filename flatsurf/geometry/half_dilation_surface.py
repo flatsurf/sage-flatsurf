@@ -24,10 +24,7 @@ from flatsurf.geometry.polygon import ConvexPolygons
 
 from sage.env import SAGE_VERSION
 
-if SAGE_VERSION >= "8.2":
-    from sage.structure.element import is_Matrix
-else:
-    from sage.matrix.matrix import is_Matrix
+from sage.structure.element import is_Matrix
 
 
 class HalfDilationSurface(SimilaritySurface):

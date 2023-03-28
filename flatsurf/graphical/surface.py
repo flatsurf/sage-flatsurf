@@ -426,21 +426,21 @@ class GraphicalSurface:
         if limit is None:
             assert self._ss.is_finite()
             if adjacent:
-                for l, poly in self._ss.walker().label_polygon_iterator():
+                for label, poly in self._ss.walker().label_polygon_iterator():
                     for e in range(poly.num_edges()):
-                        l2, e2 = self._ss.opposite_edge(l, e)
+                        l2, e2 = self._ss.opposite_edge(label, e)
                         if not self.is_visible(l2):
-                            self.make_adjacent(l, e)
+                            self.make_adjacent(label, e)
             else:
                 from flatsurf.geometry.similarity import SimilarityGroup
 
                 T = SimilarityGroup(self._ss.base_ring())
-                for l in self._ss.label_iterator():
-                    if not self.is_visible(l):
+                for label in self._ss.label_iterator():
+                    if not self.is_visible(label):
                         if self._default_position_function is None:
                             # No reasonable way to display the polygon, so we do this hack:
-                            g = self.graphical_polygon(l)
-                            poly = self._ss.polygon(l)
+                            g = self.graphical_polygon(label)
+                            poly = self._ss.polygon(label)
                             sxmax = self.xmax()
                             pxmin = g.xmin()
                             t = T(
@@ -450,16 +450,16 @@ class GraphicalSurface:
                                 )
                             )
                             g.set_transformation(t)
-                        self.make_visible(l)
+                        self.make_visible(label)
         else:
             assert limit > 0
             if adjacent:
                 i = 0
-                for l, poly in self._ss.walker().label_polygon_iterator():
+                for label, poly in self._ss.walker().label_polygon_iterator():
                     for e in range(poly.num_edges()):
-                        l2, e2 = self._ss.opposite_edge(l, e)
+                        l2, e2 = self._ss.opposite_edge(label, e)
                         if not self.is_visible(l2):
-                            self.make_adjacent(l, e)
+                            self.make_adjacent(label, e)
                             i = i + 1
                             if i >= limit:
                                 return
@@ -468,12 +468,12 @@ class GraphicalSurface:
 
                 T = SimilarityGroup(self._ss.base_ring())
                 i = 0
-                for l in self._ss.label_iterator():
-                    if not self.is_visible(l):
+                for label in self._ss.label_iterator():
+                    if not self.is_visible(label):
                         if self._default_position_function is None:
                             # No reasonable way to display the polygon, so we do this hack:
-                            g = self.graphical_polygon(l)
-                            poly = self._ss.polygon(l)
+                            g = self.graphical_polygon(label)
+                            poly = self._ss.polygon(label)
                             sxmax = self.xmax()
                             pxmin = g.xmin()
                             t = T(
@@ -483,7 +483,7 @@ class GraphicalSurface:
                                 )
                             )
                             g.set_transformation(t)
-                        self.make_visible(l)
+                        self.make_visible(label)
                         i = i + 1
                         if i >= limit:
                             return
