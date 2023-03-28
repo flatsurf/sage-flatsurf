@@ -118,16 +118,22 @@ omega.cauchy_residue(vertex, -1)
 
 ```sage
 from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology, SimplicialCohomology
-T = translation_surfaces.regular_octagon().copy(mutable=True)
+S = translation_surfaces.regular_octagon().copy(mutable=True)
 
 scale = 1.163592571218269375302518142809178538757590879116270587397 / ((1 + N(sqrt(2)))/2)
-T = T.apply_matrix(diagonal_matrix([scale, scale]))
-T = T.delaunay_triangulation()
-T.set_immutable()
-S = T
+S = S.apply_matrix(diagonal_matrix([scale, scale]))
+S = S.delaunay_triangulation()
+S.set_immutable()
 
-T.plot()
+S.plot()
 ```
+
+```sage
+HS = SimplicialCohomology(S)
+a, b, c, d = HS.homology().gens()
+```
+
+To make computations more stable, we use a finer triangulation on the octagon.
 
 ```sage
 T = S.underlying_surface()
@@ -147,95 +153,36 @@ T.plot(polygon_labels=False, edge_labels=False)
 ```
 
 ```sage
-TT = T.delaunay_triangulation()
-TT.plot(polygon_labels=False, edge_labels=False)
+HT = SimplicialCohomology(T)
 ```
 
-```sage
-H = SimplicialHomology(T)
-a, b, c, d = H.gens()
-```
-
-We create a differential whose integral along `a` is 1 and 0 on the other generators of homology. Note that `a` can be written as the edge 0 on the polygon 0, i.e., the right edge of that polygon:
+We create a differential whose integral along certain paths (in the original surface) has prescribed values:
 
 ```sage
-a
-```
-
-```sage
-H = SimplicialCohomology(T)
-f = H({a: 1})
+f = deformation(HS({
+    a: -1.64556839529346,
+    b: 0,
+    c: 0.681616747143081,
+    d: -2.32718514243654,
+}))
 ```
 
 ```sage
 Omega = HarmonicDifferentials(T)
 omega = Omega(f, prec=2, check=False)
+```
+
+We run some basic checks on the differential to determine whether it actually is a good approximation of a harmonic differential.
+
+```sage
 omega.error(verbose=True)
 ```
 
-## Evaluating the Quality of our Differential
-
-```sage
-S = translation_surfaces.regular_octagon().copy(mutable=True)
-scale = 1.163592571218269375302518142809178538757590879116270587397 / ((1 + N(sqrt(2)))/2)
-S = S.apply_matrix(diagonal_matrix([scale, scale]))
-S = S.delaunay_triangulation()
-S.set_immutable()
-```
-
-We construct a map from the octagon to the subdivided octagon by finding the singularity in the subdivided octagon and then the triangles adjacent to the singularity that contains the vertical direction.
-
-```sage
-singularities = [(α, adjacents) for (α, adjacents) in T.angles(return_adjacent_edges=True) if α != 1]
-```
-
-```sage
-assert len(singularities) == 1 and singularities[0][0] == 3
-```
-
-```sage
-singularities = singularities[0][1]
-```
-
-```sage
-saddle_connections = T.saddle_connections(scale**2 + 1e-6)
-```
-
-```sage
-saddle_connections = [ sc for sc in saddle_connections if sc.direction() == vector((0, 1))]
-```
-
-```sage
-saddle_connections = [sc for sc in saddle_connections if sc.start_data() in singularities]
-```
-
-```sage
-reference = saddle_connections[0]
-```
-
-```sage
-assert abs(reference.length() - scale / 3) < 1e-6
-```
-
-```sage
-reference = reference.start_data()
-```
-
 ### An Explicit Series for the Octagon
-We can also provide the series for the Voronoi cells explicitly if we don't want to solve for a cohomology class.
+We can provide the series for the Voronoi cells explicitly if we don't want to solve for a cohomology class.
 
 ```sage
-from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology, SimplicialCohomology
-T = translation_surfaces.regular_octagon().copy(mutable=True)
-
-scale = 1.163592571218269375302518142809178538757590879116270587397 / ((1 + N(sqrt(2)))/2)
-
-T = T.apply_matrix(diagonal_matrix([scale, scale]))
-show(T.polygon(0).plot())
-T = T.delaunay_triangulation()
-T.set_immutable()
-
-Omega = HarmonicDifferentials(T)
+Omega = HarmonicDifferentials(S)
 ```
 
 ```sage
@@ -244,9 +191,11 @@ f = z^2 - 1/9*z^10 + 20/1377*z^18 - 14/6885*z^26 + 2044/6952473*z^34 - 111097/25
 ```
 
 ```sage
-omega = Omega({triangle: f for triangle in T.label_iterator()})
+omega = Omega({triangle: f for triangle in S.label_iterator()})
 ```
 
+We integrate to find the cohomology class this corresponds to.
+
 ```sage
-omega.error(verbose=True)
+{gen: omega.integrate(gen).real() for gen in HS.homology().gens()}
 ```

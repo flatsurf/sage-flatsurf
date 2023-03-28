@@ -98,11 +98,43 @@ class Deformation:
         if isinstance(x, SurfacePoint):
             return self._image_point(x)
 
+        from flatsurf.geometry.homology import SimplicialHomologyClass
+        if isinstance(x, SimplicialHomologyClass):
+            return self._image_homology(x)
+
+        from flatsurf.geometry.cohomology import SimplicialCohomologyClass
+        if isinstance(x, SimplicialCohomologyClass):
+            return self._image_cohomology(x)
+
         raise NotImplementedError(f"cannot map a {type(x)} through a deformation yet")
 
     def _image_point(self, p):
         # TODO: docstring
         raise NotImplementedError(f"a {type(self)} cannot compute the image of a point yet")
+
+    def _image_homology(self, γ):
+        # TODO: docstring
+        raise NotImplementedError(f"a {type(self)} cannot compute the image of a homology class yet")
+
+    def _image_cohomology(self, f):
+        # TODO: docstring
+        from sage.all import ZZ, matrix
+
+        from flatsurf.geometry.homology import SimplicialHomology
+
+        # TODO: Make homology/cohomology work without having an explicit TranslationSurface (but only a Surface.)
+        from flatsurf import TranslationSurface
+
+        domain_homology = SimplicialHomology(TranslationSurface(self.domain()))
+        codomain_homology = SimplicialHomology(TranslationSurface(self.codomain()))
+
+        M = matrix(ZZ, [
+            [gamma.coefficient(gen) for gen in codomain_homology.gens()]
+            for gamma in [self(gen) for gen in domain_homology.gens()]
+        ])
+
+        values = M.solve_right([f(gen) for gen in codomain_homology.gens()])
+        return self.codomain({gen: value for (gen, value) in zip(codomain_homology.gens(), values)})
 
     def __mul__(self, other):
         # TODO: docstring
@@ -122,9 +154,9 @@ class CompositionDeformation(Deformation):
         self._lhs = lhs
         self._rhs = rhs
 
-    def _image_point(self, p):
+    def __call__(self, x):
         # TODO: docstring
-        return self._lhs(self._rhs(p))
+        return self._lhs(self._rhs(x))
 
 
 class SubdivideDeformation(Deformation):
