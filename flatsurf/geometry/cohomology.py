@@ -34,7 +34,7 @@ class SimplicialCohomologyClass(Element):
         self._values = values
 
     def _repr_(self):
-        return "[?]"
+        return repr(self._values)
 
     def __call__(self, homology):
         r"""

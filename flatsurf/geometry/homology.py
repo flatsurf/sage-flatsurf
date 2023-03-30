@@ -110,6 +110,7 @@ class SimplicialHomologyClass(Element):
 
         for g, c in zip(gen._homology(), self._homology()):
             if g:
+                assert g == 1
                 return c
 
         raise ValueError("gen must be a generator of homology")
@@ -407,7 +408,11 @@ class SimplicialHomology(UniqueRepresentation, Parent):
         if dimension == 0:
             return tuple(set(self._surface.singularity(*edge) for edge in self._surface.edge_iterator()))
         if dimension == 1:
-            return tuple(edge for edge in self._surface.edge_iterator() if edge[0] < self._surface.opposite_edge(*edge)[0])
+            simplices = set()
+            for edge in self._surface.edge_iterator():
+                if self._surface.opposite_edge(edge) not in simplices:
+                    simplices.add(edge)
+            return tuple(simplices)
         if dimension == 2:
             return tuple(self._surface.label_iterator())
 
@@ -458,7 +463,7 @@ class SimplicialHomology(UniqueRepresentation, Parent):
             C1 = self.chain_module(dimension=1)
             boundary = C1.zero()
             for face, coefficient in chain:
-                for edge in range(3):
+                for edge in range(self._surface.polygon(face).num_edges()):
                     if (face, edge) in C1.indices():
                         boundary += coefficient * C1((face, edge))
                     else:
@@ -527,7 +532,10 @@ class SimplicialHomology(UniqueRepresentation, Parent):
 
         from sage.all import vector
         from_homology = homology.module_morphism(function=lambda x: F.from_vector(vector(list(x.lift().lift()))), codomain=F)
-        to_homology = F.module_morphism(function=lambda x: homology(x.dense_coefficient_list()), codomain=homology)
+        to_homology = F.module_morphism(function=lambda x: homology(cycles(x.dense_coefficient_list(order=F.get_order()))), codomain=homology)
+
+        for gen in homology.gens():
+            assert to_homology(from_homology(gen)) == gen
 
         return homology, from_homology, to_homology
 

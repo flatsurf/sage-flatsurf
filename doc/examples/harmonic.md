@@ -125,6 +125,9 @@ S = S.apply_matrix(diagonal_matrix([scale, scale]))
 S = S.delaunay_triangulation()
 S.set_immutable()
 
+from flatsurf import TranslationSurface
+S = TranslationSurface(S)
+
 S.plot()
 ```
 
@@ -165,6 +168,31 @@ f = deformation(HS({
     c: 0.681616747143081,
     d: -2.32718514243654,
 }))
+```
+
+```sage
+Q = translation_surfaces.square_torus().triangulate()
+Q.plot()
+```
+
+```sage
+labels = list(Q.label_iterator())
+```
+
+```sage
+Q.triangle_flip(0, 2).polygon(labels[1]).plot()
+```
+
+```sage
+Q.triangle_flip(0, 0).triangle_flip(0, 1).triangle_flip(0, 0).triangle_flip(0, 1).plot()
+```
+
+```sage
+Q.triangle_flip(labels[0], 1).plot()
+```
+
+```sage
+Q.triangle_flip(labels[1], 0).plot()
 ```
 
 ```sage
