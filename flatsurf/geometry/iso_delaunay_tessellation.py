@@ -944,6 +944,11 @@ class IsoDelaunayTessellation(HyperbolicTessellation):
 
         edges_seen = set()
         for face in self._dual_graph.vertices(sort=False):
+            mod, _ = self._dual_graph.get_vertex(face)
+            if mod is not None:
+                raise NotImplementedError
+
+            # TODO: HyperbolicConvexPolygon.edges() should have an option to return segments ending at marked points (that should be the default.)
             for edge in face.edges():
                 if edge in edges_seen:
                     continue
@@ -956,7 +961,12 @@ class IsoDelaunayTessellation(HyperbolicTessellation):
                     edges_seen.add(next_edge)
                     next_edge, next_face = step(next_edge, next_face)
 
+        for (_, _, (tessellation_edges, _)) in self._dual_graph.edges(sort=False, labels=True):
+            if len(tessellation_edges) == 1:
+                nvertices += 1
+
         chi = nvertices - nedges + nfaces
+        assert chi % 2 == 0
         return (2 - chi)//2
 
     def cusps(self):
