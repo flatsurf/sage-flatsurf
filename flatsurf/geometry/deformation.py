@@ -64,6 +64,8 @@ A non-singular point::
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ********************************************************************
 
+from sage.misc.cachefunc import cached_method
+
 
 class Deformation:
     # TODO: docstring
@@ -192,7 +194,7 @@ class SubdivideDeformation(Deformation):
             return v[0] * w[1] >= w[0] * v[1]
 
         initial_edge = ((label, 0), 0)
-        mid_edge = ((label, self.codomain().num_polygons() - 1), 1)
+        mid_edge = ((label, self.codomain().num_polygons() // self.domain().num_polygons() - 1), 1)
 
         face = mid_edge if ccw(self.codomain().polygon(mid_edge[0]).edge(mid_edge[1]), coordinates) else initial_edge
         face = to_pyflatsurf(face)
@@ -289,6 +291,7 @@ class DelaunayDeformation(Deformation):
         super().__init__(domain, codomain)
         self._flip_sequence = flip_sequence
 
+    @cached_method
     def _flip_deformation(self):
         deformation = IdentityDeformation(self.domain())
         domain = self.domain()
@@ -303,9 +306,29 @@ class DelaunayDeformation(Deformation):
 
         return deformation
 
+    @cached_method
+    def _image_homology_gen(self, gen):
+        print("computing image of", gen)
+        return self._flip_deformation()(gen)
+
+    def _image_point(self, p):
+        return self._flip_deformation()(p)
+
     def _image_homology(self, γ):
         # TODO: docstring
-        return self._flip_deformation()(γ)
+        from flatsurf.geometry.homology import SimplicialHomology
+        # TODO: Make homology/cohomology work without having an explicit TranslationSurface (but only a Surface.)
+        from flatsurf import TranslationSurface
+        codomain_homology = SimplicialHomology(TranslationSurface(self.codomain()))
+        domain_homology = SimplicialHomology(TranslationSurface(self.domain()))
+
+        image = codomain_homology()
+
+        for gen in domain_homology.gens():
+            coefficient = γ.coefficient(gen)
+            image += coefficient * self._image_homology_gen(gen)
+
+        return image
 
 
 class TriangleFlipDeformation(Deformation):
@@ -317,7 +340,24 @@ class TriangleFlipDeformation(Deformation):
 
     def _image_homology(self, γ):
         # TODO: docstring
-        # TDOO: This is hack that won't work in general.
+        from flatsurf.geometry.homology import SimplicialHomology
+        # TODO: Make homology/cohomology work without having an explicit TranslationSurface (but only a Surface.)
+        from flatsurf import TranslationSurface
+        codomain_homology = SimplicialHomology(TranslationSurface(self.codomain()))
+        domain_homology = SimplicialHomology(TranslationSurface(self.domain()))
+
+        image = codomain_homology()
+
+        for gen in domain_homology.gens():
+            coefficient = γ.coefficient(gen)
+            image += coefficient * self._image_homology_gen(gen)
+
+        return image
+
+    @cached_method
+    def _image_homology_gen(self, gen):
+        # TODO: docstring
+        # TDOO: This is hack that won't work in general. (E.g., not for the square torus.)
         from flatsurf.geometry.homology import SimplicialHomology
         # TODO: Make homology/cohomology work without having an explicit TranslationSurface (but only a Surface.)
         from flatsurf import TranslationSurface
@@ -358,15 +398,36 @@ class TriangleFlipDeformation(Deformation):
 
             return H_codomain.chain_module()((label, edge))
 
-        image = H_codomain()
-        for gen in H_domain.gens():
-            assert γ.parent() is gen.parent()
-            coefficient = γ.coefficient(gen)
+        unaffected_chain = H_codomain.chain_module()()
+        for label, edge in gen._path():
+            unaffected_chain += to_unaffected_codomain_chain(label, edge)
 
-            unaffected_chain = H_codomain.chain_module()()
-            for label, edge in gen._path():
-                unaffected_chain += to_unaffected_codomain_chain(label, edge)
+        return H_codomain(unaffected_chain)
 
-            image += coefficient * H_codomain(unaffected_chain)
+    def _image_point(self, p):
+        # TODO: This is a dumb way to do this (and wrong for non-translation surfaces?)
 
-        return image
+        from flatsurf.geometry.surface_objects import SurfacePoint
+        affected = {self._flip[0], self.domain().opposite_edge(*self._flip)[0]}
+
+        for label in p.labels():
+            if label not in affected:
+                return SurfacePoint(self.codomain(), label, next(iter(p.coordinates(label))))
+
+        for label in p.labels():
+            polygon = self.domain().polygon(label)
+            for edge in range(polygon.num_edges()):
+                cross_label, cross_edge = self.domain().opposite_edge(label, edge)
+                if cross_label in affected:
+                    continue
+
+                Δ = next(iter(p.coordinates(label))) - polygon.vertex(edge)
+                recross_label, recross_edge = self.codomain().opposite_edge(cross_label, cross_edge)
+                recross_polygon = self.codomain().polygon(recross_label)
+                recross_position = recross_polygon.vertex(recross_edge) + Δ
+                if not recross_polygon.get_point_position(recross_position).is_inside():
+                    continue
+
+                return SurfacePoint(self.codomain(), recross_label, recross_position)
+
+        raise NotImplementedError

@@ -1965,7 +1965,7 @@ class ConvexPolygon(Polygon):
             raise ValueError("parts must be a positive integer")
 
         steps = [e / parts for e in self.edges()]
-        return self.parent()(edges=[e for e in steps for p in range(parts)])
+        return self.parent()(edges=[e for e in steps for p in range(parts)]).translate(self.vertex(0))
 
 
 class Polygons(UniqueRepresentation, Parent):

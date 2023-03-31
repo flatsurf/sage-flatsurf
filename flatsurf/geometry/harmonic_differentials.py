@@ -340,6 +340,7 @@ class HarmonicDifferential(Element):
 
     @cached_method
     def precision(self):
+        # TODO: This is the number of coefficients of the power series but we use it as bit precision?
         precisions = set(series.precision_absolute() for series in self._series.values())
         assert len(precisions) == 1
         return next(iter(precisions))
@@ -1626,6 +1627,7 @@ class PowerSeriesConstraints:
 
         self._surface = surface
         self._prec = prec
+        # TODO: The default value tends to be gigantic!
         self._bitprec = bitprec or ceil(log(factorial(prec), 2) + 53)
         self._geometry = geometry or GeometricPrimitives(surface)
         self._constraints = []
@@ -1704,16 +1706,20 @@ class PowerSeriesConstraints:
             Ring of Power Series Coefficients over Complex Field with 56 bits of precision
 
         """
-        return SymbolicCoefficientRing(self._surface, base_ring=base_ring or self.complex_field())
+        # return SymbolicCoefficientRing(self._surface, base_ring=base_ring or self.complex_field())
+        from sage.all import ComplexField
+        return SymbolicCoefficientRing(self._surface, base_ring=base_ring or ComplexField(54))
 
     @cached_method
     def complex_field(self):
         from sage.all import ComplexField
+        return ComplexField(54)
         return ComplexField(self._bitprec)
 
     @cached_method
     def real_field(self):
         from sage.all import RealField
+        return RealField(54)
         return RealField(self._bitprec)
 
     @cached_method
@@ -2023,7 +2029,9 @@ class PowerSeriesConstraints:
         z = self.complex_field().one()
 
         from sage.all import factorial
-        factor = self.complex_field()(factorial(derivative))
+        # factor = self.complex_field()(factorial(derivative))
+        from sage.all import ComplexField
+        factor = ComplexField(54)(factorial(derivative))
 
         for k in range(derivative, self._prec):
             value += factor * self.gen(triangle, k) * z
