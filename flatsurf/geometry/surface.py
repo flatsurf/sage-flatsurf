@@ -995,6 +995,18 @@ class Surface(SageObject):
         flipped = TranslationSurface(self).triangle_flip(*args, **kwargs).underlying_surface()
         return flipped
 
+    def point(self, label, point):
+        from flatsurf.geometry.surface_objects import SurfacePoint
+        return SurfacePoint(self, label, point)
+
+    def graphical_surface(self):
+        from flatsurf import TranslationSurface
+        return TranslationSurface(self).graphical_surface()
+
+    def plot(self, *args, **kwargs):
+        from flatsurf import TranslationSurface
+        return TranslationSurface(self).plot(*args, **kwargs)
+
 
 class Surface_list(Surface):
     r"""
