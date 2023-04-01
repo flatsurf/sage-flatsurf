@@ -27,6 +27,12 @@ from sage.structure.unique_representation import UniqueRepresentation
 from sage.misc.cachefunc import cached_method
 
 
+# TODO: We should have absolute and relative (to a subset of vertices) homology.
+# TODO: We implement everything in terms of generators given by the edges of
+# the polygons. However, we should have views that pretend that the generators
+# are paths between adjacent polygons, and a view with generators given by
+# paths between midpoints of edges of polygons.
+
 class SimplicialHomologyClass(Element):
     # TODO: Use the algorithm from GL2ROrbitClosure._spanning_tree to compute a basis of homology and a projection map.
     # TODO: Use https://github.com/flatsurf/sage-flatsurf/pull/114/files to
