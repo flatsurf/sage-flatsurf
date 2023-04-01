@@ -124,11 +124,8 @@ class Deformation:
 
         from flatsurf.geometry.homology import SimplicialHomology
 
-        # TODO: Make homology/cohomology work without having an explicit TranslationSurface (but only a Surface.)
-        from flatsurf import TranslationSurface
-
-        domain_homology = SimplicialHomology(TranslationSurface(self.domain()))
-        codomain_homology = SimplicialHomology(TranslationSurface(self.codomain()))
+        domain_homology = SimplicialHomology(self.domain())
+        codomain_homology = SimplicialHomology(self.codomain())
 
         M = matrix(ZZ, [
             [domain_homology_gen_image.coefficient(codomain_homology_gen) for codomain_homology_gen in codomain_homology.gens()]
@@ -139,7 +136,7 @@ class Deformation:
         values = M.solve_right(vector([f(gen) for gen in domain_homology.gens()]))
 
         from flatsurf.geometry.cohomology import SimplicialCohomology
-        codomain_cohomology = SimplicialCohomology(TranslationSurface(self.codomain()))
+        codomain_cohomology = SimplicialCohomology(self.codomain())
         return codomain_cohomology({gen: value for (gen, value) in zip(codomain_homology.gens(), values)})
 
     def __mul__(self, other):
@@ -210,10 +207,8 @@ class SubdivideDeformation(Deformation):
         # TODO: homology should allow to write this code more naturally somehow
         # TODO: docstring
         from flatsurf.geometry.homology import SimplicialHomology
-        # TODO: Make homology/cohomology work without having an explicit TranslationSurface (but only a Surface.)
-        from flatsurf import TranslationSurface
 
-        H = SimplicialHomology(TranslationSurface(self.codomain()))
+        H = SimplicialHomology(self.codomain())
         C = H.chain_module(dimension=1)
 
         image = H()
@@ -256,6 +251,9 @@ class SubdivideEdgesDeformation(Deformation):
         """
         from flatsurf.geometry.surface_objects import SurfacePoint
 
+        if not p.surface() == self.domain():
+            raise ValueError
+
         label = next(iter(p.labels()))
         return SurfacePoint(self.codomain(), label, next(iter(p.coordinates(label))))
 
@@ -263,10 +261,8 @@ class SubdivideEdgesDeformation(Deformation):
         # TODO: homology should allow to write this code more naturally somehow
         # TODO: docstring
         from flatsurf.geometry.homology import SimplicialHomology
-        # TODO: Make homology/cohomology work without having an explicit TranslationSurface (but only a Surface.)
-        from flatsurf import TranslationSurface
 
-        H = SimplicialHomology(TranslationSurface(self.codomain()))
+        H = SimplicialHomology(self.codomain())
         C = H.chain_module(dimension=1)
 
         image = H()
@@ -293,16 +289,21 @@ class DelaunayDeformation(Deformation):
 
     @cached_method
     def _flip_deformation(self):
-        deformation = IdentityDeformation(self.domain())
-        domain = self.domain()
-
-        from flatsurf.geometry.surface import Surface_dict
-        codomain = Surface_dict(surface=self.domain(), mutable=True)
+        domains = [self.domain()]
 
         for flip in self._flip_sequence:
-            domain = codomain
-            codomain = codomain.triangle_flip(*flip)
-            deformation = TriangleFlipDeformation(Surface_dict(surface=domain, mutable=False), Surface_dict(surface=codomain, mutable=False), flip) * deformation
+            from flatsurf.geometry.surface import Surface_dict
+            codomain = Surface_dict(surface=domains[-1], mutable=True)
+            codomain.triangle_flip(*flip, in_place=True)
+            codomain.set_immutable()
+            domains.append(codomain)
+
+        domains.pop()
+        domains.append(self.codomain())
+
+        deformation = IdentityDeformation(self.domain())
+        for i, flip in enumerate(self._flip_sequence):
+            deformation = TriangleFlipDeformation(domains[i], domains[i + 1], flip) * deformation
 
         return deformation
 
@@ -317,10 +318,8 @@ class DelaunayDeformation(Deformation):
     def _image_homology(self, γ):
         # TODO: docstring
         from flatsurf.geometry.homology import SimplicialHomology
-        # TODO: Make homology/cohomology work without having an explicit TranslationSurface (but only a Surface.)
-        from flatsurf import TranslationSurface
-        codomain_homology = SimplicialHomology(TranslationSurface(self.codomain()))
-        domain_homology = SimplicialHomology(TranslationSurface(self.domain()))
+        codomain_homology = SimplicialHomology(self.codomain())
+        domain_homology = SimplicialHomology(self.domain())
 
         image = codomain_homology()
 
@@ -341,10 +340,8 @@ class TriangleFlipDeformation(Deformation):
     def _image_homology(self, γ):
         # TODO: docstring
         from flatsurf.geometry.homology import SimplicialHomology
-        # TODO: Make homology/cohomology work without having an explicit TranslationSurface (but only a Surface.)
-        from flatsurf import TranslationSurface
-        codomain_homology = SimplicialHomology(TranslationSurface(self.codomain()))
-        domain_homology = SimplicialHomology(TranslationSurface(self.domain()))
+        codomain_homology = SimplicialHomology(self.codomain())
+        domain_homology = SimplicialHomology(self.domain())
 
         image = codomain_homology()
 
@@ -359,10 +356,8 @@ class TriangleFlipDeformation(Deformation):
         # TODO: docstring
         # TDOO: This is hack that won't work in general. (E.g., not for the square torus.)
         from flatsurf.geometry.homology import SimplicialHomology
-        # TODO: Make homology/cohomology work without having an explicit TranslationSurface (but only a Surface.)
-        from flatsurf import TranslationSurface
-        H_domain = SimplicialHomology(TranslationSurface(self.domain()))
-        H_codomain = SimplicialHomology(TranslationSurface(self.codomain()))
+        H_domain = SimplicialHomology(self.domain())
+        H_codomain = SimplicialHomology(self.codomain())
 
         affected = {self._flip[0], self.domain().opposite_edge(*self._flip)[0]}
         if len(affected) == 1:

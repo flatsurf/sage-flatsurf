@@ -410,7 +410,7 @@ class SimplicialHomology(UniqueRepresentation, Parent):
         if dimension == 1:
             simplices = set()
             for edge in self._surface.edge_iterator():
-                if self._surface.opposite_edge(edge) not in simplices:
+                if self._surface.opposite_edge(*edge) not in simplices:
                     simplices.add(edge)
             return tuple(simplices)
         if dimension == 2:
@@ -467,7 +467,7 @@ class SimplicialHomology(UniqueRepresentation, Parent):
                     if (face, edge) in C1.indices():
                         boundary += coefficient * C1((face, edge))
                     else:
-                        boundary -= coefficient * C1(self._surface.opposite_edge((face, edge)))
+                        boundary -= coefficient * C1(self._surface.opposite_edge(face, edge))
             return boundary
 
         return self.chain_module(dimension=-1).zero()

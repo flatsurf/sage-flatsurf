@@ -430,7 +430,7 @@ class HarmonicDifferential(Element):
                 # We integrate on the line segment from the midpoint of edge to
                 # the midpoint of the previous edge in triangle, i.e., the next
                 # edge in counterclockwise order walking around the vertex.
-                edge_ = (edge - 1) % 3
+                edge_ = (edge - 1) % 3 # TODO: Do not hardcode three here.
 
                 # TODO print(f"integrating across {triangle} from the midpoint of {edge} to {edge_}")
 
