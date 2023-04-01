@@ -2559,13 +2559,23 @@ class SimilaritySurface(SageObject):
         - their polygons are equal and labeled and glued in the same way.
         For infinite surfaces we use reference equality.
         Raises a value error if the surfaces are defined over different rings.
+
+        TESTS:
+
+        Equality comparison works with objects that are not surfaces (so we can
+        put surfaces into generic dicts)::
+
+            sage: from flatsurf import similarity_surface
+            sage: similarity_surfaces.example() == 42
+            False
+
         """
         if not self.is_finite():
             return self is other
         if self is other:
             return True
         if not isinstance(other, SimilaritySurface):
-            raise TypeError
+            return False
         if not other.is_finite():
             raise ValueError("Can not compare infinite surfaces.")
         if self.base_ring() != other.base_ring():
