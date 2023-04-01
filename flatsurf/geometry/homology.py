@@ -1,10 +1,12 @@
 r"""
-TODO: Document this module.
+Absolute and relative (simplicial) homology of surfaces.
+
+TODO: Add examples.
 """
 ######################################################################
 #  This file is part of sage-flatsurf.
 #
-#        Copyright (C) 2022 Julian Rüth
+#        Copyright (C) 2022-2023 Julian Rüth
 #
 #  sage-flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -51,7 +53,7 @@ class SimplicialHomologyClass(Element):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
             sage: H.gens()[0]._homology()
@@ -70,7 +72,7 @@ class SimplicialHomologyClass(Element):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
             sage: H.gens()[0] == H.gens()[0]
@@ -102,7 +104,7 @@ class SimplicialHomologyClass(Element):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
             sage: a,b = H.gens()
@@ -121,32 +123,33 @@ class SimplicialHomologyClass(Element):
 
         raise ValueError("gen must be a generator of homology")
 
-    def voronoi_path(self):
-        r"""
-        Return this class as a vector over a basis of homology formed by paths
-        inside Voronoi cells.
+    # def voronoi_path(self):
+    #     r"""
+    #     Return this class as a vector over a basis of homology formed by paths
+    #     inside Voronoi cells.
 
-        EXAMPLES::
+    #     EXAMPLES::
 
-            sage: from flatsurf import translation_surfaces, SimplicialHomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
-            sage: T.set_immutable()
-            sage: H = SimplicialHomology(T)
-            sage: a, b = H.gens()
+    #         sage: from flatsurf import translation_surfaces, SimplicialHomology
+    #         sage: T = translation_surfaces.torus((1, 0), (0, 1))
+    #         sage: T.set_immutable()
+    #         sage: H = SimplicialHomology(T)
+    #         sage: a, b = H.gens()
 
-        The cycle ``a`` is the diagonal (1, 1) in the square torus. 
+    #     The cycle ``a`` is the vertical in the square torus.
 
-            sage: a.voronoi_path()
-            B[((0, 0), (1, 2), (0, 1), (1, 0))]
-            sage: b.voronoi_path()
-            B[((0, 1), (1, 0), (0, 2), (1, 1))]
+    #         sage: a.voronoi_path()
+    #         B[((0, 0), (1, 2), (0, 1), (1, 0))]
+    #         sage: b.voronoi_path()
+    #         B[((0, 1), (1, 0), (0, 2), (1, 1))]
 
-        """
-        from sage.all import FreeModule, vector
+    #     """
+    #     # TODO: Don't expose this here but in a separate view that uses different generators.
+    #     from sage.all import FreeModule, vector
 
-        homology, _, _ = self.parent()._homology()
-        M = FreeModule(self.parent()._coefficients, self.parent()._paths(voronoi=True))
-        return M.from_vector(vector(self._homology()))
+    #     homology, _, _ = self.parent()._homology()
+    #     M = FreeModule(self.parent()._coefficients, self.parent()._paths(voronoi=True))
+    #     return M.from_vector(vector(self._homology()))
 
     def _add_(self, other):
         r"""
@@ -155,7 +158,7 @@ class SimplicialHomologyClass(Element):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
             sage: a, b = H.gens()
@@ -172,7 +175,7 @@ class SimplicialHomologyClass(Element):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
             sage: a, b = H.gens()
@@ -184,123 +187,124 @@ class SimplicialHomologyClass(Element):
         """
         return self.parent()(-self._chain)
 
-    def _path(self, voronoi=False):
-        r"""
-        Return this generator as a path.
+    # TODO: This probably makes no sense.
+    # def _path(self, voronoi=False):
+    #     r"""
+    #     Return this generator as a path.
 
-        If ``voronoi``, the path is formed by walking from midpoints of edges while staying inside Voronoi cells.
+    #     If ``voronoi``, the path is formed by walking from midpoints of edges while staying inside Voronoi cells.
 
-        EXAMPLES::
+    #     EXAMPLES::
 
-            sage: from flatsurf import translation_surfaces, SimplicialHomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
-            sage: T.set_immutable()
-            sage: H = SimplicialHomology(T)
-            sage: a, b = H.gens()
+    #         sage: from flatsurf import translation_surfaces, SimplicialHomology
+    #         sage: T = translation_surfaces.torus((1, 0), (0, 1))
+    #         sage: T.set_immutable()
+    #         sage: H = SimplicialHomology(T)
+    #         sage: a, b = H.gens()
 
-        The chosen generators of homology, correspond to the edge (0, 0), i.e.,
-        the diagonal with vector (1, 1), and the top horizontal edge (0, 1)
-        with vector (-1, 0)::
+    #     The chosen generators of homology, correspond to the edge (0, 0), i.e.,
+    #     the diagonal with vector (1, 1), and the top horizontal edge (0, 1)
+    #     with vector (-1, 0)::
 
-            sage: a._path()
-            ((0, 0),)
-            sage: b._path()
-            ((0, 1),)
+    #         sage: a._path()
+    #         ((0, 0),)
+    #         sage: b._path()
+    #         ((0, 1),)
 
-        Lifting the former to a path in Voronoi cells, we consider the midpoint
-        of (0, 0) as the midpoint of (1, 0) and walk across the triangle 1 to
-        get to the midpoint of (1, 2). We consider the midpoint of (1, 2) as
-        the midpoint of (0, 2) and walk across the triangle 0 to the midpoint
-        of (0, 1). Finally, we consider that midpoint to be the midpoint of (1,
-        1) and walk across 1 to the midpoint of (1, 0) which is where we
-        started::
+    #     Lifting the former to a path in Voronoi cells, we consider the midpoint
+    #     of (0, 0) as the midpoint of (1, 0) and walk across the triangle 1 to
+    #     get to the midpoint of (1, 2). We consider the midpoint of (1, 2) as
+    #     the midpoint of (0, 2) and walk across the triangle 0 to the midpoint
+    #     of (0, 1). Finally, we consider that midpoint to be the midpoint of (1,
+    #     1) and walk across 1 to the midpoint of (1, 0) which is where we
+    #     started::
 
-            sage: a._path(voronoi=True)
-            ((0, 0), (1, 2), (0, 1), (1, 0))
+    #         sage: a._path(voronoi=True)
+    #         ((0, 0), (1, 2), (0, 1), (1, 0))
 
-        Similarly, to write the other path as a path inside Voronoi cells, we
-        start from the midpoint of (0, 1) and consider it as the midpoint of
-        (1, 1). We walk across triangle 1 to get to the midpoint of (1, 0). We
-        consider that to be the midpoint of (0, 0) and walk across 0 to the
-        midpoint of (0, 2). We consider that to be the midpoint of (1, 2) and
-        walk across triangle 1 to get to the midpoint of (1, 1) which closes
-        the loop::
+    #     Similarly, to write the other path as a path inside Voronoi cells, we
+    #     start from the midpoint of (0, 1) and consider it as the midpoint of
+    #     (1, 1). We walk across triangle 1 to get to the midpoint of (1, 0). We
+    #     consider that to be the midpoint of (0, 0) and walk across 0 to the
+    #     midpoint of (0, 2). We consider that to be the midpoint of (1, 2) and
+    #     walk across triangle 1 to get to the midpoint of (1, 1) which closes
+    #     the loop::
 
-            sage: b._path(voronoi=True)
-            ((0, 1), (1, 0), (0, 2), (1, 1))
+    #         sage: b._path(voronoi=True)
+    #         ((0, 1), (1, 0), (0, 2), (1, 1))
 
-        TODO: Note from the above discussion that we can have consecutive steps
-        in the same triangle; in the above the last and the first. We should
-        collapse these.
+    #     TODO: Note from the above discussion that we can have consecutive steps
+    #     in the same triangle; in the above the last and the first. We should
+    #     collapse these.
 
-        ::
+    #     ::
 
-            sage: from flatsurf import EquiangularPolygons, similarity_surfaces
-            sage: E = EquiangularPolygons(3, 4, 13)
-            sage: P = E.an_element()
-            sage: T = similarity_surfaces.billiard(P, rational=True).minimal_cover(cover_type="translation").erase_marked_points()
+    #         sage: from flatsurf import EquiangularPolygons, similarity_surfaces
+    #         sage: E = EquiangularPolygons(3, 4, 13)
+    #         sage: P = E.an_element()
+    #         sage: T = similarity_surfaces.billiard(P, rational=True).minimal_cover(cover_type="translation").erase_marked_points()
 
-            sage: H = SimplicialHomology(T)
-            sage: a = H.gens()[0]; a
-            B[(0, 0)] - B[(30, 1)]
-            sage: a._path()
-            ((31, 2), (0, 0))
-            sage: a._path(voronoi=True)
-            ((31, 2), (30, 0), (25, 2), (5, 0), (13, 1), (18, 0), (7, 0), (12, 2), (4, 0), (24, 1), (28, 0), (21, 2), (14, 0), (9, 2), (3, 2),
-             (0, 0), (3, 1), (23, 1), (26, 1), (27, 1), (16, 0), (19, 2), (18, 1), (13, 0), (14, 1), (21, 1), (6, 2), (2, 0), (20, 1), (11, 0), (17, 0), (30, 1))
+    #         sage: H = SimplicialHomology(T)
+    #         sage: a = H.gens()[0]; a
+    #         B[(0, 0)] - B[(30, 1)]
+    #         sage: a._path()
+    #         ((31, 2), (0, 0))
+    #         sage: a._path(voronoi=True)
+    #         ((31, 2), (30, 0), (25, 2), (5, 0), (13, 1), (18, 0), (7, 0), (12, 2), (4, 0), (24, 1), (28, 0), (21, 2), (14, 0), (9, 2), (3, 2),
+    #          (0, 0), (3, 1), (23, 1), (26, 1), (27, 1), (16, 0), (19, 2), (18, 1), (13, 0), (14, 1), (21, 1), (6, 2), (2, 0), (20, 1), (11, 0), (17, 0), (30, 1))
 
-        """
-        edges = []
+    #     """
+    #     edges = []
 
-        for edge in self._chain.support():
-            coefficient = self._chain[edge]
-            if coefficient == 0:
-                continue
-            if coefficient < 0:
-                coefficient *= -1
-                edge = self.parent()._surface.opposite_edge(*edge)
+    #     for edge in self._chain.support():
+    #         coefficient = self._chain[edge]
+    #         if coefficient == 0:
+    #             continue
+    #         if coefficient < 0:
+    #             coefficient *= -1
+    #             edge = self.parent()._surface.opposite_edge(*edge)
 
-            if coefficient != 1:
-                raise NotImplementedError
+    #         if coefficient != 1:
+    #             raise NotImplementedError
 
-            edges.append(edge)
+    #         edges.append(edge)
 
-        path = [edges.pop()]
+    #     path = [edges.pop()]
 
-        surface = self.surface()
+    #     surface = self.surface()
 
-        while edges:
-            # Lengthen the path by searching for an edge that starts at the
-            # vertex at which the constructed path ends.
-            previous = path[-1]
-            vertex = surface.singularity(*surface.opposite_edge(*previous))
-            for edge in edges:
-                if surface.singularity(*edge) == vertex:
-                    path.append(edge)
-                    edges.remove(edge)
-                    break
-            else:
-                raise NotImplementedError
+    #     while edges:
+    #         # Lengthen the path by searching for an edge that starts at the
+    #         # vertex at which the constructed path ends.
+    #         previous = path[-1]
+    #         vertex = surface.singularity(*surface.opposite_edge(*previous))
+    #         for edge in edges:
+    #             if surface.singularity(*edge) == vertex:
+    #                 path.append(edge)
+    #                 edges.remove(edge)
+    #                 break
+    #         else:
+    #             raise NotImplementedError
 
-        if not voronoi:
-            return tuple(path)
+    #     if not voronoi:
+    #         return tuple(path)
 
-        # Instead of walking the edges of the triangulation, we walk
-        # across faces between the midpoints of the edges to construct a path
-        # inside Voronoi cells.
-        voronoi_path = [path[0]]
+    #     # Instead of walking the edges of the triangulation, we walk
+    #     # across faces between the midpoints of the edges to construct a path
+    #     # inside Voronoi cells.
+    #     voronoi_path = [path[0]]
 
-        for previous, edge in zip(path, path[1:] + path[:1]):
-            previous = self.surface().opposite_edge(*previous)
-            while previous != edge:
-                previous = previous[0], (previous[1] + 2) % 3
-                voronoi_path.append(previous)
-                previous = self.surface().opposite_edge(*previous)
-            voronoi_path.append(edge)
+    #     for previous, edge in zip(path, path[1:] + path[:1]):
+    #         previous = self.surface().opposite_edge(*previous)
+    #         while previous != edge:
+    #             previous = previous[0], (previous[1] + 2) % 3
+    #             voronoi_path.append(previous)
+    #             previous = self.surface().opposite_edge(*previous)
+    #         voronoi_path.append(edge)
 
-        voronoi_path.pop()
+    #     voronoi_path.pop()
 
-        return tuple(voronoi_path)
+    #     return tuple(voronoi_path)
 
     def surface(self):
         return self.parent().surface()
@@ -315,16 +319,9 @@ class SimplicialHomology(UniqueRepresentation, Parent):
         sage: from flatsurf import translation_surfaces, SimplicialHomology
         sage: T = translation_surfaces.torus((1, 0), (0, 1))
 
-    Currently, surfaces must be Delaunay triangulated to compute their homology::
-
-        sage: SimplicialHomology(T)
-        Traceback (most recent call last):
-        ...
-        NotImplementedError: surface must be Delaunay triangulated
-
     Surfaces must be immutable to compute their homology::
 
-        sage: T = T.delaunay_triangulation()
+        sage: T = T.copy(mutable=True)
         sage: SimplicialHomology(T)
         Traceback (most recent call last):
         ...
@@ -334,7 +331,7 @@ class SimplicialHomology(UniqueRepresentation, Parent):
 
         sage: T.set_immutable()
         sage: SimplicialHomology(T)
-        H₁(TranslationSurface built from 2 polygons; Integer Ring)
+        H₁(TranslationSurface built from 1 polygon; Integer Ring)
 
     """
     Element = SimplicialHomologyClass
@@ -349,7 +346,7 @@ class SimplicialHomology(UniqueRepresentation, Parent):
         Homology is unique and cached::
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: T.set_immutable()
             sage: SimplicialHomology(T) is SimplicialHomology(T)
             True
@@ -362,11 +359,6 @@ class SimplicialHomology(UniqueRepresentation, Parent):
         return super().__classcall__(cls, surface, coefficients or ZZ, category or SetsWithPartialMaps())
 
     def __init__(self, surface, coefficients, category):
-        # TODO: Not checking this anymore. But we probably actually need this still?
-        # if surface != surface.delaunay_triangulation():
-        #     # TODO: This is a silly limitation in here.
-        #     raise NotImplementedError("surface must be Delaunay triangulated")
-
         Parent.__init__(self, category=category)
 
         self._surface = surface
@@ -385,11 +377,11 @@ class SimplicialHomology(UniqueRepresentation, Parent):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
             sage: H.chain_module()
-            Free module generated by {(0, 0), (0, 1), (0, 2)} over Integer Ring
+            Free module generated by {(0, 1), (0, 0)} over Integer Ring
 
         """
         from sage.all import FreeModule
@@ -404,11 +396,11 @@ class SimplicialHomology(UniqueRepresentation, Parent):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
             sage: H.simplices()
-            ((0, 0), (0, 1), (0, 2))
+            ((0, 1), (0, 0))
 
         """
         if dimension == 0:
@@ -431,28 +423,28 @@ class SimplicialHomology(UniqueRepresentation, Parent):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
 
         ::
 
             sage: c = H.chain_module(dimension=0).an_element(); c
-            2*B[singularity with vertex equivalence class frozenset({(0, 1), (0, 2), (1, 2), (0, 0), (1, 0), (1, 1)})]
+            2*B[singularity with vertex equivalence class frozenset({(0, 1), (0, 2), (0, 3), (0, 0)})]
             sage: H.boundary(c)
             0
 
         ::
 
             sage: c = H.chain_module(dimension=1).an_element(); c
-            2*B[(0, 0)] + 2*B[(0, 1)] + 3*B[(0, 2)]
+            2*B[(0, 0)] + 2*B[(0, 1)]
             sage: H.boundary(c)
             0
 
         ::
 
             sage: c = H.chain_module(dimension=2).an_element(); c
-            2*B[0] + 2*B[1]
+            2*B[0]
             sage: H.boundary(c)
             0
 
@@ -486,7 +478,7 @@ class SimplicialHomology(UniqueRepresentation, Parent):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
             sage: H._chain_complex()
@@ -515,16 +507,16 @@ class SimplicialHomology(UniqueRepresentation, Parent):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
             sage: H._homology()
             (Finitely generated module V/W over Integer Ring with invariants (0, 0),
              Generic morphism:
                From: Finitely generated module V/W over Integer Ring with invariants (0, 0)
-               To:   Free module generated by {(0, 0), (0, 1), (0, 2)} over Integer Ring,
+               To:   Free module generated by {(0, 1), (0, 0)} over Integer Ring,
              Generic morphism:
-               From: Free module generated by {(0, 0), (0, 1), (0, 2)} over Integer Ring
+               From: Free module generated by {(0, 1), (0, 0)} over Integer Ring
                To:   Finitely generated module V/W over Integer Ring with invariants (0, 0))
 
         """
@@ -565,24 +557,24 @@ class SimplicialHomology(UniqueRepresentation, Parent):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
 
         ::
 
             sage: H.gens(dimension=0)
-            (B[singularity with vertex equivalence class frozenset({(0, 1), (0, 2), (1, 2), (0, 0), (1, 0), (1, 1)})],)
+            (B[singularity with vertex equivalence class frozenset({(0, 1), (0, 2), (0, 3), (0, 0)})],)
 
         ::
 
             sage: H.gens(dimension=1)
-            (B[(0, 0)], B[(0, 1)])
+            (B[(0, 1)], B[(0, 0)])
 
         ::
 
             sage: H.gens(dimension=2)
-            (B[0] + B[1],)
+            (B[0],)
 
         """
         if dimension < 0 or dimension > 2:
@@ -591,21 +583,22 @@ class SimplicialHomology(UniqueRepresentation, Parent):
         homology, from_homology, to_homology = self._homology(dimension)
         return tuple(self(from_homology(g)) for g in homology.gens())
 
-    @cached_method
-    def _paths(self, voronoi=False):
-        r"""
-        Return the generators of homology in dimension 1 as paths.
+    # @cached_method
+    # def _paths(self, voronoi=False):
+    #     r"""
+    #     Return the generators of homology in dimension 1 as paths.
 
-        If ``voronoi``, the paths are inside Voronoi cells without touching the vertices of the triangulation.
+    #     If ``voronoi``, the paths are inside Voronoi cells without touching the vertices of the triangulation.
 
-        EXAMPLES::
+    #     EXAMPLES::
 
-            sage: from flatsurf import translation_surfaces, SimplicialHomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
-            sage: T.set_immutable()
-            sage: H = SimplicialHomology(T)
-            sage: H._paths()
-            [((0, 0),), ((0, 1),)]
+    #         sage: from flatsurf import translation_surfaces, SimplicialHomology
+    #         sage: T = translation_surfaces.torus((1, 0), (0, 1))
+    #         sage: T.set_immutable()
+    #         sage: H = SimplicialHomology(T)
+    #         sage: H._paths()
+    #         [((0, 0),), ((0, 1),)]
 
-        """
-        return [gen._path(voronoi=voronoi) for gen in self.gens()]
+    #     """
+    #     TODO: This does not really make sense probably.
+    #     return [gen._path(voronoi=voronoi) for gen in self.gens()]
