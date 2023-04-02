@@ -1,6 +1,42 @@
 r"""
 Absolute and relative (simplicial) homology of surfaces.
 
+EXAMPLES:
+
+The absolute homology of the regular octagon::
+
+    sage: from flatsurf import translation_surfaces, SimplicialHomology
+    sage: S = translation_surfaces.regular_octagon()
+    sage: H = SimplicialHomology(S)
+
+A basis of homology, with generators written as oriented edges::
+
+    sage: H.gens()
+    (B[(0, 1)], B[(0, 2)], B[(0, 3)], B[(0, 0)])
+
+We can also write the generatorls as paths that cross over the edges and
+connect points on the interior of neighboring polygons::
+
+    sage: H = SimplicialHomology(S, generators="interior")
+    sage: H.gens()
+
+We can also use generators that connect points on the interior of edges of a
+polygon which can be advantageous when integrating along such paths while
+avoiding to integrate close to the vertices::
+
+    sage: H = SimplicialHomology(S, generators="midpoint")
+    sage: H.gens()
+
+Relative homology on the unfolding of the (3, 4, 13) triangle; homology
+relative to the subset of vertices::
+
+
+    sage: from flatsurf import EquiangularPolygons, similarity_surfaces
+    sage: P = flatsurf.EquiangularPolygons(3, 4, 13).an_element()
+    sage: S = flatsurf.similarity_surfaces.billiard(P, rational=True).minimal_cover(cover_type="translation")
+    sage: H = SimplicialHomology(relative=S.singularities())
+    sage: H.gens()
+
 TODO: Add examples.
 """
 ######################################################################
@@ -36,7 +72,10 @@ from sage.misc.cachefunc import cached_method
 # paths between midpoints of edges of polygons.
 
 class SimplicialHomologyClass(Element):
-    # TODO: Use the algorithm from GL2ROrbitClosure._spanning_tree to compute a basis of homology and a projection map.
+    # TODO: Use the algorithm from GL2ROrbitClosure._spanning_tree to compute a
+    # basis of homology and a projection map. Or better, have an algorithm
+    # keyword to use the generic implementation and the spanning tree
+    # implementation.
     # TODO: Use https://github.com/flatsurf/sage-flatsurf/pull/114/files to
     # force the representatives to live in particular subgraph of the dual
     # graph.
