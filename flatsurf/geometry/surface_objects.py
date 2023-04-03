@@ -24,8 +24,6 @@ This includes singularities, saddle connections and cylinders.
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 ######################################################################
 
-from __future__ import absolute_import, print_function, division
-
 from sage.misc.cachefunc import cached_method
 from sage.modules.free_module import VectorSpace
 from sage.modules.free_module_element import vector
@@ -35,8 +33,8 @@ from sage.rings.qqbar import AA
 from sage.structure.sage_object import SageObject
 from sage.structure.element import Element
 
-from .polygon import ConvexPolygons, wedge_product
-from .similarity import SimilarityGroup
+from flatsurf.geometry.polygon import ConvexPolygons, wedge_product
+from flatsurf.geometry.similarity import SimilarityGroup
 
 
 class Singularity(SageObject):
