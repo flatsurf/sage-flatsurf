@@ -81,7 +81,8 @@ class HalfDilationSurface(SimilaritySurface):
         If in_place=False, then a copy is made before the deformation.
         """
         if mapping is True:
-            assert in_place is False, "Can not modify in place and return a mapping."
+            if in_place:
+                raise NotImplementedError("can not modify in place and return a mapping")
             return GL2RMapping(self, m)
         if not in_place:
             if self.is_finite():
@@ -98,14 +99,13 @@ class HalfDilationSurface(SimilaritySurface):
             from sage.matrix.constructor import Matrix
 
             m = Matrix(self.base_ring(), 2, 2, m)
-            assert (
-                m.det() != self.base_ring().zero()
-            ), "Can not deform by degenerate matrix."
-            assert (
-                self.is_finite()
-            ), "In place GL(2,R) action only works for finite surfaces."
+            if m.det() == self.base_ring().zero():
+                raise ValueError("can not deform by degenerate matrix")
+            if not self.is_finite():
+                raise NotImplementedError("in-place GL(2,R) action only works for finite surfaces")
             us = self.underlying_surface()
-            assert us.is_mutable(), "In place changes only work for mutable surfaces."
+            if not us.is_mutable():
+                raise ValueError("in-place changes only work for mutable surfaces")
             for label in self.label_iterator():
                 us.change_polygon(label, m * self.polygon(label))
             if m.det() < self.base_ring().zero():
@@ -269,8 +269,9 @@ class HalfDilationSurface(SimilaritySurface):
         if direction is None:
             base_ring = self.base_ring()
             direction = self.vector_space()((base_ring.zero(), base_ring.one()))
-        else:
-            assert not direction.is_zero()
+
+        if direction.is_zero():
+            raise ValueError("direction must be non-zero")
 
         triangles = set(s.label_iterator())
         if limit is None:

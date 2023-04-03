@@ -529,7 +529,8 @@ class SimilaritySurface(SageObject):
                 )
             p = us.polygon(label)
             n = p.num_edges()
-            assert 0 <= v and v < n
+            if not (0 <= v < n):
+                raise ValueError
             glue = []
             P = ConvexPolygons(us.base_ring())
             pp = P(edges=[p.edge((i + v) % n) for i in range(n)])
@@ -733,12 +734,10 @@ class SimilaritySurface(SageObject):
                 "You can not set a new_field and also set optimal_number_field=True."
             )
         if optimal_number_field is True:
-            assert (
-                self.is_finite()
-            ), "Can only optimize_number_field for a finite surface."
-            assert (
-                not lazy
-            ), "Lazy copying is unavailable when optimize_number_field=True."
+            if not self.is_finite():
+                raise NotImplementedError("can only optimize_number_field for a finite surface")
+            if lazy:
+                raise NotImplementedError("lazy copying is unavailable when optimize_number_field=True")
             coordinates_AA = []
             for label, p in self.label_iterator(polygons=True):
                 for e in p.edges():
@@ -942,7 +941,8 @@ class SimilaritySurface(SageObject):
 
         if in_place:
             s = self
-            assert s.is_mutable(), "Surface must be mutable for in place triangle_flip."
+            if not s.is_mutable():
+                raise ValueError("surface must be mutable for in place triangle_flip")
         else:
             s = self.copy(mutable=True)
 
@@ -952,7 +952,6 @@ class SimilaritySurface(SageObject):
         l2, e2 = s.opposite_edge(l1, e1)
 
         sim = s.edge_transformation(l2, e2)
-        m = sim.derivative()
         p2 = s.polygon(l2)
         if not p2.num_edges() == 3:
             raise ValueError(
@@ -1002,13 +1001,11 @@ class SimilaritySurface(SageObject):
         # i=0 if the new_triangle[0] should be labeled l1 and new_triangle[1] should be labeled l2.
         # i=1 indicates the opposite labeling.
         if new_sep[0] + 1 == q1:
-            # For debugging:
             assert (new_sep[1] + 3) % 4 == q2, (
                 "Bug: new_sep[1]=" + str(new_sep[1]) + " and q2=" + str(q2)
             )
             i = 0
         else:
-            # For debugging:
             assert (new_sep[1] + 3) % 4 == q1
             assert new_sep[0] + 1 == q2
             i = 1
@@ -1037,7 +1034,6 @@ class SimilaritySurface(SageObject):
         diagonal_glue_e1 = 2 - cycle1
         diagonal_glue_e2 = 2 - cycle2
 
-        # FOR CATCHING BUGS:
         assert p1.find_separatrix(direction=direction) == tri1.find_separatrix(
             direction=direction
         )
@@ -1062,7 +1058,6 @@ class SimilaritySurface(SageObject):
             old_e1 = 3 - e1 - v1  # Again this finds the edge which is neither e1 nor v1
         else:
             temp = (v1 + 2) % 3
-            # FOR CATCHING BUGS:
             assert p1.edge(temp) == tri1.edge(temp)
             # We don't have to worry about changing gluings on edge (v1+2)%3 of the triangles with label l1
             # We do have to worry about the following edge:
@@ -1083,7 +1078,6 @@ class SimilaritySurface(SageObject):
             old_e2 = 3 - e2 - v2  # Again this finds the edge which is neither e2 nor v2
         else:
             temp = (v2 + 2) % 3
-            # FOR CATCHING BUGS:
             assert p2.edge(temp) == tri2.edge(temp)
             # We don't have to worry about changing gluings on edge (v2+2)%3 of the triangles with label l2
             # We do have to worry about the following edge:
@@ -1940,8 +1934,10 @@ class SimilaritySurface(SageObject):
         if direction is None:
             base_ring = self.base_ring()
             direction = self.vector_space()((base_ring.zero(), base_ring.one()))
-        else:
-            assert not direction.is_zero()
+
+        if direction.is_zero():
+            raise ValueError
+
         if s.is_finite() and limit is None:
             from collections import deque
 
@@ -2133,14 +2129,16 @@ class SimilaritySurface(SageObject):
             sage: len(sc_list)
             32
         """
-        assert squared_length_bound > 0
+        if squared_length_bound <= 0:
+            raise ValueError
+
         if sc_list is None:
             sc_list = []
         if initial_label is None:
-            assert self.is_finite()
-            assert (
-                initial_vertex is None
-            ), "If initial_label is not provided, then initial_vertex must not be provided either."
+            if not self.is_finite():
+                raise NotImplementedError
+            if initial_vertex is not None:
+                raise ValueError("when initial_label is not provided, then initial_vertex must not be provided either")
             for label in self.label_iterator():
                 self.saddle_connections(
                     squared_length_bound, initial_label=label, sc_list=sc_list

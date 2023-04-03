@@ -35,10 +35,13 @@ class MegaWollmilchsauGroupElement(MultiplicativeGroupElement):
         if parent is None:
             raise ValueError("The parent must be provided")
         # I should assert that the element lives in the domain of the group.
-        assert i in ZZ
-        assert r in _Q
+        if i not in ZZ:
+            raise ValueError
+        if r not in _Q:
+            raise ValueError
         # Actually q should be in {1,-1,-i,i,j,-j,k,-k}. I'm not testing for that.
-        assert q in _Q
+        if q not in _Q:
+            raise ValueError
         # There is one more condition. The group doesn't have full image...
         self._i = i
         self._r = r
@@ -113,9 +116,6 @@ class MegaWollmilchsauGroup(UniqueRepresentation, Group):
     def is_abelian(self):
         return False
 
-    # def order(self):
-    #    return infinity
-
     def _an_element_(self):
         return self.a()
 
@@ -123,18 +123,16 @@ class MegaWollmilchsauGroup(UniqueRepresentation, Group):
         return [self.a(), self.b()]
 
     def _test_relations(self, **options):
+        tester = self._tester(**options)
         a, b = self.gens()
         e = self.one()
-        assert a**4 == e
-        assert b**4 == e
-        assert (a * b) ** 4 == e
-        assert (a / b) ** 4 == e
-        assert (a * a * b) ** 4 == e
-        assert (a * a / b) ** 4 == e
-        assert (a * b / a / b) ** 2 != e
-
-    # def cardinality(self):
-    #    return infinity
+        tester.assertEqual(a**4, e)
+        tester.assertEqual(b**4, e)
+        tester.assertEqual((a * b) ** 4, e)
+        tester.assertEqual((a / b) ** 4, e)
+        tester.assertEqual((a * a * b) ** 4, e)
+        tester.assertEqual((a * a / b) ** 4, e)
+        tester.assertNotEqual((a * b / a / b) ** 2, e)
 
 
 class MegaWollmilchsau(AbstractOrigami):

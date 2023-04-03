@@ -127,7 +127,9 @@ def polyhedron_to_cone_surface(polyhedron, use_AA=False, scaling_factor=ZZ(1)):
         sage: ZZ(total_length**2)
         42
     """
-    assert polyhedron.dim() == 3
+    if polyhedron.dim() != 3:
+        raise ValueError
+
     c = polyhedron.center()
     vertices = polyhedron.vertices()
     vertex_order = {}
