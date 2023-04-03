@@ -88,7 +88,8 @@ class GraphicalStraightLineTrajectory:
         if graphical_surface is None:
             self._gs = trajectory.surface().graphical_surface()
         else:
-            assert trajectory.surface() == graphical_surface.get_surface()
+            if trajectory.surface() != graphical_surface.get_surface():
+                raise ValueError
             self._gs = graphical_surface
         self._traj = trajectory
         self._segments = [

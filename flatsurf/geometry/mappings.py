@@ -530,7 +530,9 @@ def triangulation_mapping(s):
         Polygon: (0, 0), (0, -a - 1), (1, 0)
         Polygon: (0, 0), (-1/2*a - 1, -1/2*a), (-1/2*a, -1/2*a)
     """
-    assert s.is_finite()
+    if not s.is_finite():
+        raise NotImplementedError
+
     m = subdivide_a_polygon(s)
     if m is None:
         return None
@@ -572,7 +574,9 @@ def delaunay_triangulation_mapping(s):
     r"""
     Returns a mapping to a Delaunay triangulation or None if the surface already is Delaunay triangulated.
     """
-    assert s.is_finite()
+    if not s.is_finite():
+        raise NotImplementedError
+
     m = triangulation_mapping(s)
     if m is None:
         s1 = s

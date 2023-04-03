@@ -183,12 +183,8 @@ class LazyDelaunayTriangulatedSurface(Surface):
             ll, ee = self._s.opposite_edge(label, edge)
             if ll in self._certified_labels:
                 return ll, ee
-            # print("Searching for opposite to ",label,edge)
             while not self._certify_or_improve(ll):
                 ll, ee = self._s.opposite_edge(label, edge)
-            # Stupid sanity check:
-            # assert ll,ee == self._s.opposite_edge(label,edge)
-            # assert ll in self._certified_labels
             return self._s.opposite_edge(label, edge)
         else:
             raise ValueError(
@@ -250,10 +246,6 @@ class LazyDelaunayTriangulatedSurface(Surface):
 
                     if self._s._edge_needs_flip(ll, ee):
 
-                        # Should not need to flip certified triangles.
-                        # assert ll not in self._certified_labels
-                        # assert lll not in self._certified_labels
-
                         # Perform the flip
                         self._s.triangle_flip(
                             ll, ee, in_place=True, direction=self._direction
@@ -278,10 +270,6 @@ class LazyDelaunayTriangulatedSurface(Surface):
 
                     # If we reach here then we know that no flip was needed.
                     ccc = self._s.edge_transformation(ll, ee) * cc
-
-                    # Some (unnecessary) sanity checks.
-                    # assert self._s.edge_transformation(ll,ee)(self._s.polygon(ll).vertex(ee))==ppp.vertex((eee+1)%3)
-                    # assert ccc.point_position(ppp.vertex((eee+2)%3))!=1
 
                     # Check if the disk passes through the next edge in the chain.
                     lp = ccc.line_segment_position(

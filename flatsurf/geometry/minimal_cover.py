@@ -1,11 +1,31 @@
 from __future__ import absolute_import, print_function, division
-from six.moves import range, map, filter, zip
 
 from sage.matrix.constructor import matrix
 
 from .surface import Surface
-from .half_translation_surface import HalfTranslationSurface
-from .dilation_surface import DilationSurface
+
+
+def _is_finite(surface):
+    r"""
+    Return whether ``surface`` is a finite rational cone surface.
+    """
+    if not surface.is_finite():
+        return False
+
+    surface = surface.reposition_polygons(relabel=True)
+
+    for label in surface.label_iterator():
+        polygon = surface.polygon(label)
+
+        for e in range(polygon.num_edges()):
+            from flatsurf.geometry.similarity_surface import SimilaritySurface
+            m = SimilaritySurface.edge_matrix(surface, label, e)
+
+            from flatsurf.geometry.matrix_2x2 import is_cosine_sine_of_rational
+            if not is_cosine_sine_of_rational(m[0][0], m[0][1]):
+                return False
+
+    return True
 
 
 class MinimalTranslationCover(Surface):
@@ -54,19 +74,7 @@ class MinimalTranslationCover(Surface):
             self._ss = similarity_surface
 
         # We are finite if and only if self._ss is a finite RationalConeSurface.
-        if not self._ss.is_finite():
-            finite = False
-        else:
-            from flatsurf.geometry.rational_cone_surface import RationalConeSurface
-
-            finite = True
-            if not isinstance(self._ss, RationalConeSurface):
-                ss_copy = self._ss.reposition_polygons(relabel=True)
-                try:
-                    rcs = RationalConeSurface(ss_copy)
-                    rcs._test_edge_matrix()
-                except AssertionError:
-                    finite = False
+        finite = _is_finite(self._ss)
 
         self._F = self._ss.base_ring()
         base_label = (self._ss.base_label(), self._F.one(), self._F.zero())
@@ -78,7 +86,6 @@ class MinimalTranslationCover(Surface):
     def polygon(self, lab):
         if not isinstance(lab, tuple) or len(lab) != 3:
             raise ValueError("invalid label {!r}".format(lab))
-        p = self._ss.polygon(lab[0])
         return matrix([[lab[1], -lab[2]], [lab[2], lab[1]]]) * self._ss.polygon(lab[0])
 
     def opposite_edge(self, p, e):
@@ -135,21 +142,10 @@ class MinimalHalfTranslationCover(Surface):
         else:
             self._ss = similarity_surface
 
+        finite = _is_finite(self._ss)
         # We are finite if and only if self._ss is a finite RationalConeSurface.
         if not self._ss.is_finite():
             finite = False
-        else:
-            from flatsurf.geometry.rational_cone_surface import RationalConeSurface
-
-            finite = True
-            if not isinstance(self._ss, RationalConeSurface):
-                ss_copy = self._ss.reposition_polygons(relabel=True)
-                try:
-                    rcs = RationalConeSurface(ss_copy)
-                    rcs._test_edge_matrix()
-                except AssertionError:
-                    # print("Warning: Could be indicating infinite surface falsely.")
-                    finite = False
 
         self._F = self._ss.base_ring()
         base_label = (self._ss.base_label(), self._F.one(), self._F.zero())
@@ -161,7 +157,6 @@ class MinimalHalfTranslationCover(Surface):
     def polygon(self, lab):
         if not isinstance(lab, tuple) or len(lab) != 3:
             raise ValueError("invalid label {!r}".format(lab))
-        p = self._ss.polygon(lab[0])
         return matrix([[lab[1], -lab[2]], [lab[2], lab[1]]]) * self._ss.polygon(lab[0])
 
     def opposite_edge(self, p, e):

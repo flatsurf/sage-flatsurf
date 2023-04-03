@@ -29,7 +29,8 @@ class GraphicalSurfacePoint:
         if graphical_surface is None:
             self._gs = surface_point.surface().graphical_surface()
         else:
-            assert surface_point.surface() == graphical_surface.get_surface()
+            if surface_point.surface() != graphical_surface.get_surface():
+                raise ValueError
             self._gs = graphical_surface
         self._sp = surface_point
 

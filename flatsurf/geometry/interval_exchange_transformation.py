@@ -47,11 +47,16 @@ class FlowPolygonMap(SageObject):
 
         - ``top_lengths`` -- lengths for top partition
         """
-        assert all(x > ring.zero() for x in bot_lengths)
-        assert all(x > ring.zero() for x in top_lengths)
-        assert len(bot_labels) == len(bot_lengths)
-        assert len(top_labels) == len(top_lengths)
-        assert sum(top_lengths) == sum(bot_lengths)
+        if not all(x > ring.zero() for x in bot_lengths):
+            raise ValueError
+        if not all(x > ring.zero() for x in top_lengths):
+            raise ValueError
+        if len(bot_labels) != len(bot_lengths):
+            raise ValueError
+        if len(top_labels) != len(top_lengths):
+            raise ValueError
+        if sum(top_lengths) != sum(bot_lengths):
+            raise ValueError
 
         self._ring = ring
 

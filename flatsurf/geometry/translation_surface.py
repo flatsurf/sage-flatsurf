@@ -141,9 +141,9 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
                 s.set_vertex_zero(label, v, in_place=True)
             return s
         else:
-            assert (
-                in_place is False
-            ), "In place standardization only available for finite surfaces."
+            if in_place:
+                raise NotImplementedError("in place standardization only available for finite surfaces")
+
             return TranslationSurface(LazyStandardizedPolygonSurface(self))
 
     def cmp(self, s2, limit=None):
@@ -157,7 +157,8 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
         """
         if self.is_finite():
             if s2.is_finite():
-                assert limit is None, "Limit only enabled for finite surfaces."
+                if limit is not None:
+                    raise ValueError("limit only enabled for finite surfaces")
 
                 # print("comparing number of polygons")
                 sign = self.num_polygons() - s2.num_polygons()
@@ -362,7 +363,6 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
         deformed_labels = set()  # list of polygon labels being deformed.
 
         for singularity, vect in iteritems(deformation):
-            # assert s==singularity.surface()
             for label, v in singularity.vertex_set():
                 vertex_deformation[(label, v)] = vect
                 deformed_labels.add(label)
@@ -398,13 +398,10 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
                     # Critical point of area function
                     c = A1 / (-2 * A2)
                     if field.zero() < c and c < field.one():
-                        assert A0 + A1 * c + A2 * c**2 > field.zero(), (
-                            "Triangle with label %r degenerates at critical point before endpoint"
-                            % label
-                        )
-                assert A0 + A1 + A2 > field.zero(), (
-                    "Triangle with label %r degenerates at or before endpoint" % label
-                )
+                        if A0 + A1 * c + A2 * c**2 <= field.zero():
+                            raise ValueError("Triangle with label %r degenerates at critical point before endpoint" % label)
+                if A0 + A1 + A2 <= field.zero():
+                    raise ValueError("Triangle with label %r degenerates at or before endpoint" % label)
                 # Triangle does not degenerate.
                 us.change_polygon(
                     label, P(vertices=[vector_space.zero(), a0 + a1, b0 + b1])
@@ -470,14 +467,15 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
                     assert found_start is not None
                 try:
                     sss = ss.rel_deformation(deformation2, local=True)
-                    sss.apply_matrix(mi * g ** (-k) * m)
-                    sss.delaunay_triangulation(direction=nonzero, in_place=True)
-                    return sss
-                except AssertionError as e:
-                    pass
-                k = k + 1
-                if limit is not None and k >= limit:
-                    assert False, "Exeeded limit iterations"
+                except ValueError:
+                    k += 1
+                    if limit is not None and k >= limit:
+                        raise Exception("exceeded limit iterations")
+                    continue
+
+                sss.apply_matrix(mi * g ** (-k) * m)
+                sss.delaunay_triangulation(direction=nonzero, in_place=True)
+                return sss
 
     def j_invariant(self):
         r"""
@@ -593,16 +591,13 @@ class MinimalTranslationCover(Surface):
         if not self._ss.is_finite():
             finite = False
         else:
-            try:
-                from flatsurf.geometry.rational_cone_surface import RationalConeSurface
+            from flatsurf.geometry.rational_cone_surface import RationalConeSurface
 
-                ss_copy = self._ss.reposition_polygons(relabel=True)
-                rcs = RationalConeSurface(ss_copy)
-                rcs._test_edge_matrix()
-                finite = True
-            except AssertionError:
-                # print("Warning: Could be indicating infinite surface falsely.")
-                finite = False
+            ss_copy = self._ss.reposition_polygons(relabel=True)
+            rcs = RationalConeSurface(ss_copy)
+            # We might be infinite when this fails
+            rcs._test_edge_matrix()
+            finite = True
 
         identity = identity_matrix(self._ss.base_ring(), 2)
         identity.set_immutable()
