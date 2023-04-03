@@ -142,10 +142,8 @@ class MinimalHalfTranslationCover(Surface):
         else:
             self._ss = similarity_surface
 
-        finite = _is_finite(self._ss)
         # We are finite if and only if self._ss is a finite RationalConeSurface.
-        if not self._ss.is_finite():
-            finite = False
+        finite = _is_finite(self._ss)
 
         self._F = self._ss.base_ring()
         base_label = (self._ss.base_label(), self._F.one(), self._F.zero())
