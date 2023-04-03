@@ -120,10 +120,31 @@ class Singularity(SageObject):
         return "singularity with vertex equivalence class " + repr(self._s)
 
     def __eq__(self, other):
+        r"""
+        Return whether this singularity is indistinguishable from ``other``.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.similarity_surface_generators import TranslationSurfaceGenerators
+            sage: S = TranslationSurfaceGenerators.veech_2n_gon(5)
+            sage: singularity = S.singularity(0, 0)
+
+            sage: singularity == singularity
+            True
+
+        TESTS:
+
+        Verify that singularities can be compared to non-singularities (so they
+        can be put into sets and dicts with other objects)::
+
+            sage: singularity == 42
+            False
+
+        """
         if self is other:
             return True
         if not isinstance(other, Singularity):
-            raise TypeError
+            return False
         if not self._ss == other._ss:
             return False
         return self._s == other._s
@@ -285,12 +306,35 @@ class SurfacePoint(SageObject):
             )
 
     def __eq__(self, other):
+        r"""
+        Return whether this point is indistinguishable from ``other``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import half_translation_surfaces
+            sage: S = half_translation_surfaces.step_billiard([1,1,1,1], [1, 1/2, 1/3, 1/4])
+            sage: p = S.point(0, (1/2,1/2))
+            sage: p == p
+            True
+
+            sage: q = S.point(0, (1/2,1/3))
+            sage: p == q
+            False
+
+        TESTS:
+
+        Verify that points can be compared to non-points so they can be put into sets and dicts with other objects::
+
+            sage: p == 42
+            False
+
+        """
         if self is other:
             return True
         if not isinstance(other, SurfacePoint):
-            raise TypeError("Comparing SurfacePoint to an object of different type")
+            return False
         if not self._s == other._s:
-            raise ValueError("Comparing SurfacePoints on different surfaces")
+            return False
         return self._coordinate_dict == other._coordinate_dict
 
     def __hash__(self):
@@ -674,10 +718,42 @@ class SaddleConnection(SageObject):
         )
 
     def __eq__(self, other):
+        r"""
+        Return whether this saddle connection is indistinguishable from
+        ``other``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: connections = S.saddle_connections(13)
+
+            sage: connections[0] == connections[0]
+            True
+            sage: connections[0] == connections[1]
+            False
+
+
+        TESTS:
+
+        Verify that saddle connections can be compared to arbitrary objects (so
+        they can be put into dicts with other objects)::
+
+            sage: connections[0] == 42
+            False
+
+        ::
+
+            sage: len(connections)
+            32
+            sage: len(set(connections))
+            32
+
+        """
         if self is other:
             return True
         if not isinstance(other, SaddleConnection):
-            raise TypeError
+            return False
         if not self._s == other._s:
             return False
         if not self._direction == other._direction:
