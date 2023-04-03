@@ -705,23 +705,23 @@ class Surface(SageObject):
         """
         if self is other:
             return True
+
         if not isinstance(other, Surface):
             return False
+
         if self.is_finite() != other.is_finite():
             return False
         if not self.is_finite():
             raise NotImplementedError("cannot compare infinite surfaces yet")
+
         if self.base_ring() != other.base_ring():
             return False
-        if not self.is_mutable() and not other.is_mutable():
-            hash1 = hash(self)
-            hash2 = hash(other)
-            if hash1 != hash2:
-                return False
         if self.base_label() != other.base_label():
             return False
+
         if self.num_polygons() != other.num_polygons():
             return False
+
         for label, polygon in self.label_polygon_iterator():
             try:
                 polygon2 = other.polygon(label)
@@ -732,6 +732,7 @@ class Surface(SageObject):
             for edge in range(polygon.num_edges()):
                 if self.opposite_edge(label, edge) != other.opposite_edge(label, edge):
                     return False
+
         return True
 
     def __ne__(self, other):
