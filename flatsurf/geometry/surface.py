@@ -679,33 +679,49 @@ class Surface(SageObject):
 
     def __eq__(self, other):
         r"""
-        Implements a naive notion of equality where two finite surfaces are equal if:
-        - their base rings are equal,
-        - their base labels are equal,
-        - their polygons are equal and labeled and glued in the same way.
-        For infinite surfaces we use reference equality.
-        Raises a value error if the surfaces are defined over different rings.
+        Return whether this surface is indistinguishable from ``other``.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.surface import Surface_dict
+            sage: from flatsurf.geometry.polygon import Polygon, ConvexPolygons
+
+            sage: S = Surface_dict(QQ)
+            sage: P = ConvexPolygons(QQ)
+            sage: S.add_polygon(P([(1, 0), (0, 1), (-1, -1)]), label=0)
+            0
+            sage: S == S
+            True
+
+            sage: T = Surface_dict(QQ)
+            sage: S == T
+            False
+
+        TESTS::
+
+            sage: S == 42
+            False
+
         """
         if self is other:
             return True
+
         if not isinstance(other, Surface):
-            raise TypeError
+            return False
+
+        if self.is_finite() != other.is_finite():
+            return False
         if not self.is_finite():
-            if other.is_finite():
-                return False
-            else:
-                raise ValueError("Can not compare infinite surfaces.")
+            raise NotImplementedError("cannot compare infinite surfaces yet")
+
         if self.base_ring() != other.base_ring():
-            raise ValueError("Refusing to compare surfaces with different base rings.")
-        if not self.is_mutable() and not other.is_mutable():
-            hash1 = hash(self)
-            hash2 = hash(other)
-            if hash1 != hash2:
-                return False
+            return False
         if self.base_label() != other.base_label():
             return False
+
         if self.num_polygons() != other.num_polygons():
             return False
+
         for label, polygon in self.label_polygon_iterator():
             try:
                 polygon2 = other.polygon(label)
@@ -716,6 +732,7 @@ class Surface(SageObject):
             for edge in range(polygon.num_edges()):
                 if self.opposite_edge(label, edge) != other.opposite_edge(label, edge):
                     return False
+
         return True
 
     def __ne__(self, other):
