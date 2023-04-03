@@ -25,8 +25,6 @@ This includes singularities, saddle connections and cylinders.
 ######################################################################
 
 from __future__ import absolute_import, print_function, division
-from six.moves import range, map, filter, zip
-from six import iteritems
 
 from sage.misc.cachefunc import cached_method
 from sage.modules.free_module import VectorSpace
@@ -36,7 +34,7 @@ from sage.plot.polygon import polygon2d
 from sage.rings.qqbar import AA
 from sage.structure.sage_object import SageObject
 
-from .polygon import dot_product, ConvexPolygons, wedge_product
+from .polygon import ConvexPolygons, wedge_product
 from .similarity import SimilarityGroup
 
 
@@ -61,12 +59,12 @@ class Singularity(SageObject):
 
     def __init__(self, similarity_surface, label, v, limit=None):
         r"""
-        Represents the singularity associated to the v-th vertex of the polygon with
-        label ``label``.
+        Represents the singularity associated to the ``v``-th vertex of the
+        polygon with label ``label``.
 
-        If the surface is infinite, the limit needs to be set. In this case the construction
-        of the singularity is successful if the sequence of vertices hit by passing through
-        edges closes up in limit or less steps.
+        If the surface is infinite, the limit can be set. In this case the
+        construction of the singularity is successful if the sequence of
+        vertices hit by passing through edges closes up in limit or less steps.
         """
         self._ss = similarity_surface
         self._s = set()
@@ -217,7 +215,7 @@ class SurfacePoint(SageObject):
                 else:
                     self._coordinate_dict[label] = {new_point}
         # Freeze the sets.
-        for label, point_set in iteritems(self._coordinate_dict):
+        for label, point_set in self._coordinate_dict.items():
             self._coordinate_dict[label] = frozenset(point_set)
 
     def surface(self):
@@ -234,7 +232,7 @@ class SurfacePoint(SageObject):
             return self._num_coordinates
         except AttributeError:
             count = 0
-            for label, point_set in iteritems(self._coordinate_dict):
+            for label, point_set in self._coordinate_dict.items():
                 count += len(point_set)
             self._num_coordinates = count
             return count
@@ -338,7 +336,7 @@ class SurfacePoint(SageObject):
 
     def __hash__(self):
         h = 0
-        for label, point_set in iteritems(self._coordinate_dict):
+        for label, point_set in self._coordinate_dict.items():
             h += 677 * hash(label) + hash(point_set)
         return h
 
@@ -772,11 +770,7 @@ class SaddleConnection(SageObject):
 
     def _test_geometry(self, **options):
         # Test that this saddle connection actually exists on the surface.
-        if "tester" in options:
-            tester = options["tester"]
-        else:
-            tester = self._tester(**options)
-        sc = SaddleConnection(
+        SaddleConnection(
             self._s,
             self._start_data,
             self._direction,
@@ -794,10 +788,6 @@ class SaddleConnection(SageObject):
 
     def _test_inverse(self, **options):
         # Test that inverting works properly.
-        if "tester" in options:
-            tester = options["tester"]
-        else:
-            tester = self._tester(**options)
         SaddleConnection(
             self._s,
             self._end_data,
