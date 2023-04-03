@@ -12,6 +12,10 @@ def _is_finite(surface):
     if not surface.is_finite():
         return False
 
+    from flatsurf.geometry.rational_cone_surface import RationalConeSurface
+    if isinstance(surface, RationalConeSurface):
+        return True
+
     surface = surface.reposition_polygons(relabel=True)
 
     for label in surface.label_iterator():
@@ -55,10 +59,10 @@ class MinimalTranslationCover(Surface):
     The following is to test that unfolding is reasonably fast on the instances reported
     in https://github.com/flatsurf/sage-flatsurf/issues/47::
 
-        sage: T = polygons.triangle(2, 13, 26)  # long time (3s)
-        sage: S = similarity_surfaces.billiard(T, rational=True)  # long time (above)
-        sage: alarm(5); S = S.minimal_cover("translation"); cancel_alarm()  # long time (above)
-        sage: S  # long time (above)
+        sage: T = polygons.triangle(2, 13, 26)
+        sage: S = similarity_surfaces.billiard(T, rational=True)
+        sage: S = S.minimal_cover("translation")
+        sage: S
         TranslationSurface built from 82 polygons
     """
 
@@ -124,10 +128,10 @@ class MinimalHalfTranslationCover(Surface):
     The following is to test that unfolding is reasonably fast on the instances reported
     in https://github.com/flatsurf/sage-flatsurf/issues/47::
 
-        sage: T = polygons.triangle(2, 13, 26)  # long time (3s)
-        sage: S = similarity_surfaces.billiard(T, rational=True)  # long time (above)
-        sage: alarm(5); S = S.minimal_cover("half-translation"); cancel_alarm()  # long time (above)
-        sage: S  # long time (above)
+        sage: T = polygons.triangle(2, 13, 26)
+        sage: S = similarity_surfaces.billiard(T, rational=True)
+        sage: S = S.minimal_cover("half-translation")
+        sage: S
         HalfTranslationSurface built from 82 polygons
     """
 
