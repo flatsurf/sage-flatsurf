@@ -389,7 +389,9 @@ class Surface(SageObject):
         r"""
         Called before a mutation occurs. Do not call directly.
         """
-        assert self.is_mutable()
+        if not self.is_mutable():
+            raise Exception("surface must be mutable")
+
         # Remove the cache which will likely be invalidated.
         self._cache = {}
 
@@ -401,7 +403,8 @@ class Surface(SageObject):
         of pairs of length equal to number of edges of the polygon).
         """
         self.__mutate()
-        assert gluing_list is None or new_polygon.num_edges() == len(gluing_list)
+        if not (gluing_list is None or new_polygon.num_edges() == len(gluing_list)):
+            raise ValueError
         self._change_polygon(label, new_polygon, gluing_list)
 
     def set_edge_pairing(self, label1, edge1, label2, edge2):
@@ -455,7 +458,8 @@ class Surface(SageObject):
         from the label provided).
         """
         self.__mutate()
-        assert gluing_list is None or new_polygon.num_edges() == len(gluing_list)
+        if not (gluing_list is None or new_polygon.num_edges() == len(gluing_list)):
+            raise ValueError
         return self._add_polygon(new_polygon, gluing_list, label)
 
     def remove_polygon(self, label):
@@ -1890,7 +1894,8 @@ class LabelWalker:
         return new_labels
 
     def find_all_labels(self):
-        assert self._s.is_finite()
+        if not self._s.is_finite():
+            raise NotImplementedError
         label = self.find_a_new_label()
         while label is not None:
             label = self.find_a_new_label()

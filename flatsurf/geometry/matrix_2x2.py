@@ -82,7 +82,8 @@ def similarity_from_vectors(u, v, matrix_space=None):
         sage: m*u == 2*v
         True
     """
-    assert u.parent() is v.parent()
+    if u.parent() is not v.parent():
+        raise ValueError
 
     if matrix_space is None:
         from sage.matrix.matrix_space import MatrixSpace

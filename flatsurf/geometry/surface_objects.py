@@ -68,8 +68,6 @@ class Singularity(SageObject):
         of the singularity is successful if the sequence of vertices hit by passing through
         edges closes up in limit or less steps.
         """
-        from .similarity_surface import SimilaritySurface
-
         self._ss = similarity_surface
         self._s = set()
         if not self._ss.is_finite() and limit is None:
@@ -194,9 +192,10 @@ class SurfacePoint(SageObject):
         point = VectorSpace(self._ring, 2)(point)
         point.set_immutable()
         pos = p.get_point_position(point)
-        assert (
-            pos.is_inside()
-        ), "Point must be positioned within the polygon with the given label."
+
+        if not pos.is_inside():
+            raise ValueError("point must be positioned within the polygon with the given label")
+
         # This is the correct thing if point lies in the interior of the polygon with the given label.
         self._coordinate_dict = {label: {point}}
         if pos.is_in_edge_interior():
@@ -417,7 +416,9 @@ class SaddleConnection(SageObject):
         """
         from .similarity_surface import SimilaritySurface
 
-        assert isinstance(surface, SimilaritySurface)
+        if not isinstance(surface, SimilaritySurface):
+            raise TypeError
+
         self._s = surface
 
         # Sanitize the direction vector:
@@ -625,9 +626,9 @@ class SaddleConnection(SageObject):
         """
         from .cone_surface import ConeSurface
 
-        assert isinstance(
-            self._s, ConeSurface
-        ), "Length of a saddle connection only makes sense for cone surfaces."
+        if not isinstance(self._s, ConeSurface):
+            raise NotImplementedError("length of a saddle connection only makes sense for cone surfaces")
+
         return vector(AA, self._holonomy).norm()
 
     def end_holonomy(self):
@@ -1068,9 +1069,8 @@ class Cylinder(SageObject):
         """
         from .cone_surface import ConeSurface
 
-        assert isinstance(
-            self._s, ConeSurface
-        ), "Area only makes sense for cone surfaces."
+        if not isinstance(self._s, ConeSurface):
+            raise NotImplementedError("area only makes sense for cone surfaces")
         area = 0
         for label, p in self.polygons():
             area += p.area()
@@ -1093,9 +1093,8 @@ class Cylinder(SageObject):
         """
         if "graphical_surface" in options and options["graphical_surface"] is not None:
             gs = options["graphical_surface"]
-            assert (
-                gs.get_surface() == self._s
-            ), "Graphical surface for the wrong surface."
+            if gs.get_surface() != self._s:
+                raise ValueError("graphical surface for the wrong surface")
             del options["graphical_surface"]
         else:
             gs = self._s.graphical_surface()
@@ -1130,7 +1129,9 @@ class Cylinder(SageObject):
         Return the next saddle connection as you move around the cylinder boundary
         moving from sc in the direction of its orientation.
         """
-        assert sc in self._boundary
+        if sc not in self._boundary:
+            raise ValueError
+
         v = sc.end_tangent_vector()
         v = v.clockwise_to(-v.vector())
         from flatsurf.geometry.polygon import is_same_direction
@@ -1148,7 +1149,8 @@ class Cylinder(SageObject):
         Return the previous saddle connection as you move around the cylinder boundary
         moving from sc in the direction opposite its orientation.
         """
-        assert sc in self._boundary
+        if sc not in self._boundary:
+            raise ValueError
         v = sc.start_tangent_vector()
         v = v.counterclockwise_to(-v.vector())
         from flatsurf.geometry.polygon import is_same_direction
@@ -1168,9 +1170,9 @@ class Cylinder(SageObject):
         """
         from .translation_surface import TranslationSurface
 
-        assert isinstance(
-            self._s, TranslationSurface
-        ), "Holonomy currently only computable for translation surfaces."
+        if not isinstance(self._s, TranslationSurface):
+            raise NotImplementedError("holonomy currently only computable for translation surfaces")
+
         V = self._s.vector_space()
         total = V.zero()
         for sc in self._boundary1:
@@ -1196,23 +1198,10 @@ class Cylinder(SageObject):
         """
         from .cone_surface import ConeSurface
 
-        assert isinstance(
-            self._s, ConeSurface
-        ), "Circumference only makes sense for cone surfaces."
+        if not isinstance(self._s, ConeSurface):
+            raise NotImplementedError("circumference only makes sense for cone surfaces")
+
         total = 0
         for sc in self._boundary1:
             total += sc.length()
         return total
-
-    # def width_vector(self):
-    #    r"""
-    #    In a translation surface, return a vector orthogonal to the holonomy vector which cuts
-    #    across the cylinder.
-    #    """
-    #    from flatsurf.geometry.translation_surface import TranslationSurface
-    #    assert isinstance(self._s,TranslationSurface), \
-    #        "width_vector currently only computable for translation surfaces."
-    #    w=self._across.holonomy()
-    #    h=iter(self._boundary1).next().holonomy()
-    #    from flatsurf.geometry.polygon import dot_product
-    #    return w-(dot_product(w,h)/dot_product(h,h))*h

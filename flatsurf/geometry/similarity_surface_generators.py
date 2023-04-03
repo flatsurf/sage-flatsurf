@@ -778,7 +778,8 @@ class HalfTranslationSurfaceGenerators:
             sage: TestSuite(S).run()
         """
         n = len(h)
-        assert len(w) == n
+        if len(w) != n:
+            raise ValueError
         if n < 2:
             raise ValueError("w and h must have length at least 2")
         H = sum(h)
@@ -1033,7 +1034,6 @@ class TranslationSurfaceGenerators:
         t = ZZ(t)
         e = ZZ(e)
         g = w.gcd(h)
-        gg = g.gcd(t).gcd(e)
         if (
             w <= 0
             or h <= 0
@@ -1185,7 +1185,8 @@ class TranslationSurfaceGenerators:
             sage: s=translation_surfaces.ward(7)
             sage: TestSuite(s).run()
         """
-        assert n >= 3
+        if n < 3:
+            raise ValueError
         o = ZZ_2 * polygons.regular_ngon(2 * n)
         p1 = polygons(*[o.edge((2 * i + n) % (2 * n)) for i in range(n)])
         p2 = polygons(*[o.edge((2 * i + n + 1) % (2 * n)) for i in range(n)])
@@ -1366,7 +1367,8 @@ class TranslationSurfaceGenerators:
             [ 0  0  2  0]
         """
         g = ZZ(genus)
-        assert g >= 3
+        if g < 3:
+            raise ValueError
         x = polygen(AA)
         p = sum([x**i for i in range(1, g + 1)]) - 1
         cp = AA.common_polynomial(p)
