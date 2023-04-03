@@ -588,16 +588,8 @@ class MinimalTranslationCover(Surface):
             self._ss = similarity_surface
 
         # We are finite if and only if self._ss is a finite RationalConeSurface.
-        if not self._ss.is_finite():
-            finite = False
-        else:
-            from flatsurf.geometry.rational_cone_surface import RationalConeSurface
-
-            ss_copy = self._ss.reposition_polygons(relabel=True)
-            rcs = RationalConeSurface(ss_copy)
-            # We might be infinite when this fails
-            rcs._test_edge_matrix()
-            finite = True
+        from flatsurf.geometry.minimal_cover import _is_finite
+        finite = _is_finite(self._ss)
 
         identity = identity_matrix(self._ss.base_ring(), 2)
         identity.set_immutable()
@@ -620,7 +612,6 @@ class MinimalTranslationCover(Surface):
         """
         if not isinstance(lab, tuple) or len(lab) != 2:
             raise ValueError("invalid label {!r}".format(lab))
-        p = self._ss.polygon(lab[0])
         return lab[1] * self._ss.polygon(lab[0])
 
     def opposite_edge(self, p, e):
