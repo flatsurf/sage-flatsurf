@@ -879,7 +879,7 @@ class Surface(Parent):
 
     def _an_element_(self):
         r"""
-        Return an point of this surface.
+        Return a point of this surface.
 
         EXAMPLES::
 
