@@ -351,7 +351,26 @@ class SimplicialHomologyClass(Element):
 
 class SimplicialHomology(UniqueRepresentation, Parent):
     r"""
-    Absolute simplicial homology of the ``surface`` with ``coefficients``.
+    Absolute and relative simplicial homology of the ``surface`` with
+    ``coefficients``.
+
+    INPUT:
+
+    - ``surface`` -- a finite :class:`flatsurf.geometry.surface.Surface`
+      without boundary
+
+    - ``coefficients`` -- a ring (default: the integers)
+
+    - ``generators`` -- one of ``edge``, ``interior``, ``midpoint`` (default:
+      ``edge``) how generators are represented
+
+    - ``relative`` -- a subset of points of the ``surface`` (default: the empty
+      set)
+
+    - ``implementation`` -- one of ``"spanning_tree"`` or ``"generic"`` (default:
+      ``"spanning_tree"``); whether the homology is computed with a (very
+      efficient) spanning tree algorithm or the generic homology machinery
+      provided by SageMath.
 
     EXAMPLES::
 
@@ -372,11 +391,23 @@ class SimplicialHomology(UniqueRepresentation, Parent):
         sage: SimplicialHomology(T)
         H₁(TranslationSurface built from 1 polygon; Integer Ring)
 
+    TESTS::
+
+        sage: T = translation_surfaces.torus((1, 0), (0, 1))
+        sage: H = SimplicialHomology(implementation="spanning_tree")
+        sage: TestSuite(H).run()
+
+    ::
+
+        sage: T = translation_surfaces.torus((1, 0), (0, 1))
+        sage: H = SimplicialHomology(implementation="generic")
+        sage: TestSuite(H).run()
+
     """
     Element = SimplicialHomologyClass
 
     @staticmethod
-    def __classcall__(cls, surface, coefficients=None, category=None):
+    def __classcall__(cls, surface, coefficients=None, generators="edge", subset=None, implementation="spanning_tree", category=None):
         r"""
         Normalize parameters used to construct homology.
 
@@ -394,16 +425,51 @@ class SimplicialHomology(UniqueRepresentation, Parent):
         if surface.is_mutable():
             raise ValueError("surface must be immutable to compute homology")
 
-        from sage.all import ZZ, SetsWithPartialMaps
-        return super().__classcall__(cls, surface, coefficients or ZZ, category or SetsWithPartialMaps())
+        from sage.all import ZZ
+        coefficients = coefficients or ZZ
 
-    def __init__(self, surface, coefficients, category):
+        from sage.all import SetsWithPartialMaps
+        category = category or SetsWithPartialMaps()
+        subset = frozenset(subset or {})
+
+        return super().__classcall__(cls, surface, coefficients, generators, subset, implementation, category)
+
+    def __init__(self, surface, coefficients, generators, subset, implementation, category):
         Parent.__init__(self, category=category)
+
+        from sage.categories.all import Rings
+        if coefficients not in Rings():
+            raise TypeError("coefficients must be a ring")
+
+        if generators not in ["edge",]:
+            raise NotImplementedError("cannot represented homology with these generators yet")
+
+        if subset:
+            raise NotImplementedError("cannot compute relative homology yet")
+
+        if implementation not in ["generic", "spanning_tree"]:
+            raise NotImplementedError("cannot compute homology with this implementation yet")
 
         self._surface = surface
         self._coefficients = coefficients
+        self._generators = generators
+        self._subset = subset
+        self._implementation = implementation
 
     def surface(self):
+        r"""
+        Return the surface of which this is the homology.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, SimplicialHomology
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
+            sage: T.set_immutable()
+            sage: H = SimplicialHomology(T)
+            sage: H.surface() == T
+            True
+
+        """
         return self._surface
 
     @cached_method
@@ -412,6 +478,10 @@ class SimplicialHomology(UniqueRepresentation, Parent):
         Return the free module of simplicial ``dimension``-chains of the
         triangulation, i.e., formal sums of ``dimension``-simplicies, e.g., formal
         sums of edges of the triangulation.
+
+        INPUT:
+
+        - ``dimension`` -- an integer (default: ``1``)
 
         EXAMPLES::
 
@@ -431,6 +501,10 @@ class SimplicialHomology(UniqueRepresentation, Parent):
         r"""
         Return the ``dimension``-simplices that form the basis of
         :meth:`chain_module`.
+
+        INPUT:
+
+        - ``dimension`` -- an integer (default: ``1``)
 
         EXAMPLES::
 
@@ -458,6 +532,10 @@ class SimplicialHomology(UniqueRepresentation, Parent):
     def boundary(self, chain):
         r"""
         Return the boundary of ``chain`` as an element of the :meth:`chain_module`.
+
+        INPUT:
+
+        - ``chain`` -- an element of :meth:`chain_module`
 
         EXAMPLES::
 
@@ -507,12 +585,19 @@ class SimplicialHomology(UniqueRepresentation, Parent):
                         boundary -= coefficient * C1(self._surface.opposite_edge(face, edge))
             return boundary
 
-        return self.chain_module(dimension=-1).zero()
+        if chain.parent() == self.chain_module(dimension=0):
+            return self.chain_module(dimension=-1).zero()
+
+        # The boundary for all other chains is trivial but we have no way to
+        # tell whether the boundary is a 2-dimensional chain (which lives in a
+        # non-trivial module) or a chain living in a trivial module.
+        raise NotImplementedError("cannot compute boundary of this chain yet")
 
     @cached_method
     def _chain_complex(self):
         r"""
-        Return the chain complex of vector spaces that is implementing this homology.
+        Return the chain complex of vector spaces that is implementing this
+        homology (if the ``"generic"`` implementation has been selected.)
 
         EXAMPLES::
 
@@ -540,8 +625,12 @@ class SimplicialHomology(UniqueRepresentation, Parent):
     @cached_method
     def _homology(self, dimension=1):
         r"""
-        Return the a free module isomorphic to homology, a map from that module
-        to the chain module, and an inverse (modulo boundaries.)
+        Return the a free module isomorphic to homology, a lift from that
+        module to the chain module, and an inverse (modulo boundaries.)
+
+        INPUT:
+
+        - ``dimension`` -- an integer (default: ``1``)
 
         EXAMPLES::
 
@@ -559,24 +648,67 @@ class SimplicialHomology(UniqueRepresentation, Parent):
                To:   Finitely generated module V/W over Integer Ring with invariants (0, 0))
 
         """
-        C = self._chain_complex()
+        if self._implementation == "generic":
+            C = self._chain_complex()
 
-        cycles = C.differential(dimension).transpose().kernel()
-        boundaries = C.differential(dimension + 1).transpose().image()
-        homology = cycles.quotient(boundaries)
+            cycles = C.differential(dimension).transpose().kernel()
+            boundaries = C.differential(dimension + 1).transpose().image()
+            homology = cycles.quotient(boundaries)
 
-        F = self.chain_module(dimension)
+            F = self.chain_module(dimension)
 
-        from sage.all import vector
-        from_homology = homology.module_morphism(function=lambda x: F.from_vector(vector(list(x.lift().lift()))), codomain=F)
-        to_homology = F.module_morphism(function=lambda x: homology(cycles(x.dense_coefficient_list(order=F.get_order()))), codomain=homology)
+            from sage.all import vector
+            from_homology = homology.module_morphism(function=lambda x: F.from_vector(vector(list(x.lift().lift()))), codomain=F)
+            to_homology = F.module_morphism(function=lambda x: homology(cycles(x.dense_coefficient_list(order=F.get_order()))), codomain=homology)
 
-        for gen in homology.gens():
-            assert to_homology(from_homology(gen)) == gen
+            for gen in homology.gens():
+                assert to_homology(from_homology(gen)) == gen
 
-        return homology, from_homology, to_homology
+            return homology, from_homology, to_homology
+
+        raise NotImplementedError("cannot compute homology with this implementation yet")
+
+    def _test_homology(self, **options):
+        r"""
+        Test that :meth:`_homology` compute homology correctly.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, SimplicialHomology
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
+            sage: T.set_immutable()
+            sage: H = SimplicialHomology(T)
+            sage: H._test_homology()
+
+        """
+        tester = self._tester(**options)
+
+        for dimension in [0, 1, 2]:
+            homology, from_homology, to_homology = self._homology(dimension=dimension)
+            chains = self.chain_module(dimension)
+
+            tester.assertEqual(homology, to_homology.codomain())
+            tester.assertEqual(homology, from_homology.domain())
+            tester.assertEqual(chains, to_homology.domain())
+            tester.assertEqual(chains, from_homology.codomain())
+
+            for gen in homology.gens():
+                tester.assertEqual(to_homology(from_homology(gen)), gen)
 
     def _repr_(self):
+        r"""
+        Return a printable representation of this homology.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, SimplicialHomology
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
+            sage: T.set_immutable()
+            sage: H = SimplicialHomology(T)
+            sage: H
+            H₁(TranslationSurface built from 1 polygon; Integer Ring)
+
+        """
         return f"H₁({self._surface}; {self._coefficients})"
 
     def _element_constructor_(self, x):
