@@ -4,10 +4,10 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
-    <!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
+    <!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
         <title>flatsurf.geometry.surface_objects - sage-flatsurf 0.4.7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     <link rel="stylesheet" type="text/css" href="https://doc.sagemath.org/html/en/reference/_static/custom-furo.css" />
@@ -379,10 +379,31 @@
         <span class="k">return</span> <span class="s2">&quot;singularity with vertex equivalence class &quot;</span> <span class="o">+</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return whether this singularity is indistinguishable from ``other``.</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf.geometry.similarity_surface_generators import TranslationSurfaceGenerators</span>
+<span class="sd">            sage: S = TranslationSurfaceGenerators.veech_2n_gon(5)</span>
+<span class="sd">            sage: singularity = S.singularity(0, 0)</span>
+
+<span class="sd">            sage: singularity == singularity</span>
+<span class="sd">            True</span>
+
+<span class="sd">        TESTS:</span>
+
+<span class="sd">        Verify that singularities can be compared to non-singularities (so they</span>
+<span class="sd">        can be put into sets and dicts with other objects)::</span>
+
+<span class="sd">            sage: singularity == 42</span>
+<span class="sd">            False</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span> <span class="ow">is</span> <span class="n">other</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">True</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Singularity</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span>
+            <span class="k">return</span> <span class="kc">False</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ss</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_ss</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_s</span>
@@ -544,12 +565,35 @@
             <span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return whether this point is indistinguishable from ``other``.</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf import half_translation_surfaces</span>
+<span class="sd">            sage: S = half_translation_surfaces.step_billiard([1,1,1,1], [1, 1/2, 1/3, 1/4])</span>
+<span class="sd">            sage: p = S.point(0, (1/2,1/2))</span>
+<span class="sd">            sage: p == p</span>
+<span class="sd">            True</span>
+
+<span class="sd">            sage: q = S.point(0, (1/2,1/3))</span>
+<span class="sd">            sage: p == q</span>
+<span class="sd">            False</span>
+
+<span class="sd">        TESTS:</span>
+
+<span class="sd">        Verify that points can be compared to non-points so they can be put into sets and dicts with other objects::</span>
+
+<span class="sd">            sage: p == 42</span>
+<span class="sd">            False</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span> <span class="ow">is</span> <span class="n">other</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">True</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">SurfacePoint</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Comparing SurfacePoint to an object of different type&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_s</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Comparing SurfacePoints on different surfaces&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coordinate_dict</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_coordinate_dict</span>
 
     <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -933,10 +977,42 @@
         <span class="p">)</span></div>
 
     <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return whether this saddle connection is indistinguishable from</span>
+<span class="sd">        ``other``.</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf import translation_surfaces</span>
+<span class="sd">            sage: S = translation_surfaces.square_torus()</span>
+<span class="sd">            sage: connections = S.saddle_connections(13)</span>
+
+<span class="sd">            sage: connections[0] == connections[0]</span>
+<span class="sd">            True</span>
+<span class="sd">            sage: connections[0] == connections[1]</span>
+<span class="sd">            False</span>
+
+
+<span class="sd">        TESTS:</span>
+
+<span class="sd">        Verify that saddle connections can be compared to arbitrary objects (so</span>
+<span class="sd">        they can be put into dicts with other objects)::</span>
+
+<span class="sd">            sage: connections[0] == 42</span>
+<span class="sd">            False</span>
+
+<span class="sd">        ::</span>
+
+<span class="sd">            sage: len(connections)</span>
+<span class="sd">            32</span>
+<span class="sd">            sage: len(set(connections))</span>
+<span class="sd">            32</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span> <span class="ow">is</span> <span class="n">other</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">True</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">SaddleConnection</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span>
+            <span class="k">return</span> <span class="kc">False</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_s</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_direction</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_direction</span><span class="p">:</span>
