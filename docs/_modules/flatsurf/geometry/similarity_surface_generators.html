@@ -1037,7 +1037,8 @@
 <span class="sd">            sage: TestSuite(S).run()</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
-        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="o">==</span> <span class="n">n</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="o">!=</span> <span class="n">n</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span>
         <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;w and h must have length at least 2&quot;</span><span class="p">)</span>
         <span class="n">H</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
@@ -1292,7 +1293,6 @@
         <span class="n">t</span> <span class="o">=</span> <span class="n">ZZ</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
         <span class="n">e</span> <span class="o">=</span> <span class="n">ZZ</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
         <span class="n">g</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">gcd</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
-        <span class="n">gg</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">gcd</span><span class="p">(</span><span class="n">t</span><span class="p">)</span><span class="o">.</span><span class="n">gcd</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
         <span class="k">if</span> <span class="p">(</span>
             <span class="n">w</span> <span class="o">&lt;=</span> <span class="mi">0</span>
             <span class="ow">or</span> <span class="n">h</span> <span class="o">&lt;=</span> <span class="mi">0</span>
@@ -1444,7 +1444,8 @@
 <span class="sd">            sage: s=translation_surfaces.ward(7)</span>
 <span class="sd">            sage: TestSuite(s).run()</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">assert</span> <span class="n">n</span> <span class="o">&gt;=</span> <span class="mi">3</span>
+        <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span>
         <span class="n">o</span> <span class="o">=</span> <span class="n">ZZ_2</span> <span class="o">*</span> <span class="n">polygons</span><span class="o">.</span><span class="n">regular_ngon</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">n</span><span class="p">)</span>
         <span class="n">p1</span> <span class="o">=</span> <span class="n">polygons</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">o</span><span class="o">.</span><span class="n">edge</span><span class="p">((</span><span class="mi">2</span> <span class="o">*</span> <span class="n">i</span> <span class="o">+</span> <span class="n">n</span><span class="p">)</span> <span class="o">%</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">n</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)])</span>
         <span class="n">p2</span> <span class="o">=</span> <span class="n">polygons</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">o</span><span class="o">.</span><span class="n">edge</span><span class="p">((</span><span class="mi">2</span> <span class="o">*</span> <span class="n">i</span> <span class="o">+</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">n</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)])</span>
@@ -1625,7 +1626,8 @@
 <span class="sd">            [ 0  0  2  0]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">g</span> <span class="o">=</span> <span class="n">ZZ</span><span class="p">(</span><span class="n">genus</span><span class="p">)</span>
-        <span class="k">assert</span> <span class="n">g</span> <span class="o">&gt;=</span> <span class="mi">3</span>
+        <span class="k">if</span> <span class="n">g</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span>
         <span class="n">x</span> <span class="o">=</span> <span class="n">polygen</span><span class="p">(</span><span class="n">AA</span><span class="p">)</span>
         <span class="n">p</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="n">x</span><span class="o">**</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">g</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)])</span> <span class="o">-</span> <span class="mi">1</span>
         <span class="n">cp</span> <span class="o">=</span> <span class="n">AA</span><span class="o">.</span><span class="n">common_polynomial</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>

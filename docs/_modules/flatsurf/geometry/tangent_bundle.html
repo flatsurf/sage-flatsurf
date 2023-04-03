@@ -338,7 +338,7 @@
         <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">surface</span><span class="p">()</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">polygon_label</span><span class="p">)</span>
         <span class="n">pos</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">get_point_position</span><span class="p">(</span><span class="n">point</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">vector</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bundle</span><span class="o">.</span><span class="n">vector_space</span><span class="p">()</span><span class="o">.</span><span class="n">zero</span><span class="p">():</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Provided vector is zero. (Temporarily not supported.)&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;vector must be non-zero&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">pos</span><span class="o">.</span><span class="n">is_in_interior</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_polygon_label</span> <span class="o">=</span> <span class="n">polygon_label</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_point</span> <span class="o">=</span> <span class="n">point</span>
@@ -653,7 +653,9 @@
 <span class="sd">            sage: v.clockwise_to((1,1), code=True)</span>
 <span class="sd">            (SimilaritySurfaceTangentVector in polygon 0 based at (-1/2*a, 1/2*a) with vector (1, 1), [0, 5, 2])</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">assert</span> <span class="n">w</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">surface</span><span class="p">()</span><span class="o">.</span><span class="n">vector_space</span><span class="p">()</span><span class="o">.</span><span class="n">zero</span><span class="p">(),</span> <span class="s2">&quot;Vector w must be non-zero.&quot;</span>
+        <span class="k">if</span> <span class="n">w</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">surface</span><span class="p">()</span><span class="o">.</span><span class="n">vector_space</span><span class="p">()</span><span class="o">.</span><span class="n">zero</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;w must be non-zero&quot;</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_based_at_singularity</span><span class="p">():</span>
             <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">surface</span><span class="p">()</span>
             <span class="n">v1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vector</span><span class="p">()</span>
@@ -725,7 +727,9 @@
 <span class="sd">            sage: v.counterclockwise_to((1,1), code=True)</span>
 <span class="sd">            (SimilaritySurfaceTangentVector in polygon 0 based at (1, 0) with vector (1, 1), [7, 2, 5])</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">assert</span> <span class="n">w</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">surface</span><span class="p">()</span><span class="o">.</span><span class="n">vector_space</span><span class="p">()</span><span class="o">.</span><span class="n">zero</span><span class="p">(),</span> <span class="s2">&quot;Vector w must be non-zero.&quot;</span>
+        <span class="k">if</span> <span class="n">w</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">surface</span><span class="p">()</span><span class="o">.</span><span class="n">vector_space</span><span class="p">()</span><span class="o">.</span><span class="n">zero</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;w must be non-zero&quot;</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_based_at_singularity</span><span class="p">():</span>
             <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">surface</span><span class="p">()</span>
             <span class="n">v1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vector</span><span class="p">()</span>

@@ -648,7 +648,9 @@
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called before a mutation occurs. Do not call directly.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_mutable</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_mutable</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;surface must be mutable&quot;</span><span class="p">)</span>
+
         <span class="c1"># Remove the cache which will likely be invalidated.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span> <span class="o">=</span> <span class="p">{}</span>
 
@@ -660,7 +662,8 @@
 <span class="sd">        of pairs of length equal to number of edges of the polygon).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__mutate</span><span class="p">()</span>
-        <span class="k">assert</span> <span class="n">gluing_list</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">new_polygon</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">gluing_list</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">gluing_list</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">new_polygon</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">gluing_list</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_change_polygon</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">new_polygon</span><span class="p">,</span> <span class="n">gluing_list</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Surface.set_edge_pairing"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Surface.set_edge_pairing">[docs]</a>    <span class="k">def</span> <span class="nf">set_edge_pairing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label1</span><span class="p">,</span> <span class="n">edge1</span><span class="p">,</span> <span class="n">label2</span><span class="p">,</span> <span class="n">edge2</span><span class="p">):</span>
@@ -714,7 +717,8 @@
 <span class="sd">        from the label provided).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__mutate</span><span class="p">()</span>
-        <span class="k">assert</span> <span class="n">gluing_list</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">new_polygon</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">gluing_list</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">gluing_list</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">new_polygon</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">gluing_list</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_polygon</span><span class="p">(</span><span class="n">new_polygon</span><span class="p">,</span> <span class="n">gluing_list</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Surface.remove_polygon"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Surface.remove_polygon">[docs]</a>    <span class="k">def</span> <span class="nf">remove_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
@@ -2149,7 +2153,8 @@
         <span class="k">return</span> <span class="n">new_labels</span></div>
 
 <div class="viewcode-block" id="LabelWalker.find_all_labels"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.LabelWalker.find_all_labels">[docs]</a>    <span class="k">def</span> <span class="nf">find_all_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">is_finite</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">is_finite</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span>
         <span class="n">label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_a_new_label</span><span class="p">()</span>
         <span class="k">while</span> <span class="n">label</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_a_new_label</span><span class="p">()</span></div>

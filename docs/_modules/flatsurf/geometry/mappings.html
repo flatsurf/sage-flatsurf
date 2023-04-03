@@ -789,7 +789,9 @@
 <span class="sd">        Polygon: (0, 0), (0, -a - 1), (1, 0)</span>
 <span class="sd">        Polygon: (0, 0), (-1/2*a - 1, -1/2*a), (-1/2*a, -1/2*a)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">assert</span> <span class="n">s</span><span class="o">.</span><span class="n">is_finite</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">s</span><span class="o">.</span><span class="n">is_finite</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
     <span class="n">m</span> <span class="o">=</span> <span class="n">subdivide_a_polygon</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">m</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">None</span>
@@ -831,7 +833,9 @@
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns a mapping to a Delaunay triangulation or None if the surface already is Delaunay triangulated.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">assert</span> <span class="n">s</span><span class="o">.</span><span class="n">is_finite</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">s</span><span class="o">.</span><span class="n">is_finite</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
     <span class="n">m</span> <span class="o">=</span> <span class="n">triangulation_mapping</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">m</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">s1</span> <span class="o">=</span> <span class="n">s</span>

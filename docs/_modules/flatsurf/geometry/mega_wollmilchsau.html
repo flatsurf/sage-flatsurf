@@ -294,10 +294,13 @@
         <span class="k">if</span> <span class="n">parent</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The parent must be provided&quot;</span><span class="p">)</span>
         <span class="c1"># I should assert that the element lives in the domain of the group.</span>
-        <span class="k">assert</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">ZZ</span>
-        <span class="k">assert</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">_Q</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ZZ</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span>
+        <span class="k">if</span> <span class="n">r</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_Q</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span>
         <span class="c1"># Actually q should be in {1,-1,-i,i,j,-j,k,-k}. I&#39;m not testing for that.</span>
-        <span class="k">assert</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">_Q</span>
+        <span class="k">if</span> <span class="n">q</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_Q</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span>
         <span class="c1"># There is one more condition. The group doesn&#39;t have full image...</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_i</span> <span class="o">=</span> <span class="n">i</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_r</span> <span class="o">=</span> <span class="n">r</span>
@@ -372,9 +375,6 @@
 <div class="viewcode-block" id="MegaWollmilchsauGroup.is_abelian"><a class="viewcode-back" href="../../../geometry/mega_wollmilchsau.html#flatsurf.geometry.mega_wollmilchsau.MegaWollmilchsauGroup.is_abelian">[docs]</a>    <span class="k">def</span> <span class="nf">is_abelian</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="kc">False</span></div>
 
-    <span class="c1"># def order(self):</span>
-    <span class="c1">#    return infinity</span>
-
     <span class="k">def</span> <span class="nf">_an_element_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="p">()</span>
 
@@ -382,18 +382,16 @@
         <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">()]</span></div>
 
     <span class="k">def</span> <span class="nf">_test_relations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+        <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tester</span><span class="p">(</span><span class="o">**</span><span class="n">options</span><span class="p">)</span>
         <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gens</span><span class="p">()</span>
         <span class="n">e</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
-        <span class="k">assert</span> <span class="n">a</span><span class="o">**</span><span class="mi">4</span> <span class="o">==</span> <span class="n">e</span>
-        <span class="k">assert</span> <span class="n">b</span><span class="o">**</span><span class="mi">4</span> <span class="o">==</span> <span class="n">e</span>
-        <span class="k">assert</span> <span class="p">(</span><span class="n">a</span> <span class="o">*</span> <span class="n">b</span><span class="p">)</span> <span class="o">**</span> <span class="mi">4</span> <span class="o">==</span> <span class="n">e</span>
-        <span class="k">assert</span> <span class="p">(</span><span class="n">a</span> <span class="o">/</span> <span class="n">b</span><span class="p">)</span> <span class="o">**</span> <span class="mi">4</span> <span class="o">==</span> <span class="n">e</span>
-        <span class="k">assert</span> <span class="p">(</span><span class="n">a</span> <span class="o">*</span> <span class="n">a</span> <span class="o">*</span> <span class="n">b</span><span class="p">)</span> <span class="o">**</span> <span class="mi">4</span> <span class="o">==</span> <span class="n">e</span>
-        <span class="k">assert</span> <span class="p">(</span><span class="n">a</span> <span class="o">*</span> <span class="n">a</span> <span class="o">/</span> <span class="n">b</span><span class="p">)</span> <span class="o">**</span> <span class="mi">4</span> <span class="o">==</span> <span class="n">e</span>
-        <span class="k">assert</span> <span class="p">(</span><span class="n">a</span> <span class="o">*</span> <span class="n">b</span> <span class="o">/</span> <span class="n">a</span> <span class="o">/</span> <span class="n">b</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">!=</span> <span class="n">e</span></div>
-
-    <span class="c1"># def cardinality(self):</span>
-    <span class="c1">#    return infinity</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">a</span><span class="o">**</span><span class="mi">4</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">b</span><span class="o">**</span><span class="mi">4</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">((</span><span class="n">a</span> <span class="o">*</span> <span class="n">b</span><span class="p">)</span> <span class="o">**</span> <span class="mi">4</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">((</span><span class="n">a</span> <span class="o">/</span> <span class="n">b</span><span class="p">)</span> <span class="o">**</span> <span class="mi">4</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">((</span><span class="n">a</span> <span class="o">*</span> <span class="n">a</span> <span class="o">*</span> <span class="n">b</span><span class="p">)</span> <span class="o">**</span> <span class="mi">4</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">((</span><span class="n">a</span> <span class="o">*</span> <span class="n">a</span> <span class="o">/</span> <span class="n">b</span><span class="p">)</span> <span class="o">**</span> <span class="mi">4</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assertNotEqual</span><span class="p">((</span><span class="n">a</span> <span class="o">*</span> <span class="n">b</span> <span class="o">/</span> <span class="n">a</span> <span class="o">/</span> <span class="n">b</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="MegaWollmilchsau"><a class="viewcode-back" href="../../../geometry/mega_wollmilchsau.html#flatsurf.geometry.mega_wollmilchsau.MegaWollmilchsau">[docs]</a><span class="k">class</span> <span class="nc">MegaWollmilchsau</span><span class="p">(</span><span class="n">AbstractOrigami</span><span class="p">):</span>

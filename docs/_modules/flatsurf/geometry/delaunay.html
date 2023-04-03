@@ -442,12 +442,8 @@
             <span class="n">ll</span><span class="p">,</span> <span class="n">ee</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">ll</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_certified_labels</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">ll</span><span class="p">,</span> <span class="n">ee</span>
-            <span class="c1"># print(&quot;Searching for opposite to &quot;,label,edge)</span>
             <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_certify_or_improve</span><span class="p">(</span><span class="n">ll</span><span class="p">):</span>
                 <span class="n">ll</span><span class="p">,</span> <span class="n">ee</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">)</span>
-            <span class="c1"># Stupid sanity check:</span>
-            <span class="c1"># assert ll,ee == self._s.opposite_edge(label,edge)</span>
-            <span class="c1"># assert ll in self._certified_labels</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
@@ -509,10 +505,6 @@
 
                     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">_edge_needs_flip</span><span class="p">(</span><span class="n">ll</span><span class="p">,</span> <span class="n">ee</span><span class="p">):</span>
 
-                        <span class="c1"># Should not need to flip certified triangles.</span>
-                        <span class="c1"># assert ll not in self._certified_labels</span>
-                        <span class="c1"># assert lll not in self._certified_labels</span>
-
                         <span class="c1"># Perform the flip</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">triangle_flip</span><span class="p">(</span>
                             <span class="n">ll</span><span class="p">,</span> <span class="n">ee</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_direction</span>
@@ -537,10 +529,6 @@
 
                     <span class="c1"># If we reach here then we know that no flip was needed.</span>
                     <span class="n">ccc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">edge_transformation</span><span class="p">(</span><span class="n">ll</span><span class="p">,</span> <span class="n">ee</span><span class="p">)</span> <span class="o">*</span> <span class="n">cc</span>
-
-                    <span class="c1"># Some (unnecessary) sanity checks.</span>
-                    <span class="c1"># assert self._s.edge_transformation(ll,ee)(self._s.polygon(ll).vertex(ee))==ppp.vertex((eee+1)%3)</span>
-                    <span class="c1"># assert ccc.point_position(ppp.vertex((eee+2)%3))!=1</span>
 
                     <span class="c1"># Check if the disk passes through the next edge in the chain.</span>
                     <span class="n">lp</span> <span class="o">=</span> <span class="n">ccc</span><span class="o">.</span><span class="n">line_segment_position</span><span class="p">(</span>

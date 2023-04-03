@@ -283,10 +283,6 @@
 <span class="c1">#  along with sage-flatsurf. If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
 <span class="c1">######################################################################</span>
 
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span><span class="p">,</span> <span class="n">print_function</span><span class="p">,</span> <span class="n">division</span>
-<span class="kn">from</span> <span class="nn">six.moves</span> <span class="kn">import</span> <span class="nb">range</span><span class="p">,</span> <span class="nb">map</span><span class="p">,</span> <span class="nb">filter</span><span class="p">,</span> <span class="nb">zip</span>
-<span class="kn">from</span> <span class="nn">six</span> <span class="kn">import</span> <span class="n">iteritems</span>
-
 <span class="kn">from</span> <span class="nn">sage.misc.cachefunc</span> <span class="kn">import</span> <span class="n">cached_method</span>
 <span class="kn">from</span> <span class="nn">sage.modules.free_module</span> <span class="kn">import</span> <span class="n">VectorSpace</span>
 <span class="kn">from</span> <span class="nn">sage.modules.free_module_element</span> <span class="kn">import</span> <span class="n">vector</span>
@@ -295,8 +291,8 @@
 <span class="kn">from</span> <span class="nn">sage.rings.qqbar</span> <span class="kn">import</span> <span class="n">AA</span>
 <span class="kn">from</span> <span class="nn">sage.structure.sage_object</span> <span class="kn">import</span> <span class="n">SageObject</span>
 
-<span class="kn">from</span> <span class="nn">.polygon</span> <span class="kn">import</span> <span class="n">dot_product</span><span class="p">,</span> <span class="n">ConvexPolygons</span><span class="p">,</span> <span class="n">wedge_product</span>
-<span class="kn">from</span> <span class="nn">.similarity</span> <span class="kn">import</span> <span class="n">SimilarityGroup</span>
+<span class="kn">from</span> <span class="nn">flatsurf.geometry.polygon</span> <span class="kn">import</span> <span class="n">ConvexPolygons</span><span class="p">,</span> <span class="n">wedge_product</span>
+<span class="kn">from</span> <span class="nn">flatsurf.geometry.similarity</span> <span class="kn">import</span> <span class="n">SimilarityGroup</span>
 
 
 <div class="viewcode-block" id="Singularity"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.Singularity">[docs]</a><span class="k">class</span> <span class="nc">Singularity</span><span class="p">(</span><span class="n">SageObject</span><span class="p">):</span>
@@ -320,15 +316,13 @@
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">similarity_surface</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Represents the singularity associated to the v-th vertex of the polygon with</span>
-<span class="sd">        label ``label``.</span>
+<span class="sd">        Represents the singularity associated to the ``v``-th vertex of the</span>
+<span class="sd">        polygon with label ``label``.</span>
 
-<span class="sd">        If the surface is infinite, the limit needs to be set. In this case the construction</span>
-<span class="sd">        of the singularity is successful if the sequence of vertices hit by passing through</span>
-<span class="sd">        edges closes up in limit or less steps.</span>
+<span class="sd">        If the surface is infinite, the limit can be set. In this case the</span>
+<span class="sd">        construction of the singularity is successful if the sequence of</span>
+<span class="sd">        vertices hit by passing through edges closes up in limit or less steps.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">.similarity_surface</span> <span class="kn">import</span> <span class="n">SimilaritySurface</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">_ss</span> <span class="o">=</span> <span class="n">similarity_surface</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_s</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">is_finite</span><span class="p">()</span> <span class="ow">and</span> <span class="n">limit</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -453,9 +447,10 @@
         <span class="n">point</span> <span class="o">=</span> <span class="n">VectorSpace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ring</span><span class="p">,</span> <span class="mi">2</span><span class="p">)(</span><span class="n">point</span><span class="p">)</span>
         <span class="n">point</span><span class="o">.</span><span class="n">set_immutable</span><span class="p">()</span>
         <span class="n">pos</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">get_point_position</span><span class="p">(</span><span class="n">point</span><span class="p">)</span>
-        <span class="k">assert</span> <span class="p">(</span>
-            <span class="n">pos</span><span class="o">.</span><span class="n">is_inside</span><span class="p">()</span>
-        <span class="p">),</span> <span class="s2">&quot;Point must be positioned within the polygon with the given label.&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">pos</span><span class="o">.</span><span class="n">is_inside</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;point must be positioned within the polygon with the given label&quot;</span><span class="p">)</span>
+
         <span class="c1"># This is the correct thing if point lies in the interior of the polygon with the given label.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_coordinate_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">label</span><span class="p">:</span> <span class="p">{</span><span class="n">point</span><span class="p">}}</span>
         <span class="k">if</span> <span class="n">pos</span><span class="o">.</span><span class="n">is_in_edge_interior</span><span class="p">():</span>
@@ -477,7 +472,7 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_coordinate_dict</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">new_point</span><span class="p">}</span>
         <span class="c1"># Freeze the sets.</span>
-        <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">point_set</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_coordinate_dict</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">point_set</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coordinate_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_coordinate_dict</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">(</span><span class="n">point_set</span><span class="p">)</span>
 
 <div class="viewcode-block" id="SurfacePoint.surface"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SurfacePoint.surface">[docs]</a>    <span class="k">def</span> <span class="nf">surface</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -494,7 +489,7 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_num_coordinates</span>
         <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
             <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
-            <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">point_set</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_coordinate_dict</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">point_set</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coordinate_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="n">count</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">point_set</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_num_coordinates</span> <span class="o">=</span> <span class="n">count</span>
             <span class="k">return</span> <span class="n">count</span>
@@ -598,7 +593,7 @@
 
     <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">h</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">point_set</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_coordinate_dict</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">point_set</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coordinate_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">h</span> <span class="o">+=</span> <span class="mi">677</span> <span class="o">*</span> <span class="nb">hash</span><span class="p">(</span><span class="n">label</span><span class="p">)</span> <span class="o">+</span> <span class="nb">hash</span><span class="p">(</span><span class="n">point_set</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">h</span>
 
@@ -676,7 +671,9 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span> <span class="nn">.similarity_surface</span> <span class="kn">import</span> <span class="n">SimilaritySurface</span>
 
-        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">surface</span><span class="p">,</span> <span class="n">SimilaritySurface</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">surface</span><span class="p">,</span> <span class="n">SimilaritySurface</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_s</span> <span class="o">=</span> <span class="n">surface</span>
 
         <span class="c1"># Sanitize the direction vector:</span>
@@ -884,9 +881,9 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span> <span class="nn">.cone_surface</span> <span class="kn">import</span> <span class="n">ConeSurface</span>
 
-        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="p">,</span> <span class="n">ConeSurface</span>
-        <span class="p">),</span> <span class="s2">&quot;Length of a saddle connection only makes sense for cone surfaces.&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="p">,</span> <span class="n">ConeSurface</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;length of a saddle connection only makes sense for cone surfaces&quot;</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="n">vector</span><span class="p">(</span><span class="n">AA</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_holonomy</span><span class="p">)</span><span class="o">.</span><span class="n">norm</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="SaddleConnection.end_holonomy"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SaddleConnection.end_holonomy">[docs]</a>    <span class="k">def</span> <span class="nf">end_holonomy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1030,11 +1027,7 @@
 
     <span class="k">def</span> <span class="nf">_test_geometry</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
         <span class="c1"># Test that this saddle connection actually exists on the surface.</span>
-        <span class="k">if</span> <span class="s2">&quot;tester&quot;</span> <span class="ow">in</span> <span class="n">options</span><span class="p">:</span>
-            <span class="n">tester</span> <span class="o">=</span> <span class="n">options</span><span class="p">[</span><span class="s2">&quot;tester&quot;</span><span class="p">]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tester</span><span class="p">(</span><span class="o">**</span><span class="n">options</span><span class="p">)</span>
-        <span class="n">sc</span> <span class="o">=</span> <span class="n">SaddleConnection</span><span class="p">(</span>
+        <span class="n">SaddleConnection</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_start_data</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_direction</span><span class="p">,</span>
@@ -1052,10 +1045,6 @@
 
     <span class="k">def</span> <span class="nf">_test_inverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
         <span class="c1"># Test that inverting works properly.</span>
-        <span class="k">if</span> <span class="s2">&quot;tester&quot;</span> <span class="ow">in</span> <span class="n">options</span><span class="p">:</span>
-            <span class="n">tester</span> <span class="o">=</span> <span class="n">options</span><span class="p">[</span><span class="s2">&quot;tester&quot;</span><span class="p">]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tester</span><span class="p">(</span><span class="o">**</span><span class="n">options</span><span class="p">)</span>
         <span class="n">SaddleConnection</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_end_data</span><span class="p">,</span>
@@ -1327,9 +1316,8 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span> <span class="nn">.cone_surface</span> <span class="kn">import</span> <span class="n">ConeSurface</span>
 
-        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="p">,</span> <span class="n">ConeSurface</span>
-        <span class="p">),</span> <span class="s2">&quot;Area only makes sense for cone surfaces.&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="p">,</span> <span class="n">ConeSurface</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;area only makes sense for cone surfaces&quot;</span><span class="p">)</span>
         <span class="n">area</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">polygons</span><span class="p">():</span>
             <span class="n">area</span> <span class="o">+=</span> <span class="n">p</span><span class="o">.</span><span class="n">area</span><span class="p">()</span>
@@ -1352,9 +1340,8 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="s2">&quot;graphical_surface&quot;</span> <span class="ow">in</span> <span class="n">options</span> <span class="ow">and</span> <span class="n">options</span><span class="p">[</span><span class="s2">&quot;graphical_surface&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">gs</span> <span class="o">=</span> <span class="n">options</span><span class="p">[</span><span class="s2">&quot;graphical_surface&quot;</span><span class="p">]</span>
-            <span class="k">assert</span> <span class="p">(</span>
-                <span class="n">gs</span><span class="o">.</span><span class="n">get_surface</span><span class="p">()</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span>
-            <span class="p">),</span> <span class="s2">&quot;Graphical surface for the wrong surface.&quot;</span>
+            <span class="k">if</span> <span class="n">gs</span><span class="o">.</span><span class="n">get_surface</span><span class="p">()</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;graphical surface for the wrong surface&quot;</span><span class="p">)</span>
             <span class="k">del</span> <span class="n">options</span><span class="p">[</span><span class="s2">&quot;graphical_surface&quot;</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">gs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">graphical_surface</span><span class="p">()</span>
@@ -1389,7 +1376,9 @@
 <span class="sd">        Return the next saddle connection as you move around the cylinder boundary</span>
 <span class="sd">        moving from sc in the direction of its orientation.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">assert</span> <span class="n">sc</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_boundary</span>
+        <span class="k">if</span> <span class="n">sc</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_boundary</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span>
+
         <span class="n">v</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">end_tangent_vector</span><span class="p">()</span>
         <span class="n">v</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">clockwise_to</span><span class="p">(</span><span class="o">-</span><span class="n">v</span><span class="o">.</span><span class="n">vector</span><span class="p">())</span>
         <span class="kn">from</span> <span class="nn">flatsurf.geometry.polygon</span> <span class="kn">import</span> <span class="n">is_same_direction</span>
@@ -1407,7 +1396,8 @@
 <span class="sd">        Return the previous saddle connection as you move around the cylinder boundary</span>
 <span class="sd">        moving from sc in the direction opposite its orientation.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">assert</span> <span class="n">sc</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_boundary</span>
+        <span class="k">if</span> <span class="n">sc</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_boundary</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span>
         <span class="n">v</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">start_tangent_vector</span><span class="p">()</span>
         <span class="n">v</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">counterclockwise_to</span><span class="p">(</span><span class="o">-</span><span class="n">v</span><span class="o">.</span><span class="n">vector</span><span class="p">())</span>
         <span class="kn">from</span> <span class="nn">flatsurf.geometry.polygon</span> <span class="kn">import</span> <span class="n">is_same_direction</span>
@@ -1427,9 +1417,9 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span> <span class="nn">.translation_surface</span> <span class="kn">import</span> <span class="n">TranslationSurface</span>
 
-        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="p">,</span> <span class="n">TranslationSurface</span>
-        <span class="p">),</span> <span class="s2">&quot;Holonomy currently only computable for translation surfaces.&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="p">,</span> <span class="n">TranslationSurface</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;holonomy currently only computable for translation surfaces&quot;</span><span class="p">)</span>
+
         <span class="n">V</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">vector_space</span><span class="p">()</span>
         <span class="n">total</span> <span class="o">=</span> <span class="n">V</span><span class="o">.</span><span class="n">zero</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">sc</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_boundary1</span><span class="p">:</span>
@@ -1455,26 +1445,13 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span> <span class="nn">.cone_surface</span> <span class="kn">import</span> <span class="n">ConeSurface</span>
 
-        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="p">,</span> <span class="n">ConeSurface</span>
-        <span class="p">),</span> <span class="s2">&quot;Circumference only makes sense for cone surfaces.&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="p">,</span> <span class="n">ConeSurface</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;circumference only makes sense for cone surfaces&quot;</span><span class="p">)</span>
+
         <span class="n">total</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">sc</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_boundary1</span><span class="p">:</span>
             <span class="n">total</span> <span class="o">+=</span> <span class="n">sc</span><span class="o">.</span><span class="n">length</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">total</span></div></div>
-
-    <span class="c1"># def width_vector(self):</span>
-    <span class="c1">#    r&quot;&quot;&quot;</span>
-    <span class="c1">#    In a translation surface, return a vector orthogonal to the holonomy vector which cuts</span>
-    <span class="c1">#    across the cylinder.</span>
-    <span class="c1">#    &quot;&quot;&quot;</span>
-    <span class="c1">#    from flatsurf.geometry.translation_surface import TranslationSurface</span>
-    <span class="c1">#    assert isinstance(self._s,TranslationSurface), \</span>
-    <span class="c1">#        &quot;width_vector currently only computable for translation surfaces.&quot;</span>
-    <span class="c1">#    w=self._across.holonomy()</span>
-    <span class="c1">#    h=iter(self._boundary1).next().holonomy()</span>
-    <span class="c1">#    from flatsurf.geometry.polygon import dot_product</span>
-    <span class="c1">#    return w-(dot_product(w,h)/dot_product(h,h))*h</span>
 </pre></div>
         </article>
       </div>

@@ -422,7 +422,8 @@
         <span class="n">edge_labels</span><span class="o">=</span><span class="s2">&quot;gluings&quot;</span><span class="p">,</span>
         <span class="n">default_position_function</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">similarity_surface</span><span class="p">,</span> <span class="n">SimilaritySurface</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">similarity_surface</span><span class="p">,</span> <span class="n">SimilaritySurface</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ss</span> <span class="o">=</span> <span class="n">similarity_surface</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_default_position_function</span> <span class="o">=</span> <span class="n">default_position_function</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_polygons</span> <span class="o">=</span> <span class="p">{}</span>
@@ -683,7 +684,8 @@
         <span class="k">if</span> <span class="n">adjacent</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">adjacent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_position_function</span> <span class="ow">is</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="n">limit</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">is_finite</span><span class="p">()</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">is_finite</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="ne">NotImplementedError</span>
             <span class="k">if</span> <span class="n">adjacent</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">poly</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">walker</span><span class="p">()</span><span class="o">.</span><span class="n">label_polygon_iterator</span><span class="p">():</span>
                     <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">poly</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()):</span>
@@ -711,7 +713,8 @@
                             <span class="n">g</span><span class="o">.</span><span class="n">set_transformation</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">make_visible</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">assert</span> <span class="n">limit</span> <span class="o">&gt;</span> <span class="mi">0</span>
+            <span class="k">if</span> <span class="n">limit</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span>
             <span class="k">if</span> <span class="n">adjacent</span><span class="p">:</span>
                 <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
                 <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">poly</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">walker</span><span class="p">()</span><span class="o">.</span><span class="n">label_polygon_iterator</span><span class="p">():</span>
@@ -969,7 +972,7 @@
 <span class="sd">            sage: gs.to_surface((3,2), search_all=True, search_limit=20)</span>
 <span class="sd">            Traceback (most recent call last):</span>
 <span class="sd">            ...</span>
-<span class="sd">            ValueError: To obtain a singularity on an infinite surface, singularity_limit must be set.</span>
+<span class="sd">            ValueError: need a limit when working with an infinite surface</span>
 <span class="sd">            sage: gs.to_surface((3,2), search_all=True, search_limit=20, singularity_limit=4)</span>
 <span class="sd">            Surface point with 4 coordinate representations</span>
 <span class="sd">            sage: p = gs.to_surface((sqrt(3),sqrt(2)), ring=AA, search_all=True, search_limit=20)</span>
@@ -979,14 +982,13 @@
 <span class="sd">            sage: v.bundle()</span>
 <span class="sd">            Tangent bundle of TranslationSurface built from infinitely many polygons defined over Algebraic Real Field</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">surface</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_surface</span><span class="p">()</span>
+
         <span class="k">if</span> <span class="n">label</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">return_all</span><span class="p">:</span>
-                <span class="n">ret</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
-            <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_surface</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">search_all</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">search_limit</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">is_finite</span><span class="p">():</span>
-                        <span class="n">it</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">label_iterator</span><span class="p">()</span>
+                    <span class="k">if</span> <span class="n">surface</span><span class="o">.</span><span class="n">is_finite</span><span class="p">():</span>
+                        <span class="n">labels</span> <span class="o">=</span> <span class="n">surface</span><span class="o">.</span><span class="n">label_iterator</span><span class="p">()</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                             <span class="s2">&quot;If search_all=True and the surface is infinite, then a search_limit must be provided.&quot;</span>
@@ -994,56 +996,53 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">islice</span>
 
-                    <span class="n">it</span> <span class="o">=</span> <span class="n">islice</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">label_iterator</span><span class="p">(),</span> <span class="n">search_limit</span><span class="p">)</span>
+                    <span class="n">labels</span> <span class="o">=</span> <span class="n">islice</span><span class="p">(</span><span class="n">surface</span><span class="o">.</span><span class="n">label_iterator</span><span class="p">(),</span> <span class="n">search_limit</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">it</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">visible</span><span class="p">()</span>
-            <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">it</span><span class="p">:</span>
-                <span class="k">try</span><span class="p">:</span>
-                    <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_surface</span><span class="p">(</span>
-                        <span class="n">point</span><span class="p">,</span>
-                        <span class="n">v</span><span class="o">=</span><span class="n">v</span><span class="p">,</span>
-                        <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span>
-                        <span class="n">ring</span><span class="o">=</span><span class="n">ring</span><span class="p">,</span>
-                        <span class="n">singularity_limit</span><span class="o">=</span><span class="n">singularity_limit</span><span class="p">,</span>
-                    <span class="p">)</span>
-                    <span class="k">if</span> <span class="n">return_all</span><span class="p">:</span>
-                        <span class="n">ret</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="k">return</span> <span class="n">val</span>
-                <span class="k">except</span> <span class="ne">AssertionError</span><span class="p">:</span>
-                    <span class="c1"># Not in the polygon</span>
-                    <span class="k">pass</span>
-                <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="p">(</span>
-                        <span class="n">e</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-                        <span class="o">==</span> <span class="s2">&quot;need a limit when working with an infinite surface&quot;</span>
-                    <span class="p">):</span>
-                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                            <span class="s2">&quot;To obtain a singularity on an infinite surface, &quot;</span>
-                            <span class="o">+</span> <span class="s2">&quot;singularity_limit must be set.&quot;</span>
-                        <span class="p">)</span>
-                    <span class="c1"># Otherwise it is not in the polygon.</span>
-            <span class="k">if</span> <span class="n">return_all</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">ret</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;Point or vector is not in a visible graphical polygon.&quot;</span>
-                <span class="p">)</span>
+                <span class="n">labels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">visible</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
+            <span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="n">label</span><span class="p">]</span>
+
+        <span class="n">points</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">:</span>
             <span class="n">gp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graphical_polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
             <span class="n">coords</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">transform_back</span><span class="p">(</span><span class="n">point</span><span class="p">)</span>
-            <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_surface</span><span class="p">()</span>
+
+            <span class="n">pos</span> <span class="o">=</span> <span class="n">surface</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">.</span><span class="n">get_point_position</span><span class="p">(</span><span class="n">coords</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">pos</span><span class="o">.</span><span class="n">is_inside</span><span class="p">():</span>
+                <span class="k">continue</span>
+
             <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">surface_point</span><span class="p">(</span>
+                <span class="n">points</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">surface</span><span class="o">.</span><span class="n">surface_point</span><span class="p">(</span>
                     <span class="n">label</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">ring</span><span class="o">=</span><span class="n">ring</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">singularity_limit</span>
-                <span class="p">)</span>
+                <span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">tangent_vector</span><span class="p">(</span>
+                <span class="n">direction</span> <span class="o">=</span> <span class="p">(</span><span class="o">~</span><span class="p">(</span><span class="n">gp</span><span class="o">.</span><span class="n">transformation</span><span class="p">()</span><span class="o">.</span><span class="n">derivative</span><span class="p">()))</span> <span class="o">*</span> <span class="n">vector</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">pos</span><span class="o">.</span><span class="n">is_vertex</span><span class="p">():</span>
+                    <span class="n">vertex</span> <span class="o">=</span> <span class="n">pos</span><span class="o">.</span><span class="n">get_vertex</span><span class="p">()</span>
+                    <span class="n">polygon</span> <span class="o">=</span> <span class="n">surface</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+
+                    <span class="kn">from</span> <span class="nn">flatsurf.geometry.polygon</span> <span class="kn">import</span> <span class="n">wedge_product</span>
+                    <span class="k">if</span> <span class="n">wedge_product</span><span class="p">(</span><span class="n">polygon</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="n">vertex</span><span class="p">),</span> <span class="n">direction</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="k">continue</span>
+                    <span class="k">if</span> <span class="n">wedge_product</span><span class="p">(</span><span class="n">polygon</span><span class="o">.</span><span class="n">edge</span><span class="p">((</span><span class="n">vertex</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="n">polygon</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()),</span> <span class="n">direction</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="k">continue</span>
+
+                <span class="n">points</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">surface</span><span class="o">.</span><span class="n">tangent_vector</span><span class="p">(</span>
                     <span class="n">label</span><span class="p">,</span>
                     <span class="n">coords</span><span class="p">,</span>
-                    <span class="p">(</span><span class="o">~</span><span class="p">(</span><span class="n">gp</span><span class="o">.</span><span class="n">transformation</span><span class="p">()</span><span class="o">.</span><span class="n">derivative</span><span class="p">()))</span> <span class="o">*</span> <span class="n">vector</span><span class="p">(</span><span class="n">v</span><span class="p">),</span>
+                    <span class="n">direction</span><span class="p">,</span>
                     <span class="n">ring</span><span class="o">=</span><span class="n">ring</span><span class="p">,</span>
-                <span class="p">)</span></div>
+                <span class="p">))</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">return_all</span><span class="p">:</span>
+                <span class="k">return</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">points</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">return_all</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">points</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Point or vector is not in a visible graphical polygon.&quot;</span>
+            <span class="p">)</span></div>
 
 <div class="viewcode-block" id="GraphicalSurface.opposite_edge"><a class="viewcode-back" href="../../../graphical/surface.html#flatsurf.graphical.surface.GraphicalSurface.opposite_edge">[docs]</a>    <span class="k">def</span> <span class="nf">opposite_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
