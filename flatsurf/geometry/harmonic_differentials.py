@@ -572,6 +572,22 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
     def surface(self):
         return self._surface
 
+    def safety(self):
+        return max(self._safety(label0, label1) for ((label0, edge0), (label1, edge1)) in self._surface.edge_gluing_iterator())
+
+    def _safety(self, label0, label1):
+        # TODO: Probably take inverse and rescale, see https://sagemath.zulipchat.com/#narrow/stream/271193-polygon/topic/Uniformization.20.26.20Jacobian/near/346535028
+        return self._surface.point(label0, self._surface.polygon(label0).circumscribing_circle().center()).distance(self._surface.polygon(label1).circumscribing_circle().center()) / min(self._convergence(label0), self._convergence(label1))
+
+    def _convergence(self, label):
+        r"""
+        Return the radius of convergence at the point at which we develop the
+        series for the polygon ``label``.
+        """
+        return min(
+            self._surface.point(label, self._surface.polygon(label).circumscribing_circle().center()).distance(v)
+            for v in self._surface.singularities() if not v.is_marked())
+
     def _repr_(self):
         return f"Ω({self._surface})"
 
