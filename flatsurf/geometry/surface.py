@@ -76,12 +76,13 @@ from six.moves import range
 from six import iteritems
 from collections import deque
 
-from sage.structure.sage_object import SageObject
+from sage.structure.parent import Parent
+from flatsurf.geometry.surface_objects import SurfacePoint
 
 from sage.misc.cachefunc import cached_method
 
 
-class Surface(SageObject):
+class Surface(Parent):
     r"""
     Abstract base class of all surfaces that are built from a set of polygons
     with edges identified. The identifications are compositions of homothety,
@@ -134,8 +135,9 @@ class Surface(SageObject):
         True
 
     """
+    Element = SurfacePoint
 
-    def __init__(self, base_ring, base_label, finite, mutable):
+    def __init__(self, base_ring, base_label, finite, mutable, category=None):
         if finite not in [False, True]:
             raise ValueError("finite must be either True or False")
 
@@ -160,6 +162,9 @@ class Surface(SageObject):
         self._mutable = mutable
 
         self._cache = {}
+
+        from sage.all import Sets
+        Parent.__init__(self, base=base_ring, category=category or Sets())
 
     def is_triangulated(self, limit=None):
         r"""
@@ -867,6 +872,33 @@ class Surface(SageObject):
                 "polygon(label) does not return a ConvexPolygon when label="
                 + str(label),
             )
+
+    def point(self, label, position):
+        # TODO: Document me
+        return self(label, position)
+
+    def _an_element_(self):
+        r"""
+        Return an point of this surface.
+
+        EXAMPLES::
+
+            sage: from flatsurf import polygons
+            sage: from flatsurf.geometry.surface import Surface_list
+
+            sage: S = Surface_list(QQ)
+            sage: S.add_polygon(polygons(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]))
+            0
+            sage: S.set_edge_pairing(0, 0, 0, 2)
+            sage: S.set_edge_pairing(0, 1, 0, 3)
+
+            sage: S.an_element()
+            Surface point with 4 coordinate representations
+
+        """
+        label = next(self.label_iterator())
+        polygon = self.polygon(label)
+        return self.point(label, polygon.vertices()[0])
 
 
 class Surface_list(Surface):
@@ -1932,7 +1964,7 @@ class LabelWalker:
         return self._s
 
 
-class ExtraLabel(SageObject):
+class ExtraLabel:
     r"""
     Used to spit out new labels.
     """
@@ -1964,7 +1996,7 @@ class ExtraLabel(SageObject):
         return "ExtraLabel(" + str(self._label) + ")"
 
 
-class LabelComparator(object):
+class LabelComparator:
     r"""
     Implements a total ordering on labels, which may be of varying types.
 
