@@ -156,7 +156,6 @@ class Surface(Parent):
         if mutable not in [False, True]:
             raise ValueError("mutable must be either True or False")
 
-        self._base_ring = base_ring
         self._base_label = base_label
         self._finite = finite
         self._mutable = mutable
@@ -333,14 +332,6 @@ class Surface(Parent):
                 label_edge_pair,
                 self.opposite_edge(label_edge_pair[0], label_edge_pair[1]),
             )
-
-    def base_ring(self):
-        r"""
-        The field on which the coordinates of ``self`` live.
-
-        This method must be overridden in subclasses!
-        """
-        return self._base_ring
 
     def base_label(self):
         r"""
@@ -569,7 +560,7 @@ class Surface(Parent):
 
         from flatsurf.geometry.surface import Surface_dict
 
-        surface = Surface_dict(base_ring=self._base_ring)
+        surface = Surface_dict(base_ring=self.base())
 
         # Add subdivided polygons
         for s, subdivision in enumerate(subdivisions):
@@ -654,7 +645,7 @@ class Surface(Parent):
 
         from flatsurf.geometry.surface import Surface_dict
 
-        surface = Surface_dict(base_ring=self._base_ring)
+        surface = Surface_dict(base_ring=self.base())
 
         # Add subdivided polygons
         for s, subdivided in enumerate(subdivideds):
@@ -927,12 +918,21 @@ class Surface(Parent):
             sage: S.set_edge_pairing(0, 1, 0, 3)
 
             sage: S.an_element()
-            Vertex 0 of polygon 0
+            Point (1/2, 1/2) of polygon 0
 
         """
         label = next(self.label_iterator())
         polygon = self.polygon(label)
-        return self.point(label, polygon.vertices()[0])
+
+        # We use a point that can be constructed without problems on an
+        # infinite surface.
+        if polygon.is_convex():
+            coordinates = polygon.centroid()
+        else:
+            # Sometimes, this is not implemented because it requires the edge
+            # transformation to be known, so we prefer the centroid.
+            coordinates = polygon.edge(0) / 2
+        return self.point(label, coordinates)
 
 
 class Surface_list(Surface):
@@ -1815,10 +1815,9 @@ class BaseRingChangedSurface(Surface):
 
     def __init__(self, surface, ring):
         self._s = surface
-        self._base_ring = ring
         from flatsurf.geometry.polygon import ConvexPolygons
 
-        self._P = ConvexPolygons(self._base_ring)
+        self._P = ConvexPolygons(ring)
         Surface.__init__(
             self, ring, self._s.base_label(), mutable=False, finite=self._s.is_finite()
         )
