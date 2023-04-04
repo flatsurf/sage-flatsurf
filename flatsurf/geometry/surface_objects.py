@@ -234,7 +234,7 @@ class SurfacePoint(SageObject):
             sage: permutation = SymmetricGroup(2)('(1, 2)')
             sage: S = translation_surfaces.origami(permutation, permutation)
             sage: p = S.point(1, (0, 0))
-            sage: p.one_vertex()
+            sage: p.one_vertex()  # random output: depends on the Python version
             doctest:warning
             ...
             UserWarning: one_vertex() is deprecated and will be removed in a future version of sage-flatsurf; use (label, coordinates) = point.representative(); vertex = surface.polygon(label).get_point_position(coordinates).get_vertex() instead
@@ -282,7 +282,7 @@ class SurfacePoint(SageObject):
             sage: permutation = SymmetricGroup(2)('(1, 2)')
             sage: S = translation_surfaces.origami(permutation, permutation)
             sage: p = S.point(1, (0, 0))
-            sage: p.representative()
+            sage: p.representative()  # random output: depends on the Python version
             (2, (1, 0))
 
         """
@@ -299,7 +299,7 @@ class SurfacePoint(SageObject):
             sage: permutation = SymmetricGroup(2)('(1, 2)')
             sage: S = translation_surfaces.origami(permutation, permutation)
             sage: p = S.point(1, (0, 0))
-            sage: list(p.vertex_set())
+            sage: list(p.vertex_set())  # random output: ordering depends on the Python version
             doctest:warning
             ...
             UserWarning: vertex_set() is deprecated and will be removed in a future version of sage-flatsurf; use representatives() and then vertex = surface.polygon(label).get_point_position(coordinates).get_vertex() instead
