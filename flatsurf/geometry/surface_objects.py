@@ -413,7 +413,7 @@ class SurfacePoint(SageObject):
 
         return GraphicalSurfacePoint(self, graphical_surface=graphical_surface)
 
-    def plot(self, graphical_surface=None, *args, **kwargs):
+    def plot(self, *args, **kwargs):
         r"""
         Return a plot of this point.
 
@@ -430,6 +430,10 @@ class SurfacePoint(SageObject):
             Graphics object consisting of 1 graphics primitive
 
         """
+        graphical_surface = None
+        if args:
+            graphical_surface = args.pop()
+
         return self.graphical_surface_point(graphical_surface=graphical_surface).plot(*args, **kwargs)
 
     def __repr__(self):
