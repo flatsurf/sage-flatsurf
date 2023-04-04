@@ -494,9 +494,9 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         from sage.all import SR
 
         # pylint does not see the Cython parent() so we disable the import check.
-        # pylint: disable=no-member
+        # pylint: disable=c-extension-no-member
         parent = sage.structure.element.parent(x)
-        # pylint: enable=no-member
+        # pylint: enable=c-extension-no-member
 
         # Note that in old versions of SageMath (9.1 e.g.), I is not a number field element but a symbolic ring element.
         # The "parent is SR" part can probably removed at some point.

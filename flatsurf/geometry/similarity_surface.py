@@ -1346,9 +1346,9 @@ class SimilaritySurface(SageObject):
         Represents the Singularity associated to the v-th vertex of the polygon
         with label ``label``.
 
-        If the surface is infinite, the limit needs to be set. In this case the construction
-        of the singularity is successful if the sequence of vertices hit by passing through
-        edges closes up in limit or less steps.
+        If the surface is infinite, the limit can be set. In this case the
+        construction of the singularity is successful if the sequence of
+        vertices hit by passing through edges closes up in limit or less steps.
 
         EXAMPLES::
 
@@ -1356,11 +1356,15 @@ class SimilaritySurface(SageObject):
             sage: s = translation_surfaces.square_torus()
             sage: pc = s.minimal_cover(cover_type="planar")
             sage: pc.singularity(pc.base_label(),0)
+            doctest:warning
+            ...
+            UserWarning: Singularity() is deprecated and will be removed in a future version of sage-flatsurf. Use surface.point() instead.
+            Vertex 0 of polygon (0, (x, y) |-> (x, y))
+            sage: pc.singularity(pc.base_label(),0,limit=1)
             Traceback (most recent call last):
             ...
-            ValueError: need a limit when working with an infinite surface
-            sage: pc.singularity(pc.base_label(),0,limit=4)
-            singularity with vertex equivalence class frozenset(...)
+            ValueError: number of edges at singularity exceeds limit
+
         """
         return Singularity(self, label, v, limit)
 
@@ -1376,8 +1380,8 @@ class SimilaritySurface(SageObject):
 
         - ``ring`` (optional) - a ring for the coordinates
 
-        - ``limit`` (optional) - undocumented (only necessary if the point corresponds
-          to a singularity in an infinite surface)
+        - ``limit`` (optional) - undocumented (only relevant if the point
+          corresponds to a singularity in an infinite surface)
 
         EXAMPLES::
 
@@ -1385,13 +1389,12 @@ class SimilaritySurface(SageObject):
             sage: s = translation_surfaces.square_torus()
             sage: pc = s.minimal_cover(cover_type="planar")
             sage: pc.surface_point(pc.base_label(),(0,0))
-            Traceback (most recent call last):
-            ...
-            ValueError: need a limit when working with an infinite surface
-            sage: pc.surface_point(pc.base_label(),(1,0),limit=4)
-            Surface point with 4 coordinate representations
+            Vertex 0 of polygon (0, (x, y) |-> (x, y))
             sage: z = pc.surface_point(pc.base_label(),(sqrt(2)-1,sqrt(3)-1),ring=AA)
-            sage: next(iter(z.coordinates(z.labels()[0]))).parent()
+            doctest:warning
+            ...
+            UserWarning: the ring parameter is deprecated and will be removed in a future version of sage-flatsurf; define the surface over a larger ring instead so that this points' coordinates live in the base ring
+            sage: next(iter(z.coordinates(next(iter(z.labels()))))).parent()
             Vector space of dimension 2 over Algebraic Real Field
         """
         return SurfacePoint(self, label, point, ring=ring, limit=limit)
@@ -2325,7 +2328,7 @@ class SimilaritySurface(SageObject):
             sage: import flatsurf
             sage: S = flatsurf.translation_surfaces.veech_double_n_gon(5)
             sage: S.plot()
-            Graphics object consisting of 21 graphics primitives
+            ...Graphics object consisting of 21 graphics primitives
 
         Keywords are passed on to the underlying plotting routines, see
         :meth:`flatsurf.graphical.surface.GraphicalSurface.plot` for details::

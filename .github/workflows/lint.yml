@@ -71,7 +71,7 @@ jobs:
           mamba install black=22.12
       - name: Run black
         shell: bash -l {0}
-        run: black **/*.py
+        run: black `find -name '*.py'`
       - name: Detect changes
         shell: bash -l {0}
         run: git diff --exit-code
