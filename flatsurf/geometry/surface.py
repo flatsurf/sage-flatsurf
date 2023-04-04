@@ -884,7 +884,31 @@ class Surface(Parent):
             )
 
     def point(self, label, position):
-        # TODO: Document me
+        r"""
+        Return the :class:`flatsurf.geometry.surface_objects.SurfacePoint` of
+        this surface at ``position`` in the polygon ``label``.
+
+        INPUT:
+
+        - ``label`` -- a label of a polygon in this surface, see :meth:`label_iterator`
+
+        - ``position`` -- a vector with coordinates in this surface's :meth:`base_ring`
+
+        EXAMPLES::
+
+            sage: from flatsurf import polygons
+            sage: from flatsurf.geometry.surface import Surface_list
+
+            sage: S = Surface_list(QQ)
+            sage: S.add_polygon(polygons(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]))
+            0
+            sage: S.set_edge_pairing(0, 0, 0, 2)
+            sage: S.set_edge_pairing(0, 1, 0, 3)
+
+            sage: S.point(0, (0, 0))
+            Vertex 0 of polygon 0
+
+        """
         return self(label, position)
 
     def _an_element_(self):
@@ -903,7 +927,7 @@ class Surface(Parent):
             sage: S.set_edge_pairing(0, 1, 0, 3)
 
             sage: S.an_element()
-            Surface point with 4 coordinate representations
+            Vertex 0 of polygon 0
 
         """
         label = next(self.label_iterator())
