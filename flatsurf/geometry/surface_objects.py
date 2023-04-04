@@ -471,7 +471,8 @@ class SurfacePoint(SageObject):
         """
         graphical_surface = None
         if args:
-            graphical_surface = args.pop()
+            graphical_surface = args[0]
+            args = args[1:]
 
         return self.graphical_surface_point(graphical_surface=graphical_surface).plot(
             *args, **kwargs
