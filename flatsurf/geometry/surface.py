@@ -164,6 +164,7 @@ class Surface(Parent):
         self._cache = {}
 
         from sage.all import Sets
+
         Parent.__init__(self, base=base_ring, category=category or Sets())
 
     def is_triangulated(self, limit=None):
@@ -290,7 +291,9 @@ class Surface(Parent):
             try:
                 return self._cache["num_edges"]
             except KeyError:
-                num_edges = sum(p.num_edges() for label, p in self.label_polygon_iterator())
+                num_edges = sum(
+                    p.num_edges() for label, p in self.label_polygon_iterator()
+                )
                 self._cache["num_edges"] = num_edges
                 return num_edges
         else:
@@ -684,7 +687,14 @@ class Surface(Parent):
         if not self.is_finite():
             raise ValueError("Attempting to hash infinite surface.")
 
-        return hash((self.base_ring(), self.base_label(), tuple(self.label_polygon_iterator()), tuple(self.edge_gluing_iterator())))
+        return hash(
+            (
+                self.base_ring(),
+                self.base_label(),
+                tuple(self.label_polygon_iterator()),
+                tuple(self.edge_gluing_iterator()),
+            )
+        )
 
     def __eq__(self, other):
         r"""

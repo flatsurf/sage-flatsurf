@@ -2005,7 +2005,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
                     # namely those that are between vertices that are not
                     # connected by an edge.
                     edges = subset.edges()
-                    for (a, b) in subset.vertices().pairs():
+                    for a, b in subset.vertices().pairs():
                         if a.segment(b) not in edges:
                             half_spaces.append(self.geodesic(a, b).right_half_space())
                 else:
@@ -2556,7 +2556,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
                 "preimage and image must be the same size to determine an isometry between them"
             )
 
-        for (x, y) in zip(preimage, image):
+        for x, y in zip(preimage, image):
             if x.dimension() != y.dimension():
                 raise ValueError(
                     "preimage and image must be of the same dimensions to determine an isometry between them"
@@ -2949,10 +2949,14 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
                 return None
 
             if preimage.start() in existings:
-                return self._isometry_untrivialize(preimage.end(), image.end(), defining)
+                return self._isometry_untrivialize(
+                    preimage.end(), image.end(), defining
+                )
 
             if preimage.end() in existings:
-                return self._isometry_untrivialize(preimage.start(), image.start(), defining)
+                return self._isometry_untrivialize(
+                    preimage.start(), image.start(), defining
+                )
 
             return (preimage, image)
 
@@ -10785,7 +10789,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
         if len(half_spaces) < 3:
             return half_spaces[0]
 
-        for (i, half_space) in enumerate(half_spaces):
+        for i, half_space in enumerate(half_spaces):
             following = half_spaces[(i + 1) % len(half_spaces)]
             configuration = half_space.boundary()._configuration(following.boundary())
 

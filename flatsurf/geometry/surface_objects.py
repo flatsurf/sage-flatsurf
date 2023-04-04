@@ -190,7 +190,9 @@ class SurfacePoint(Element):
         pos = p.get_point_position(point)
 
         if not pos.is_inside():
-            raise ValueError("point must be positioned within the polygon with the given label")
+            raise ValueError(
+                "point must be positioned within the polygon with the given label"
+            )
 
         # This is the correct thing if point lies in the interior of the polygon with the given label.
         self._coordinate_dict = {label: {point}}
@@ -631,7 +633,9 @@ class SaddleConnection(SageObject):
         from .cone_surface import ConeSurface
 
         if not isinstance(self._s, ConeSurface):
-            raise NotImplementedError("length of a saddle connection only makes sense for cone surfaces")
+            raise NotImplementedError(
+                "length of a saddle connection only makes sense for cone surfaces"
+            )
 
         return vector(AA, self._holonomy).norm()
 
@@ -662,7 +666,10 @@ class SaddleConnection(SageObject):
         """
         if cache is not None:
             import warnings
-            warnings.warn("The cache keyword argument of trajectory() is ignored. Trajectories are always cached.")
+
+            warnings.warn(
+                "The cache keyword argument of trajectory() is ignored. Trajectories are always cached."
+            )
 
         v = self.start_tangent_vector()
         traj = v.straight_line_trajectory()
@@ -1167,7 +1174,9 @@ class Cylinder(SageObject):
         from .translation_surface import TranslationSurface
 
         if not isinstance(self._s, TranslationSurface):
-            raise NotImplementedError("holonomy currently only computable for translation surfaces")
+            raise NotImplementedError(
+                "holonomy currently only computable for translation surfaces"
+            )
 
         V = self._s.vector_space()
         total = V.zero()
@@ -1195,7 +1204,9 @@ class Cylinder(SageObject):
         from .cone_surface import ConeSurface
 
         if not isinstance(self._s, ConeSurface):
-            raise NotImplementedError("circumference only makes sense for cone surfaces")
+            raise NotImplementedError(
+                "circumference only makes sense for cone surfaces"
+            )
 
         total = 0
         for sc in self._boundary1:

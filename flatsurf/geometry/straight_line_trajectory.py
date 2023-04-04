@@ -504,9 +504,11 @@ class AbstractStraightLineTrajectory:
                             seg2.start().point() + seg2.start().vector(),
                         )
                         if x is not None:
-                            pos = self.surface().polygon(
-                                seg1.polygon_label()
-                            ).get_point_position(x)
+                            pos = (
+                                self.surface()
+                                .polygon(seg1.polygon_label())
+                                .get_point_position(x)
+                            )
                             if pos.is_inside() and (
                                 count_singularities or not pos.is_vertex()
                             ):

@@ -82,7 +82,9 @@ class HalfDilationSurface(SimilaritySurface):
         """
         if mapping is True:
             if in_place:
-                raise NotImplementedError("can not modify in place and return a mapping")
+                raise NotImplementedError(
+                    "can not modify in place and return a mapping"
+                )
             return GL2RMapping(self, m)
         if not in_place:
             if self.is_finite():
@@ -102,7 +104,9 @@ class HalfDilationSurface(SimilaritySurface):
             if m.det() == self.base_ring().zero():
                 raise ValueError("can not deform by degenerate matrix")
             if not self.is_finite():
-                raise NotImplementedError("in-place GL(2,R) action only works for finite surfaces")
+                raise NotImplementedError(
+                    "in-place GL(2,R) action only works for finite surfaces"
+                )
             us = self.underlying_surface()
             if not us.is_mutable():
                 raise ValueError("in-place changes only work for mutable surfaces")
@@ -307,7 +311,6 @@ class GL2RImageSurface(Surface):
     """
 
     def __init__(self, surface, m, ring=None):
-
         if surface.is_mutable():
             if surface.is_finite():
                 self._s = surface.copy()
