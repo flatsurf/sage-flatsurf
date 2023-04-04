@@ -597,7 +597,7 @@ class SimilaritySurfaceGenerators:
             surface.add_polygon(
                 polygons(edges=[V((-x, y)) for x, y in reversed(p.edges())])
             )
-        for (p1, e1, p2, e2) in internal_edges:
+        for p1, e1, p2, e2 in internal_edges:
             surface.set_edge_pairing(p1, e1, p2, e2)
             ne1 = surface.polygon(p1).num_edges()
             ne2 = surface.polygon(p2).num_edges()

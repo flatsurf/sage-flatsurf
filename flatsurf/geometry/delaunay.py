@@ -47,7 +47,6 @@ class LazyTriangulatedSurface(Surface):
     """
 
     def __init__(self, similarity_surface, relabel=True):
-
         if similarity_surface.is_mutable():
             raise ValueError("Surface must be immutable.")
 
@@ -245,7 +244,6 @@ class LazyDelaunayTriangulatedSurface(Surface):
                     # now ppp is a triangle
 
                     if self._s._edge_needs_flip(ll, ee):
-
                         # Perform the flip
                         self._s.triangle_flip(
                             ll, ee, in_place=True, direction=self._direction

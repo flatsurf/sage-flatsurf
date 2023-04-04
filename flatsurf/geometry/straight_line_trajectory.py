@@ -467,9 +467,9 @@ class AbstractStraightLineTrajectory:
             sage: for p, (segs1, segs2) in traj1.intersections(traj2, include_segments=True):
             ....:     print(p)
             ....:     print(len(segs1), len(segs2))
-            Surface point with 2 coordinate representations
+            Point (1/2, 0) of polygon 0
             2 2
-            Surface point with 2 coordinate representations
+            Point (0, 1/2) of polygon 0
             2 2
         """
         # Partition the segments making up the trajectories by label.
@@ -504,9 +504,11 @@ class AbstractStraightLineTrajectory:
                             seg2.start().point() + seg2.start().vector(),
                         )
                         if x is not None:
-                            pos = self.surface().polygon(
-                                seg1.polygon_label()
-                            ).get_point_position(x)
+                            pos = (
+                                self.surface()
+                                .polygon(seg1.polygon_label())
+                                .get_point_position(x)
+                            )
                             if pos.is_inside() and (
                                 count_singularities or not pos.is_vertex()
                             ):

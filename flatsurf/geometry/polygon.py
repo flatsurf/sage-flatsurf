@@ -552,7 +552,7 @@ def triangulate(vertices):
             if good:
                 part0 = [(s + i, t + i) for s, t in triangulate(vertices[i : j + 1])]
                 part1 = []
-                for (s, t) in triangulate(vertices[j:] + vertices[: i + 1]):
+                for s, t in triangulate(vertices[j:] + vertices[: i + 1]):
                     if s < n - j:
                         s += j
                     else:

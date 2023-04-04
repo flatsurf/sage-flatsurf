@@ -77,4 +77,7 @@ def test_gothic_veech():
         assert d.parabolic()
         orbit_closure.update_tangent_space_from_flow_decomposition(d)
     assert orbit_closure.dimension() == orbit_closure.absolute_dimension() == 2
-    assert orbit_closure.field_of_definition() == orbit_closure.V2._isomorphic_vector_space.base_ring()
+    assert (
+        orbit_closure.field_of_definition()
+        == orbit_closure.V2._isomorphic_vector_space.base_ring()
+    )

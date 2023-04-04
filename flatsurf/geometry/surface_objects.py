@@ -25,7 +25,6 @@ This includes singularities, saddle connections and cylinders.
 ######################################################################
 
 from sage.misc.cachefunc import cached_method
-from sage.modules.free_module import VectorSpace
 from sage.modules.free_module_element import vector
 from sage.plot.graphics import Graphics
 from sage.plot.polygon import polygon2d
@@ -36,269 +35,479 @@ from flatsurf.geometry.polygon import ConvexPolygons, wedge_product
 from flatsurf.geometry.similarity import SimilarityGroup
 
 
-class Singularity(SageObject):
+def Singularity(similarity_surface, label, v, limit=None):
     r"""
-    Represents a combinatorial singularity on a surface.
+    Return the point of ``similarity_surface`` at the ``v``-th vertex of the
+    polygon ``label``.
 
-    Such a combinatorial singularity is an equivalence class of vertices of the polygons
-    making up the surface. This is the coarsest equivalence relation where two vertices
-    are equivalent if they are glued along an edge.
+    If the surface is infinite, the ``limit`` can be set. In this case the
+    construction of the singularity is successful if the sequence of vertices
+    hit by passing through edges closes up in ``limit`` or less steps.
 
     EXAMPLES::
 
         sage: from flatsurf.geometry.similarity_surface_generators import TranslationSurfaceGenerators
         sage: s=TranslationSurfaceGenerators.veech_2n_gon(5)
         sage: from flatsurf.geometry.surface_objects import Singularity
-        sage: sing=Singularity(s,0,1)
+        sage: sing=Singularity(s, 0, 1)
+        doctest:warning
+        ...
+        UserWarning: Singularity() is deprecated and will be removed in a future version of sage-flatsurf. Use surface.point() instead.
         sage: print(sing)
-        singularity with vertex equivalence class frozenset(...)
+        Vertex 1 of polygon 0
         sage: TestSuite(sing).run()
+
     """
+    import warnings
 
-    def __init__(self, similarity_surface, label, v, limit=None):
-        r"""
-        Represents the singularity associated to the ``v``-th vertex of the
-        polygon with label ``label``.
-
-        If the surface is infinite, the limit can be set. In this case the
-        construction of the singularity is successful if the sequence of
-        vertices hit by passing through edges closes up in limit or less steps.
-        """
-        self._ss = similarity_surface
-        self._s = set()
-        if not self._ss.is_finite() and limit is None:
-            raise ValueError("need a limit when working with an infinite surface")
-        start = (label, v)
-        self._s.add(start)
-        edge = self._ss.opposite_edge(label, v)
-        next = (edge[0], (edge[1] + 1) % self._ss.polygon(edge[0]).num_edges())
-        while start != next:
-            self._s.add(next)
-            if limit is not None and len(self._s) > limit:
-                raise ValueError("Number of vertices in singularities exceeds limit.")
-            edge = self._ss.opposite_edge(next)
-            next = (edge[0], (edge[1] + 1) % self._ss.polygon(edge[0]).num_edges())
-        self._s = frozenset(self._s)
-
-    def surface(self):
-        r"""
-        Return the SimilaritySurface where the singularity appears.
-        """
-        return self._ss
-
-    def one_vertex(self):
-        r"""
-        Return a pair (l,v) from the equivalence class of this singularity.
-        """
-        return next(iter(self._s))
-
-    def vertex_set(self):
-        r"""
-        Return the set of pairs (l,v) in the equivalence class of this singularity.
-        """
-        return self._s
-
-    def contains_vertex(self, label, v=None):
-        r"""
-        Checks if the pair ``(label, v)`` is in the equivalence class returning
-        true or false.
-
-        If v is None, then check if the pair ``label`` is in the equivalence class.
-        """
-        if v is None:
-            return label in self._s
-        else:
-            return (label, v) in self._s
-
-    def _repr_(self):
-        return "singularity with vertex equivalence class " + repr(self._s)
-
-    def __eq__(self, other):
-        r"""
-        Return whether this singularity is indistinguishable from ``other``.
-
-        EXAMPLES::
-
-            sage: from flatsurf.geometry.similarity_surface_generators import TranslationSurfaceGenerators
-            sage: S = TranslationSurfaceGenerators.veech_2n_gon(5)
-            sage: singularity = S.singularity(0, 0)
-
-            sage: singularity == singularity
-            True
-
-        TESTS:
-
-        Verify that singularities can be compared to non-singularities (so they
-        can be put into sets and dicts with other objects)::
-
-            sage: singularity == 42
-            False
-
-        """
-        if self is other:
-            return True
-        if not isinstance(other, Singularity):
-            return False
-        if not self._ss == other._ss:
-            return False
-        return self._s == other._s
-
-    def __ne__(self, other):
-        return not self == other
-
-    def __hash__(self):
-        # Hash only using the set of vertices (rather than including the surface)
-        return hash(self._s)
+    warnings.warn(
+        "Singularity() is deprecated and will be removed in a future version of sage-flatsurf. Use surface.point() instead."
+    )
+    return similarity_surface.point(
+        label, similarity_surface.polygon(label).vertex(v), limit=limit
+    )
 
 
 class SurfacePoint(SageObject):
     r"""
-    Represents a point on a SimilaritySurface.
+    A point on ``surface``.
+
+    INPUT:
+
+    - ``surface`` -- a :class:`flatsurf.geometry.surface.Surface` or a
+      :class:`flatsurf.geometry.similarity_surface.SimilaritySurface`.
+
+    - ``label`` -- a polygon label for the polygon with respect to which the
+      ``point`` coordinates can be made sense of
+
+    - ``point`` -- coordinates of a point in the polygon ``label``
+
+    - ``ring`` -- a SageMath ring or ``None`` (default: ``None``); the
+      coordinate ring for ``point``
+
+    - ``limit`` -- an integer or ``None`` (default: ``None`` for an unlimited
+      number of steps); if this is a singularity of the surface, then this
+      limits the number of edges that are crossed to determine all the edges
+      adjacent to that singularity. An error is raised if the limit is
+      insufficient.
 
     EXAMPLES::
 
-        sage: from flatsurf import *
-        sage: from flatsurf.geometry.surface_objects import SurfacePoint
-        sage: p = SymmetricGroup(2)('(1,2)')
-        sage: s = translation_surfaces.origami(p,p)
-        sage: SurfacePoint(s, 1, (1/2,1/2))
-        Surface point located at (1/2, 1/2) in polygon 1
-        sage: sp1 = SurfacePoint(s, 1, (1/2,0))
-        sage: sp1
-        Surface point with 2 coordinate representations
-        sage: sp2 = SurfacePoint(s, 2, (1/2,1))
-        sage: sp1 == sp2
+        sage: from flatsurf import translation_surfaces
+
+        sage: permutation = SymmetricGroup(2)('(1, 2)')
+        sage: S = translation_surfaces.origami(permutation, permutation)
+
+    A point can have a single representation with coordinates when it is in
+    interior of a polygon::
+
+        sage: S.point(1, (1/2, 1/2))
+        Point (1/2, 1/2) of polygon 1
+
+    A point can have two representations when it is in interior of an edge::
+
+        sage: p = S.point(1, (1/2, 0))
+        sage: q = S.point(2, (1/2, 1))
+        sage: p == q
         True
-        sage: hash(sp1) == hash(sp2)
-        True
-        sage: sp1.coordinates(2)
-        frozenset({(1/2, 1)})
-        sage: sp = SurfacePoint(s, 1, (0,0))
-        sage: sp
-        Surface point with 4 coordinate representations
+        sage: p.coordinates(2)
+        ((1/2, 1),)
+
+    A point can have even more representations when it is a vertex::
+
+        sage: S.point(1, (0, 0))
+        Vertex 0 of polygon 1
+
     """
 
     def __init__(self, surface, label, point, ring=None, limit=None):
-        self._s = surface
+        self._surface = surface
+
         if ring is None:
-            self._ring = surface.base_ring()
-        else:
-            self._ring = ring
-        p = surface.polygon(label)
-        point = VectorSpace(self._ring, 2)(point)
+            ring = surface.base_ring()
+
+        if ring is not surface.base_ring():
+            import warnings
+
+            warnings.warn(
+                "the ring parameter is deprecated and will be removed in a future version of sage-flatsurf; define the surface over a larger ring instead so that this points' coordinates live in the base ring"
+            )
+
+        polygon = surface.polygon(label)
+
+        from sage.modules.free_module import VectorSpace
+
+        point = VectorSpace(ring, 2)(point)
         point.set_immutable()
-        pos = p.get_point_position(point)
 
-        if not pos.is_inside():
-            raise ValueError("point must be positioned within the polygon with the given label")
+        position = polygon.get_point_position(point)
 
-        # This is the correct thing if point lies in the interior of the polygon with the given label.
-        self._coordinate_dict = {label: {point}}
-        if pos.is_in_edge_interior():
-            label2, e2 = surface.opposite_edge(label, pos.get_edge())
-            point2 = surface.edge_transformation(label, pos.get_edge())(point)
-            point2.set_immutable()
-            if label2 in self._coordinate_dict:
-                self._coordinate_dict[label2].add(point2)
-            else:
-                self._coordinate_dict[label2] = {point2}
-        if pos.is_vertex():
-            self._coordinate_dict = {}
-            sing = surface.singularity(label, pos.get_vertex(), limit=limit)
-            for label, v in sing.vertex_set():
-                new_point = surface.polygon(label).vertex(v)
-                new_point.set_immutable()
-                if label in self._coordinate_dict:
-                    self._coordinate_dict[label].add(new_point)
-                else:
-                    self._coordinate_dict[label] = {new_point}
-        # Freeze the sets.
-        for label, point_set in self._coordinate_dict.items():
-            self._coordinate_dict[label] = frozenset(point_set)
+        if not position.is_inside():
+            raise NotImplementedError(
+                "point must be positioned within the polygon with the given label"
+            )
+
+        if position.is_in_interior():
+            self._representatives = {(label, point)}
+        elif position.is_in_edge_interior():
+            self._representatives = {(label, point)}
+
+            cross_label, cross_edge = surface.opposite_edge(label, position.get_edge())
+            cross_point = surface.edge_transformation(label, position.get_edge())(point)
+            cross_point.set_immutable()
+
+            self._representatives.add((cross_label, cross_point))
+        elif position.is_vertex():
+            self._representatives = set()
+
+            source_edge = position.get_vertex()
+            while (label, source_edge) not in self._representatives:
+                self._representatives.add((label, source_edge))
+
+                # Rotate to the next edge that is leaving at the vertex
+                label, source_edge = surface.opposite_edge(label, source_edge)
+                source_edge = (source_edge + 1) % surface.polygon(label).num_edges()
+
+                if limit is not None:
+                    limit -= 1
+                    if limit < 0:
+                        raise ValueError("number of edges at singularity exceeds limit")
+
+            self._representatives = {
+                (label, surface.polygon(label).vertex(vertex))
+                for (label, vertex) in self._representatives
+            }
+        else:
+            raise NotImplementedError
+
+        self._representatives = frozenset(self._representatives)
 
     def surface(self):
         r"""
         Return the surface containing this point.
+
+        Depending on how this point was created, this can be either a
+        :class:`flatsurf.geometry.surface.Surface` or a
+        :class:`flatsurf.geometry.similarity_surface.SimilaritySurface`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+
+            sage: permutation = SymmetricGroup(2)('(1, 2)')
+            sage: S = translation_surfaces.origami(permutation, permutation)
+            sage: p = S.point(1, (1/2, 1/2))
+            sage: p.surface() is S
+            True
+
         """
-        return self._s
+        return self._surface
+
+    def is_vertex(self):
+        r"""
+        Return whether this point is a singularity of the surface.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+
+            sage: permutation = SymmetricGroup(2)('(1, 2)')
+            sage: S = translation_surfaces.origami(permutation, permutation)
+            sage: p = S.point(1, (0, 0))
+
+            sage: p.is_vertex()
+            True
+
+        """
+        label, coordinates = self.representative()
+        position = self.surface().polygon(label).get_point_position(coordinates)
+        return position.is_vertex()
+
+    def one_vertex(self):
+        r"""
+        Return a pair (l, v) from the equivalence class of this singularity.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+
+            sage: permutation = SymmetricGroup(2)('(1, 2)')
+            sage: S = translation_surfaces.origami(permutation, permutation)
+            sage: p = S.point(1, (0, 0))
+            sage: p.one_vertex()  # random output: depends on the Python version
+            doctest:warning
+            ...
+            UserWarning: one_vertex() is deprecated and will be removed in a future version of sage-flatsurf; use (label, coordinates) = point.representative(); vertex = surface.polygon(label).get_point_position(coordinates).get_vertex() instead
+            (2, 1)
+
+        """
+        import warnings
+
+        warnings.warn(
+            "one_vertex() is deprecated and will be removed in a future version of sage-flatsurf; use (label, coordinates) = point.representative(); vertex = surface.polygon(label).get_point_position(coordinates).get_vertex() instead"
+        )
+        label, coordinates = self.representative()
+        vertex = (
+            self.surface().polygon(label).get_point_position(coordinates).get_vertex()
+        )
+        return label, vertex
+
+    def representatives(self):
+        r"""
+        Return the representatives of this point as pairs of polygon labels and
+        coordinates.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+
+            sage: permutation = SymmetricGroup(2)('(1, 2)')
+            sage: S = translation_surfaces.origami(permutation, permutation)
+            sage: p = S.point(1, (0, 0))
+            sage: p.representatives()
+            frozenset({(1, (0, 0)), (1, (1, 1)), (2, (0, 1)), (2, (1, 0))})
+
+        """
+        return self._representatives
+
+    def representative(self):
+        r"""
+        Return a representative of this point, i.e., the first of
+        :meth:`representatives`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+
+            sage: permutation = SymmetricGroup(2)('(1, 2)')
+            sage: S = translation_surfaces.origami(permutation, permutation)
+            sage: p = S.point(1, (0, 0))
+            sage: p.representative()  # random output: depends on the Python version
+            (2, (1, 0))
+
+        """
+        return next(iter(self.representatives()))
+
+    def vertex_set(self):
+        r"""
+        Return the list of pairs (l, v) in the equivalence class of this singularity.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+
+            sage: permutation = SymmetricGroup(2)('(1, 2)')
+            sage: S = translation_surfaces.origami(permutation, permutation)
+            sage: p = S.point(1, (0, 0))
+            sage: list(p.vertex_set())  # random output: ordering depends on the Python version
+            doctest:warning
+            ...
+            UserWarning: vertex_set() is deprecated and will be removed in a future version of sage-flatsurf; use representatives() and then vertex = surface.polygon(label).get_point_position(coordinates).get_vertex() instead
+            [(2, 1), (1, 2), (1, 0), (2, 3)]
+
+        """
+        import warnings
+
+        warnings.warn(
+            "vertex_set() is deprecated and will be removed in a future version of sage-flatsurf; use representatives() and then vertex = surface.polygon(label).get_point_position(coordinates).get_vertex() instead"
+        )
+
+        return [
+            (
+                label,
+                self.surface()
+                .polygon(label)
+                .get_point_position(coordinates)
+                .get_vertex(),
+            )
+            for label, coordinates in self.representatives()
+        ]
+
+    def contains_vertex(self, label, v=None):
+        r"""
+        Checks if the pair ``(label, v)`` is in the equivalence class returning
+        true or false. If ``v`` is ``None``, the both the pair ``(label, v)``
+        is passed as a single parameter in ``label``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+
+            sage: permutation = SymmetricGroup(2)('(1, 2)')
+            sage: S = translation_surfaces.origami(permutation, permutation)
+            sage: p = S.point(1, (0, 0))
+            sage: p.contains_vertex((1, 0))
+            doctest:warning
+            ...
+            UserWarning: contains_vertex() is deprecated and will be removed in a future version of sage-flatsurf; use the == operator instead
+            doctest:warning
+            ...
+            UserWarning: Singularity() is deprecated and will be removed in a future version of sage-flatsurf. Use surface.point() instead.
+            True
+            sage: p.contains_vertex(label=1, v=0)
+            True
+
+        """
+        import warnings
+
+        warnings.warn(
+            "contains_vertex() is deprecated and will be removed in a future version of sage-flatsurf; use the == operator instead"
+        )
+
+        if v is None:
+            label, v = label
+
+        return Singularity(self.surface(), label, v) == self
 
     def num_coordinates(self):
         r"""
         Return the number of different coordinate representations of the point.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+
+            sage: permutation = SymmetricGroup(2)('(1, 2)')
+            sage: S = translation_surfaces.origami(permutation, permutation)
+            sage: p = S.point(1, (0, 0))
+            sage: p.num_coordinates()
+            doctest:warning
+            ...
+            UserWarning: num_coordinates() is deprecated and will be removed in a future version of sage-flatsurf; use len(representatives()) instead.
+            4
+
         """
-        try:
-            return self._num_coordinates
-        except AttributeError:
-            count = 0
-            for label, point_set in self._coordinate_dict.items():
-                count += len(point_set)
-            self._num_coordinates = count
-            return count
-        else:
-            raise ValueError("Unable to return num_coordinates()")
+        import warnings
+
+        warnings.warn(
+            "num_coordinates() is deprecated and will be removed in a future version of sage-flatsurf; use len(representatives()) instead."
+        )
+
+        return len(self._representatives)
 
     def labels(self):
         r"""
-        Return the list of labels of polygons containing the point in its closure.
+        Return the labels of polygons containing the point.
 
-        This will be a list of one label if the point is the the interior of a polygon,
-        at most two labels if it is on the interior of an edge, and can be lots of labels
-        if the point is a singularity.
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.mcmullen_L(1, 1, 1, 1)
+
+        For a point in the interior of polygon, there is exactly one label::
+
+            sage: p = S.point(0, (1/2, 1/2))
+            sage: p.labels()
+            {0}
+
+        For a point in the interior of an edge of a polygon, there can be up to
+        two labels::
+
+            sage: p = S.point(0, (0, 1/2))
+            sage: p.labels()
+            {0, 2}
+
+        For a point at a vertex, there can be more labels::
+
+            sage: p = S.point(0, (0, 0))
+            sage: p.labels()
+            {0, 1, 2}
+
         """
-        return list(self._coordinate_dict.keys())
+        return set(label for (label, _) in self._representatives)
 
     def coordinates(self, label):
         r"""
-        Return a frozenset of coordinates for the closure of the point in the polygon
-        with the provided label.
+        Return coordinates for the point in the in the polygon ``label``.
 
-        The set will consist of one point if the point lies in the interior of a polygon,
-        will be two points if the point lies in the interior of two edges of the polygon
-        simultaneously and can be lots of points if the point is a singularity.
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.mcmullen_L(1, 1, 1, 1)
+
+            sage: p = S.point(0, (0, 0))
+            sage: p.coordinates(0)  # random output: order depends on the Python version
+            ((0, 0), (1, 0), (0, 1), (1, 1))
+
         """
-        return self._coordinate_dict[label]
+        return tuple(
+            coordinates for (l, coordinates) in self._representatives if l == label
+        )
 
     def graphical_surface_point(self, graphical_surface=None):
         r"""
-        Return the GraphicalSurfacePoint built from this SurfacePoint.
+        Return a
+        :class:`flatsurf.graphical.surface_point.GraphicalSurfacePoint` to
+        represent this point graphically.
+
+        EXAMPLES::
+
+            sage: from flatsurf import half_translation_surfaces
+            sage: S = half_translation_surfaces.step_billiard([1, 1, 1, 1], [1, 1/2, 1/3, 1/4])
+            sage: p = S.point(0, (1/2, 1/2))
+            sage: G = p.graphical_surface_point()
+
         """
         from flatsurf.graphical.surface_point import GraphicalSurfacePoint
 
         return GraphicalSurfacePoint(self, graphical_surface=graphical_surface)
 
-    def plot(self, *args, **options):
+    def plot(self, *args, **kwargs):
         r"""
-        Plot this point.
+        Return a plot of this point.
 
-        There may be one argument which provides a graphical surface.
-        All options are passed two the plotting method of GraphicalSurfacePoint.
+        EXAMPLES::
+
+            sage: from flatsurf import half_translation_surfaces
+            sage: S = half_translation_surfaces.step_billiard([1, 1, 1, 1], [1, 1/2, 1/3, 1/4])
+            sage: p = S.point(0, (0, 0))
+            sage: p.plot()
+            ...Graphics object consisting of 1 graphics primitive
+
+            sage: p = S.point(0, (0, 25/12))
+            sage: p.plot()
+            ...Graphics object consisting of 1 graphics primitive
+
         """
-        if len(args) > 1:
-            raise ValueError("SurfacePoint.plot() can take at most one argument.")
-        if len(args) == 1:
-            return self.graphical_surface_point(graphical_surface=args[0]).plot(
-                **options
-            )
-        else:
-            return self.graphical_surface_point().plot(**options)
+        graphical_surface = None
+        if args:
+            graphical_surface = args[0]
+            args = args[1:]
+
+        return self.graphical_surface_point(graphical_surface=graphical_surface).plot(
+            *args, **kwargs
+        )
 
     def __repr__(self):
         r"""
+        Return a printable representation of this point.
+
         TESTS::
 
             sage: from flatsurf import half_translation_surfaces
-            sage: S = half_translation_surfaces.step_billiard([1,1,1,1], [1, 1/2, 1/3, 1/4])
-            sage: S.point(0, (1/2,1/2))
-            Surface point located at (1/2, 1/2) in polygon 0
+            sage: S = half_translation_surfaces.step_billiard([1, 1, 1, 1], [1, 1/2, 1/3, 1/4])
+            sage: S.point(0, (1/2, 1/2))
+            Point (1/2, 1/2) of polygon 0
+
         """
-        if self.num_coordinates() == 1:
-            return "Surface point located at {} in polygon {}".format(
-                next(iter(self.coordinates(self.labels()[0]))), self.labels()[0]
-            )
-        else:
-            return "Surface point with {} coordinate representations".format(
-                self.num_coordinates()
-            )
+
+        def render(label, coordinates):
+            if self.is_vertex():
+                vertex = (
+                    self.surface()
+                    .polygon(label)
+                    .get_point_position(coordinates)
+                    .get_vertex()
+                )
+                return "Vertex {} of polygon {}".format(vertex, label)
+
+            return "Point {} of polygon {}".format(coordinates, label)
+
+        # We pick a specific representative to make our lives easier when doctesting
+        return min(
+            render(label, coordinates)
+            for (label, coordinates) in self.representatives()
+        )
 
     def __eq__(self, other):
         r"""
@@ -307,12 +516,12 @@ class SurfacePoint(SageObject):
         EXAMPLES::
 
             sage: from flatsurf import half_translation_surfaces
-            sage: S = half_translation_surfaces.step_billiard([1,1,1,1], [1, 1/2, 1/3, 1/4])
-            sage: p = S.point(0, (1/2,1/2))
+            sage: S = half_translation_surfaces.step_billiard([1, 1, 1, 1], [1, 1/2, 1/3, 1/4])
+            sage: p = S.point(0, (1/2, 1/2))
             sage: p == p
             True
 
-            sage: q = S.point(0, (1/2,1/3))
+            sage: q = S.point(0, (1/2, 1/3))
             sage: p == q
             False
 
@@ -328,18 +537,44 @@ class SurfacePoint(SageObject):
             return True
         if not isinstance(other, SurfacePoint):
             return False
-        if not self._s == other._s:
+        if not self._surface == other._surface:
             return False
-        return self._coordinate_dict == other._coordinate_dict
+        return self._representatives == other._representatives
 
     def __hash__(self):
-        h = 0
-        for label, point_set in self._coordinate_dict.items():
-            h += 677 * hash(label) + hash(point_set)
-        return h
+        r"""
+        Return a hash value of this point.
+
+        EXAMPLES::
+
+            sage: from flatsurf import half_translation_surfaces
+            sage: S = half_translation_surfaces.step_billiard([1, 1, 1, 1], [1, 1/2, 1/3, 1/4])
+            sage: p = S.point(0, (0, 0))
+            sage: q = S.point(4, (0, 0))
+            sage: hash(p) == hash(q)
+            True
+
+        """
+        return hash(self._representatives)
 
     def __ne__(self, other):
-        return not self == other
+        r"""
+        Return whether this point is distinguishable from ``other``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import half_translation_surfaces
+            sage: S = half_translation_surfaces.step_billiard([1, 1, 1, 1], [1, 1/2, 1/3, 1/4])
+            sage: p = S.point(0, (1/2, 1/2))
+            sage: p != p
+            False
+
+            sage: q = S.point(0, (1/2, 1/3))
+            sage: p != q
+            True
+
+        """
+        return not (self == other)
 
 
 class SaddleConnection(SageObject):
@@ -415,10 +650,10 @@ class SaddleConnection(SageObject):
         if not isinstance(surface, SimilaritySurface):
             raise TypeError
 
-        self._s = surface
+        self._surface = surface
 
         # Sanitize the direction vector:
-        V = self._s.vector_space()
+        V = self._surface.vector_space()
         self._direction = V(direction)
         if self._direction == V.zero():
             raise ValueError("Direction must be nonzero.")
@@ -439,17 +674,19 @@ class SaddleConnection(SageObject):
             else:
                 end_direction = end_direction / yabs
 
-        self._start_data = tuple(start_data)
+        self._surfacetart_data = tuple(start_data)
 
         if end_direction is None:
             from .half_dilation_surface import HalfDilationSurface
             from .dilation_surface import DilationSurface
 
             # Attempt to infer the end_direction.
-            if isinstance(self._s, DilationSurface):
+            if isinstance(self._surface, DilationSurface):
                 end_direction = -self._direction
-            elif isinstance(self._s, HalfDilationSurface) and end_data is not None:
-                p = self._s.polygon(end_data[0])
+            elif (
+                isinstance(self._surface, HalfDilationSurface) and end_data is not None
+            ):
+                p = self._surface.polygon(end_data[0])
                 if (
                     wedge_product(p.edge(end_data[1]), self._direction) >= 0
                     and wedge_product(
@@ -467,9 +704,9 @@ class SaddleConnection(SageObject):
             from .half_translation_surface import HalfTranslationSurface
             from .translation_surface import TranslationSurface
 
-            if isinstance(self._s, TranslationSurface):
+            if isinstance(self._surface, TranslationSurface):
                 end_holonomy = -holonomy
-            if isinstance(self._s, HalfTranslationSurface):
+            if isinstance(self._surface, HalfTranslationSurface):
                 if direction == end_direction:
                     end_holonomy = holonomy
                 else:
@@ -519,18 +756,20 @@ class SaddleConnection(SageObject):
 
             if traj.segments()[0].is_edge():
                 # Special case (The below method causes error if the trajectory is just an edge.)
-                self._holonomy = self._s.polygon(start_data[0]).edge(start_data[1])
-                self._end_holonomy = self._s.polygon(self._end_data[0]).edge(
+                self._holonomy = self._surface.polygon(start_data[0]).edge(
+                    start_data[1]
+                )
+                self._end_holonomy = self._surface.polygon(self._end_data[0]).edge(
                     self._end_data[1]
                 )
             else:
                 from .similarity import SimilarityGroup
 
-                sim = SimilarityGroup(self._s.base_ring()).one()
+                sim = SimilarityGroup(self._surface.base_ring()).one()
                 itersegs = iter(traj.segments())
                 next(itersegs)
                 for seg in itersegs:
-                    sim = sim * self._s.edge_transformation(
+                    sim = sim * self._surface.edge_transformation(
                         seg.start().polygon_label(), seg.start().position().get_edge()
                     )
                 self._holonomy = (
@@ -573,7 +812,7 @@ class SaddleConnection(SageObject):
         self._end_holonomy.set_immutable()
 
     def surface(self):
-        return self._s
+        return self._surface
 
     def direction(self):
         r"""
@@ -593,14 +832,14 @@ class SaddleConnection(SageObject):
 
     def start_data(self):
         r"""
-        Return the pair (l,v) representing the label and vertex of the corresponding polygon
+        Return the pair (l, v) representing the label and vertex of the corresponding polygon
         where the saddle connection originates.
         """
-        return self._start_data
+        return self._surfacetart_data
 
     def end_data(self):
         r"""
-        Return the pair (l,v) representing the label and vertex of the corresponding polygon
+        Return the pair (l, v) representing the label and vertex of the corresponding polygon
         where the saddle connection terminates.
         """
         return self._end_data
@@ -622,8 +861,10 @@ class SaddleConnection(SageObject):
         """
         from .cone_surface import ConeSurface
 
-        if not isinstance(self._s, ConeSurface):
-            raise NotImplementedError("length of a saddle connection only makes sense for cone surfaces")
+        if not isinstance(self._surface, ConeSurface):
+            raise NotImplementedError(
+                "length of a saddle connection only makes sense for cone surfaces"
+            )
 
         return vector(AA, self._holonomy).norm()
 
@@ -640,9 +881,11 @@ class SaddleConnection(SageObject):
         r"""
         Return a tangent vector to the saddle connection based at its start.
         """
-        return self._s.tangent_vector(
-            self._start_data[0],
-            self._s.polygon(self._start_data[0]).vertex(self._start_data[1]),
+        return self._surface.tangent_vector(
+            self._surfacetart_data[0],
+            self._surface.polygon(self._surfacetart_data[0]).vertex(
+                self._surfacetart_data[1]
+            ),
             self._direction,
         )
 
@@ -654,7 +897,10 @@ class SaddleConnection(SageObject):
         """
         if cache is not None:
             import warnings
-            warnings.warn("The cache keyword argument of trajectory() is ignored. Trajectories are always cached.")
+
+            warnings.warn(
+                "The cache keyword argument of trajectory() is ignored. Trajectories are always cached."
+            )
 
         v = self.start_tangent_vector()
         traj = v.straight_line_trajectory()
@@ -677,9 +923,9 @@ class SaddleConnection(SageObject):
         r"""
         Return a tangent vector to the saddle connection based at its start.
         """
-        return self._s.tangent_vector(
+        return self._surface.tangent_vector(
             self._end_data[0],
-            self._s.polygon(self._end_data[0]).vertex(self._end_data[1]),
+            self._surface.polygon(self._end_data[0]).vertex(self._end_data[1]),
             self._end_direction,
         )
 
@@ -688,10 +934,10 @@ class SaddleConnection(SageObject):
         Return this saddle connection but with opposite orientation.
         """
         return SaddleConnection(
-            self._s,
+            self._surface,
             self._end_data,
             self._end_direction,
-            self._start_data,
+            self._surfacetart_data,
             self._direction,
             self._end_holonomy,
             self._holonomy,
@@ -751,11 +997,11 @@ class SaddleConnection(SageObject):
             return True
         if not isinstance(other, SaddleConnection):
             return False
-        if not self._s == other._s:
+        if not self._surface == other._surface:
             return False
         if not self._direction == other._direction:
             return False
-        if not self._start_data == other._start_data:
+        if not self._surfacetart_data == other._surfacetart_data:
             return False
         # Initial data should determine the saddle connection:
         return True
@@ -764,13 +1010,13 @@ class SaddleConnection(SageObject):
         return not self == other
 
     def __hash__(self):
-        return 41 * hash(self._direction) - 97 * hash(self._start_data)
+        return 41 * hash(self._direction) - 97 * hash(self._surfacetart_data)
 
     def _test_geometry(self, **options):
         # Test that this saddle connection actually exists on the surface.
         SaddleConnection(
-            self._s,
-            self._start_data,
+            self._surface,
+            self._surfacetart_data,
             self._direction,
             self._end_data,
             self._end_direction,
@@ -781,16 +1027,16 @@ class SaddleConnection(SageObject):
 
     def __repr__(self):
         return "Saddle connection in direction {} with start data {} and end data {}".format(
-            self._direction, self._start_data, self._end_data
+            self._direction, self._surfacetart_data, self._end_data
         )
 
     def _test_inverse(self, **options):
         # Test that inverting works properly.
         SaddleConnection(
-            self._s,
+            self._surface,
             self._end_data,
             self._end_direction,
-            self._start_data,
+            self._surfacetart_data,
             self._direction,
             self._end_holonomy,
             self._holonomy,
@@ -841,7 +1087,7 @@ class Cylinder(SageObject):
         edges: a list
             giving the sequence of edges the cylinder crosses until it closes.
         """
-        self._s = s
+        self._surface = s
         self._label0 = label0
         self._edges = tuple(edges)
         ss = s.minimal_cover(cover_type="planar")
@@ -1018,7 +1264,7 @@ class Cylinder(SageObject):
         self._polygons = tuple(polygons)
 
     def surface(self):
-        return self._s
+        return self._surface
 
     def initial_label(self):
         r"""
@@ -1057,7 +1303,7 @@ class Cylinder(SageObject):
         """
         from .cone_surface import ConeSurface
 
-        if not isinstance(self._s, ConeSurface):
+        if not isinstance(self._surface, ConeSurface):
             raise NotImplementedError("area only makes sense for cone surfaces")
         area = 0
         for label, p in self.polygons():
@@ -1081,11 +1327,11 @@ class Cylinder(SageObject):
         """
         if "graphical_surface" in options and options["graphical_surface"] is not None:
             gs = options["graphical_surface"]
-            if gs.get_surface() != self._s:
+            if gs.get_surface() != self._surface:
                 raise ValueError("graphical surface for the wrong surface")
             del options["graphical_surface"]
         else:
-            gs = self._s.graphical_surface()
+            gs = self._surface.graphical_surface()
         plt = Graphics()
         for label, p in self.polygons():
             if gs.is_visible(label):
@@ -1158,10 +1404,12 @@ class Cylinder(SageObject):
         """
         from .translation_surface import TranslationSurface
 
-        if not isinstance(self._s, TranslationSurface):
-            raise NotImplementedError("holonomy currently only computable for translation surfaces")
+        if not isinstance(self._surface, TranslationSurface):
+            raise NotImplementedError(
+                "holonomy currently only computable for translation surfaces"
+            )
 
-        V = self._s.vector_space()
+        V = self._surface.vector_space()
         total = V.zero()
         for sc in self._boundary1:
             total += sc.holonomy()
@@ -1186,8 +1434,10 @@ class Cylinder(SageObject):
         """
         from .cone_surface import ConeSurface
 
-        if not isinstance(self._s, ConeSurface):
-            raise NotImplementedError("circumference only makes sense for cone surfaces")
+        if not isinstance(self._surface, ConeSurface):
+            raise NotImplementedError(
+                "circumference only makes sense for cone surfaces"
+            )
 
         total = 0
         for sc in self._boundary1:

@@ -505,7 +505,10 @@ def subdivide_a_polygon(s):
                 if wedge_product(e1, e2) != 0:
                     return SplitPolygonsMapping(s, label, i, (i + 2) % n)
             raise ValueError(
-                "Unable to triangulate polygon with label " + str(label) + ": " + str(poly)
+                "Unable to triangulate polygon with label "
+                + str(label)
+                + ": "
+                + str(poly)
             )
     return None
 

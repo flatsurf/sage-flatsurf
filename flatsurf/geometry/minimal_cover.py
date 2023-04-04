@@ -13,6 +13,7 @@ def _is_finite(surface):
         return False
 
     from flatsurf.geometry.rational_cone_surface import RationalConeSurface
+
     if isinstance(surface, RationalConeSurface):
         return True
 
@@ -23,9 +24,11 @@ def _is_finite(surface):
 
         for e in range(polygon.num_edges()):
             from flatsurf.geometry.similarity_surface import SimilaritySurface
+
             m = SimilaritySurface.edge_matrix(surface, label, e)
 
             from flatsurf.geometry.matrix_2x2 import is_cosine_sine_of_rational
+
             if not is_cosine_sine_of_rational(m[0][0], m[0][1]):
                 return False
 
@@ -188,7 +191,13 @@ class MinimalPlanarCover(Surface):
         sage: pc.is_finite()
         False
         sage: sing = pc.singularity(pc.base_label(),0,limit=4)
+        doctest:warning
+        ...
+        UserWarning: Singularity() is deprecated and will be removed in a future version of sage-flatsurf. Use surface.point() instead.
         sage: len(sing.vertex_set())
+        doctest:warning
+        ...
+        UserWarning: vertex_set() is deprecated and will be removed in a future version of sage-flatsurf; use representatives() and then vertex = surface.polygon(label).get_point_position(coordinates).get_vertex() instead
         4
         sage: TestSuite(s).run(skip="_test_pickling")
     """
