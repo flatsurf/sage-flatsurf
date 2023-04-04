@@ -54,7 +54,7 @@ def Singularity(similarity_surface, label, v, limit=None):
         ...
         UserWarning: Singularity() is deprecated and will be removed in a future version of sage-flatsurf. Use surface.point() instead.
         sage: print(sing)
-        Vertex 5 of polygon 0
+        Vertex 1 of polygon 0
         sage: TestSuite(sing).run()
 
     """
@@ -116,7 +116,7 @@ class SurfacePoint(SageObject):
     A point can have even more representations when it is a vertex::
 
         sage: S.point(1, (0, 0))
-        Vertex 1 of polygon 2
+        Vertex 0 of polygon 1
 
     """
 
@@ -490,18 +490,20 @@ class SurfacePoint(SageObject):
             Point (1/2, 1/2) of polygon 0
 
         """
-        label, coordinates = self.representative()
+        def render(label, coordinates):
+            if self.is_vertex():
+                vertex = (
+                    self.surface()
+                    .polygon(label)
+                    .get_point_position(coordinates)
+                    .get_vertex()
+                )
+                return "Vertex {} of polygon {}".format(vertex, label)
 
-        if self.is_vertex():
-            vertex = (
-                self.surface()
-                .polygon(label)
-                .get_point_position(coordinates)
-                .get_vertex()
-            )
-            return "Vertex {} of polygon {}".format(vertex, label)
+            return "Point {} of polygon {}".format(coordinates, label)
 
-        return "Point {} of polygon {}".format(coordinates, label)
+        # We pick a specific representative to make our lives easier when doctesting
+        return min(render(label, coordinates) for (label, coordinates) in self.representatives())
 
     def __eq__(self, other):
         r"""

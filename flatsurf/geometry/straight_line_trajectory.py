@@ -467,7 +467,7 @@ class AbstractStraightLineTrajectory:
             sage: for p, (segs1, segs2) in traj1.intersections(traj2, include_segments=True):
             ....:     print(p)
             ....:     print(len(segs1), len(segs2))
-            Point (1/2, 1) of polygon 0
+            Point (1/2, 0) of polygon 0
             2 2
             Point (0, 1/2) of polygon 0
             2 2

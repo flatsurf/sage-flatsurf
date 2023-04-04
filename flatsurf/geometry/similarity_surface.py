@@ -1359,7 +1359,7 @@ class SimilaritySurface(SageObject):
             doctest:warning
             ...
             UserWarning: Singularity() is deprecated and will be removed in a future version of sage-flatsurf. Use surface.point() instead.
-            Vertex 2 of polygon (0, (x, y) |-> (x - 1, y - 1))
+            Vertex 0 of polygon (0, (x, y) |-> (x, y))
             sage: pc.singularity(pc.base_label(),0,limit=1)
             Traceback (most recent call last):
             ...
@@ -1389,7 +1389,7 @@ class SimilaritySurface(SageObject):
             sage: s = translation_surfaces.square_torus()
             sage: pc = s.minimal_cover(cover_type="planar")
             sage: pc.surface_point(pc.base_label(),(0,0))
-            Vertex 2 of polygon (0, (x, y) |-> (x - 1, y - 1))
+            Vertex 0 of polygon (0, (x, y) |-> (x, y))
             sage: z = pc.surface_point(pc.base_label(),(sqrt(2)-1,sqrt(3)-1),ring=AA)
             doctest:warning
             ...
