@@ -335,6 +335,9 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
             sage: a = field.gen()
             sage: V = VectorSpace(field,2)
             sage: deformation1 = {s.singularity(0,0):V((1,0))}
+            doctest:warning
+            ...
+            UserWarning: Singularity() is deprecated and will be removed in a future version of sage-flatsurf. Use surface.point() instead.
             sage: s1 = s.rel_deformation(deformation1).canonicalize()
             sage: deformation2 = {s.singularity(0,0):V((a,0))}
             sage: s2 = s.rel_deformation(deformation2).canonicalize()
@@ -363,7 +366,8 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
         deformed_labels = set()  # list of polygon labels being deformed.
 
         for singularity, vect in iteritems(deformation):
-            for label, v in singularity.vertex_set():
+            for label, coordinates in singularity.representatives():
+                v = self.polygon(label).get_point_position(coordinates).get_vertex()
                 vertex_deformation[(label, v)] = vect
                 deformed_labels.add(label)
                 assert s.polygon(label).num_edges() == 3
@@ -440,7 +444,8 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
                 deformation2 = {}
                 for singularity, vect in iteritems(deformation):
                     found_start = None
-                    for label, v in singularity.vertex_set():
+                    for label, coordinates in singularity.representatives():
+                        v = s.polygon(label).get_point_position(coordinates).get_vertex()
                         if (
                             wedge_product(s.polygon(label).edge(v), nonzero) >= 0
                             and wedge_product(

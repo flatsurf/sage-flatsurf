@@ -698,7 +698,7 @@ class GraphicalSurface:
             sage: s = similarity_surfaces.example()
             sage: gs = s.graphical_surface()
             sage: gs.to_surface((1,-2))
-            Surface point located at (1, 1/2) in polygon 1
+            Point (1, 1/2) of polygon 1
             sage: gs.to_surface((1,-2), v=(1,0))
             SimilaritySurfaceTangentVector in polygon 1 based at (1, 1/2) with vector (1, -1/2)
 
@@ -711,17 +711,19 @@ class GraphicalSurface:
             sage: pc = s.minimal_cover(cover_type="planar")
             sage: gs = pc.graphical_surface()
             sage: gs.to_surface((3,2), search_all=True, search_limit=20)
-            Traceback (most recent call last):
-            ...
-            ValueError: need a limit when working with an infinite surface
+            Vertex 0 of polygon (0, (x, y) |-> (x + 3, y + 2))
             sage: gs.to_surface((3,2), search_all=True, search_limit=20, singularity_limit=4)
-            Surface point with 4 coordinate representations
+            Vertex 0 of polygon (0, (x, y) |-> (x + 3, y + 2))
             sage: p = gs.to_surface((sqrt(3),sqrt(2)), ring=AA, search_all=True, search_limit=20)
-            sage: next(iter(p.coordinates(p.labels()[0]))).parent()
+            doctest:warning
+            ...
+            UserWarning: the ring parameter is deprecated and will be removed in a future version of sage-flatsurf; define the surface over a larger ring instead so that this points' coordinates live in the base ring
+            sage: next(iter(p.coordinates(next(iter(p.labels()))))).parent()
             Vector space of dimension 2 over Algebraic Real Field
             sage: v = gs.to_surface((3/2,3/2),(sqrt(3),sqrt(2)),ring=AA,search_all=True, search_limit=20)
             sage: v.bundle()
             Tangent bundle of TranslationSurface built from infinitely many polygons defined over Algebraic Real Field
+
         """
         surface = self.get_surface()
 

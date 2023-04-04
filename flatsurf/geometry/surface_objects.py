@@ -159,7 +159,7 @@ class SurfacePoint(SageObject):
 
                 if limit is not None:
                     limit -= 1
-                    if limit <= 0:
+                    if limit < 0:
                         raise ValueError("number of edges at singularity exceeds limit")
 
             self._representatives = {(label, surface.polygon(label).vertex(vertex)) for (label, vertex) in self._representatives}
@@ -271,7 +271,7 @@ class SurfacePoint(SageObject):
 
     def vertex_set(self):
         r"""
-        Return the set of pairs (l, v) in the equivalence class of this singularity.
+        Return the list of pairs (l, v) in the equivalence class of this singularity.
 
         EXAMPLES::
 
@@ -290,8 +290,7 @@ class SurfacePoint(SageObject):
         import warnings
         warnings.warn("vertex_set() is deprecated and will be removed in a future version of sage-flatsurf; use representatives() and then vertex = surface.polygon(label).get_point_position(coordinates).get_vertex() instead")
 
-        for label, coordinates in self.representatives():
-            yield (label, self.surface().polygon(label).get_point_position(coordinates).get_vertex())
+        return [(label, self.surface().polygon(label).get_point_position(coordinates).get_vertex()) for label, coordinates in self.representatives()]
 
     def contains_vertex(self, label, v=None):
         r"""
@@ -370,7 +369,6 @@ class SurfacePoint(SageObject):
             sage: p = S.point(0, (0, 1/2))
             sage: p.labels()
             {0, 2}
-
 
         For a point at a vertex, there can be more labels::
 
