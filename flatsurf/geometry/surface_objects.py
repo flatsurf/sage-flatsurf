@@ -490,6 +490,7 @@ class SurfacePoint(SageObject):
             Point (1/2, 1/2) of polygon 0
 
         """
+
         def render(label, coordinates):
             if self.is_vertex():
                 vertex = (
@@ -503,7 +504,10 @@ class SurfacePoint(SageObject):
             return "Point {} of polygon {}".format(coordinates, label)
 
         # We pick a specific representative to make our lives easier when doctesting
-        return min(render(label, coordinates) for (label, coordinates) in self.representatives())
+        return min(
+            render(label, coordinates)
+            for (label, coordinates) in self.representatives()
+        )
 
     def __eq__(self, other):
         r"""
